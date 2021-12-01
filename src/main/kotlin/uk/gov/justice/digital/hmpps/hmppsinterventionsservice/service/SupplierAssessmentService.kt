@@ -52,7 +52,6 @@ class SupplierAssessmentService(
     additionalAttendanceInformation: String? = null,
     notifyProbationPractitioner: Boolean? = null,
     behaviourDescription: String? = null,
-    pastAppointment: Boolean = false
   ): Appointment {
     val appointment = appointmentService.createOrUpdateAppointment(
       supplierAssessment.referral,
@@ -68,8 +67,7 @@ class SupplierAssessmentService(
       attended,
       additionalAttendanceInformation,
       notifyProbationPractitioner,
-      behaviourDescription,
-      pastAppointment
+      behaviourDescription
     )
     supplierAssessment.appointments.add(appointment)
     supplierAssessmentRepository.save(supplierAssessment)

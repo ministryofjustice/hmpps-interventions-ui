@@ -90,7 +90,6 @@ class SupplierAssessmentServiceTest {
           isNull(),
           isNull(),
           isNull(),
-          eq(false)
         )
       ).thenReturn(appointment)
       whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessment)
@@ -126,7 +125,6 @@ class SupplierAssessmentServiceTest {
           isNull(),
           isNull(),
           isNull(),
-          eq(false)
         )
       ).thenReturn(appointment)
       whenever(supplierAssessmentRepository.save(any())).thenReturn(supplierAssessment)

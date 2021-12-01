@@ -155,7 +155,6 @@ class DeliverySessionService(
     additionalAttendanceInformation: String? = null,
     notifyProbationPractitioner: Boolean? = null,
     behaviourDescription: String? = null,
-    pastAppointment: Boolean = false
   ): DeliverySession {
     val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
     val existingAppointment = session.currentAppointment
@@ -181,10 +180,7 @@ class DeliverySessionService(
         deliusAppointmentId = deliusAppointmentId,
         referral = session.referral,
       )
-      if (pastAppointment) {
-        setAttendanceFields(appointment, attended!!, additionalAttendanceInformation, updatedBy)
-        setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, updatedBy)
-      }
+      setAttendanceAndBehaviourIfHistoricAppointment(appointment, appointmentTime, attended, additionalAttendanceInformation, behaviourDescription, notifyProbationPractitioner, updatedBy)
       appointmentRepository.saveAndFlush(appointment)
       appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
       session.appointments.add(appointment)
@@ -305,6 +301,25 @@ class DeliverySessionService(
 
   fun getSession(deliverySessionId: UUID): DeliverySession {
     return deliverySessionRepository.findByIdOrNull(deliverySessionId) ?: throw EntityNotFoundException("Delivery session not found [deliverySessionId=$deliverySessionId]")
+  }
+
+  private fun setAttendanceAndBehaviourIfHistoricAppointment(
+    appointment: Appointment,
+    appointmentTime: OffsetDateTime,
+    attended: Attended?,
+    additionalAttendanceInformation: String?,
+    behaviourDescription: String?,
+    notifyProbationPractitioner: Boolean?,
+    updatedBy: AuthUser
+  ) {
+    if (appointmentTime.isBefore(OffsetDateTime.now())) {
+      setAttendanceFields(appointment, attended!!, additionalAttendanceInformation, updatedBy)
+      if (Attended.NO != attended) {
+        setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, updatedBy)
+      }
+      appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
+      appointment.appointmentFeedbackSubmittedBy = updatedBy
+    }
   }
 
   private fun setAttendanceFields(

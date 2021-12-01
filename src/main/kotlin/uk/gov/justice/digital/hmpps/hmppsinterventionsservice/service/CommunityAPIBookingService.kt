@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.Communit
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.NO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import java.lang.IllegalStateException
 import java.time.OffsetDateTime
@@ -109,9 +110,12 @@ class CommunityAPIBookingService(
       notes = getNotes(referral, resourceUrl, "${get(appointmentType, notesFieldQualifier)} Appointment"),
       countsTowardsRarDays = get(appointmentType, countsTowardsRarDays),
       attended = attended?.toString(),
-      notifyPPOfAttendanceBehaviour = notifyPPOfAttendanceBehaviour,
+      notifyPPOfAttendanceBehaviour = setNotifyPPIfAttendedNo(attended, notifyPPOfAttendanceBehaviour),
     )
   }
+
+  fun setNotifyPPIfAttendedNo(attended: Attended?, notifyPPOfAttendanceBehaviour: Boolean?) =
+    if (attended == NO) true else notifyPPOfAttendanceBehaviour
 
   private fun buildAppointmentRelocateRequestDTO(npsOfficeCode: String): AppointmentRelocateRequestDTO {
     return AppointmentRelocateRequestDTO(

@@ -12,11 +12,13 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.User
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DeliverySessionAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DeliverySessionDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointmentBehaviourDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.YES
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentService
@@ -48,38 +50,76 @@ internal class DeliverySessionControllerTest {
   private val jwtTokenFactory = JwtTokenFactory()
   private val authUserFactory = AuthUserFactory()
 
-  @Test
-  fun `updates a session`() {
-    val user = authUserFactory.create()
-    val userToken = jwtTokenFactory.create(user)
-    val deliverySession = deliverySessionFactory.createScheduled(createdBy = user)
-    val actionPlanId = UUID.randomUUID()
-    val sessionNumber = deliverySession.sessionNumber
+  @Nested
+  inner class UpdateSession {
 
-    val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE, null, null)
+    @Test
+    fun `updates a session`() {
+      val user = authUserFactory.create()
+      val userToken = jwtTokenFactory.create(user)
+      val deliverySession = deliverySessionFactory.createScheduled(createdBy = user)
+      val actionPlanId = UUID.randomUUID()
+      val sessionNumber = deliverySession.sessionNumber
 
-    whenever(
-      sessionsService.updateSessionAppointment(
-        actionPlanId,
-        sessionNumber,
-        updateAppointmentDTO.appointmentTime,
-        updateAppointmentDTO.durationInMinutes,
-        user,
-        AppointmentDeliveryType.PHONE_CALL,
-        AppointmentSessionType.ONE_TO_ONE,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        true
-      )
-    ).thenReturn(deliverySession)
+      val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE, null, null)
 
-    val sessionResponse = sessionsController.updateSessionAppointment(actionPlanId, sessionNumber, updateAppointmentDTO, userToken)
+      whenever(
+        sessionsService.updateSessionAppointment(
+          actionPlanId,
+          sessionNumber,
+          updateAppointmentDTO.appointmentTime,
+          updateAppointmentDTO.durationInMinutes,
+          user,
+          AppointmentDeliveryType.PHONE_CALL,
+          AppointmentSessionType.ONE_TO_ONE,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        )
+      ).thenReturn(deliverySession)
 
-    assertThat(sessionResponse).isEqualTo(DeliverySessionDTO.from(deliverySession))
+      val sessionResponse = sessionsController.updateSessionAppointment(actionPlanId, sessionNumber, updateAppointmentDTO, userToken)
+
+      assertThat(sessionResponse).isEqualTo(DeliverySessionDTO.from(deliverySession))
+    }
+
+    @Test
+    fun `updates a session with new historic appointment`() {
+      val user = authUserFactory.create()
+      val userToken = jwtTokenFactory.create(user)
+      val deliverySession = deliverySessionFactory.createScheduled(createdBy = user)
+      val actionPlanId = UUID.randomUUID()
+      val sessionNumber = deliverySession.sessionNumber
+
+      val attendanceDTO = UpdateAppointmentAttendanceDTO(YES, "attended")
+      val behaviourDTO = RecordAppointmentBehaviourDTO("behaviour", false)
+      val updateAppointmentDTO = UpdateAppointmentDTO(OffsetDateTime.now(), 10, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE, null, null, attendanceDTO, behaviourDTO)
+
+      whenever(
+        sessionsService.updateSessionAppointment(
+          actionPlanId,
+          sessionNumber,
+          updateAppointmentDTO.appointmentTime,
+          updateAppointmentDTO.durationInMinutes,
+          user,
+          AppointmentDeliveryType.PHONE_CALL,
+          AppointmentSessionType.ONE_TO_ONE,
+          null,
+          null,
+          YES,
+          "attended",
+          false,
+          "behaviour"
+        )
+      ).thenReturn(deliverySession)
+
+      val sessionResponse = sessionsController.updateSessionAppointment(actionPlanId, sessionNumber, updateAppointmentDTO, userToken)
+
+      assertThat(sessionResponse).isEqualTo(DeliverySessionDTO.from(deliverySession))
+    }
   }
 
   @Nested

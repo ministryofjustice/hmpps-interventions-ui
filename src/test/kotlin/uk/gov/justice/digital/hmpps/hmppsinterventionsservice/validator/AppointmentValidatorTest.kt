@@ -9,9 +9,12 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointmentBehaviourDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import java.time.OffsetDateTime
 
 internal class AppointmentValidatorTest {
@@ -110,6 +113,66 @@ internal class AppointmentValidatorTest {
         assertThat(exception.errors).containsExactly(
           FieldError("appointmentDeliveryAddress.firstAddressLine", Code.CANNOT_BE_EMPTY),
           FieldError("appointmentDeliveryAddress.postCode", Code.CANNOT_BE_EMPTY),
+        )
+      }
+
+      @Test
+      fun `past appointment fails if no attendance reported but behaviour is`() {
+        val updateAppointmentDTO = UpdateAppointmentDTO(
+          appointmentTime = OffsetDateTime.now().minusDays(1),
+          durationInMinutes = 1,
+          appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE,
+          sessionType = AppointmentSessionType.ONE_TO_ONE,
+          npsOfficeCode = "CRSEXT",
+          appointmentAttendance = null,
+          appointmentBehaviour = RecordAppointmentBehaviourDTO("some comments", false)
+        )
+        val exception = assertThrows<ValidationError> {
+          deliverySessionValidator.validateUpdateAppointment(updateAppointmentDTO)
+        }
+        assertThat(exception.errors).containsExactly(
+          FieldError("appointmentBehaviour.notifyProbationPractitioner", Code.INVALID_VALUE),
+          FieldError("appointmentBehaviour.behaviourDescription", Code.INVALID_VALUE),
+        )
+      }
+
+      @Test
+      fun `past appointment fails if attendance reported as yes but behaviour is not`() {
+        val updateAppointmentDTO = UpdateAppointmentDTO(
+          appointmentTime = OffsetDateTime.now().minusDays(1),
+          durationInMinutes = 1,
+          appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE,
+          sessionType = AppointmentSessionType.ONE_TO_ONE,
+          npsOfficeCode = "CRSEXT",
+          appointmentAttendance = UpdateAppointmentAttendanceDTO(Attended.YES, null),
+          appointmentBehaviour = null
+        )
+        val exception = assertThrows<ValidationError> {
+          deliverySessionValidator.validateUpdateAppointment(updateAppointmentDTO)
+        }
+        assertThat(exception.errors).containsExactly(
+          FieldError("appointmentBehaviour.notifyProbationPractitioner", Code.CANNOT_BE_EMPTY),
+          FieldError("appointmentBehaviour.behaviourDescription", Code.CANNOT_BE_EMPTY),
+        )
+      }
+
+      @Test
+      fun `past appointment fails if attendance reported as late but behaviour is not`() {
+        val updateAppointmentDTO = UpdateAppointmentDTO(
+          appointmentTime = OffsetDateTime.now().minusDays(1),
+          durationInMinutes = 1,
+          appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE,
+          sessionType = AppointmentSessionType.ONE_TO_ONE,
+          npsOfficeCode = "CRSEXT",
+          appointmentAttendance = UpdateAppointmentAttendanceDTO(Attended.LATE, null),
+          appointmentBehaviour = null
+        )
+        val exception = assertThrows<ValidationError> {
+          deliverySessionValidator.validateUpdateAppointment(updateAppointmentDTO)
+        }
+        assertThat(exception.errors).containsExactly(
+          FieldError("appointmentBehaviour.notifyProbationPractitioner", Code.CANNOT_BE_EMPTY),
+          FieldError("appointmentBehaviour.behaviourDescription", Code.CANNOT_BE_EMPTY),
         )
       }
     }

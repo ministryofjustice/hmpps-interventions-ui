@@ -23,7 +23,6 @@ import java.util.UUID
 import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
-import javax.validation.ValidationException
 
 @Service
 @Transactional
@@ -52,7 +51,6 @@ class AppointmentService(
     additionalAttendanceInformation: String? = null,
     notifyProbationPractitioner: Boolean? = null,
     behaviourDescription: String? = null,
-    pastAppointment: Boolean
   ): Appointment {
     val appointment = when {
       // an initial appointment is required
@@ -72,8 +70,7 @@ class AppointmentService(
           attended,
           additionalAttendanceInformation,
           notifyProbationPractitioner,
-          behaviourDescription,
-          pastAppointment
+          behaviourDescription
         )
       }
       // the current appointment needs to be updated
@@ -88,13 +85,13 @@ class AppointmentService(
           appointmentDeliveryType,
           appointmentSessionType,
           appointmentDeliveryAddress,
-          npsOfficeCode,
+          npsOfficeCode
         )
       }
       // an additional appointment is required
       appointment.attended == Attended.NO -> {
         val deliusAppointmentId =
-          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode)
+          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode, attended, notifyProbationPractitioner)
         createAppointment(
           durationInMinutes,
           appointmentTime,
@@ -108,8 +105,7 @@ class AppointmentService(
           attended,
           additionalAttendanceInformation,
           notifyProbationPractitioner,
-          behaviourDescription,
-          pastAppointment
+          behaviourDescription
         )
       }
       // the appointment has already been attended
@@ -142,22 +138,6 @@ class AppointmentService(
       appointmentDelivery.appointmentDeliveryAddress =
         createOrUpdateAppointmentDeliveryAddress(appointmentDelivery, appointmentDeliveryAddressDTO!!)
       appointmentDeliveryRepository.saveAndFlush(appointmentDelivery)
-    }
-  }
-
-  fun verifyPastAppointmentFields(
-    attended: Attended?,
-    notifyProbationPractitioner: Boolean?,
-    behaviourDescription: String?
-  ) {
-    if (attended == null) {
-      throw ValidationException("Missing field 'attended' must be set for past appointment")
-    }
-    if (notifyProbationPractitioner == null) {
-      throw ValidationException("Missing field 'notifyProbationPractitioner' must be set for past appointment")
-    }
-    if (behaviourDescription == null) {
-      throw ValidationException("Missing field 'behaviourDescription' must be set for past appointment")
     }
   }
 
@@ -236,7 +216,7 @@ class AppointmentService(
     return appointment
   }
 
-  fun setAttendanceFields(
+  private fun setAttendanceFields(
     appointment: Appointment,
     attended: Attended,
     additionalInformation: String?,
@@ -248,7 +228,7 @@ class AppointmentService(
     appointment.attendanceSubmittedBy = authUserRepository.save(submittedBy)
   }
 
-  fun setBehaviourFields(
+  private fun setBehaviourFields(
     appointment: Appointment,
     behaviour: String,
     notifyProbationPractitioner: Boolean,
@@ -274,7 +254,6 @@ class AppointmentService(
     additionalAttendanceInformation: String?,
     notifyProbationPractitioner: Boolean?,
     behaviourDescription: String?,
-    pastAppointment: Boolean = false
   ): Appointment {
     val appointment = Appointment(
       id = UUID.randomUUID(),
@@ -285,10 +264,7 @@ class AppointmentService(
       createdAt = OffsetDateTime.now(),
       referral = referral,
     )
-    if (pastAppointment) {
-      setAttendanceFields(appointment, attended!!, additionalAttendanceInformation, createdByUser)
-      setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, createdByUser)
-    }
+    setAttendanceAndBehaviourIfHistoricAppointment(appointment, appointmentTime, attended, additionalAttendanceInformation, behaviourDescription, notifyProbationPractitioner, createdByUser)
     appointmentRepository.saveAndFlush(appointment)
     createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     return appointment
@@ -389,5 +365,24 @@ class AppointmentService(
     createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     appointmentEventPublisher.appointmentScheduledEvent(appointment, appointmentType)
     return appointment
+  }
+
+  private fun setAttendanceAndBehaviourIfHistoricAppointment(
+    appointment: Appointment,
+    appointmentTime: OffsetDateTime,
+    attended: Attended?,
+    additionalAttendanceInformation: String?,
+    behaviourDescription: String?,
+    notifyProbationPractitioner: Boolean?,
+    updatedBy: AuthUser
+  ) {
+    if (appointmentTime.isBefore(OffsetDateTime.now())) {
+      setAttendanceFields(appointment, attended!!, additionalAttendanceInformation, updatedBy)
+      if (Attended.NO != attended) {
+        setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, updatedBy)
+      }
+      appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
+      appointment.appointmentFeedbackSubmittedBy = updatedBy
+    }
   }
 }
