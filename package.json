@@ -169,7 +169,7 @@
     "fishery": "^2.1.0",
     "husky": "^7.0.4",
     "jest": "^27.4.3",
-    "jest-html-reporter": "^3.3.0",
+    "jest-html-reporter": "^3.4.2",
     "jest-junit": "^13.0.0",
     "jest-pact": "^0.9.1",
     "jsonwebtoken": "^8.5.1",
