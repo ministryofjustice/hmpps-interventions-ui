@@ -19,7 +19,7 @@ class EndOfServiceReportEvent(
 ) :
   ApplicationEvent(source) {
   override fun toString(): String {
-    return "EndOfServiceReportEvent(type=$type, referral=${endOfServiceReport.id}, detailUrl='$detailUrl', source=$source)"
+    return "EndOfServiceReportEvent(type=$type, referralId=${endOfServiceReport.referral.id}, detailUrl='$detailUrl', source=$source)"
   }
 }
 
