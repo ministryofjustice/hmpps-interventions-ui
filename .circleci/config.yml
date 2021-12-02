@@ -178,6 +178,7 @@ workflows:
             - vulnerability_scan_and_monitor
           context:
             - hmpps-common-vars
+            - hmpps-interventions-dev-deploy
       - tag_pact_version:
           name: "tag_pact_version_dev"
           tag: "deployed:dev"
@@ -197,7 +198,7 @@ workflows:
             - approve_postdev
           context:
             - hmpps-common-vars
-            - hmpps-interventions-ui-preprod
+            - hmpps-interventions-preprod-deploy
       - tag_pact_version:
           name: "tag_pact_version_preprod"
           tag: "deployed:preprod"

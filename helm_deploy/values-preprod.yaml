@@ -1,6 +1,7 @@
 generic-service:
   ingress:
     host: hmpps-interventions-ui-preprod.apps.live-1.cloud-platform.service.justice.gov.uk
+    contextColour: green
     modsecurity_enabled: true
   env:
     INGRESS_URL: "https://hmpps-interventions-ui-preprod.apps.live-1.cloud-platform.service.justice.gov.uk"
