@@ -119,7 +119,7 @@
     "helmet": "^4.1.1",
     "http-errors": "^1.8.1",
     "indefinite": "^2.4.1",
-    "joi": "^17.4.2",
+    "joi": "^17.4.3",
     "jquery": "^3.5.1",
     "jwt-decode": "^2.2.0",
     "nocache": "^3.0.1",
