@@ -818,9 +818,11 @@ export default class ServiceProviderReferralsController {
       accessToken,
       sentReferral.id,
       existingActionPlan.numberOfSessions || undefined,
-      existingActionPlan.activities.map(it => {
-        return { description: it.description }
-      })
+      existingActionPlan.activities
+        .sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1))
+        .map(it => {
+          return { description: it.description }
+        })
     )
     res.redirect(303, `/service-provider/action-plan/${newDraftActionPlan.id}/add-activity/1`)
   }
