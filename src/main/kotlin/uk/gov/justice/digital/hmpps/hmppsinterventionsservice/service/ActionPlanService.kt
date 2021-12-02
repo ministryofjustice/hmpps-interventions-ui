@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPlanValidator
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
@@ -18,7 +19,6 @@ import java.util.UUID
 import java.util.UUID.randomUUID
 import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
-import javax.validation.ValidationException
 
 @Service
 @Transactional
@@ -106,13 +106,13 @@ class ActionPlanService(
 
   private fun verifySafeForApproval(actionPlan: ActionPlan) {
     if (actionPlan.approvedAt != null) {
-      throw ValidationException("Action plan has already been approved. [id=${actionPlan.id}]")
+      throw ValidationError("Action plan has already been approved", listOf())
     } else if (actionPlan.referral.actionPlans?.filter { it.approvedAt == null && it.submittedAt != null }?.maxByOrNull { it.submittedAt!! }?.id != actionPlan.id) {
-      throw ValidationException("Action plan is not the latest submitted, so cannot be approved. [id=${actionPlan.id}]")
+      throw ValidationError("Action plan is not the latest submitted, so cannot be approved", listOf())
     }
     actionPlan.referral.approvedActionPlan?. let {
       if (it.numberOfSessions!! > actionPlan.numberOfSessions!!) {
-        throw ValidationException("Action plan cannot be approved as it has less sessions than the currently approved action plan. [id=${actionPlan.id}]")
+        throw ValidationError("Action plan cannot be approved as it has less sessions than the currently approved action plan", listOf())
       }
     }
   }
