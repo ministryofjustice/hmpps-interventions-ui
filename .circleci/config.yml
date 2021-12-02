@@ -198,7 +198,7 @@ workflows:
             - approve_postdev
           context:
             - hmpps-common-vars
-            - hmpps-interventions-ui-preprod
+            - hmpps-interventions-preprod-deploy
       - tag_pact_version:
           name: "tag_pact_version_preprod"
           tag: "deployed:preprod"
