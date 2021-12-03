@@ -1495,6 +1495,7 @@ describe('Service provider referrals dashboard', () => {
             notifyProbationPractitioner: false,
           },
           submitted: true,
+          submittedBy: serviceProvider,
         },
       }),
     ]
@@ -1557,6 +1558,8 @@ describe('Service provider referrals dashboard', () => {
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.contains('Intervention cancelled').should('not.exist')
       cy.contains('View feedback form').click()
+      cy.contains('Caseworker').next().contains('Case Worker (auth.user@someagency.justice.gov.uk)')
+      cy.contains('Feedback submitted by').next().contains('Case Worker (auth.user@someagency.justice.gov.uk)')
       cy.contains('Alex attended the session')
       cy.contains('Yes, they were on time')
       cy.contains('Alex was well-behaved')

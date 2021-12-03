@@ -1,7 +1,11 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
-import { AppointmentSchedulingDetails, InitialAssessmentAppointment } from '../../models/appointment'
+import {
+  ActionPlanAppointment,
+  AppointmentSchedulingDetails,
+  InitialAssessmentAppointment,
+} from '../../models/appointment'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import CommunityApiService from '../../services/communityApiService'
@@ -41,6 +45,8 @@ import AttendanceFeedbackView from './feedback/shared/attendance/attendanceFeedb
 import BehaviourFeedbackForm from './feedback/shared/behaviour/behaviourFeedbackForm'
 import BehaviourFeedbackView from './feedback/shared/behaviour/behaviourFeedbackView'
 import CheckFeedbackAnswersView from './feedback/shared/checkYourAnswers/checkFeedbackAnswersView'
+import logger from '../../../log'
+import SentReferral from '../../models/sentReferral'
 
 export type DraftAppointmentBooking = null | AppointmentSchedulingDetails
 
@@ -111,18 +117,9 @@ export default class AppointmentsController {
     }
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    let assignedCaseworker: AuthUserDetails | null = null
-    if (currentAppointment?.sessionFeedback?.submitted) {
-      assignedCaseworker = await this.hmppsAuthService.getSPUserByUsername(
-        res.locals.user.token.accessToken,
-        currentAppointment!.sessionFeedback!.submittedBy!.username
-      )
-    }
     let appointmentSummary: AppointmentSummary | null = null
     if (currentAppointment) {
-      const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
-      appointmentSummary = new AppointmentSummary(currentAppointment, assignedCaseworker, deliusOfficeLocation)
+      appointmentSummary = await this.createAppointmentSummary(accessToken, currentAppointment, referral)
     }
     const overrideBackLinkHref = hasExistingScheduledAppointment
       ? `/service-provider/referrals/${referralId}/supplier-assessment`
@@ -224,9 +221,13 @@ export default class AppointmentsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async showSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
+  async showSupplierAssessmentAppointment(
+    req: Request,
+    res: Response,
+    userType: 'service-provider' | 'probation-practitioner'
+  ): Promise<void> {
     const referralId = req.params.id
-
+    const { accessToken } = res.locals.user.token
     const [referral, supplierAssessment] = await Promise.all([
       this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId),
 
@@ -237,18 +238,13 @@ export default class AppointmentsController {
     if (appointment === null) {
       throw new Error('Attempting to view supplier assessment without a current appointment')
     }
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    const presenter = new SupplierAssessmentAppointmentPresenter(
-      referral,
-      appointment,
-      new AppointmentSummary(appointment, null, deliusOfficeLocation),
-      {
-        userType: 'service-provider',
-      }
-    )
+    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
+    const presenter = new SupplierAssessmentAppointmentPresenter(referral, appointment, appointmentSummary, {
+      readonly: userType === 'probation-practitioner',
+      userType,
+    })
     const view = new SupplierAssessmentAppointmentView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -316,11 +312,11 @@ export default class AppointmentsController {
       req.params.id,
       sessionNumber
     )
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
+    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
     const presenter = new ScheduleActionPlanSessionPresenter(
       referral,
       appointment,
-      new AppointmentSummary(appointment, null, deliusOfficeLocation),
+      appointmentSummary,
       deliusOfficeLocations,
       formError,
       draft.data,
@@ -435,13 +431,12 @@ export default class AppointmentsController {
       }
     }
 
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
+    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
     const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
       appointment,
       serviceUser,
-      new AppointmentSummary(appointment, null, deliusOfficeLocation),
+      appointmentSummary,
       referralId,
       formError,
       userInputData
@@ -508,14 +503,14 @@ export default class AppointmentsController {
     if (appointment === null) {
       throw new Error('Attempting to check supplier assessment feedback answers without a current appointment')
     }
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
     const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(
       appointment,
       serviceUser,
       referralId,
-      new AppointmentSummary(appointment, null, deliusOfficeLocation)
+      appointmentSummary
     )
     const view = new CheckFeedbackAnswersView(presenter)
 
@@ -587,16 +582,11 @@ export default class AppointmentsController {
         throw new Error('Attempting to view supplier assessment feedback without a current appointment')
       }
     }
-
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(
-      supplierAssessmentAppointment
-    )
-
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
+    const appointmentSummary = await this.createAppointmentSummary(accessToken, supplierAssessmentAppointment, referral)
     const presenter = new SubmittedFeedbackPresenter(
       supplierAssessmentAppointment,
-      new AppointmentSummary(supplierAssessmentAppointment, null, deliusOfficeLocation),
+      appointmentSummary,
       serviceUser,
       userType,
       referralId
@@ -647,13 +637,12 @@ export default class AppointmentsController {
       actionPlanId,
       Number(sessionNumber)
     )
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
+    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
     const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
       appointment,
       serviceUser,
-      new AppointmentSummary(appointment, null, deliusOfficeLocation),
+      appointmentSummary,
       referral.id,
       formError,
       userInputData
@@ -728,15 +717,13 @@ export default class AppointmentsController {
       actionPlanId,
       Number(sessionNumber)
     )
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
-
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
+    const appointmentSummary = await this.createAppointmentSummary(accessToken, currentAppointment, referral)
     const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
       currentAppointment,
       serviceUser,
       actionPlanId,
-      new AppointmentSummary(currentAppointment, null, deliusOfficeLocation)
+      appointmentSummary
     )
     const view = new CheckFeedbackAnswersView(presenter)
 
@@ -753,6 +740,48 @@ export default class AppointmentsController {
     return res.redirect(
       `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
     )
+  }
+
+  private async getCaseWorker(accessToken: string, username: string): Promise<AuthUserDetails | string> {
+    try {
+      return this.hmppsAuthService.getSPUserByUsername(accessToken, username)
+    } catch (e) {
+      const interventionsServiceError = e as InterventionsServiceError
+      if (interventionsServiceError.status === 404) {
+        logger.warn(`Auth user details not found for user ${username}".`)
+        return username
+      }
+      throw e
+    }
+  }
+
+  private async getAssignedCaseworker(
+    accessToken: string,
+    referral: SentReferral
+  ): Promise<AuthUserDetails | string | null> {
+    const assignedToUsername = referral.assignedTo?.username
+    return assignedToUsername ? this.getCaseWorker(accessToken, assignedToUsername) : null
+  }
+
+  private async getFeedbackSubmittedByCaseworker(
+    accessToken: string,
+    appointment: ActionPlanAppointment | InitialAssessmentAppointment
+  ): Promise<AuthUserDetails | string | null> {
+    const submittedByUsername = appointment?.sessionFeedback.submittedBy?.username
+    return submittedByUsername ? this.getCaseWorker(accessToken, submittedByUsername) : null
+  }
+
+  private async createAppointmentSummary(
+    accessToken: string,
+    appointment: ActionPlanAppointment | InitialAssessmentAppointment,
+    referral: SentReferral
+  ): Promise<AppointmentSummary> {
+    const [deliusOfficeLocation, assignedCaseworker, feedbackSubmittedByCaseworker] = await Promise.all([
+      this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment),
+      this.getAssignedCaseworker(accessToken, referral),
+      this.getFeedbackSubmittedByCaseworker(accessToken, appointment),
+    ])
+    return new AppointmentSummary(appointment, assignedCaseworker, deliusOfficeLocation, feedbackSubmittedByCaseworker)
   }
 
   async viewSubmittedPostSessionFeedback(
@@ -784,12 +813,11 @@ export default class AppointmentsController {
       referral.actionPlanId,
       Number(sessionNumber)
     )
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new SubmittedFeedbackPresenter(
       currentAppointment,
-      new AppointmentSummary(currentAppointment, referral.assignedTo, deliusOfficeLocation),
+      await this.createAppointmentSummary(accessToken, currentAppointment, referral),
       serviceUser,
       userType,
       referral.id
@@ -812,17 +840,16 @@ export default class AppointmentsController {
       actionPlanId,
       Number(sessionNumber)
     )
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(currentAppointment)
-
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     if (!referral.assignedTo) {
       throw new Error('Referral has not yet been assigned to a caseworker')
     }
 
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const appointmentSummary = await this.createAppointmentSummary(accessToken, currentAppointment, referral)
     const presenter = new SubmittedFeedbackPresenter(
       currentAppointment,
-      new AppointmentSummary(currentAppointment, referral.assignedTo, deliusOfficeLocation),
+      appointmentSummary,
       serviceUser,
       'probation-practitioner',
       referral.id,

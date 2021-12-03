@@ -22,7 +22,15 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
           }
         )
 
-        expect(presenter.summary[0]).toEqual({ key: 'Caseworker', lines: ['Liam Johnson'] })
+        expect(presenter.summary[0]).toMatchObject({
+          key: 'Caseworker',
+          lines: [
+            {
+              firstName: 'Liam',
+              lastName: 'Johnson',
+            },
+          ],
+        })
       })
     })
 

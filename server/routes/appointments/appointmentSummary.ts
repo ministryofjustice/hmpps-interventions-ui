@@ -5,26 +5,25 @@ import Address from '../../models/address'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import DateUtils from '../../utils/dateUtils'
 import { AppointmentSchedulingDetails } from '../../models/appointment'
+import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 
-interface Caseworker {
-  username?: string
-  firstName?: string
-  lastName?: string
-}
 export default class AppointmentSummary {
   constructor(
     private readonly appointment: AppointmentSchedulingDetails,
-    private readonly assignedCaseworker: Caseworker | null = null,
-    private readonly deliusOfficeLocation: DeliusOfficeLocation | null = null
+    private readonly assignedCaseworker: AuthUserDetails | string | null = null,
+    private readonly deliusOfficeLocation: DeliusOfficeLocation | null = null,
+    private readonly feedbackSubmittedBy: AuthUserDetails | string | null = null
   ) {}
 
   private readonly appointmentDecorator = new AppointmentDecorator(this.appointment)
 
   get appointmentSummaryList(): SummaryListItem[] {
     const summary: SummaryListItem[] = []
-    const caseworkerName = this.assignedCaseworkerName
-    if (caseworkerName !== null) {
-      summary.push({ key: 'Caseworker', lines: [caseworkerName] })
+    if (this.assignedCaseworker) {
+      summary.push({ key: 'Caseworker', lines: [this.assignedCaseworker] })
+    }
+    if (this.feedbackSubmittedBy) {
+      summary.push({ key: 'Feedback submitted by', lines: [this.feedbackSubmittedBy] })
     }
     if (this.appointmentDecorator.britishDay) {
       summary.push({
@@ -69,18 +68,6 @@ export default class AppointmentSummary {
       })
     }
     return summary
-  }
-
-  private get assignedCaseworkerName(): string | null {
-    if (this.assignedCaseworker?.firstName || this.assignedCaseworker?.lastName) {
-      const firstName = this.assignedCaseworker.firstName ? this.assignedCaseworker.firstName : ''
-      const lastName = this.assignedCaseworker.lastName ? this.assignedCaseworker.lastName : ''
-      return `${firstName} ${lastName}`.trim()
-    }
-    if (this.assignedCaseworker?.username) {
-      return this.assignedCaseworker.username
-    }
-    return null
   }
 
   private deliveryMethod(appointmentDeliveryType: AppointmentDeliveryType): string {

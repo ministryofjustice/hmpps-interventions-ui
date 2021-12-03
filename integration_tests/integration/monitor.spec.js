@@ -267,7 +267,10 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
-      cy.stubGetAuthUserByUsername(assignedReferral.assignedTo.username, hmppsAuthUserFactory.build())
+      cy.stubGetAuthUserByUsername(
+        assignedReferral.assignedTo.username,
+        hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', email: 'john.smith@email.com' })
+      )
 
       const appointmentsWithSubmittedFeedback = [
         actionPlanAppointmentFactory.scheduled().build({
@@ -295,7 +298,7 @@ describe('Probation Practitioner monitor journey', () => {
 
       cy.contains('View feedback form').click()
 
-      cy.contains('john.smith')
+      cy.contains('John Smith (john.smith@email.com)')
       cy.contains('Alex attended the session')
       cy.contains('Yes, they were on time')
       cy.contains('Alex was well-behaved')
