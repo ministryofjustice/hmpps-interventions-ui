@@ -6,7 +6,7 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import Intervention from '../../models/intervention'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
 import TestUtils from '../../../testutils/testUtils'
-import { ListStyle, SummaryListItem } from '../../utils/summaryList'
+import { ListStyle, SummaryListItem, SummaryListItemContent } from '../../utils/summaryList'
 import pccRegion from '../../../testutils/factories/pccRegion'
 import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 
@@ -136,7 +136,7 @@ three lines.`,
       return new InterventionDetailsPresenter(interventionFactory.build(params), loggedInUser).summary
     }
 
-    function linesForKey(key: string, params: DeepPartial<Intervention>): string[] | null {
+    function linesForKey(key: string, params: DeepPartial<Intervention>): SummaryListItemContent[] | null {
       return TestUtils.linesForKey(key, () => summaryForParams(params))
     }
 

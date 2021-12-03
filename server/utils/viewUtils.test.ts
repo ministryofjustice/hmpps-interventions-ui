@@ -1,6 +1,7 @@
 import * as nunjucks from 'nunjucks'
 import { ListStyle } from './summaryList'
 import ViewUtils from './viewUtils'
+import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 
 describe('ViewUtils', () => {
   describe('escape', () => {
@@ -91,6 +92,12 @@ describe('ViewUtils', () => {
           { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.bulleted },
           { key: 'Gender', lines: ['Male'] },
           { key: 'Address', lines: ['Flat 2', '27 Test Walk', 'SY16 1AQ'] },
+          {
+            key: 'AuthUserDetailsLine',
+            lines: [
+              hmppsAuthUserFactory.build({ firstName: 'firstName', lastName: 'lastName', email: 'user@email.com' }),
+            ],
+          },
         ])
       ).toEqual({
         classes: undefined,
@@ -144,6 +151,15 @@ describe('ViewUtils', () => {
             },
             value: {
               html: '<p class="govuk-body">Flat 2</p>\n<p class="govuk-body">27 Test Walk</p>\n<p class="govuk-body">SY16 1AQ</p>',
+            },
+            actions: null,
+          },
+          {
+            key: {
+              text: 'AuthUserDetailsLine',
+            },
+            value: {
+              html: '<p class="govuk-body">firstName lastName (<a href="mailto: user@email.com">user@email.com</a>)</p>',
             },
             actions: null,
           },

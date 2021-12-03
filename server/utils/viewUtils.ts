@@ -1,8 +1,9 @@
 import * as nunjucks from 'nunjucks'
-import { ListStyle, SummaryListItem } from './summaryList'
+import { ListStyle, SummaryListItem, SummaryListItemContent } from './summaryList'
 import { ErrorSummaryArgs, SummaryListArgs, TableArgs, TagArgs } from './govukFrontendTypes'
 import SessionStatusPresenter from '../routes/shared/sessionStatusPresenter'
 import { PrimaryNavBarItem } from '../routes/shared/primaryNavBar/primaryNavBarPresenter'
+import AuthUserDetails from '../models/hmppsAuth/authUserDetails'
 
 export type SortableTableHeaders = { text: string; sort: 'ascending' | 'descending' | 'none'; persistentId: string }[]
 export type SortableTableRow = { text: string; sortValue: string | null; href: string | null }[]
@@ -43,6 +44,20 @@ export default class ViewUtils {
     }
   }
 
+  private static isAuthUserDetails(line: SummaryListItemContent): line is AuthUserDetails {
+    return (<AuthUserDetails>line).username !== undefined
+  }
+
+  private static summaryListItemLine(line: SummaryListItemContent): string {
+    if (ViewUtils.isAuthUserDetails(line)) {
+      const name = `${line.firstName} ${line.lastName}`
+      return `${ViewUtils.escape(name)} (<a href="mailto: ${ViewUtils.escape(line.email)}">${ViewUtils.escape(
+        line.email
+      )}</a>)`
+    }
+    return `${ViewUtils.escape(line)}`
+  }
+
   static summaryListArgs(
     summaryListItems: SummaryListItem[],
     options: { showBorders: boolean } = { showBorders: true }
@@ -58,13 +73,13 @@ export default class ViewUtils {
             if (item.listStyle !== undefined) {
               const itemClass = `govuk-list${item.listStyle === ListStyle.bulleted ? ' govuk-list--bullet' : ''}`
               const html = `<ul class="${itemClass}">${item.lines
-                .map(line => `<li>${ViewUtils.escape(line)}</li>`)
+                .map(line => `<li>${ViewUtils.summaryListItemLine(line)}</li>`)
                 .join('\n')}</ul>`
               return { html }
             }
 
             const html = item.lines
-              .map(line => `<p class="govuk-body">${ViewUtils.nl2br(ViewUtils.escape(line))}</p>`)
+              .map(line => `<p class="govuk-body">${ViewUtils.nl2br(ViewUtils.summaryListItemLine(line))}</p>`)
               .join('\n')
             return { html }
           })(),
