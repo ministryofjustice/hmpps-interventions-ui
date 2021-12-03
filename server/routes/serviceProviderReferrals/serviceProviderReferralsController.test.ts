@@ -1507,7 +1507,19 @@ describe('POST /service-provider/referrals/:id/action-plan/edit', () => {
         {
           id: 'd67217a8-82eb-4e8d-bdce-60dbd6ba6db9',
           createdAt: '2020-12-07T20:45:21.986389Z',
-          description: 'existing activity',
+          description: 'existing activity - 2020-12-07T20:45:21.986389Z',
+        },
+
+        {
+          id: '4f3db97b-b258-4aeb-8fc1-4d712cde3e43',
+          createdAt: '2020-12-07T20:50:21.986389Z',
+          description: 'existing activity - 2020-12-07T20:50:21.986389Z',
+        },
+
+        {
+          id: '091f94a7-939a-43e2-ba79-e5a948f1f1c3',
+          createdAt: '2020-12-10T19:45:21.986389Z',
+          description: 'existing activity - 2020-12-10T19:45:21.986389Z',
         },
       ],
     })
@@ -1524,7 +1536,9 @@ describe('POST /service-provider/referrals/:id/action-plan/edit', () => {
       .expect('Location', `/service-provider/action-plan/${newActionPlan.id}/add-activity/1`)
 
     expect(interventionsService.createDraftActionPlan).toBeCalledWith('token', referral.id, 5, [
-      { description: 'existing activity' },
+      { description: 'existing activity - 2020-12-07T20:45:21.986389Z' },
+      { description: 'existing activity - 2020-12-07T20:50:21.986389Z' },
+      { description: 'existing activity - 2020-12-10T19:45:21.986389Z' },
     ])
   })
 })
