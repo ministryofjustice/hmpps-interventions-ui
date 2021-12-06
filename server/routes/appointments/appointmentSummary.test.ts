@@ -91,7 +91,7 @@ describe(AppointmentSummary, () => {
         )
 
         expect(summaryComponent.appointmentSummaryList[0]).toMatchObject({
-          key: 'Caseworker',
+          key: 'Current caseworker',
           lines: [
             {
               firstName: 'firstName',
