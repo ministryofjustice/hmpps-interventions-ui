@@ -11,7 +11,7 @@ export default class AddCaseNoteConfirmationPresenter {
     public loggedInUserType: 'service-provider' | 'probation-practitioner'
   ) {}
 
-  progressHref = `/${this.loggedInUserType}/referrals/${this.referral.id}/progress`
+  caseNotesHref = `/${this.loggedInUserType}/referrals/${this.referral.id}/case-notes`
 
   text = {
     whatHappensNext: `The case note will be available to view by the service user's ${this.loggedInUserTypeText}.`,
