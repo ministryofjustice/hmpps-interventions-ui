@@ -1698,6 +1698,13 @@ describe('Adding post delivery session feedback', () => {
           interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
           interventionsService.getSentReferral.mockResolvedValue(referral)
           interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
+          hmppsAuthService.getSPUserByUsername.mockResolvedValue(
+            hmppsAuthUserFactory.build({
+              firstName: 'caseworkerFirstName',
+              lastName: 'caseworkerLastName',
+              email: 'caseworker@email.com',
+            })
+          )
 
           await request(app)
             .get(
@@ -1706,7 +1713,8 @@ describe('Adding post delivery session feedback', () => {
             .expect(200)
             .expect(res => {
               expect(res.text).toContain('View feedback')
-              expect(res.text).toContain('Kay.Swerker')
+              expect(res.text).toContain('caseworkerFirstName caseworkerLastName')
+              expect(res.text).toContain('caseworker@email.com')
               expect(res.text).toContain('They were early to the session')
               expect(res.text).toContain('Yes, they were on time')
               expect(res.text).toContain('Alex was well-behaved')
@@ -1749,6 +1757,13 @@ describe('Adding post delivery session feedback', () => {
           interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
           interventionsService.getSentReferral.mockResolvedValue(referral)
           interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
+          hmppsAuthService.getSPUserByUsername.mockResolvedValue(
+            hmppsAuthUserFactory.build({
+              firstName: 'caseworkerFirstName',
+              lastName: 'caseworkerLastName',
+              email: 'caseworker@email.com',
+            })
+          )
 
           await request(app)
             .get(
@@ -1757,7 +1772,7 @@ describe('Adding post delivery session feedback', () => {
             .expect(200)
             .expect(res => {
               expect(res.text).toContain('View feedback')
-              expect(res.text).toContain('Kay.Swerker')
+              expect(res.text).toContain('caseworkerFirstName caseworkerLastName')
               expect(res.text).toContain('They were early to the session')
               expect(res.text).toContain('Yes, they were on time')
               expect(res.text).toContain('Alex was well-behaved')

@@ -84,7 +84,7 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   )
 
   get(router, '/referrals/:id/supplier-assessment', (req, res) =>
-    probationPractitionerReferralsController.showSupplierAssessmentAppointment(req, res)
+    appointmentsController.showSupplierAssessmentAppointment(req, res, 'probation-practitioner')
   )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
     appointmentsController.viewSupplierAssessmentFeedback(req, res, 'probation-practitioner')

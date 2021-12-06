@@ -51,45 +51,54 @@ describe(AppointmentSummary, () => {
       })
     })
 
-    describe('when the assigned case worker is provided', () => {
-      describe('and it is an DeliusAuthUser', () => {
-        describe('and only firstname is provided', () => {
-          it('contains the firstname as the caseworker', () => {
-            const appointment = initialAssessmentAppointmentFactory.build()
-            const summaryComponent = new AppointmentSummary(appointment, { firstName: 'Liam' })
-            expect(summaryComponent.appointmentSummaryList[0]).toEqual({ key: 'Caseworker', lines: ['Liam'] })
+    describe('when the feedback submitted case worker is provided', () => {
+      it('it is included in summary list', () => {
+        const appointment = initialAssessmentAppointmentFactory.build()
+        const summaryComponent = new AppointmentSummary(
+          appointment,
+          null,
+          null,
+          hmppsAuthUserFactory.build({
+            firstName: 'firstName',
+            lastName: 'lastName',
+            email: 'email',
           })
-        })
+        )
 
-        describe('and only lastname is provided', () => {
-          it('contains the lastname as the caseworker', () => {
-            const appointment = initialAssessmentAppointmentFactory.build()
-            const summaryComponent = new AppointmentSummary(appointment, { lastName: 'Johnson' })
-            expect(summaryComponent.appointmentSummaryList[0]).toEqual({ key: 'Caseworker', lines: ['Johnson'] })
-          })
-        })
-
-        describe('and fullname is provided', () => {
-          it('contains the fullname as the caseworker', () => {
-            const appointment = initialAssessmentAppointmentFactory.build()
-            const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
-            const summaryComponent = new AppointmentSummary(appointment, assignee)
-
-            expect(summaryComponent.appointmentSummaryList[0]).toEqual({ key: 'Caseworker', lines: ['Liam Johnson'] })
-          })
+        expect(summaryComponent.appointmentSummaryList[0]).toMatchObject({
+          key: 'Feedback submitted by',
+          lines: [
+            {
+              firstName: 'firstName',
+              lastName: 'lastName',
+              email: 'email',
+            },
+          ],
         })
       })
+    })
 
-      describe('and it is a User', () => {
-        it('contains the username of the referral’s assignee', () => {
-          const appointment = initialAssessmentAppointmentFactory.build()
-          const assignee = { username: 'hellouser@username', userId: 'userId', authSource: 'authSource' }
-          const summaryComponent = new AppointmentSummary(appointment, assignee)
-
-          expect(summaryComponent.appointmentSummaryList[0]).toEqual({
-            key: 'Caseworker',
-            lines: ['hellouser@username'],
+    describe('when the assigned case worker is provided', () => {
+      it('it is included in summary list', () => {
+        const appointment = initialAssessmentAppointmentFactory.build()
+        const summaryComponent = new AppointmentSummary(
+          appointment,
+          hmppsAuthUserFactory.build({
+            firstName: 'firstName',
+            lastName: 'lastName',
+            email: 'email',
           })
+        )
+
+        expect(summaryComponent.appointmentSummaryList[0]).toMatchObject({
+          key: 'Caseworker',
+          lines: [
+            {
+              firstName: 'firstName',
+              lastName: 'lastName',
+              email: 'email',
+            },
+          ],
         })
       })
     })

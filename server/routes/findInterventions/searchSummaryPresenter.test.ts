@@ -3,6 +3,7 @@ import SearchSummaryPresenter from './searchSummaryPresenter'
 import pccRegionFactory from '../../../testutils/factories/pccRegion'
 import PCCRegion from '../../models/pccRegion'
 import TestUtils from '../../../testutils/testUtils'
+import { SummaryListItemContent } from '../../utils/summaryList'
 
 describe(SearchSummaryPresenter, () => {
   describe('summary', () => {
@@ -14,7 +15,7 @@ describe(SearchSummaryPresenter, () => {
       })
     })
 
-    function linesForKey(key: string, args: [InterventionsFilter, PCCRegion[]]): string[] | null {
+    function linesForKey(key: string, args: [InterventionsFilter, PCCRegion[]]): SummaryListItemContent[] | null {
       return TestUtils.linesForKey(key, () => new SearchSummaryPresenter(...args).summary)
     }
 

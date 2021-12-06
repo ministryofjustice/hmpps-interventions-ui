@@ -73,8 +73,16 @@ describe(ScheduleAppointmentPresenter, () => {
             ),
             []
           )
-          expect(presenter.appointmentSummary).toEqual([
-            { key: 'Caseworker', lines: ['firstName lastName'] },
+          expect(presenter.appointmentSummary).toMatchObject([
+            {
+              key: 'Caseworker',
+              lines: [
+                {
+                  firstName: 'firstName',
+                  lastName: 'lastName',
+                },
+              ],
+            },
             { key: 'Date', lines: ['2 January 2021'] },
             { key: 'Time', lines: ['Midday to 1:00pm'] },
             { key: 'Method', lines: ['Video call'] },

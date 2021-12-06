@@ -21,13 +21,9 @@ import ActionPlanPresenter from '../shared/action-plan/actionPlanPresenter'
 import ActionPlanView from '../shared/action-plan/actionPlanView'
 import ConfirmationCheckboxInput from '../../utils/forms/inputs/confirmationCheckboxInput'
 import errorMessages from '../../utils/errorMessages'
-import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
-import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessmentAppointmentPresenter'
-import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import FileUtils from '../../utils/fileUtils'
 import DraftsService from '../../services/draftsService'
 import config from '../../config'
-import AppointmentSummary from '../appointments/appointmentSummary'
 import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilter'
 import ReferenceDataService from '../../services/referenceDataService'
 import SentReferral from '../../models/sentReferral'
@@ -339,44 +335,5 @@ export default class ProbationPractitionerReferralsController {
       },
       serviceUser
     )
-  }
-
-  async showSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
-    const referralId = req.params.id
-
-    const [referral, supplierAssessment] = await Promise.all([
-      this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId),
-
-      this.interventionsService.getSupplierAssessment(res.locals.user.token.accessToken, referralId),
-    ])
-
-    const assignee =
-      referral.assignedTo === null
-        ? null
-        : await this.hmppsAuthService.getSPUserByUsername(
-            res.locals.user.token.accessToken,
-            referral.assignedTo.username
-          )
-
-    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
-    if (appointment === null) {
-      throw new Error('Attempting to view initial assessment without a current appointment')
-    }
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
-
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    const presenter = new SupplierAssessmentAppointmentPresenter(
-      referral,
-      appointment,
-      new AppointmentSummary(appointment, assignee, deliusOfficeLocation),
-      {
-        readonly: true,
-        userType: 'probation-practitioner',
-      }
-    )
-    const view = new SupplierAssessmentAppointmentView(presenter)
-
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 }
