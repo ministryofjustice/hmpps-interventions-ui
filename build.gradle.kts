@@ -42,7 +42,7 @@ dependencies {
   // monitoring and logging
   implementation("io.sentry:sentry-spring-boot-starter:5.4.3")
   implementation("io.sentry:sentry-logback:5.4.3")
-  implementation("io.github.microutils:kotlin-logging-jvm:2.1.0")
+  implementation("io.github.microutils:kotlin-logging-jvm:2.1.15")
 
   // openapi
   implementation("org.springdoc:springdoc-openapi-ui:1.5.13")
