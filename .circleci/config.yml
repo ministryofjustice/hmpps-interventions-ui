@@ -239,7 +239,9 @@ workflows:
           requires:
             - build_docker
             - build_and_publish_docker
-      - validate_helm
+      - validate_helm:
+          context:
+            - hmpps-interventions-dev-deploy
       - hmpps/build_docker:
           name: build_and_publish_docker
           <<: *snyk_options
