@@ -14,6 +14,7 @@ import org.mockito.AdditionalAnswers
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.ActionPlanValidator
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlanActivity
@@ -34,7 +35,6 @@ import java.util.Optional.empty
 import java.util.Optional.of
 import java.util.UUID
 import javax.persistence.EntityNotFoundException
-import javax.validation.ValidationException
 
 internal class ActionPlanServiceTest {
 
@@ -257,10 +257,10 @@ internal class ActionPlanServiceTest {
 
     whenever(actionPlanRepository.findById(actionPlan.id)).thenReturn(of(actionPlan))
 
-    val exception = Assertions.assertThrows(ValidationException::class.java) {
+    val exception = Assertions.assertThrows(ValidationError::class.java) {
       actionPlanService.approveActionPlan(actionPlan.id, authUser)
     }
-    assertThat(exception.message).isEqualTo("Action plan is not the latest submitted, so cannot be approved. [id=${actionPlan.id}]")
+    assertThat(exception.message).isEqualTo("Action plan is not the latest submitted, so cannot be approved")
   }
 
   @Test
@@ -272,10 +272,10 @@ internal class ActionPlanServiceTest {
 
     whenever(actionPlanRepository.findById(actionPlan.id)).thenReturn(of(actionPlan))
 
-    val exception = Assertions.assertThrows(ValidationException::class.java) {
+    val exception = Assertions.assertThrows(ValidationError::class.java) {
       actionPlanService.approveActionPlan(actionPlan.id, authUser)
     }
-    assertThat(exception.message).isEqualTo("Action plan has already been approved. [id=${actionPlan.id}]")
+    assertThat(exception.message).isEqualTo("Action plan has already been approved")
   }
 
   @Test
@@ -288,10 +288,10 @@ internal class ActionPlanServiceTest {
 
     whenever(actionPlanRepository.findById(actionPlan.id)).thenReturn(of(actionPlan))
 
-    val exception = Assertions.assertThrows(ValidationException::class.java) {
+    val exception = Assertions.assertThrows(ValidationError::class.java) {
       actionPlanService.approveActionPlan(actionPlan.id, authUser)
     }
-    assertThat(exception.message).isEqualTo("Action plan cannot be approved as it has less sessions than the currently approved action plan. [id=${actionPlan.id}]")
+    assertThat(exception.message).isEqualTo("Action plan cannot be approved as it has less sessions than the currently approved action plan")
   }
 
   @Test
