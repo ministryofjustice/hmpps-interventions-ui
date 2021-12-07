@@ -11,7 +11,7 @@ export default class OasysRiskInformationView {
 
   constructor(readonly presenter: OasysRiskInformationPresenter) {
     this.roshPanelView = new RoshPanelView(this.presenter.riskPresenter, 'probation-practitioner')
-    this.riskSummaryView = new OasysRiskSummaryView(presenter.supplementaryRiskInformation, presenter.riskSummary)
+    this.riskSummaryView = new OasysRiskSummaryView(presenter.riskSummary)
   }
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errors.summary)

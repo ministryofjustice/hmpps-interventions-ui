@@ -2,7 +2,7 @@ import ShowReferralPresenter from './showReferralPresenter'
 import ViewUtils from '../../utils/viewUtils'
 import { InputArgs, SummaryListArgs, TagArgs } from '../../utils/govukFrontendTypes'
 import RoshPanelView from './roshPanelView'
-import OasysRiskSummaryView from '../makeAReferral/risk-information/oasys/oasysRiskSummaryView'
+import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
 
 interface ServiceCategorySection {
   name: string
@@ -10,10 +10,10 @@ interface ServiceCategorySection {
 }
 
 export default class ShowReferralView {
-  supplementaryRiskInformationView: OasysRiskSummaryView
+  supplementaryRiskInformationView: ArnRiskSummaryView
 
   constructor(private readonly presenter: ShowReferralPresenter) {
-    this.supplementaryRiskInformationView = new OasysRiskSummaryView(presenter.riskInformation, presenter.riskSummary)
+    this.supplementaryRiskInformationView = new ArnRiskSummaryView(presenter.riskSummary, presenter.riskInformation)
   }
 
   private readonly roshPanelView = new RoshPanelView(this.presenter.roshPanelPresenter, this.presenter.userType)

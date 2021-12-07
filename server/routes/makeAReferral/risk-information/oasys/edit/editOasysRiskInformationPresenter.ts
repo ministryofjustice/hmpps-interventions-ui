@@ -1,6 +1,5 @@
 import RiskSummary from '../../../../../models/assessRisksAndNeeds/riskSummary'
 import DateUtils from '../../../../../utils/dateUtils'
-import { SupplementaryRiskInformation } from '../../../../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 
 import RoshPanelPresenter from '../../../../shared/roshPanelPresenter'
 import PresenterUtils from '../../../../../utils/presenterUtils'
@@ -11,7 +10,6 @@ export default class EditOasysRiskInformationPresenter {
   riskPresenter: RoshPanelPresenter
 
   constructor(
-    readonly supplementaryRiskInformation: SupplementaryRiskInformation | null,
     readonly riskSummary: RiskSummary | null,
     readonly draftOasysRiskInformation: DraftOasysRiskInformation | null,
     private readonly error: FormValidationError | null = null

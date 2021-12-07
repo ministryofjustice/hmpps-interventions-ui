@@ -1,58 +1,13 @@
-import { SupplementaryRiskInformation } from '../../../../models/assessRisksAndNeeds/supplementaryRiskInformation'
-import RiskSummary, { Risk } from '../../../../models/assessRisksAndNeeds/riskSummary'
+import RiskSummary from '../../../../models/assessRisksAndNeeds/riskSummary'
+import { RiskInformationArgs, RiskInformationLabels } from './riskInformationLabels'
 
-export interface RiskInformationLabelArgs {
-  class: string
-  text: string
-}
-export type RiskToSelfLabelText = 'Yes' | 'No' | "Don't know"
-export interface RiskToSelfLabelArgs {
-  class: string
-  text: RiskToSelfLabelText
-}
-export interface RiskInformationArgs {
-  summary: {
-    whoIsAtRisk: {
-      label?: RiskInformationLabelArgs
-      text: string | null
-    }
-    natureOfRisk: {
-      label?: RiskInformationLabelArgs
-      text: string | null
-    }
-    riskImminence: {
-      label?: RiskInformationLabelArgs
-      text: string | null
-    }
-  }
-  riskToSelf: {
-    suicide: {
-      label: RiskToSelfLabelArgs
-      text: string | null
-    }
-    selfHarm: {
-      label: RiskToSelfLabelArgs
-      text: string | null
-    }
-    hostelSetting: {
-      label: RiskToSelfLabelArgs
-      text: string | null
-    }
-    vulnerability: {
-      label: RiskToSelfLabelArgs
-      text: string | null
-    }
-  }
-  additionalRiskInformation: {
-    label?: RiskInformationLabelArgs
-    text: string | null
-  }
-}
+// This is for presenting the non-editable OAsys risk information in Make A Referral journey
 export default class OasysRiskSummaryView {
-  constructor(
-    readonly supplementaryRiskInformation: SupplementaryRiskInformation | null,
-    readonly riskSummary: RiskSummary | null
-  ) {}
+  private readonly riskInformationLabels: RiskInformationLabels
+
+  constructor(readonly riskSummary: RiskSummary | null) {
+    this.riskInformationLabels = new RiskInformationLabels()
+  }
 
   get oasysRiskInformationArgs(): RiskInformationArgs {
     const summary = this.riskSummary?.summary
@@ -60,145 +15,40 @@ export default class OasysRiskSummaryView {
     return {
       summary: {
         whoIsAtRisk: {
-          label: summary?.whoIsAtRisk ? undefined : this.noInformationProvidedLabel,
+          label: summary?.whoIsAtRisk ? undefined : this.riskInformationLabels.noInformationProvidedLabel,
           text: summary?.whoIsAtRisk ? summary.whoIsAtRisk : null,
         },
         natureOfRisk: {
-          label: summary?.natureOfRisk ? undefined : this.noInformationProvidedLabel,
+          label: summary?.natureOfRisk ? undefined : this.riskInformationLabels.noInformationProvidedLabel,
           text: summary?.natureOfRisk ? summary.natureOfRisk : null,
         },
         riskImminence: {
-          label: summary?.riskImminence ? undefined : this.noInformationProvidedLabel,
+          label: summary?.riskImminence ? undefined : this.riskInformationLabels.noInformationProvidedLabel,
           text: summary?.riskImminence ? summary.riskImminence : null,
         },
       },
       riskToSelf: {
         suicide: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf?.suicide),
-            text: this.riskToSelfLabelText(riskToSelf?.suicide),
-          },
+          label: this.riskInformationLabels.riskToSelfLabel(riskToSelf?.suicide),
           text: riskToSelf?.suicide ? riskToSelf.suicide.currentConcernsText : null,
         },
         selfHarm: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf?.selfHarm),
-            text: this.riskToSelfLabelText(riskToSelf?.selfHarm),
-          },
+          label: this.riskInformationLabels.riskToSelfLabel(riskToSelf?.selfHarm),
           text: riskToSelf?.selfHarm ? riskToSelf?.selfHarm.currentConcernsText : null,
         },
         hostelSetting: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf?.hostelSetting),
-            text: this.riskToSelfLabelText(riskToSelf?.hostelSetting),
-          },
+          label: this.riskInformationLabels.riskToSelfLabel(riskToSelf?.hostelSetting),
           text: riskToSelf?.hostelSetting ? riskToSelf?.hostelSetting.currentConcernsText : null,
         },
         vulnerability: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf?.vulnerability),
-            text: this.riskToSelfLabelText(riskToSelf?.vulnerability),
-          },
+          label: this.riskInformationLabels.riskToSelfLabel(riskToSelf?.vulnerability),
           text: riskToSelf?.vulnerability ? riskToSelf.vulnerability.currentConcernsText : null,
         },
       },
       additionalRiskInformation: {
-        label: this.supplementaryRiskInformation ? undefined : this.noAdditionalRiskInformationLabel,
-        text: this.supplementaryRiskInformation ? this.supplementaryRiskInformation.riskSummaryComments : null,
+        label: this.riskInformationLabels.noAdditionalRiskInformationLabel,
+        text: null,
       },
-    }
-  }
-
-  get supplementaryRiskInformationArgs(): RiskInformationArgs {
-    const riskToSelf = this.riskSummary?.riskToSelf
-    return {
-      summary: {
-        whoIsAtRisk: {
-          text: this.supplementaryRiskInformation?.redactedRisk?.riskWho || null,
-        },
-        natureOfRisk: {
-          text: this.supplementaryRiskInformation?.redactedRisk?.riskNature || null,
-        },
-        riskImminence: {
-          text: this.supplementaryRiskInformation?.redactedRisk?.riskWhen || null,
-        },
-      },
-      riskToSelf: {
-        suicide: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf?.suicide),
-            text: this.riskToSelfLabelText(riskToSelf?.suicide),
-          },
-          text: this.supplementaryRiskInformation?.redactedRisk?.concernsSuicide || null,
-        },
-        selfHarm: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf?.selfHarm),
-            text: this.riskToSelfLabelText(riskToSelf?.selfHarm),
-          },
-          text: this.supplementaryRiskInformation?.redactedRisk?.concernsSelfHarm || null,
-        },
-        hostelSetting: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf?.hostelSetting),
-            text: this.riskToSelfLabelText(riskToSelf?.hostelSetting),
-          },
-          text: this.supplementaryRiskInformation?.redactedRisk?.concernsHostel || null,
-        },
-        vulnerability: {
-          label: {
-            class: this.riskToSelfLabelClass(riskToSelf?.vulnerability),
-            text: this.riskToSelfLabelText(riskToSelf?.vulnerability),
-          },
-          text: this.supplementaryRiskInformation?.redactedRisk?.concernsVulnerability || null,
-        },
-      },
-      additionalRiskInformation: {
-        label: this.supplementaryRiskInformation ? undefined : this.noAdditionalRiskInformationLabel,
-        text: this.supplementaryRiskInformation ? this.supplementaryRiskInformation.riskSummaryComments : null,
-      },
-    }
-  }
-
-  private get noAdditionalRiskInformationLabel(): RiskInformationLabelArgs {
-    return {
-      class: 'app-oasys-text app-oasys-text--dark-grey',
-      text: 'None',
-    }
-  }
-
-  private get noInformationProvidedLabel(): RiskInformationLabelArgs {
-    return {
-      class: 'app-oasys-text app-oasys-text--dark-grey',
-      text: 'No information provided',
-    }
-  }
-
-  private riskToSelfLabelText(risk: Risk | undefined | null): RiskToSelfLabelText {
-    if (!risk) {
-      return "Don't know"
-    }
-    switch (risk.current) {
-      case 'YES':
-        return 'Yes'
-      case 'NO':
-        return 'No'
-      default:
-        return "Don't know"
-    }
-  }
-
-  private riskToSelfLabelClass(risk: Risk | undefined | null): string {
-    if (!risk) {
-      return 'app-oasys-text app-oasys-text--dark-grey'
-    }
-    switch (risk.current) {
-      case 'YES':
-        return 'app-oasys-text app-oasys-text--green'
-      case 'NO':
-        return 'app-oasys-text app-oasys-text--red'
-      default:
-        return 'app-oasys-text app-oasys-text--dark-grey'
     }
   }
 }
