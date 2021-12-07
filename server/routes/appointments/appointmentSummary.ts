@@ -20,7 +20,7 @@ export default class AppointmentSummary {
   get appointmentSummaryList(): SummaryListItem[] {
     const summary: SummaryListItem[] = []
     if (this.assignedCaseworker) {
-      summary.push({ key: 'Caseworker', lines: [this.assignedCaseworker] })
+      summary.push({ key: 'Current caseworker', lines: [this.assignedCaseworker] })
     }
     if (this.feedbackSubmittedBy) {
       summary.push({ key: 'Feedback submitted by', lines: [this.feedbackSubmittedBy] })

@@ -75,7 +75,7 @@ describe(ScheduleAppointmentPresenter, () => {
           )
           expect(presenter.appointmentSummary).toMatchObject([
             {
-              key: 'Caseworker',
+              key: 'Current caseworker',
               lines: [
                 {
                   firstName: 'firstName',
