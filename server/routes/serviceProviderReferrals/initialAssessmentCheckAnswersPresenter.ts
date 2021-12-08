@@ -11,6 +11,13 @@ export default class InitialAssessmentCheckAnswersPresenter {
 
   readonly title = 'Confirm appointment details'
 
+  get pastAppointment(): boolean {
+    if (this.draft.data === null) {
+      throw new Error('Draft has null data on check your answers page')
+    }
+    return new Date(this.draft.data.appointmentTime!) < new Date()
+  }
+
   readonly summary = (() => {
     if (this.draft.data === null) {
       throw new Error('Draft has null data on check your answers page')

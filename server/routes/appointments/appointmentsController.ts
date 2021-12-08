@@ -10,11 +10,11 @@ import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import CommunityApiService from '../../services/communityApiService'
 import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilter'
-import DraftsService from '../../services/draftsService'
+import DraftsService, { Draft } from '../../services/draftsService'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import InterventionsService, { InterventionsServiceError } from '../../services/interventionsService'
 import ReferenceDataService from '../../services/referenceDataService'
-import ControllerUtils from '../../utils/controllerUtils'
+import ControllerUtils, { DraftFetchSuccessResult } from '../../utils/controllerUtils'
 import { FormValidationError } from '../../utils/formValidationError'
 import ScheduleActionPlanSessionPresenter from '../service-provider/action-plan/sessions/edit/scheduleActionPlanSessionPresenter'
 import ActionPlanSessionCheckAnswersPresenter from '../serviceProviderReferrals/actionPlanSessionCheckAnswersPresenter'
@@ -47,8 +47,12 @@ import BehaviourFeedbackView from './feedback/shared/behaviour/behaviourFeedback
 import CheckFeedbackAnswersView from './feedback/shared/checkYourAnswers/checkFeedbackAnswersView'
 import logger from '../../../log'
 import SentReferral from '../../models/sentReferral'
-
-export type DraftAppointmentBooking = null | AppointmentSchedulingDetails
+import SessionFeedback from '../../models/sessionFeedback'
+import {
+  AppointmentDetails,
+  DraftAppointment,
+  DraftAppointmentBooking,
+} from '../serviceProviderReferrals/draftAppointment'
 
 export default class AppointmentsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -261,7 +265,7 @@ export default class AppointmentsController {
   }
 
   async editActionPlanSessionAppointment(req: Request, res: Response): Promise<void> {
-    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
@@ -287,7 +291,23 @@ export default class AppointmentsController {
         formError = data.error
         userInputData = req.body
       } else {
-        await this.draftsService.updateDraft(draft.id, data.paramsForUpdate, { userId: res.locals.user.userId })
+        const draftAppointment: DraftAppointment = {
+          ...data.paramsForUpdate,
+          sessionFeedback: {
+            attendance: {
+              attended: null,
+              additionalAttendanceInformation: null,
+            },
+            behaviour: {
+              behaviourDescription: null,
+              notifyProbationPractitioner: null,
+            },
+            submitted: false,
+            submittedBy: null,
+          },
+        }
+
+        await this.draftsService.updateDraft(draft.id, draftAppointment, { userId: res.locals.user.userId })
         res.redirect(
           `/service-provider/action-plan/${actionPlan.id}/sessions/${sessionNumber}/edit/${draft.id}/check-answers`
         )
@@ -313,13 +333,14 @@ export default class AppointmentsController {
       sessionNumber
     )
     const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
+    const appointmentScheduleDetails = this.extractAppointmentSchedulingDetails(draft)
     const presenter = new ScheduleActionPlanSessionPresenter(
       referral,
       appointment,
       appointmentSummary,
       deliusOfficeLocations,
       formError,
-      draft.data,
+      appointmentScheduleDetails,
       userInputData,
       serverError
     )
@@ -338,12 +359,17 @@ export default class AppointmentsController {
 
     const sessionNumber = Number(req.params.sessionNumber)
 
-    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
-
-    const presenter = new ActionPlanSessionCheckAnswersPresenter(fetchResult.draft, actionPlan.id, sessionNumber)
+    const appointmentScheduleDetails = this.extractAppointmentSchedulingDetails(fetchResult.draft)
+    const presenter = new ActionPlanSessionCheckAnswersPresenter(
+      appointmentScheduleDetails,
+      actionPlan.id,
+      sessionNumber,
+      fetchResult.draft.id
+    )
     const view = new ScheduleAppointmentCheckAnswersView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -357,7 +383,7 @@ export default class AppointmentsController {
     const actionPlanId = req.params.id
     const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, actionPlanId)
 
-    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
@@ -366,32 +392,37 @@ export default class AppointmentsController {
     if (draft.data === null) {
       throw new Error('Draft data was unexpectedly null when submitting appointment')
     }
-
-    try {
-      await this.interventionsService.updateActionPlanAppointment(accessToken, actionPlanId, sessionNumber, draft.data)
-    } catch (e) {
-      const interventionsServiceError = e as InterventionsServiceError
-      if (interventionsServiceError.status === 409) {
-        res.redirect(
-          `/service-provider/action-plan/${actionPlanId}/sessions/${sessionNumber}/edit/${draftBookingId}/details?clash=true`
+    const appointmentScheduleDetails = this.extractAppointmentSchedulingDetails(fetchResult.draft)
+    if (appointmentScheduleDetails === null || !appointmentScheduleDetails.appointmentTime) {
+      throw new Error('No scheduling details were filled in on the draft')
+    }
+    if (this.isAPastAppointment(appointmentScheduleDetails)) {
+      res.redirect(
+        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draft.id}/attendance`
+      )
+    } else {
+      try {
+        await this.interventionsService.updateActionPlanAppointment(
+          accessToken,
+          actionPlanId,
+          sessionNumber,
+          appointmentScheduleDetails
         )
-        return
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        if (interventionsServiceError.status === 409) {
+          res.redirect(
+            `/service-provider/action-plan/${actionPlanId}/sessions/${sessionNumber}/edit/${draftBookingId}/details?clash=true`
+          )
+          return
+        }
+
+        throw e
       }
 
-      throw e
+      await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
+      res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
     }
-
-    await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
-    res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
-  }
-
-  private async fetchDraftBookingOrRenderMessage(req: Request, res: Response) {
-    return ControllerUtils.fetchDraftOrRenderMessage<DraftAppointmentBooking>(req, res, this.draftsService, {
-      idParamName: 'draftBookingId',
-      notFoundUserMessage:
-        'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.',
-      typeName: 'booking',
-    })
   }
 
   async addSupplierAssessmentAttendanceFeedback(req: Request, res: Response): Promise<void> {
@@ -599,7 +630,7 @@ export default class AppointmentsController {
   async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
-    const { actionPlanId, sessionNumber } = req.params
+    const { actionPlanId, sessionNumber, draftBookingId } = req.params
 
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
@@ -612,31 +643,51 @@ export default class AppointmentsController {
         formError = data.error
         userInputData = req.body
       } else {
-        const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
-          accessToken,
-          actionPlanId,
-          Number(sessionNumber),
-          data.paramsForUpdate
-        )
+        let basePath
+        let redirectPath
+        if (draftBookingId) {
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+          if (fetchResult.rendered) {
+            return
+          }
+          const { draft } = fetchResult
 
-        const redirectPath =
-          updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
+          if (draft.data != null && this.isADraftAppointment(draft.data)) {
+            draft.data.sessionFeedback.attendance.attended = data.paramsForUpdate.attended!
+            draft.data.sessionFeedback.attendance.additionalAttendanceInformation =
+              data.paramsForUpdate.additionalAttendanceInformation!
+          } else {
+            throw new Error('Draft appointment data is missing.')
+          }
 
-        return res.redirect(
-          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/${redirectPath}`
-        )
+          await this.draftsService.updateDraft(draft.id, draft.data, { userId: res.locals.user.userId })
+
+          basePath = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draftBookingId}`
+          redirectPath = draft?.data?.sessionFeedback.attendance.attended === 'no' ? 'check-your-answers' : 'behaviour'
+        } else {
+          const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
+            accessToken,
+            actionPlanId,
+            Number(sessionNumber),
+            data.paramsForUpdate
+          )
+          basePath = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback`
+          redirectPath =
+            updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
+        }
+        res.redirect(`${basePath}/${redirectPath}`)
+        return
       }
     }
 
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
-
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.interventionsService.getActionPlanAppointment(
-      accessToken,
-      actionPlanId,
-      Number(sessionNumber)
-    )
+    const appointment = await this.getActionPlanAppointment(req, res)
+    // return because draft service already renders page.
+    if (appointment === null) {
+      return
+    }
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
     const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
@@ -644,18 +695,20 @@ export default class AppointmentsController {
       serviceUser,
       appointmentSummary,
       referral.id,
+      actionPlan.id,
+      draftBookingId,
       formError,
       userInputData
     )
     const view = new AttendanceFeedbackView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async addPostSessionBehaviourFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
-    const { actionPlanId, sessionNumber } = req.params
+    const { actionPlanId, sessionNumber, draftBookingId } = req.params
 
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
@@ -668,27 +721,47 @@ export default class AppointmentsController {
         formError = data.error
         userInputData = req.body
       } else {
-        await this.interventionsService.recordActionPlanAppointmentBehavior(
-          accessToken,
-          actionPlanId,
-          Number(sessionNumber),
-          data.paramsForUpdate
-        )
+        let redirectUrl
+        if (!draftBookingId) {
+          await this.interventionsService.recordActionPlanAppointmentBehavior(
+            accessToken,
+            actionPlanId,
+            Number(sessionNumber),
+            data.paramsForUpdate
+          )
+          redirectUrl = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/check-your-answers`
+        } else {
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+          if (fetchResult.rendered) {
+            return
+          }
+          const { draft } = fetchResult
 
-        return res.redirect(
-          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/check-your-answers`
-        )
+          if (draft.data != null && this.isADraftAppointment(draft.data)) {
+            draft.data.sessionFeedback.behaviour.behaviourDescription = data.paramsForUpdate.behaviourDescription!
+            draft.data.sessionFeedback.behaviour.notifyProbationPractitioner =
+              data.paramsForUpdate.notifyProbationPractitioner!
+          } else {
+            throw new Error('Draft appointment data is missing.')
+          }
+
+          await this.draftsService.updateDraft(draft.id, draft.data, { userId: res.locals.user.userId })
+
+          redirectUrl = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draftBookingId}/check-your-answers`
+        }
+
+        res.redirect(redirectUrl)
       }
     }
 
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.interventionsService.getActionPlanAppointment(
-      accessToken,
-      actionPlanId,
-      Number(sessionNumber)
-    )
+    const appointment = await this.getActionPlanAppointment(req, res)
+    // return because draft service already renders page.
+    if (appointment === null) {
+      return
+    }
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(
@@ -696,48 +769,67 @@ export default class AppointmentsController {
       serviceUser,
       actionPlanId,
       formError,
-      userInputData
+      userInputData,
+      draftBookingId
     )
     const view = new BehaviourFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async checkPostSessionFeedbackAnswers(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
-    const { actionPlanId, sessionNumber } = req.params
+    const { actionPlanId, draftBookingId } = req.params
 
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
-      accessToken,
-      actionPlanId,
-      Number(sessionNumber)
-    )
+    const appointment = await this.getActionPlanAppointment(req, res)
+    // return because draft service already renders page.
+    if (appointment === null) {
+      return
+    }
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const appointmentSummary = await this.createAppointmentSummary(accessToken, currentAppointment, referral)
+    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
     const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
-      currentAppointment,
+      appointment,
       serviceUser,
       actionPlanId,
-      appointmentSummary
+      appointmentSummary,
+      draftBookingId
     )
     const view = new CheckFeedbackAnswersView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async submitPostSessionFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
-    const { actionPlanId, sessionNumber } = req.params
+    const { actionPlanId, sessionNumber, draftBookingId } = req.params
 
-    await this.interventionsService.submitActionPlanSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
+    if (draftBookingId) {
+      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+      if (fetchResult.rendered) {
+        return
+      }
+      const { draft } = fetchResult
 
-    return res.redirect(
+      if (this.isADraftAppointment(draft.data)) {
+        await this.interventionsService.recordAndSubmitActionPlanAppointmentWithFeedback(
+          accessToken,
+          actionPlanId,
+          Number(sessionNumber),
+          draft.data
+        )
+      }
+    } else {
+      await this.interventionsService.submitActionPlanSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
+    }
+
+    res.redirect(
       `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
     )
   }
@@ -889,5 +981,98 @@ export default class AppointmentsController {
     const view = new PostSessionFeedbackConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  // TODO: Remove DraftAppointmentBooking from here once this has gone live for at least a week.
+  private async fetchDraftAppointmentOrRenderMessage(req: Request, res: Response) {
+    return ControllerUtils.fetchDraftOrRenderMessage<DraftAppointmentBooking | DraftAppointment>(
+      req,
+      res,
+      this.draftsService,
+      {
+        idParamName: 'draftBookingId',
+        notFoundUserMessage:
+          'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.',
+        typeName: 'booking',
+      }
+    )
+  }
+
+  private async fetchDraftBookingOrRenderMessage(req: Request, res: Response) {
+    return ControllerUtils.fetchDraftOrRenderMessage<DraftAppointmentBooking>(req, res, this.draftsService, {
+      idParamName: 'draftBookingId',
+      notFoundUserMessage:
+        'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.',
+      typeName: 'booking',
+    })
+  }
+
+  private isADraftAppointment(
+    details: AppointmentSchedulingDetails | AppointmentDetails | null
+  ): details is AppointmentDetails {
+    return (details as DraftAppointment)?.sessionFeedback !== undefined
+  }
+
+  private extractAppointmentSchedulingDetails(
+    draft: Draft<DraftAppointmentBooking | DraftAppointment>
+  ): AppointmentSchedulingDetails | null {
+    if (draft?.data) {
+      return draft.data
+    }
+    return null
+  }
+
+  private extractFeedbackSchedulingDetailsOrEmpty(
+    draft: Draft<DraftAppointmentBooking | DraftAppointment>
+  ): SessionFeedback | null {
+    if (draft?.data) {
+      if (this.isADraftAppointment(draft.data)) {
+        return draft.data.sessionFeedback
+      }
+      return null
+    }
+    return null
+  }
+
+  private extractActionPlanAppointment(
+    fetchResult: DraftFetchSuccessResult<DraftAppointmentBooking | DraftAppointment>,
+    sessionNumber: string
+  ): ActionPlanAppointment | null {
+    const { draft } = fetchResult
+    const appointmentSchedulingDetails = this.extractAppointmentSchedulingDetails(draft)
+    const feedbackDetails = this.extractFeedbackSchedulingDetailsOrEmpty(draft)
+    if (appointmentSchedulingDetails != null && feedbackDetails != null && this.isADraftAppointment(draft.data)) {
+      return {
+        sessionFeedback: feedbackDetails,
+        sessionNumber: Number(sessionNumber),
+        ...appointmentSchedulingDetails,
+      }
+    }
+    return null
+  }
+
+  private async getActionPlanAppointment(req: Request, res: Response): Promise<ActionPlanAppointment | null> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { draftBookingId, sessionNumber, actionPlanId } = req.params
+    if (draftBookingId) {
+      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+      if (fetchResult.rendered) {
+        return null
+      }
+      const extractedAppointment = this.extractActionPlanAppointment(fetchResult, sessionNumber)
+      if (extractedAppointment === null) {
+        throw new Error('No draft appointment could be found.')
+      }
+      return extractedAppointment
+    }
+    return this.interventionsService.getActionPlanAppointment(accessToken, actionPlanId, Number(sessionNumber))
+  }
+
+  private isAPastAppointment(appointmentSchedulingDetails: AppointmentSchedulingDetails): boolean {
+    if (!appointmentSchedulingDetails.appointmentTime) {
+      throw new Error('No appointment time exists on appointment.')
+    }
+    return new Date(appointmentSchedulingDetails.appointmentTime) < new Date()
   }
 }

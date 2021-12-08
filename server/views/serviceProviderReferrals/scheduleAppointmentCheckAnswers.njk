@@ -1,6 +1,7 @@
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -17,9 +18,15 @@
 
         <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
 
+        {% if notificationBannerArgs %}
+         {{ govukNotificationBanner(notificationBannerArgs) }}
+        {% endif %}
+
         {{ govukSummaryList(summaryListArgs) }}
 
+
         {{ govukButton({ text: "Confirm", preventDoubleClick: true }) }}
+
       </form>
     </div>
   </div>

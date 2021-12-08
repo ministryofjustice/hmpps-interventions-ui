@@ -3,7 +3,7 @@ import actionPlanAppointmentFactory from '../../../../../../testutils/factories/
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
 import AppointmentSummary from '../../../appointmentSummary'
 
-describe(ActionPlanPostSessionFeedbackCheckAnswersPresenter, () => {
+describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
   describe('text', () => {
     it('includes the title of the page', () => {
       const appointment = actionPlanAppointmentFactory.build()
@@ -24,36 +24,130 @@ describe(ActionPlanPostSessionFeedbackCheckAnswersPresenter, () => {
   })
 
   describe('submitHref', () => {
-    it('includes the action plan id and session number', () => {
-      const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
-      const serviceUser = deliusServiceUserFactory.build()
-      const actionPlanId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
+    describe('draftId is provided', () => {
+      it('includes the action plan id and session number', () => {
+        const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
+        const serviceUser = deliusServiceUserFactory.build()
+        const actionPlanId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
 
-      const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
-        appointment,
-        serviceUser,
-        actionPlanId,
-        new AppointmentSummary(appointment)
-      )
+        const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
+          appointment,
+          serviceUser,
+          actionPlanId,
+          new AppointmentSummary(appointment),
+          'draftId'
+        )
 
-      expect(presenter.submitHref).toEqual(
-        '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/submit'
-      )
+        expect(presenter.submitHref).toEqual(
+          '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/edit/draftId/submit'
+        )
+      })
+    })
+
+    describe('draftId is not provided', () => {
+      it('includes the action plan id and session number', () => {
+        const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
+        const serviceUser = deliusServiceUserFactory.build()
+        const actionPlanId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
+
+        const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
+          appointment,
+          serviceUser,
+          actionPlanId,
+          new AppointmentSummary(appointment)
+        )
+
+        expect(presenter.submitHref).toEqual(
+          '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/submit'
+        )
+      })
     })
   })
 
   describe('backLinkHref', () => {
-    describe('when the appointment was attended', () => {
-      it('includes the referal id and link to the behaviour feedback page', () => {
-        const attendedAppointments = [
-          actionPlanAppointmentFactory.build({ sessionFeedback: { attendance: { attended: 'yes' } } }),
-          actionPlanAppointmentFactory.build({ sessionFeedback: { attendance: { attended: 'late' } } }),
-        ]
+    describe('draftId is provided', () => {
+      describe('when the appointment was attended', () => {
+        it('includes the referal id and link to the behaviour feedback page', () => {
+          const attendedAppointments = [
+            actionPlanAppointmentFactory.build({ sessionFeedback: { attendance: { attended: 'yes' } } }),
+            actionPlanAppointmentFactory.build({ sessionFeedback: { attendance: { attended: 'late' } } }),
+          ]
 
-        const serviceUser = deliusServiceUserFactory.build()
-        const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
+          const serviceUser = deliusServiceUserFactory.build()
+          const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
 
-        attendedAppointments.forEach(appointment => {
+          attendedAppointments.forEach(appointment => {
+            const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
+              appointment,
+              serviceUser,
+              referralId,
+              new AppointmentSummary(appointment),
+              'draftId'
+            )
+
+            expect(presenter.backLinkHref).toEqual(
+              '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/edit/draftId/behaviour'
+            )
+          })
+        })
+      })
+
+      describe('when the appointment was not attended', () => {
+        it('includes the referal id and link to the attendance feedback page', () => {
+          const appointment = actionPlanAppointmentFactory.build({
+            sessionFeedback: { attendance: { attended: 'no' } },
+          })
+          const serviceUser = deliusServiceUserFactory.build()
+          const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
+
+          const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
+            appointment,
+            serviceUser,
+            referralId,
+            new AppointmentSummary(appointment),
+            'draftId'
+          )
+
+          expect(presenter.backLinkHref).toEqual(
+            '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/edit/draftId/attendance'
+          )
+        })
+      })
+    })
+    describe('draftId is not provided', () => {
+      describe('when the appointment was attended', () => {
+        it('includes the referal id and link to the behaviour feedback page', () => {
+          const attendedAppointments = [
+            actionPlanAppointmentFactory.build({ sessionFeedback: { attendance: { attended: 'yes' } } }),
+            actionPlanAppointmentFactory.build({ sessionFeedback: { attendance: { attended: 'late' } } }),
+          ]
+
+          const serviceUser = deliusServiceUserFactory.build()
+          const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
+
+          attendedAppointments.forEach(appointment => {
+            const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
+              appointment,
+              serviceUser,
+              referralId,
+              new AppointmentSummary(appointment)
+            )
+
+            expect(presenter.backLinkHref).toEqual(
+              '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/behaviour'
+            )
+          })
+        })
+      })
+
+      describe('when the appointment was not attended', () => {
+        it('includes the referal id and link to the attendance feedback page', () => {
+          const appointment = actionPlanAppointmentFactory.build({
+            sessionFeedback: { attendance: { attended: 'no' } },
+          })
+          const serviceUser = deliusServiceUserFactory.build()
+          const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
+
           const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
             appointment,
             serviceUser,
@@ -62,28 +156,9 @@ describe(ActionPlanPostSessionFeedbackCheckAnswersPresenter, () => {
           )
 
           expect(presenter.backLinkHref).toEqual(
-            '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/behaviour'
+            '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/attendance'
           )
         })
-      })
-    })
-
-    describe('when the appointment was not attended', () => {
-      it('includes the referal id and link to the attendance feedback page', () => {
-        const appointment = actionPlanAppointmentFactory.build({ sessionFeedback: { attendance: { attended: 'no' } } })
-        const serviceUser = deliusServiceUserFactory.build()
-        const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
-
-        const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
-          appointment,
-          serviceUser,
-          referralId,
-          new AppointmentSummary(appointment)
-        )
-
-        expect(presenter.backLinkHref).toEqual(
-          '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/attendance'
-        )
       })
     })
   })

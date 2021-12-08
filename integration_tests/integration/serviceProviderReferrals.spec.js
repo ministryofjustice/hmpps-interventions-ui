@@ -879,13 +879,13 @@ describe('Service provider referrals dashboard', () => {
       cy.login()
     })
 
-    describe('with valid inputs', () => {
+    describe('with valid inputs and an appointment in the future', () => {
       describe('when booking for an In-Person Meeting - Other Location', () => {
         it('should present no errors and display scheduled appointment', () => {
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
           cy.get('#date-day').type('24')
           cy.get('#date-month').type('3')
-          cy.get('#date-year').type('2021')
+          cy.get('#date-year').type('3000')
           cy.get('#time-hour').type('9')
           cy.get('#time-minute').type('02')
           cy.get('#time-part-of-day').select('AM')
@@ -901,7 +901,7 @@ describe('Service provider referrals dashboard', () => {
 
           const scheduledAppointment = actionPlanAppointmentFactory.build({
             ...appointment,
-            appointmentTime: '2021-03-24T09:02:02Z',
+            appointmentTime: '3000-03-24T09:02:02Z',
             durationInMinutes: 75,
             sessionType: 'GROUP',
             appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -919,7 +919,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
 
           cy.get('h1').contains('Confirm session 1 details')
-          cy.contains('24 March 2021')
+          cy.contains('24 March 3000')
           cy.contains('9:02am to 10:17am')
           cy.contains('In-person meeting')
           cy.contains('Harmony Living Office, Room 4')
@@ -936,7 +936,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.get('#date-day').should('have.value', '24')
           cy.get('#date-month').should('have.value', '3')
-          cy.get('#date-year').should('have.value', '2021')
+          cy.get('#date-year').should('have.value', '3000')
           cy.get('#time-hour').should('have.value', '9')
           cy.get('#time-minute').should('have.value', '02')
           // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
@@ -956,7 +956,7 @@ describe('Service provider referrals dashboard', () => {
             cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
             cy.get('#date-day').type('24')
             cy.get('#date-month').type('3')
-            cy.get('#date-year').type('2021')
+            cy.get('#date-year').type('3000')
             cy.get('#time-hour').type('9')
             cy.get('#time-minute').type('02')
             cy.get('#time-part-of-day').select('AM')
@@ -973,7 +973,7 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Save and continue').click()
 
             cy.get('h1').contains('Confirm session 1 details')
-            cy.contains('24 March 2021')
+            cy.contains('24 March 3000')
             cy.contains('9:02am to 10:17am')
             cy.contains('In-person meeting')
             cy.contains('Harmony Living Office, Room 4')
@@ -991,7 +991,7 @@ describe('Service provider referrals dashboard', () => {
             cy.get('h1').contains('Add session 1 details')
             cy.get('#date-day').should('have.value', '24')
             cy.get('#date-month').should('have.value', '3')
-            cy.get('#date-year').should('have.value', '2021')
+            cy.get('#date-year').should('have.value', '3000')
             cy.get('#time-hour').should('have.value', '9')
             cy.get('#time-minute').should('have.value', '02')
             cy.get('#time-part-of-day').get('[selected]').should('have.text', 'AM')
@@ -1010,7 +1010,7 @@ describe('Service provider referrals dashboard', () => {
 
             const scheduledAppointment = actionPlanAppointmentFactory.build({
               ...appointment,
-              appointmentTime: '2021-03-25T09:02:02Z',
+              appointmentTime: '3000-03-25T09:02:02Z',
               durationInMinutes: 75,
               sessionType: 'GROUP',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -1038,7 +1038,7 @@ describe('Service provider referrals dashboard', () => {
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
           cy.get('#date-day').type('24')
           cy.get('#date-month').type('3')
-          cy.get('#date-year').type('2021')
+          cy.get('#date-year').type('3000')
           cy.get('#time-hour').type('9')
           cy.get('#time-minute').type('02')
           cy.get('#time-part-of-day').select('AM')
@@ -1050,7 +1050,7 @@ describe('Service provider referrals dashboard', () => {
 
           const scheduledAppointment = actionPlanAppointmentFactory.build({
             ...appointment,
-            appointmentTime: '2021-03-24T09:02:02Z',
+            appointmentTime: '3000-03-24T09:02:02Z',
             durationInMinutes: 75,
             sessionType: 'GROUP',
             appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
@@ -1063,7 +1063,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
 
           cy.get('h1').contains('Confirm session 1 details')
-          cy.contains('24 March 2021')
+          cy.contains('24 March 3000')
           cy.contains('9:02am to 10:17am')
           cy.contains('In-person meeting (probation office)')
 
@@ -1076,7 +1076,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.get('#date-day').should('have.value', '24')
           cy.get('#date-month').should('have.value', '3')
-          cy.get('#date-year').should('have.value', '2021')
+          cy.get('#date-year').should('have.value', '3000')
           cy.get('#time-hour').should('have.value', '9')
           cy.get('#time-minute').should('have.value', '02')
           // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
@@ -1088,6 +1088,87 @@ describe('Service provider referrals dashboard', () => {
             'have.text',
             'Blackpool: Blackpool Probation Office'
           )
+        })
+      })
+    })
+
+    describe('with valid inputs and an appointment in the past', () => {
+      describe('when booking for a phone call', () => {
+        it('should present no errors and display scheduled appointment', () => {
+          cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
+
+          // schedule page
+          cy.get('#date-day').type('24')
+          cy.get('#date-month').type('3')
+          cy.get('#date-year').type('2021')
+          cy.get('#time-hour').type('9')
+          cy.get('#time-minute').type('02')
+          cy.get('#time-part-of-day').select('AM')
+          cy.get('#duration-hours').type('1')
+          cy.get('#duration-minutes').type('15')
+          cy.contains('1:1').click()
+          cy.contains('Phone call').click()
+
+          cy.contains('Save and continue').click()
+
+          // schedule check your answers page
+          cy.get('h1').contains('Confirm session 1 details')
+          cy.contains('24 March 2021')
+          cy.contains('9:02am to 10:17am')
+          cy.contains('Phone call')
+
+          cy.get('button').contains('Confirm').click()
+
+          // Attendance page
+          cy.contains('Yes').click()
+          cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
+          cy.contains('Save and continue').click()
+
+          cy.contains('Add behaviour feedback')
+
+          cy.contains("Describe Alex's behaviour in this session").type('Alex was well behaved')
+          cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
+
+          cy.contains('Save and continue').click()
+
+          cy.contains('Confirm feedback')
+          cy.contains('Alex attended the session')
+          cy.contains('Yes, they were on time')
+          cy.contains('Alex was well behaved')
+          cy.contains('No')
+
+          const scheduledAppointment = actionPlanAppointmentFactory.build({
+            ...appointment,
+            appointmentTime: '2021-03-24T09:02:02Z',
+            durationInMinutes: 75,
+            sessionType: 'ONE_TO_ONE',
+            appointmentDeliveryType: 'PHONE_CALL',
+            appointmentDeliveryAddress: null,
+            npsOfficeCode: null,
+            sessionFeedback: {
+              attendance: {
+                attended: 'yes',
+                additionalAttendanceInformation: 'Alex attended the session',
+              },
+              behaviour: {
+                behaviourDescription: 'Alex was well behaved',
+                notifyProbationPractitioner: false,
+              },
+              submitted: true,
+              submittedBy: {
+                firstName: 'Case',
+                lastName: 'Worker',
+                username: 'case.worker',
+              },
+            },
+          })
+          cy.stubGetActionPlanAppointment(actionPlan.id, 1, scheduledAppointment)
+          cy.stubGetActionPlanAppointment(actionPlan.id, 2, scheduledAppointment)
+          cy.stubUpdateActionPlanAppointment(actionPlan.id, 1, scheduledAppointment)
+          cy.get('form').contains('Confirm').click()
+
+          cy.contains('Session feedback added and submitted to the probation practitioner')
+          cy.contains('You can now deliver the next session scheduled for 24 March 2021.')
         })
       })
     })

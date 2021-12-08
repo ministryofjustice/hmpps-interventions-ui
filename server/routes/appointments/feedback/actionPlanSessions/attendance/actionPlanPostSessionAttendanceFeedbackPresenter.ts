@@ -11,6 +11,8 @@ export default class ActionPlanPostSessionAttendanceFeedbackPresenter extends At
     private readonly serviceUser: DeliusServiceUser,
     readonly appointmentSummary: AppointmentSummary,
     private readonly referralId: string | null = null,
+    private readonly actionPlanId: string | null = null,
+    private readonly draftId: string | null = null,
     error: FormValidationError | null = null,
     userInputData: Record<string, unknown> | null = null
   ) {
@@ -25,5 +27,19 @@ export default class ActionPlanPostSessionAttendanceFeedbackPresenter extends At
     )
   }
 
-  readonly backLinkHref = this.referralId ? `/service-provider/referrals/${this.referralId}/progress` : null
+  get pastAppointment(): boolean {
+    return new Date(this.actionPlanAppointment.appointmentTime!) < new Date()
+  }
+
+  get getBackLinkHref(): string | null {
+    if (this.actionPlanId && this.actionPlanAppointment.sessionNumber && this.draftId) {
+      return `/service-provider/action-plan/${this.actionPlanId}/sessions/${this.actionPlanAppointment.sessionNumber}/edit/${this.draftId}/check-answers`
+    }
+    if (this.referralId) {
+      return `/service-provider/referrals/${this.referralId}/progress`
+    }
+    return null
+  }
+
+  readonly backLinkHref = this.getBackLinkHref
 }
