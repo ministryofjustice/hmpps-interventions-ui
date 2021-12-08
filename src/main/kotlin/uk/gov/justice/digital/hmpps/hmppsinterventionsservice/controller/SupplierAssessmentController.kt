@@ -30,6 +30,7 @@ class SupplierAssessmentController(
   private val appointmentValidator: AppointmentValidator,
   private val appointmentService: AppointmentService,
 ) {
+
   @PutMapping("/supplier-assessment/{id}/schedule-appointment")
   fun updateSupplierAssessmentAppointment(
     @PathVariable id: UUID,
@@ -51,6 +52,26 @@ class SupplierAssessmentController(
         updateAppointmentDTO.npsOfficeCode,
       )
     )
+  }
+
+  @PostMapping("/referral/{referralId}/supplier-assessment")
+  fun scheduleSupplierAssessmentAppointment(
+    @PathVariable referralId: UUID,
+    @RequestBody updateAppointmentDTO: UpdateAppointmentDTO,
+    authentication: JwtAuthenticationToken,
+  ): AppointmentDTO {
+    val user = userMapper.fromToken(authentication)
+    appointmentValidator.validateUpdateAppointment(updateAppointmentDTO)
+    val appointment = supplierAssessmentService.scheduleNewSupplierAssessmentAppointment(
+      referralId,
+      updateAppointmentDTO.durationInMinutes,
+      updateAppointmentDTO.appointmentTime,
+      user,
+      updateAppointmentDTO.appointmentDeliveryType,
+      updateAppointmentDTO.appointmentDeliveryAddress,
+      updateAppointmentDTO.npsOfficeCode
+    )
+    return AppointmentDTO.from(appointment)
   }
 
   @PutMapping("/referral/{referralId}/supplier-assessment/record-behaviour")

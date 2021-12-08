@@ -17,8 +17,10 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import java.time.OffsetDateTime
 import java.util.UUID
+import javax.persistence.EntityNotFoundException
 import javax.transaction.Transactional
 
 @Service
@@ -29,6 +31,7 @@ class AppointmentService(
   val appointmentDeliveryRepository: AppointmentDeliveryRepository,
   val authUserRepository: AuthUserRepository,
   val appointmentEventPublisher: AppointmentEventPublisher,
+  val referralRepository: ReferralRepository,
 ) {
 
   // TODO complexity of this method can be reduced
@@ -289,5 +292,36 @@ class AppointmentService(
       appointmentDeliveryAddress.postCode = appointmentDeliveryAddressDTO.postCode
     }
     return appointmentDeliveryAddress
+  }
+
+  fun scheduleNewAppointment(
+    sentReferralId: UUID,
+    appointmentType: AppointmentType,
+    durationInMinutes: Int,
+    appointmentTime: OffsetDateTime,
+    createdByUser: AuthUser,
+    appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentSessionType: AppointmentSessionType,
+    appointmentDeliveryAddress: AddressDTO? = null,
+    npsOfficeCode: String? = null,
+  ): Appointment {
+    val sentReferral = referralRepository.findByIdAndSentAtIsNotNull(sentReferralId) ?: throw EntityNotFoundException(
+      "Sent Referral not found [referralId=$sentReferralId]"
+    )
+    val deliusAppointmentId =
+      communityAPIBookingService.book(sentReferral, null, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode)
+    val appointment = Appointment(
+      id = UUID.randomUUID(),
+      appointmentTime = appointmentTime,
+      durationInMinutes = durationInMinutes,
+      deliusAppointmentId = deliusAppointmentId,
+      createdBy = authUserRepository.save(createdByUser),
+      createdAt = OffsetDateTime.now(),
+      referral = sentReferral,
+    )
+    appointmentRepository.saveAndFlush(appointment)
+    createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
+    appointmentEventPublisher.appointmentScheduledEvent(appointment, appointmentType)
+    return appointment
   }
 }
