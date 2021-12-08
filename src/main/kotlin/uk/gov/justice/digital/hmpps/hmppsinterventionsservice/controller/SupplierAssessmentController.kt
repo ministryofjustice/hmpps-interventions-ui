@@ -31,6 +31,7 @@ class SupplierAssessmentController(
   private val appointmentService: AppointmentService,
 ) {
 
+  @Deprecated("superseded by POST /referral/{referralId}/supplier-assessment and PUT /referral/{referralId}/supplier-assessment/{appointmentId}")
   @PutMapping("/supplier-assessment/{id}/schedule-appointment")
   fun updateSupplierAssessmentAppointment(
     @PathVariable id: UUID,
@@ -68,6 +69,29 @@ class SupplierAssessmentController(
       updateAppointmentDTO.appointmentTime,
       user,
       updateAppointmentDTO.appointmentDeliveryType,
+      updateAppointmentDTO.appointmentDeliveryAddress,
+      updateAppointmentDTO.npsOfficeCode
+    )
+    return AppointmentDTO.from(appointment)
+  }
+
+  @PutMapping("/referral/{referralId}/supplier-assessment/{appointmentId}")
+  fun rescheduleSupplierAssessmentAppointment(
+    @PathVariable referralId: UUID,
+    @PathVariable appointmentId: UUID,
+    @RequestBody updateAppointmentDTO: UpdateAppointmentDTO,
+    authentication: JwtAuthenticationToken,
+  ): AppointmentDTO {
+    val user = userMapper.fromToken(authentication)
+    appointmentValidator.validateUpdateAppointment(updateAppointmentDTO)
+    val appointment = supplierAssessmentService.rescheduleSupplierAssessmentAppointment(
+      referralId,
+      appointmentId,
+      updateAppointmentDTO.durationInMinutes,
+      updateAppointmentDTO.appointmentTime,
+      user,
+      updateAppointmentDTO.appointmentDeliveryType,
+      updateAppointmentDTO.sessionType,
       updateAppointmentDTO.appointmentDeliveryAddress,
       updateAppointmentDTO.npsOfficeCode
     )

@@ -161,4 +161,108 @@ class SupplierAssessmentServiceRepositoryTest @Autowired constructor(
       assertThat(error.message).contains("can't schedule new supplier assessment appointment; latest appointment has no feedback delivered")
     }
   }
+
+  @Nested
+  inner class RescheduleSupplierAssessmentAppointment {
+
+    @Test
+    fun `can reschedule an existing supplier assessment appointment`() {
+      val referral = referralFactory.createSent()
+      val appointment = appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now(), appointmentFeedbackSubmittedAt = null)
+      val supplierAssessment = supplierAssessmentFactory.createWithMultipleAppointments(referral = referral, appointments = mutableSetOf(appointment))
+      referral.supplierAssessment = supplierAssessment
+      entityManager.refresh(referral)
+
+      whenever(
+        appointmentService.rescheduleExistingAppointment(
+          eq(appointment.id),
+          eq(AppointmentType.SUPPLIER_ASSESSMENT),
+          eq(defaultDuration),
+          eq(defaultAppointmentTime),
+          eq(AppointmentDeliveryType.PHONE_CALL),
+          eq(AppointmentSessionType.ONE_TO_ONE),
+          anyOrNull(),
+          anyOrNull()
+        )
+      ).thenReturn(appointment)
+
+      val actualAppointment = supplierAssessmentService.rescheduleSupplierAssessmentAppointment(
+        referral.id,
+        appointment.id,
+        defaultDuration, defaultAppointmentTime, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE
+      )
+
+      assertThat(actualAppointment).isEqualTo(appointment)
+    }
+
+    @Test
+    fun `expect failure if GROUP Session Type provided`() {
+      val error = assertThrows<ValidationError> {
+        supplierAssessmentService.rescheduleSupplierAssessmentAppointment(
+          UUID.randomUUID(), UUID.randomUUID(),
+          defaultDuration, defaultAppointmentTime, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.GROUP
+        )
+      }
+      assertThat(error.message).contains("Supplier Assessment Appointment must always be ONE_TO_ONE session")
+    }
+
+    @Test
+    fun `expect failure if sent referral does not exist`() {
+      val referralId = UUID.randomUUID()
+
+      val error = assertThrows<EntityNotFoundException> {
+        supplierAssessmentService.rescheduleSupplierAssessmentAppointment(
+          referralId, UUID.randomUUID(),
+          defaultDuration, defaultAppointmentTime, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE
+        )
+      }
+      assertThat(error.message).contains("Sent Referral not found")
+    }
+
+    @Test
+    fun `expect failure if no supplier assessment exists`() {
+      val referral = referralFactory.createSent()
+
+      val error = assertThrows<EntityNotFoundException> {
+        supplierAssessmentService.rescheduleSupplierAssessmentAppointment(
+          referral.id, UUID.randomUUID(),
+          defaultDuration, defaultAppointmentTime, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE
+        )
+      }
+      assertThat(error.message).contains("Supplier Assessment not found for referral")
+    }
+
+    @Test
+    fun `expect failure if no supplier assessment appointment exists`() {
+      val referral = referralFactory.createSent()
+      val supplierAssessment = supplierAssessmentFactory.createWithNoAppointment(referral = referral)
+      referral.supplierAssessment = supplierAssessment
+      entityManager.refresh(referral)
+
+      val error = assertThrows<EntityNotFoundException> {
+        supplierAssessmentService.rescheduleSupplierAssessmentAppointment(
+          referral.id, UUID.randomUUID(),
+          defaultDuration, defaultAppointmentTime, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE
+        )
+      }
+      assertThat(error.message).contains("Supplier Assessment Appointment not found")
+    }
+
+    @Test
+    fun `expect failure if no provided appointment id is not the latest appointment for supplier assessment`() {
+      val referral = referralFactory.createSent()
+      val existingAppointment = appointmentFactory.create(referral = referral, appointmentTime = OffsetDateTime.now(), appointmentFeedbackSubmittedAt = null)
+      val supplierAssessment = supplierAssessmentFactory.createWithMultipleAppointments(referral = referral, appointments = mutableSetOf(existingAppointment))
+      referral.supplierAssessment = supplierAssessment
+      entityManager.refresh(referral)
+
+      val error = assertThrows<ValidationError> {
+        supplierAssessmentService.rescheduleSupplierAssessmentAppointment(
+          referral.id, UUID.randomUUID(),
+          defaultDuration, defaultAppointmentTime, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE
+        )
+      }
+      assertThat(error.message).contains("Supplier Assessment Appointment is not the latest")
+    }
+  }
 }

@@ -106,6 +106,42 @@ class SupplierAssessmentService(
     return appointment
   }
 
+  fun rescheduleSupplierAssessmentAppointment(
+    referralId: UUID,
+    appointmentId: UUID,
+    durationInMinutes: Int,
+    appointmentTime: OffsetDateTime,
+    createdByUser: AuthUser,
+    appointmentDeliveryType: AppointmentDeliveryType,
+    appointmentSessionType: AppointmentSessionType?,
+    appointmentDeliveryAddress: AddressDTO? = null,
+    npsOfficeCode: String? = null,
+  ): Appointment {
+    if (appointmentSessionType != AppointmentSessionType.ONE_TO_ONE) {
+      throw ValidationError("Supplier Assessment Appointment must always be ONE_TO_ONE session", listOf())
+    }
+    val referral = referralRepository.findByIdAndSentAtIsNotNull(referralId) ?: throw EntityNotFoundException("Sent Referral not found [referralId=$referralId]")
+    val supplierAssessment = referral.supplierAssessment ?: throw EntityNotFoundException("Supplier Assessment not found for referral [referralId=$referralId]")
+    supplierAssessment.currentAppointment?.let {
+      latestAppointment ->
+      if (latestAppointment.id != appointmentId) throw ValidationError("Supplier Assessment Appointment is not the latest [appointmentId=$appointmentId]", listOf())
+      latestAppointment
+    } ?: throw EntityNotFoundException("Supplier Assessment Appointment not found [appointmentId=$appointmentId]")
+    val appointment = appointmentService.rescheduleExistingAppointment(
+      appointmentId,
+      SUPPLIER_ASSESSMENT,
+      durationInMinutes,
+      appointmentTime,
+      appointmentDeliveryType,
+      appointmentSessionType,
+      appointmentDeliveryAddress,
+      npsOfficeCode,
+    )
+    supplierAssessment.appointments.add(appointment)
+    supplierAssessmentRepository.save(supplierAssessment)
+    return appointment
+  }
+
   fun getSupplierAssessmentById(supplierAssessmentId: UUID): SupplierAssessment {
     return supplierAssessmentRepository.findByIdOrNull(supplierAssessmentId)
       ?: throw EntityNotFoundException("Supplier Assessment not found [id=$supplierAssessmentId]")
