@@ -214,10 +214,7 @@ class DeliverySessionService(
     attended: Attended,
     additionalInformation: String?
   ): Pair<DeliverySession, Appointment> {
-    var sessionAndAppointment = deliverySessionRepository.findAllByReferralId(referralId)
-      .flatMap { session -> session.appointments.map { appointment -> Pair(session, appointment) } }
-      .firstOrNull { appointment -> appointment.second.id == appointmentId }
-    sessionAndAppointment ?: throw EntityNotFoundException("No Delivery Session Appointment found [referralId=$referralId, appointmentId=$appointmentId]")
+    var sessionAndAppointment = getDeliverySessionAppointmentOrThrowException(referralId, appointmentId)
     var updatedAppointment = appointmentService.recordAppointmentAttendance(sessionAndAppointment.second, attended, additionalInformation, actor)
     return Pair(sessionAndAppointment.first, updatedAppointment)
   }
@@ -240,6 +237,18 @@ class DeliverySessionService(
     setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner, actor)
     appointmentRepository.save(appointment)
     return deliverySessionRepository.save(session)
+  }
+
+  fun recordAppointmentBehaviour(
+    referralId: UUID,
+    appointmentId: UUID,
+    actor: AuthUser,
+    behaviourDescription: String,
+    notifyProbationPractitioner: Boolean,
+  ): Pair<DeliverySession, Appointment> {
+    var sessionAndAppointment = getDeliverySessionAppointmentOrThrowException(referralId, appointmentId)
+    var updatedAppointment = appointmentService.recordBehaviour(sessionAndAppointment.second, behaviourDescription, notifyProbationPractitioner, actor)
+    return Pair(sessionAndAppointment.first, updatedAppointment)
   }
 
   fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int, submitter: AuthUser): DeliverySession {
@@ -323,4 +332,8 @@ class DeliverySessionService(
 
   private fun getDeliverySessionByActionPlanId(actionPlanId: UUID, sessionNumber: Int) =
     deliverySessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)
+
+  private fun getDeliverySessionAppointmentOrThrowException(referralId: UUID, appointmentId: UUID): Pair<DeliverySession, Appointment> = deliverySessionRepository.findAllByReferralId(referralId)
+    .flatMap { session -> session.appointments.map { appointment -> Pair(session, appointment) } }
+    .firstOrNull { appointment -> appointment.second.id == appointmentId } ?: throw EntityNotFoundException("No Delivery Session Appointment found [referralId=$referralId, appointmentId=$appointmentId]")
 }

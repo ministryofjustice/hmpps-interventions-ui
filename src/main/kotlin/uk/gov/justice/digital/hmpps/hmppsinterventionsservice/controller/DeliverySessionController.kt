@@ -113,6 +113,7 @@ class DeliverySessionController(
     return DeliverySessionDTO.from(updatedSession)
   }
 
+  @Deprecated("superseded by PUT /referral/{referralId}/delivery-session-appointments/{appointmentId}/behaviour")
   @PostMapping("/action-plan/{actionPlanId}/appointment/{sessionNumber}/record-behaviour")
   fun recordBehaviour(
     @PathVariable actionPlanId: UUID,
@@ -235,6 +236,24 @@ class DeliverySessionController(
     referralAccessChecker.forUser(referral, user)
     val updatedSessionAppointment = deliverySessionService.recordAppointmentAttendance(
       referralId, appointmentId, user, update.attended, update.additionalAttendanceInformation
+    )
+    return DeliverySessionAppointmentDTO.from(updatedSessionAppointment.first.sessionNumber, updatedSessionAppointment.second)
+  }
+
+  @PutMapping("/referral/{referralId}/delivery-session-appointments/{appointmentId}/behaviour")
+  fun recordBehaviour(
+    @PathVariable(name = "referralId") referralId: UUID,
+    @PathVariable(name = "appointmentId") appointmentId: UUID,
+    @RequestBody recordBehaviourDTO: RecordAppointmentBehaviourDTO,
+    authentication: JwtAuthenticationToken,
+  ): DeliverySessionAppointmentDTO {
+    val user = userMapper.fromToken(authentication)
+    val referral = referralService.getSentReferral(referralId) ?: throw ResponseStatusException(
+      HttpStatus.BAD_REQUEST, "sent referral not found [referralId=$referralId]"
+    )
+    referralAccessChecker.forUser(referral, user)
+    val updatedSessionAppointment = deliverySessionService.recordAppointmentBehaviour(
+      referralId, appointmentId, user, recordBehaviourDTO.behaviourDescription, recordBehaviourDTO.notifyProbationPractitioner
     )
     return DeliverySessionAppointmentDTO.from(updatedSessionAppointment.first.sessionNumber, updatedSessionAppointment.second)
   }
