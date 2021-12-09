@@ -277,6 +277,13 @@ class DeliverySessionService(
     return session
   }
 
+  fun submitSessionFeedback(referralId: UUID, appointmentId: UUID, submitter: AuthUser): Pair<DeliverySession, Appointment> {
+    var sessionAndAppointment = getDeliverySessionAppointmentOrThrowException(referralId, appointmentId)
+    val appointment = sessionAndAppointment.second
+    val updatedAppointment = appointmentService.submitSessionFeedback(appointment, submitter, SERVICE_DELIVERY)
+    return Pair(sessionAndAppointment.first, updatedAppointment)
+  }
+
   fun getSessions(referralId: UUID): List<DeliverySession> {
     return deliverySessionRepository.findAllByReferralId(referralId)
   }
