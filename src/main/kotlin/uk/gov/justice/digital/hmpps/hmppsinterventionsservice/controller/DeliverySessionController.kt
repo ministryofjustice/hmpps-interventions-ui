@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointm
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DeliverySessionService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator.AppointmentValidator
@@ -35,6 +36,7 @@ class DeliverySessionController(
   val appointmentValidator: AppointmentValidator,
   val referralAccessChecker: ReferralAccessChecker,
   val referralService: ReferralService,
+  val appointmentService: AppointmentService,
 ) {
 
   @Deprecated("superseded by scheduleNewDeliverySessionAppointment and rescheduleDeliverySessionAppointment")
@@ -95,6 +97,7 @@ class DeliverySessionController(
     return DeliverySessionDTO.from(deliverySession)
   }
 
+  @Deprecated("superseded by PUT /referral/{referralId}/delivery-session-appointments/{appointmentId}/attendance")
   @PostMapping("/action-plan/{id}/appointment/{sessionNumber}/record-attendance")
   fun recordAttendance(
     @PathVariable(name = "id") actionPlanId: UUID,
@@ -216,5 +219,23 @@ class DeliverySessionController(
       newDeliverySessionAppointmentRequest.npsOfficeCode,
     )
     return DeliverySessionAppointmentDTO.from(deliverySession.sessionNumber, deliverySession.currentAppointment!!)
+  }
+
+  @PutMapping("/referral/{referralId}/delivery-session-appointments/{appointmentId}/attendance")
+  fun recordAttendance(
+    @PathVariable(name = "referralId") referralId: UUID,
+    @PathVariable(name = "appointmentId") appointmentId: UUID,
+    @RequestBody update: UpdateAppointmentAttendanceDTO,
+    authentication: JwtAuthenticationToken,
+  ): DeliverySessionAppointmentDTO {
+    val user = userMapper.fromToken(authentication)
+    val referral = referralService.getSentReferral(referralId) ?: throw ResponseStatusException(
+      HttpStatus.BAD_REQUEST, "sent referral not found [referralId=$referralId]"
+    )
+    referralAccessChecker.forUser(referral, user)
+    val updatedSessionAppointment = deliverySessionService.recordAppointmentAttendance(
+      referralId, appointmentId, user, update.attended, update.additionalAttendanceInformation
+    )
+    return DeliverySessionAppointmentDTO.from(updatedSessionAppointment.first.sessionNumber, updatedSessionAppointment.second)
   }
 }

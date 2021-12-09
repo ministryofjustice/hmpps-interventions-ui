@@ -206,6 +206,22 @@ class DeliverySessionService(
     return deliverySessionRepository.save(session)
   }
 
+  // TODO: Returning Pair because Appointment does not link to DeliverySession. Suggestion to create a new DeliverySessionAppointment entity (it is currently embedded in DeliverySession)
+  fun recordAppointmentAttendance(
+    referralId: UUID,
+    appointmentId: UUID,
+    actor: AuthUser,
+    attended: Attended,
+    additionalInformation: String?
+  ): Pair<DeliverySession, Appointment> {
+    var sessionAndAppointment = deliverySessionRepository.findAllByReferralId(referralId)
+      .flatMap { session -> session.appointments.map { appointment -> Pair(session, appointment) } }
+      .firstOrNull { appointment -> appointment.second.id == appointmentId }
+    sessionAndAppointment ?: throw EntityNotFoundException("No Delivery Session Appointment found [referralId=$referralId, appointmentId=$appointmentId]")
+    var updatedAppointment = appointmentService.recordAppointmentAttendance(sessionAndAppointment.second, attended, additionalInformation, actor)
+    return Pair(sessionAndAppointment.first, updatedAppointment)
+  }
+
   fun recordBehaviour(
     actor: AuthUser,
     actionPlanId: UUID,
