@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
-import org.springframework.web.server.ResponseStatusException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
@@ -31,6 +31,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFacto
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.RepositoryTest
 import java.time.OffsetDateTime
 import java.util.UUID
+import javax.persistence.EntityExistsException
 import javax.persistence.EntityNotFoundException
 
 @RepositoryTest
@@ -116,7 +117,7 @@ class DeliverySessionServiceTest @Autowired constructor(
       val session = deliverySessionFactory.createAttended()
       val existingAppointment = session.currentAppointment!!
       val newTime = existingAppointment.appointmentTime.minusHours(1)
-      val error = assertThrows<ResponseStatusException> {
+      val error = assertThrows<EntityExistsException> {
         deliverySessionService.scheduleNewDeliverySessionAppointment(session.referral.id, session.sessionNumber, newTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
       }
       assertThat(error.message).contains("can't schedule new appointment for session; new appointment occurs before previously scheduled appointment for session")
@@ -127,10 +128,10 @@ class DeliverySessionServiceTest @Autowired constructor(
       val session = deliverySessionFactory.createScheduled()
       val existingAppointment = session.currentAppointment!!
       val newTime = existingAppointment.appointmentTime.plusHours(1)
-      val error = assertThrows<ResponseStatusException> {
+      val error = assertThrows<ValidationError> {
         deliverySessionService.scheduleNewDeliverySessionAppointment(session.referral.id, session.sessionNumber, newTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
       }
-      assertThat(error.message).contains("can't schedule new appointment for session; existing appointment has no feedback delivered")
+      assertThat(error.message).contains("can't schedule new appointment for session; latest appointment has no feedback delivered")
     }
   }
 
@@ -166,7 +167,7 @@ class DeliverySessionServiceTest @Autowired constructor(
     @Test
     fun `rescheduling appointment on empty session throws exception`() {
       val session = deliverySessionFactory.createUnscheduled()
-      val error = assertThrows<ResponseStatusException> {
+      val error = assertThrows<ValidationError> {
         deliverySessionService.rescheduleDeliverySessionAppointment(session.referral.id, session.sessionNumber, UUID.randomUUID(), defaultAppointmentTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
       }
       assertThat(error.message).contains("can't reschedule appointment for session; no appointment exists for session")
@@ -177,7 +178,7 @@ class DeliverySessionServiceTest @Autowired constructor(
       val session = deliverySessionFactory.createScheduled()
       val existingAppointment = session.currentAppointment!!
       val newTime = existingAppointment.appointmentTime.minusHours(1)
-      val error = assertThrows<ResponseStatusException> {
+      val error = assertThrows<ValidationError> {
         deliverySessionService.rescheduleDeliverySessionAppointment(session.referral.id, session.sessionNumber, UUID.randomUUID(), newTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
       }
       assertThat(error.message).contains("can't reschedule appointment for session; no appointment exists for session")
@@ -188,7 +189,7 @@ class DeliverySessionServiceTest @Autowired constructor(
       val session = deliverySessionFactory.createAttended()
       val existingAppointment = session.currentAppointment!!
       val newTime = existingAppointment.appointmentTime.plusHours(1)
-      val error = assertThrows<ResponseStatusException> {
+      val error = assertThrows<ValidationError> {
         deliverySessionService.rescheduleDeliverySessionAppointment(session.referral.id, session.sessionNumber, existingAppointment.id, newTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
       }
       assertThat(error.message).contains("can't reschedule appointment for session; appointment feedback already supplied")

@@ -42,7 +42,7 @@ class SupplierAssessmentServiceTest {
   private val supplierAssessmentService = SupplierAssessmentService(
     supplierAssessmentRepository,
     referralRepository,
-    appointmentService,
+    appointmentService
   )
 
   @Test

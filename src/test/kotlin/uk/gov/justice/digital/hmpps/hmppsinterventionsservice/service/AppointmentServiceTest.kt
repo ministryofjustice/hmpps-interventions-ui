@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attende
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AppointmentFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -37,6 +38,7 @@ class AppointmentServiceTest {
   private val communityAPIBookingService: CommunityAPIBookingService = mock()
   private val appointmentDeliveryRepository: AppointmentDeliveryRepository = mock()
   private val appointmentEventPublisher: AppointmentEventPublisher = mock()
+  private val referralRepository: ReferralRepository = mock()
 
   private val authUserFactory = AuthUserFactory()
   private val appointmentFactory = AppointmentFactory()
@@ -49,7 +51,8 @@ class AppointmentServiceTest {
     communityAPIBookingService,
     appointmentDeliveryRepository,
     authUserRepository,
-    appointmentEventPublisher
+    appointmentEventPublisher,
+    referralRepository,
   )
 
   @BeforeEach

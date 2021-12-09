@@ -4,6 +4,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ActionPlan
@@ -78,9 +79,9 @@ class DeliverySessionService(
 
     existingAppointment?.let {
       if (it.appointmentTime.isAfter(appointmentTime)) {
-        throw ResponseStatusException(HttpStatus.BAD_REQUEST, "can't schedule new appointment for session; new appointment occurs before previously scheduled appointment for session [referralId=$referralId, sessionNumber=$sessionNumber]")
+        throw EntityExistsException("can't schedule new appointment for session; new appointment occurs before previously scheduled appointment for session [referralId=$referralId, sessionNumber=$sessionNumber]")
       }
-      it.appointmentFeedbackSubmittedAt ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "can't schedule new appointment for session; existing appointment has no feedback delivered [referralId=$referralId, sessionNumber=$sessionNumber]")
+      it.appointmentFeedbackSubmittedAt ?: throw ValidationError("can't schedule new appointment for session; latest appointment has no feedback delivered [referralId=$referralId, sessionNumber=$sessionNumber]", listOf())
     }
     val deliusAppointmentId = communityAPIBookingService.book(
       session.referral,
@@ -120,9 +121,9 @@ class DeliverySessionService(
     val session = getDeliverySession(referralId, sessionNumber) ?: throw EntityNotFoundException("Session not found for referral [referralId=$referralId, sessionNumber=$sessionNumber]")
     val existingAppointment = session.currentAppointment
     if (existingAppointment == null || existingAppointment.id !== appointmentId) {
-      throw ResponseStatusException(HttpStatus.BAD_REQUEST, "can't reschedule appointment for session; no appointment exists for session [referralId=$referralId, sessionNumber=$sessionNumber, appointmentId=$appointmentId]")
+      throw ValidationError("can't reschedule appointment for session; no appointment exists for session [referralId=$referralId, sessionNumber=$sessionNumber, appointmentId=$appointmentId]", listOf())
     }
-    existingAppointment.appointmentFeedbackSubmittedAt?.let { throw ResponseStatusException(HttpStatus.BAD_REQUEST, "can't reschedule appointment for session; appointment feedback already supplied [referralId=$referralId, sessionNumber=$sessionNumber, appointmentId=$appointmentId]") }
+    existingAppointment.appointmentFeedbackSubmittedAt?.let { throw ValidationError("can't reschedule appointment for session; appointment feedback already supplied [referralId=$referralId, sessionNumber=$sessionNumber, appointmentId=$appointmentId]", listOf()) }
     val deliusAppointmentId = communityAPIBookingService.book(
       session.referral,
       existingAppointment,
