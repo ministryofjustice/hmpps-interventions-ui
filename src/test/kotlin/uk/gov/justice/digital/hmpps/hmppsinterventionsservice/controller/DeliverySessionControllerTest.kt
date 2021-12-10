@@ -19,6 +19,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DeliverySessionService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
@@ -39,8 +40,9 @@ internal class DeliverySessionControllerTest {
   private val userMapper = UserMapper(authUserRepository)
   private val referralService = mock<ReferralService>()
   private val referralAccessChecker = mock<ReferralAccessChecker>()
+  private val appointmentService = mock<AppointmentService>()
 
-  private val sessionsController = DeliverySessionController(actionPlanService, sessionsService, locationMapper, userMapper, appointmentValidator, referralAccessChecker, referralService)
+  private val sessionsController = DeliverySessionController(actionPlanService, sessionsService, locationMapper, userMapper, appointmentValidator, referralAccessChecker, referralService, appointmentService)
   private val actionPlanFactory = ActionPlanFactory()
   private val deliverySessionFactory = DeliverySessionFactory()
   private val jwtTokenFactory = JwtTokenFactory()

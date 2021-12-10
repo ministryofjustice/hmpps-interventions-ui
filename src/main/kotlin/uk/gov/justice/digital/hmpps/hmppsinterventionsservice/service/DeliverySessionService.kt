@@ -206,6 +206,19 @@ class DeliverySessionService(
     return deliverySessionRepository.save(session)
   }
 
+  // TODO: Returning Pair because Appointment does not link to DeliverySession. Suggestion to create a new DeliverySessionAppointment entity (it is currently embedded in DeliverySession)
+  fun recordAppointmentAttendance(
+    referralId: UUID,
+    appointmentId: UUID,
+    actor: AuthUser,
+    attended: Attended,
+    additionalInformation: String?
+  ): Pair<DeliverySession, Appointment> {
+    var sessionAndAppointment = getDeliverySessionAppointmentOrThrowException(referralId, appointmentId)
+    var updatedAppointment = appointmentService.recordAppointmentAttendance(sessionAndAppointment.second, attended, additionalInformation, actor)
+    return Pair(sessionAndAppointment.first, updatedAppointment)
+  }
+
   fun recordBehaviour(
     actor: AuthUser,
     actionPlanId: UUID,
@@ -224,6 +237,18 @@ class DeliverySessionService(
     setBehaviourFields(appointment, behaviourDescription, notifyProbationPractitioner, actor)
     appointmentRepository.save(appointment)
     return deliverySessionRepository.save(session)
+  }
+
+  fun recordAppointmentBehaviour(
+    referralId: UUID,
+    appointmentId: UUID,
+    actor: AuthUser,
+    behaviourDescription: String,
+    notifyProbationPractitioner: Boolean,
+  ): Pair<DeliverySession, Appointment> {
+    var sessionAndAppointment = getDeliverySessionAppointmentOrThrowException(referralId, appointmentId)
+    var updatedAppointment = appointmentService.recordBehaviour(sessionAndAppointment.second, behaviourDescription, notifyProbationPractitioner, actor)
+    return Pair(sessionAndAppointment.first, updatedAppointment)
   }
 
   fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int, submitter: AuthUser): DeliverySession {
@@ -250,6 +275,13 @@ class DeliverySessionService(
 
     actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour ?: false)
     return session
+  }
+
+  fun submitSessionFeedback(referralId: UUID, appointmentId: UUID, submitter: AuthUser): Pair<DeliverySession, Appointment> {
+    var sessionAndAppointment = getDeliverySessionAppointmentOrThrowException(referralId, appointmentId)
+    val appointment = sessionAndAppointment.second
+    val updatedAppointment = appointmentService.submitSessionFeedback(appointment, submitter, SERVICE_DELIVERY)
+    return Pair(sessionAndAppointment.first, updatedAppointment)
   }
 
   fun getSessions(referralId: UUID): List<DeliverySession> {
@@ -307,4 +339,8 @@ class DeliverySessionService(
 
   private fun getDeliverySessionByActionPlanId(actionPlanId: UUID, sessionNumber: Int) =
     deliverySessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)
+
+  private fun getDeliverySessionAppointmentOrThrowException(referralId: UUID, appointmentId: UUID): Pair<DeliverySession, Appointment> = deliverySessionRepository.findAllByReferralId(referralId)
+    .flatMap { session -> session.appointments.map { appointment -> Pair(session, appointment) } }
+    .firstOrNull { appointment -> appointment.second.id == appointmentId } ?: throw EntityNotFoundException("No Delivery Session Appointment found [referralId=$referralId, appointmentId=$appointmentId]")
 }

@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.isNotNull
 import com.nhaarman.mockitokotlin2.isNull
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -19,6 +20,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanA
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
@@ -193,6 +195,159 @@ class DeliverySessionServiceTest @Autowired constructor(
         deliverySessionService.rescheduleDeliverySessionAppointment(session.referral.id, session.sessionNumber, existingAppointment.id, newTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
       }
       assertThat(error.message).contains("can't reschedule appointment for session; appointment feedback already supplied")
+    }
+  }
+
+  @Nested
+  inner class RecordAppointmentAttendance {
+    @Test
+    fun `can record attendance`() {
+      val deliverySession = deliverySessionFactory.createScheduled()
+      val referral = deliverySession.referral
+      val appointment = deliverySession.currentAppointment!!
+      whenever(appointmentService.recordAppointmentAttendance(eq(appointment), eq(Attended.YES), eq("additionalInformation"), eq(defaultUser))).thenReturn(appointment)
+      val pair = deliverySessionService.recordAppointmentAttendance(referral.id, appointment.id, defaultUser, Attended.YES, "additionalInformation")
+      assertThat(pair.first).isEqualTo(deliverySession)
+      assertThat(pair.second).isEqualTo(appointment)
+    }
+
+    @Test
+    fun `expect failure when no referral exists`() {
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.recordAppointmentAttendance(UUID.randomUUID(), UUID.randomUUID(), defaultUser, Attended.YES, "additionalInformation")
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+
+    @Test
+    fun `expect failure when no session exists`() {
+      val referral = referralFactory.createSent()
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.recordAppointmentAttendance(referral.id, UUID.randomUUID(), defaultUser, Attended.YES, "additionalInformation")
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+
+    @Test
+    fun `expect failure when no appointment exists`() {
+      val deliverySession = deliverySessionFactory.createUnscheduled()
+      val referral = deliverySession.referral
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.recordAppointmentAttendance(referral.id, UUID.randomUUID(), defaultUser, Attended.YES, "additionalInformation")
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+
+    @Test
+    fun `expect failure when no matching appointment exists`() {
+      val deliverySession = deliverySessionFactory.createScheduled()
+      val referral = deliverySession.referral
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.recordAppointmentAttendance(referral.id, UUID.randomUUID(), defaultUser, Attended.YES, "additionalInformation")
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+  }
+
+  @Nested
+  inner class RecordAppointmentBehaviour {
+    @Test
+    fun `can record behaviour`() {
+      val deliverySession = deliverySessionFactory.createScheduled()
+      val referral = deliverySession.referral
+      val appointment = deliverySession.currentAppointment!!
+      whenever(appointmentService.recordBehaviour(eq(appointment), eq("good"), eq(false), eq(defaultUser))).thenReturn(appointment)
+      val pair = deliverySessionService.recordAppointmentBehaviour(referral.id, appointment.id, defaultUser, "good", false)
+      assertThat(pair.first).isEqualTo(deliverySession)
+      assertThat(pair.second).isEqualTo(appointment)
+    }
+
+    @Test
+    fun `expect failure when no referral exists`() {
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.recordAppointmentBehaviour(UUID.randomUUID(), UUID.randomUUID(), defaultUser, "good", false)
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+
+    @Test
+    fun `expect failure when no session exists`() {
+      val referral = referralFactory.createSent()
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.recordAppointmentBehaviour(referral.id, UUID.randomUUID(), defaultUser, "good", false)
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+
+    @Test
+    fun `expect failure when no appointment exists`() {
+      val deliverySession = deliverySessionFactory.createUnscheduled()
+      val referral = deliverySession.referral
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.recordAppointmentBehaviour(referral.id, UUID.randomUUID(), defaultUser, "good", false)
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+
+    @Test
+    fun `expect failure when no matching appointment exists`() {
+      val deliverySession = deliverySessionFactory.createScheduled()
+      val referral = deliverySession.referral
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.recordAppointmentBehaviour(referral.id, UUID.randomUUID(), defaultUser, "good", false)
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+  }
+
+  @Nested
+  inner class SubmitSessionFeedback {
+    @Test
+    fun `can submit feedback`() {
+      val deliverySession = deliverySessionFactory.createScheduled()
+      val referral = deliverySession.referral
+      val appointment = deliverySession.currentAppointment!!
+      whenever(appointmentService.submitSessionFeedback(eq(appointment), eq(defaultUser), eq(AppointmentType.SERVICE_DELIVERY))).thenReturn(appointment)
+      val pair = deliverySessionService.submitSessionFeedback(referral.id, appointment.id, defaultUser)
+      assertThat(pair.first).isEqualTo(deliverySession)
+      assertThat(pair.second).isEqualTo(appointment)
+    }
+
+    @Test
+    fun `expect failure when no referral exists`() {
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.submitSessionFeedback(UUID.randomUUID(), UUID.randomUUID(), defaultUser)
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+
+    @Test
+    fun `expect failure when no session exists`() {
+      val referral = referralFactory.createSent()
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.submitSessionFeedback(referral.id, UUID.randomUUID(), defaultUser)
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+
+    @Test
+    fun `expect failure when no appointment exists`() {
+      val deliverySession = deliverySessionFactory.createUnscheduled()
+      val referral = deliverySession.referral
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.submitSessionFeedback(referral.id, UUID.randomUUID(), defaultUser)
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
+    }
+
+    @Test
+    fun `expect failure when no matching appointment exists`() {
+      val deliverySession = deliverySessionFactory.createScheduled()
+      val referral = deliverySession.referral
+      val error = assertThrows<EntityNotFoundException> {
+        deliverySessionService.submitSessionFeedback(referral.id, UUID.randomUUID(), defaultUser)
+      }
+      assertThat(error.message).contains("No Delivery Session Appointment found")
     }
   }
 }
