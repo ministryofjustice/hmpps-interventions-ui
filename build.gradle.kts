@@ -60,7 +60,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("com.nimbusds:oauth2-oidc-sdk:9.20")
   // until bumped in upstream
-  implementation("org.apache.logging.log4j:log4j-api:2.15.0")
+  implementation("io.netty:netty-codec:4.1.71.Final") // CVE-2021-43797
+  implementation("org.apache.logging.log4j:log4j-api:2.15.0") // CVE-2021-44228
 
   // database
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
