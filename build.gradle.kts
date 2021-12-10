@@ -72,7 +72,7 @@ dependencies {
   implementation("com.github.java-json-tools:json-patch:1.13")
   implementation("org.apache.commons:commons-csv:1.9.0")
 
-  testImplementation("au.com.dius.pact.provider:junit5spring:4.3.1")
+  testImplementation("au.com.dius.pact.provider:junit5spring:4.3.2")
   testImplementation("com.squareup.okhttp3:okhttp:4.9.3")
   testImplementation("com.squareup.okhttp3:mockwebserver:4.9.3")
   testImplementation("org.mockito:mockito-inline:4.1.0")
