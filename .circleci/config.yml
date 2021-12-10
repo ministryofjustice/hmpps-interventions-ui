@@ -13,13 +13,7 @@ orbs:
   gradle: circleci/gradle@2.2.0
   kubernetes: circleci/kubernetes@0.11.2
   mem: circleci/rememborb@0.0.1
-  snyk: snyk/snyk@0.0.12
   veracode: orb-01scan/sast-orb@0.0.9
-
-_snyk_options: &snyk_options
-  snyk-scan: true
-  snyk-fail-build: true
-  snyk-args: --policy-path=.snyk --configuration-matching='^((?!test).)*$'
 
 _db_docker_config: &db_docker_config
   - image: cimg/openjdk:11.0
@@ -159,28 +153,6 @@ jobs:
               --pacticipant="Interventions Service" --version="$CIRCLE_SHA1" --tag="<< parameters.tag >>" \
               --broker-base-url="$PACT_BROKER_BASE_URL" --broker-username="$PACT_BROKER_USERNAME" --broker-password="$PACT_BROKER_PASSWORD"
 
-  vulnerability_scan:
-    executor: hmpps/java
-    parameters:
-      monitor:
-        type: boolean
-        default: false
-      snyk-scan:
-        type: boolean
-      snyk-fail-build:
-        type: boolean
-      snyk-args:
-        type: string
-    steps:
-      - checkout
-      - snyk/scan:
-          project: '${CIRCLE_PROJECT_REPONAME}'
-          monitor-on-build: << parameters.monitor >>
-          organization: "digital-probation-services"
-          severity-threshold: "high" # note: this does not affect snyk 'monitor' commands
-          fail-on-issues: << parameters.snyk-fail-build >>
-          additional-arguments: << parameters.snyk-args >>
-
   assemble:
     executor: hmpps/java
     environment:
@@ -244,33 +216,21 @@ workflows:
             - hmpps-interventions-dev-deploy
       - hmpps/build_docker:
           name: build_and_publish_docker
-          <<: *snyk_options
+          publish: true
+          persist_container_image: true
           filters:
             branches:
-              only:
-                - main
-      - vulnerability_scan:
-          name: vulnerability_scan_and_monitor
-          monitor: true
-          <<: *snyk_options
-          filters:
-            branches:
-              only:
-                - main
-      - vulnerability_scan:
-          <<: *snyk_options
-          filters:
-            branches:
-              ignore:
-                - main
+              only: [main]
       - hmpps/build_docker:
           name: build_docker
           publish: false
-          <<: *snyk_options
+          persist_container_image: true
           filters:
             branches:
-              ignore:
-                - main
+              ignore: [main]
+      - hmpps/trivy_pipeline_scan:
+          name: vulnerability_scan
+          requires: [build_docker, build_and_publish_docker]
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
@@ -286,7 +246,7 @@ workflows:
             - publish_data
             - build_and_publish_docker
             - validate_helm
-            - vulnerability_scan_and_monitor
+            - vulnerability_scan
           context:
             - hmpps-common-vars
             - hmpps-interventions-dev-deploy
@@ -340,14 +300,10 @@ workflows:
               only:
                 - main
     jobs:
-      - vulnerability_scan:
-          name: vulnerability_scan_and_monitor
-          monitor: true
-          <<: *snyk_options
       - assemble
       - appsec_scan:
           requires: [assemble]
           context: [veracode-credentials]
-      - hmpps/build_docker:
-          publish: false
-          <<: *snyk_options
+      - hmpps/trivy_latest_scan:
+          slack_channel: "interventions-dev-notifications"
+          context: [hmpps-common-vars]
