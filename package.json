@@ -137,7 +137,7 @@
     "@types/bunyan": "^1.8.8",
     "@types/bunyan-format": "^0.2.4",
     "@types/compression": "^1.7.2",
-    "@types/connect-redis": "0.0.17",
+    "@types/connect-redis": "0.0.18",
     "@types/cookie-session": "^2.0.43",
     "@types/csurf": "^1.11.2",
     "@types/express-request-id": "^1.4.3",
