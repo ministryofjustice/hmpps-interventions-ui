@@ -273,8 +273,11 @@ workflows:
                 - main
     jobs:
       - hmpps/veracode_policy_scan:
+          teams: hmpps-interventions
           slack_channel: "interventions-dev-notifications"
-          context: [hmpps-common-vars]
+          context:
+            - hmpps-common-vars
+            - veracode-credentials
       - hmpps/trivy_latest_scan:
           slack_channel: "interventions-dev-notifications"
           context: [hmpps-common-vars]
