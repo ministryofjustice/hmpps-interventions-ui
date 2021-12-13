@@ -3,7 +3,6 @@ version: 2.1
 orbs:
   hmpps: ministryofjustice/hmpps@3.11
   node: circleci/node@4.1.0
-  veracode: orb-01scan/sast-orb@0.0.9
 
 executors:
   integration:
@@ -58,35 +57,6 @@ jobs:
             npx --package='@pact-foundation/pact-node' pact-broker create-version-tag \
               --pacticipant="Interventions UI" --version="$CIRCLE_SHA1" --tag="<< parameters.tag >>" \
               --broker-base-url="$PACT_BROKER_BASE_URL" --broker-username="$PACT_BROKER_USERNAME" --broker-password="$PACT_BROKER_PASSWORD"
-
-  assemble:
-    executor:
-      name: hmpps/node
-      tag: 14.16.0-browsers
-    steps:
-      - checkout
-      - node/install-npm:
-          version: 7.5.4
-      - node/install-packages
-      - run: npm run build:prod
-      - run: npm prune --production --no-audit
-      - run:
-          # copies what the Dockerfile does, without build-info
-          name: Package production code for scanning
-          command: tar czf hmpps-interventions-ui.tar.gz package*.json assets/ dist/ node_modules/
-      - persist_to_workspace:
-          root: .
-          paths:
-            - hmpps-interventions-ui.tar.gz
-
-  appsec_scan:
-    executor: veracode/default
-    steps:
-      - attach_workspace:
-          at: ./build
-      - veracode/policy-scan:
-          filepath: ./build/hmpps-interventions-ui.tar.gz
-          teams: hmpps-interventions
 
   integration_test:
     executor: integration
@@ -207,10 +177,12 @@ workflows:
                 - main
     jobs:
       - hmpps/npm_security_audit
-      - assemble
-      - appsec_scan:
-          requires: [assemble]
-          context: [veracode-credentials]
+      - hmpps/veracode_policy_scan:
+          teams: hmpps-interventions
+          slack_channel: "interventions-dev-notifications"
+          context:
+            - hmpps-common-vars
+            - veracode-credentials
       - hmpps/trivy_latest_scan:
           slack_channel: "interventions-dev-notifications"
           context: [hmpps-common-vars]
