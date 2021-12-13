@@ -12,7 +12,6 @@ orbs:
   hmpps: ministryofjustice/hmpps@3.11
   gradle: circleci/gradle@2.2.0
   mem: circleci/rememborb@0.0.1
-  veracode: orb-01scan/sast-orb@0.0.9
 
 _db_docker_config: &db_docker_config
   - image: cimg/openjdk:11.0
@@ -152,32 +151,6 @@ jobs:
               --pacticipant="Interventions Service" --version="$CIRCLE_SHA1" --tag="<< parameters.tag >>" \
               --broker-base-url="$PACT_BROKER_BASE_URL" --broker-username="$PACT_BROKER_USERNAME" --broker-password="$PACT_BROKER_PASSWORD"
 
-  assemble:
-    executor: hmpps/java
-    environment:
-      _JAVA_OPTIONS: -Xmx512m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process
-    steps:
-      - checkout
-      - gradle/with_cache:
-          cache_checksum_file: "build.gradle.kts"
-          cache_key: v2
-          steps:
-            - run: ./gradlew assemble
-      - persist_to_workspace:
-          root: build/libs
-          paths:
-            - hmpps-interventions-service-*.jar
-
-  appsec_scan:
-    executor: veracode/default
-    steps:
-      - attach_workspace:
-          at: ./build
-      - run: mv -v ./build/hmpps-interventions-service-*.jar ./build/hmpps-interventions-service.jar
-      - veracode/policy-scan:
-          filepath: ./build/hmpps-interventions-service.jar
-          teams: hmpps-interventions
-
   validate_helm:
     executor: hmpps/default_small
     steps:
@@ -299,10 +272,9 @@ workflows:
               only:
                 - main
     jobs:
-      - assemble
-      - appsec_scan:
-          requires: [assemble]
-          context: [veracode-credentials]
+      - hmpps/veracode_policy_scan:
+          slack_channel: "interventions-dev-notifications"
+          context: [hmpps-common-vars]
       - hmpps/trivy_latest_scan:
           slack_channel: "interventions-dev-notifications"
           context: [hmpps-common-vars]
