@@ -91,7 +91,7 @@
       "prettier --write"
     ]
   },
-  "//": "validator is pinned for CVE-2021-3765; remove when fixed upstream",
+  "//": "TODO validator is pinned for CVE-2021-3765; remove when fixed upstream",
   "dependencies": {
     "@ministryofjustice/frontend": "1.0.1",
     "@sentry/node": "^6.16.1",
