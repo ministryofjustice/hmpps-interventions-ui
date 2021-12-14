@@ -91,7 +91,7 @@
       "prettier --write"
     ]
   },
-  "//": "tar is not a direct dependency of our project; we’ve only added it here to remove a security vulnerability introduced by a transitive dependency. This should be removed; see IC-2177",
+  "//": "TODO validator is pinned for CVE-2021-3765; remove when fixed upstream",
   "dependencies": {
     "@ministryofjustice/frontend": "1.0.1",
     "@sentry/node": "^6.16.1",
@@ -128,9 +128,9 @@
     "passport-oauth2": "^1.6.1",
     "redis": "^3.1.1",
     "superagent": "^6.1.0",
-    "tar": "^6.1.11",
     "timezone-support": "^2.0.2",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@pact-foundation/pact": "^9.17.0",

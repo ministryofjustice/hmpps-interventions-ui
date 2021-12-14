@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@3.11
-  snyk: snyk/snyk@0.0.12
   node: circleci/node@4.1.0
   veracode: orb-01scan/sast-orb@0.0.9
 
@@ -108,24 +107,6 @@ jobs:
       - store_artifacts:
           path: integration_tests/screenshots
 
-  vulnerability_scan:
-    executor:
-      name: hmpps/node
-      tag: 14.16.0-browsers
-    parameters:
-      monitor:
-        type: boolean
-        default: false
-    steps:
-      - checkout
-      - run: npm install -q
-      - snyk/scan:
-          project: '${CIRCLE_PROJECT_REPONAME}'
-          monitor-on-build: << parameters.monitor >>
-          organization: "digital-probation-services"
-          severity-threshold: "high" # note: this does not affect snyk 'monitor' commands
-          fail-on-issues: true
-
 workflows:
   version: 2
   build_test_and_deploy:
@@ -133,34 +114,25 @@ workflows:
       - build
       - integration_test
       - hmpps/helm_lint
-      - vulnerability_scan:
-          name: vulnerability_scan_and_monitor
-          monitor: true
-          filters:
-            branches:
-              only:
-                - main
-      - vulnerability_scan:
-          filters:
-            branches:
-              ignore:
-                - main
       - hmpps/build_docker:
           name: build_docker_publish
-          snyk-scan: true
           git-lfs: true
+          publish: true
+          persist_container_image: true
           filters:
             branches:
-              only:
-                - main
+              only: [main]
       - hmpps/build_docker:
-          publish: false
-          snyk-scan: true
+          name: build_docker
           git-lfs: true
+          publish: false
+          persist_container_image: true
           filters:
             branches:
-              ignore:
-                - main
+              ignore: [main]
+      - hmpps/trivy_pipeline_scan:
+          name: vulnerability_scan
+          requires: [build_docker, build_docker_publish]
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
@@ -175,7 +147,7 @@ workflows:
             - integration_test
             - hmpps/helm_lint
             - build_docker_publish
-            - vulnerability_scan_and_monitor
+            - vulnerability_scan
           context:
             - hmpps-common-vars
             - hmpps-interventions-dev-deploy
@@ -239,10 +211,6 @@ workflows:
       - appsec_scan:
           requires: [assemble]
           context: [veracode-credentials]
-      - vulnerability_scan:
-          name: vulnerability_scan_and_monitor
-          monitor: true
-      - hmpps/build_docker:
-          publish: false
-          snyk-scan: true
-          git-lfs: true
+      - hmpps/trivy_latest_scan:
+          slack_channel: "interventions-dev-notifications"
+          context: [hmpps-common-vars]
