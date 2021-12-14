@@ -281,3 +281,6 @@ workflows:
       - hmpps/trivy_latest_scan:
           slack_channel: "interventions-dev-notifications"
           context: [hmpps-common-vars]
+      - hmpps/gradle_owasp_dependency_check:
+          slack_channel: "interventions-dev-notifications"
+          context: [hmpps-common-vars]
