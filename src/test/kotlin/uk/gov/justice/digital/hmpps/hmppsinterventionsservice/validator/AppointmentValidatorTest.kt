@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.RecordAppointmentBehaviourDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentAttendanceDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
@@ -117,7 +116,7 @@ internal class AppointmentValidatorTest {
       }
 
       @Test
-      fun `past appointment fails if no attendance reported but behaviour is`() {
+      fun `past appointment fails if no attendance reported`() {
         val updateAppointmentDTO = UpdateAppointmentDTO(
           appointmentTime = OffsetDateTime.now().minusDays(1),
           durationInMinutes = 1,
@@ -125,14 +124,13 @@ internal class AppointmentValidatorTest {
           sessionType = AppointmentSessionType.ONE_TO_ONE,
           npsOfficeCode = "CRSEXT",
           appointmentAttendance = null,
-          appointmentBehaviour = RecordAppointmentBehaviourDTO("some comments", false)
+          appointmentBehaviour = null
         )
         val exception = assertThrows<ValidationError> {
           deliverySessionValidator.validateUpdateAppointment(updateAppointmentDTO)
         }
         assertThat(exception.errors).containsExactly(
-          FieldError("appointmentBehaviour.notifyProbationPractitioner", Code.INVALID_VALUE),
-          FieldError("appointmentBehaviour.behaviourDescription", Code.INVALID_VALUE),
+          FieldError("appointmentAttendance.attended", Code.CANNOT_BE_EMPTY),
         )
       }
 
