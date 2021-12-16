@@ -180,7 +180,7 @@ class DeliverySessionService(
         deliusAppointmentId = deliusAppointmentId,
         referral = session.referral,
       )
-      setAttendanceAndBehaviourIfHistoricAppointment(appointment, appointmentTime, attended, additionalAttendanceInformation, behaviourDescription, notifyProbationPractitioner, updatedBy)
+      setAttendanceAndBehaviourIfHistoricAppointment(session, appointment, appointmentTime, attended, additionalAttendanceInformation, behaviourDescription, notifyProbationPractitioner, updatedBy)
       appointmentRepository.saveAndFlush(appointment)
       appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
       session.appointments.add(appointment)
@@ -261,7 +261,11 @@ class DeliverySessionService(
   fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int, submitter: AuthUser): DeliverySession {
     val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
     val appointment = session.currentAppointment
+    this.submitSessionFeedback(session, appointment, submitter)
+    return session
+  }
 
+  private fun submitSessionFeedback(session: DeliverySession, appointment: Appointment?, submitter: AuthUser) {
     if (appointment?.appointmentFeedbackSubmittedAt != null) {
       throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this session")
     }
@@ -281,7 +285,6 @@ class DeliverySessionService(
     }
 
     actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour ?: false)
-    return session
   }
 
   fun submitSessionFeedback(referralId: UUID, appointmentId: UUID, submitter: AuthUser): Pair<DeliverySession, Appointment> {
@@ -304,6 +307,7 @@ class DeliverySessionService(
   }
 
   private fun setAttendanceAndBehaviourIfHistoricAppointment(
+    session: DeliverySession,
     appointment: Appointment,
     appointmentTime: OffsetDateTime,
     attended: Attended?,
@@ -317,8 +321,7 @@ class DeliverySessionService(
       if (Attended.NO != attended) {
         setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, updatedBy)
       }
-      appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
-      appointment.appointmentFeedbackSubmittedBy = updatedBy
+      this.submitSessionFeedback(session, appointment, updatedBy)
     }
   }
 

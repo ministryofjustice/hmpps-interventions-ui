@@ -141,7 +141,7 @@ internal class DeliverySessionsServiceTest {
   }
 
   @Test
-  fun `updates session appointment for a historic appointment`() {
+  fun `create session appointment for a historic appointment`() {
     val session = deliverySessionFactory.createUnscheduled()
     val actionPlanId = UUID.randomUUID()
     val sessionNumber = session.sessionNumber
@@ -169,6 +169,9 @@ internal class DeliverySessionsServiceTest {
     )
 
     verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), isNull(), isNull())
+    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(updatedSession, false)
+    verify(actionPlanAppointmentEventPublisher).behaviourRecordedEvent(updatedSession, false)
+    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(updatedSession, false)
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(appointmentTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(updatedSession.currentAppointment?.createdBy?.userName).isEqualTo("scheduler")
