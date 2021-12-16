@@ -316,8 +316,8 @@ class DeliverySessionService(
     notifyProbationPractitioner: Boolean?,
     updatedBy: AuthUser
   ) {
-    if (appointmentTime.isBefore(OffsetDateTime.now())) {
-      setAttendanceFields(appointment, attended!!, additionalAttendanceInformation, updatedBy)
+    attended?.let {
+      setAttendanceFields(appointment, attended, additionalAttendanceInformation, updatedBy)
       if (Attended.NO != attended) {
         setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, updatedBy)
       }
