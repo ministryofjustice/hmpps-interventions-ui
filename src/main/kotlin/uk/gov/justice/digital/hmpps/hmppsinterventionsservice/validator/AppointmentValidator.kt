@@ -7,6 +7,9 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AddressDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.NO
+import java.time.OffsetDateTime
 
 @Component
 class AppointmentValidator {
@@ -30,6 +33,13 @@ class AppointmentValidator {
         }
       }
     }
+    validateAttendanceAndBehaviourFieldsIfHistoricAppointment(
+      updateAppointmentDTO.appointmentTime,
+      updateAppointmentDTO.appointmentAttendance?.attended,
+      updateAppointmentDTO.appointmentBehaviour?.notifyProbationPractitioner,
+      updateAppointmentDTO.appointmentBehaviour?.behaviourDescription,
+      errors
+    )
     if (errors.isNotEmpty()) {
       throw ValidationError("invalid update session appointment request", errors)
     }
@@ -44,5 +54,35 @@ class AppointmentValidator {
     } else if (!postCodeRegex.matches(addressDTO.postCode)) {
       errors.add(FieldError(field = "appointmentDeliveryAddress.postCode", error = Code.INVALID_FORMAT))
     }
+  }
+
+  private fun validateAttendanceAndBehaviourFieldsIfHistoricAppointment(
+    appointmentTime: OffsetDateTime,
+    attended: Attended?,
+    notifyProbationPractitioner: Boolean?,
+    behaviourDescription: String?,
+    errors: MutableList<FieldError>
+  ) {
+    if (appointmentTime.isAfter(OffsetDateTime.now()))
+      return
+
+    when (attended) {
+      null, NO -> {
+        checkValueNotSupplied(notifyProbationPractitioner, "appointmentBehaviour.notifyProbationPractitioner", Code.INVALID_VALUE, errors)
+        checkValueNotSupplied(behaviourDescription, "appointmentBehaviour.behaviourDescription", Code.INVALID_VALUE, errors)
+      }
+      else -> { // YES OR LATE
+        checkValueSupplied(notifyProbationPractitioner, "appointmentBehaviour.notifyProbationPractitioner", Code.CANNOT_BE_EMPTY, errors)
+        checkValueSupplied(behaviourDescription, "appointmentBehaviour.behaviourDescription", Code.CANNOT_BE_EMPTY, errors)
+      }
+    }
+  }
+
+  fun <T : Any> checkValueSupplied(field: T?, fieldName: String, errorCode: Code, errors: MutableList<FieldError>) {
+    field ?: errors.add(FieldError(field = fieldName, error = errorCode))
+  }
+
+  fun <T : Any> checkValueNotSupplied(field: T?, fieldName: String, errorCode: Code, errors: MutableList<FieldError>) {
+    field?.let { errors.add(FieldError(field = fieldName, error = errorCode)) }
   }
 }

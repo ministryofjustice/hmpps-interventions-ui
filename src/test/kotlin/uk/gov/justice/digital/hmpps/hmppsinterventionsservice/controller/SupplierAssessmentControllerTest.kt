@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.LATE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.AppointmentService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.SupplierAssessmentService
@@ -73,7 +74,33 @@ class SupplierAssessmentControllerTest {
       whenever(userMapper.fromToken(token)).thenReturn(user)
       whenever(referralService.getSentReferralForUser(referral.id, user)).thenReturn(referral)
       whenever(supplierAssessmentService.getSupplierAssessmentById(any())).thenReturn(supplierAssessment)
-      whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, user, appointmentDeliveryType, appointmentSessionType, addressDTO, npsOfficeCode)).thenReturn(supplierAssessment.currentAppointment)
+      whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, user, appointmentDeliveryType, appointmentSessionType, addressDTO, npsOfficeCode, null, null, null, null)).thenReturn(supplierAssessment.currentAppointment)
+
+      val response = supplierAssessmentController.updateSupplierAssessmentAppointment(referral.id, update, token)
+      verify(appointmentValidator).validateUpdateAppointment(eq(update))
+      assertThat(response).isNotNull
+    }
+
+    @Test
+    fun `update supplier assessment with new historic appointment`() {
+      val referral = referralFactory.createSent()
+      val durationInMinutes = 60
+      val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
+      val appointmentDeliveryType = AppointmentDeliveryType.PHONE_CALL
+      val npsOfficeCode = "CRSEXT"
+      val appointmentSessionType = AppointmentSessionType.ONE_TO_ONE
+      val addressDTO = null
+      val attendanceDTO = UpdateAppointmentAttendanceDTO(LATE, "attended")
+      val behaviourDTO = RecordAppointmentBehaviourDTO("behaviour", true)
+      val update = UpdateAppointmentDTO(appointmentTime, durationInMinutes, appointmentDeliveryType, appointmentSessionType, addressDTO, npsOfficeCode, attendanceDTO, behaviourDTO)
+      val user = authUserFactory.create()
+      val token = tokenFactory.create()
+      val supplierAssessment = supplierAssessmentFactory.create()
+
+      whenever(userMapper.fromToken(token)).thenReturn(user)
+      whenever(referralService.getSentReferralForUser(referral.id, user)).thenReturn(referral)
+      whenever(supplierAssessmentService.getSupplierAssessmentById(any())).thenReturn(supplierAssessment)
+      whenever(supplierAssessmentService.createOrUpdateSupplierAssessmentAppointment(supplierAssessment, durationInMinutes, appointmentTime, user, appointmentDeliveryType, appointmentSessionType, addressDTO, npsOfficeCode, LATE, "attended", true, "behaviour")).thenReturn(supplierAssessment.currentAppointment)
 
       val response = supplierAssessmentController.updateSupplierAssessmentAppointment(referral.id, update, token)
       verify(appointmentValidator).validateUpdateAppointment(eq(update))

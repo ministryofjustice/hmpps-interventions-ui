@@ -8,6 +8,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
@@ -47,6 +48,10 @@ class SupplierAssessmentService(
     appointmentSessionType: AppointmentSessionType? = null,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
+    attended: Attended? = null,
+    additionalAttendanceInformation: String? = null,
+    notifyProbationPractitioner: Boolean? = null,
+    behaviourDescription: String? = null,
   ): Appointment {
     val appointment = appointmentService.createOrUpdateAppointment(
       supplierAssessment.referral,
@@ -59,6 +64,10 @@ class SupplierAssessmentService(
       appointmentSessionType,
       appointmentDeliveryAddress,
       npsOfficeCode,
+      attended,
+      additionalAttendanceInformation,
+      notifyProbationPractitioner,
+      behaviourDescription
     )
     supplierAssessment.appointments.add(appointment)
     supplierAssessmentRepository.save(supplierAssessment)

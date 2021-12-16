@@ -51,6 +51,10 @@ class SupplierAssessmentController(
         updateAppointmentDTO.sessionType,
         updateAppointmentDTO.appointmentDeliveryAddress,
         updateAppointmentDTO.npsOfficeCode,
+        updateAppointmentDTO.appointmentAttendance?.attended,
+        updateAppointmentDTO.appointmentAttendance?.additionalAttendanceInformation,
+        updateAppointmentDTO.appointmentBehaviour?.notifyProbationPractitioner,
+        updateAppointmentDTO.appointmentBehaviour?.behaviourDescription,
       )
     )
   }

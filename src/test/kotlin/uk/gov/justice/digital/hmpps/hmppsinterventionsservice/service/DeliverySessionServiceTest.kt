@@ -77,7 +77,7 @@ class DeliverySessionServiceTest @Autowired constructor(
       val session = deliverySessionFactory.createUnscheduled()
       val updatedSession = deliverySessionService.scheduleNewDeliverySessionAppointment(session.referral.id, session.sessionNumber, defaultAppointmentTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
 
-      verify(communityAPIBookingService).book(eq(session.referral), isNull(), eq(defaultAppointmentTime), eq(defaultDuration), eq(AppointmentType.SERVICE_DELIVERY), anyOrNull())
+      verify(communityAPIBookingService).book(eq(session.referral), isNull(), eq(defaultAppointmentTime), eq(defaultDuration), eq(AppointmentType.SERVICE_DELIVERY), anyOrNull(), anyOrNull(), anyOrNull())
       verify(appointmentService).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), anyOrNull(), anyOrNull())
 
       assertThat(updatedSession.appointments.size).isEqualTo(1)
@@ -94,7 +94,7 @@ class DeliverySessionServiceTest @Autowired constructor(
       val newTime = existingAppointment.appointmentTime.plusHours(1)
       val updatedSession = deliverySessionService.scheduleNewDeliverySessionAppointment(session.referral.id, session.sessionNumber, newTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
 
-      verify(communityAPIBookingService).book(any(), isNotNull(), any(), any(), any(), anyOrNull())
+      verify(communityAPIBookingService).book(any(), isNotNull(), any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
       verify(appointmentService).createOrUpdateAppointmentDeliveryDetails(any(), any(), any(), anyOrNull(), anyOrNull())
 
       assertThat(updatedSession.appointments.size).isEqualTo(2)
@@ -146,7 +146,7 @@ class DeliverySessionServiceTest @Autowired constructor(
       val newTime = existingAppointment.appointmentTime.plusHours(1)
       val updatedSession = deliverySessionService.rescheduleDeliverySessionAppointment(session.referral.id, session.sessionNumber, existingAppointment.id, newTime, 2, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
 
-      verify(communityAPIBookingService).book(any(), isNotNull(), any(), any(), any(), anyOrNull())
+      verify(communityAPIBookingService).book(any(), isNotNull(), any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
       verify(appointmentService).createOrUpdateAppointmentDeliveryDetails(any(), any(), any(), anyOrNull(), anyOrNull())
 
       assertThat(updatedSession.appointments.size).isEqualTo(1)

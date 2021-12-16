@@ -18,8 +18,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDelivery
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType.SUPPLIER_ASSESSMENT
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.NO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.YES
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
@@ -64,7 +64,7 @@ class AppointmentServiceTest {
   fun `can create new appointment with delius office location delivery`() {
     // Given
     val durationInMinutes = 60
-    val appointmentTime = OffsetDateTime.now()
+    val appointmentTime = OffsetDateTime.now().plusHours(1)
     val referral = referralFactory.createSent()
     val deliusAppointmentId = 99L
     val npsOfficeCode = "CRSEXT"
@@ -90,7 +90,7 @@ class AppointmentServiceTest {
   fun `create new appointment if none currently exist`() {
     // Given
     val durationInMinutes = 60
-    val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
+    val appointmentTime = OffsetDateTime.parse("2022-12-04T10:42:43+00:00")
     val referral = referralFactory.createSent()
     val deliusAppointmentId = 99L
 
@@ -109,6 +109,69 @@ class AppointmentServiceTest {
     // Then
     verifyResponse(newAppointment, null, true, deliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
     verifySavedAppointment(appointmentTime, durationInMinutes, deliusAppointmentId, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    assertThat(newAppointment.attended).isNull()
+    assertThat(newAppointment.additionalAttendanceInformation).isNull()
+    assertThat(newAppointment.attendanceBehaviour).isNull()
+    assertThat(newAppointment.notifyPPOfAttendanceBehaviour).isNull()
+    assertThat(newAppointment.attendanceSubmittedAt).isNull()
+    assertThat(newAppointment.attendanceSubmittedBy).isNull()
+    assertThat(newAppointment.attendanceBehaviourSubmittedAt).isNull()
+    assertThat(newAppointment.attendanceBehaviourSubmittedBy).isNull()
+    assertThat(newAppointment.appointmentFeedbackSubmittedAt).isNull()
+    assertThat(newAppointment.appointmentFeedbackSubmittedBy).isNull()
+  }
+
+  @Test
+  fun `create a historic appointment`() {
+    // Given
+    val durationInMinutes = 60
+    val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
+    val referral = referralFactory.createSent()
+    val deliusAppointmentId = 99L
+
+    whenever(communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT, null, YES, false))
+      .thenReturn(deliusAppointmentId)
+    val savedAppointment = appointmentFactory.create(
+      appointmentTime = appointmentTime,
+      durationInMinutes = durationInMinutes,
+      deliusAppointmentId = deliusAppointmentId,
+    )
+    whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
+
+    // When
+    val newAppointment = appointmentService.createOrUpdateAppointment(
+      referral,
+      null,
+      durationInMinutes,
+      appointmentTime,
+      SUPPLIER_ASSESSMENT,
+      createdByUser,
+      AppointmentDeliveryType.PHONE_CALL,
+      AppointmentSessionType.ONE_TO_ONE,
+      null,
+      null,
+      YES,
+      "additional information",
+      false,
+      "description",
+    )
+
+    // Then
+    verifyResponse(newAppointment, null, true, deliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    verifySavedAppointment(appointmentTime, durationInMinutes, deliusAppointmentId, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    verify(appointmentEventPublisher).attendanceRecordedEvent(newAppointment, false, AppointmentType.SUPPLIER_ASSESSMENT)
+    verify(appointmentEventPublisher).behaviourRecordedEvent(newAppointment, false, AppointmentType.SUPPLIER_ASSESSMENT)
+    verify(appointmentEventPublisher).sessionFeedbackRecordedEvent(newAppointment, false, AppointmentType.SUPPLIER_ASSESSMENT)
+    assertThat(newAppointment.attended).isEqualTo(YES)
+    assertThat(newAppointment.additionalAttendanceInformation).isEqualTo("additional information")
+    assertThat(newAppointment.attendanceBehaviour).isEqualTo("description")
+    assertThat(newAppointment.notifyPPOfAttendanceBehaviour).isEqualTo(false)
+    assertThat(newAppointment.attendanceSubmittedAt).isNotNull
+    assertThat(newAppointment.attendanceSubmittedBy).isEqualTo(createdByUser)
+    assertThat(newAppointment.attendanceBehaviourSubmittedAt).isNotNull
+    assertThat(newAppointment.attendanceBehaviourSubmittedBy).isEqualTo(createdByUser)
+    assertThat(newAppointment.appointmentFeedbackSubmittedAt).isNotNull
+    assertThat(newAppointment.appointmentFeedbackSubmittedBy).isEqualTo(createdByUser)
   }
 
   @Test
@@ -135,13 +198,23 @@ class AppointmentServiceTest {
     // Then
     verifyResponse(updatedAppointment, existingAppointment.id, false, rescheduledDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
     verifySavedAppointment(appointmentTime, durationInMinutes, rescheduledDeliusAppointmentId, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    assertThat(updatedAppointment.attended).isNull()
+    assertThat(updatedAppointment.additionalAttendanceInformation).isNull()
+    assertThat(updatedAppointment.attendanceBehaviour).isNull()
+    assertThat(updatedAppointment.notifyPPOfAttendanceBehaviour).isNull()
+    assertThat(updatedAppointment.attendanceSubmittedAt).isNull()
+    assertThat(updatedAppointment.attendanceSubmittedBy).isNull()
+    assertThat(updatedAppointment.attendanceBehaviourSubmittedAt).isNull()
+    assertThat(updatedAppointment.attendanceBehaviourSubmittedBy).isNull()
+    assertThat(updatedAppointment.appointmentFeedbackSubmittedAt).isNull()
+    assertThat(updatedAppointment.appointmentFeedbackSubmittedBy).isNull()
   }
 
   @Test
   fun `appointment with none attendance will create a new appointment`() {
     // Given
     val durationInMinutes = 60
-    val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
+    val appointmentTime = OffsetDateTime.parse("2022-12-04T10:42:43+00:00")
     val existingAppointment = appointmentFactory.create(deliusAppointmentId = 98L, attended = NO)
     val referral = referralFactory.createSent()
     val additionalDeliusAppointmentId = 99L
@@ -160,6 +233,55 @@ class AppointmentServiceTest {
     // Then
     verifyResponse(newAppointment, existingAppointment.id, true, additionalDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
     verifySavedAppointment(appointmentTime, durationInMinutes, additionalDeliusAppointmentId, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    assertThat(newAppointment.attended).isNull()
+    assertThat(newAppointment.additionalAttendanceInformation).isNull()
+    assertThat(newAppointment.attendanceBehaviour).isNull()
+    assertThat(newAppointment.notifyPPOfAttendanceBehaviour).isNull()
+    assertThat(newAppointment.attendanceSubmittedAt).isNull()
+    assertThat(newAppointment.attendanceSubmittedBy).isNull()
+    assertThat(newAppointment.attendanceBehaviourSubmittedAt).isNull()
+    assertThat(newAppointment.attendanceBehaviourSubmittedBy).isNull()
+    assertThat(newAppointment.appointmentFeedbackSubmittedAt).isNull()
+    assertThat(newAppointment.appointmentFeedbackSubmittedBy).isNull()
+  }
+
+  @Test
+  fun `appointment with none attendance will create a new historic appointment`() {
+    // Given
+    val durationInMinutes = 60
+    val appointmentTime = OffsetDateTime.parse("2021-12-04T10:42:43+00:00")
+    val existingAppointment = appointmentFactory.create(deliusAppointmentId = 98L, attended = NO)
+    val referral = referralFactory.createSent()
+    val additionalDeliusAppointmentId = 99L
+
+    whenever(communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT, null, NO, null)).thenReturn(additionalDeliusAppointmentId)
+    val savedAppointment = appointmentFactory.create(
+      appointmentTime = appointmentTime,
+      durationInMinutes = durationInMinutes,
+      deliusAppointmentId = additionalDeliusAppointmentId,
+      attended = NO,
+      additionalAttendanceInformation = "non attended",
+      attendanceBehaviour = null,
+      notifyPPOfAttendanceBehaviour = null,
+    )
+    whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
+
+    // When
+    val newAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, appointmentTime, SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE, null, null, NO, "non attended", null, null)
+
+    // Then
+    verifyResponse(newAppointment, existingAppointment.id, true, additionalDeliusAppointmentId, appointmentTime, durationInMinutes, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    verifySavedAppointment(appointmentTime, durationInMinutes, additionalDeliusAppointmentId, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    assertThat(newAppointment.attended).isEqualTo(NO)
+    assertThat(newAppointment.additionalAttendanceInformation).isEqualTo("non attended")
+    assertThat(newAppointment.attendanceBehaviour).isNull()
+    assertThat(newAppointment.notifyPPOfAttendanceBehaviour).isNull()
+    assertThat(newAppointment.attendanceSubmittedAt).isNotNull
+    assertThat(newAppointment.attendanceSubmittedBy).isEqualTo(createdByUser)
+    assertThat(newAppointment.attendanceBehaviourSubmittedAt).isNull()
+    assertThat(newAppointment.attendanceBehaviourSubmittedBy).isNull()
+    assertThat(newAppointment.appointmentFeedbackSubmittedAt).isNotNull
+    assertThat(newAppointment.appointmentFeedbackSubmittedBy).isEqualTo(createdByUser)
   }
 
   @Test
@@ -167,7 +289,7 @@ class AppointmentServiceTest {
     val durationInMinutes = 60
     val appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")
     val createdByUser = authUserFactory.create()
-    val appointment = appointmentFactory.create(attended = Attended.YES)
+    val appointment = appointmentFactory.create(attended = YES)
     val referral = referralFactory.createSent()
 
     val error = assertThrows<IllegalStateException> {
@@ -286,7 +408,7 @@ class AppointmentServiceTest {
     @Test
     fun `appointment attendance can be updated`() {
       val appointmentId = UUID.randomUUID()
-      val attended = Attended.YES
+      val attended = YES
       val additionalAttendanceInformation = "information"
       val appointment = appointmentFactory.create(id = appointmentId)
       val submittedBy = authUserFactory.create()
@@ -310,7 +432,7 @@ class AppointmentServiceTest {
     @Test
     fun `appointment attendance cannot be updated if feedback has been submitted`() {
       val appointmentId = UUID.randomUUID()
-      val attended = Attended.YES
+      val attended = YES
       val additionalAttendanceInformation = "information"
       val submittedBy = authUserFactory.create()
       val feedbackSubmittedAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00")

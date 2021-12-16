@@ -59,6 +59,10 @@ class DeliverySessionController(
       updateAppointmentDTO.sessionType,
       updateAppointmentDTO.appointmentDeliveryAddress,
       updateAppointmentDTO.npsOfficeCode,
+      updateAppointmentDTO.appointmentAttendance?.attended,
+      updateAppointmentDTO.appointmentAttendance?.additionalAttendanceInformation,
+      updateAppointmentDTO.appointmentBehaviour?.notifyProbationPractitioner,
+      updateAppointmentDTO.appointmentBehaviour?.behaviourDescription,
     )
     return DeliverySessionDTO.from(deliverySession)
   }

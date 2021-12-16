@@ -151,6 +151,10 @@ class DeliverySessionService(
     appointmentSessionType: AppointmentSessionType? = null,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
+    attended: Attended? = null,
+    additionalAttendanceInformation: String? = null,
+    notifyProbationPractitioner: Boolean? = null,
+    behaviourDescription: String? = null,
   ): DeliverySession {
     val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
     val existingAppointment = session.currentAppointment
@@ -162,7 +166,9 @@ class DeliverySessionService(
       appointmentTime,
       durationInMinutes,
       SERVICE_DELIVERY,
-      npsOfficeCode
+      npsOfficeCode,
+      attended,
+      notifyProbationPractitioner,
     )
     if (existingAppointment == null) {
       val appointment = Appointment(
@@ -174,6 +180,7 @@ class DeliverySessionService(
         deliusAppointmentId = deliusAppointmentId,
         referral = session.referral,
       )
+      setAttendanceAndBehaviourIfHistoricAppointment(session, appointment, appointmentTime, attended, additionalAttendanceInformation, behaviourDescription, notifyProbationPractitioner, updatedBy)
       appointmentRepository.saveAndFlush(appointment)
       appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
       session.appointments.add(appointment)
@@ -254,7 +261,11 @@ class DeliverySessionService(
   fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int, submitter: AuthUser): DeliverySession {
     val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
     val appointment = session.currentAppointment
+    this.submitSessionFeedback(session, appointment, submitter)
+    return session
+  }
 
+  private fun submitSessionFeedback(session: DeliverySession, appointment: Appointment?, submitter: AuthUser) {
     if (appointment?.appointmentFeedbackSubmittedAt != null) {
       throw ResponseStatusException(HttpStatus.CONFLICT, "session feedback has already been submitted for this session")
     }
@@ -274,7 +285,6 @@ class DeliverySessionService(
     }
 
     actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour ?: false)
-    return session
   }
 
   fun submitSessionFeedback(referralId: UUID, appointmentId: UUID, submitter: AuthUser): Pair<DeliverySession, Appointment> {
@@ -294,6 +304,25 @@ class DeliverySessionService(
 
   fun getSession(deliverySessionId: UUID): DeliverySession {
     return deliverySessionRepository.findByIdOrNull(deliverySessionId) ?: throw EntityNotFoundException("Delivery session not found [deliverySessionId=$deliverySessionId]")
+  }
+
+  private fun setAttendanceAndBehaviourIfHistoricAppointment(
+    session: DeliverySession,
+    appointment: Appointment,
+    appointmentTime: OffsetDateTime,
+    attended: Attended?,
+    additionalAttendanceInformation: String?,
+    behaviourDescription: String?,
+    notifyProbationPractitioner: Boolean?,
+    updatedBy: AuthUser
+  ) {
+    attended?.let {
+      setAttendanceFields(appointment, attended, additionalAttendanceInformation, updatedBy)
+      if (Attended.NO != attended) {
+        setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, updatedBy)
+      }
+      this.submitSessionFeedback(session, appointment, updatedBy)
+    }
   }
 
   private fun setAttendanceFields(

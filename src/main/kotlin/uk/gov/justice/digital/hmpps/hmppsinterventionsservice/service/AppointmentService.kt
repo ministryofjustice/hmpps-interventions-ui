@@ -47,12 +47,16 @@ class AppointmentService(
     appointmentSessionType: AppointmentSessionType?,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String? = null,
+    attended: Attended? = null,
+    additionalAttendanceInformation: String? = null,
+    notifyProbationPractitioner: Boolean? = null,
+    behaviourDescription: String? = null,
   ): Appointment {
     val appointment = when {
       // an initial appointment is required
       appointment == null -> {
         val deliusAppointmentId =
-          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode)
+          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode, attended, notifyProbationPractitioner)
         createAppointment(
           durationInMinutes,
           appointmentTime,
@@ -62,7 +66,12 @@ class AppointmentService(
           appointmentSessionType,
           appointmentDeliveryAddress,
           referral,
-          npsOfficeCode
+          npsOfficeCode,
+          attended,
+          additionalAttendanceInformation,
+          notifyProbationPractitioner,
+          behaviourDescription,
+          appointmentType
         )
       }
       // the current appointment needs to be updated
@@ -83,7 +92,7 @@ class AppointmentService(
       // an additional appointment is required
       appointment.attended == Attended.NO -> {
         val deliusAppointmentId =
-          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode)
+          communityAPIBookingService.book(referral, null, appointmentTime, durationInMinutes, appointmentType, npsOfficeCode, attended, notifyProbationPractitioner)
         createAppointment(
           durationInMinutes,
           appointmentTime,
@@ -93,7 +102,12 @@ class AppointmentService(
           appointmentSessionType,
           appointmentDeliveryAddress,
           referral,
-          npsOfficeCode
+          npsOfficeCode,
+          attended,
+          additionalAttendanceInformation,
+          notifyProbationPractitioner,
+          behaviourDescription,
+          appointmentType
         )
       }
       // the appointment has already been attended
@@ -238,6 +252,11 @@ class AppointmentService(
     appointmentDeliveryAddress: AddressDTO? = null,
     referral: Referral,
     npsOfficeCode: String?,
+    attended: Attended?,
+    additionalAttendanceInformation: String?,
+    notifyProbationPractitioner: Boolean?,
+    behaviourDescription: String?,
+    appointmentType: AppointmentType
   ): Appointment {
     val appointment = Appointment(
       id = UUID.randomUUID(),
@@ -248,6 +267,7 @@ class AppointmentService(
       createdAt = OffsetDateTime.now(),
       referral = referral,
     )
+    setAttendanceAndBehaviourIfHistoricAppointment(appointment, appointmentTime, attended, additionalAttendanceInformation, behaviourDescription, notifyProbationPractitioner, createdByUser, appointmentType)
     appointmentRepository.saveAndFlush(appointment)
     createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     return appointment
@@ -348,5 +368,24 @@ class AppointmentService(
     createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     appointmentEventPublisher.appointmentScheduledEvent(appointment, appointmentType)
     return appointment
+  }
+
+  private fun setAttendanceAndBehaviourIfHistoricAppointment(
+    appointment: Appointment,
+    appointmentTime: OffsetDateTime,
+    attended: Attended?,
+    additionalAttendanceInformation: String?,
+    behaviourDescription: String?,
+    notifyProbationPractitioner: Boolean?,
+    updatedBy: AuthUser,
+    appointmentType: AppointmentType,
+  ) {
+    attended?.let {
+      setAttendanceFields(appointment, attended, additionalAttendanceInformation, updatedBy)
+      if (Attended.NO != attended) {
+        setBehaviourFields(appointment, behaviourDescription!!, notifyProbationPractitioner!!, updatedBy)
+      }
+      this.submitSessionFeedback(appointment, updatedBy, appointmentType)
+    }
   }
 }

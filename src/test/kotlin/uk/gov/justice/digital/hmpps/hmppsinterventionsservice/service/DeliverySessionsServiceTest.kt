@@ -111,7 +111,7 @@ internal class DeliverySessionsServiceTest {
     whenever(deliverySessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
     whenever(deliverySessionRepository.save(any())).thenReturn(session)
 
-    val appointmentTime = OffsetDateTime.now()
+    val appointmentTime = OffsetDateTime.now().plusHours(1)
     val durationInMinutes = 200
     val updatedSession = deliverySessionsService.updateSessionAppointment(
       actionPlanId,
@@ -128,6 +128,105 @@ internal class DeliverySessionsServiceTest {
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(appointmentTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(updatedSession.currentAppointment?.createdBy?.userName).isEqualTo("scheduler")
+    assertThat(updatedSession.currentAppointment?.attended).isNull()
+    assertThat(updatedSession.currentAppointment?.additionalAttendanceInformation).isNull()
+    assertThat(updatedSession.currentAppointment?.notifyPPOfAttendanceBehaviour).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviour).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceSubmittedAt).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceSubmittedBy).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviourSubmittedAt).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviourSubmittedBy).isNull()
+    assertThat(updatedSession.currentAppointment?.appointmentFeedbackSubmittedAt).isNull()
+    assertThat(updatedSession.currentAppointment?.appointmentFeedbackSubmittedBy).isNull()
+  }
+
+  @Test
+  fun `create session appointment for a historic appointment`() {
+    val session = deliverySessionFactory.createUnscheduled()
+    val actionPlanId = UUID.randomUUID()
+    val sessionNumber = session.sessionNumber
+    val user = createActor("scheduler")
+
+    whenever(deliverySessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
+    whenever(deliverySessionRepository.save(any())).thenReturn(session)
+
+    val appointmentTime = OffsetDateTime.now()
+    val durationInMinutes = 200
+    val updatedSession = deliverySessionsService.updateSessionAppointment(
+      actionPlanId,
+      sessionNumber,
+      appointmentTime,
+      durationInMinutes,
+      user,
+      AppointmentDeliveryType.PHONE_CALL,
+      AppointmentSessionType.ONE_TO_ONE,
+      null,
+      null,
+      Attended.YES,
+      "additional information",
+      false,
+      "description"
+    )
+
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), isNull(), isNull())
+    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(updatedSession, false)
+    verify(actionPlanAppointmentEventPublisher).behaviourRecordedEvent(updatedSession, false)
+    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(updatedSession, false)
+    assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(appointmentTime)
+    assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(durationInMinutes)
+    assertThat(updatedSession.currentAppointment?.createdBy?.userName).isEqualTo("scheduler")
+    assertThat(updatedSession.currentAppointment?.attended).isEqualTo(Attended.YES)
+    assertThat(updatedSession.currentAppointment?.additionalAttendanceInformation).isEqualTo("additional information")
+    assertThat(updatedSession.currentAppointment?.notifyPPOfAttendanceBehaviour).isEqualTo(false)
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviour).isEqualTo("description")
+    assertThat(updatedSession.currentAppointment?.attendanceSubmittedAt).isNotNull
+    assertThat(updatedSession.currentAppointment?.attendanceSubmittedBy).isNotNull
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviourSubmittedAt).isNotNull
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviourSubmittedBy).isNotNull
+    assertThat(updatedSession.currentAppointment?.appointmentFeedbackSubmittedAt).isNotNull
+    assertThat(updatedSession.currentAppointment?.appointmentFeedbackSubmittedBy).isNotNull
+  }
+
+  @Test
+  fun `updates session appointment for a historic appointment non attended`() {
+    val session = deliverySessionFactory.createUnscheduled()
+    val actionPlanId = UUID.randomUUID()
+    val sessionNumber = session.sessionNumber
+    val user = createActor("scheduler")
+
+    whenever(deliverySessionRepository.findAllByActionPlanIdAndSessionNumber(actionPlanId, sessionNumber)).thenReturn(session)
+    whenever(deliverySessionRepository.save(any())).thenReturn(session)
+
+    val appointmentTime = OffsetDateTime.now()
+    val durationInMinutes = 200
+    val updatedSession = deliverySessionsService.updateSessionAppointment(
+      actionPlanId,
+      sessionNumber,
+      appointmentTime,
+      durationInMinutes,
+      user,
+      AppointmentDeliveryType.PHONE_CALL,
+      AppointmentSessionType.ONE_TO_ONE,
+      null,
+      null,
+      Attended.NO,
+      "additional information"
+    )
+
+    verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), isNull(), isNull())
+    assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(appointmentTime)
+    assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(durationInMinutes)
+    assertThat(updatedSession.currentAppointment?.createdBy?.userName).isEqualTo("scheduler")
+    assertThat(updatedSession.currentAppointment?.attended).isEqualTo(Attended.NO)
+    assertThat(updatedSession.currentAppointment?.additionalAttendanceInformation).isEqualTo("additional information")
+    assertThat(updatedSession.currentAppointment?.notifyPPOfAttendanceBehaviour).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviour).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceSubmittedAt).isNotNull
+    assertThat(updatedSession.currentAppointment?.attendanceSubmittedBy).isEqualTo(user)
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviourSubmittedAt).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviourSubmittedBy).isNull()
+    assertThat(updatedSession.currentAppointment?.appointmentFeedbackSubmittedAt).isNotNull
+    assertThat(updatedSession.currentAppointment?.appointmentFeedbackSubmittedBy).isEqualTo(user)
   }
 
   @Test
@@ -159,6 +258,15 @@ internal class DeliverySessionsServiceTest {
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(newTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(newDuration)
     assertThat(updatedSession.currentAppointment?.createdBy?.userName).isNotEqualTo("re-scheduler")
+    assertThat(updatedSession.currentAppointment?.attended).isNull()
+    assertThat(updatedSession.currentAppointment?.additionalAttendanceInformation).isNull()
+    assertThat(updatedSession.currentAppointment?.notifyPPOfAttendanceBehaviour).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviour).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceSubmittedAt).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceSubmittedBy).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviourSubmittedAt).isNull()
+    assertThat(updatedSession.currentAppointment?.attendanceBehaviourSubmittedBy).isNull()
+    assertThat(updatedSession.currentAppointment?.appointmentFeedbackSubmittedAt).isNull()
   }
 
   @Test
