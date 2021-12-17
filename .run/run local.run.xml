@@ -1,0 +1,25 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="run local" type="js.build_tools.npm">
+    <package-json value="$PROJECT_DIR$/package.json" />
+    <command value="run" />
+    <scripts>
+      <script value="watch" />
+    </scripts>
+    <node-interpreter value="project" />
+    <envs>
+      <env name="COMMUNITY_API_URL" value="http://localhost:8091" />
+      <env name="INTERVENTIONS_SERVICE_URL" value="http://localhost:8092" />
+    </envs>
+    <method v="2">
+      <option name="NpmBeforeRunTask" enabled="true">
+        <package-json value="$PROJECT_DIR$/package.json" />
+        <command value="run" />
+        <scripts>
+          <script value="build" />
+        </scripts>
+        <node-interpreter value="project" />
+        <envs />
+      </option>
+    </method>
+  </configuration>
+</component>

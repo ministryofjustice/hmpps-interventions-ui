@@ -2763,7 +2763,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       it('returns an updated action plan appointment', async () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
-          appointmentTime: '2021-05-13T12:30:00Z',
+          appointmentTime: '3000-05-13T12:30:00Z',
           durationInMinutes: 60,
           sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -2785,7 +2785,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'PATCH',
             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
             body: {
-              appointmentTime: '2021-05-13T12:30:00Z',
+              appointmentTime: '3000-05-13T12:30:00Z',
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -2816,7 +2816,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             '345059d4-1697-467b-8914-fedec9957279',
             2,
             {
-              appointmentTime: '2021-05-13T12:30:00Z',
+              appointmentTime: '3000-05-13T12:30:00Z',
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3273,7 +3273,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('scheduleSupplierAssessmentAppointment', () => {
     const appointmentParams = {
-      appointmentTime: '2021-05-13T12:30:00Z',
+      appointmentTime: '3000-05-13T12:30:00Z',
       durationInMinutes: 60,
     }
 
