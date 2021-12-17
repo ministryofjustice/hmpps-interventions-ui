@@ -36,11 +36,12 @@
 
         <div id='session-input' {% if serverError != null %}class="{{serverError.classes}}"{% endif %}>
           {% if serverError !== null %}
-            <span class="govuk-error-message">
+            <p class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span>
                 {{ serverError.message }}
               </span>
-            {% endif %}
+            </p>
+          {% endif %}
 
           {{ govukDateInput(dateInputArgs) }}
           {{ appTimeInput(timeInputArgs) }}
