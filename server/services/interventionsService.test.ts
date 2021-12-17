@@ -2784,9 +2784,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
               behaviourDescription: 'they were good',
             },
             submittedBy: {
-              authSource: 'delius',
-              userId: '2500128586',
-              username: 'joe.smith',
+              authSource: 'auth',
+              userId: '6c4036b7-e87d-44fb-864f-5a06c1c492f3',
+              username: 'TEST_INTERVENTIONS_SP_1',
             },
             submitted: true,
           },
@@ -2822,7 +2822,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 behaviourDescription: 'they were good',
               },
             },
-            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
           },
           // note - this is an exact match
           willRespondWith: {
@@ -2836,7 +2836,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
         expect(
           await interventionsService.recordAndSubmitActionPlanAppointmentWithFeedback(
-            probationPractitionerToken,
+            serviceProviderToken,
             '345059d4-1697-467b-8914-fedec9957279',
             2,
             {
@@ -2904,7 +2904,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
               },
               npsOfficeCode: null,
             },
-            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
           },
           // note - this is an exact match
           willRespondWith: {
@@ -2918,7 +2918,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
         expect(
           await interventionsService.updateActionPlanAppointment(
-            probationPractitionerToken,
+            serviceProviderToken,
             '345059d4-1697-467b-8914-fedec9957279',
             2,
             {
