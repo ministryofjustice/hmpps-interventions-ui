@@ -641,18 +641,6 @@ describe('Scheduling a delivery session', () => {
             appointmentDeliveryType: 'PHONE_CALL',
             npsOfficeCode: null,
             sessionType: 'ONE_TO_ONE',
-            sessionFeedback: {
-              attendance: {
-                attended: null,
-                additionalAttendanceInformation: null,
-              },
-              behaviour: {
-                behaviourDescription: null,
-                notifyProbationPractitioner: null,
-              },
-              submitted: false,
-              submittedBy: null,
-            },
           },
           { userId: '123' }
         )
@@ -1792,7 +1780,16 @@ describe('Adding post delivery session feedback', () => {
         'token',
         actionPlanId,
         sessionNumber,
-        draftAppointment
+        {
+          appointmentTime: draftAppointment!.appointmentTime,
+          durationInMinutes: draftAppointment!.durationInMinutes,
+          appointmentDeliveryType: draftAppointment!.appointmentDeliveryType,
+          sessionType: draftAppointment!.sessionType,
+          appointmentDeliveryAddress: draftAppointment!.appointmentDeliveryAddress,
+          npsOfficeCode: draftAppointment!.npsOfficeCode,
+          appointmentAttendance: { ...draftAppointment!.sessionFeedback!.attendance },
+          appointmentBehaviour: { ...draftAppointment!.sessionFeedback!.behaviour },
+        }
       )
     })
   })

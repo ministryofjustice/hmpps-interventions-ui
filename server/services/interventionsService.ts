@@ -28,7 +28,6 @@ import ApprovedActionPlanSummary from '../models/approvedActionPlanSummary'
 import { Page } from '../models/pagination'
 import { CaseNote } from '../models/caseNote'
 import { DraftOasysRiskInformation } from '../models/draftOasysRiskInformation'
-import { AppointmentDetails } from '../routes/serviceProviderReferrals/draftAppointment'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -98,6 +97,17 @@ export interface CreateCaseNoteParams {
   referralId: string
   subject: string
   body: string
+}
+
+export type CreateAppointmentSchedulingAndFeedback = AppointmentSchedulingDetails & {
+  appointmentAttendance: {
+    attended: 'yes' | 'no' | 'late' | null
+    additionalAttendanceInformation: string | null
+  }
+  appointmentBehaviour: {
+    behaviourDescription: string | null
+    notifyProbationPractitioner: boolean | null
+  }
 }
 
 export default class InterventionsService {
@@ -437,23 +447,13 @@ export default class InterventionsService {
     token: string,
     actionPlanId: string,
     sessionNumber: number,
-    appointmentDetails: AppointmentDetails
+    appointmentDetails: CreateAppointmentSchedulingAndFeedback
   ): Promise<ActionPlanAppointment> {
-    const data = {
-      appointmentTime: appointmentDetails.appointmentTime,
-      durationInMinutes: appointmentDetails.durationInMinutes,
-      appointmentDeliveryType: appointmentDetails.appointmentDeliveryType,
-      sessionType: appointmentDetails.sessionType,
-      appointmentDeliveryAddress: appointmentDetails.appointmentDeliveryAddress,
-      npsOfficeCode: appointmentDetails.npsOfficeCode,
-      appointmentAttendance: { ...appointmentDetails.sessionFeedback.attendance },
-      appointmentBehaviour: { ...appointmentDetails.sessionFeedback.behaviour },
-    }
     const restClient = this.createRestClient(token)
     return (await restClient.patch({
       path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}`,
       headers: { Accept: 'application/json' },
-      data: { ...data },
+      data: { ...appointmentDetails },
     })) as ActionPlanAppointment
   }
 

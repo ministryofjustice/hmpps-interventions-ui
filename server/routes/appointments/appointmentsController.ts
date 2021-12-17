@@ -12,7 +12,10 @@ import CommunityApiService from '../../services/communityApiService'
 import DeliusOfficeLocationFilter from '../../services/deliusOfficeLocationFilter'
 import DraftsService, { Draft } from '../../services/draftsService'
 import HmppsAuthService from '../../services/hmppsAuthService'
-import InterventionsService, { InterventionsServiceError } from '../../services/interventionsService'
+import InterventionsService, {
+  CreateAppointmentSchedulingAndFeedback,
+  InterventionsServiceError,
+} from '../../services/interventionsService'
 import ReferenceDataService from '../../services/referenceDataService'
 import ControllerUtils, { DraftFetchSuccessResult } from '../../utils/controllerUtils'
 import { FormValidationError } from '../../utils/formValidationError'
@@ -47,7 +50,6 @@ import BehaviourFeedbackView from './feedback/shared/behaviour/behaviourFeedback
 import CheckFeedbackAnswersView from './feedback/shared/checkYourAnswers/checkFeedbackAnswersView'
 import logger from '../../../log'
 import SentReferral from '../../models/sentReferral'
-import SessionFeedback from '../../models/sessionFeedback'
 import {
   AppointmentDetails,
   DraftAppointment,
@@ -291,23 +293,7 @@ export default class AppointmentsController {
         formError = data.error
         userInputData = req.body
       } else {
-        const draftAppointment: DraftAppointment = {
-          ...data.paramsForUpdate,
-          sessionFeedback: {
-            attendance: {
-              attended: null,
-              additionalAttendanceInformation: null,
-            },
-            behaviour: {
-              behaviourDescription: null,
-              notifyProbationPractitioner: null,
-            },
-            submitted: false,
-            submittedBy: null,
-          },
-        }
-
-        await this.draftsService.updateDraft(draft.id, draftAppointment, { userId: res.locals.user.userId })
+        await this.draftsService.updateDraft(draft.id, data.paramsForUpdate, { userId: res.locals.user.userId })
         res.redirect(
           `/service-provider/action-plan/${actionPlan.id}/sessions/${sessionNumber}/edit/${draft.id}/check-answers`
         )
@@ -651,11 +637,26 @@ export default class AppointmentsController {
             return
           }
           const { draft } = fetchResult
-
-          if (draft.data != null && this.isADraftAppointment(draft.data)) {
-            draft.data.sessionFeedback.attendance.attended = data.paramsForUpdate.attended!
-            draft.data.sessionFeedback.attendance.additionalAttendanceInformation =
-              data.paramsForUpdate.additionalAttendanceInformation!
+          const draftAppointment = draft.data as DraftAppointment
+          if (draftAppointment) {
+            if (draftAppointment.sessionFeedback) {
+              draftAppointment.sessionFeedback.attendance.attended = data.paramsForUpdate.attended!
+              draftAppointment.sessionFeedback.attendance.additionalAttendanceInformation =
+                data.paramsForUpdate.additionalAttendanceInformation!
+            } else {
+              draftAppointment.sessionFeedback = {
+                attendance: {
+                  attended: data.paramsForUpdate.attended!,
+                  additionalAttendanceInformation: data.paramsForUpdate.additionalAttendanceInformation!,
+                },
+                behaviour: {
+                  behaviourDescription: null,
+                  notifyProbationPractitioner: null,
+                },
+                submitted: false,
+                submittedBy: null,
+              }
+            }
           } else {
             throw new Error('Draft appointment data is missing.')
           }
@@ -663,7 +664,8 @@ export default class AppointmentsController {
           await this.draftsService.updateDraft(draft.id, draft.data, { userId: res.locals.user.userId })
 
           basePath = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draftBookingId}`
-          redirectPath = draft?.data?.sessionFeedback.attendance.attended === 'no' ? 'check-your-answers' : 'behaviour'
+          redirectPath =
+            draftAppointment.sessionFeedback.attendance.attended === 'no' ? 'check-your-answers' : 'behaviour'
         } else {
           const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
             accessToken,
@@ -683,7 +685,7 @@ export default class AppointmentsController {
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.getActionPlanAppointment(req, res)
+    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res)
     // return because draft service already renders page.
     if (appointment === null) {
       return
@@ -736,10 +738,10 @@ export default class AppointmentsController {
             return
           }
           const { draft } = fetchResult
-
-          if (draft.data != null && this.isADraftAppointment(draft.data)) {
-            draft.data.sessionFeedback.behaviour.behaviourDescription = data.paramsForUpdate.behaviourDescription!
-            draft.data.sessionFeedback.behaviour.notifyProbationPractitioner =
+          const draftAppointment = draft.data as DraftAppointment
+          if (draftAppointment && draftAppointment.sessionFeedback) {
+            draftAppointment.sessionFeedback.behaviour.behaviourDescription = data.paramsForUpdate.behaviourDescription!
+            draftAppointment.sessionFeedback.behaviour.notifyProbationPractitioner =
               data.paramsForUpdate.notifyProbationPractitioner!
           } else {
             throw new Error('Draft appointment data is missing.')
@@ -757,7 +759,7 @@ export default class AppointmentsController {
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.getActionPlanAppointment(req, res)
+    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res)
     // return because draft service already renders page.
     if (appointment === null) {
       return
@@ -786,7 +788,7 @@ export default class AppointmentsController {
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.getActionPlanAppointment(req, res)
+    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res)
     // return because draft service already renders page.
     if (appointment === null) {
       return
@@ -816,14 +818,27 @@ export default class AppointmentsController {
         return
       }
       const { draft } = fetchResult
-
-      if (this.isADraftAppointment(draft.data)) {
+      const draftAppointment = draft.data as DraftAppointment
+      if (draftAppointment && draftAppointment.sessionFeedback) {
+        const data: CreateAppointmentSchedulingAndFeedback = {
+          appointmentTime: draftAppointment.appointmentTime,
+          durationInMinutes: draftAppointment.durationInMinutes,
+          appointmentDeliveryType: draftAppointment.appointmentDeliveryType,
+          sessionType: draftAppointment.sessionType,
+          appointmentDeliveryAddress: draftAppointment.appointmentDeliveryAddress,
+          npsOfficeCode: draftAppointment.npsOfficeCode,
+          appointmentAttendance: { ...draftAppointment.sessionFeedback.attendance },
+          appointmentBehaviour: { ...draftAppointment.sessionFeedback.behaviour },
+        }
         await this.interventionsService.recordAndSubmitActionPlanAppointmentWithFeedback(
           accessToken,
           actionPlanId,
           Number(sessionNumber),
-          draft.data
+          data
         )
+        await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
+      } else {
+        throw new Error('Draft appointment data is missing.')
       }
     } else {
       await this.interventionsService.submitActionPlanSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
@@ -1007,7 +1022,7 @@ export default class AppointmentsController {
     })
   }
 
-  private isADraftAppointment(
+  private hasSessionFeedback(
     details: AppointmentSchedulingDetails | AppointmentDetails | null
   ): details is AppointmentDetails {
     return (details as DraftAppointment)?.sessionFeedback !== undefined
@@ -1022,28 +1037,34 @@ export default class AppointmentsController {
     return null
   }
 
-  private extractFeedbackSchedulingDetailsOrEmpty(
-    draft: Draft<DraftAppointmentBooking | DraftAppointment>
-  ): SessionFeedback | null {
-    if (draft?.data) {
-      if (this.isADraftAppointment(draft.data)) {
-        return draft.data.sessionFeedback
-      }
-      return null
-    }
-    return null
-  }
-
   private extractActionPlanAppointment(
     fetchResult: DraftFetchSuccessResult<DraftAppointmentBooking | DraftAppointment>,
     sessionNumber: string
   ): ActionPlanAppointment | null {
     const { draft } = fetchResult
     const appointmentSchedulingDetails = this.extractAppointmentSchedulingDetails(draft)
-    const feedbackDetails = this.extractFeedbackSchedulingDetailsOrEmpty(draft)
-    if (appointmentSchedulingDetails != null && feedbackDetails != null && this.isADraftAppointment(draft.data)) {
+    if (appointmentSchedulingDetails) {
+      const draftAppointment = draft.data as DraftAppointment
+      if (draftAppointment?.sessionFeedback) {
+        return {
+          sessionFeedback: draftAppointment.sessionFeedback,
+          sessionNumber: Number(sessionNumber),
+          ...appointmentSchedulingDetails,
+        }
+      }
       return {
-        sessionFeedback: feedbackDetails,
+        sessionFeedback: {
+          attendance: {
+            attended: null,
+            additionalAttendanceInformation: null,
+          },
+          behaviour: {
+            behaviourDescription: null,
+            notifyProbationPractitioner: null,
+          },
+          submitted: false,
+          submittedBy: null,
+        },
         sessionNumber: Number(sessionNumber),
         ...appointmentSchedulingDetails,
       }
@@ -1051,7 +1072,10 @@ export default class AppointmentsController {
     return null
   }
 
-  private async getActionPlanAppointment(req: Request, res: Response): Promise<ActionPlanAppointment | null> {
+  private async getActionPlanAppointmentFromDraftOrService(
+    req: Request,
+    res: Response
+  ): Promise<ActionPlanAppointment | null> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { draftBookingId, sessionNumber, actionPlanId } = req.params
