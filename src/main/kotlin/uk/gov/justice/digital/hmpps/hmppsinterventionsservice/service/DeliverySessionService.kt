@@ -194,6 +194,7 @@ class DeliverySessionService(
     }
   }
 
+  @Deprecated("Deprecated in favour of method that uses common AppointmentService")
   fun recordAppointmentAttendance(
     actor: AuthUser,
     actionPlanId: UUID,
@@ -226,6 +227,7 @@ class DeliverySessionService(
     return Pair(sessionAndAppointment.first, updatedAppointment)
   }
 
+  @Deprecated("Deprecated in favour of method that uses common AppointmentService")
   fun recordBehaviour(
     actor: AuthUser,
     actionPlanId: UUID,
@@ -258,6 +260,8 @@ class DeliverySessionService(
     return Pair(sessionAndAppointment.first, updatedAppointment)
   }
 
+
+  @Deprecated("Deprecated in favour of method that uses common AppointmentService")
   fun submitSessionFeedback(actionPlanId: UUID, sessionNumber: Int, submitter: AuthUser): DeliverySession {
     val session = getDeliverySessionByActionPlanIdOrThrowException(actionPlanId, sessionNumber)
     val appointment = session.currentAppointment
