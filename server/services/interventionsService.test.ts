@@ -2760,7 +2760,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('updateActionPlanAppointment', () => {
     describe('with a past appointment time', () => {
-      it('returns an updated action plan appointment', async () => {
+      it('returns a scheduled action plan appointment with feedback', async () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
           appointmentTime: '2021-05-13T12:30:00Z',
