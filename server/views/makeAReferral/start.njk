@@ -4,23 +4,23 @@
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = "Make a referral" %}
-{% set pageSubTitle = "Enter user's case identifier" %}
+{% set pageSubTitle = "Enter the person's case identifier" %}
 
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">
-        Enter the service user's case identifier
+        Enter the case identifier for the person on probation 
       </h1>
 
-      <p class="govuk-body-l">Retrieve service user's record</p>
+      <p class="govuk-body-l">This will retrieve the person on probation's record</p>
 
       <form action="{{presenter.hrefStartReferral}}" method="POST">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
         {{govukInput(crnInputArgs)}}
 
-        <p>The service user's details will be imported</p>
+        <p>These details will be imported</p>
 
         <button role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button" data-prevent-double-click="true">
           Continue
