@@ -2852,17 +2852,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 postCode: 'SY40RE',
               },
               npsOfficeCode: null,
-              sessionFeedback: {
-                attendance: {
-                  attended: 'yes',
-                  additionalAttendanceInformation: 'attendance information',
-                },
-                behaviour: {
-                  notifyProbationPractitioner: false,
-                  behaviourDescription: 'they were good',
-                },
-                submitted: false,
-                submittedBy: null,
+              appointmentAttendance: {
+                attended: 'yes',
+                additionalAttendanceInformation: 'attendance information',
+              },
+              appointmentBehaviour: {
+                notifyProbationPractitioner: false,
+                behaviourDescription: 'they were good',
               },
             }
           )
