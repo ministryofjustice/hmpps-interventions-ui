@@ -2759,7 +2759,117 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('updateActionPlanAppointment', () => {
-    describe('with non-null values', () => {
+    describe('with a past appointment time', () => {
+      it('returns an updated action plan appointment', async () => {
+        const actionPlanAppointment = actionPlanAppointmentFactory.build({
+          sessionNumber: 2,
+          appointmentTime: '2021-05-13T12:30:00Z',
+          durationInMinutes: 60,
+          sessionType: 'ONE_TO_ONE',
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+          appointmentDeliveryAddress: {
+            firstAddressLine: 'Harmony Living Office, Room 4',
+            secondAddressLine: '44 Bouverie Road',
+            townOrCity: 'Blackpool',
+            county: 'Lancashire',
+            postCode: 'SY40RE',
+          },
+          sessionFeedback: {
+            attendance: {
+              attended: 'yes',
+              additionalAttendanceInformation: 'attendance information',
+            },
+            behaviour: {
+              notifyProbationPractitioner: false,
+              behaviourDescription: 'they were good',
+            },
+            submittedBy: {
+              authSource: 'delius',
+              userId: '2500128586',
+              username: 'joe.smith',
+            },
+            submitted: true,
+          },
+        })
+
+        await provider.addInteraction({
+          state:
+            'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
+          uponReceiving:
+            'a PATCH request to update the appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+          withRequest: {
+            method: 'PATCH',
+            path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
+            body: {
+              appointmentTime: '2021-05-13T12:30:00Z',
+              durationInMinutes: 60,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+              appointmentAttendance: {
+                attended: 'yes',
+                additionalAttendanceInformation: 'attendance information',
+              },
+              appointmentBehaviour: {
+                notifyProbationPractitioner: false,
+                behaviourDescription: 'they were good',
+              },
+            },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          // note - this is an exact match
+          willRespondWith: {
+            status: 200,
+            body: actionPlanAppointment,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        })
+
+        expect(
+          await interventionsService.recordAndSubmitActionPlanAppointmentWithFeedback(
+            probationPractitionerToken,
+            '345059d4-1697-467b-8914-fedec9957279',
+            2,
+            {
+              appointmentTime: '2021-05-13T12:30:00Z',
+              durationInMinutes: 60,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+              sessionFeedback: {
+                attendance: {
+                  attended: 'yes',
+                  additionalAttendanceInformation: 'attendance information',
+                },
+                behaviour: {
+                  notifyProbationPractitioner: false,
+                  behaviourDescription: 'they were good',
+                },
+                submitted: false,
+                submittedBy: null,
+              },
+            }
+          )
+        ).toMatchObject(actionPlanAppointment)
+      })
+    })
+    describe('with a future appointment time', () => {
       it('returns an updated action plan appointment', async () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
