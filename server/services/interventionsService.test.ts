@@ -2796,7 +2796,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           state:
             'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
           uponReceiving:
-            'a PATCH request to update the appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+            'a PATCH request to update a past appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
           withRequest: {
             method: 'PATCH',
             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
@@ -2886,7 +2886,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           state:
             'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
           uponReceiving:
-            'a PATCH request to update the appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+            'a PATCH request to update a future appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
           withRequest: {
             method: 'PATCH',
             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
