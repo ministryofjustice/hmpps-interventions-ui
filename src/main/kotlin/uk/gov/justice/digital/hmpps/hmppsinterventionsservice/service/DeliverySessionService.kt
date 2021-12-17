@@ -185,6 +185,7 @@ class DeliverySessionService(
       appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
       session.appointments.add(appointment)
     } else {
+      setAttendanceAndBehaviourIfHistoricAppointment(session, existingAppointment, appointmentTime, attended, additionalAttendanceInformation, behaviourDescription, notifyProbationPractitioner, updatedBy)
       existingAppointment.appointmentTime = appointmentTime
       existingAppointment.durationInMinutes = durationInMinutes
       existingAppointment.deliusAppointmentId = deliusAppointmentId
