@@ -196,6 +196,10 @@ class DeliverySessionController(
       newDeliverySessionAppointmentRequest.sessionType,
       newDeliverySessionAppointmentRequest.appointmentDeliveryAddress,
       newDeliverySessionAppointmentRequest.npsOfficeCode,
+      newDeliverySessionAppointmentRequest.appointmentAttendance?.attended,
+      newDeliverySessionAppointmentRequest.appointmentAttendance?.additionalAttendanceInformation,
+      newDeliverySessionAppointmentRequest.appointmentBehaviour?.notifyProbationPractitioner,
+      newDeliverySessionAppointmentRequest.appointmentBehaviour?.behaviourDescription,
     )
     return DeliverySessionAppointmentDTO.from(deliverySession.sessionNumber, deliverySession.currentAppointment!!)
   }
@@ -223,6 +227,10 @@ class DeliverySessionController(
       newDeliverySessionAppointmentRequest.sessionType,
       newDeliverySessionAppointmentRequest.appointmentDeliveryAddress,
       newDeliverySessionAppointmentRequest.npsOfficeCode,
+      newDeliverySessionAppointmentRequest.appointmentAttendance?.attended,
+      newDeliverySessionAppointmentRequest.appointmentAttendance?.additionalAttendanceInformation,
+      newDeliverySessionAppointmentRequest.appointmentBehaviour?.notifyProbationPractitioner,
+      newDeliverySessionAppointmentRequest.appointmentBehaviour?.behaviourDescription,
     )
     return DeliverySessionAppointmentDTO.from(deliverySession.sessionNumber, deliverySession.currentAppointment!!)
   }

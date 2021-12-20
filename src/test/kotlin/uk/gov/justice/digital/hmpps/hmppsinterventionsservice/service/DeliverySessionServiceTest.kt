@@ -64,7 +64,7 @@ class DeliverySessionServiceTest @Autowired constructor(
   private val deliverySessionFactory = DeliverySessionFactory(entityManager)
   private val actionPlanFactory = ActionPlanFactory(entityManager)
 
-  val defaultAppointmentTime = OffsetDateTime.now()
+  val defaultAppointmentTime = OffsetDateTime.now().plusDays(1)
   val defaultDuration = 1
   lateinit var defaultUser: AuthUser
 
@@ -107,6 +107,53 @@ class DeliverySessionServiceTest @Autowired constructor(
       assertThat(appointment.appointmentTime).isEqualTo(newTime)
       assertThat(appointment.durationInMinutes).isEqualTo(defaultDuration)
       assertThat(appointment.createdBy).isEqualTo(defaultUser)
+    }
+
+    @Test
+    fun `can schedule new appointment with appointment feedback`() {
+      val session = deliverySessionFactory.createUnscheduled()
+      val pastDate = OffsetDateTime.now().minusDays(1)
+
+      whenever(actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(any())).doAnswer {
+        val session = it.getArgument<DeliverySession>(0)
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedAt).isNotNull()
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedBy).isNotNull()
+        assertThat(session.currentAppointment?.attended).isEqualTo(Attended.YES)
+        assertThat(session.currentAppointment?.additionalAttendanceInformation).isEqualTo("additionalAttendanceInformation")
+        assertThat(session.currentAppointment?.notifyPPOfAttendanceBehaviour).isEqualTo(false)
+        assertThat(session.currentAppointment?.attendanceBehaviour).isEqualTo("behaviourDescription")
+        null
+      }
+
+      val updatedSession = deliverySessionService.scheduleNewDeliverySessionAppointment(
+        session.referral.id, session.sessionNumber, pastDate, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE,
+        attended = Attended.YES, additionalAttendanceInformation = "additionalAttendanceInformation", notifyProbationPractitioner = false, behaviourDescription = "behaviourDescription"
+      )
+
+      verify(communityAPIBookingService).book(eq(session.referral), isNull(), eq(pastDate), eq(defaultDuration), eq(AppointmentType.SERVICE_DELIVERY), anyOrNull(), anyOrNull(), anyOrNull())
+      verify(appointmentService).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), anyOrNull(), anyOrNull())
+
+      assertThat(updatedSession.appointments.size).isEqualTo(1)
+      val appointment = updatedSession.appointments.first()
+      assertThat(appointment.appointmentTime).isEqualTo(pastDate)
+      assertThat(appointment.durationInMinutes).isEqualTo(defaultDuration)
+      assertThat(appointment.createdBy).isEqualTo(defaultUser)
+      assertThat(appointment.attended).isEqualTo(Attended.YES)
+      assertThat(appointment.additionalAttendanceInformation).isEqualTo("additionalAttendanceInformation")
+      assertThat(appointment.notifyPPOfAttendanceBehaviour).isEqualTo(false)
+      assertThat(appointment.attendanceBehaviour).isEqualTo("behaviourDescription")
+      assertThat(appointment.attendanceSubmittedAt).isNotNull()
+      assertThat(appointment.attendanceSubmittedBy).isEqualTo(defaultUser)
+    }
+
+    @Test
+    fun `scheduling appointment with a date in the past and not providing appointment feedback throws exception`() {
+      val session = deliverySessionFactory.createUnscheduled()
+      val pastDate = OffsetDateTime.now().minusDays(1)
+      val error = assertThrows<IllegalArgumentException> {
+        deliverySessionService.scheduleNewDeliverySessionAppointment(session.referral.id, session.sessionNumber, pastDate, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+      }
+      assertThat(error.message).contains("Appointment feedback must be provided for appointments in the past.")
     }
 
     @Test
@@ -159,6 +206,55 @@ class DeliverySessionServiceTest @Autowired constructor(
       assertThat(appointment.appointmentTime).isEqualTo(newTime)
       assertThat(appointment.durationInMinutes).isEqualTo(2)
       assertThat(appointment.createdBy).isEqualTo(defaultUser)
+    }
+
+    @Test
+    fun `can reschedule an appointment with a past time and with appointment feedback`() {
+      val session = deliverySessionFactory.createScheduled()
+      val existingAppointment = session.currentAppointment!!
+      val pastDate = OffsetDateTime.now().minusDays(1)
+
+      whenever(actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(any())).doAnswer {
+        val session = it.getArgument<DeliverySession>(0)
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedAt).isNotNull()
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedBy).isNotNull()
+        assertThat(session.currentAppointment?.attended).isEqualTo(Attended.YES)
+        assertThat(session.currentAppointment?.additionalAttendanceInformation).isEqualTo("additionalAttendanceInformation")
+        assertThat(session.currentAppointment?.notifyPPOfAttendanceBehaviour).isEqualTo(false)
+        assertThat(session.currentAppointment?.attendanceBehaviour).isEqualTo("behaviourDescription")
+        null
+      }
+
+      val updatedSession = deliverySessionService.rescheduleDeliverySessionAppointment(
+        session.referral.id, session.sessionNumber, existingAppointment.id, pastDate, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE,
+        attended = Attended.YES, additionalAttendanceInformation = "additionalAttendanceInformation", notifyProbationPractitioner = false, behaviourDescription = "behaviourDescription"
+      )
+
+      verify(communityAPIBookingService).book(any(), isNotNull(), any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
+      verify(appointmentService).createOrUpdateAppointmentDeliveryDetails(any(), any(), any(), anyOrNull(), anyOrNull())
+
+      assertThat(updatedSession.appointments.size).isEqualTo(1)
+      val appointment = updatedSession.appointments.first()
+      assertThat(appointment.appointmentTime).isEqualTo(pastDate)
+      assertThat(appointment.durationInMinutes).isEqualTo(defaultDuration)
+      assertThat(appointment.createdBy).isEqualTo(defaultUser)
+      assertThat(appointment.attended).isEqualTo(Attended.YES)
+      assertThat(appointment.additionalAttendanceInformation).isEqualTo("additionalAttendanceInformation")
+      assertThat(appointment.notifyPPOfAttendanceBehaviour).isEqualTo(false)
+      assertThat(appointment.attendanceBehaviour).isEqualTo("behaviourDescription")
+      assertThat(appointment.attendanceSubmittedAt).isNotNull()
+      assertThat(appointment.attendanceSubmittedBy).isEqualTo(defaultUser)
+    }
+
+    @Test
+    fun `rescheduling appointment with a date in the past and not providing appointment feedback throws exception`() {
+      val session = deliverySessionFactory.createScheduled()
+      val existingAppointment = session.currentAppointment!!
+      val pastDate = OffsetDateTime.now().minusDays(1)
+      val error = assertThrows<IllegalArgumentException> {
+        deliverySessionService.rescheduleDeliverySessionAppointment(session.referral.id, session.sessionNumber, existingAppointment.id, pastDate, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+      }
+      assertThat(error.message).contains("Appointment feedback must be provided for appointments in the past.")
     }
 
     @Test
