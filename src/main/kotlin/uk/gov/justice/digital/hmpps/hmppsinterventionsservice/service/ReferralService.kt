@@ -519,8 +519,13 @@ class ReferralService(
   }
 
   fun getResponsibleProbationPractitioner(referral: Referral): ResponsibleProbationPractitioner {
+    val sentBy = referral.sentBy?.let { it } ?: null
+    return getResponsibleProbationPractitioner(referral.serviceUserCRN, sentBy, referral.createdBy)
+  }
+
+  fun getResponsibleProbationPractitioner(crn: String, sentBy: AuthUser?, createdBy: AuthUser): ResponsibleProbationPractitioner {
     try {
-      val responsibleOfficer = communityAPIOffenderService.getResponsibleOfficer(referral.serviceUserCRN)
+      val responsibleOfficer = communityAPIOffenderService.getResponsibleOfficer(crn)
       if (responsibleOfficer.email != null) {
         return ResponsibleProbationPractitioner(
           responsibleOfficer.firstName ?: "",
@@ -543,7 +548,7 @@ class ReferralService(
       )
     }
 
-    val referringProbationPractitioner = referral.sentBy ?: referral.createdBy
+    val referringProbationPractitioner = sentBy ?: createdBy
     val userDetail = hmppsAuthService.getUserDetail(referringProbationPractitioner)
     return ResponsibleProbationPractitioner(
       userDetail.firstName,

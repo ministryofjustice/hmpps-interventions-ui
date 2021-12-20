@@ -15,7 +15,9 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScope
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.ServiceProviderAccessScopeMapper
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.IntegrationTestBase
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIOffenderService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.CommunityAPIReferralService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.HMPPSAuthService
@@ -53,7 +55,8 @@ class PactTest : IntegrationTestBase() {
     whenever(communityAPIOffenderService.checkIfAuthenticatedDeliusUserHasAccessToServiceUser(any(), any()))
       .thenReturn(ServiceUserAccessResult(true, emptyList()))
     // required for SP users
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("tom", "tom@tom.tom"))
+    whenever(hmppsAuthService.getUserDetail(any<AuthUserDTO>())).thenReturn(UserDetail("tom", "tom@tom.tom"))
+    whenever(hmppsAuthService.getUserDetail(any<AuthUser>())).thenReturn(UserDetail("tom", "tom@tom.tom"))
     whenever(serviceProviderAccessScopeMapper.fromUser(any())).thenReturn(
       ServiceProviderAccessScope(
         setOf(serviceProviderFactory.create()),

@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanA
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DeliverySessionFactory
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -25,9 +26,10 @@ class NotifyActionPlanAppointmentServiceTest {
   private val referralService = mock<ReferralService>()
   private val deliverySessionFactory = DeliverySessionFactory()
   private val actionPlanFactory = ActionPlanFactory()
+  private val authUserFactory = AuthUserFactory()
 
-  private fun appointmentEvent(type: ActionPlanAppointmentEventType, notifyPP: Boolean): ActionPlanAppointmentEvent {
-    return ActionPlanAppointmentEvent(
+  private fun generateAppointmentEvent(type: ActionPlanAppointmentEventType, notifyPP: Boolean = false, attended: Attended = Attended.YES): ActionPlanAppointmentEvent {
+    return ActionPlanAppointmentEvent.from(
       "source",
       type,
       deliverySessionFactory.createAttended(
@@ -38,13 +40,16 @@ class NotifyActionPlanAppointmentServiceTest {
           id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
           referenceNumber = "HAS71263",
           sentAt = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
-          actionPlans = mutableListOf(actionPlanFactory.create(id = UUID.fromString("4907ffb5-94cf-4eff-8cf9-dcf09765be42")))
+          sentBy = authUserFactory.create(),
+          actionPlans = mutableListOf(actionPlanFactory.create(id = UUID.fromString("4907ffb5-94cf-4eff-8cf9-dcf09765be42"))),
+          relevantSentenceId = 123456,
+          supplementaryRiskId = UUID.randomUUID(),
         ),
         createdBy = SampleData.sampleAuthUser(),
-        attended = Attended.YES,
+        attended = attended,
+        notifyPPOfAttendanceBehaviour = notifyPP
       ),
-      "http://localhost:8080/appointment/42c7d267-0776-4272-a8e8-a673bfe30d0d",
-      notifyPP,
+      "http://localhost:8080/appointment/42c7d267-0776-4272-a8e8-a673bfe30d0d"
     )
   }
 
@@ -63,22 +68,22 @@ class NotifyActionPlanAppointmentServiceTest {
   fun `appointment attendance recorded event does not send email when user details are not available`() {
     whenever(referralService.getResponsibleProbationPractitioner(any())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
-      notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, true))
+      notifyService().onApplicationEvent(generateAppointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, attended = Attended.NO))
     }
     verifyZeroInteractions(emailSender)
   }
 
   @Test
-  fun `appointment attendance recorded event does not send email when notifyPP is false`() {
-    notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, false))
+  fun `appointment attendance recorded event does not send email when attended is YES`() {
+    notifyService().onApplicationEvent(generateAppointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, false, Attended.YES))
     verifyZeroInteractions(emailSender)
   }
 
   @Test
-  fun `appointment attendance recorded event calls email client`() {
-    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ResponsibleProbationPractitioner("abc", "abc@abc.com", null, null))
+  fun `appointment attendance recorded event calls email client when attended is NO`() {
+    whenever(referralService.getResponsibleProbationPractitioner(any(), any(), any())).thenReturn(ResponsibleProbationPractitioner("abc", "abc@abc.com", null, null))
 
-    notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, true))
+    notifyService().onApplicationEvent(generateAppointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, false, Attended.NO))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")
@@ -90,22 +95,22 @@ class NotifyActionPlanAppointmentServiceTest {
   fun `appointment behaviour recorded event does not send email when user details are not available`() {
     whenever(referralService.getResponsibleProbationPractitioner(any())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
-      notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, true))
+      notifyService().onApplicationEvent(generateAppointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, true))
     }
     verifyZeroInteractions(emailSender)
   }
 
   @Test
   fun `appointment behaviour recorded event does not send email when notifyPP is false`() {
-    notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, false))
+    notifyService().onApplicationEvent(generateAppointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, false))
     verifyZeroInteractions(emailSender)
   }
 
   @Test
   fun `appointment behaviour recorded event calls email client`() {
-    whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(ResponsibleProbationPractitioner("abc", "abc@abc.com", null, null))
+    whenever(referralService.getResponsibleProbationPractitioner(any(), any(), any())).thenReturn(ResponsibleProbationPractitioner("abc", "abc@abc.com", null, null))
 
-    notifyService().onApplicationEvent(appointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, true))
+    notifyService().onApplicationEvent(generateAppointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, true))
     val personalisationCaptor = argumentCaptor<Map<String, String>>()
     verify(emailSender).sendEmail(eq("template"), eq("abc@abc.com"), personalisationCaptor.capture())
     Assertions.assertThat(personalisationCaptor.firstValue["ppFirstName"]).isEqualTo("abc")

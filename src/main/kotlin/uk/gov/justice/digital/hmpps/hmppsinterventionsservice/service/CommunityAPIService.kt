@@ -6,6 +6,8 @@ import org.springframework.context.ApplicationListener
 import org.springframework.stereotype.Service
 import org.springframework.web.util.UriComponentsBuilder
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.DeliverySessionDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
@@ -29,8 +31,15 @@ interface CommunityAPIService {
     return "$description for $contractTypeName Referral ${referral.referenceNumber} with Prime Provider $primeProviderName\n$url"
   }
 
+  fun getNotes(referral: SentReferralDTO, url: String, description: String, contractTypeName: String, primeProviderName: String): String {
+    return "$description for $contractTypeName Referral ${referral.referenceNumber} with Prime Provider $primeProviderName\n$url"
+  }
+
   fun setNotifyPPIfRequired(appointment: Appointment) =
-    NO == appointment.attended!! || appointment.notifyPPOfAttendanceBehaviour ?: false
+    NO == appointment.attended || appointment.notifyPPOfAttendanceBehaviour == true
+
+  fun setNotifyPPIfRequired(deliverySession: DeliverySessionDTO) =
+    NO == deliverySession.sessionFeedback.attendance.attended || deliverySession.sessionFeedback.behaviour.notifyProbationPractitioner == true
 }
 
 @Service
@@ -203,23 +212,21 @@ class CommunityAPIActionPlanAppointmentEventService(
         if (!outcomeNotificationEnabled) {
           return
         }
-
         val url = UriComponentsBuilder.fromHttpUrl(interventionsUIBaseURL)
           .path(ppSessionFeedbackLocation)
-          .buildAndExpand(event.deliverySession.referral.id, event.deliverySession.sessionNumber)
+          .buildAndExpand(event.referral.id, event.deliverySession.sessionNumber)
           .toString()
 
-        val appointment = event.deliverySession.currentAppointment!!
-        val notifyPP = setNotifyPPIfRequired(appointment)
+        val notifyPP = setNotifyPPIfRequired(event.deliverySession)
 
         val request = AppointmentOutcomeRequest(
-          getNotes(event.deliverySession.referral, url, "Session Feedback Recorded"),
-          appointment.attended!!.name,
+          getNotes(event.referral, url, "Session Feedback Recorded", event.contractTypeName, event.primeProviderName),
+          event.deliverySession.sessionFeedback.attendance.attended!!.name,
           notifyPP
         )
 
         val communityApiSentReferralPath = UriComponentsBuilder.fromPath(communityAPIAppointmentOutcomeLocation)
-          .buildAndExpand(event.deliverySession.referral.serviceUserCRN, appointment.deliusAppointmentId, integrationContext)
+          .buildAndExpand(event.referral.serviceUserCRN, event.deliverySession.deliusAppointmentId, integrationContext)
           .toString()
 
         communityAPIClient.makeAsyncPostRequest(communityApiSentReferralPath, request)

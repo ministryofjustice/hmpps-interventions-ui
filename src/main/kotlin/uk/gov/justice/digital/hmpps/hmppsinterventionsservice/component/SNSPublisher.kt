@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 import software.amazon.awssdk.services.sns.SnsClient
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import java.util.UUID
@@ -22,7 +23,7 @@ class SNSPublisher(
 ) {
   companion object : KLogging()
 
-  fun publish(referralId: UUID, actor: AuthUser, event: EventDTO) {
+  fun publish(referralId: UUID, actor: AuthUserDTO, event: EventDTO) {
     if (enabled) {
       buildRequestAndPublish(event)
     } else {
@@ -30,15 +31,18 @@ class SNSPublisher(
     }
     sendCustomEvent(referralId, actor, event.eventType)
   }
+  fun publish(referralId: UUID, actor: AuthUser, event: EventDTO) {
+    return publish(referralId, AuthUserDTO.from(actor), event)
+  }
 
-  private fun sendCustomEvent(referralId: UUID, actor: AuthUser, eventType: String) {
+  private fun sendCustomEvent(referralId: UUID, actor: AuthUserDTO, eventType: String) {
     telemetryClient.trackEvent(
       "InterventionsDomainEvent",
       mapOf(
         "event" to eventType,
         "referralId" to referralId.toString(),
-        "actorUserId" to actor.id,
-        "actorUserName" to actor.userName,
+        "actorUserId" to actor.userId,
+        "actorUserName" to actor.username,
       ),
       null
     )

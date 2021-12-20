@@ -18,6 +18,8 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEve
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.exception.AsyncEventExceptionHandling
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import java.net.URI
 
 interface NotifyService {
@@ -114,15 +116,25 @@ class NotifyActionPlanAppointmentService(
   private val emailSender: EmailSender,
   private val referralService: ReferralService,
 ) : ApplicationListener<ActionPlanAppointmentEvent>, NotifyService {
+  private fun notifyPP(event: ActionPlanAppointmentEvent): Boolean {
+    return when (event.type) {
+      ActionPlanAppointmentEventType.ATTENDANCE_RECORDED -> event.deliverySession.sessionFeedback.attendance.attended!! == Attended.NO
+      ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED -> event.deliverySession.sessionFeedback.behaviour.notifyProbationPractitioner!!
+      ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED -> event.deliverySession.sessionFeedback.behaviour.notifyProbationPractitioner ?: false
+    }
+  }
+
   @AsyncEventExceptionHandling
   override fun onApplicationEvent(event: ActionPlanAppointmentEvent) {
-    if (event.notifyPP) {
-      val referral = event.deliverySession.referral
-      val recipient = referralService.getResponsibleProbationPractitioner(referral)
+    if (this.notifyPP(event)) {
+      val referral = event.referral
+      val sentBy = AuthUser(referral.sentBy.userId, referral.sentBy.authSource, referral.sentBy.username)
+      val createdBy = AuthUser(referral.createdBy.userId, referral.createdBy.authSource, referral.createdBy.username)
+      val recipient = referralService.getResponsibleProbationPractitioner(referral.serviceUserCRN, sentBy, createdBy)
       val location = generateResourceUrl(
         interventionsUIBaseURL,
         ppSessionFeedbackLocation,
-        event.deliverySession.referral.id,
+        event.referral.id,
         event.deliverySession.sessionNumber,
       )
 

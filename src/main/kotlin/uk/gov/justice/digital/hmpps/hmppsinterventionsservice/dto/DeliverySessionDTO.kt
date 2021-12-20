@@ -2,10 +2,10 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DeliverySession
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -68,6 +68,7 @@ data class DeliverySessionDTO(
   val npsOfficeCode: String?,
   val appointmentDeliveryAddress: AddressDTO?,
   val sessionFeedback: SessionFeedbackDTO,
+  val deliusAppointmentId: Long?
 ) {
   companion object {
     fun from(session: DeliverySession): DeliverySessionDTO {
@@ -93,14 +94,8 @@ data class DeliverySessionDTO(
         sessionType = session.currentAppointment?.appointmentDelivery?.appointmentSessionType,
         appointmentDeliveryAddress = address,
         npsOfficeCode = session.currentAppointment?.appointmentDelivery?.npsOfficeCode,
-        sessionFeedback = SessionFeedbackDTO.from(
-          session.currentAppointment?.attended,
-          session.currentAppointment?.additionalAttendanceInformation,
-          session.currentAppointment?.attendanceBehaviour,
-          session.currentAppointment?.notifyPPOfAttendanceBehaviour,
-          session.currentAppointment?.appointmentFeedbackSubmittedAt != null,
-          session.currentAppointment?.appointmentFeedbackSubmittedBy,
-        ),
+        sessionFeedback = SessionFeedbackDTO.from(session.currentAppointment),
+        deliusAppointmentId = session.currentAppointment?.deliusAppointmentId
       )
     }
     fun from(sessions: List<DeliverySession>): List<DeliverySessionDTO> {
@@ -117,19 +112,17 @@ data class SessionFeedbackDTO(
 ) {
   companion object {
     fun from(
-      attended: Attended?,
-      additionalAttendanceInformation: String?,
-      behaviourDescription: String?,
-      notifyProbationPractitioner: Boolean?,
-      submitted: Boolean,
-      submittedBy: AuthUser?,
+      appointment: Appointment?,
     ): SessionFeedbackDTO {
-      return SessionFeedbackDTO(
-        AttendanceDTO(attended = attended, additionalAttendanceInformation = additionalAttendanceInformation),
-        BehaviourDTO(behaviourDescription, notifyProbationPractitioner),
-        submitted,
-        submittedBy?.let { AuthUserDTO.from(it) },
-      )
+
+      return appointment?.let {
+        SessionFeedbackDTO(
+          AttendanceDTO.from(appointment),
+          BehaviourDTO.from(appointment),
+          appointment.appointmentFeedbackSubmittedAt !== null,
+          appointment.appointmentFeedbackSubmittedBy?.let { AuthUserDTO.from(it) },
+        )
+      } ?: SessionFeedbackDTO(AttendanceDTO(null, null, null, null), BehaviourDTO(null, null), false, null)
     }
   }
 }
@@ -137,9 +130,23 @@ data class SessionFeedbackDTO(
 data class AttendanceDTO(
   val attended: Attended?,
   val additionalAttendanceInformation: String?,
-)
+  val submittedAt: OffsetDateTime?,
+  val submittedBy: AuthUserDTO?,
+) {
+  companion object {
+    fun from(appointment: Appointment): AttendanceDTO {
+      return AttendanceDTO(attended = appointment.attended, additionalAttendanceInformation = appointment.additionalAttendanceInformation, appointment.attendanceSubmittedAt, appointment.attendanceSubmittedBy?.let { AuthUserDTO.from(it) } ?: null)
+    }
+  }
+}
 
 data class BehaviourDTO(
   val behaviourDescription: String?,
   val notifyProbationPractitioner: Boolean?,
-)
+) {
+  companion object {
+    fun from(appointment: Appointment): BehaviourDTO {
+      return BehaviourDTO(appointment.attendanceBehaviour, appointment.notifyPPOfAttendanceBehaviour)
+    }
+  }
+}

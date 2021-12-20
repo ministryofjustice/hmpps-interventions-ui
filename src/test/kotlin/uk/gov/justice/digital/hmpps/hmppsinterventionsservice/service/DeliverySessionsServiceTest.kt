@@ -169,9 +169,9 @@ internal class DeliverySessionsServiceTest {
     )
 
     verify(appointmentService, times(1)).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), isNull(), isNull())
-    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(updatedSession, false)
-    verify(actionPlanAppointmentEventPublisher).behaviourRecordedEvent(updatedSession, false)
-    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(updatedSession, false)
+    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(updatedSession)
+    verify(actionPlanAppointmentEventPublisher).behaviourRecordedEvent(updatedSession)
+    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(updatedSession)
     assertThat(updatedSession.currentAppointment?.appointmentTime).isEqualTo(appointmentTime)
     assertThat(updatedSession.currentAppointment?.durationInMinutes).isEqualTo(durationInMinutes)
     assertThat(updatedSession.currentAppointment?.createdBy?.userName).isEqualTo("scheduler")
@@ -580,9 +580,9 @@ internal class DeliverySessionsServiceTest {
     deliverySessionsService.recordBehaviour(user, actionPlanId, 1, "bad", true)
 
     deliverySessionsService.submitSessionFeedback(actionPlanId, 1, session.referral.createdBy)
-    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session, false)
-    verify(actionPlanAppointmentEventPublisher).behaviourRecordedEvent(session, true)
-    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session, true)
+    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session)
+    verify(actionPlanAppointmentEventPublisher).behaviourRecordedEvent(session)
+    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session)
   }
 
   @Test
@@ -623,8 +623,8 @@ internal class DeliverySessionsServiceTest {
     deliverySessionsService.submitSessionFeedback(actionPlanId, 1, user)
 
     verify(deliverySessionRepository, atLeastOnce()).save(session)
-    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session, true)
-    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session, false)
+    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session)
+    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session)
   }
 
   @Test
@@ -641,8 +641,8 @@ internal class DeliverySessionsServiceTest {
     deliverySessionsService.submitSessionFeedback(actionPlanId, 1, user)
 
     verify(deliverySessionRepository, atLeastOnce()).save(session)
-    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session, false)
-    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session, false)
+    verify(actionPlanAppointmentEventPublisher).attendanceRecordedEvent(session)
+    verify(actionPlanAppointmentEventPublisher).sessionFeedbackRecordedEvent(session)
   }
 
   @Test

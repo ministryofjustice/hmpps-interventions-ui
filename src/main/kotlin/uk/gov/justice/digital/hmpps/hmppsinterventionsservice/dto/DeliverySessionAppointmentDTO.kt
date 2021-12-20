@@ -40,14 +40,7 @@ data class DeliverySessionAppointmentDTO(
         sessionType = appointment.appointmentDelivery?.appointmentSessionType,
         appointmentDeliveryAddress = address,
         npsOfficeCode = appointment.appointmentDelivery?.npsOfficeCode,
-        sessionFeedback = SessionFeedbackDTO.from(
-          appointment.attended,
-          appointment.additionalAttendanceInformation,
-          appointment.attendanceBehaviour,
-          appointment.notifyPPOfAttendanceBehaviour,
-          appointment.appointmentFeedbackSubmittedAt != null,
-          appointment.appointmentFeedbackSubmittedBy,
-        ),
+        sessionFeedback = SessionFeedbackDTO.from(appointment),
       )
     }
   }

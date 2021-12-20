@@ -279,13 +279,13 @@ class DeliverySessionService(
     appointment.appointmentFeedbackSubmittedBy = authUserRepository.save(submitter)
     deliverySessionRepository.save(session)
 
-    actionPlanAppointmentEventPublisher.attendanceRecordedEvent(session, appointment.attended!! == Attended.NO)
+    actionPlanAppointmentEventPublisher.attendanceRecordedEvent(session)
 
     if (appointment.attendanceBehaviourSubmittedAt != null) { // excluding the case of non attendance
-      actionPlanAppointmentEventPublisher.behaviourRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour!!)
+      actionPlanAppointmentEventPublisher.behaviourRecordedEvent(session)
     }
 
-    actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(session, appointment.notifyPPOfAttendanceBehaviour ?: false)
+    actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(session)
   }
 
   fun submitSessionFeedback(referralId: UUID, appointmentId: UUID, submitter: AuthUser): Pair<DeliverySession, Appointment> {

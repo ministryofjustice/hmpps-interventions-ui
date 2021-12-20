@@ -74,6 +74,7 @@ class SampleData {
           primeProvider = sampleServiceProvider(id = serviceProviderName, name = serviceProviderName),
         )
       ),
+      supplementaryRiskId: UUID? = null
     ): Referral {
 
       return Referral(
@@ -91,6 +92,7 @@ class SampleData {
         actionPlans = actionPlans,
         endOfServiceReport = endOfServiceReport,
         concludedAt = concludedAt,
+        supplementaryRiskId = supplementaryRiskId,
       )
     }
 
