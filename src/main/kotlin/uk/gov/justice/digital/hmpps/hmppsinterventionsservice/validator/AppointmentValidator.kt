@@ -65,9 +65,13 @@ class AppointmentValidator {
   ) {
     if (appointmentTime.isAfter(OffsetDateTime.now()))
       return
+    if (attended == null) {
+      errors.add(FieldError(field = "appointmentAttendance.attended", error = Code.CANNOT_BE_EMPTY))
+      return
+    }
 
     when (attended) {
-      null, NO -> {
+      NO -> {
         checkValueNotSupplied(notifyProbationPractitioner, "appointmentBehaviour.notifyProbationPractitioner", Code.INVALID_VALUE, errors)
         checkValueNotSupplied(behaviourDescription, "appointmentBehaviour.behaviourDescription", Code.INVALID_VALUE, errors)
       }
