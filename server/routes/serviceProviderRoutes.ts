@@ -7,7 +7,6 @@ import ReportingController from './reporting/reportingController'
 import AppointmentsController from './appointments/appointmentsController'
 
 export const serviceProviderUrlPrefix = '/service-provider'
-
 export default function serviceProviderRoutes(router: Router, services: Services): Router {
   const serviceProviderReferralsController = new ServiceProviderReferralsController(
     services.interventionsService,
@@ -76,6 +75,8 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/action-plan/:id/number-of-sessions', (req, res) =>
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
+
+  // START delivery session appointment scheduling
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/start', (req, res) =>
     appointmentsController.startEditingActionPlanSessionAppointment(req, res)
   )
@@ -91,12 +92,26 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/action-plan/:id/sessions/:sessionNumber/edit/:draftBookingId/submit', (req, res) =>
     appointmentsController.submitActionPlanSessionAppointment(req, res)
   )
+
+  // START delivery session appointment feedback
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', (req, res) =>
     appointmentsController.addPostSessionAttendanceFeedback(req, res)
+  )
+  get(
+    router,
+    '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/edit/:draftBookingId/attendance',
+    (req, res) => appointmentsController.addPostSessionAttendanceFeedback(req, res)
   )
   post(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/attendance', (req, res) =>
     appointmentsController.addPostSessionAttendanceFeedback(req, res)
   )
+
+  post(
+    router,
+    '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/edit/:draftBookingId/attendance',
+    (req, res) => appointmentsController.addPostSessionAttendanceFeedback(req, res)
+  )
+
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/behaviour', (req, res) =>
     appointmentsController.addPostSessionBehaviourFeedback(req, res)
   )
@@ -105,12 +120,33 @@ export default function serviceProviderRoutes(router: Router, services: Services
   )
   get(
     router,
+    '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/edit/:draftBookingId/behaviour',
+    (req, res) => appointmentsController.addPostSessionBehaviourFeedback(req, res)
+  )
+  post(
+    router,
+    '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/edit/:draftBookingId/behaviour',
+    (req, res) => appointmentsController.addPostSessionBehaviourFeedback(req, res)
+  )
+  get(
+    router,
     '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/check-your-answers',
+    (req, res) => appointmentsController.checkPostSessionFeedbackAnswers(req, res)
+  )
+  get(
+    router,
+    '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/edit/:draftBookingId/check-your-answers',
     (req, res) => appointmentsController.checkPostSessionFeedbackAnswers(req, res)
   )
   post(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/submit', (req, res) =>
     appointmentsController.submitPostSessionFeedback(req, res)
   )
+  post(
+    router,
+    '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/edit/:draftBookingId/submit',
+    (req, res) => appointmentsController.submitPostSessionFeedback(req, res)
+  )
+
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/confirmation', (req, res) =>
     appointmentsController.showPostSessionFeedbackConfirmation(req, res)
   )

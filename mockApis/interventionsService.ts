@@ -491,6 +491,26 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubRecordAndSubmitActionPlanAppointmentWithFeedback = async (
+    actionPlanId: string,
+    session: number,
+    responseJson: unknown
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/action-plan/${actionPlanId}/appointment/${session}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubCreateDraftEndOfServiceReport = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {

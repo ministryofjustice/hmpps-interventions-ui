@@ -79,6 +79,23 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
   })
 
   describe('backLinkHref', () => {
+    describe('when a draftId, actionPlan, sessionNumber is provided', () => {
+      it('is a link back to the check answers page for scheduling appointment', () => {
+        const appointment = actionPlanAppointmentFactory.build()
+        const serviceUser = deliusServiceUserFactory.build()
+        const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
+          appointment,
+          serviceUser,
+          new AppointmentSummary(appointment),
+          'test-referral-id',
+          'actionPlanId',
+          'draftId'
+        )
+        expect(presenter.backLinkHref).toEqual(
+          '/service-provider/action-plan/actionPlanId/sessions/1/edit/draftId/check-answers'
+        )
+      })
+    })
     describe('when a referral id is passed in', () => {
       it('is a link back to the Intervention Progress page', () => {
         const appointment = actionPlanAppointmentFactory.build()
@@ -87,15 +104,13 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
           appointment,
           serviceUser,
           new AppointmentSummary(appointment),
-          'test-referral-id',
-          null,
-          null
+          'test-referral-id'
         )
         expect(presenter.backLinkHref).toEqual('/service-provider/referrals/test-referral-id/progress')
       })
     })
 
-    describe('when a referral id is not passed in', () => {
+    describe('when a referral id or draftId is not passed in', () => {
       it('is null', () => {
         const appointment = actionPlanAppointmentFactory.build()
         const serviceUser = deliusServiceUserFactory.build()

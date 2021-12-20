@@ -10,7 +10,8 @@ export default class ActionPlanSessionBehaviourFeedbackPresenter {
     private readonly serviceUser: DeliusServiceUser,
     private readonly actionPlanId: string | null = null,
     private readonly error: FormValidationError | null = null,
-    private readonly userInputData: Record<string, unknown> | null = null
+    private readonly userInputData: Record<string, unknown> | null = null,
+    private readonly draftId: string | undefined = undefined
   ) {}
 
   readonly text = {
@@ -19,9 +20,15 @@ export default class ActionPlanSessionBehaviourFeedbackPresenter {
 
   readonly questionnaire = new BehaviourFeedbackQuestionnaire(this.appointment, this.serviceUser)
 
-  readonly backLinkHref = this.actionPlanId
-    ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.appointment.sessionNumber}/post-session-feedback/attendance`
-    : null
+  get backLinkHref(): string | null {
+    if (this.actionPlanId && this.appointment.sessionNumber) {
+      if (this.draftId) {
+        return `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.appointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/attendance`
+      }
+      return `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.appointment.sessionNumber}/post-session-feedback/attendance`
+    }
+    return null
+  }
 
   readonly inputsPresenter = new BehaviourFeedbackInputsPresenter(this.appointment, this.error, this.userInputData)
 }

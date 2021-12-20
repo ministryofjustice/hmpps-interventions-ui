@@ -99,6 +99,17 @@ export interface CreateCaseNoteParams {
   body: string
 }
 
+export type CreateAppointmentSchedulingAndFeedback = AppointmentSchedulingDetails & {
+  appointmentAttendance: {
+    attended: 'yes' | 'no' | 'late' | null
+    additionalAttendanceInformation: string | null
+  }
+  appointmentBehaviour: {
+    behaviourDescription: string | null
+    notifyProbationPractitioner: boolean | null
+  }
+}
+
 export default class InterventionsService {
   constructor(private readonly config: ApiConfig) {}
 
@@ -429,6 +440,20 @@ export default class InterventionsService {
       path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}`,
       headers: { Accept: 'application/json' },
       data: { ...appointmentUpdate },
+    })) as ActionPlanAppointment
+  }
+
+  async recordAndSubmitActionPlanAppointmentWithFeedback(
+    token: string,
+    actionPlanId: string,
+    sessionNumber: number,
+    appointmentDetails: CreateAppointmentSchedulingAndFeedback
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.patch({
+      path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}`,
+      headers: { Accept: 'application/json' },
+      data: { ...appointmentDetails },
     })) as ActionPlanAppointment
   }
 

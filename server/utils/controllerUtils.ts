@@ -6,7 +6,7 @@ import DeliusServiceUser from '../models/delius/deliusServiceUser'
 import DraftsService, { Draft } from '../services/draftsService'
 import DraftSoftDeletedView from '../routes/shared/draftSoftDeletedView'
 
-interface DraftFetchSuccessResult<T> {
+export interface DraftFetchSuccessResult<T> {
   rendered: false
   draft: Draft<T>
 }
@@ -15,7 +15,7 @@ interface DraftFetchRenderedResult {
   rendered: true
 }
 
-type DraftFetchResult<T> = DraftFetchSuccessResult<T> | DraftFetchRenderedResult
+export type DraftFetchResult<T> = DraftFetchSuccessResult<T> | DraftFetchRenderedResult
 
 export default class ControllerUtils {
   static renderWithLayout(res: Response, contentView: PageContentView, serviceUser: DeliusServiceUser | null): void {

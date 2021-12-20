@@ -11,16 +11,25 @@ export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends 
     private readonly actionPlanAppointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
     private readonly actionPlanId: string,
-    readonly appointmentSummary: AppointmentSummary
+    readonly appointmentSummary: AppointmentSummary,
+    private readonly draftId: string | undefined = undefined
   ) {
     super(actionPlanAppointment, appointmentSummary)
     this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(actionPlanAppointment, serviceUser)
   }
 
-  readonly submitHref = `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/submit`
+  readonly submitHref = this.draftId
+    ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/submit`
+    : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/submit`
 
-  readonly backLinkHref =
-    this.actionPlanAppointment.sessionFeedback.attendance.attended === 'no'
+  get backLinkHref(): string {
+    if (this.draftId) {
+      return this.actionPlanAppointment.sessionFeedback.attendance.attended === 'no'
+        ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/attendance`
+        : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/behaviour`
+    }
+    return this.actionPlanAppointment.sessionFeedback.attendance.attended === 'no'
       ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/attendance`
       : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/behaviour`
+  }
 }

@@ -2759,8 +2759,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('updateActionPlanAppointment', () => {
-    describe('with non-null values', () => {
-      it('returns an updated action plan appointment', async () => {
+    describe('with a past appointment time', () => {
+      it('returns a scheduled action plan appointment with feedback', async () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
           appointmentTime: '2021-05-13T12:30:00Z',
@@ -2774,13 +2774,29 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             county: 'Lancashire',
             postCode: 'SY40RE',
           },
+          sessionFeedback: {
+            attendance: {
+              attended: 'yes',
+              additionalAttendanceInformation: 'attendance information',
+            },
+            behaviour: {
+              notifyProbationPractitioner: false,
+              behaviourDescription: 'they were good',
+            },
+            submittedBy: {
+              authSource: 'auth',
+              userId: '6c4036b7-e87d-44fb-864f-5a06c1c492f3',
+              username: 'TEST_INTERVENTIONS_SP_1',
+            },
+            submitted: true,
+          },
         })
 
         await provider.addInteraction({
           state:
             'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
           uponReceiving:
-            'a PATCH request to update the appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+            'a PATCH request to update a past appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
           withRequest: {
             method: 'PATCH',
             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
@@ -2797,8 +2813,98 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 postCode: 'SY40RE',
               },
               npsOfficeCode: null,
+              appointmentAttendance: {
+                attended: 'yes',
+                additionalAttendanceInformation: 'attendance information',
+              },
+              appointmentBehaviour: {
+                notifyProbationPractitioner: false,
+                behaviourDescription: 'they were good',
+              },
             },
-            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
+          },
+          // note - this is an exact match
+          willRespondWith: {
+            status: 200,
+            body: actionPlanAppointment,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        })
+
+        expect(
+          await interventionsService.recordAndSubmitActionPlanAppointmentWithFeedback(
+            serviceProviderToken,
+            '345059d4-1697-467b-8914-fedec9957279',
+            2,
+            {
+              appointmentTime: '2021-05-13T12:30:00Z',
+              durationInMinutes: 60,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+              appointmentAttendance: {
+                attended: 'yes',
+                additionalAttendanceInformation: 'attendance information',
+              },
+              appointmentBehaviour: {
+                notifyProbationPractitioner: false,
+                behaviourDescription: 'they were good',
+              },
+            }
+          )
+        ).toMatchObject(actionPlanAppointment)
+      })
+    })
+    describe('with a future appointment time', () => {
+      it('returns an updated action plan appointment', async () => {
+        const actionPlanAppointment = actionPlanAppointmentFactory.build({
+          sessionNumber: 2,
+          appointmentTime: '3000-05-13T12:30:00Z',
+          durationInMinutes: 60,
+          sessionType: 'ONE_TO_ONE',
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+          appointmentDeliveryAddress: {
+            firstAddressLine: 'Harmony Living Office, Room 4',
+            secondAddressLine: '44 Bouverie Road',
+            townOrCity: 'Blackpool',
+            county: 'Lancashire',
+            postCode: 'SY40RE',
+          },
+        })
+
+        await provider.addInteraction({
+          state:
+            'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
+          uponReceiving:
+            'a PATCH request to update a future appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+          withRequest: {
+            method: 'PATCH',
+            path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
+            body: {
+              appointmentTime: '3000-05-13T12:30:00Z',
+              durationInMinutes: 60,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+            },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
           },
           // note - this is an exact match
           willRespondWith: {
@@ -2812,11 +2918,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
         expect(
           await interventionsService.updateActionPlanAppointment(
-            probationPractitionerToken,
+            serviceProviderToken,
             '345059d4-1697-467b-8914-fedec9957279',
             2,
             {
-              appointmentTime: '2021-05-13T12:30:00Z',
+              appointmentTime: '3000-05-13T12:30:00Z',
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3273,7 +3379,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('scheduleSupplierAssessmentAppointment', () => {
     const appointmentParams = {
-      appointmentTime: '2021-05-13T12:30:00Z',
+      appointmentTime: '3000-05-13T12:30:00Z',
       durationInMinutes: 60,
     }
 
