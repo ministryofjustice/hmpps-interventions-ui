@@ -68,7 +68,7 @@ class DeliverySessionService(
     sessionNumber: Int,
     appointmentTime: OffsetDateTime,
     durationInMinutes: Int,
-    updatedBy: AuthUser,
+    createdBy: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentSessionType: AppointmentSessionType,
     appointmentDeliveryAddress: AddressDTO? = null,
@@ -88,7 +88,7 @@ class DeliverySessionService(
     }
     val appointment = Appointment(
       id = UUID.randomUUID(),
-      createdBy = authUserRepository.save(updatedBy),
+      createdBy = authUserRepository.save(createdBy),
       createdAt = OffsetDateTime.now(),
       appointmentTime = appointmentTime,
       durationInMinutes = durationInMinutes,
