@@ -465,6 +465,53 @@ describe('POST /referrals/:id/edit-oasys-risk-information', () => {
   })
 })
 
+describe('POST /referrals/:id/confirm-edit-oasys-risk-information', () => {
+  describe('when the user selects that they want to edit risk information', () => {
+    it('they are directed to edit the risk information', async () => {
+      await request(app)
+        .post('/referrals/1/confirm-edit-oasys-risk-information')
+        .type('form')
+        .send({
+          'edit-risk-confirmation': 'yes',
+        })
+        .expect(302)
+        .expect('Location', '/referrals/1/edit-oasys-risk-information')
+    })
+  })
+  describe("when the user selects that they don't want to edit risk information", () => {
+    it('updates the draft oasys risk information on the backend and redirects to the next question', async () => {
+      interventionsService.getDraftReferral.mockResolvedValue(draftReferralFactory.build())
+      assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummaryFactory.build())
+      interventionsService.updateDraftOasysRiskInformation.mockResolvedValue(draftOasysRiskInformation.build())
+
+      await request(app)
+        .post('/referrals/1/confirm-edit-oasys-risk-information')
+        .type('form')
+        .send({
+          'edit-risk-confirmation': 'no',
+          'confirm-understood': 'understood',
+        })
+        .expect(302)
+        .expect('Location', '/referrals/1/needs-and-requirements')
+
+      expect(interventionsService.updateDraftOasysRiskInformation.mock.calls[0]).toEqual([
+        'token',
+        '1',
+        {
+          riskSummaryWhoIsAtRisk: null,
+          riskSummaryNatureOfRisk: 'physically aggressive',
+          riskSummaryRiskImminence: 'can happen at the drop of a hat',
+          riskToSelfSuicide: 'Manic episodes are common.',
+          riskToSelfSelfHarm: null,
+          riskToSelfHostelSetting: null,
+          riskToSelfVulnerability: null,
+          additionalInformation: null,
+        },
+      ])
+    })
+  })
+})
+
 describe('GET /referrals/:id/needs-and-requirements', () => {
   beforeEach(() => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })

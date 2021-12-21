@@ -56,6 +56,7 @@ import DraftReferral from '../../models/draftReferral'
 import ConfirmOasysRiskInformationForm from './risk-information/oasys/confirmOasysRiskInformationForm'
 import EditOasysRiskInformationForm from './risk-information/oasys/edit/editOasysRiskInformationForm'
 import { DraftOasysRiskInformation } from '../../models/draftOasysRiskInformation'
+import OasysRiskSummaryView from './risk-information/oasys/oasysRiskSummaryView'
 
 export default class MakeAReferralController {
   constructor(
@@ -553,6 +554,7 @@ export default class MakeAReferralController {
   }
 
   async confirmEditOasysRiskInformation(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
     if (!config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
       throw createError(403, `access restricted when risk feature flag disabled`, {
         userMessage: 'You are not authorized to access this page',
@@ -564,6 +566,24 @@ export default class MakeAReferralController {
       if (confirmEditRiskForm.userWantsToEdit) {
         res.redirect(`/referrals/${referralId}/edit-oasys-risk-information`)
       } else {
+        const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
+        const riskSummary = await this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken)
+        const oasysRiskSummaryView = new OasysRiskSummaryView(riskSummary)
+        const draftOasysRiskInformation: DraftOasysRiskInformation = {
+          riskSummaryWhoIsAtRisk: oasysRiskSummaryView.oasysRiskInformationArgs.summary.whoIsAtRisk.text,
+          riskSummaryNatureOfRisk: oasysRiskSummaryView.oasysRiskInformationArgs.summary.natureOfRisk.text,
+          riskSummaryRiskImminence: oasysRiskSummaryView.oasysRiskInformationArgs.summary.riskImminence.text,
+          riskToSelfSuicide: oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.suicide.text,
+          riskToSelfSelfHarm: oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.selfHarm.text,
+          riskToSelfHostelSetting: oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.hostelSetting.text,
+          riskToSelfVulnerability: oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.vulnerability.text,
+          additionalInformation: null,
+        }
+        await this.interventionsService.updateDraftOasysRiskInformation(
+          accessToken,
+          referralId,
+          draftOasysRiskInformation
+        )
         res.redirect(`/referrals/${req.params.id}/needs-and-requirements`)
       }
     } else {
