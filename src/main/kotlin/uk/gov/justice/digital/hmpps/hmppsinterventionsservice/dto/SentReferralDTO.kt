@@ -24,6 +24,7 @@ class SentReferralDTO(
   val concludedAt: OffsetDateTime?,
   val supplementaryRiskId: UUID,
   val endOfServiceReportCreationRequired: Boolean,
+  val createdBy: AuthUserDTO,
 ) {
   companion object {
     fun from(referral: Referral, endOfServiceReportRequired: Boolean): SentReferralDTO {
@@ -47,6 +48,7 @@ class SentReferralDTO(
         concludedAt = referral.concludedAt,
         supplementaryRiskId = referral.supplementaryRiskId!!,
         endOfServiceReportCreationRequired = endOfServiceReportRequired,
+        createdBy = AuthUserDTO.from(referral.createdBy)
       )
     }
   }

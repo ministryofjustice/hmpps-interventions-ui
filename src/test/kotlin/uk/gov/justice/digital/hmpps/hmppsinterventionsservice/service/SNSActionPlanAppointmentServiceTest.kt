@@ -8,6 +8,7 @@ import com.nhaarman.mockitokotlin2.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.SNSPublisher
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
@@ -28,7 +29,7 @@ internal class SNSActionPlanAppointmentServiceTest {
     referral = referralFactory.createSent(id = UUID.fromString("56b40f96-0657-4e01-925c-da208a6fbcfd"))
   )
   private val now = OffsetDateTime.now()
-  private fun attendanceRecordedEvent(attendance: Attended) = ActionPlanAppointmentEvent(
+  private fun attendanceRecordedEvent(attendance: Attended) = ActionPlanAppointmentEvent.from(
     "source",
     ActionPlanAppointmentEventType.ATTENDANCE_RECORDED,
     deliverySessionFactory.createAttended(
@@ -39,13 +40,14 @@ internal class SNSActionPlanAppointmentServiceTest {
       createdBy = actionPlan.createdBy,
       attended = attendance,
       attendanceSubmittedAt = now,
+      attendanceSubmittedBy = actionPlan.createdBy,
       appointmentFeedbackSubmittedBy = actionPlan.createdBy,
+      appointmentFeedbackSubmittedAt = now,
     ),
-    "http://localhost:8080/action-plan/77df9f6c-3fcb-4ec6-8fcf-96551cd9b080/session/1",
-    false,
+    "http://localhost:8080/action-plan/77df9f6c-3fcb-4ec6-8fcf-96551cd9b080/session/1"
   )
 
-  private fun sessionFeedbackEvent(attendance: Attended) = ActionPlanAppointmentEvent(
+  private fun sessionFeedbackEvent(attendance: Attended) = ActionPlanAppointmentEvent.from(
     "source",
     ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED,
     deliverySessionFactory.createAttended(
@@ -55,13 +57,12 @@ internal class SNSActionPlanAppointmentServiceTest {
       ),
       createdBy = actionPlan.createdBy,
       attended = attendance,
-      attendanceSubmittedAt = now.minusSeconds(1),
+      attendanceSubmittedAt = now,
       appointmentFeedbackSubmittedBy = actionPlan.createdBy,
       appointmentFeedbackSubmittedAt = now,
       deliusAppointmentId = 123L
     ),
     "http://localhost:8080/action-plan/77df9f6c-3fcb-4ec6-8fcf-96551cd9b080/session/1",
-    false,
   )
 
   @Test
@@ -80,7 +81,7 @@ internal class SNSActionPlanAppointmentServiceTest {
       ),
     )
 
-    verify(publisher).publish(referralId, actionPlan.createdBy, eventDTO)
+    verify(publisher).publish(referralId, AuthUserDTO.from(actionPlan.createdBy), eventDTO)
   }
 
   @Test
@@ -100,7 +101,7 @@ internal class SNSActionPlanAppointmentServiceTest {
       ),
     )
 
-    verify(publisher).publish(referralId, actionPlan.createdBy, eventDTO)
+    verify(publisher).publish(referralId, AuthUserDTO.from(actionPlan.createdBy), eventDTO)
   }
 
   @Test
@@ -109,7 +110,7 @@ internal class SNSActionPlanAppointmentServiceTest {
     snsAppointmentService.onApplicationEvent(attendanceRecordedEvent(Attended.LATE))
 
     val eventCaptor = argumentCaptor<EventDTO>()
-    verify(publisher, times(2)).publish(eq(actionPlan.referral.id), eq(actionPlan.createdBy), eventCaptor.capture())
+    verify(publisher, times(2)).publish(eq(actionPlan.referral.id), eq(AuthUserDTO.from(actionPlan.createdBy)), eventCaptor.capture())
     eventCaptor.allValues.forEach {
       assertThat(it.eventType).isEqualTo("intervention.session-appointment.attended")
     }

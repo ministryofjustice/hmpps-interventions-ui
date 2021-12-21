@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.LATE
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.NO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.YES
@@ -39,49 +40,37 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
   @Test
   fun `notifies community-api of late attended appointment outcome`() {
 
-    appointmentEvent.deliverySession.referral.referenceNumber = "X123456"
-    appointmentEvent.deliverySession.currentAppointment!!.attended = LATE
-    appointmentEvent.deliverySession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
-
+    val appointmentEvent = generateAppointmentEvent(LATE, false)
     communityAPIService.onApplicationEvent(appointmentEvent)
 
-    verifyNotification(LATE.name, false)
+    verifyNotification(appointmentEvent.referral.id, LATE.name, false)
   }
 
   @Test
   fun `notifies community-api of attended appointment outcome`() {
 
-    appointmentEvent.deliverySession.referral.referenceNumber = "X123456"
-    appointmentEvent.deliverySession.currentAppointment!!.attended = YES
-    appointmentEvent.deliverySession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
-
+    val appointmentEvent = generateAppointmentEvent(YES, false)
     communityAPIService.onApplicationEvent(appointmentEvent)
 
-    verifyNotification(YES.name, false)
+    verifyNotification(appointmentEvent.referral.id, YES.name, false)
   }
 
   @Test
   fun `notifies community-api of non attended appointment outcome and notify PP set is always set`() {
 
-    appointmentEvent.deliverySession.referral.referenceNumber = "X123456"
-    appointmentEvent.deliverySession.currentAppointment!!.attended = NO
-    appointmentEvent.deliverySession.currentAppointment!!.notifyPPOfAttendanceBehaviour = false
-
+    val appointmentEvent = generateAppointmentEvent(NO, false)
     communityAPIService.onApplicationEvent(appointmentEvent)
 
-    verifyNotification(NO.name, true)
+    verifyNotification(appointmentEvent.referral.id, NO.name, true)
   }
 
   @Test
   fun `notifies community-api of appointment outcome with notify PP set`() {
 
-    appointmentEvent.deliverySession.referral.referenceNumber = "X123456"
-    appointmentEvent.deliverySession.currentAppointment!!.attended = YES
-    appointmentEvent.deliverySession.currentAppointment!!.notifyPPOfAttendanceBehaviour = true
-
+    val appointmentEvent = generateAppointmentEvent(YES, true)
     communityAPIService.onApplicationEvent(appointmentEvent)
 
-    verifyNotification(YES.name, true)
+    verifyNotification(appointmentEvent.referral.id, YES.name, true)
   }
 
   @Test
@@ -96,19 +85,14 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
       communityAPIClient
     )
 
-    appointmentEvent.deliverySession.referral.referenceNumber = "X123456"
-    appointmentEvent.deliverySession.currentAppointment!!.attended = YES
-    appointmentEvent.deliverySession.currentAppointment!!.notifyPPOfAttendanceBehaviour = true
-
-    communityAPIService.onApplicationEvent(appointmentEvent)
+    communityAPIService.onApplicationEvent(generateAppointmentEvent(YES, true))
 
     verifyZeroInteractions(communityAPIClient)
   }
 
-  private fun verifyNotification(attended: String, notifyPP: Boolean) {
+  private fun verifyNotification(referralId: UUID, attended: String, notifyPP: Boolean) {
     val urlCaptor = argumentCaptor<String>()
     val payloadCaptor = argumentCaptor<Any>()
-    val referralId = appointmentEvent.deliverySession.referral.id
     verify(communityAPIClient).makeAsyncPostRequest(urlCaptor.capture(), payloadCaptor.capture())
     assertThat(urlCaptor.firstValue).isEqualTo("/secure/offenders/crn/CRN123/appointments/123456/outcome/context/commissioned-rehabilitation-services")
     assertThat(payloadCaptor.firstValue.toString()).isEqualTo(
@@ -121,21 +105,24 @@ class CommunityAPIActionPlanAppointmentEventServiceTest {
     )
   }
 
-  private val appointmentEvent = ActionPlanAppointmentEvent(
-    "source",
-    SESSION_FEEDBACK_RECORDED,
-    deliverySessionFactory.createAttended(
-      id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
-      referral = referralFactory.createSent(serviceUserCRN = "CRN123", actionPlans = mutableListOf(actionPlanFactory.create())),
-      sessionNumber = 1,
-      appointmentTime = OffsetDateTime.now(),
-      durationInMinutes = 60,
-      createdBy = SampleData.sampleAuthUser("userId", "auth", "me"),
-      additionalAttendanceInformation = "dded notes",
-      attendanceSubmittedAt = OffsetDateTime.now(),
-      deliusAppointmentId = 123456L
-    ),
-    "http://localhost:8080/url/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080",
-    true
-  )
+  private fun generateAppointmentEvent(attended: Attended = YES, notifyPP: Boolean = false, referenceNumber: String = "X123456"): ActionPlanAppointmentEvent {
+    return ActionPlanAppointmentEvent.from(
+      "source",
+      SESSION_FEEDBACK_RECORDED,
+      deliverySessionFactory.createAttended(
+        id = UUID.fromString("68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"),
+        referral = referralFactory.createSent(serviceUserCRN = "CRN123", actionPlans = mutableListOf(actionPlanFactory.create()), referenceNumber = referenceNumber),
+        sessionNumber = 1,
+        appointmentTime = OffsetDateTime.now(),
+        durationInMinutes = 60,
+        createdBy = SampleData.sampleAuthUser("userId", "auth", "me"),
+        additionalAttendanceInformation = "dded notes",
+        attendanceSubmittedAt = OffsetDateTime.now(),
+        deliusAppointmentId = 123456L,
+        attended = attended,
+        notifyPPOfAttendanceBehaviour = notifyPP,
+      ),
+      "http://localhost:8080/url/68df9f6c-3fcb-4ec6-8fcf-96551cd9b080"
+    )
+  }
 }

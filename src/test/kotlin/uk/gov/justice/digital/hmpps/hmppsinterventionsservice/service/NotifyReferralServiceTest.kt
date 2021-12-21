@@ -12,8 +12,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
@@ -74,7 +76,7 @@ class NotifyReferralServiceTest {
 
   @Test
   fun `referral assigned event does not send email when user details are not available`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenThrow(RuntimeException::class.java)
+    whenever(hmppsAuthService.getUserDetail(any<AuthUserDTO>())).thenThrow(RuntimeException::class.java)
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(referralAssignedEvent)
     }
@@ -83,13 +85,13 @@ class NotifyReferralServiceTest {
 
   @Test
   fun `referral assigned event does not swallows hmpps auth errors`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenThrow(UnverifiedEmailException::class.java)
+    whenever(hmppsAuthService.getUserDetail(any<AuthUser>())).thenThrow(UnverifiedEmailException::class.java)
     assertThrows<UnverifiedEmailException> { notifyService().onApplicationEvent(referralAssignedEvent) }
   }
 
   @Test
   fun `referral assigned event generates valid url and sends an email`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("tom", "tom@tom.tom"))
+    whenever(hmppsAuthService.getUserDetail(any<AuthUser>())).thenReturn(UserDetail("tom", "tom@tom.tom"))
 
     notifyService().onApplicationEvent(referralAssignedEvent)
     val personalisationCaptor = argumentCaptor<Map<String, String>>()

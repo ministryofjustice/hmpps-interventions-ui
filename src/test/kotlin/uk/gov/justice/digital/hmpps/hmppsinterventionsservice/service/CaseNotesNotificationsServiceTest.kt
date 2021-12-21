@@ -11,6 +11,7 @@ import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserTypeChecker
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.CreateCaseNoteEvent
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.CaseNoteFactory
@@ -43,7 +44,7 @@ internal class CaseNotesNotificationsServiceTest {
   @Test
   fun `both PPs (responsible officer) and SPs (assignee) get notifications for a sent case note as long as they didn't send it`() {
 
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
+    whenever(hmppsAuthService.getUserDetail(any<AuthUser>())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
     whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(
       ResponsibleProbationPractitioner("pp", "pp@justice.gov.uk", null, null)
     )
@@ -85,7 +86,7 @@ internal class CaseNotesNotificationsServiceTest {
 
   @Test
   fun `PP (responsible officer) does not get notified if they sent the case note`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
+    whenever(hmppsAuthService.getUserDetail(any<AuthUser>())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
     whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(
       ResponsibleProbationPractitioner("pp", "pp@justice.gov.uk", 123L, null)
     )
@@ -123,7 +124,7 @@ internal class CaseNotesNotificationsServiceTest {
   fun `PP (referring officer) does not get notified if they sent the case note`() {
     val sender = authUserFactory.createPP(id = "pp_sender")
 
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
+    whenever(hmppsAuthService.getUserDetail(any<AuthUser>())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
     whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(
       ResponsibleProbationPractitioner("pp", "pp@justice.gov.uk", null, sender)
     )
@@ -157,7 +158,7 @@ internal class CaseNotesNotificationsServiceTest {
 
   @Test
   fun `SP (assignee) does not get notified if they sent the case note`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
+    whenever(hmppsAuthService.getUserDetail(any<AuthUser>())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
     whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(
       ResponsibleProbationPractitioner("pp", "pp@justice.gov.uk", null, null)
     )
@@ -195,7 +196,7 @@ internal class CaseNotesNotificationsServiceTest {
   // user
   @Test
   fun `SP (assignee) does not get notified as the assignee has the same user name as the sender`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
+    whenever(hmppsAuthService.getUserDetail(any<AuthUser>())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
     val responsiblePp = authUserFactory.createSP(id = "responsiblePp", userName = "sameUserName")
     whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(
       ResponsibleProbationPractitioner("pp", "pp@justice.gov.uk", null, responsiblePp)
@@ -233,7 +234,7 @@ internal class CaseNotesNotificationsServiceTest {
 
   @Test
   fun `SP (assignee) does not get notified if the referral is unassigned`() {
-    whenever(hmppsAuthService.getUserDetail(any())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
+    whenever(hmppsAuthService.getUserDetail(any<AuthUser>())).thenReturn(UserDetail("sp", "sp@provider.co.uk"))
     whenever(referralService.getResponsibleProbationPractitioner(any())).thenReturn(
       ResponsibleProbationPractitioner("pp", "pp@justice.gov.uk", null, null)
     )

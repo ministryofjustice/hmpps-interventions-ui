@@ -125,11 +125,10 @@ class SNSActionPlanAppointmentService(
   override fun onApplicationEvent(event: ActionPlanAppointmentEvent) {
     when (event.type) {
       ActionPlanAppointmentEventType.ATTENDANCE_RECORDED -> {
-        val referral = event.deliverySession.referral
-        val appointment = event.deliverySession.currentAppointment
-          ?: throw RuntimeException("event triggered for session with no appointments")
+        val referral = event.referral
+        event.deliverySession.appointmentTime ?: throw RuntimeException("event triggered for session with no appointments")
 
-        val eventType = "intervention.session-appointment.${when (appointment.attended) {
+        val eventType = "intervention.session-appointment.${when (event.deliverySession.sessionFeedback.attendance.attended) {
           Attended.YES, Attended.LATE -> "attended"
           Attended.NO -> "missed"
           null -> throw RuntimeException("event triggered for appointment with no recorded attendance")
@@ -139,16 +138,15 @@ class SNSActionPlanAppointmentService(
           eventType,
           "Attendance was recorded for a session appointment",
           event.detailUrl,
-          appointment.attendanceSubmittedAt!!,
+          event.deliverySession.sessionFeedback.attendance.submittedAt!!,
           mapOf("serviceUserCRN" to referral.serviceUserCRN, "referralId" to referral.id)
         )
 
-        snsPublisher.publish(referral.id, appointment.appointmentFeedbackSubmittedBy!!, snsEvent)
+        snsPublisher.publish(referral.id, event.deliverySession.sessionFeedback.attendance.submittedBy!!, snsEvent)
       }
       ActionPlanAppointmentEventType.SESSION_FEEDBACK_RECORDED -> {
-        val referral = event.deliverySession.referral
-        val appointment = event.deliverySession.currentAppointment
-          ?: throw RuntimeException("event triggered for session with no appointments")
+        val referral = event.referral
+        event.deliverySession.appointmentTime ?: throw RuntimeException("event triggered for session with no appointments")
 
         val eventType = "intervention.session-appointment.session-feedback-submitted"
 
@@ -156,15 +154,15 @@ class SNSActionPlanAppointmentService(
           eventType,
           "Session feedback submitted for a session appointment",
           event.detailUrl,
-          appointment.appointmentFeedbackSubmittedAt!!,
+          event.deliverySession.sessionFeedback.attendance.submittedAt!!,
           mapOf(
             "serviceUserCRN" to referral.serviceUserCRN,
             "referralId" to referral.id,
-            "deliusAppointmentId" to appointment.deliusAppointmentId.toString()
+            "deliusAppointmentId" to event.deliverySession.deliusAppointmentId.toString()
           )
         )
 
-        snsPublisher.publish(referral.id, appointment.appointmentFeedbackSubmittedBy!!, snsEvent)
+        snsPublisher.publish(referral.id, event.deliverySession.sessionFeedback.submittedBy!!, snsEvent)
       }
     }
   }

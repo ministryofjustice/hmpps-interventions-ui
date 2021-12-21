@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono
 import reactor.util.retry.Retry
 import reactor.util.retry.Retry.RetrySignal
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import javax.transaction.Transactional
@@ -72,8 +73,12 @@ class HMPPSAuthService(
   }
 
   fun getUserDetail(user: AuthUser): UserDetail {
+    return getUserDetail(AuthUserDTO.from(user))
+  }
+
+  fun getUserDetail(user: AuthUserDTO): UserDetail {
     return if (user.authSource == "auth") {
-      val url = UriComponentsBuilder.fromPath(authUserDetailLocation).buildAndExpand(user.userName).toString()
+      val url = UriComponentsBuilder.fromPath(authUserDetailLocation).buildAndExpand(user.username).toString()
       hmppsAuthApiClient.get(url)
         .retrieve()
         .bodyToMono(AuthUserDetailResponse::class.java)
@@ -86,8 +91,8 @@ class HMPPSAuthService(
         }
         .block()
     } else {
-      val detailUrl = UriComponentsBuilder.fromPath(userDetailLocation).buildAndExpand(user.userName).toString()
-      val emailUrl = UriComponentsBuilder.fromPath(userEmailLocation).buildAndExpand(user.userName).toString()
+      val detailUrl = UriComponentsBuilder.fromPath(userDetailLocation).buildAndExpand(user.username).toString()
+      val emailUrl = UriComponentsBuilder.fromPath(userEmailLocation).buildAndExpand(user.username).toString()
       Mono.zip(
         hmppsAuthApiClient.get(detailUrl)
           .retrieve()
