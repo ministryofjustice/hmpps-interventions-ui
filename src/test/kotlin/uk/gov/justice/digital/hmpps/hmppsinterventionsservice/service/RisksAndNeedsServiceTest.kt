@@ -3,26 +3,25 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import ch.qos.logback.classic.Level
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
-import org.springframework.security.core.context.SecurityContext
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.springframework.security.core.context.SecurityContext
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.RestClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.LoggingSpyTest
 import java.time.OffsetDateTime
 import java.util.UUID
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertThrows
-import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.reactive.function.client.WebClientResponseException
-import org.springframework.web.server.ResponseStatusException
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.JwtTokenFactory
 
-internal class RisksAndNeedsServiceTest : LoggingSpyTest(RisksAndNeedsService::class, Level.WARN) {
+internal class RisksAndNeedsServiceTest : LoggingSpyTest(RisksAndNeedsService::class, Level.ERROR) {
   private val mockWebServer = MockWebServer()
   private val restClient = RestClient(
     WebClient.create(mockWebServer.url("/").toString()),
@@ -40,14 +39,60 @@ internal class RisksAndNeedsServiceTest : LoggingSpyTest(RisksAndNeedsService::c
   }
 
   @Nested
-  inner class createSupplementaryRiskWithOasysRiskInformation {
+  inner class createSupplementaryRisk {
     val oasysRiskInformation = RedactedRisk(
       "someone", "all the time", "bad", "none", "none", "none", "none",
     )
 
     @Test
-    fun `logs warning and fails on http 409 response`() {
-      mockWebServer.enqueue(MockResponse().setResponseCode(409))
+    fun `ignores http 409 response when risk is up to date`() {
+      mockWebServer.enqueue(
+        MockResponse()
+          .setResponseCode(409)
+          .setHeader("Content-Type", "application/json")
+          .setBody(
+            """
+        { 
+          "supplementaryRiskId": "f974d97e-9f50-4963-91f3-a619f50ad127",
+          "createdDate": "2020-12-04T10:42:43+00:00"
+        }
+            """.trimIndent()
+          )
+      )
+
+      val risksAndNeedsService = RisksAndNeedsService(
+        "/risk/supplementary",
+        true,
+        restClient,
+      )
+
+      risksAndNeedsService.createSupplementaryRisk(
+        UUID.randomUUID(),
+        "CRN123",
+        authUserFactory.createPP(),
+        OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
+        "additional information",
+        oasysRiskInformation,
+      )
+
+      assertThat(logEvents).isEmpty()
+    }
+
+    @Test
+    fun `logs error and fails on http 409 response when risk is out of date`() {
+      mockWebServer.enqueue(
+        MockResponse()
+          .setResponseCode(409)
+          .setHeader("Content-Type", "application/json")
+          .setBody(
+            """
+        { 
+          "supplementaryRiskId": "f974d97e-9f50-4963-91f3-a619f50ad127",
+          "createdDate": "2020-12-04T10:42:43+00:00"
+        }
+            """.trimIndent()
+          )
+      )
 
       val risksAndNeedsService = RisksAndNeedsService(
         "/risk/supplementary",
@@ -66,33 +111,7 @@ internal class RisksAndNeedsServiceTest : LoggingSpyTest(RisksAndNeedsService::c
         )
       }
 
-      assertThat(logEvents[0].message).contains("attempted to create new supplementary risk, but risk already exists for this referral")
-    }
-  }
-
-  @Nested
-  inner class createSupplementaryRiskWithOldStyleAdditionalRiskInformation {
-    @Test
-    fun `logs warning and fails on http 409 response`() {
-      mockWebServer.enqueue(MockResponse().setResponseCode(409))
-
-      val risksAndNeedsService = RisksAndNeedsService(
-        "/risk/supplementary",
-        false,
-        restClient,
-      )
-
-      assertThrows<WebClientResponseException> {
-        risksAndNeedsService.createSupplementaryRisk(
-          UUID.randomUUID(),
-          "CRN123",
-          authUserFactory.createPP(),
-          OffsetDateTime.now(),
-          "additional information",
-        )
-      }
-
-      assertThat(logEvents[0].message).contains("attempted to create new supplementary risk, but risk already exists for this referral")
+      assertThat(logEvents[0].message).contains("attempted to update an existing supplementary risk with new data")
     }
   }
 }
