@@ -170,29 +170,28 @@ class DeliverySessionService(
       attended,
       notifyProbationPractitioner,
     )
-    if (existingAppointment == null) {
-      val appointment = Appointment(
-        id = UUID.randomUUID(),
-        createdBy = authUserRepository.save(updatedBy),
-        createdAt = OffsetDateTime.now(),
-        appointmentTime = appointmentTime,
-        durationInMinutes = durationInMinutes,
-        deliusAppointmentId = deliusAppointmentId,
-        referral = session.referral,
-      )
+
+    val appointment = existingAppointment?.apply {
+      this.appointmentTime = appointmentTime
+      this.durationInMinutes = durationInMinutes
+      this.deliusAppointmentId = deliusAppointmentId
+    } ?: Appointment(
+      id = UUID.randomUUID(),
+      createdBy = authUserRepository.save(updatedBy),
+      createdAt = OffsetDateTime.now(),
+      appointmentTime = appointmentTime,
+      durationInMinutes = durationInMinutes,
+      deliusAppointmentId = deliusAppointmentId,
+      referral = session.referral,
+    )
+    appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
+    appointmentRepository.saveAndFlush(appointment)
+    session.appointments.add(appointment)
+    deliverySessionRepository.save(session)
+    return deliverySessionRepository.save(session).also {
+      // Occuring after saving the session to ensure that session has the latest appointment attached when publishing the session feedback event.
       setAttendanceAndBehaviourIfHistoricAppointment(session, appointment, appointmentTime, attended, additionalAttendanceInformation, behaviourDescription, notifyProbationPractitioner, updatedBy)
-      appointmentRepository.saveAndFlush(appointment)
-      appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
-      session.appointments.add(appointment)
-    } else {
-      setAttendanceAndBehaviourIfHistoricAppointment(session, existingAppointment, appointmentTime, attended, additionalAttendanceInformation, behaviourDescription, notifyProbationPractitioner, updatedBy)
-      existingAppointment.appointmentTime = appointmentTime
-      existingAppointment.durationInMinutes = durationInMinutes
-      existingAppointment.deliusAppointmentId = deliusAppointmentId
-      appointmentRepository.saveAndFlush(existingAppointment)
-      appointmentService.createOrUpdateAppointmentDeliveryDetails(existingAppointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     }
-    return deliverySessionRepository.save(session)
   }
 
   fun recordAppointmentAttendance(
@@ -277,6 +276,7 @@ class DeliverySessionService(
 
     appointment.appointmentFeedbackSubmittedAt = OffsetDateTime.now()
     appointment.appointmentFeedbackSubmittedBy = authUserRepository.save(submitter)
+    appointmentRepository.saveAndFlush(appointment)
     deliverySessionRepository.save(session)
 
     actionPlanAppointmentEventPublisher.attendanceRecordedEvent(session)

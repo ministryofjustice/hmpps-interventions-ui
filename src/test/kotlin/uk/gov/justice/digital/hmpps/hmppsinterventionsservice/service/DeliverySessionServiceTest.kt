@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.anyOrNull
+import com.nhaarman.mockitokotlin2.doAnswer
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.isNotNull
 import com.nhaarman.mockitokotlin2.isNull
@@ -22,6 +23,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appoint
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DeliverySession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
@@ -359,6 +361,18 @@ class DeliverySessionServiceTest @Autowired constructor(
     fun `can create new delivery session appointment for a time in the past`() {
       val actionPlan = actionPlanFactory.createApproved(numberOfSessions = 1)
       val session = deliverySessionFactory.createUnscheduled(referral = actionPlan.referral)
+
+      whenever(actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(any())).doAnswer {
+        val session = it.getArgument<DeliverySession>(0)
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedAt).isNotNull()
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedBy).isNotNull()
+        assertThat(session.currentAppointment?.attended).isEqualTo(Attended.YES)
+        assertThat(session.currentAppointment?.additionalAttendanceInformation).isEqualTo("additionalAttendanceInformation")
+        assertThat(session.currentAppointment?.notifyPPOfAttendanceBehaviour).isEqualTo(true)
+        assertThat(session.currentAppointment?.attendanceBehaviour).isEqualTo("behaviourDescription")
+        null
+      }
+
       val updatedSession = deliverySessionService.updateSessionAppointment(
         actionPlan.id, session.sessionNumber, defaultAppointmentTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE,
         null,
@@ -389,6 +403,18 @@ class DeliverySessionServiceTest @Autowired constructor(
     fun `can update existing scheduled delivery session appointment for a time in the past`() {
       val actionPlan = actionPlanFactory.createApproved(numberOfSessions = 1)
       val session = deliverySessionFactory.createScheduled(referral = actionPlan.referral)
+
+      whenever(actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(any())).doAnswer {
+        val session = it.getArgument<DeliverySession>(0)
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedAt).isNotNull()
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedBy).isNotNull()
+        assertThat(session.currentAppointment?.attended).isEqualTo(Attended.YES)
+        assertThat(session.currentAppointment?.additionalAttendanceInformation).isEqualTo("additionalAttendanceInformation")
+        assertThat(session.currentAppointment?.notifyPPOfAttendanceBehaviour).isEqualTo(true)
+        assertThat(session.currentAppointment?.attendanceBehaviour).isEqualTo("behaviourDescription")
+        null
+      }
+
       val updatedSession = deliverySessionService.updateSessionAppointment(
         actionPlan.id, session.sessionNumber, defaultAppointmentTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE,
         null,
