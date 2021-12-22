@@ -184,8 +184,8 @@ class DeliverySessionService(
       deliusAppointmentId = deliusAppointmentId,
       referral = session.referral,
     )
-    appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     appointmentRepository.saveAndFlush(appointment)
+    appointmentService.createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     session.appointments.add(appointment)
     deliverySessionRepository.save(session)
     return deliverySessionRepository.save(session).also {
