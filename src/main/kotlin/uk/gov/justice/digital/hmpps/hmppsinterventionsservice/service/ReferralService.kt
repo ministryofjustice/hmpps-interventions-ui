@@ -231,44 +231,45 @@ class ReferralService(
   private fun submitAdditionalRiskInformation(referral: Referral, user: AuthUser) {
     // todo: throw exception once posting full risk to ARN feature is enabled, however allow some time for in-flight
     //  make-referral requests to pass
-    var additionalRiskInformation = ""
-    var redactedRisk: RedactedRisk? = null
-    if (assessRisksAndNeedsService.canPostFullRiskInformation()) {
-      val draftOasysRiskInfo = draftOasysRiskInformationService.getDraftOasysRiskInformation(referral.id)
-      draftOasysRiskInfo?.let {
-        additionalRiskInformation = it.additionalInformation ?: ""
-        redactedRisk = RedactedRisk(
-          riskWho = it.riskSummaryWhoIsAtRisk ?: "",
-          riskWhen = it.riskSummaryRiskImminence ?: "",
-          riskNature = it.riskSummaryNatureOfRisk ?: "",
-          concernsSelfHarm = it.riskToSelfSelfHarm ?: "",
-          concernsSuicide = it.riskToSelfSuicide ?: "",
-          concernsHostel = it.riskToSelfHostelSetting ?: "",
-          concernsVulnerability = it.riskToSelfVulnerability ?: "",
+
+    val oasysRiskInformation = draftOasysRiskInformationService.getDraftOasysRiskInformation(referral.id)
+    val riskId = if (oasysRiskInformation != null && assessRisksAndNeedsService.canPostFullRiskInformation()) {
+      assessRisksAndNeedsService.createSupplementaryRisk(
+        referral.id,
+        referral.serviceUserCRN,
+        user,
+        oasysRiskInformation.updatedAt,
+        oasysRiskInformation.additionalInformation ?: "",
+        RedactedRisk(
+          riskWho = oasysRiskInformation.riskSummaryWhoIsAtRisk ?: "",
+          riskWhen = oasysRiskInformation.riskSummaryRiskImminence ?: "",
+          riskNature = oasysRiskInformation.riskSummaryNatureOfRisk ?: "",
+          concernsSelfHarm = oasysRiskInformation.riskToSelfSelfHarm ?: "",
+          concernsSuicide = oasysRiskInformation.riskToSelfSuicide ?: "",
+          concernsHostel = oasysRiskInformation.riskToSelfHostelSetting ?: "",
+          concernsVulnerability = oasysRiskInformation.riskToSelfVulnerability ?: "",
         )
-      } ?: run {
-        additionalRiskInformation = referral.additionalRiskInformation
-          ?: throw ServerWebInputException("can't submit a referral without risk information")
-      }
+      )
     } else {
-      additionalRiskInformation = referral.additionalRiskInformation
+      val additionalRiskInformation = referral.additionalRiskInformation
         ?: throw ServerWebInputException("can't submit a referral without risk information")
+
+      val riskSubmittedAt = referral.additionalRiskInformationUpdatedAt
+        ?: run {
+          // this should NEVER happen. i'm not really sure why we have this as a fallback.
+          logger.warn("no additionalRiskInformationUpdatedAt on referral; setting to current time")
+          OffsetDateTime.now()
+        }
+
+      assessRisksAndNeedsService.createSupplementaryRisk(
+        referral.id,
+        referral.serviceUserCRN,
+        user,
+        riskSubmittedAt,
+        additionalRiskInformation,
+        null
+      )
     }
-
-    val riskSubmittedAt = referral.additionalRiskInformationUpdatedAt
-      ?: run {
-        logger.warn("no additionalRiskInformationUpdatedAt on referral; setting to current time")
-        OffsetDateTime.now()
-      }
-
-    val riskId = assessRisksAndNeedsService.createSupplementaryRisk(
-      referral.id,
-      referral.serviceUserCRN,
-      user,
-      riskSubmittedAt,
-      additionalRiskInformation,
-      redactedRisk
-    )
 
     referral.supplementaryRiskId = riskId
     // we do not store _any_ risk information in interventions once it has been sent to ARN
