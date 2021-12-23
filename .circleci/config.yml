@@ -91,7 +91,7 @@ workflows:
           persist_container_image: true
           filters:
             branches:
-              only: [main]
+              only: [release/code-freeze]
       - hmpps/build_docker:
           name: build_docker
           git-lfs: true
@@ -99,7 +99,7 @@ workflows:
           persist_container_image: true
           filters:
             branches:
-              ignore: [main]
+              ignore: [release/code-freeze]
       - hmpps/trivy_pipeline_scan:
           name: vulnerability_scan
           requires: [build_docker, build_docker_publish]
@@ -111,7 +111,7 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - release/code-freeze
           requires:
             - build
             - integration_test
@@ -174,7 +174,7 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - release/code-freeze
     jobs:
       - hmpps/npm_security_audit
       - hmpps/veracode_policy_scan:
