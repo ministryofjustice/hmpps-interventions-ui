@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.ValidationError
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventPublisher
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.AppointmentEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentSessionType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentType
@@ -25,6 +26,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attende
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DeliverySession
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ActionPlanRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentDeliveryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AppointmentRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
@@ -47,10 +49,14 @@ class DeliverySessionServiceTest @Autowired constructor(
   val actionPlanRepository: ActionPlanRepository,
   val referralRepository: ReferralRepository,
   val authUserRepository: AuthUserRepository,
+  appointmentDeliveryRepository: AppointmentDeliveryRepository,
 ) {
   private val actionPlanAppointmentEventPublisher = mock<ActionPlanAppointmentEventPublisher>()
   private val communityAPIBookingService = mock<CommunityAPIBookingService>()
-  private val appointmentService = mock<AppointmentService>()
+  private val appointmentEventPublisher = mock<AppointmentEventPublisher>()
+  private val appointmentService = AppointmentService(
+    appointmentRepository, communityAPIBookingService, appointmentDeliveryRepository, authUserRepository, appointmentEventPublisher, referralRepository
+  )
 
   private val deliverySessionService = DeliverySessionService(
     deliverySessionRepository, actionPlanRepository, authUserRepository,
@@ -64,7 +70,7 @@ class DeliverySessionServiceTest @Autowired constructor(
   private val deliverySessionFactory = DeliverySessionFactory(entityManager)
   private val actionPlanFactory = ActionPlanFactory(entityManager)
 
-  val defaultAppointmentTime = OffsetDateTime.now()
+  val defaultAppointmentTime = OffsetDateTime.now().plusDays(1)
   val defaultDuration = 1
   lateinit var defaultUser: AuthUser
 
@@ -82,7 +88,6 @@ class DeliverySessionServiceTest @Autowired constructor(
       val updatedSession = deliverySessionService.scheduleNewDeliverySessionAppointment(session.referral.id, session.sessionNumber, defaultAppointmentTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
 
       verify(communityAPIBookingService).book(eq(session.referral), isNull(), eq(defaultAppointmentTime), eq(defaultDuration), eq(AppointmentType.SERVICE_DELIVERY), anyOrNull(), anyOrNull(), anyOrNull())
-      verify(appointmentService).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), anyOrNull(), anyOrNull())
 
       assertThat(updatedSession.appointments.size).isEqualTo(1)
       val appointment = updatedSession.appointments.first()
@@ -99,7 +104,6 @@ class DeliverySessionServiceTest @Autowired constructor(
       val updatedSession = deliverySessionService.scheduleNewDeliverySessionAppointment(session.referral.id, session.sessionNumber, newTime, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
 
       verify(communityAPIBookingService).book(any(), isNotNull(), any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
-      verify(appointmentService).createOrUpdateAppointmentDeliveryDetails(any(), any(), any(), anyOrNull(), anyOrNull())
 
       assertThat(updatedSession.appointments.size).isEqualTo(2)
 
@@ -107,6 +111,54 @@ class DeliverySessionServiceTest @Autowired constructor(
       assertThat(appointment.appointmentTime).isEqualTo(newTime)
       assertThat(appointment.durationInMinutes).isEqualTo(defaultDuration)
       assertThat(appointment.createdBy).isEqualTo(defaultUser)
+    }
+
+    @Test
+    fun `can schedule new appointment with appointment feedback`() {
+      val session = deliverySessionFactory.createUnscheduled()
+      val pastDate = OffsetDateTime.now().minusDays(1)
+
+      whenever(actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(any())).doAnswer {
+        val session = it.getArgument<DeliverySession>(0)
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedAt).isNotNull()
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedBy).isNotNull()
+        assertThat(session.currentAppointment?.attended).isEqualTo(Attended.YES)
+        assertThat(session.currentAppointment?.additionalAttendanceInformation).isEqualTo("additionalAttendanceInformation")
+        assertThat(session.currentAppointment?.notifyPPOfAttendanceBehaviour).isEqualTo(false)
+        assertThat(session.currentAppointment?.attendanceBehaviour).isEqualTo("behaviourDescription")
+        null
+      }
+
+      val updatedSession = deliverySessionService.scheduleNewDeliverySessionAppointment(
+        session.referral.id, session.sessionNumber, pastDate, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE,
+        attended = Attended.YES, additionalAttendanceInformation = "additionalAttendanceInformation", notifyProbationPractitioner = false, behaviourDescription = "behaviourDescription"
+      )
+
+      verify(communityAPIBookingService).book(eq(session.referral), isNull(), eq(pastDate), eq(defaultDuration), eq(AppointmentType.SERVICE_DELIVERY), anyOrNull(), anyOrNull(), anyOrNull())
+
+      assertThat(updatedSession.appointments.size).isEqualTo(1)
+      val appointment = updatedSession.appointments.first()
+      assertThat(appointment.appointmentTime).isEqualTo(pastDate)
+      assertThat(appointment.durationInMinutes).isEqualTo(defaultDuration)
+      assertThat(appointment.createdBy).isEqualTo(defaultUser)
+      assertThat(appointment.attended).isEqualTo(Attended.YES)
+      assertThat(appointment.additionalAttendanceInformation).isEqualTo("additionalAttendanceInformation")
+      assertThat(appointment.notifyPPOfAttendanceBehaviour).isEqualTo(false)
+      assertThat(appointment.attendanceBehaviour).isEqualTo("behaviourDescription")
+      assertThat(appointment.attendanceSubmittedAt).isNotNull()
+      assertThat(appointment.attendanceSubmittedBy).isEqualTo(defaultUser)
+      assertThat(appointment.appointmentDelivery?.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.PHONE_CALL)
+      assertThat(appointment.appointmentDelivery?.appointmentSessionType).isEqualTo(AppointmentSessionType.ONE_TO_ONE)
+    }
+
+    @Test
+    fun `scheduling appointment with a date in the past and not providing appointment feedback throws exception`() {
+      val session = deliverySessionFactory.createUnscheduled()
+      val pastDate = OffsetDateTime.now().minusDays(1)
+      val error = assertThrows<IllegalArgumentException> {
+        deliverySessionService.scheduleNewDeliverySessionAppointment(session.referral.id, session.sessionNumber, pastDate, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+      }
+      assertThat(error.message).contains("Appointment feedback must be provided for appointments in the past.")
     }
 
     @Test
@@ -151,7 +203,6 @@ class DeliverySessionServiceTest @Autowired constructor(
       val updatedSession = deliverySessionService.rescheduleDeliverySessionAppointment(session.referral.id, session.sessionNumber, existingAppointment.id, newTime, 2, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
 
       verify(communityAPIBookingService).book(any(), isNotNull(), any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
-      verify(appointmentService).createOrUpdateAppointmentDeliveryDetails(any(), any(), any(), anyOrNull(), anyOrNull())
 
       assertThat(updatedSession.appointments.size).isEqualTo(1)
 
@@ -159,6 +210,56 @@ class DeliverySessionServiceTest @Autowired constructor(
       assertThat(appointment.appointmentTime).isEqualTo(newTime)
       assertThat(appointment.durationInMinutes).isEqualTo(2)
       assertThat(appointment.createdBy).isEqualTo(defaultUser)
+    }
+
+    @Test
+    fun `can reschedule an appointment with a past time and with appointment feedback`() {
+      val session = deliverySessionFactory.createScheduled()
+      val existingAppointment = session.currentAppointment!!
+      val pastDate = OffsetDateTime.now().minusDays(1)
+
+      whenever(actionPlanAppointmentEventPublisher.sessionFeedbackRecordedEvent(any())).doAnswer {
+        val session = it.getArgument<DeliverySession>(0)
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedAt).isNotNull()
+        assertThat(session.currentAppointment?.appointmentFeedbackSubmittedBy).isNotNull()
+        assertThat(session.currentAppointment?.attended).isEqualTo(Attended.YES)
+        assertThat(session.currentAppointment?.additionalAttendanceInformation).isEqualTo("additionalAttendanceInformation")
+        assertThat(session.currentAppointment?.notifyPPOfAttendanceBehaviour).isEqualTo(false)
+        assertThat(session.currentAppointment?.attendanceBehaviour).isEqualTo("behaviourDescription")
+        null
+      }
+
+      val updatedSession = deliverySessionService.rescheduleDeliverySessionAppointment(
+        session.referral.id, session.sessionNumber, existingAppointment.id, pastDate, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE,
+        attended = Attended.YES, additionalAttendanceInformation = "additionalAttendanceInformation", notifyProbationPractitioner = false, behaviourDescription = "behaviourDescription"
+      )
+
+      verify(communityAPIBookingService).book(any(), isNotNull(), any(), any(), any(), anyOrNull(), anyOrNull(), anyOrNull())
+
+      assertThat(updatedSession.appointments.size).isEqualTo(1)
+      val appointment = updatedSession.appointments.first()
+      assertThat(appointment.appointmentTime).isEqualTo(pastDate)
+      assertThat(appointment.durationInMinutes).isEqualTo(defaultDuration)
+      assertThat(appointment.createdBy).isEqualTo(defaultUser)
+      assertThat(appointment.attended).isEqualTo(Attended.YES)
+      assertThat(appointment.additionalAttendanceInformation).isEqualTo("additionalAttendanceInformation")
+      assertThat(appointment.notifyPPOfAttendanceBehaviour).isEqualTo(false)
+      assertThat(appointment.attendanceBehaviour).isEqualTo("behaviourDescription")
+      assertThat(appointment.attendanceSubmittedAt).isNotNull()
+      assertThat(appointment.attendanceSubmittedBy).isEqualTo(defaultUser)
+      assertThat(appointment.appointmentDelivery?.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.PHONE_CALL)
+      assertThat(appointment.appointmentDelivery?.appointmentSessionType).isEqualTo(AppointmentSessionType.ONE_TO_ONE)
+    }
+
+    @Test
+    fun `rescheduling appointment with a date in the past and not providing appointment feedback throws exception`() {
+      val session = deliverySessionFactory.createScheduled()
+      val existingAppointment = session.currentAppointment!!
+      val pastDate = OffsetDateTime.now().minusDays(1)
+      val error = assertThrows<IllegalArgumentException> {
+        deliverySessionService.rescheduleDeliverySessionAppointment(session.referral.id, session.sessionNumber, existingAppointment.id, pastDate, defaultDuration, defaultUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+      }
+      assertThat(error.message).contains("Appointment feedback must be provided for appointments in the past.")
     }
 
     @Test
@@ -209,7 +310,6 @@ class DeliverySessionServiceTest @Autowired constructor(
       val deliverySession = deliverySessionFactory.createScheduled()
       val referral = deliverySession.referral
       val appointment = deliverySession.currentAppointment!!
-      whenever(appointmentService.recordAppointmentAttendance(eq(appointment), eq(Attended.YES), eq("additionalInformation"), eq(defaultUser))).thenReturn(appointment)
       val pair = deliverySessionService.recordAppointmentAttendance(referral.id, appointment.id, defaultUser, Attended.YES, "additionalInformation")
       assertThat(pair.first).isEqualTo(deliverySession)
       assertThat(pair.second).isEqualTo(appointment)
@@ -260,7 +360,6 @@ class DeliverySessionServiceTest @Autowired constructor(
       val deliverySession = deliverySessionFactory.createScheduled()
       val referral = deliverySession.referral
       val appointment = deliverySession.currentAppointment!!
-      whenever(appointmentService.recordBehaviour(eq(appointment), eq("good"), eq(false), eq(defaultUser))).thenReturn(appointment)
       val pair = deliverySessionService.recordAppointmentBehaviour(referral.id, appointment.id, defaultUser, "good", false)
       assertThat(pair.first).isEqualTo(deliverySession)
       assertThat(pair.second).isEqualTo(appointment)
@@ -311,7 +410,9 @@ class DeliverySessionServiceTest @Autowired constructor(
       val deliverySession = deliverySessionFactory.createScheduled()
       val referral = deliverySession.referral
       val appointment = deliverySession.currentAppointment!!
-      whenever(appointmentService.submitSessionFeedback(eq(appointment), eq(defaultUser), eq(AppointmentType.SERVICE_DELIVERY))).thenReturn(appointment)
+      appointment.attended = Attended.NO
+      appointment.attendanceSubmittedAt = OffsetDateTime.now()
+      appointmentRepository.save(appointment)
       val pair = deliverySessionService.submitSessionFeedback(referral.id, appointment.id, defaultUser)
       assertThat(pair.first).isEqualTo(deliverySession)
       assertThat(pair.second).isEqualTo(appointment)
@@ -384,7 +485,6 @@ class DeliverySessionServiceTest @Autowired constructor(
       )
 
       verify(communityAPIBookingService).book(eq(session.referral), isNull(), eq(defaultAppointmentTime), eq(defaultDuration), eq(AppointmentType.SERVICE_DELIVERY), anyOrNull(), anyOrNull(), anyOrNull())
-      verify(appointmentService).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), anyOrNull(), anyOrNull())
 
       assertThat(updatedSession.appointments.size).isEqualTo(1)
       val appointment = updatedSession.appointments.first()
@@ -397,6 +497,8 @@ class DeliverySessionServiceTest @Autowired constructor(
       assertThat(appointment.attendanceBehaviour).isEqualTo("behaviourDescription")
       assertThat(appointment.appointmentFeedbackSubmittedAt).isNotNull()
       assertThat(appointment.appointmentFeedbackSubmittedBy).isNotNull()
+      assertThat(appointment.appointmentDelivery?.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.PHONE_CALL)
+      assertThat(appointment.appointmentDelivery?.appointmentSessionType).isEqualTo(AppointmentSessionType.ONE_TO_ONE)
     }
 
     @Test
@@ -426,7 +528,6 @@ class DeliverySessionServiceTest @Autowired constructor(
       )
 
       verify(communityAPIBookingService).book(eq(session.referral), isNotNull(), eq(defaultAppointmentTime), eq(defaultDuration), eq(AppointmentType.SERVICE_DELIVERY), anyOrNull(), anyOrNull(), anyOrNull())
-      verify(appointmentService).createOrUpdateAppointmentDeliveryDetails(any(), eq(AppointmentDeliveryType.PHONE_CALL), eq(AppointmentSessionType.ONE_TO_ONE), anyOrNull(), anyOrNull())
 
       assertThat(updatedSession.appointments.size).isEqualTo(1)
       val appointment = updatedSession.appointments.first()
@@ -439,6 +540,8 @@ class DeliverySessionServiceTest @Autowired constructor(
       assertThat(appointment.attendanceBehaviour).isEqualTo("behaviourDescription")
       assertThat(appointment.appointmentFeedbackSubmittedAt).isNotNull()
       assertThat(appointment.appointmentFeedbackSubmittedBy).isNotNull()
+      assertThat(appointment.appointmentDelivery?.appointmentDeliveryType).isEqualTo(AppointmentDeliveryType.PHONE_CALL)
+      assertThat(appointment.appointmentDelivery?.appointmentSessionType).isEqualTo(AppointmentSessionType.ONE_TO_ONE)
     }
   }
 }
