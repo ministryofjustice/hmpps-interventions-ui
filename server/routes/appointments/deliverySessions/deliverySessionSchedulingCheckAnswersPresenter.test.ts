@@ -15,7 +15,7 @@ describe(DeliverySessionSchedulingCheckAnswersPresenter, () => {
   describe('summary', () => {
     it('returns a summary of the draft booking', () => {
       const draft = draftBookingFactory.build()
-      const presenter = new DeliverySessionSchedulingCheckAnswersPresenter(draft, '1', '1', 2)
+      const presenter = new DeliverySessionSchedulingCheckAnswersPresenter(draft, '1', '1', 2, 'reschedule-appointment')
 
       expect(presenter.summary).toEqual([
         { key: 'Date', lines: ['24 March 2021'] },
@@ -28,7 +28,7 @@ describe(DeliverySessionSchedulingCheckAnswersPresenter, () => {
   describe('backLinkHref', () => {
     it('returns the relative URL of the details page', () => {
       const draft = draftBookingFactory.build()
-      const presenter = new DeliverySessionSchedulingCheckAnswersPresenter(draft, '1', '1', 2)
+      const presenter = new DeliverySessionSchedulingCheckAnswersPresenter(draft, '1', '1', 2, 'reschedule-appointment')
 
       expect(presenter.backLinkHref).toEqual(
         `/service-provider/referral/1/session/2/appointment/1/edit/${draft.id}/details`
@@ -39,7 +39,7 @@ describe(DeliverySessionSchedulingCheckAnswersPresenter, () => {
   describe('formAction', () => {
     it('returns the relative URL of the submit page', () => {
       const draft = draftBookingFactory.build()
-      const presenter = new DeliverySessionSchedulingCheckAnswersPresenter(draft, '1', '1', 2)
+      const presenter = new DeliverySessionSchedulingCheckAnswersPresenter(draft, '1', '1', 2, 'reschedule-appointment')
 
       expect(presenter.formAction).toEqual(
         `/service-provider/referral/1/session/2/appointment/1/edit/${draft.id}/submit`
@@ -49,7 +49,13 @@ describe(DeliverySessionSchedulingCheckAnswersPresenter, () => {
 
   describe('title', () => {
     it('returns the page’s title', () => {
-      const presenter = new DeliverySessionSchedulingCheckAnswersPresenter(draftBookingFactory.build(), '1', '1', 2)
+      const presenter = new DeliverySessionSchedulingCheckAnswersPresenter(
+        draftBookingFactory.build(),
+        '1',
+        '1',
+        2,
+        'reschedule-appointment'
+      )
 
       expect(presenter.title).toEqual('Confirm session 2 details')
     })

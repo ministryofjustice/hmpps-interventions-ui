@@ -1,6 +1,6 @@
 import PresenterUtils from '../../../../../utils/presenterUtils'
 import { FormValidationError } from '../../../../../utils/formValidationError'
-import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
+import { Appointment } from '../../../../../models/appointment'
 import AttendanceFeedbackQuestionnaire from './attendanceFeedbackQuestionnaire'
 import AppointmentSummary from '../../../appointmentSummary'
 
@@ -16,7 +16,7 @@ export default abstract class AttendanceFeedbackPresenter {
   readonly text: AttendanceFeedbackFormText
 
   protected constructor(
-    private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
+    private readonly appointment: Appointment,
     private readonly title: string,
     private readonly subTitle: string,
     private readonly attendanceFeedbackQuestionnaire: AttendanceFeedbackQuestionnaire,

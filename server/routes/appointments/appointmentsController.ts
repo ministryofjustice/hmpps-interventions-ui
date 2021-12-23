@@ -1,11 +1,7 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
-import {
-  ActionPlanAppointment,
-  AppointmentSchedulingDetails,
-  InitialAssessmentAppointment,
-} from '../../models/appointment'
+import { Appointment, AppointmentSchedulingDetails, InitialAssessmentAppointment } from '../../models/appointment'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
 import CommunityApiService from '../../services/communityApiService'
@@ -260,16 +256,24 @@ export default class AppointmentsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async startEditingDeliverySessionAppointment(req: Request, res: Response): Promise<void> {
+  async startEditingDeliverySessionAppointment(
+    req: Request,
+    res: Response,
+    action: 'schedule-appointment' | 'reschedule-appointment'
+  ): Promise<void> {
+    const { referralId, sessionNumber, appointmentId } = req.params
+
     const draft = await this.draftsService.createDraft('deliverySessionUpdate', null, {
       userId: res.locals.user.userId,
     })
 
-    const { referralId, sessionNumber, appointmentId } = req.params
-
-    res.redirect(
-      `/service-provider/referral/${referralId}/session/${sessionNumber}/appointment/${appointmentId}/edit/${draft.id}/details`
-    )
+    if (action === 'reschedule-appointment') {
+      res.redirect(
+        `/service-provider/referral/${referralId}/session/${sessionNumber}/appointment/${appointmentId}/edit/${draft.id}/details`
+      )
+    } else {
+      res.redirect(`/service-provider/referral/${referralId}/session/${sessionNumber}/edit/${draft.id}/details`)
+    }
   }
 
   // Deprecated
@@ -283,7 +287,11 @@ export default class AppointmentsController {
     )
   }
 
-  async editDeliverySessionAppointment(req: Request, res: Response): Promise<void> {
+  async editDeliverySessionAppointment(
+    req: Request,
+    res: Response,
+    action: 'schedule-appointment' | 'reschedule-appointment'
+  ): Promise<void> {
     const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
@@ -310,9 +318,16 @@ export default class AppointmentsController {
         userInputData = req.body
       } else {
         await this.draftsService.updateDraft(draft.id, data.paramsForUpdate, { userId })
-        res.redirect(
-          `/service-provider/referral/${referralId}/session/${sessionNumber}/appointment/${appointmentId}/edit/${draft.id}/check-answers`
-        )
+
+        if (action === 'reschedule-appointment') {
+          res.redirect(
+            `/service-provider/referral/${referralId}/session/${sessionNumber}/edit/${draft.id}/check-answers`
+          )
+        } else {
+          res.redirect(
+            `/service-provider/referral/${referralId}/session/${sessionNumber}/appointment/${appointmentId}/edit/${draft.id}/check-answers`
+          )
+        }
         return
       }
     } else if (req.query.clash === 'true') {
@@ -329,17 +344,22 @@ export default class AppointmentsController {
     }
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const appointment = await this.interventionsService.getDeliverySessionAppointment(
-      accessToken,
-      referralId,
-      appointmentId
-    )
-    const deliusOfficeLocation = await this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment)
+    let appointment: Appointment | null = null
+    let appointmentSummary: AppointmentSummary | null = null
+    if (action === 'reschedule-appointment') {
+      appointment = await this.interventionsService.getDeliverySessionAppointment(
+        accessToken,
+        referralId,
+        appointmentId
+      )
+      appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
+    }
     const presenter = new ScheduleDeliverySessionPresenter(
       referral,
       appointment,
-      new AppointmentSummary(appointment, null, deliusOfficeLocation),
+      appointmentSummary,
       deliusOfficeLocations,
+      sessionNumber,
       formError,
       draft.data,
       userInputData,
@@ -420,7 +440,11 @@ export default class AppointmentsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async checkDeliverySessionAppointmentAnswers(req: Request, res: Response): Promise<void> {
+  async checkDeliverySessionAppointmentAnswers(
+    req: Request,
+    res: Response,
+    action: 'schedule-appointment' | 'reschedule-appointment'
+  ): Promise<void> {
     const { referralId, sessionNumber, appointmentId } = req.params
     const { accessToken } = res.locals.user.token
 
@@ -436,7 +460,8 @@ export default class AppointmentsController {
       fetchResult.draft,
       referralId,
       appointmentId,
-      Number(sessionNumber)
+      Number(sessionNumber),
+      action
     )
     const view = new ScheduleAppointmentCheckAnswersView(presenter)
 
@@ -470,10 +495,15 @@ export default class AppointmentsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async submitDeliverySessionAppointment(req: Request, res: Response): Promise<void> {
+  async submitDeliverySessionAppointment(
+    req: Request,
+    res: Response,
+    action: 'schedule-appointment' | 'reschedule-appointment'
+  ): Promise<void> {
     const { draftBookingId } = req.params
     const { accessToken } = res.locals.user.token
-    const { referralId, sessionNumber, appointmentId } = req.params
+    const { referralId, appointmentId } = req.params
+    const sessionNumber = Number(req.params.sessionNumber)
 
     const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
     if (fetchResult.rendered) {
@@ -486,18 +516,34 @@ export default class AppointmentsController {
     }
 
     try {
-      await this.interventionsService.updateDeliverySessionAppointment(
-        accessToken,
-        referralId,
-        appointmentId,
-        draft.data
-      )
+      if (action === 'reschedule-appointment') {
+        await this.interventionsService.rescheduleDeliverySessionAppointment(
+          accessToken,
+          referralId,
+          sessionNumber,
+          appointmentId,
+          draft.data
+        )
+      } else {
+        await this.interventionsService.scheduleDeliverySessionAppointment(
+          accessToken,
+          referralId,
+          sessionNumber,
+          draft.data
+        )
+      }
     } catch (e) {
       const interventionsServiceError = e as InterventionsServiceError
       if (interventionsServiceError.status === 409) {
-        res.redirect(
-          `/service-provider/referral/${referralId}/session/${sessionNumber}/appointment/${appointmentId}/edit/${draftBookingId}/details?clash=true`
-        )
+        if (action === 'reschedule-appointment') {
+          res.redirect(
+            `/service-provider/referral/${referralId}/session/${sessionNumber}/appointment/${appointmentId}/edit/${draftBookingId}/details?clash=true`
+          )
+        } else {
+          res.redirect(
+            `/service-provider/referral/${referralId}/session/${sessionNumber}/edit/${draftBookingId}/details?clash=true`
+          )
+        }
         return
       }
 
@@ -807,9 +853,12 @@ export default class AppointmentsController {
       appointment,
       serviceUser,
       new AppointmentSummary(appointment, null, deliusOfficeLocation),
+      sessionNumber,
+      referralId,
+      null,
+      null,
       formError,
-      userInputData,
-      referral.id
+      userInputData
     )
     const view = new AttendanceFeedbackView(presenter)
 
@@ -1042,7 +1091,7 @@ export default class AppointmentsController {
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res)
+    const appointment = await this.getAppointmentFromDraftOrService(req, res)
     // return because draft service already renders page.
     if (appointment === null) {
       return
@@ -1053,6 +1102,7 @@ export default class AppointmentsController {
       appointment,
       serviceUser,
       appointmentSummary,
+      sessionNumber,
       referral.id,
       actionPlan.id,
       draftBookingId,
@@ -1117,7 +1167,7 @@ export default class AppointmentsController {
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res)
+    const appointment = await this.getAppointmentFromDraftOrService(req, res)
     // return because draft service already renders page.
     if (appointment === null) {
       return
@@ -1128,6 +1178,7 @@ export default class AppointmentsController {
       appointment,
       serviceUser,
       actionPlanId,
+      sessionNumber,
       formError,
       userInputData,
       draftBookingId
@@ -1141,12 +1192,12 @@ export default class AppointmentsController {
   async checkPostSessionFeedbackAnswers(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
-    const { actionPlanId, draftBookingId } = req.params
+    const { actionPlanId, draftBookingId, sessionNumber } = req.params
 
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res)
+    const appointment = await this.getAppointmentFromDraftOrService(req, res)
     // return because draft service already renders page.
     if (appointment === null) {
       return
@@ -1157,6 +1208,7 @@ export default class AppointmentsController {
       appointment,
       serviceUser,
       actionPlanId,
+      sessionNumber,
       appointmentSummary,
       draftBookingId
     )
@@ -1230,7 +1282,7 @@ export default class AppointmentsController {
 
   private async getFeedbackSubmittedByCaseworker(
     accessToken: string,
-    appointment: ActionPlanAppointment | InitialAssessmentAppointment
+    appointment: Appointment
   ): Promise<AuthUserDetails | string | null> {
     const submittedByUsername = appointment?.sessionFeedback.submittedBy?.username
     return submittedByUsername ? this.getCaseWorker(accessToken, submittedByUsername) : null
@@ -1238,7 +1290,7 @@ export default class AppointmentsController {
 
   private async createAppointmentSummary(
     accessToken: string,
-    appointment: ActionPlanAppointment | InitialAssessmentAppointment,
+    appointment: Appointment,
     referral: SentReferral
   ): Promise<AppointmentSummary> {
     const [deliusOfficeLocation, assignedCaseworker, feedbackSubmittedByCaseworker] = await Promise.all([
@@ -1395,10 +1447,9 @@ export default class AppointmentsController {
     return null
   }
 
-  private extractActionPlanAppointment(
-    fetchResult: DraftFetchSuccessResult<DraftAppointmentBooking | DraftAppointment>,
-    sessionNumber: string
-  ): ActionPlanAppointment | null {
+  private extractAppointment(
+    fetchResult: DraftFetchSuccessResult<DraftAppointmentBooking | DraftAppointment>
+  ): Appointment | null {
     const { draft } = fetchResult
     const appointmentSchedulingDetails = this.extractAppointmentSchedulingDetails(draft)
     if (appointmentSchedulingDetails) {
@@ -1406,7 +1457,6 @@ export default class AppointmentsController {
       if (draftAppointment?.sessionFeedback) {
         return {
           sessionFeedback: draftAppointment.sessionFeedback,
-          sessionNumber: Number(sessionNumber),
           ...appointmentSchedulingDetails,
         }
       }
@@ -1423,17 +1473,13 @@ export default class AppointmentsController {
           submitted: false,
           submittedBy: null,
         },
-        sessionNumber: Number(sessionNumber),
         ...appointmentSchedulingDetails,
       }
     }
     return null
   }
 
-  private async getActionPlanAppointmentFromDraftOrService(
-    req: Request,
-    res: Response
-  ): Promise<ActionPlanAppointment | null> {
+  private async getAppointmentFromDraftOrService(req: Request, res: Response): Promise<Appointment | null> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { draftBookingId, sessionNumber, actionPlanId } = req.params
@@ -1442,7 +1488,7 @@ export default class AppointmentsController {
       if (fetchResult.rendered) {
         return null
       }
-      const extractedAppointment = this.extractActionPlanAppointment(fetchResult, sessionNumber)
+      const extractedAppointment = this.extractAppointment(fetchResult)
       if (extractedAppointment === null) {
         throw new Error('No draft appointment could be found.')
       }

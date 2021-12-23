@@ -1,4 +1,4 @@
-import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
+import { Appointment } from '../../../../../models/appointment'
 import AttendanceFeedbackQuestionnaire from '../attendance/attendanceFeedbackQuestionnaire'
 import BehaviourFeedbackQuestionnaire from '../behaviour/behaviourFeedbackQuestionnaire'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
@@ -8,10 +8,7 @@ export default class FeedbackAnswersPresenter {
 
   private readonly behaviourFeedbackQuestionnaire: BehaviourFeedbackQuestionnaire
 
-  constructor(
-    private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
-    private readonly serviceUser: DeliusServiceUser
-  ) {
+  constructor(private readonly appointment: Appointment, private readonly serviceUser: DeliusServiceUser) {
     this.attendanceFeedbackQuestionnaire = new AttendanceFeedbackQuestionnaire(appointment, serviceUser)
     this.behaviourFeedbackQuestionnaire = new BehaviourFeedbackQuestionnaire(appointment, serviceUser)
   }

@@ -1,7 +1,7 @@
 import ReferenceDataService from './referenceDataService'
 import DeliusOfficeLocation from '../models/deliusOfficeLocation'
 import Intervention from '../models/intervention'
-import { ActionPlanAppointment, InitialAssessmentAppointment } from '../models/appointment'
+import { Appointment } from '../models/appointment'
 
 export default class DeliusOfficeLocationFilter {
   constructor(private referenceDataService: ReferenceDataService) {}
@@ -15,9 +15,7 @@ export default class DeliusOfficeLocationFilter {
     return this.findOfficesByNpsRegionIds(npsRegionIds)
   }
 
-  async findOfficeByAppointment(
-    appointment: InitialAssessmentAppointment | ActionPlanAppointment
-  ): Promise<DeliusOfficeLocation | null> {
+  async findOfficeByAppointment(appointment: Appointment): Promise<DeliusOfficeLocation | null> {
     if (appointment.npsOfficeCode === null) {
       return null
     }

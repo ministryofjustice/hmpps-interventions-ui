@@ -75,29 +75,50 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/action-plan/:id/number-of-sessions', (req, res) =>
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
+
+  // Scheduling a new delivery session appointment START
+  get(router, '/referral/:referralId/session/:sessionNumber/edit/start', (req, res) =>
+    appointmentsController.startEditingDeliverySessionAppointment(req, res, 'schedule-appointment')
+  )
+  get(router, '/referral/:referralId/session/:sessionNumber/edit/:draftBookingId/details', (req, res) =>
+    appointmentsController.editDeliverySessionAppointment(req, res, 'schedule-appointment')
+  )
+  post(router, '/referral/:referralId/session/:sessionNumber/edit/:draftBookingId/details', (req, res) =>
+    appointmentsController.editDeliverySessionAppointment(req, res, 'schedule-appointment')
+  )
+  get(router, '/referral/:referralId/session/:sessionNumber/edit/:draftBookingId/check-answers', (req, res) =>
+    appointmentsController.checkDeliverySessionAppointmentAnswers(req, res, 'schedule-appointment')
+  )
+  post(router, '/referral/:referralId/session/:sessionNumber/edit/:draftBookingId/submit', (req, res) =>
+    appointmentsController.submitDeliverySessionAppointment(req, res, 'schedule-appointment')
+  )
+  // Scheduling a new delivery session appointment END
+
+  // Rescheduling a delivery session appointment START
   get(router, '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/start', (req, res) =>
-    appointmentsController.startEditingDeliverySessionAppointment(req, res)
+    appointmentsController.startEditingDeliverySessionAppointment(req, res, 'reschedule-appointment')
   )
   get(
     router,
     '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/details',
-    (req, res) => appointmentsController.editDeliverySessionAppointment(req, res)
+    (req, res) => appointmentsController.editDeliverySessionAppointment(req, res, 'reschedule-appointment')
   )
   post(
     router,
     '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/details',
-    (req, res) => appointmentsController.editDeliverySessionAppointment(req, res)
+    (req, res) => appointmentsController.editDeliverySessionAppointment(req, res, 'reschedule-appointment')
   )
   get(
     router,
     '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/check-answers',
-    (req, res) => appointmentsController.checkDeliverySessionAppointmentAnswers(req, res)
+    (req, res) => appointmentsController.checkDeliverySessionAppointmentAnswers(req, res, 'reschedule-appointment')
   )
   post(
     router,
     '/referral/:referralId/session/:sessionNumber/appointment/:appointmentId/edit/:draftBookingId/submit',
-    (req, res) => appointmentsController.submitDeliverySessionAppointment(req, res)
+    (req, res) => appointmentsController.submitDeliverySessionAppointment(req, res, 'reschedule-appointment')
   )
+  // Scheduling a new delivery session appointment END
 
   // Deprecated
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/start', (req, res) =>

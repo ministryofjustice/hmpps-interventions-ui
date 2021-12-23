@@ -1,4 +1,4 @@
-import { ActionPlanAppointment } from '../../../../../models/appointment'
+import { Appointment } from '../../../../../models/appointment'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import BehaviourFeedbackInputsPresenter from '../../shared/behaviour/behaviourFeedbackInputsPresenter'
@@ -6,8 +6,9 @@ import BehaviourFeedbackQuestionnaire from '../../shared/behaviour/behaviourFeed
 
 export default class ActionPlanSessionBehaviourFeedbackPresenter {
   constructor(
-    private readonly appointment: ActionPlanAppointment,
+    private readonly appointment: Appointment,
     private readonly serviceUser: DeliusServiceUser,
+    private readonly sessionNumber: string,
     private readonly actionPlanId: string | null = null,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
@@ -21,11 +22,11 @@ export default class ActionPlanSessionBehaviourFeedbackPresenter {
   readonly questionnaire = new BehaviourFeedbackQuestionnaire(this.appointment, this.serviceUser)
 
   get backLinkHref(): string | null {
-    if (this.actionPlanId && this.appointment.sessionNumber) {
+    if (this.actionPlanId) {
       if (this.draftId) {
-        return `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.appointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/attendance`
+        return `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.sessionNumber}/post-session-feedback/edit/${this.draftId}/attendance`
       }
-      return `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.appointment.sessionNumber}/post-session-feedback/attendance`
+      return `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.sessionNumber}/post-session-feedback/attendance`
     }
     return null
   }

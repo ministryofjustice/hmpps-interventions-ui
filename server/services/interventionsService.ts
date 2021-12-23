@@ -409,7 +409,7 @@ export default class InterventionsService {
   ): Promise<ActionPlanAppointment> {
     const restClient = this.createRestClient(token)
     return (await restClient.get({
-      path: `/referral/${referralId}/delivery-session-appointment/${appointmentId}`,
+      path: `/referral/${referralId}/delivery-session-appointments/${appointmentId}`,
       headers: { Accept: 'application/json' },
     })) as ActionPlanAppointment
   }
@@ -451,21 +451,36 @@ export default class InterventionsService {
     )) as ActionPlanAppointment
   }
 
-  async updateDeliverySessionAppointment(
+  async scheduleDeliverySessionAppointment(
     token: string,
     referralId: string,
-    appointmentId: string,
+    sessionNumber: number,
     appointmentUpdate: AppointmentSchedulingDetails
   ): Promise<ActionPlanAppointment> {
     const restClient = this.createRestClient(token)
     return (await restClient.patch({
-      path: `/referral/${referralId}/delivery-session-appointment/${appointmentId}`,
+      path: `/referral/${referralId}/delivery-session-appointments`,
       headers: { Accept: 'application/json' },
-      data: { ...appointmentUpdate },
+      data: { ...appointmentUpdate, sessionId: sessionNumber },
     })) as ActionPlanAppointment
   }
 
-  // Deprecated in favour of updateDeliverySessionAppointment
+  async rescheduleDeliverySessionAppointment(
+    token: string,
+    referralId: string,
+    sessionNumber: number,
+    appointmentId: string,
+    appointmentUpdate: AppointmentSchedulingDetails
+  ): Promise<ActionPlanAppointment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.put({
+      path: `/referral/${referralId}/delivery-session-appointments/${appointmentId}`,
+      headers: { Accept: 'application/json' },
+      data: { ...appointmentUpdate, sessionId: sessionNumber },
+    })) as ActionPlanAppointment
+  }
+
+  // Deprecated in favour of scheduleDeliverySessionAppointment/rescheduleDeliverySessionAppointment
   async updateActionPlanAppointment(
     token: string,
     actionPlanId: string,
@@ -503,7 +518,7 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
-      path: `/referral/${referralId}/delivery-session-appointment/${appointmentId}/record-attendance`,
+      path: `/referral/${referralId}/delivery-session-appointments/${appointmentId}/attendance`,
       headers: { Accept: 'application/json' },
       data: appointmentAttendanceUpdate,
     })) as ActionPlanAppointment
@@ -534,7 +549,7 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
-      path: `/referral/${referralId}/delivery-session-appointment/${appointmentId}/record-behaviour`,
+      path: `/referral/${referralId}/delivery-session-appointments/${appointmentId}/behaviour`,
       headers: { Accept: 'application/json' },
       data: appointmentBehaviourUpdate,
     })) as ActionPlanAppointment
@@ -564,7 +579,7 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
-      path: `/referral/${referralId}/delivery-session-appointment/${appointmentId}/submit`,
+      path: `/referral/${referralId}/delivery-session-appointments/${appointmentId}/submit-feedback`,
       headers: { Accept: 'application/json' },
     })) as ActionPlanAppointment
   }

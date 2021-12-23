@@ -1,9 +1,5 @@
 import PresenterUtils from '../../utils/presenterUtils'
-import {
-  ActionPlanAppointment,
-  AppointmentSchedulingDetails,
-  InitialAssessmentAppointment,
-} from '../../models/appointment'
+import { Appointment, AppointmentSchedulingDetails } from '../../models/appointment'
 import { FormValidationError } from '../../utils/formValidationError'
 import AppointmentDecorator from '../../decorators/appointmentDecorator'
 import SentReferral from '../../models/sentReferral'
@@ -15,7 +11,7 @@ export default class ScheduleAppointmentPresenter {
   constructor(
     private readonly formType: 'supplierAssessment' | 'actionPlan',
     private readonly referral: SentReferral,
-    private readonly currentAppointment: InitialAssessmentAppointment | ActionPlanAppointment | null,
+    private readonly currentAppointment: Appointment | null,
     private readonly currentAppointmentSummary: AppointmentSummary | null,
     private readonly deliusOfficeLocations: DeliusOfficeLocation[],
     private readonly validationError: FormValidationError | null = null,

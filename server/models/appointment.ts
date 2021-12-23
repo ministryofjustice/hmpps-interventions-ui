@@ -8,11 +8,12 @@ export interface InitialAssessmentAppointment extends Appointment {
 }
 
 export interface ActionPlanAppointment extends Appointment {
+  // This id is the session id rather than delivery session appointment id
   id: string
   sessionNumber: number
 }
 
-interface Appointment extends AppointmentSchedulingDetails {
+export interface Appointment extends AppointmentSchedulingDetails {
   sessionFeedback: SessionFeedback
 }
 

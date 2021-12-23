@@ -779,7 +779,7 @@ describe('Scheduling a delivery session', () => {
         .expect(302)
         .expect('Location', `/service-provider/referrals/${referral.id}/progress`)
 
-      expect(interventionsService.updateDeliverySessionAppointment).toHaveBeenCalledWith(
+      expect(interventionsService.scheduleDeliverySessionAppointment).toHaveBeenCalledWith(
         'token',
         referral.id,
         updatedAppointment.id,
@@ -813,7 +813,7 @@ describe('Scheduling a delivery session', () => {
         const referral = sentReferralFactory.build()
 
         const error = { status: 409 }
-        interventionsService.updateDeliverySessionAppointment.mockRejectedValue(error)
+        interventionsService.scheduleDeliverySessionAppointment.mockRejectedValue(error)
 
         await request(app)
           .post(
@@ -847,7 +847,7 @@ describe('Scheduling a delivery session', () => {
         const referral = sentReferralFactory.build()
 
         const error = new Error('Failed to update appointment')
-        interventionsService.updateDeliverySessionAppointment.mockRejectedValue(error)
+        interventionsService.scheduleDeliverySessionAppointment.mockRejectedValue(error)
 
         await request(app)
           .post(

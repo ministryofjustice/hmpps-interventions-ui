@@ -11,7 +11,8 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
       const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
         appointment,
         serviceUser,
-        new AppointmentSummary(appointment)
+        new AppointmentSummary(appointment),
+        appointment.sessionNumber.toString()
       )
 
       expect(presenter.text).toMatchObject({
@@ -30,7 +31,8 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
         const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
           appointment,
           serviceUser,
-          new AppointmentSummary(appointment)
+          new AppointmentSummary(appointment),
+          appointment.sessionNumber.toString()
         )
         expect(presenter.text.attendanceQuestion).toEqual('Did Alex join this phone call?')
       })
@@ -43,7 +45,8 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
         const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
           appointment,
           serviceUser,
-          new AppointmentSummary(appointment)
+          new AppointmentSummary(appointment),
+          appointment.sessionNumber.toString()
         )
         expect(presenter.text.attendanceQuestion).toEqual('Did Alex join this video call?')
       })
@@ -56,7 +59,8 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
         const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
           appointment,
           serviceUser,
-          new AppointmentSummary(appointment)
+          new AppointmentSummary(appointment),
+          appointment.sessionNumber.toString()
         )
         expect(presenter.text.attendanceQuestion).toEqual('Did Alex attend this in-person meeting?')
       })
@@ -71,7 +75,8 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
         const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
           appointment,
           serviceUser,
-          new AppointmentSummary(appointment)
+          new AppointmentSummary(appointment),
+          appointment.sessionNumber.toString()
         )
         expect(presenter.text.attendanceQuestion).toEqual('Did Alex attend this in-person meeting?')
       })
@@ -117,7 +122,8 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
         const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
           appointment,
           serviceUser,
-          new AppointmentSummary(appointment)
+          new AppointmentSummary(appointment),
+          appointment.sessionNumber.toString()
         )
         expect(presenter.backLinkHref).toEqual(null)
       })

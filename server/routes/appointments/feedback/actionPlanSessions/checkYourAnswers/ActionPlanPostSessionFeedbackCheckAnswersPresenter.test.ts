@@ -14,6 +14,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
         appointment,
         serviceUser,
         actionPlanId,
+        appointment.sessionNumber.toString(),
         new AppointmentSummary(appointment)
       )
 
@@ -34,6 +35,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
           appointment,
           serviceUser,
           actionPlanId,
+          appointment.sessionNumber.toString(),
           new AppointmentSummary(appointment),
           'draftId'
         )
@@ -54,6 +56,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
           appointment,
           serviceUser,
           actionPlanId,
+          appointment.sessionNumber.toString(),
           new AppointmentSummary(appointment)
         )
 
@@ -81,6 +84,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
               appointment,
               serviceUser,
               referralId,
+              appointment.sessionNumber.toString(),
               new AppointmentSummary(appointment),
               'draftId'
             )
@@ -104,6 +108,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
             appointment,
             serviceUser,
             referralId,
+            appointment.sessionNumber.toString(),
             new AppointmentSummary(appointment),
             'draftId'
           )
@@ -130,6 +135,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
               appointment,
               serviceUser,
               referralId,
+              appointment.sessionNumber.toString(),
               new AppointmentSummary(appointment)
             )
 
@@ -152,6 +158,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
             appointment,
             serviceUser,
             referralId,
+            appointment.sessionNumber.toString(),
             new AppointmentSummary(appointment)
           )
 

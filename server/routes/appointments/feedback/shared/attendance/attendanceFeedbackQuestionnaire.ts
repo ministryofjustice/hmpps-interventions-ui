@@ -1,14 +1,11 @@
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
-import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
+import { Appointment } from '../../../../../models/appointment'
 import AppointmentDecorator from '../../../../../decorators/appointmentDecorator'
 
 export default class AttendanceFeedbackQuestionnaire {
   private readonly appointmentDecorator: AppointmentDecorator
 
-  constructor(
-    private appointment: InitialAssessmentAppointment | ActionPlanAppointment,
-    private serviceUser: DeliusServiceUser
-  ) {
+  constructor(private appointment: Appointment, private serviceUser: DeliusServiceUser) {
     this.appointmentDecorator = new AppointmentDecorator(appointment)
   }
 

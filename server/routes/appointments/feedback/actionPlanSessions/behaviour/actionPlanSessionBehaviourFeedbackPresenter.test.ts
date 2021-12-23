@@ -11,6 +11,7 @@ describe(ActionPlanSessionBehaviourFeedbackPresenter, () => {
         const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(
           appointment,
           serviceUser,
+          appointment.sessionNumber.toString(),
           'action-plan-id',
           null,
           null,
@@ -39,7 +40,12 @@ describe(ActionPlanSessionBehaviourFeedbackPresenter, () => {
       it('contains the link to the attendance page with the action plan id and session number', () => {
         const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
         const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-        const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(appointment, serviceUser, null)
+        const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(
+          appointment,
+          serviceUser,
+          appointment.sessionNumber.toString(),
+          null
+        )
 
         expect(presenter.backLinkHref).toBeNull()
       })

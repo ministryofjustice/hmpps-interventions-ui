@@ -1,4 +1,4 @@
-import { ActionPlanAppointment, AppointmentSchedulingDetails } from '../../../models/appointment'
+import { Appointment, AppointmentSchedulingDetails } from '../../../models/appointment'
 import DeliusOfficeLocation from '../../../models/deliusOfficeLocation'
 import SentReferral from '../../../models/sentReferral'
 import { FormValidationError } from '../../../utils/formValidationError'
@@ -8,9 +8,10 @@ import AppointmentSummary from '../appointmentSummary'
 export default class ScheduleDeliverySessionPresenter extends ScheduleAppointmentPresenter {
   constructor(
     referral: SentReferral,
-    currentAppointment: ActionPlanAppointment,
-    currentAppointmentSummary: AppointmentSummary,
+    currentAppointment: Appointment | null,
+    currentAppointmentSummary: AppointmentSummary | null,
     deliusOfficeLocations: DeliusOfficeLocation[],
+    sessionNumber: string,
     validationError: FormValidationError | null = null,
     draftSchedulingDetails: AppointmentSchedulingDetails | null = null,
     userInputData: Record<string, unknown> | null = null,
@@ -27,6 +28,6 @@ export default class ScheduleDeliverySessionPresenter extends ScheduleAppointmen
       userInputData,
       serverError
     )
-    this.text.title = `Add session ${currentAppointment.sessionNumber} details`
+    this.text.title = `Add session ${sessionNumber} details`
   }
 }
