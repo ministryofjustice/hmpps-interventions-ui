@@ -42,6 +42,17 @@ describe(DurationInput, () => {
 
         expect(result.value).toEqual(Duration.fromUnits(0, 30, 0))
       })
+
+      it('returns a Duration value when input have leading or trailing spaces', async () => {
+        const request = TestUtils.createRequest({
+          'session-duration-hours': ' 1',
+          'session-duration-minutes': '30 ',
+        })
+
+        const result = await new DurationInput(request, 'session-duration', messages).validate()
+
+        expect(result.value).toEqual(Duration.fromUnits(1, 30, 0))
+      })
     })
 
     it('returns an error when hours and minutes are both empty', async () => {
