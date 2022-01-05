@@ -18,7 +18,7 @@ describe(ScheduleAppointmentForm, () => {
       describe('with a phone call appointment', () => {
         it('returns a paramsForUpdate with the completionDeadline key, an ISO-formatted date and phone call', async () => {
           const request = TestUtils.createRequest({
-            'date-year': '2021',
+            'date-year': '2025',
             'date-month': '09',
             'date-day': '12',
             'time-hour': '1',
@@ -33,7 +33,7 @@ describe(ScheduleAppointmentForm, () => {
           const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
 
           expect(data.paramsForUpdate).toEqual({
-            appointmentTime: '2021-09-12T12:05:00.000Z',
+            appointmentTime: '2025-09-12T12:05:00.000Z',
             durationInMinutes: 90,
             sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'PHONE_CALL',
@@ -46,7 +46,7 @@ describe(ScheduleAppointmentForm, () => {
       describe('with an other locations appointment', () => {
         it('returns a paramsForUpdate with the completionDeadline key, an ISO-formatted date and phone call', async () => {
           const request = TestUtils.createRequest({
-            'date-year': '2021',
+            'date-year': '2025',
             'date-month': '09',
             'date-day': '12',
             'time-hour': '1',
@@ -66,7 +66,7 @@ describe(ScheduleAppointmentForm, () => {
           const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
 
           expect(data.paramsForUpdate).toEqual({
-            appointmentTime: '2021-09-12T12:05:00.000Z',
+            appointmentTime: '2025-09-12T12:05:00.000Z',
             durationInMinutes: 90,
             sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -84,7 +84,7 @@ describe(ScheduleAppointmentForm, () => {
         describe('with a missing second address line', () => {
           it('returns a paramsForUpdate with the completionDeadline key, an ISO-formatted date and phone call', async () => {
             const request = TestUtils.createRequest({
-              'date-year': '2021',
+              'date-year': '2025',
               'date-month': '09',
               'date-day': '12',
               'time-hour': '1',
@@ -102,7 +102,7 @@ describe(ScheduleAppointmentForm, () => {
 
             const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
             expect(data.paramsForUpdate).toEqual({
-              appointmentTime: '2021-09-12T12:05:00.000Z',
+              appointmentTime: '2025-09-12T12:05:00.000Z',
               durationInMinutes: 90,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -121,7 +121,7 @@ describe(ScheduleAppointmentForm, () => {
       describe('with a delius office location appointment', () => {
         it('returns a valid appointment with an office location code', async () => {
           const request = TestUtils.createRequest({
-            'date-year': '2021',
+            'date-year': '2025',
             'date-month': '09',
             'date-day': '12',
             'time-hour': '1',
@@ -137,7 +137,7 @@ describe(ScheduleAppointmentForm, () => {
           const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
 
           expect(data.paramsForUpdate).toEqual({
-            appointmentTime: '2021-09-12T12:05:00.000Z',
+            appointmentTime: '2025-09-12T12:05:00.000Z',
             durationInMinutes: 90,
             sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
@@ -197,7 +197,7 @@ describe(ScheduleAppointmentForm, () => {
         describe('having an empty office location selection', () => {
           it('returns an error message for missing office location', async () => {
             const request = TestUtils.createRequest({
-              'date-year': '2021',
+              'date-year': '2025',
               'date-month': '09',
               'date-day': '12',
               'time-hour': '1',
@@ -226,7 +226,7 @@ describe(ScheduleAppointmentForm, () => {
         describe('having an invalid office location selection', () => {
           it('returns an error message for invalid office location', async () => {
             const request = TestUtils.createRequest({
-              'date-year': '2021',
+              'date-year': '2025',
               'date-month': '09',
               'date-day': '12',
               'time-hour': '1',
