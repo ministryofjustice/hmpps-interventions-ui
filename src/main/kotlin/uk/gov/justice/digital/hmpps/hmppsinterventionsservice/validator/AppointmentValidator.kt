@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.UpdateAppointm
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended.NO
+import java.time.LocalTime
 import java.time.OffsetDateTime
 
 @Component
@@ -63,8 +64,11 @@ class AppointmentValidator {
     behaviourDescription: String?,
     errors: MutableList<FieldError>
   ) {
-    if (appointmentTime.isAfter(OffsetDateTime.now()))
+    // if the appointment occurred today or on a date in the future, no attendance validation is required
+    if (appointmentTime.isAfter(OffsetDateTime.now().with(LocalTime.MIN))) {
       return
+    }
+
     if (attended == null) {
       errors.add(FieldError(field = "appointmentAttendance.attended", error = Code.CANNOT_BE_EMPTY))
       return

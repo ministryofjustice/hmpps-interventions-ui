@@ -116,6 +116,22 @@ internal class AppointmentValidatorTest {
       }
 
       @Test
+      fun `past appointment on same day allowed if no attendance reported`() {
+        val updateAppointmentDTO = UpdateAppointmentDTO(
+          appointmentTime = OffsetDateTime.now().minusMinutes(1), // will fail if the test runs just after midnight
+          durationInMinutes = 1,
+          appointmentDeliveryType = AppointmentDeliveryType.IN_PERSON_MEETING_PROBATION_OFFICE,
+          sessionType = AppointmentSessionType.ONE_TO_ONE,
+          npsOfficeCode = "CRSEXT",
+          appointmentAttendance = null,
+          appointmentBehaviour = null
+        )
+        assertDoesNotThrow {
+          deliverySessionValidator.validateUpdateAppointment(updateAppointmentDTO)
+        }
+      }
+
+      @Test
       fun `past appointment fails if no attendance reported`() {
         val updateAppointmentDTO = UpdateAppointmentDTO(
           appointmentTime = OffsetDateTime.now().minusDays(1),
