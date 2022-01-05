@@ -17,12 +17,16 @@ export default class ScheduleAppointmentForm {
   constructor(private readonly request: Request, private readonly deliusOfficeLocations: DeliusOfficeLocation[]) {}
 
   async data(): Promise<FormData<AppointmentSchedulingDetails>> {
+    const startOfToday = new Date()
+    startOfToday.setHours(0, 0, 0, 0)
+
     const [dateResult, durationResult, sessionTypeResult, appointmentDeliveryType] = await Promise.all([
       new TwelveHourBritishDateTimeInput(
         this.request,
         'date',
         'time',
-        errorMessages.scheduleAppointment.time
+        errorMessages.scheduleAppointment.time,
+        startOfToday
       ).validate(),
       new DurationInput(this.request, 'duration', errorMessages.scheduleAppointment.duration).validate(),
       FormUtils.runValidations({ request: this.request, validations: this.validateSessionType() }),
