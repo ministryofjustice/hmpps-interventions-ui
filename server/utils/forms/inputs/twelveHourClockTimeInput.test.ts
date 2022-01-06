@@ -35,6 +35,18 @@ describe(TwelveHourClockTimeInput, () => {
 
         expect(result.value).toEqual(ClockTime.fromTwentyFourHourComponents(13, 5, 0))
       })
+
+      it('returns a ClockTime value for inputs with leading or trailing spaces', async () => {
+        const request = TestUtils.createRequest({
+          'alarm-time-hour': ' 1     ',
+          'alarm-time-minute': ' 05',
+          'alarm-time-part-of-day': 'am',
+        })
+
+        const result = await new TwelveHourClockTimeInput(request, 'alarm-time', messages).validate()
+
+        expect(result.value).toEqual(ClockTime.fromTwentyFourHourComponents(1, 5, 0))
+      })
     })
 
     it('returns an error when a field is empty', async () => {

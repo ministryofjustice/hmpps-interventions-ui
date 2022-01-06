@@ -25,6 +25,20 @@ describe(CalendarDayInput, () => {
       })
     })
 
+    describe('with trailing or leading spaces', () => {
+      it('returns a CalendarDay value', async () => {
+        const request = TestUtils.createRequest({
+          'deadline-year': ' 2021 ',
+          'deadline-month': '09 ',
+          'deadline-day': ' 12',
+        })
+
+        const result = await new CalendarDayInput(request, 'deadline', messages).validate()
+
+        expect(result.value).toEqual(CalendarDay.fromComponents(12, 9, 2021))
+      })
+    })
+
     it('returns an error when a field is empty', async () => {
       const request = TestUtils.createRequest({
         'deadline-year': '',

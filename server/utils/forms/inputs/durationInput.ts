@@ -81,10 +81,12 @@ export default class DurationInput {
       // These two express that any provided component must be an integer
       ExpressValidator.body(this.keys.hours)
         .if(ExpressValidator.body(this.keys.hours).notEmpty(isEmptyOptions))
+        .trim()
         .isInt()
         .withMessage(this.errorMessages.invalidDuration),
       ExpressValidator.body(this.keys.minutes)
         .if(ExpressValidator.body(this.keys.minutes).notEmpty(isEmptyOptions))
+        .trim()
         .isInt()
         .withMessage(this.errorMessages.invalidDuration),
     ]

@@ -80,18 +80,21 @@ export default class CalendarDayInput {
         .notEmpty({ ignore_whitespace: true })
         .withMessage(this.errorMessages.dayEmpty)
         .bail()
+        .trim()
         .isInt()
         .withMessage(this.errorMessages.invalidDate),
       ExpressValidator.body(this.keys.month)
         .notEmpty({ ignore_whitespace: true })
         .withMessage(this.errorMessages.monthEmpty)
         .bail()
+        .trim()
         .isInt()
         .withMessage(this.errorMessages.invalidDate),
       ExpressValidator.body(this.keys.year)
         .notEmpty({ ignore_whitespace: true })
         .withMessage(this.errorMessages.yearEmpty)
         .bail()
+        .trim()
         .isInt({ max: 9999 }) // sure, dates bigger than this are real dates, but they're not valid here
         .withMessage(this.errorMessages.invalidDate),
     ]
