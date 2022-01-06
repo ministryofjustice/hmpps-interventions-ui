@@ -1918,7 +1918,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.get('#date-day').type('24')
       cy.get('#date-month').type('3')
-      cy.get('#date-year').type('2021')
+      cy.get('#date-year').type('2025')
       cy.get('#time-hour').type('9')
       cy.get('#time-minute').type('02')
       cy.get('#time-part-of-day').select('AM')
@@ -1934,7 +1934,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Save and continue').click()
 
       const scheduledAppointment = initialAssessmentAppointmentFactory.build({
-        appointmentTime: '3021-03-24T09:02:02Z',
+        appointmentTime: '2025-03-24T09:02:02Z',
         durationInMinutes: 75,
         appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
         appointmentDeliveryAddress: {
@@ -1953,7 +1953,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
 
       cy.get('h1').contains('Confirm appointment details')
-      cy.contains('24 March 2021')
+      cy.contains('24 March 2025')
       cy.contains('9:02am to 10:17am')
       cy.contains('In-person meeting')
       cy.contains('Harmony Living Office, Room 4')
@@ -1978,7 +1978,7 @@ describe('Service provider referrals dashboard', () => {
         .getTable()
         .should('deep.equal', [
           {
-            'Date and time': '9:02am on 24 Mar 3021',
+            'Date and time': '9:02am on 24 Mar 2025',
             Status: 'scheduled',
             Action: 'View details or reschedule',
           },
@@ -1987,7 +1987,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('View details or reschedule').click()
       cy.get('h1').contains('View appointment details')
 
-      cy.contains('24 March 3021')
+      cy.contains('24 March 2025')
       cy.contains('9:02am to 10:17am')
       cy.contains('In-person meeting')
       cy.contains('Harmony Living Office, Room 4')
@@ -2027,7 +2027,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.get('#date-day').type('24')
       cy.get('#date-month').type('3')
-      cy.get('#date-year').type('2021')
+      cy.get('#date-year').type('2025')
       cy.get('#time-hour').type('9')
       cy.get('#time-minute').type('02')
       cy.get('#time-part-of-day').select('AM')
@@ -2052,7 +2052,7 @@ describe('Service provider referrals dashboard', () => {
       cy.get('h1').contains('Add appointment details')
       cy.get('#date-day').should('have.value', '24')
       cy.get('#date-month').should('have.value', '3')
-      cy.get('#date-year').should('have.value', '2021')
+      cy.get('#date-year').should('have.value', '2025')
       cy.get('#time-hour').should('have.value', '9')
       cy.get('#time-minute').should('have.value', '02')
       cy.get('#time-part-of-day').get('[selected]').should('have.text', 'AM')
@@ -2070,7 +2070,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Save and continue').click()
 
       const scheduledAppointment = initialAssessmentAppointmentFactory.build({
-        appointmentTime: '2021-03-25T09:02:02Z',
+        appointmentTime: '2025-03-25T09:02:02Z',
         durationInMinutes: 75,
         appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
         appointmentDeliveryAddress: {
@@ -2102,7 +2102,7 @@ describe('Service provider referrals dashboard', () => {
         referral: { serviceCategoryIds: [serviceCategory.id], interventionId: intervention.id },
       })
       const scheduledAppointment = initialAssessmentAppointmentFactory.build({
-        appointmentTime: '3021-03-24T09:02:00Z',
+        appointmentTime: '2025-03-24T09:02:00Z',
         durationInMinutes: 75,
       })
       const supplierAssessmentWithScheduledAppointment = supplierAssessmentFactory.justCreated.build({
@@ -2132,7 +2132,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.get('#date-day').should('have.value', '24')
       cy.get('#date-month').should('have.value', '3')
-      cy.get('#date-year').should('have.value', '3021')
+      cy.get('#date-year').should('have.value', '2025')
       cy.get('#time-hour').should('have.value', '9')
       cy.get('#time-minute').should('have.value', '02')
       // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
@@ -2142,7 +2142,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.get('#date-day').clear().type('10')
       cy.get('#date-month').clear().type('4')
-      cy.get('#date-year').clear().type('2021')
+      cy.get('#date-year').clear().type('2025')
       cy.get('#time-hour').clear().type('4')
       cy.get('#time-minute').clear().type('15')
       cy.get('#time-part-of-day').select('PM')
@@ -2152,7 +2152,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Save and continue').click()
 
       const rescheduledAppointment = initialAssessmentAppointmentFactory.build({
-        appointmentTime: '3021-04-10T16:15:00Z',
+        appointmentTime: '2025-04-10T16:15:00Z',
         durationInMinutes: 45,
       })
       const supplierAssessmentWithRescheduledAppointment = supplierAssessmentFactory.build({
@@ -2166,7 +2166,7 @@ describe('Service provider referrals dashboard', () => {
       )
 
       cy.get('h1').contains('Confirm appointment details')
-      cy.contains('10 April 2021')
+      cy.contains('10 April 2025')
       cy.contains('4:15pm to 5:00pm')
 
       cy.get('button').contains('Confirm').click()
@@ -2325,7 +2325,7 @@ describe('Service provider referrals dashboard', () => {
           cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
 
           const unattendedAppointment = initialAssessmentAppointmentFactory.build({
-            appointmentTime: '2021-03-24T09:02:02Z',
+            appointmentTime: '2025-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
             sessionFeedback: {
@@ -2356,7 +2356,7 @@ describe('Service provider referrals dashboard', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date and time': '9:02am on 24 Mar 2021',
+                'Date and time': '9:02am on 24 Mar 2025',
                 Status: 'did not attend',
                 Action: 'RescheduleView feedback',
               },
@@ -2364,7 +2364,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.get('[data-cy=supplier-assessment-table]').contains('View feedback').click()
 
-          cy.contains('24 March 2021')
+          cy.contains('24 March 2025')
           cy.contains('9:02am to 10:17am')
           cy.contains('Did Alex attend the initial assessment appointment?')
           cy.contains('No')
@@ -2381,7 +2381,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.get('#date-day').clear().type('10')
           cy.get('#date-month').clear().type('2')
-          cy.get('#date-year').clear().type('3021')
+          cy.get('#date-year').clear().type('2025')
           cy.get('#time-hour').clear().type('4')
           cy.get('#time-minute').clear().type('15')
           cy.get('#time-part-of-day').select('PM')
@@ -2392,7 +2392,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
 
           const rescheduledAppointment = initialAssessmentAppointmentFactory.build({
-            appointmentTime: '3021-02-10T16:15:00Z',
+            appointmentTime: '2025-02-10T16:15:00Z',
             durationInMinutes: 45,
           })
 
@@ -2408,7 +2408,7 @@ describe('Service provider referrals dashboard', () => {
           )
 
           cy.get('h1').contains('Confirm appointment details')
-          cy.contains('10 February 3021')
+          cy.contains('10 February 2025')
           cy.contains('4:15pm to 5:00pm')
 
           cy.get('button').contains('Confirm').click()
@@ -2423,14 +2423,14 @@ describe('Service provider referrals dashboard', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date and time': '4:15pm on 10 Feb 3021',
-                Status: 'scheduled',
-                Action: 'View details or reschedule',
-              },
-              {
-                'Date and time': '9:02am on 24 Mar 2021',
+                'Date and time': '9:02am on 24 Mar 2025',
                 Status: 'did not attend',
                 Action: 'View feedback',
+              },
+              {
+                'Date and time': '4:15pm on 10 Feb 2025',
+                Status: 'scheduled',
+                Action: 'View details or reschedule',
               },
             ])
         })

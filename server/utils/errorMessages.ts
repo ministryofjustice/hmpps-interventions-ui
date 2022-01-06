@@ -108,6 +108,7 @@ export default {
         invalidTime: 'The session time must be a real time',
       },
       invalidTime: 'The session time must exist on the session date',
+      pastTime: 'The session cannot be scheduled in the past',
     },
     duration: {
       empty: 'Enter a duration',

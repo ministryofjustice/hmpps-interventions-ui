@@ -10,6 +10,7 @@ export interface TwelveHourBritishDateTimeErrorMessages {
   calendarDay: CalendarDayErrorMessages
   clockTime: TwelveHourClockTimeErrorMessages
   invalidTime: string
+  pastTime: string
 }
 
 export default class TwelveHourBritishDateTimeInput {
@@ -17,7 +18,8 @@ export default class TwelveHourBritishDateTimeInput {
     private readonly request: Request,
     private readonly dayKey: string,
     private readonly timeKey: string,
-    private readonly errorMessages: TwelveHourBritishDateTimeErrorMessages
+    private readonly errorMessages: TwelveHourBritishDateTimeErrorMessages,
+    private readonly earliestAllowedTime: Date | null = null
   ) {}
 
   async validate(): Promise<FormValidationResult<Date>> {
@@ -45,7 +47,8 @@ export default class TwelveHourBritishDateTimeInput {
       return { errors: [...(dayResult.error?.errors ?? []), ...(timeResult.error?.errors ?? [])] }
     }
 
-    if (this.date(dayResult, timeResult) === null) {
+    const result = this.date(dayResult, timeResult)
+    if (result === null) {
       return {
         errors: [
           {
@@ -55,6 +58,35 @@ export default class TwelveHourBritishDateTimeInput {
           },
         ],
       }
+    }
+
+    if (this.earliestAllowedTime !== null && result < this.earliestAllowedTime) {
+      const isSameDate =
+        this.earliestAllowedTime.getDate() === result.getDate() &&
+        this.earliestAllowedTime.getMonth() === result.getMonth() &&
+        this.earliestAllowedTime.getFullYear() === result.getFullYear()
+
+      return isSameDate
+        ? {
+            // the error is in the time field
+            errors: [
+              {
+                errorSummaryLinkedField: `${this.timeKey}-hour`,
+                formFields: [`${this.timeKey}-hour`, `${this.timeKey}-minute`, `${this.timeKey}-part-of-day`],
+                message: this.errorMessages.pastTime,
+              },
+            ],
+          }
+        : {
+            // the error is in the date field
+            errors: [
+              {
+                errorSummaryLinkedField: `${this.dayKey}-day`,
+                formFields: [`${this.dayKey}-day`, `${this.dayKey}-month`, `${this.dayKey}-year`],
+                message: this.errorMessages.pastTime,
+              },
+            ],
+          }
     }
 
     return null
