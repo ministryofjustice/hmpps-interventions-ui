@@ -54,7 +54,7 @@ internal class RisksAndNeedsServiceTest : LoggingSpyTest(RisksAndNeedsService::c
             """
         { 
           "supplementaryRiskId": "f974d97e-9f50-4963-91f3-a619f50ad127",
-          "createdDate": "2020-12-04T10:42:43+00:00"
+          "createdDate": "2022-01-06T11:23:53.622652"
         }
             """.trimIndent()
           )
@@ -70,7 +70,7 @@ internal class RisksAndNeedsServiceTest : LoggingSpyTest(RisksAndNeedsService::c
         UUID.randomUUID(),
         "CRN123",
         authUserFactory.createPP(),
-        OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
+        OffsetDateTime.parse("2022-01-06T11:23:53.622652+00:00"),
         "additional information",
         oasysRiskInformation,
       )
@@ -88,7 +88,7 @@ internal class RisksAndNeedsServiceTest : LoggingSpyTest(RisksAndNeedsService::c
             """
         { 
           "supplementaryRiskId": "f974d97e-9f50-4963-91f3-a619f50ad127",
-          "createdDate": "2020-12-04T10:42:43+00:00"
+          "createdDate": "2020-12-04T10:42:43.123456"
         }
             """.trimIndent()
           )
