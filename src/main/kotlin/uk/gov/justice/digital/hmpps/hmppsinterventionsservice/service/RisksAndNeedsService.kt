@@ -49,6 +49,7 @@ data class RedactedRisk(
 
 data class SupplementaryRiskResponse(
   val supplementaryRiskId: UUID,
+  val createdDate: OffsetDateTime,
 )
 
 @Service
@@ -92,22 +93,26 @@ class RisksAndNeedsService(
 
     // this endpoint requires user auth tokens for security reasons
     val authentication = SecurityContextHolder.getContext().authentication as JwtAuthenticationToken
-    return assessRisksAndNeedsClient.post(createSupplementaryRiskLocation, request, customAuthentication = authentication)
+    val response = assessRisksAndNeedsClient.post(createSupplementaryRiskLocation, request, customAuthentication = authentication)
       .retrieve()
-      .bodyToMono(SupplementaryRiskResponse::class.java)
-      .onErrorResume(WebClientResponseException::class.java) {
-        when (it.statusCode) {
-          HttpStatus.CONFLICT -> {
-            logger.warn(
-              "attempted to create new supplementary risk, but risk already exists for this referral {} {}",
-              kv("crn", crn),
-              kv("referralId", referralId)
-            )
-          }
-        }
-        Mono.error(it)
-      }
+      .onStatus({ it == HttpStatus.CONFLICT }, { Mono.empty() })
+      .toEntity(SupplementaryRiskResponse::class.java)
       .block()
-      .supplementaryRiskId
+
+    if (response.statusCode.equals(HttpStatus.CONFLICT)) {
+      if (response.body.createdDate != riskCreatedAt) {
+        logger.error(
+          "attempted to update an existing supplementary risk with new data {} {} {} {}",
+          kv("crn", crn),
+          kv("referralId", referralId),
+          kv("riskId", response.body.supplementaryRiskId),
+          kv("riskCreatedAt", riskCreatedAt)
+        )
+
+        throw WebClientResponseException(409, "Conflict from ARN 'createSupplementaryRisk'", null, null, null)
+      }
+    }
+
+    return response.body.supplementaryRiskId
   }
 }
