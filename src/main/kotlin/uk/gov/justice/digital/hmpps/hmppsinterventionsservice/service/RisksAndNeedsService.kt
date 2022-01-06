@@ -49,7 +49,7 @@ data class RedactedRisk(
 
 data class SupplementaryRiskResponse(
   val supplementaryRiskId: UUID,
-  val createdDate: OffsetDateTime,
+  val createdDate: LocalDateTime,
 )
 
 @Service
@@ -100,7 +100,7 @@ class RisksAndNeedsService(
       .block()
 
     if (response.statusCode.equals(HttpStatus.CONFLICT)) {
-      if (response.body.createdDate != riskCreatedAt) {
+      if (response.body.createdDate != riskCreatedAt.toLocalDateTime()) {
         logger.error(
           "attempted to update an existing supplementary risk with new data {} {} {} {}",
           kv("crn", crn),
