@@ -46,7 +46,7 @@ dependencies {
   runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1") // needed for OffsetDateTime for AppInsights
 
   // openapi
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.2")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.3")
 
   // notifications
   implementation("uk.gov.service.notify:notifications-java-client:3.17.2-RELEASE")
@@ -59,11 +59,14 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("com.nimbusds:oauth2-oidc-sdk:9.20")
+  implementation("com.nimbusds:oauth2-oidc-sdk:9.20.1")
+
   // until bumped in upstream
+  implementation("ch.qos.logback:logback-classic:1.2.10") // CVE-2021-42550
+  implementation("ch.qos.logback:logback-core:1.2.10") // CVE-2021-42550
   implementation("io.netty:netty-codec:4.1.72.Final") // CVE-2021-43797
-  implementation("org.apache.logging.log4j:log4j-api:2.17.0") // CVE-2021-44228
-  implementation("org.apache.logging.log4j:log4j-to-slf4j:2.17.0") // CVE-2021-44228
+  implementation("org.apache.logging.log4j:log4j-api:2.17.1") // CVE-2021-44228
+  implementation("org.apache.logging.log4j:log4j-to-slf4j:2.17.1") // CVE-2021-44228
 
   // database
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -77,7 +80,7 @@ dependencies {
   implementation("com.github.java-json-tools:json-patch:1.13")
   implementation("org.apache.commons:commons-csv:1.9.0")
 
-  testImplementation("au.com.dius.pact.provider:junit5spring:4.3.2")
+  testImplementation("au.com.dius.pact.provider:junit5spring:4.3.3")
   testImplementation("com.squareup.okhttp3:okhttp:4.9.3")
   testImplementation("com.squareup.okhttp3:mockwebserver:4.9.3")
   testImplementation("org.mockito:mockito-inline:4.2.0")
