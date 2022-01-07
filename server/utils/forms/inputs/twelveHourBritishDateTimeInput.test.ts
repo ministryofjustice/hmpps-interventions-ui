@@ -16,6 +16,7 @@ describe(TwelveHourBritishDateTimeInput, () => {
       invalidTime: 'The deadline time must be a real time',
     },
     invalidTime: 'The deadline time must exist on the deadline day',
+    pastTime: 'The deadline cannot be in the past',
   }
 
   describe('validate', () => {
@@ -155,6 +156,90 @@ describe(TwelveHourBritishDateTimeInput, () => {
             message: 'The deadline time must exist on the deadline day',
           },
         ],
+      })
+    })
+
+    describe('with valid date and earliestAllowedTime', () => {
+      it('returns the date when earliestAllowedTime is before the input time', async () => {
+        const request = TestUtils.createRequest({
+          'deadline-date-year': '2021',
+          'deadline-date-month': '09',
+          'deadline-date-day': '12',
+          'deadline-time-hour': '1',
+          'deadline-time-minute': '05',
+          'deadline-time-part-of-day': 'pm',
+        })
+
+        const result = await new TwelveHourBritishDateTimeInput(
+          request,
+          'deadline-date',
+          'deadline-time',
+          messages,
+          // month is zero indexed!
+          new Date(2021, 8, 11, 9, 0, 0)
+        ).validate()
+
+        expect(result.error).toBeNull()
+      })
+
+      it('returns an error when the earliest time is on the same day', async () => {
+        const request = TestUtils.createRequest({
+          'deadline-date-year': '2021',
+          'deadline-date-month': '09',
+          'deadline-date-day': '12',
+          'deadline-time-hour': '1',
+          'deadline-time-minute': '05',
+          'deadline-time-part-of-day': 'pm',
+        })
+
+        const result = await new TwelveHourBritishDateTimeInput(
+          request,
+          'deadline-date',
+          'deadline-time',
+          messages,
+          // month is zero indexed!
+          new Date(2021, 8, 12, 14, 0, 0)
+        ).validate()
+
+        expect(result.error).toEqual({
+          errors: [
+            {
+              errorSummaryLinkedField: 'deadline-time-hour',
+              formFields: ['deadline-time-hour', 'deadline-time-minute', 'deadline-time-part-of-day'],
+              message: 'The deadline cannot be in the past',
+            },
+          ],
+        })
+      })
+
+      it('returns an error when the earliest time is on a different day', async () => {
+        const request = TestUtils.createRequest({
+          'deadline-date-year': '2021',
+          'deadline-date-month': '09',
+          'deadline-date-day': '12',
+          'deadline-time-hour': '1',
+          'deadline-time-minute': '05',
+          'deadline-time-part-of-day': 'pm',
+        })
+
+        const result = await new TwelveHourBritishDateTimeInput(
+          request,
+          'deadline-date',
+          'deadline-time',
+          messages,
+          // month is zero indexed!
+          new Date(2021, 8, 13, 9, 0, 0)
+        ).validate()
+
+        expect(result.error).toEqual({
+          errors: [
+            {
+              errorSummaryLinkedField: 'deadline-date-day',
+              formFields: ['deadline-date-day', 'deadline-date-month', 'deadline-date-year'],
+              message: 'The deadline cannot be in the past',
+            },
+          ],
+        })
       })
     })
   })

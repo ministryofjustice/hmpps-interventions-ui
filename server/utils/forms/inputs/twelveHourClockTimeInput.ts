@@ -70,12 +70,14 @@ export default class TwelveHourClockTimeInput {
         .notEmpty({ ignore_whitespace: true })
         .withMessage(this.errorMessages.hourEmpty)
         .bail()
+        .trim()
         .isInt()
         .withMessage(this.errorMessages.invalidTime),
       ExpressValidator.body(this.keys.minute)
         .notEmpty({ ignore_whitespace: true })
         .withMessage(this.errorMessages.minuteEmpty)
         .bail()
+        .trim()
         .isInt()
         .withMessage(this.errorMessages.invalidTime),
       ExpressValidator.body(this.keys.partOfDay)
