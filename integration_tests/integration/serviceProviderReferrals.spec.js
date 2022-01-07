@@ -1094,7 +1094,7 @@ describe('Service provider referrals dashboard', () => {
 
     describe('with valid inputs and an appointment in the past', () => {
       describe('when booking for a phone call', () => {
-        it('should present no errors and display scheduled appointment', () => {
+        it('presents an error because appointments in the past are not allowed', () => {
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
 
           // schedule page
@@ -1110,65 +1110,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Phone call').click()
 
           cy.contains('Save and continue').click()
-
-          // schedule check your answers page
-          cy.get('h1').contains('Confirm session 1 details')
-          cy.contains('24 March 2021')
-          cy.contains('9:02am to 10:17am')
-          cy.contains('Phone call')
-
-          cy.get('button').contains('Confirm').click()
-
-          // Attendance page
-          cy.contains('Yes').click()
-          cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
-          cy.contains('Save and continue').click()
-
-          cy.contains('Add behaviour feedback')
-
-          cy.contains("Describe Alex's behaviour in this session").type('Alex was well behaved')
-          cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
-
-          cy.contains('Save and continue').click()
-
-          cy.contains('Confirm feedback')
-          cy.contains('Alex attended the session')
-          cy.contains('Yes, they were on time')
-          cy.contains('Alex was well behaved')
-          cy.contains('No')
-
-          const scheduledAppointment = actionPlanAppointmentFactory.build({
-            ...appointment,
-            appointmentTime: '2021-03-24T09:02:02Z',
-            durationInMinutes: 75,
-            sessionType: 'ONE_TO_ONE',
-            appointmentDeliveryType: 'PHONE_CALL',
-            appointmentDeliveryAddress: null,
-            npsOfficeCode: null,
-            sessionFeedback: {
-              attendance: {
-                attended: 'yes',
-                additionalAttendanceInformation: 'Alex attended the session',
-              },
-              behaviour: {
-                behaviourDescription: 'Alex was well behaved',
-                notifyProbationPractitioner: false,
-              },
-              submitted: true,
-              submittedBy: {
-                firstName: 'Case',
-                lastName: 'Worker',
-                username: 'case.worker',
-              },
-            },
-          })
-          cy.stubGetActionPlanAppointment(actionPlan.id, 1, scheduledAppointment)
-          cy.stubGetActionPlanAppointment(actionPlan.id, 2, scheduledAppointment)
-          cy.stubUpdateActionPlanAppointment(actionPlan.id, 1, scheduledAppointment)
-          cy.get('form').contains('Confirm').click()
-
-          cy.contains('Session feedback added and submitted to the probation practitioner')
-          cy.contains('You can now deliver the next session scheduled for 24 March 2021.')
+          cy.contains('There is a problem').next().contains('The session cannot be scheduled in the past')
         })
       })
     })
