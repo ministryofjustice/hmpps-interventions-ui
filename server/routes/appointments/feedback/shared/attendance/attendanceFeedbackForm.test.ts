@@ -29,7 +29,7 @@ describe(AttendanceFeedbackForm, () => {
         expect(data.error?.errors).toContainEqual({
           errorSummaryLinkedField: 'attended',
           formFields: ['attended'],
-          message: 'Select whether the service user attended or not',
+          message: 'Select whether they attended or not',
         })
       })
     })

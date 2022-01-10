@@ -26,7 +26,7 @@ describe(BehaviourFeedbackForm, () => {
         expect(data.error?.errors).toContainEqual({
           errorSummaryLinkedField: 'behaviour-description',
           formFields: ['behaviour-description'],
-          message: "Enter a description of the service user's behaviour",
+          message: "Enter a description of their behaviour",
         })
         expect(data.error?.errors).toContainEqual({
           errorSummaryLinkedField: 'notify-probation-practitioner',
@@ -47,7 +47,7 @@ describe(BehaviourFeedbackForm, () => {
           {
             errorSummaryLinkedField: 'behaviour-description',
             formFields: ['behaviour-description'],
-            message: "Enter a description of the service user's behaviour",
+            message: "Enter a description of their behaviour",
           },
         ])
       })
