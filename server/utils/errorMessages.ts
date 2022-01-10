@@ -90,7 +90,7 @@ export default {
     empty: 'Select whether they attended or not',
   },
   appointmentBehaviour: {
-    descriptionEmpty: "Enter a description of their behaviour",
+    descriptionEmpty: 'Enter a description of their behaviour',
     notifyProbationPractitionerNotSelected: 'Select whether to notify the probation practitioner or not',
   },
   scheduleAppointment: {
