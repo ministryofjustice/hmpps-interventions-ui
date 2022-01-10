@@ -87,10 +87,10 @@ export default {
     notConfirmed: 'Select the checkbox to confirm before you approve the action plan',
   },
   attendedAppointment: {
-    empty: 'Select whether the service user attended or not',
+    empty: 'Select whether they attended or not',
   },
   appointmentBehaviour: {
-    descriptionEmpty: "Enter a description of the service user's behaviour",
+    descriptionEmpty: "Enter a description of their behaviour",
     notifyProbationPractitionerNotSelected: 'Select whether to notify the probation practitioner or not',
   },
   scheduleAppointment: {
