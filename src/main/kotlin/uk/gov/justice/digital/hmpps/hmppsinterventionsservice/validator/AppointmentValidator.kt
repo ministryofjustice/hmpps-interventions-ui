@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.validator
 
+import mu.KLogging
+import net.logstash.logback.argument.StructuredArguments
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.Code
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.config.FieldError
@@ -14,7 +16,7 @@ import java.time.OffsetDateTime
 
 @Component
 class AppointmentValidator {
-  companion object {
+  companion object : KLogging() {
     val postCodeRegex = Regex("""^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}${'$'}""")
   }
   fun validateUpdateAppointment(updateAppointmentDTO: UpdateAppointmentDTO) {
@@ -53,6 +55,7 @@ class AppointmentValidator {
     if (addressDTO.postCode.isNullOrEmpty()) {
       errors.add(FieldError(field = "appointmentDeliveryAddress.postCode", error = Code.CANNOT_BE_EMPTY))
     } else if (!postCodeRegex.matches(addressDTO.postCode)) {
+      logger.info("invalid postcode format detected", StructuredArguments.kv("postcode", addressDTO.postCode))
       errors.add(FieldError(field = "appointmentDeliveryAddress.postCode", error = Code.INVALID_FORMAT))
     }
   }
