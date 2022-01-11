@@ -1943,60 +1943,6 @@ describe('Service provider referrals dashboard', () => {
       })
 
       describe('with appointments in the past', () => {
-        describe('that happened earlier today', () => {
-          it('presents the feedback form as soon as the appointment is confirmed', () => {
-            const today = new Date()
-
-            cy.visit(`/service-provider/referrals/${referral.id}/progress`)
-            cy.get('#supplier-assessment-status').contains('not scheduled')
-            cy.contains('Schedule initial assessment').click()
-
-            // schedule page
-            cy.get('#date-day').type(today.getDate().toString())
-            cy.get('#date-month').type((today.getMonth() + 1).toString())
-            cy.get('#date-year').type(today.getFullYear().toString())
-            cy.get('#time-hour').type('0')
-            cy.get('#time-minute').type('0')
-            cy.get('#time-part-of-day').select('AM')
-            cy.get('#duration-hours').type('1')
-            cy.get('#duration-minutes').type('15')
-            cy.contains('Phone call').click()
-
-            cy.contains('Save and continue').click()
-
-            // schedule check your answers page
-            cy.get('h1').contains('Confirm appointment details')
-            cy.contains("You've chosen a data and time in the past")
-            cy.contains('Midnight to 1:15am')
-            cy.contains('Phone call')
-
-            cy.get('button').contains('Confirm').click()
-
-            // Attendance page
-            cy.contains('Yes, they were on time').click()
-            cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
-            cy.contains('Save and continue').click()
-
-            cy.contains('Add behaviour feedback')
-
-            cy.contains("Describe Alex's behaviour in this session").type('Alex was well behaved')
-            cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
-
-            cy.contains('Save and continue').click()
-
-            cy.contains('Confirm feedback')
-            cy.contains('Alex attended the session')
-            cy.contains('Yes, they were on time')
-            cy.contains('Alex was well behaved')
-            cy.contains('No')
-
-            cy.get('form').contains('Confirm').click()
-            cy.contains('Initial assessment added')
-
-            // FIXME
-            cy.contains('Deliver the assessment and mark that the service user attended')
-          })
-        })
         describe('that happened before today', () => {
           it('presents a form validation error', () => {
             cy.visit(`/service-provider/referrals/${referral.id}/progress`)

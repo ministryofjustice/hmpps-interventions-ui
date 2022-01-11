@@ -12,13 +12,10 @@ export default class InitialAssessmentCheckAnswersPresenter {
   readonly title = 'Confirm appointment details'
 
   get pastAppointment(): boolean {
-    // Currently forced to be false until past appointments are to be enabled for supplier assessments
-    return false
-
-    // if (this.draft.data === null) {
-    //   throw new Error('Draft has null data on check your answers page')
-    // }
-    // return new Date(this.draft.data.appointmentTime!) < new Date()
+    if (this.draft.data === null) {
+      throw new Error('Draft has null data on check your answers page')
+    }
+    return new Date(this.draft.data.appointmentTime!) < new Date()
   }
 
   readonly summary = (() => {
