@@ -1,5 +1,6 @@
 import { Express } from 'express'
 import request from 'supertest'
+import createError from 'http-errors'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import { createDraftFactory } from '../../../testutils/factories/draft'
@@ -1776,7 +1777,7 @@ describe('Adding post delivery session feedback', () => {
           `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
         )
 
-      expect(interventionsService.recordAndSubmitActionPlanAppointmentWithFeedback).toHaveBeenCalledWith(
+      expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith(
         'token',
         actionPlanId,
         sessionNumber,
@@ -1791,6 +1792,30 @@ describe('Adding post delivery session feedback', () => {
           appointmentBehaviour: { ...draftAppointment!.sessionFeedback!.behaviour },
         }
       )
+    })
+
+    it('redirects back to the appointment booking form if a 409 conflict is return from interventions service', async () => {
+      const actionPlanId = '91e7ceab-74fd-45d8-97c8-ec58844618dd'
+      const sessionNumber = 2
+
+      const draftAppointment: DraftAppointment = draftAppointmentFactory.withSubmittedFeedback().build()
+      const draftAppointmentResult = draftAppointmentBookingFactory.build({
+        data: draftAppointment,
+      })
+      draftsService.fetchDraft.mockResolvedValue(draftAppointmentResult)
+      interventionsService.updateActionPlanAppointment.mockImplementation(() => {
+        throw createError(409)
+      })
+
+      await request(app)
+        .post(
+          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draftAppointmentResult.id}/submit`
+        )
+        .expect(302)
+        .expect(
+          'Location',
+          `/service-provider/action-plan/${actionPlanId}/sessions/${sessionNumber}/edit/${draftAppointmentResult.id}/details?clash=true`
+        )
     })
   })
 

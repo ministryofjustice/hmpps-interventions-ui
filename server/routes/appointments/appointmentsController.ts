@@ -387,28 +387,42 @@ export default class AppointmentsController {
         `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draft.id}/attendance`
       )
     } else {
-      try {
-        await this.interventionsService.updateActionPlanAppointment(
-          accessToken,
-          actionPlanId,
-          sessionNumber,
-          appointmentScheduleDetails
-        )
-      } catch (e) {
-        const interventionsServiceError = e as InterventionsServiceError
-        if (interventionsServiceError.status === 409) {
-          res.redirect(
-            `/service-provider/action-plan/${actionPlanId}/sessions/${sessionNumber}/edit/${draftBookingId}/details?clash=true`
-          )
-          return
-        }
+      const success = await this.updateSessionAppointmentAndCheckForConflicts(
+        accessToken,
+        actionPlanId,
+        sessionNumber,
+        appointmentScheduleDetails
+      )
 
-        throw e
+      if (success === false) {
+        res.redirect(
+          `/service-provider/action-plan/${actionPlanId}/sessions/${sessionNumber}/edit/${draftBookingId}/details?clash=true`
+        )
+        return
       }
 
       await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
       res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
     }
+  }
+
+  // returns true on success, false on conflict
+  private async updateSessionAppointmentAndCheckForConflicts(
+    accessToken: string,
+    actionPlanId: string,
+    sessionNumber: number,
+    data: AppointmentSchedulingDetails
+  ): Promise<boolean> {
+    try {
+      await this.interventionsService.updateActionPlanAppointment(accessToken, actionPlanId, sessionNumber, data)
+    } catch (e) {
+      const interventionsServiceError = e as InterventionsServiceError
+      if (interventionsServiceError.status === 409) {
+        return false
+      }
+      throw e
+    }
+    return true
   }
 
   async addSupplierAssessmentAttendanceFeedback(req: Request, res: Response): Promise<void> {
@@ -830,12 +844,20 @@ export default class AppointmentsController {
           appointmentAttendance: { ...draftAppointment.sessionFeedback.attendance },
           appointmentBehaviour: { ...draftAppointment.sessionFeedback.behaviour },
         }
-        await this.interventionsService.recordAndSubmitActionPlanAppointmentWithFeedback(
+
+        const success = await this.updateSessionAppointmentAndCheckForConflicts(
           accessToken,
           actionPlanId,
           Number(sessionNumber),
           data
         )
+        if (success === false) {
+          res.redirect(
+            `/service-provider/action-plan/${actionPlanId}/sessions/${sessionNumber}/edit/${draftBookingId}/details?clash=true`
+          )
+          return
+        }
+
         await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
       } else {
         throw new Error('Draft appointment data is missing.')
