@@ -1943,6 +1943,52 @@ describe('Service provider referrals dashboard', () => {
       })
 
       describe('with appointments in the past', () => {
+        describe('that happened earlier today', () => {
+          it('schedules the appointment', () => {
+            const today = new Date()
+
+            cy.visit(`/service-provider/referrals/${referral.id}/progress`)
+            cy.get('#supplier-assessment-status').contains('not scheduled')
+            cy.contains('Schedule initial assessment').click()
+
+            // schedule page
+            cy.get('#date-day').type(today.getDate().toString())
+            cy.get('#date-month').type((today.getMonth() + 1).toString())
+            cy.get('#date-year').type(today.getFullYear().toString())
+            cy.get('#time-hour').type('0')
+            cy.get('#time-minute').type('0')
+            cy.get('#time-part-of-day').select('AM')
+            cy.get('#duration-hours').type('1')
+            cy.get('#duration-minutes').type('15')
+            cy.contains('Phone call').click()
+
+            cy.contains('Save and continue').click()
+
+            // // schedule check your answers page
+            cy.get('h1').contains('Confirm appointment details')
+            cy.contains("You've chosen a data and time in the past")
+            cy.contains('Midnight to 1:15am')
+            cy.contains('Phone call')
+
+            const scheduledAppointment = initialAssessmentAppointmentFactory.build({
+              appointmentTime: '2025-03-24T09:02:02Z',
+              durationInMinutes: 75,
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY4 0RE',
+              },
+            })
+            cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
+
+            cy.get('button').contains('Confirm').click()
+
+            cy.contains('Initial assessment appointment added')
+          })
+        })
         describe('that happened before today', () => {
           it('presents a form validation error', () => {
             cy.visit(`/service-provider/referrals/${referral.id}/progress`)
