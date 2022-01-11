@@ -107,7 +107,7 @@ export type CreateAppointmentSchedulingAndFeedback = AppointmentSchedulingDetail
   appointmentBehaviour: {
     behaviourDescription: string | null
     notifyProbationPractitioner: boolean | null
-  }
+  } | null
 }
 
 export default class InterventionsService {
