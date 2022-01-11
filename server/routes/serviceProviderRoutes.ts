@@ -207,6 +207,11 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
     appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
   )
+  get(
+    router,
+    '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/attendance',
+    (req, res) => appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
+  )
   post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
     appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
   )

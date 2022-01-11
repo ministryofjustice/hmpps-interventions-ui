@@ -55,6 +55,8 @@ import {
   DraftAppointment,
   DraftAppointmentBooking,
 } from '../serviceProviderReferrals/draftAppointment'
+import appointmentDecorator from '../../decorators/appointmentDecorator'
+import SupplierAssessment from '../../models/supplierAssessment'
 
 export default class AppointmentsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -183,7 +185,15 @@ export default class AppointmentsController {
     if (draft.data === null) {
       throw new Error('Draft data was unexpectedly null when submitting appointment')
     }
-
+    const appointmentScheduleDetails = this.extractAppointmentSchedulingDetails(fetchResult.draft)
+    if (appointmentScheduleDetails === null || !appointmentScheduleDetails.appointmentTime) {
+      throw new Error('No scheduling details were filled in on the draft')
+    }
+    // if (this.isAPastAppointment(appointmentScheduleDetails)) {
+    //   res.redirect(
+    //     `/service-provider/referrals/${req.params.id}/supplier-assessment/post-assessment-feedback/edit/${draft.id}/attendance`
+    //   )
+    // } else {
     try {
       await this.interventionsService.scheduleSupplierAssessmentAppointment(
         res.locals.user.token.accessToken,
@@ -209,6 +219,7 @@ export default class AppointmentsController {
       : 'scheduled-confirmation'
 
     res.redirect(`/service-provider/referrals/${referralId}/supplier-assessment/${successfulRedirectPath}`)
+    // }
   }
 
   async showSupplierAssessmentAppointmentConfirmation(
@@ -431,12 +442,15 @@ export default class AppointmentsController {
     const { user } = res.locals
     const { accessToken } = user.token
     const referralId = req.params.id
+    const { draftBookingId } = req.params
 
     const [referral, supplierAssessment] = await Promise.all([
       this.interventionsService.getSentReferral(accessToken, referralId),
       this.interventionsService.getSupplierAssessment(accessToken, referralId),
     ])
-    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(req, res, supplierAssessment)
+    // return because draft service already renders page.
+
     if (appointment === null) {
       throw new Error('Attempting to add supplier assessment attendance feedback without a current appointment')
     }
@@ -458,7 +472,7 @@ export default class AppointmentsController {
         )
         const redirectPath =
           updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
-        return res.redirect(
+        res.redirect(
           `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/${redirectPath}`
         )
       }
@@ -476,7 +490,7 @@ export default class AppointmentsController {
     )
     const view = new AttendanceFeedbackView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async addSupplierAssessmentBehaviourFeedback(req: Request, res: Response): Promise<void> {
@@ -1120,6 +1134,63 @@ export default class AppointmentsController {
       return extractedAppointment
     }
     return this.interventionsService.getActionPlanAppointment(accessToken, actionPlanId, Number(sessionNumber))
+  }
+
+  private extractSupplierAssessmentAppointment(
+    fetchResult: DraftFetchSuccessResult<DraftAppointmentBooking | DraftAppointment>,
+    id: string
+  ): InitialAssessmentAppointment | null {
+    const { draft } = fetchResult
+    const appointmentSchedulingDetails = this.extractAppointmentSchedulingDetails(draft)
+    if (appointmentSchedulingDetails) {
+      const draftAppointment = draft.data as DraftAppointment
+      if (draftAppointment?.sessionFeedback) {
+        return {
+          sessionFeedback: draftAppointment.sessionFeedback,
+          id,
+          ...appointmentSchedulingDetails,
+        }
+      }
+      return {
+        sessionFeedback: {
+          attendance: {
+            attended: null,
+            additionalAttendanceInformation: null,
+          },
+          behaviour: {
+            behaviourDescription: null,
+            notifyProbationPractitioner: null,
+          },
+          submitted: false,
+          submittedBy: null,
+        },
+        id: 'null',
+        ...appointmentSchedulingDetails,
+      }
+    }
+    return null
+  }
+
+  private async getSupplierAssessmentAppointmentFromDraftOrService(
+    req: Request,
+    res: Response,
+    supplierAssessment: SupplierAssessment
+  ): Promise<InitialAssessmentAppointment | null> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const { draftBookingId, id } = req.params
+    if (draftBookingId) {
+      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+      if (fetchResult.rendered) {
+        return null
+      }
+      const extractedAppointment = this.extractSupplierAssessmentAppointment(fetchResult, id)
+      if (extractedAppointment === null) {
+        throw new Error('No draft appointment could be found.')
+      }
+      return extractedAppointment
+    }
+    return new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
   }
 
   private isAPastAppointment(appointmentSchedulingDetails: AppointmentSchedulingDetails): boolean {
