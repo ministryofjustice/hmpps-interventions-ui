@@ -433,27 +433,13 @@ export default class InterventionsService {
     token: string,
     actionPlanId: string,
     sessionNumber: number,
-    appointmentUpdate: AppointmentSchedulingDetails
+    appointmentUpdate: AppointmentSchedulingDetails | CreateAppointmentSchedulingAndFeedback
   ): Promise<ActionPlanAppointment> {
     const restClient = this.createRestClient(token)
     return (await restClient.patch({
       path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}`,
       headers: { Accept: 'application/json' },
       data: { ...appointmentUpdate },
-    })) as ActionPlanAppointment
-  }
-
-  async recordAndSubmitActionPlanAppointmentWithFeedback(
-    token: string,
-    actionPlanId: string,
-    sessionNumber: number,
-    appointmentDetails: CreateAppointmentSchedulingAndFeedback
-  ): Promise<ActionPlanAppointment> {
-    const restClient = this.createRestClient(token)
-    return (await restClient.patch({
-      path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}`,
-      headers: { Accept: 'application/json' },
-      data: { ...appointmentDetails },
     })) as ActionPlanAppointment
   }
 

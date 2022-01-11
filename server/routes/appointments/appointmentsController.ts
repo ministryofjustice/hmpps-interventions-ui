@@ -830,7 +830,7 @@ export default class AppointmentsController {
           appointmentAttendance: { ...draftAppointment.sessionFeedback.attendance },
           appointmentBehaviour: { ...draftAppointment.sessionFeedback.behaviour },
         }
-        await this.interventionsService.recordAndSubmitActionPlanAppointmentWithFeedback(
+        await this.interventionsService.updateActionPlanAppointment(
           accessToken,
           actionPlanId,
           Number(sessionNumber),

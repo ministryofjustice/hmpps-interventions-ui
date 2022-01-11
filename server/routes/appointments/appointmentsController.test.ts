@@ -1776,7 +1776,7 @@ describe('Adding post delivery session feedback', () => {
           `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
         )
 
-      expect(interventionsService.recordAndSubmitActionPlanAppointmentWithFeedback).toHaveBeenCalledWith(
+      expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith(
         'token',
         actionPlanId,
         sessionNumber,

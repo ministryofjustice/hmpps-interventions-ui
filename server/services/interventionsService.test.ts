@@ -2835,7 +2835,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         })
 
         expect(
-          await interventionsService.recordAndSubmitActionPlanAppointmentWithFeedback(
+          await interventionsService.updateActionPlanAppointment(
             serviceProviderToken,
             '345059d4-1697-467b-8914-fedec9957279',
             2,
