@@ -842,7 +842,11 @@ export default class AppointmentsController {
           appointmentDeliveryAddress: draftAppointment.appointmentDeliveryAddress,
           npsOfficeCode: draftAppointment.npsOfficeCode,
           appointmentAttendance: { ...draftAppointment.sessionFeedback.attendance },
-          appointmentBehaviour: { ...draftAppointment.sessionFeedback.behaviour },
+          appointmentBehaviour:
+            draftAppointment.sessionFeedback.behaviour.behaviourDescription ||
+            draftAppointment.sessionFeedback.behaviour.notifyProbationPractitioner
+              ? { ...draftAppointment.sessionFeedback.behaviour }
+              : null,
         }
 
         const success = await this.updateSessionAppointmentAndCheckForConflicts(
