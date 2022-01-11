@@ -51,19 +51,21 @@ describe(AddressInput, () => {
             'method-other-location-address-postcode': postCode,
           }
         }
-        async function validatePostCode(postCode: string): Promise<void> {
-          const request = TestUtils.createRequest(createRequest(postCode))
+        async function validatePostCode(input: string, expected: string): Promise<void> {
+          const request = TestUtils.createRequest(createRequest(input))
           const result = await new AddressInput(request, 'method-other-location', errorMessages).validate()
-          expect(result.value?.postCode).toEqual(postCode)
+          expect(result.value?.postCode).toEqual(expected)
         }
         it('returns an address value when all postcode is valid', async () => {
-          await validatePostCode('aa9a 9aa')
-          await validatePostCode('a9a 9aa')
-          await validatePostCode('a9 9aa')
-          await validatePostCode('a99 9aa')
-          await validatePostCode('aa9 9aa')
-          await validatePostCode('aa99 9aa')
-          await validatePostCode(' aa999aa ')
+          await validatePostCode('aa9a 9aa', 'aa9a 9aa')
+          await validatePostCode('a9a 9aa', 'a9a 9aa')
+          await validatePostCode('a9 9aa', 'a9 9aa')
+          await validatePostCode('a99 9aa', 'a99 9aa')
+          await validatePostCode('aa9 9aa', 'aa9 9aa')
+          await validatePostCode('aa99 9aa', 'aa99 9aa')
+          await validatePostCode(' aa999aa ', 'aa999aa')
+          // unicode whitespace characters
+          await validatePostCode(' aa9 9aa  ', 'aa9 9aa')
         })
       })
     })

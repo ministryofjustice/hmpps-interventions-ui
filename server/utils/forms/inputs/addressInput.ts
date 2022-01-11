@@ -57,7 +57,8 @@ export default class AddressInput {
         .withMessage(this.errorMessages.postCodeEmpty),
 
       ExpressValidator.body(this.keys.postCode)
-        .matches(/^\s*[A-Za-z]{1,2}\d[A-Za-z\d]? ?\d[A-Za-z]{2}\s*$/)
+        .trim()
+        .matches(/^[A-Za-z]{1,2}\d[A-Za-z\d]? ?\d[A-Za-z]{2}$/)
         .withMessage(this.errorMessages.postCodeInvalid),
     ]
   }
