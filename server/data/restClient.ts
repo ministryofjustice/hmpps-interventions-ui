@@ -53,6 +53,12 @@ export default class RestClient {
 
   private static createErrorFromCaughtValue(value: unknown): RestClientError {
     const error = value as SuperagentHttpError
+
+    // some errors thrown by superagent are not HttpError e.g. `RequestBase._timeoutError`
+    if (error.status === undefined) {
+      throw value
+    }
+
     return createError(error.status, error, { external: true })
   }
 
