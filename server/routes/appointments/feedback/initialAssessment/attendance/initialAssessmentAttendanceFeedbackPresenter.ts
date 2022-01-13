@@ -11,6 +11,7 @@ export default class InitialAssessmentAttendanceFeedbackPresenter extends Attend
     private readonly serviceUser: DeliusServiceUser,
     readonly appointmentSummary: AppointmentSummary,
     private readonly referralId: string | null = null,
+    private readonly draftId: string | null = null,
     error: FormValidationError | null = null,
     userInputData: Record<string, unknown> | null = null
   ) {
@@ -25,5 +26,15 @@ export default class InitialAssessmentAttendanceFeedbackPresenter extends Attend
     )
   }
 
-  readonly backLinkHref = this.referralId ? `/service-provider/referrals/${this.referralId}/progress` : null
+  get getBackLinkHref(): string | null {
+    if (this.draftId && this.referralId) {
+      return `/service-provider/referrals/${this.referralId}/supplier-assessment/schedule/${this.draftId}/check-answers`
+    }
+    if (this.referralId) {
+      return `/service-provider/referrals/${this.referralId}/progress`
+    }
+    return null
+  }
+
+  readonly backLinkHref = this.getBackLinkHref
 }

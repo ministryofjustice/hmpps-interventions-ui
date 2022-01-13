@@ -523,6 +523,7 @@ export default class AppointmentsController {
       serviceUser,
       appointmentSummary,
       referralId,
+      draftBookingId,
       formError,
       userInputData
     )
@@ -591,6 +592,7 @@ export default class AppointmentsController {
       appointment,
       serviceUser,
       referralId,
+      draftBookingId,
       formError,
       userInputData
     )
