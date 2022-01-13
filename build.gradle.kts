@@ -59,7 +59,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("com.nimbusds:oauth2-oidc-sdk:9.20.1")
+  implementation("com.nimbusds:oauth2-oidc-sdk:9.22")
 
   // until bumped in upstream
   implementation("ch.qos.logback:logback-classic:1.2.10") // CVE-2021-42550
