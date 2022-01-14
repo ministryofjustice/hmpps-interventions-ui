@@ -75,10 +75,10 @@ export default class HmppsAuthService {
     return Promise.resolve(authUsers[0])
   }
 
-  async getSPUserByUsername(token: string, username: string): Promise<AuthUserDetails> {
-    logger.info(`Getting user detail by username: calling HMPPS Auth`)
+  async getSPUserByUserId(token: string, userId: string): Promise<AuthUserDetails> {
+    logger.info(`Getting user detail by user id: calling HMPPS Auth`)
     return (await this.restClient(token).get({
-      path: `/api/authuser/${username}`,
+      path: `/api/authuser/id/${userId}`,
     })) as AuthUserDetails
   }
 

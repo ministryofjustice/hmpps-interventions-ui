@@ -162,7 +162,7 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthService.getSPUserByUserId.mockResolvedValue(hmppsAuthUser)
 
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
 
@@ -263,7 +263,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(expandedDeliusServiceUser)
-    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthService.getSPUserByUserId.mockResolvedValue(hmppsAuthUser)
     communityApiService.getConvictionById.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
@@ -472,7 +472,7 @@ describe('GET /probation-practitioner/referrals/:id/supplier-assessment', () => 
       lastName: 'Johnson',
       username: 'liam.johnson',
     })
-    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthService.getSPUserByUserId.mockResolvedValue(hmppsAuthUser)
 
     const referral = sentReferralFactory.build({ assignedTo: { username: hmppsAuthUser.username } })
     interventionsService.getSentReferral.mockResolvedValue(referral)

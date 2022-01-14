@@ -173,7 +173,7 @@ describe('hmppsAuthService', () => {
     })
   })
 
-  describe('getSPUserByUsername', () => {
+  describe('getSPUserByUserId', () => {
     it('should return the matching user from the API response', async () => {
       const response = {
         userId: '91229A16-B5F4-4784-942E-A484A97AC865',
@@ -188,11 +188,11 @@ describe('hmppsAuthService', () => {
       }
 
       fakeHmppsAuthApi
-        .get('/api/authuser/AUTH_ADM')
+        .get('/api/authuser/id/123456')
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, response)
 
-      const output = await hmppsAuthService.getSPUserByUsername(token.access_token, 'AUTH_ADM')
+      const output = await hmppsAuthService.getSPUserByUserId(token.access_token, '123456')
       expect(output).toEqual(response)
     })
   })

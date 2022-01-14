@@ -137,7 +137,7 @@ export default class ServiceProviderReferralsController {
     const assignee =
       sentReferral.assignedTo === null
         ? null
-        : await this.hmppsAuthService.getSPUserByUsername(accessToken, sentReferral.assignedTo.username)
+        : await this.hmppsAuthService.getSPUserByUserId(accessToken, sentReferral.assignedTo.userId)
 
     let formError: FormValidationError | null = null
     const error = req.query.error as string
@@ -205,9 +205,9 @@ export default class ServiceProviderReferralsController {
     const assignee =
       sentReferral.assignedTo === null
         ? null
-        : await this.hmppsAuthService.getSPUserByUsername(
+        : await this.hmppsAuthService.getSPUserByUserId(
             res.locals.user.token.accessToken,
-            sentReferral.assignedTo.username
+            sentReferral.assignedTo.userId
           )
 
     const presenter = new InterventionProgressPresenter(
@@ -328,7 +328,7 @@ export default class ServiceProviderReferralsController {
     }
 
     const [assignee, intervention, serviceUser] = await Promise.all([
-      this.hmppsAuthService.getSPUserByUsername(res.locals.user.token.accessToken, referral.assignedTo.username),
+      this.hmppsAuthService.getSPUserByUserId(res.locals.user.token.accessToken, referral.assignedTo.userId),
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
     ])

@@ -25,8 +25,8 @@ export default on => {
     stubGetAuthUserByEmailAddress: arg => {
       return auth.stubGetSPUserByEmailAddress(arg.responseJson)
     },
-    stubGetAuthUserByUsername: arg => {
-      return auth.stubGetSPUserByUsername(arg.username, arg.responseJson)
+    stubGetAuthUserByUserId: arg => {
+      return auth.stubGetSPUserByUserId(arg.userId, arg.responseJson)
     },
 
     stubServiceProviderAuthUser: auth.stubServiceProviderUser,

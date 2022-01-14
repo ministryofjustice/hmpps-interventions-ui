@@ -75,7 +75,7 @@ describe('Probation Practitioner monitor journey', () => {
               interventionId: intervention.id,
               serviceCategoryIds: [serviceCategory.id],
             },
-            assignedTo: { username: hmppsAuthUser.username },
+            assignedTo: { username: hmppsAuthUser.username, userId: hmppsAuthUser.userId },
           })
 
           const supplierAssessment = supplierAssessmentFactory.justCreated.build()
@@ -83,7 +83,7 @@ describe('Probation Practitioner monitor journey', () => {
           cy.stubGetSentReferral(referral.id, referral)
           cy.stubGetIntervention(intervention.id, intervention)
           cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
-          cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+          cy.stubGetAuthUserByUserId(hmppsAuthUser.userId, hmppsAuthUser)
           cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
 
           cy.login()
@@ -117,7 +117,7 @@ describe('Probation Practitioner monitor journey', () => {
               interventionId: intervention.id,
               serviceCategoryIds: [serviceCategory.id],
             },
-            assignedTo: { username: hmppsAuthUser.username },
+            assignedTo: { username: hmppsAuthUser.username, userId: hmppsAuthUser.userId },
           })
 
           const supplierAssessment = supplierAssessmentFactory.withSingleAppointment.build()
@@ -125,7 +125,7 @@ describe('Probation Practitioner monitor journey', () => {
           cy.stubGetSentReferral(referral.id, referral)
           cy.stubGetIntervention(intervention.id, intervention)
           cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
-          cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+          cy.stubGetAuthUserByUserId(hmppsAuthUser.userId, hmppsAuthUser)
           cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
 
           cy.login()
@@ -192,7 +192,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetExpandedServiceUserByCRN(assignedReferral.referral.serviceUser.crn, expandedDeliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
-      cy.stubGetAuthUserByUsername(assignedReferral.assignedTo.username, hmppsAuthUserFactory.build())
+      cy.stubGetAuthUserByUserId(assignedReferral.assignedTo.userId, hmppsAuthUserFactory.build())
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
@@ -267,8 +267,8 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
-      cy.stubGetAuthUserByUsername(
-        assignedReferral.assignedTo.username,
+      cy.stubGetAuthUserByUserId(
+        assignedReferral.assignedTo.userId,
         hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', email: 'john.smith@email.com' })
       )
 
@@ -359,7 +359,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
-      cy.stubGetAuthUserByUsername(assignedReferral.assignedTo.username, hmppsAuthUserFactory.build())
+      cy.stubGetAuthUserByUserId(assignedReferral.assignedTo.userId, hmppsAuthUserFactory.build())
       cy.stubGetReferralCancellationReasons([
         { code: 'MIS', description: 'Referral was made by mistake' },
         { code: 'MOV', description: 'Service user has moved out of delivery area' },
@@ -422,7 +422,7 @@ describe('Probation Practitioner monitor journey', () => {
           interventionId: intervention.id,
           serviceCategoryIds: [serviceCategory.id],
         },
-        assignedTo: { username: hmppsAuthUser.username },
+        assignedTo: { username: hmppsAuthUser.username, userId: hmppsAuthUser.userId },
       })
 
       const appointment = initialAssessmentAppointmentFactory.build({
@@ -445,7 +445,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
-      cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+      cy.stubGetAuthUserByUserId(hmppsAuthUser.userId, hmppsAuthUser)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
 
       cy.login()
@@ -492,7 +492,7 @@ describe('Probation Practitioner monitor journey', () => {
           serviceCategoryIds: [serviceCategory.id],
         },
         actionPlanId,
-        assignedTo: { username: hmppsAuthUser.username },
+        assignedTo: { username: hmppsAuthUser.username, userId: hmppsAuthUser.userId },
       })
 
       const appointment = initialAssessmentAppointmentFactory.attended().build()
@@ -527,7 +527,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
-      cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+      cy.stubGetAuthUserByUserId(hmppsAuthUser.userId, hmppsAuthUser)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
       cy.stubGetActionPlanAppointments(actionPlanId, actionPlanAppointmentFactory.buildList(4))
       cy.stubGetActionPlan(actionPlanId, actionPlan)
@@ -604,7 +604,7 @@ describe('Probation Practitioner monitor journey', () => {
           serviceCategoryIds: [serviceCategory.id],
         },
         actionPlanId,
-        assignedTo: { username: hmppsAuthUser.username },
+        assignedTo: { username: hmppsAuthUser.username, userId: hmppsAuthUser.userId },
       })
 
       const appointment = initialAssessmentAppointmentFactory.attended().build()
@@ -654,7 +654,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
-      cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+      cy.stubGetAuthUserByUserId(hmppsAuthUser.userId, hmppsAuthUser)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
       cy.stubGetActionPlanAppointments(actionPlanId, actionPlanAppointmentFactory.buildList(4))
       cy.stubGetActionPlan(actionPlanId, approvedActionPlan)
