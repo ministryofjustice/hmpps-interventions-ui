@@ -176,7 +176,9 @@ workflows:
               only:
                 - main
     jobs:
-      - hmpps/npm_security_audit
+      - hmpps/npm_security_audit:
+          slack_channel: "interventions-dev-notifications"
+          context: [hmpps-common-vars]
       - hmpps/veracode_policy_scan:
           teams: hmpps-interventions
           slack_channel: "interventions-dev-notifications"
