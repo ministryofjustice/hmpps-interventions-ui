@@ -382,28 +382,30 @@ export default class AppointmentsController {
     if (appointmentScheduleDetails === null || !appointmentScheduleDetails.appointmentTime) {
       throw new Error('No scheduling details were filled in on the draft')
     }
+
     if (this.isAPastAppointment(appointmentScheduleDetails)) {
       res.redirect(
         `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draft.id}/attendance`
       )
-    } else {
-      const success = await this.updateSessionAppointmentAndCheckForConflicts(
-        accessToken,
-        actionPlanId,
-        sessionNumber,
-        appointmentScheduleDetails
-      )
-
-      if (success === false) {
-        res.redirect(
-          `/service-provider/action-plan/${actionPlanId}/sessions/${sessionNumber}/edit/${draftBookingId}/details?clash=true`
-        )
-        return
-      }
-
-      await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
-      res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
+      return
     }
+
+    const success = await this.updateSessionAppointmentAndCheckForConflicts(
+      accessToken,
+      actionPlanId,
+      sessionNumber,
+      appointmentScheduleDetails
+    )
+
+    if (success === false) {
+      res.redirect(
+        `/service-provider/action-plan/${actionPlanId}/sessions/${sessionNumber}/edit/${draftBookingId}/details?clash=true`
+      )
+      return
+    }
+
+    await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
+    res.redirect(`/service-provider/referrals/${actionPlan.referralId}/progress`)
   }
 
   // returns true on success, false on conflict
@@ -767,6 +769,7 @@ export default class AppointmentsController {
         }
 
         res.redirect(redirectUrl)
+        return
       }
     }
 
