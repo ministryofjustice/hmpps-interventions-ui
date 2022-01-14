@@ -209,7 +209,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
-    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthService.getSPUserByUserId.mockResolvedValue(hmppsAuthUser)
     communityApiService.getConvictionById.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
@@ -317,7 +317,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
-    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthService.getSPUserByUserId.mockResolvedValue(hmppsAuthUser)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/progress`)
@@ -489,7 +489,7 @@ describe('GET /service-provider/referrals/:id/assignment/confirmation', () => {
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    hmppsAuthService.getSPUserByUserId.mockResolvedValue(hmppsAuthUser)
 
     await request(app)
       .get(`/service-provider/referrals/${referral.id}/assignment/confirmation`)

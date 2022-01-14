@@ -13,8 +13,8 @@ Cypress.Commands.add('stubGetAuthUserByEmailAddress', responseJson => {
   cy.task('stubGetAuthUserByEmailAddress', { responseJson })
 })
 
-Cypress.Commands.add('stubGetAuthUserByUsername', (username, responseJson) => {
-  cy.task('stubGetAuthUserByUsername', { username, responseJson })
+Cypress.Commands.add('stubGetAuthUserByUserId', (userId, responseJson) => {
+  cy.task('stubGetAuthUserByUserId', { userId, responseJson })
 })
 
 Cypress.Commands.add('withinFieldsetThatContains', (text, action) => {

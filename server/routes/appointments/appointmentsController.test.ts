@@ -141,7 +141,7 @@ describe('Scheduling a supplier assessment appointment', () => {
         )
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-        hmppsAuthService.getSPUserByUsername.mockResolvedValue(
+        hmppsAuthService.getSPUserByUserId.mockResolvedValue(
           hmppsAuthUserFactory.build({ firstName: 'caseWorkerFirstName', lastName: 'caseWorkerLastName' })
         )
 
@@ -1992,7 +1992,7 @@ describe('Adding post delivery session feedback', () => {
           interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
           interventionsService.getSentReferral.mockResolvedValue(referral)
           interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
-          hmppsAuthService.getSPUserByUsername.mockResolvedValue(
+          hmppsAuthService.getSPUserByUserId.mockResolvedValue(
             hmppsAuthUserFactory.build({
               firstName: 'caseworkerFirstName',
               lastName: 'caseworkerLastName',
@@ -2051,7 +2051,7 @@ describe('Adding post delivery session feedback', () => {
           interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
           interventionsService.getSentReferral.mockResolvedValue(referral)
           interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
-          hmppsAuthService.getSPUserByUsername.mockResolvedValue(
+          hmppsAuthService.getSPUserByUserId.mockResolvedValue(
             hmppsAuthUserFactory.build({
               firstName: 'caseworkerFirstName',
               lastName: 'caseworkerLastName',

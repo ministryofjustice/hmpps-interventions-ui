@@ -187,7 +187,7 @@ describe('Probation practitioner referrals dashboard', () => {
           email: 'john.smith@example.com',
         })
         assignedReferral = sentReferralFactory.build({
-          assignedTo: { username: hmppsAuthUser.username },
+          assignedTo: { username: hmppsAuthUser.username, userId: hmppsAuthUser.userId },
           referral: {
             interventionId: intervention.id,
             serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
@@ -209,7 +209,7 @@ describe('Probation practitioner referrals dashboard', () => {
         )
 
         cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
-        cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+        cy.stubGetAuthUserByUserId(hmppsAuthUser.userId, hmppsAuthUser)
       })
 
       describe('when the referral has been assigned and the appointment scheduled', () => {
