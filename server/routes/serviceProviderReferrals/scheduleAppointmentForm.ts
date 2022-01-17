@@ -14,7 +14,11 @@ import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import FormUtils from '../../utils/formUtils'
 
 export default class ScheduleAppointmentForm {
-  constructor(private readonly request: Request, private readonly deliusOfficeLocations: DeliusOfficeLocation[]) {}
+  constructor(
+    private readonly request: Request,
+    private readonly deliusOfficeLocations: DeliusOfficeLocation[],
+    private readonly allowPastAppointments = false
+  ) {}
 
   async data(): Promise<FormData<AppointmentSchedulingDetails>> {
     const startOfToday = new Date()
@@ -26,7 +30,7 @@ export default class ScheduleAppointmentForm {
         'date',
         'time',
         errorMessages.scheduleAppointment.time,
-        startOfToday
+        this.allowPastAppointments ? null : startOfToday
       ).validate(),
       new DurationInput(this.request, 'duration', errorMessages.scheduleAppointment.duration).validate(),
       FormUtils.runValidations({ request: this.request, validations: this.validateSessionType() }),
