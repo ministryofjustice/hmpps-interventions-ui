@@ -1175,7 +1175,7 @@ describe('Service provider referrals dashboard', () => {
         })
 
         describe('on a day before today', () => {
-          it('presents an error because appointments before today are not allowed', () => {
+          it('takes the user through the feedback form upon appointment confirmation', () => {
             cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
 
             // schedule page
@@ -1191,7 +1191,52 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Phone call').click()
 
             cy.contains('Save and continue').click()
-            cy.contains('There is a problem').next().contains('The session cannot be scheduled in the past')
+
+            // schedule check your answers page
+            cy.get('h1').contains('Confirm session 1 details')
+            cy.contains("You've chosen a data and time in the past")
+            cy.contains('9:02am to 10:17am')
+            cy.contains('Phone call')
+
+            cy.get('button').contains('Confirm').click()
+
+            // Attendance page
+            cy.contains('No').click()
+            cy.contains("Add additional information about Alex's attendance").type('Alex did not attend the session')
+            cy.contains('Save and continue').click()
+
+            cy.contains('Confirm feedback')
+            cy.contains('Alex did not attend the session')
+            cy.contains('No')
+
+            const scheduledAppointment = actionPlanAppointmentFactory.build({
+              ...appointment,
+              appointmentTime: '2021-03-24T09:02:02Z',
+              durationInMinutes: 75,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'PHONE_CALL',
+              appointmentDeliveryAddress: null,
+              npsOfficeCode: null,
+              sessionFeedback: {
+                attendance: {
+                  attended: 'no',
+                  additionalAttendanceInformation: 'Alex did not attend the session',
+                },
+                submitted: true,
+                submittedBy: {
+                  firstName: 'Case',
+                  lastName: 'Worker',
+                  username: 'case.worker',
+                },
+              },
+            })
+            cy.stubGetActionPlanAppointment(actionPlan.id, 1, scheduledAppointment)
+            cy.stubGetActionPlanAppointment(actionPlan.id, 2, scheduledAppointment)
+            cy.stubUpdateActionPlanAppointment(actionPlan.id, 1, scheduledAppointment)
+            cy.get('form').contains('Confirm').click()
+
+            cy.contains('Session feedback added and submitted to the probation practitioner')
+            cy.contains('You can now deliver the next session scheduled for 24 March 2021.')
           })
         })
       })
