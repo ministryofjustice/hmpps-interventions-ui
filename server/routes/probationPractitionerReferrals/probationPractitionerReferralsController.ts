@@ -121,7 +121,7 @@ export default class ProbationPractitionerReferralsController {
       sentReferral.id
     )
     const assigneePromise = sentReferral.assignedTo
-      ? this.hmppsAuthService.getSPUserByUserId(res.locals.user.token.accessToken, sentReferral.assignedTo.userId)
+      ? this.hmppsAuthService.getSPUserByUsername(res.locals.user.token.accessToken, sentReferral.assignedTo.username)
       : Promise.resolve(null)
 
     const [intervention, actionPlan, serviceUser, supplierAssessment, assignee] = await Promise.all([
@@ -172,7 +172,7 @@ export default class ProbationPractitionerReferralsController {
     const assignee =
       sentReferral.assignedTo === null
         ? null
-        : await this.hmppsAuthService.getSPUserByUserId(
+        : await this.hmppsAuthService.getSPUserByUsername(
             res.locals.user.token.accessToken,
             sentReferral.assignedTo.username
           )

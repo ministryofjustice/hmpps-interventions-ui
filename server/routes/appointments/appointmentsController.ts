@@ -878,14 +878,14 @@ export default class AppointmentsController {
     )
   }
 
-  private async getCaseWorker(accessToken: string, userId: string): Promise<AuthUserDetails | null> {
+  private async getCaseWorker(accessToken: string, username: string): Promise<AuthUserDetails | string> {
     try {
-      return this.hmppsAuthService.getSPUserByUserId(accessToken, userId)
+      return this.hmppsAuthService.getSPUserByUsername(accessToken, username)
     } catch (e) {
       const interventionsServiceError = e as InterventionsServiceError
       if (interventionsServiceError.status === 404) {
-        logger.warn({ userId }, 'Auth user details not found for user')
-        return null
+        logger.warn(`Auth user details not found for user ${username}".`)
+        return username
       }
       throw e
     }
@@ -895,16 +895,16 @@ export default class AppointmentsController {
     accessToken: string,
     referral: SentReferral
   ): Promise<AuthUserDetails | string | null> {
-    const assignee = referral.assignedTo
-    return assignee ? this.getCaseWorker(accessToken, assignee.userId) || assignee.username : null
+    const assignedToUsername = referral.assignedTo?.username
+    return assignedToUsername ? this.getCaseWorker(accessToken, assignedToUsername) : null
   }
 
   private async getFeedbackSubmittedByCaseworker(
     accessToken: string,
     appointment: ActionPlanAppointment | InitialAssessmentAppointment
   ): Promise<AuthUserDetails | string | null> {
-    const submitter = appointment?.sessionFeedback.submittedBy
-    return submitter ? this.getCaseWorker(accessToken, submitter.userId) || submitter.username : null
+    const submittedByUsername = appointment?.sessionFeedback.submittedBy?.username
+    return submittedByUsername ? this.getCaseWorker(accessToken, submittedByUsername) : null
   }
 
   private async createAppointmentSummary(

@@ -182,11 +182,11 @@ export default class AuthServiceMocks {
     })
   }
 
-  stubGetSPUserByUserId = async (userId: string, responseJson: Record<string, unknown>): Promise<unknown> => {
+  stubGetSPUserByUsername = async (username: string, responseJson: Record<string, unknown>): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/auth/api/authuser/id/${userId}`,
+        urlPattern: `/auth/api/authuser/${username}`,
       },
       response: {
         status: 200,
