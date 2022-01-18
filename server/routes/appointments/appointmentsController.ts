@@ -448,7 +448,6 @@ export default class AppointmentsController {
       this.interventionsService.getSupplierAssessment(accessToken, referralId),
     ])
     const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(req, res, supplierAssessment)
-    // return because draft service already renders page.
 
     if (appointment === null) {
       throw new Error('Attempting to add supplier assessment attendance feedback without a current appointment')
@@ -513,6 +512,7 @@ export default class AppointmentsController {
         }
 
         res.redirect(`${basePath}/${redirectPath}`)
+        return
       }
     }
 
