@@ -192,33 +192,33 @@ export default class AppointmentsController {
       res.redirect(
         `/service-provider/referrals/${req.params.id}/supplier-assessment/post-assessment-feedback/edit/${draft.id}/attendance`
       )
-    } else {
-      try {
-        await this.interventionsService.scheduleSupplierAssessmentAppointment(
-          res.locals.user.token.accessToken,
-          supplierAssessment.id,
-          draft.data
+      return
+    }
+    try {
+      await this.interventionsService.scheduleSupplierAssessmentAppointment(
+        res.locals.user.token.accessToken,
+        supplierAssessment.id,
+        draft.data
+      )
+    } catch (e) {
+      const interventionsServiceError = e as InterventionsServiceError
+      if (interventionsServiceError.status === 409) {
+        res.redirect(
+          `/service-provider/referrals/${req.params.id}/supplier-assessment/schedule/${draftBookingId}/details?clash=true`
         )
-      } catch (e) {
-        const interventionsServiceError = e as InterventionsServiceError
-        if (interventionsServiceError.status === 409) {
-          res.redirect(
-            `/service-provider/referrals/${req.params.id}/supplier-assessment/schedule/${draftBookingId}/details?clash=true`
-          )
-          return
-        }
-
-        throw e
+        return
       }
 
-      await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
-
-      const successfulRedirectPath = hasExistingScheduledAppointment
-        ? 'rescheduled-confirmation'
-        : 'scheduled-confirmation'
-
-      res.redirect(`/service-provider/referrals/${referralId}/supplier-assessment/${successfulRedirectPath}`)
+      throw e
     }
+
+    await this.draftsService.deleteDraft(draft.id, { userId: res.locals.user.userId })
+
+    const successfulRedirectPath = hasExistingScheduledAppointment
+      ? 'rescheduled-confirmation'
+      : 'scheduled-confirmation'
+
+    res.redirect(`/service-provider/referrals/${referralId}/supplier-assessment/${successfulRedirectPath}`)
   }
 
   async showSupplierAssessmentAppointmentConfirmation(
