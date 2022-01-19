@@ -32,7 +32,7 @@
         {{ govukCheckboxes(pccRegionCheckboxArgs) }}
         {{ govukCheckboxes(genderCheckboxArgs) }}
         {{ govukCheckboxes(ageCheckboxArgs) }}
-        {{ govukButton({ text: "Filter results" }) }}
+        {{ govukButton({ text: "Filter results", preventDoubleClick: true }) }}
       </form>
 
     </div>

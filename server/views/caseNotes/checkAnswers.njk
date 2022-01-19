@@ -16,6 +16,6 @@
 
     <form method="post" action="{{ presenter.submitHref }}">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        {{ govukButton({ text: "Confirm case note" }) }}
+        {{ govukButton({ text: "Confirm case note", preventDoubleClick: true }) }}
     </form>
 {% endblock %}

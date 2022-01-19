@@ -26,7 +26,7 @@
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukInput(subjectInputArgs) }}
         {{ govukTextarea(bodyInputArgs) }}
-        {{ govukButton({ text: "Continue" }) }}
+        {{ govukButton({ text: "Continue" , preventDoubleClick: true}) }}
       </form>
     </div>
   </div>

@@ -12,6 +12,6 @@
 
     {{ govukTextarea(furtherInformationTextareaArgs) }}
 
-    {{ govukButton({ text: "Save and continue" }) }}
+    {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
   </form>
 {% endblock %}

@@ -14,6 +14,6 @@
       <form method="post" novalidate>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukInput(numberOfSessionsInputArgs) }}
-        {{ govukButton({ text: "Save and continue" }) }}
+        {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
       </form>
 {% endblock %}
