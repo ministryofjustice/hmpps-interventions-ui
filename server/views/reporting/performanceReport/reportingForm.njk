@@ -29,7 +29,7 @@
         {{ govukDateInput(fromDateInputArgs) }}
         {{ govukDateInput(toDateInputArgs) }}
 
-        {{ govukButton({ text: "Request data" }) }}
+        {{ govukButton({ text: "Request data", preventDoubleClick: true }) }}
       </form>
     </div>
   </div>

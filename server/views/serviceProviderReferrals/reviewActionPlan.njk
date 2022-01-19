@@ -39,6 +39,6 @@
 
   <form method="post" action="{{ presenter.submitFormAction }}">
     <input type="hidden" name="_csrf" value="{{csrfToken}}">
-    {{ govukButton({ text: "Submit for approval" }) }}
+    {{ govukButton({ text: "Submit for approval", preventDoubleClick: true }) }}
   </form>
 {% endblock %}
