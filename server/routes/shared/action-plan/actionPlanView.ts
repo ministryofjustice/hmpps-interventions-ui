@@ -58,7 +58,7 @@ export default class ActionPlanView {
 
   get viewingPreviousActionPlanNotificationBannerArgs(): NotificationBannerArgs {
     return {
-      html: `<p class="govuk-body-m">You are looking at an older version of the action plan.</p><a href="${this.presenter.viewProbationPractitionerLatestActionPlanURL}">Click here to see the current action plan.</a>`,
+      html: `<p class="govuk-body-m">You're looking at an older version of the action plan.</p><a href="${this.presenter.viewProbationPractitionerLatestActionPlanURL}">View the current action plan.</a>`,
     }
   }
 
