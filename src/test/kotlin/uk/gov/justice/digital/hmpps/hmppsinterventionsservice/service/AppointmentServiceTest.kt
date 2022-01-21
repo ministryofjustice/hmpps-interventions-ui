@@ -246,6 +246,40 @@ class AppointmentServiceTest {
   }
 
   @Test
+  fun `future appointment can be updated with a past appointment containing feedback`() {
+    // Given
+    val durationInMinutes = 60
+    val appointmentTime = OffsetDateTime.parse("3000-12-04T10:42:43+00:00")
+    val existingAppointment = appointmentFactory.create(deliusAppointmentId = 98L, attended = null)
+    val referral = referralFactory.createSent()
+    val rescheduledDeliusAppointmentId = 99L
+
+    whenever(communityAPIBookingService.book(referral, existingAppointment, appointmentTime, durationInMinutes, SUPPLIER_ASSESSMENT, null))
+      .thenReturn(rescheduledDeliusAppointmentId)
+    val savedAppointment = appointmentFactory.create(
+      appointmentTime = OffsetDateTime.parse("2020-12-04T10:42:43+00:00"),
+      durationInMinutes = durationInMinutes,
+      deliusAppointmentId = rescheduledDeliusAppointmentId,
+      attended = NO,
+      additionalAttendanceInformation = "non attended",
+      attendanceBehaviour = null,
+      notifyPPOfAttendanceBehaviour = null,
+    )
+    whenever(appointmentRepository.save(any())).thenReturn(savedAppointment)
+
+    // When
+    val updatedAppointment = appointmentService.createOrUpdateAppointment(referral, existingAppointment, durationInMinutes, OffsetDateTime.parse("2020-12-04T10:42:43+00:00"), SUPPLIER_ASSESSMENT, createdByUser, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE, null, null, NO, "non attended", null, null)
+
+    // Then
+    verifyResponse(updatedAppointment, existingAppointment.id, false, rescheduledDeliusAppointmentId, OffsetDateTime.parse("2020-12-04T10:42:43+00:00"), durationInMinutes, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    verifySavedAppointment(OffsetDateTime.parse("2020-12-04T10:42:43+00:00"), durationInMinutes, rescheduledDeliusAppointmentId, AppointmentDeliveryType.PHONE_CALL, AppointmentSessionType.ONE_TO_ONE)
+    assertThat(updatedAppointment.attended).isEqualTo(NO)
+    assertThat(updatedAppointment.additionalAttendanceInformation).isEqualTo("non attended")
+    assertThat(updatedAppointment.attendanceBehaviour).isNull()
+    assertThat(updatedAppointment.notifyPPOfAttendanceBehaviour).isNull()
+  }
+
+  @Test
   fun `appointment with none attendance will create a new historic appointment`() {
     // Given
     val durationInMinutes = 60

@@ -83,10 +83,16 @@ class AppointmentService(
           durationInMinutes,
           appointmentTime,
           deliusAppointmentId,
+          createdByUser,
           appointmentDeliveryType,
           appointmentSessionType,
           appointmentDeliveryAddress,
-          npsOfficeCode
+          npsOfficeCode,
+          attended,
+          additionalAttendanceInformation,
+          notifyProbationPractitioner,
+          behaviourDescription,
+          appointmentType
         )
       }
       // an additional appointment is required
@@ -278,14 +284,21 @@ class AppointmentService(
     durationInMinutes: Int,
     appointmentTime: OffsetDateTime,
     deliusAppointmentId: Long?,
+    createdByUser: AuthUser,
     appointmentDeliveryType: AppointmentDeliveryType,
     appointmentSessionType: AppointmentSessionType?,
     appointmentDeliveryAddress: AddressDTO? = null,
     npsOfficeCode: String?,
+    attended: Attended?,
+    additionalAttendanceInformation: String?,
+    notifyProbationPractitioner: Boolean?,
+    behaviourDescription: String?,
+    appointmentType: AppointmentType,
   ): Appointment {
     appointment.durationInMinutes = durationInMinutes
     appointment.appointmentTime = appointmentTime
     appointment.deliusAppointmentId = deliusAppointmentId
+    setAttendanceAndBehaviourIfHistoricAppointment(appointment, appointmentTime, attended, additionalAttendanceInformation, behaviourDescription, notifyProbationPractitioner, createdByUser, appointmentType)
     val appointment = appointmentRepository.save(appointment)
     createOrUpdateAppointmentDeliveryDetails(appointment, appointmentDeliveryType, appointmentSessionType, appointmentDeliveryAddress, npsOfficeCode)
     return appointment
