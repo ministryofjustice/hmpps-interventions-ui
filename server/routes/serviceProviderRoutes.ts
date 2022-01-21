@@ -207,19 +207,47 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
     appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
   )
+  get(
+    router,
+    '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/attendance',
+    (req, res) => appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
+  )
   post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/attendance', (req, res) =>
     appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
+  )
+  post(
+    router,
+    '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/attendance',
+    (req, res) => appointmentsController.addSupplierAssessmentAttendanceFeedback(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', (req, res) =>
     appointmentsController.addSupplierAssessmentBehaviourFeedback(req, res)
   )
+  get(
+    router,
+    '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/behaviour',
+    (req, res) => appointmentsController.addSupplierAssessmentBehaviourFeedback(req, res)
+  )
   post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/behaviour', (req, res) =>
     appointmentsController.addSupplierAssessmentBehaviourFeedback(req, res)
+  )
+  post(
+    router,
+    '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/behaviour',
+    (req, res) => appointmentsController.addSupplierAssessmentBehaviourFeedback(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/check-your-answers', (req, res) =>
     appointmentsController.checkSupplierAssessmentFeedbackAnswers(req, res)
   )
+  get(
+    router,
+    '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/check-your-answers',
+    (req, res) => appointmentsController.checkSupplierAssessmentFeedbackAnswers(req, res)
+  )
   post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/submit', (req, res) =>
+    appointmentsController.submitSupplierAssessmentFeedback(req, res)
+  )
+  post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/submit', (req, res) =>
     appointmentsController.submitSupplierAssessmentFeedback(req, res)
   )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/confirmation', (req, res) =>

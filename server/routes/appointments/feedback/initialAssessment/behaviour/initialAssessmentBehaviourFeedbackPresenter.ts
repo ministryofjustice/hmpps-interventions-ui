@@ -9,6 +9,7 @@ export default class InitialAssessmentBehaviourFeedbackPresenter {
     private readonly appointment: InitialAssessmentAppointment,
     private readonly serviceUser: DeliusServiceUser,
     private readonly referralId: string | null = null,
+    private readonly draftId: string | undefined = undefined,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
@@ -19,9 +20,15 @@ export default class InitialAssessmentBehaviourFeedbackPresenter {
     title: `Add behaviour feedback`,
   }
 
-  readonly backLinkHref = this.referralId
-    ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/attendance`
-    : null
+  get backLinkHref(): string | null {
+    if (this.referralId) {
+      if (this.draftId) {
+        return `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/edit/${this.draftId}/attendance`
+      }
+      return `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/attendance`
+    }
+    return null
+  }
 
   readonly inputsPresenter = new BehaviourFeedbackInputsPresenter(this.appointment, this.error, this.userInputData)
 }

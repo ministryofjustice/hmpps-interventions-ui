@@ -11,16 +11,25 @@ export default class InitialAssessmentFeedbackCheckAnswersPresenter extends Chec
     appointment: InitialAssessmentAppointment,
     private readonly serviceUser: DeliusServiceUser,
     private readonly referralId: string,
-    readonly appointmentSummary: AppointmentSummary
+    readonly appointmentSummary: AppointmentSummary,
+    private readonly draftId: string | undefined = undefined
   ) {
     super(appointment, appointmentSummary)
     this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(appointment, serviceUser)
   }
 
-  readonly submitHref = `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/submit`
+  readonly submitHref = this.draftId
+    ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/edit/${this.draftId}/submit`
+    : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/submit`
 
-  readonly backLinkHref =
-    this.appointment.sessionFeedback.attendance.attended === 'no'
+  get backLinkHref(): string {
+    if (this.draftId) {
+      return this.appointment.sessionFeedback.attendance.attended === 'no'
+        ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/edit/${this.draftId}/attendance`
+        : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/edit/${this.draftId}/behaviour`
+    }
+    return this.appointment.sessionFeedback.attendance.attended === 'no'
       ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/attendance`
       : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/behaviour`
+  }
 }

@@ -2015,8 +2015,32 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Midnight to 1:15am')
             cy.contains('Phone call')
 
+            cy.get('button').contains('Confirm').click()
+
+            // Attendance page
+            cy.contains('Yes').click()
+            cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
+            cy.contains('Save and continue').click()
+
+            cy.contains('Add behaviour feedback')
+
+            cy.contains("Describe Alex's behaviour in the assessment appointment").type('Alex was well behaved')
+            cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
+
+            cy.contains('Save and continue').click()
+
+            cy.contains('Confirm feedback')
+            cy.contains('Alex attended the session')
+            cy.contains('Yes, they were on time')
+            cy.contains('Alex was well behaved')
+            cy.contains('No')
+
+            const time = new Date()
+            time.setHours(0)
+            time.setMinutes(15)
+
             const scheduledAppointment = initialAssessmentAppointmentFactory.build({
-              appointmentTime: '2025-03-24T09:02:02Z',
+              appointmentTime: time.toString(),
               durationInMinutes: 75,
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
               appointmentDeliveryAddress: {
@@ -2026,12 +2050,27 @@ describe('Service provider referrals dashboard', () => {
                 county: 'Lancashire',
                 postCode: 'SY4 0RE',
               },
+              sessionFeedback: {
+                attendance: {
+                  attended: 'yes',
+                  additionalAttendanceInformation: 'Alex attended the session',
+                },
+                behaviour: {
+                  behaviourDescription: 'Alex was well behaved',
+                  notifyProbationPractitioner: false,
+                },
+                submitted: true,
+                submittedBy: {
+                  firstName: 'Case',
+                  lastName: 'Worker',
+                  username: 'case.worker',
+                },
+              },
             })
+
             cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
-
-            cy.get('button').contains('Confirm').click()
-
-            cy.contains('Initial assessment appointment added')
+            cy.get('form').contains('Confirm').click()
+            cy.contains('Initial assessment added')
           })
         })
         describe('that happened before today', () => {

@@ -569,6 +569,19 @@ export default class InterventionsService {
     })) as SupplierAssessment
   }
 
+  async scheduleAndSubmitSupplierAssessmentAppointmentWithFeedback(
+    token: string,
+    supplierAssessmentId: string,
+    appointmentUpdate: CreateAppointmentSchedulingAndFeedback
+  ): Promise<InitialAssessmentAppointment> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.put({
+      path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
+      headers: { Accept: 'application/json' },
+      data: { ...appointmentUpdate },
+    })) as InitialAssessmentAppointment
+  }
+
   async scheduleSupplierAssessmentAppointment(
     token: string,
     supplierAssessmentId: string,

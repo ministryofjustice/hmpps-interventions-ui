@@ -328,7 +328,7 @@ describe('Scheduling a supplier assessment appointment', () => {
     it('updates the draft booking, schedules the appointment on the interventions service, deletes the draft booking, and redirects to the confirmation page', async () => {
       const draftBooking = draftAppointmentBookingFactory.build({
         data: {
-          appointmentTime: '2021-03-24T09:02:00.000Z',
+          appointmentTime: '3000-03-24T09:02:00.000Z',
           durationInMinutes: 75,
           appointmentDeliveryType: 'PHONE_CALL',
           appointmentDeliveryAddress: null,
@@ -361,7 +361,7 @@ describe('Scheduling a supplier assessment appointment', () => {
         'token',
         supplierAssessment.id,
         {
-          appointmentTime: '2021-03-24T09:02:00.000Z',
+          appointmentTime: '3000-03-24T09:02:00.000Z',
           durationInMinutes: 75,
           appointmentDeliveryType: 'PHONE_CALL',
           appointmentDeliveryAddress: null,
@@ -376,7 +376,7 @@ describe('Scheduling a supplier assessment appointment', () => {
       it('redirects to the booking form, passing a clash=true parameter, and does not delete the draft booking', async () => {
         const draftBooking = draftAppointmentBookingFactory.build({
           data: {
-            appointmentTime: '2021-03-24T09:02:00.000Z',
+            appointmentTime: '3000-03-24T09:02:00.000Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
@@ -406,7 +406,7 @@ describe('Scheduling a supplier assessment appointment', () => {
       it('renders an error message, and does not delete the draft booking', async () => {
         const draftBooking = draftAppointmentBookingFactory.build({
           data: {
-            appointmentTime: '2021-03-24T09:02:00.000Z',
+            appointmentTime: '3000-03-24T09:02:00.000Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
             appointmentDeliveryAddress: null,
