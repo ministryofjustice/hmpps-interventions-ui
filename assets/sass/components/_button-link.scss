@@ -14,3 +14,11 @@
     @include button-link;
   }
 }
+
+.form-input-reset {
+  button {
+    @include button-link;
+    @include govuk-link-common;
+    @include govuk-link-style-no-visited-state;
+  }
+}

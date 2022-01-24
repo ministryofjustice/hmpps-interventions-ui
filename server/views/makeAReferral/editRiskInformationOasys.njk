@@ -24,63 +24,79 @@
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         <h2 class="govuk-heading-m">Who is at risk</h2>
         {{ govukTextarea(whoIsAtRiskTextareaArgs) }}
-        <a id='revert-who-is-at-risk' class="govuk-link link link__right-justified">
+        <div class="form-input-reset govuk-!-text-align-right">
+        <button type="button" id='revert-who-is-at-risk'>
             Revert to original OASys information
-        </a>
+        </button>
+        </div>
         <hr/>
 
         <h2 class="govuk-heading-m">What is the nature of the risk</h2>
         {{ govukTextarea(natureOfRiskTextareaArgs) }}
-        <a id='revert-nature-of-risk' class="govuk-link link link__right-justified">
+        <div class="form-input-reset govuk-!-text-align-right">
+        <button type="button" id='revert-nature-of-risk'>
             Revert to original OASys information
-        </a>
+        </button>
+        </div>
         <hr/>
 
         <h2 class="govuk-heading-m">When is the risk likely to be greatest</h2>
         {{ govukTextarea(riskImminenceTextareaArgs) }}
-        <a id='revert-risk-imminence' class="govuk-link link link__right-justified">
+        <div class="form-input-reset govuk-!-text-align-right">
+        <button type="button" id='revert-risk-imminence'>
             Revert to original OASys information
-        </a>
+        </button>
+        </div>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to self-harm</h2>
         <p class="govuk-body {{ riskInformation.riskToSelf.selfHarm.label.class }}"> {{ riskInformation.riskToSelf.selfHarm.label.text }}</p>
         {{ govukTextarea(riskToSelfSelfHarmTextareaArgs) }}
-        <a id='revert-risk-to-self-self-harm' class="govuk-link link link__right-justified">
+        <div class="form-input-reset govuk-!-text-align-right">
+        <button type="button" id='revert-risk-to-self-self-harm'>
             Revert to original OASys information
-        </a>
+        </button>
+        </div>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to suicide</h2>
         <p class="govuk-body {{ riskInformation.riskToSelf.suicide.label.class }}"> {{ riskInformation.riskToSelf.suicide.label.text }}</p>
         {{ govukTextarea(riskToSelfSuicideTextareaArgs) }}
-        <a id='revert-risk-to-self-suicide' class="govuk-link link link__right-justified">
+        <div class="form-input-reset govuk-!-text-align-right">
+        <button type="button" id='revert-risk-to-self-suicide'>
             Revert to original OASys information
-        </a>
+        </button>
+        </div>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to coping in a hostel setting</h2>
         <p class="govuk-body {{ riskInformation.riskToSelf.hostelSetting.label.class }}"> {{ riskInformation.riskToSelf.hostelSetting.label.text }}</p>
         {{ govukTextarea(riskToSelfHostelSettingTextareaArgs) }}
-        <a id='revert-risk-to-self-hostel-setting' class="govuk-link link link__right-justified">
+        <div class="form-input-reset govuk-!-text-align-right">
+        <button type="button" id='revert-risk-to-self-hostel-setting'>
             Revert to original OASys information
-        </a>
+        </button>
+        </div>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to vulnerability</h2>
         <p class="govuk-body {{ riskInformation.riskToSelf.vulnerability.label.class }}"> {{ riskInformation.riskToSelf.vulnerability.label.text }}</p>
         {{ govukTextarea(riskToSelfVulnerabilityTextareaArgs) }}
-        <a id='revert-risk-to-self-vulnerability' class="govuk-link link link__right-justified">
+        <div class="form-input-reset govuk-!-text-align-right">
+        <button type="button" id='revert-risk-to-self-vulnerability'>
             Revert to original OASys information
-        </a>
+        </button>
+        </div>
         <hr/>
 
         <h2 class="govuk-heading-m">Additional information</h2>
         <p class="govuk-body {{ riskInformation.additionalRiskInformation.label.class }}">{{ riskInformation.additionalRiskInformation.label.text }}</p>
         {{ govukTextarea(additionalInformationTextareaArgs) }}
-        <a id='revert-additional-information' class="govuk-link link link__right-justified">
+        <div class="form-input-reset govuk-!-text-align-right">
+        <button type="button" id='revert-additional-information'>
             Revert to original OASys information
-        </a>
+        </button>
+        </div>
 
         {{ govukCheckboxes(confirmUnderstoodWarningCheckboxArgs) }}
         {{ govukButton({ text: "Save and continue" }) }}
