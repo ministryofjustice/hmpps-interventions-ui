@@ -585,8 +585,10 @@ export default class AppointmentsController {
         }
 
         res.redirect(redirectUrl)
+        return
       }
     }
+
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const presenter = new InitialAssessmentBehaviourFeedbackPresenter(
       appointment,
