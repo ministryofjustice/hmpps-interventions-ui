@@ -6,15 +6,14 @@ export default class AddActionPlanActivitiesView {
   constructor(private readonly presenter: AddActionPlanActivitiesPresenter) {}
 
   private get backLinkArgs(): BackLinkArgs | null {
-    if (this.presenter.activityNumber === 1) {
-      return null
-    }
-
     return {
       text: 'Back',
-      href: `/service-provider/action-plan/${this.presenter.actionPlanId}/add-activity/${
-        this.presenter.activityNumber - 1
-      }`,
+      href:
+        this.presenter.activityNumber === 1
+          ? `/service-provider/referrals/${this.presenter.referralId}/progress`
+          : `/service-provider/action-plan/${this.presenter.actionPlanId}/add-activity/${
+              this.presenter.activityNumber - 1
+            }`,
     }
   }
 

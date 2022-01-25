@@ -20,6 +20,8 @@ export default class AddActionPlanActivitiesPresenter {
 
   readonly actionPlanId = this.actionPlan.id
 
+  readonly referralId = this.sentReferral.id
+
   readonly saveAndContinueFormAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activities`
 
   readonly addActivityAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activity/${this.activityNumber}`
