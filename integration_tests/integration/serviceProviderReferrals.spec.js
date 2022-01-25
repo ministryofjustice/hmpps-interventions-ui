@@ -2074,7 +2074,7 @@ describe('Service provider referrals dashboard', () => {
           })
         })
         describe('that happened before today', () => {
-          it('presents a form validation error', () => {
+          it('schedules the appointment', () => {
             cy.visit(`/service-provider/referrals/${referral.id}/progress`)
             cy.get('#supplier-assessment-status').contains('not scheduled')
             cy.contains('Schedule initial assessment').click()
@@ -2088,10 +2088,62 @@ describe('Service provider referrals dashboard', () => {
             cy.get('#time-part-of-day').select('AM')
             cy.get('#duration-hours').type('1')
             cy.get('#duration-minutes').type('15')
-            cy.contains('Phone call').click()
-
+            cy.contains('Video call').click()
             cy.contains('Save and continue').click()
-            cy.contains('There is a problem').next().contains('The session cannot be scheduled in the past')
+
+            // schedule check your answers page
+            cy.get('h1').contains('Confirm appointment details')
+            cy.contains("You've chosen a data and time in the past")
+            cy.contains('9:02am to 10:17am')
+            cy.contains('Video call')
+
+            cy.get('button').contains('Confirm').click()
+
+            // Attendance page
+            cy.contains('No').click()
+            cy.contains("Add additional information about Alex's attendance").type('Alex did not attend the session')
+            cy.contains('Save and continue').click()
+
+            cy.contains('Confirm feedback')
+            cy.contains('Alex did not attend the session')
+            cy.contains('No')
+
+            const time = new Date()
+            time.setHours(0)
+            time.setMinutes(15)
+
+            const scheduledAppointment = initialAssessmentAppointmentFactory.build({
+              appointmentTime: time.toString(),
+              durationInMinutes: 75,
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY4 0RE',
+              },
+              sessionFeedback: {
+                attendance: {
+                  attended: 'yes',
+                  additionalAttendanceInformation: 'Alex attended the session',
+                },
+                behaviour: {
+                  behaviourDescription: 'Alex was well behaved',
+                  notifyProbationPractitioner: false,
+                },
+                submitted: true,
+                submittedBy: {
+                  firstName: 'Case',
+                  lastName: 'Worker',
+                  username: 'case.worker',
+                },
+              },
+            })
+
+            cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
+            cy.get('form').contains('Confirm').click()
+            cy.contains('Initial assessment added')
           })
         })
       })
