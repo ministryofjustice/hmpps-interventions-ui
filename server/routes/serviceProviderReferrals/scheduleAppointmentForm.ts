@@ -21,16 +21,12 @@ export default class ScheduleAppointmentForm {
   ) {}
 
   async data(): Promise<FormData<AppointmentSchedulingDetails>> {
-    const startOfToday = new Date()
-    startOfToday.setHours(0, 0, 0, 0)
-
     const [dateResult, durationResult, sessionTypeResult, appointmentDeliveryType] = await Promise.all([
       new TwelveHourBritishDateTimeInput(
         this.request,
         'date',
         'time',
-        errorMessages.scheduleAppointment.time,
-        this.allowPastAppointments ? null : startOfToday
+        errorMessages.scheduleAppointment.time
       ).validate(),
       new DurationInput(this.request, 'duration', errorMessages.scheduleAppointment.duration).validate(),
       FormUtils.runValidations({ request: this.request, validations: this.validateSessionType() }),
