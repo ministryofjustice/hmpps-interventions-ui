@@ -9,7 +9,7 @@
 {% block formSection %}
     <h3 class="govuk-heading-m">Add number of sessions for {{ presenter.text.serviceUserFirstName | capitalize }}’s action plan</h3>
 
-    <p class="govuk-body">This will be shared with the service user's probation practitioner for approval. The first version of the action plan must be submitted within 5 working days from the initial assessment.</p>
+    <p class="govuk-body">This will be shared with the probation practitioner for approval. The first version of the action plan must be submitted within 5 working days from the initial assessment.</p>
 
       <form method="post" novalidate>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
