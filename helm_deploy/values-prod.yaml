@@ -1,6 +1,7 @@
 generic-service:
   ingress:
     host: refer-monitor-intervention.service.justice.gov.uk
+    contextColour: green
     tlsSecretName: tls-certificate
     modsecurity_enabled: true
   env:
@@ -14,4 +15,3 @@ generic-service:
     GA_ID: G-THWB3S7TLX
     FEATURE_SP_REPORTING_ENABLED: true
     FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS: true
-
