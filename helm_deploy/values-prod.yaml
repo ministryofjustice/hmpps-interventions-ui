@@ -11,7 +11,7 @@ ingress:
   hosts:
     - host: hmpps-interventions-service.apps.live-1.cloud-platform.service.justice.gov.uk
   migration:
-    colour: blue
+    colour: green
 
 env_details:
   contains_live_data: true
