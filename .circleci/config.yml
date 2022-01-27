@@ -256,7 +256,7 @@ workflows:
             - approve_prod
           context:
             - hmpps-common-vars
-            - hmpps-interventions-service-prod
+            - hmpps-interventions-prod-deploy
       - tag_pact_version:
           name: "tag_pact_version_prod"
           tag: "deployed:prod"
