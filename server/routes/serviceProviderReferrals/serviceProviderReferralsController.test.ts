@@ -1488,6 +1488,30 @@ describe('GET /service-provider/end-of-service-report/:id/confirmation', () => {
   })
 })
 
+describe('GET /service-provider/action-plan/:id', () => {
+  it('returns details of the specified action plan', async () => {
+    const referral = sentReferralFactory.assigned().build()
+    const actionPlan = actionPlanFactory.approved().build({
+      submittedAt: '2021-12-12T09:30:00+00:00',
+    })
+    const serviceCategories = [serviceCategoryFactory.build({ name: 'accommodation' })]
+
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
+
+    await request(app)
+      .get(`/service-provider/action-plan/${actionPlan.id}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('View action plan')
+        expect(res.text).toContain('Approved')
+        expect(res.text).toContain('12 December 2021')
+      })
+  })
+})
+
 describe('POST /service-provider/referrals/:id/action-plan/edit', () => {
   it('returns error if no existing action plan exists', async () => {
     const referral = sentReferralFactory.assigned().build()

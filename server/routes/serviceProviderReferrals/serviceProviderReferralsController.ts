@@ -782,6 +782,27 @@ export default class ServiceProviderReferralsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
+  async viewActionPlanById(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { id } = req.params
+
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, id)
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+
+    const [serviceCategories, serviceUser] = await Promise.all([
+      Promise.all(
+        sentReferral.referral.serviceCategoryIds.map(it =>
+          this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, it)
+        )
+      ),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
+
+    const presenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
+    const view = new ActionPlanView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
   async actionPlanEditConfirmation(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
