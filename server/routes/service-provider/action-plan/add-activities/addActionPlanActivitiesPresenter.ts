@@ -20,6 +20,8 @@ export default class AddActionPlanActivitiesPresenter {
 
   readonly actionPlanId = this.actionPlan.id
 
+  readonly referralId = this.sentReferral.id
+
   readonly saveAndContinueFormAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activities`
 
   readonly addActivityAction = `/service-provider/action-plan/${this.actionPlan.id}/add-activity/${this.activityNumber}`
@@ -31,6 +33,12 @@ export default class AddActionPlanActivitiesPresenter {
   readonly text = {
     title: `Add activity ${this.activityNumber} to action plan`,
     referredOutcomesHeader: `Referred outcomes for ${this.sentReferral.referral.serviceUser.firstName}`,
+  }
+
+  get backLinkHref(): string {
+    return this.activityNumber === 1
+      ? `/service-provider/referrals/${this.referralId}/progress`
+      : `/service-provider/action-plan/${this.actionPlanId}/add-activity/${this.activityNumber - 1}`
   }
 
   get existingActivity(): Activity | null {

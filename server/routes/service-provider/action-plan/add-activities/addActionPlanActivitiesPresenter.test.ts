@@ -160,4 +160,32 @@ describe(AddActionPlanActivitiesPresenter, () => {
       expect(presenter.existingActivity).toEqual(actionPlan.activities[0])
     })
   })
+
+  describe('backlink', () => {
+    it('returns to progress page for 1st activity', () => {
+      const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
+      const activityNumber = 1
+      const presenter = new AddActionPlanActivitiesPresenter(
+        sentReferral,
+        serviceCategories,
+        actionPlan,
+        activityNumber
+      )
+      expect(presenter.backLinkHref).toEqual(`/service-provider/referrals/${sentReferral.id}/progress`)
+    })
+
+    it('returns to previous add activity page for an activity later than the 1st', () => {
+      const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
+      const activityNumber = 2
+      const presenter = new AddActionPlanActivitiesPresenter(
+        sentReferral,
+        serviceCategories,
+        actionPlan,
+        activityNumber
+      )
+      expect(presenter.backLinkHref).toEqual(
+        `/service-provider/action-plan/${actionPlan.id}/add-activity/${activityNumber - 1}`
+      )
+    })
+  })
 })
