@@ -5,15 +5,10 @@ import { BackLinkArgs } from '../../../../utils/govukFrontendTypes'
 export default class AddActionPlanActivitiesView {
   constructor(private readonly presenter: AddActionPlanActivitiesPresenter) {}
 
-  private get backLinkArgs(): BackLinkArgs | null {
+  private get backLinkArgs(): BackLinkArgs {
     return {
       text: 'Back',
-      href:
-        this.presenter.activityNumber === 1
-          ? `/service-provider/referrals/${this.presenter.referralId}/progress`
-          : `/service-provider/action-plan/${this.presenter.actionPlanId}/add-activity/${
-              this.presenter.activityNumber - 1
-            }`,
+      href: this.presenter.backLinkHref,
     }
   }
 

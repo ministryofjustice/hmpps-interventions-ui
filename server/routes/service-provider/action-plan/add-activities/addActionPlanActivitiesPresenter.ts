@@ -35,6 +35,12 @@ export default class AddActionPlanActivitiesPresenter {
     referredOutcomesHeader: `Referred outcomes for ${this.sentReferral.referral.serviceUser.firstName}`,
   }
 
+  get backLinkHref(): string {
+    return this.activityNumber === 1
+      ? `/service-provider/referrals/${this.referralId}/progress`
+      : `/service-provider/action-plan/${this.actionPlanId}/add-activity/${this.activityNumber - 1}`
+  }
+
   get existingActivity(): Activity | null {
     return this.actionPlanPresenter.orderedActivities[this.activityNumber - 1] || null
   }
