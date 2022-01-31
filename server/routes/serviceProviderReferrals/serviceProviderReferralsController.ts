@@ -53,6 +53,7 @@ import createFormValidationErrorOrRethrow from '../../utils/interventionsFormErr
 import EndOfServiceReportPresenter from '../shared/endOfServiceReport/endOfServiceReportPresenter'
 import EndOfServiceReportView from '../shared/endOfServiceReport/endOfServiceReportView'
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
+import ActionPlanUtils from '../../utils/actionPlanUtils'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -173,42 +174,44 @@ export default class ServiceProviderReferralsController {
   }
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
-    const sentReferral = await this.interventionsService.getSentReferral(
-      res.locals.user.token.accessToken,
-      req.params.id
-    )
+    const { accessToken } = res.locals.user.token
+    const { id } = req.params
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, id)
+
     const serviceUserPromise = this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
     const interventionPromise = this.interventionsService.getIntervention(
-      res.locals.user.token.accessToken,
+      accessToken,
       sentReferral.referral.interventionId
     )
+
     const actionPlanPromise =
       sentReferral.actionPlanId === null
         ? Promise.resolve(null)
-        : this.interventionsService.getActionPlan(res.locals.user.token.accessToken, sentReferral.actionPlanId)
+        : this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId)
 
-    const [intervention, actionPlan, serviceUser, supplierAssessment] = await Promise.all([
+    const [intervention, actionPlan, approvedActionPlanSummaries, serviceUser, supplierAssessment] = await Promise.all([
       interventionPromise,
       actionPlanPromise,
+      this.interventionsService.getApprovedActionPlanSummaries(accessToken, id),
       serviceUserPromise,
-      this.interventionsService.getSupplierAssessment(res.locals.user.token.accessToken, sentReferral.id),
+      this.interventionsService.getSupplierAssessment(accessToken, sentReferral.id),
     ])
 
+    // appointments should always come from the latest approved action plan
+    const latestApprovedActionPlanSummary =
+      ActionPlanUtils.getLatestApprovedActionPlanSummary(approvedActionPlanSummaries)
     let actionPlanAppointments: ActionPlanAppointment[] = []
-    if (actionPlan !== null && actionPlan.submittedAt !== null) {
+    if (latestApprovedActionPlanSummary !== null) {
       actionPlanAppointments = await this.interventionsService.getActionPlanAppointments(
-        res.locals.user.token.accessToken,
-        actionPlan.id
+        accessToken,
+        latestApprovedActionPlanSummary.id
       )
     }
 
     const assignee =
       sentReferral.assignedTo === null
         ? null
-        : await this.hmppsAuthService.getSPUserByUsername(
-            res.locals.user.token.accessToken,
-            sentReferral.assignedTo.username
-          )
+        : await this.hmppsAuthService.getSPUserByUsername(accessToken, sentReferral.assignedTo.username)
 
     const presenter = new InterventionProgressPresenter(
       sentReferral,

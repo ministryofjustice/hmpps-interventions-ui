@@ -45,6 +45,7 @@ describe('Probation Practitioner monitor journey', () => {
           cy.stubGetIntervention(intervention.id, intervention)
           cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
           cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+          cy.stubGetApprovedActionPlanSummaries(referral.id, [])
 
           cy.login()
 
@@ -85,6 +86,7 @@ describe('Probation Practitioner monitor journey', () => {
           cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
           cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
           cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+          cy.stubGetApprovedActionPlanSummaries(referral.id, [])
 
           cy.login()
 
@@ -127,6 +129,7 @@ describe('Probation Practitioner monitor journey', () => {
           cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
           cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
           cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+          cy.stubGetApprovedActionPlanSummaries(referral.id, [])
 
           cy.login()
 
@@ -151,7 +154,7 @@ describe('Probation Practitioner monitor journey', () => {
         surname: 'Smith',
         username: 'john.smith',
       })
-      const actionPlan = actionPlanFactory.submitted().build({
+      const actionPlan = actionPlanFactory.approved().build({
         referralId: referralParams.id,
         numberOfSessions: 4,
       })
@@ -193,6 +196,14 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
       cy.stubGetAuthUserByUsername(assignedReferral.assignedTo.username, hmppsAuthUserFactory.build())
+
+      cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [
+        {
+          id: actionPlan.id,
+          submittedAt: actionPlan.submittedAt,
+          approvedAt: actionPlan.approvedAt,
+        },
+      ])
 
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
@@ -249,7 +260,7 @@ describe('Probation Practitioner monitor journey', () => {
         surname: 'Smith',
         username: 'john.smith',
       })
-      const actionPlan = actionPlanFactory.submitted().build({
+      const actionPlan = actionPlanFactory.approved().build({
         referralId: referralParams.id,
         numberOfSessions: 4,
       })
@@ -289,6 +300,13 @@ describe('Probation Practitioner monitor journey', () => {
         }),
       ]
 
+      cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [
+        {
+          id: actionPlan.id,
+          submittedAt: actionPlan.submittedAt,
+          approvedAt: actionPlan.approvedAt,
+        },
+      ])
       cy.stubGetActionPlanAppointments(actionPlan.id, appointmentsWithSubmittedFeedback)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentsWithSubmittedFeedback[0])
 
@@ -324,28 +342,6 @@ describe('Probation Practitioner monitor journey', () => {
         numberOfSessions: 4,
       })
 
-      const appointments = [
-        actionPlanAppointmentFactory.attended('yes').build({
-          sessionNumber: 1,
-          appointmentTime: '2021-03-24T09:02:02Z',
-          durationInMinutes: 75,
-        }),
-        actionPlanAppointmentFactory.attended('no').build({
-          sessionNumber: 2,
-          appointmentTime: '2021-04-30T09:02:02Z',
-          durationInMinutes: 75,
-        }),
-        actionPlanAppointmentFactory.build({
-          sessionNumber: 3,
-          appointmentTime: '2021-05-31T09:02:02Z',
-          durationInMinutes: 75,
-        }),
-        actionPlanAppointmentFactory.build({
-          sessionNumber: 4,
-          durationInMinutes: 75,
-        }),
-      ]
-
       const assignedReferral = sentReferralFactory.assigned().build({
         ...referralParams,
         assignedTo: { username: probationPractitioner.username },
@@ -364,10 +360,7 @@ describe('Probation Practitioner monitor journey', () => {
         { code: 'MIS', description: 'Referral was made by mistake' },
         { code: 'MOV', description: 'Service user has moved out of delivery area' },
       ])
-
-      cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
-      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
-      cy.stubGetActionPlanAppointment(actionPlan.id, 2, appointments[1])
+      cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [])
 
       cy.login()
 
@@ -447,6 +440,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUserFactory.build())
       cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+      cy.stubGetApprovedActionPlanSummaries(referral.id, [])
 
       cy.login()
 
