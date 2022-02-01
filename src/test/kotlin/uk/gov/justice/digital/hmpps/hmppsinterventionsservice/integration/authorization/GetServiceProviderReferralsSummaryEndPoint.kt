@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.authorization
 
-import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.whenever
 import org.springframework.boot.test.mock.mockito.MockBean
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.integration.IntegrationTestBase
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser

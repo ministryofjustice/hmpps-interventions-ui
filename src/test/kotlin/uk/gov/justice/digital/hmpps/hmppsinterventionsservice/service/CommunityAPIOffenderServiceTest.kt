@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import com.microsoft.applicationinsights.TelemetryClient
-import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.mock
 import org.springframework.http.HttpStatus
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient

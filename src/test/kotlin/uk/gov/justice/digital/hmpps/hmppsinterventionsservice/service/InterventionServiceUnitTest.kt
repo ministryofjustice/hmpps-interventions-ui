@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData.Companion.sampleIntervention
@@ -43,7 +43,7 @@ class InterventionServiceUnitTest {
 
     interventionService.getInterventions(locations, null, null, null, null)
 
-    verifyZeroInteractions(pccRegionRepository)
+    verifyNoInteractions(pccRegionRepository)
   }
 
   @Test

@@ -1,8 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
 import ch.qos.logback.classic.Level
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.assertj.core.api.Assertions.assertThat
@@ -10,6 +8,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.springframework.security.core.context.SecurityContext
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.reactive.function.client.WebClient
@@ -52,7 +52,7 @@ internal class RisksAndNeedsServiceTest : LoggingSpyTest(RisksAndNeedsService::c
           .setHeader("Content-Type", "application/json")
           .setBody(
             """
-        { 
+        {
           "supplementaryRiskId": "f974d97e-9f50-4963-91f3-a619f50ad127",
           "createdDate": "2022-01-06T11:23:53.622652"
         }
@@ -86,7 +86,7 @@ internal class RisksAndNeedsServiceTest : LoggingSpyTest(RisksAndNeedsService::c
           .setHeader("Content-Type", "application/json")
           .setBody(
             """
-        { 
+        {
           "supplementaryRiskId": "f974d97e-9f50-4963-91f3-a619f50ad127",
           "createdDate": "2020-12-04T10:42:43.123456"
         }

@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.serviceprovider
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.springframework.batch.core.BatchStatus
 import org.springframework.batch.core.JobExecution
 import org.springframework.batch.core.JobInstance

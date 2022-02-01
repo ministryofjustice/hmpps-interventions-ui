@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.isNull
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.any
+import org.mockito.kotlin.isNull
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 import uk.gov.service.notify.NotificationClient
 
 class EmailSenderTest {
@@ -24,7 +24,7 @@ class EmailSenderTest {
   @Test
   fun `Does not send email when not enabled`() {
     EmailSender(false, notificationClient).sendEmail("template", "address", mapOf())
-    verifyZeroInteractions(notificationClient)
+    verifyNoInteractions(notificationClient)
   }
 
   @Test

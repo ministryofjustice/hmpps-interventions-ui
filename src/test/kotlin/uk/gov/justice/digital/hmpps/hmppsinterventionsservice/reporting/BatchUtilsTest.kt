@@ -1,9 +1,9 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting
 
-import com.nhaarman.mockitokotlin2.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
 import org.springframework.batch.item.ExecutionContext
 import org.springframework.core.io.FileSystemResource
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.reporting.ndmis.performance.NdmisDateTime
@@ -70,7 +70,7 @@ internal class BatchUtilsTest {
       string value,uuid value
       tom,5863b32b-bb60-4bad-aeee-a15ff61abf3a
       andrew,cec6b55f-b32f-43af-828b-c72a4c1aade7
-      
+
         """.trimIndent()
       )
     } finally {

@@ -1,14 +1,14 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import com.nhaarman.mockitokotlin2.firstValue
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.same
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
+import org.mockito.kotlin.firstValue
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.same
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ReferralEventType
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
@@ -98,7 +98,7 @@ internal class ReferralConcluderTest {
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttemptedSessions)
 
-    verifyZeroInteractions(referralRepository, referralEventPublisher)
+    verifyNoInteractions(referralRepository, referralEventPublisher)
   }
 
   @Test
@@ -111,7 +111,7 @@ internal class ReferralConcluderTest {
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttemptedSessions)
 
-    verifyZeroInteractions(referralRepository, referralEventPublisher)
+    verifyNoInteractions(referralRepository, referralEventPublisher)
   }
 
   @Test
@@ -123,7 +123,7 @@ internal class ReferralConcluderTest {
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttemptedSessions)
 
-    verifyZeroInteractions(referralRepository, referralEventPublisher)
+    verifyNoInteractions(referralRepository, referralEventPublisher)
   }
 
   @Test
@@ -135,7 +135,7 @@ internal class ReferralConcluderTest {
 
     referralConcluder.concludeIfEligible(referralWithActionPlanAndSomeAttemptedSessions)
 
-    verifyZeroInteractions(referralRepository, referralEventPublisher)
+    verifyNoInteractions(referralRepository, referralEventPublisher)
   }
 
   @Test
@@ -149,7 +149,7 @@ internal class ReferralConcluderTest {
     val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)
 
     assertThat(endOfServiceReportCreationRequired).isFalse
-    verifyZeroInteractions(referralRepository, referralEventPublisher)
+    verifyNoInteractions(referralRepository, referralEventPublisher)
   }
 
   @Test
@@ -162,7 +162,7 @@ internal class ReferralConcluderTest {
     val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)
 
     assertThat(endOfServiceReportCreationRequired).isTrue
-    verifyZeroInteractions(referralRepository, referralEventPublisher)
+    verifyNoInteractions(referralRepository, referralEventPublisher)
   }
 
   @Test
@@ -175,7 +175,7 @@ internal class ReferralConcluderTest {
     val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)
 
     assertThat(endOfServiceReportCreationRequired).isTrue
-    verifyZeroInteractions(referralRepository, referralEventPublisher)
+    verifyNoInteractions(referralRepository, referralEventPublisher)
   }
 
   @Test
@@ -186,7 +186,7 @@ internal class ReferralConcluderTest {
     val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)
 
     assertThat(endOfServiceReportCreationRequired).isFalse
-    verifyZeroInteractions(actionPlanRepository, referralRepository, referralEventPublisher)
+    verifyNoInteractions(actionPlanRepository, referralRepository, referralEventPublisher)
   }
 
   @Test
@@ -199,7 +199,7 @@ internal class ReferralConcluderTest {
     val endOfServiceReportCreationRequired = referralConcluder.requiresEndOfServiceReportCreation(referralWithActionPlanAndSomeAttemptedSessions)
 
     assertThat(endOfServiceReportCreationRequired).isFalse
-    verifyZeroInteractions(referralRepository, referralEventPublisher)
+    verifyNoInteractions(referralRepository, referralEventPublisher)
   }
 
   private fun verifyEventPublished(referralWithNoActionPlan: Referral, value: ReferralEventType) {

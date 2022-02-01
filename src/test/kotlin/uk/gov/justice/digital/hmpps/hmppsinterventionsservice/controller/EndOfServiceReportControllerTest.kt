@@ -1,10 +1,10 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.authorization.UserMapper
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.LocationMapper
@@ -107,7 +107,7 @@ class EndOfServiceReportControllerTest {
 
     whenever(endOfServiceReportService.updateEndOfServiceReport(endOfServiceReportId, "info", null))
       .thenReturn(endOfServiceReport)
-    verifyZeroInteractions(endOfServiceReportOutcomeMapper)
+    verifyNoInteractions(endOfServiceReportOutcomeMapper)
     val endOfServiceReportResponse = endOfServiceReportController.updateEndOfServiceReport(endOfServiceReportId, updateEndOfServiceReportDTO)
     assertThat(endOfServiceReportResponse).isEqualTo(endOfServiceReportDTO)
   }

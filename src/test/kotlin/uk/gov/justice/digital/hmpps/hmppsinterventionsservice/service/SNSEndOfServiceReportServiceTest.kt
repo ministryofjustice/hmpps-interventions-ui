@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.SNSPublisher
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EventDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.EndOfServiceReportEvent
