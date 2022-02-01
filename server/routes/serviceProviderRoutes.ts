@@ -271,6 +271,8 @@ export default function serviceProviderRoutes(router: Router, services: Services
     serviceProviderReferralsController.createNewDraftActionPlan(req, res)
   )
 
+  get(router, '/action-plan/:id', (req, res) => serviceProviderReferralsController.viewActionPlanById(req, res))
+
   const caseNotesController = new CaseNotesController(
     services.interventionsService,
     services.communityApiService,
