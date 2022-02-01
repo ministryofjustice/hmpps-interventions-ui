@@ -69,12 +69,14 @@ data class UpdateActionPlanActivityDTO(
 data class ActionPlanSummaryDTO(
   val id: UUID,
   val approvedAt: OffsetDateTime?,
+  val submittedAt: OffsetDateTime?,
 ) {
   companion object {
     fun from(actionPlan: ActionPlan): ActionPlanSummaryDTO {
       return ActionPlanSummaryDTO(
         id = actionPlan.id,
         approvedAt = actionPlan.approvedAt,
+        submittedAt = actionPlan.submittedAt,
       )
     }
     fun from(actionPlans: List<ActionPlan>): List<ActionPlanSummaryDTO> {
