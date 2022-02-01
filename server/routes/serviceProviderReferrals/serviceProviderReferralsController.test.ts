@@ -318,6 +318,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/progress`)

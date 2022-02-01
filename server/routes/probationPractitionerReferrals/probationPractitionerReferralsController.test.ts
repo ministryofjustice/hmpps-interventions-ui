@@ -163,6 +163,7 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
 
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
 

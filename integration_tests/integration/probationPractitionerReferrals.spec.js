@@ -196,6 +196,7 @@ describe('Probation practitioner referrals dashboard', () => {
         const deliusUser = deliusUserFactory.build()
         cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
         cy.stubGetIntervention(intervention.id, intervention)
+        cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [])
         cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
         cy.stubGetExpandedServiceUserByCRN(
           assignedReferral.referral.serviceUser.crn,

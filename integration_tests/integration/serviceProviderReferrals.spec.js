@@ -324,6 +324,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
+      cy.stubGetApprovedActionPlanSummaries(referral.id, [])
 
       cy.login()
 
@@ -531,6 +532,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
     cy.stubGetActionPlanAppointments(draftActionPlan.id, actionPlanAppointments)
     cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+    cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [])
 
     cy.login()
 
@@ -622,52 +624,99 @@ describe('Service provider referrals dashboard', () => {
   })
 
   describe('editing a submitted action plan', () => {
-    it('User edits an unapproved action plan and submits it for approval', () => {
-      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-      const accommodationIntervention = interventionFactory.build({
-        contractType: { code: 'SOC', name: 'Social inclusion' },
-        serviceCategories: [serviceCategory],
-      })
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const accommodationIntervention = interventionFactory.build({
+      contractType: { code: 'SOC', name: 'Social inclusion' },
+      serviceCategories: [serviceCategory],
+    })
 
-      const actionPlanId = '2763d6e8-1847-4191-9c3f-0eea9a3b0c41'
-      const referralParams = {
-        referral: {
-          interventionId: accommodationIntervention.id,
-          serviceCategoryIds: [serviceCategory.id],
-        },
-      }
-      const deliusServiceUser = deliusServiceUserFactory.build()
-      const deliusUser = deliusUserFactory.build()
-      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
-      const assignedReferral = sentReferralFactory
-        .assigned()
-        .build({ ...referralParams, assignedTo: { username: hmppsAuthUser.username }, actionPlanId })
+    const actionPlanId = '2763d6e8-1847-4191-9c3f-0eea9a3b0c41'
+    const referralParams = {
+      referral: {
+        interventionId: accommodationIntervention.id,
+        serviceCategoryIds: [serviceCategory.id],
+        actionPlanId,
+      },
+    }
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const deliusUser = deliusUserFactory.build()
+    const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
+    const assignedReferral = sentReferralFactory
+      .assigned()
+      .build({ ...referralParams, assignedTo: { username: hmppsAuthUser.username }, actionPlanId })
 
-      const activityId = '1'
-      const submittedActionPlan = actionPlanFactory.submitted(assignedReferral.id).build({
-        id: actionPlanId,
-        activities: [actionPlanActivityFactory.build({ id: activityId, description: 'First activity version 1' })],
-        submittedAt: '2021-08-19T11:03:47.061Z',
-      })
-      const referralSummary = serviceProviderSentReferralSummaryFactory
-        .fromReferralAndIntervention(assignedReferral, accommodationIntervention)
-        .withAssignedUser(hmppsAuthUser.username)
-        .build()
+    const referralSummary = serviceProviderSentReferralSummaryFactory
+      .fromReferralAndIntervention(assignedReferral, accommodationIntervention)
+      .withAssignedUser(hmppsAuthUser.username)
+      .build()
 
+    const appointments = [
+      actionPlanAppointmentFactory.build({
+        sessionNumber: 1,
+        appointmentTime: '2021-03-24T09:02:02Z',
+        durationInMinutes: 75,
+        appointmentDeliveryType: 'PHONE_CALL',
+      }),
+      actionPlanAppointmentFactory.build({
+        sessionNumber: 2,
+        appointmentTime: '2021-03-31T09:02:02Z',
+        durationInMinutes: 75,
+        appointmentDeliveryType: 'PHONE_CALL',
+      }),
+    ]
+
+    beforeEach(() => {
       cy.stubGetSentReferralsForUserToken([assignedReferral])
-
       cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
-      cy.stubGetActionPlan(submittedActionPlan.id, submittedActionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
-      cy.stubGetActionPlanAppointments(submittedActionPlan.id, [])
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
-
       cy.login()
+    })
+
+    describe('User creates a new draft action plan but does not submit it', () => {
+      it('the referral progress page still shows sessions from the most recently approved action plan', () => {
+        const draftActionPlan = actionPlanFactory.justCreated(assignedReferral.id).build({
+          id: actionPlanId,
+        })
+        const approvedActionPlan = actionPlanFactory.approved(assignedReferral.id).build({
+          activities: [actionPlanActivityFactory.build({ id: '1', description: 'First activity version 1' })],
+        })
+
+        cy.stubGetActionPlan(draftActionPlan.id, draftActionPlan)
+        cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [
+          {
+            id: approvedActionPlan.id,
+            submittedAt: approvedActionPlan.submittedAt,
+            approvedAt: approvedActionPlan.approvedAt,
+          },
+        ])
+
+        cy.stubGetActionPlanAppointments(approvedActionPlan.id, appointments)
+        cy.stubGetActionPlanAppointment(approvedActionPlan.id, 1, appointments[0])
+        cy.stubGetActionPlanAppointment(approvedActionPlan.id, 2, appointments[1])
+
+        cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
+        cy.get('#action-plan-status').contains('In draft')
+        cy.contains('Session 1')
+        cy.contains('Session 2')
+      })
+    })
+
+    it('User edits an unapproved action plan and submits it for approval', () => {
+      const activityId = '1'
+      const submittedActionPlan = actionPlanFactory.submitted(assignedReferral.id).build({
+        id: actionPlanId,
+        activities: [actionPlanActivityFactory.build({ id: activityId, description: 'First activity version 1' })],
+        submittedAt: '2021-08-19T11:03:47.061Z',
+      })
+      cy.stubGetActionPlan(submittedActionPlan.id, submittedActionPlan)
+      cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [])
+      cy.stubGetActionPlanAppointments(submittedActionPlan.id, [])
 
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.get('#action-plan-status').contains('Awaiting approval')
@@ -730,51 +779,21 @@ describe('Service provider referrals dashboard', () => {
     })
 
     it('User edits an approved action plan and submits it for approval', () => {
-      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
-      const accommodationIntervention = interventionFactory.build({
-        contractType: { code: 'SOC', name: 'Social inclusion' },
-        serviceCategories: [serviceCategory],
-      })
-
-      const actionPlanId = '2763d6e8-1847-4191-9c3f-0eea9a3b0c41'
-      const referralParams = {
-        referral: {
-          interventionId: accommodationIntervention.id,
-          serviceCategoryIds: [serviceCategory.id],
-        },
-      }
-      const deliusServiceUser = deliusServiceUserFactory.build()
-      const deliusUser = deliusUserFactory.build()
-      const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
-      const assignedReferral = sentReferralFactory
-        .assigned()
-        .build({ ...referralParams, assignedTo: { username: hmppsAuthUser.username }, actionPlanId })
-
       const activityId = '1'
       const approvedActionPlan = actionPlanFactory.approved(assignedReferral.id).build({
         id: actionPlanId,
         activities: [actionPlanActivityFactory.build({ id: activityId, description: 'First activity version 1' })],
         submittedAt: '2021-08-19T11:03:47.061Z',
       })
-      const referralSummary = serviceProviderSentReferralSummaryFactory
-        .fromReferralAndIntervention(assignedReferral, accommodationIntervention)
-        .withAssignedUser(hmppsAuthUser.username)
-        .build()
-
-      cy.stubGetSentReferralsForUserToken([assignedReferral])
-
-      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
       cy.stubGetActionPlan(approvedActionPlan.id, approvedActionPlan)
-      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
-      cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
-      cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
-      cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
-      cy.stubGetUserByUsername(deliusUser.username, deliusUser)
-      cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+      cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [
+        {
+          id: approvedActionPlan.id,
+          submittedAt: approvedActionPlan.submittedAt,
+          approvedAt: approvedActionPlan.approvedAt,
+        },
+      ])
       cy.stubGetActionPlanAppointments(approvedActionPlan.id, [])
-      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
-
-      cy.login()
 
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.get('#action-plan-status').contains('Approved')
@@ -1321,7 +1340,7 @@ describe('Service provider referrals dashboard', () => {
         username: 'case.worker',
       })
 
-      const actionPlan = actionPlanFactory.submitted().build({
+      const actionPlan = actionPlanFactory.approved().build({
         referralId: referralParams.id,
         numberOfSessions: 4,
       })
@@ -1349,7 +1368,6 @@ describe('Service provider referrals dashboard', () => {
 
       cy.stubGetSentReferralsForUserToken([assignedReferral])
       cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
-      cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
@@ -1358,6 +1376,10 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
       cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
 
+      cy.stubGetActionPlan(actionPlan.id, actionPlan)
+      cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [
+        { id: actionPlan.id, submittedAt: actionPlan.submittedAt, approvedAt: actionPlan.approvedAt },
+      ])
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
       cy.stubGetActionPlanAppointment(actionPlan.id, 2, appointments[1])
@@ -1509,7 +1531,6 @@ describe('Service provider referrals dashboard', () => {
 
       cy.stubGetSentReferralsForUserToken([assignedReferral])
       cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
-      cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubGetIntervention(intervention.id, intervention)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
@@ -1518,6 +1539,10 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
       cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
 
+      cy.stubGetActionPlan(actionPlan.id, actionPlan)
+      cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [
+        { id: actionPlan.id, submittedAt: actionPlan.submittedAt, approvedAt: actionPlan.approvedAt },
+      ])
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointments[0])
       cy.stubGetActionPlanAppointment(actionPlan.id, 2, appointments[1])
@@ -1628,7 +1653,7 @@ describe('Service provider referrals dashboard', () => {
       surname: 'Smith',
       username: 'john.smith',
     })
-    const actionPlan = actionPlanFactory.submitted().build({
+    const actionPlan = actionPlanFactory.approved().build({
       referralId: referralParams.id,
       numberOfSessions: 4,
     })
@@ -1671,6 +1696,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(endedReferral.id, endedReferral)
       cy.stubGetSentReferralsForUserToken([endedReferral])
       cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
+      cy.stubGetApprovedActionPlanSummaries(endedReferral.id, [])
       cy.login()
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
       cy.contains('Intervention ended')
@@ -1690,6 +1716,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(endedReferral.id, endedReferral)
       cy.stubGetSentReferralsForUserToken([endedReferral])
       cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
+      cy.stubGetApprovedActionPlanSummaries(endedReferral.id, [])
       cy.login()
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
       cy.contains('Please note that an end of service report must still be submitted within 10 working days.')
@@ -1704,6 +1731,9 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetSentReferralsForUserToken([assignedReferral])
       cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
+      cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [
+        { id: actionPlan.id, submittedAt: actionPlan.submittedAt, approvedAt: actionPlan.approvedAt },
+      ])
       cy.login()
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.contains('Intervention cancelled').should('not.exist')
@@ -1774,6 +1804,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
       cy.stubGetActionPlanAppointments(actionPlan.id, [])
+      cy.stubGetApprovedActionPlanSummaries(referral.id, [])
     })
 
     it('User fills in, reviews, changes, and submits an end of service report', () => {
@@ -1983,7 +2014,7 @@ describe('Service provider referrals dashboard', () => {
         cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
         cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
         cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
-
+        cy.stubGetApprovedActionPlanSummaries(referral.id, [])
         cy.login()
       })
 
@@ -2405,6 +2436,7 @@ describe('Service provider referrals dashboard', () => {
         cy.stubGetSentReferral(sentReferral.id, sentReferral)
         cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser)
         cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
+        cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       })
 
       describe('when user records the attendance as not attended', () => {
