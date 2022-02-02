@@ -45,28 +45,28 @@ describe('tokenVerificationMiddleware', () => {
     expect(middlewareResponse).toEqual(next())
   })
 
-  it('should redirect to the login page if the token is expired', async () => {
+  it('should redirect to the sign-in page if the token is expired', async () => {
     const req = authenticatedRequest(true)
     const res = redirectCapturingResponseWithToken(true)
 
     const middlewareResponse = await tokenVerificationMiddleware(tokenVerifier(true))(req, res, next)
-    expect(middlewareResponse).toEqual('/login')
+    expect(middlewareResponse).toEqual('/sign-in')
   })
 
-  it('should redirect to the login page if the token expiry is invalid', async () => {
+  it('should redirect to the sign-in page if the token expiry is invalid', async () => {
     const req = authenticatedRequest(true)
     const res = redirectCapturingResponseWithToken(false)
     res.locals.user.token = 'token'
 
     const middlewareResponse = await tokenVerificationMiddleware(tokenVerifier(true))(req, res, next)
-    expect(middlewareResponse).toEqual('/login')
+    expect(middlewareResponse).toEqual('/sign-in')
   })
 
-  it('should redirect to the login page if the token verification fails', async () => {
+  it('should redirect to the sign-in page if the token verification fails', async () => {
     const req = authenticatedRequest(true)
     const res = redirectCapturingResponseWithToken(false)
 
     const middlewareResponse = await tokenVerificationMiddleware(tokenVerifier(false))(req, res, next)
-    expect(middlewareResponse).toEqual('/login')
+    expect(middlewareResponse).toEqual('/sign-in')
   })
 })

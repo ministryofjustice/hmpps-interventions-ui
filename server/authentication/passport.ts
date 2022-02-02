@@ -33,7 +33,7 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
         tokenURL: `${authConfig.url}/oauth/token`,
         clientID: authConfig.loginClientId,
         clientSecret: authConfig.loginClientSecret,
-        callbackURL: `${config.domain}/login/callback`,
+        callbackURL: `${config.domain}/sign-in/callback`,
         state: true, // see https://auth0.com/docs/protocols/state-parameters
         customHeaders: {
           Authorization: generateOauthClientBaiscAuthHeader(authConfig.loginClientId, authConfig.loginClientSecret),
@@ -95,7 +95,6 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
 
   const signIn = passport.authenticate('oauth2')
   app.get('/sign-in', signIn)
-  app.get('/login', signIn)
 
   const signInCallback = (redirectUri: string) =>
     passport.authenticate('oauth2', {
@@ -103,7 +102,6 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
       failureRedirect: redirectUri,
     })
   app.get('/sign-in/callback', signInCallback('/sign-in'))
-  app.get('/login/callback', signInCallback('/login'))
 
   const signOut = (logoutTerm: string, req: Request, res: Response) => {
     const { redirectUrl } = req.query
@@ -117,9 +115,6 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
       res.redirect(logoutUrl)
     }
   }
-  app.get('/logout', (req, res) => {
-    signOut('logout', req, res)
-  })
   app.get('/sign-out', (req, res) => {
     signOut('sign-out', req, res)
   })
@@ -127,6 +122,5 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
   const signOutSuccess = (req: Request, res: Response) => {
     res.render('logoutSuccess')
   }
-  app.get('/logout/success', signOutSuccess)
   app.get('/sign-out/success', signOutSuccess)
 }

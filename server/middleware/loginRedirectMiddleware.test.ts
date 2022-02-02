@@ -27,6 +27,6 @@ describe('loginRedirectMiddleware', () => {
   it('should redirect to the login page if the user is not logged in', () => {
     const req = authenticatedRequest(false)
     const res = redirectCapturingResponse()
-    expect(loginRedirectMiddleware()(req, res, next)).toEqual('/login')
+    expect(loginRedirectMiddleware()(req, res, next)).toEqual('/sign-in')
   })
 })

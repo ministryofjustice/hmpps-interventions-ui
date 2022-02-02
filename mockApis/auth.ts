@@ -25,7 +25,7 @@ export default class AuthServiceMocks {
       const { requests } = data.body
       const stateParam = requests[0].request.queryParams.state
       const stateValue = stateParam ? stateParam.values[0] : requests[1].request.queryParams.state.values[0]
-      return `/login/callback?code=codexxxx&state=${stateValue}`
+      return `/sign-in/callback?code=codexxxx&state=${stateValue}`
     })
   }
 
@@ -63,25 +63,25 @@ export default class AuthServiceMocks {
         status: 200,
         headers: {
           'Content-Type': 'text/html',
-          Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
+          Location: 'http://localhost:3007/sign-in/callback?code=codexxxx&state=stateyyyy',
         },
-        body: '<html><body>Login page<h1>Sign in</h1></body></html>',
+        body: '<html><body>Sign-in page<h1>Sign in</h1></body></html>',
       },
     })
   }
 
-  private logout = async (): Promise<unknown> => {
+  private signOut = async (): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: '/auth/logout.*',
+        urlPattern: '/auth/sign-out.*',
       },
       response: {
         status: 200,
         headers: {
           'Content-Type': 'text/html',
         },
-        body: '<html><body>Login page<h1>Sign in</h1></body></html>',
+        body: '<html><body>Sign-in page<h1>Sign in</h1></body></html>',
       },
     })
   }
@@ -96,7 +96,7 @@ export default class AuthServiceMocks {
         status: 200,
         headers: {
           'Content-Type': 'application/json;charset=UTF-8',
-          Location: 'http://localhost:3007/login/callback?code=codexxxx&state=stateyyyy',
+          Location: 'http://localhost:3007/sign-in/callback?code=codexxxx&state=stateyyyy',
         },
         jsonBody: {
           access_token: this.createToken(authSource),
@@ -211,7 +211,7 @@ export default class AuthServiceMocks {
   }
 
   stubLogin = async (): Promise<unknown> => {
-    return Promise.all([this.favicon(), this.redirect(), this.logout()])
+    return Promise.all([this.favicon(), this.redirect(), this.signOut()])
   }
 
   stubServiceProviderToken = async (): Promise<unknown> => {
