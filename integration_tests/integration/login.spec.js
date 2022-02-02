@@ -43,8 +43,8 @@ context('Login', () => {
       )
     })
 
-    it('the user can log out', () => {
-      cy.get('[data-qa=logout]').click()
+    it('the user can sign out', () => {
+      cy.get('[data-qa=sign-out]').click()
       AuthLoginPage.verifyOnPage()
     })
 
@@ -88,8 +88,8 @@ context('Login', () => {
       )
     })
 
-    it('the user can log out', () => {
-      cy.get('[data-qa=logout]').click()
+    it('the user can sign out', () => {
+      cy.get('[data-qa=sign-out]').click()
       AuthLoginPage.verifyOnPage()
     })
 
