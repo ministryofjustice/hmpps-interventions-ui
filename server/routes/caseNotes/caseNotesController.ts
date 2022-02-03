@@ -135,7 +135,7 @@ export default class CaseNotesController {
     const { accessToken } = res.locals.user.token
     const { caseNoteId } = req.params
     const backlinkPageNumber = req.query.backlinkPageNumber as string
-    if (!Number(backlinkPageNumber)) {
+    if (backlinkPageNumber && !Number(backlinkPageNumber)) {
       // This is to prevent the url being manipulated.
       throw createError(500, `The page number for a case not backlink should only ever be a number.`, {
         userMessage: 'Incorrect url.',
