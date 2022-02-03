@@ -43,6 +43,8 @@ export default class CaseNotesPresenter {
     title: `${utils.convertToTitleCase(this.intervention.contractType.name)}: case notes`,
   }
 
+  readonly backlinkPageNumber = this.caseNotes.number + 1
+
   readonly hrefBackLink = `/${this.loggedInUserType}/dashboard`
 
   readonly hrefCaseNoteStart = `/${this.loggedInUserType}/referrals/${this.referralId}/add-case-note/start`
@@ -65,7 +67,8 @@ export default class CaseNotesPresenter {
       sentByUserType: caseNote.sentBy.authSource === 'delius' ? 'probation practitioner' : 'service provider',
       subject: caseNote.subject,
       body: caseNote.body,
-      caseNoteLink: `/${this.loggedInUserType}/case-note/${caseNote.id}`,
+      // caseNoteLink: `/${this.loggedInUserType}/case-note/${caseNote.id}`,
+      caseNoteLink: `/${this.loggedInUserType}/case-note/${caseNote.id}?backlinkPageNumber=${this.backlinkPageNumber}`,
     }
   })
 }
