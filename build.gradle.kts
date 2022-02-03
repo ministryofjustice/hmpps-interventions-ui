@@ -62,6 +62,7 @@ dependencies {
   implementation("com.nimbusds:oauth2-oidc-sdk:9.22.2")
 
   // until bumped in upstream
+  implementation("org.postgresql:postgresql:42.3.2") // CVE-2022-21724
   implementation("ch.qos.logback:logback-classic:1.2.10") // CVE-2021-42550
   implementation("ch.qos.logback:logback-core:1.2.10") // CVE-2021-42550
   implementation("io.netty:netty-codec:4.1.73.Final") // CVE-2021-43797
