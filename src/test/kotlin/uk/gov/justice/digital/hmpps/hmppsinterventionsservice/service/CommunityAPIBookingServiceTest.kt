@@ -1,13 +1,13 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.CommunityAPIClient
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Appointment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AppointmentDeliveryType
@@ -378,7 +378,7 @@ internal class CommunityAPIBookingServiceTest {
     val deliusAppointmentId = communityAPIBookingServiceNotEnabled.book(referral, appointment, now(), 60, SERVICE_DELIVERY, null, null, null)
 
     assertThat(deliusAppointmentId).isNull()
-    verifyZeroInteractions(communityAPIClient)
+    verifyNoInteractions(communityAPIClient)
   }
 
   @Test
@@ -403,7 +403,7 @@ internal class CommunityAPIBookingServiceTest {
     val deliusAppointmentId = communityAPIBookingServiceNotEnabled.book(referral, appointment, now(), 60, SERVICE_DELIVERY, null, null, null)
 
     assertThat(deliusAppointmentId).isEqualTo(1234L)
-    verifyZeroInteractions(communityAPIClient)
+    verifyNoInteractions(communityAPIClient)
   }
 
   private fun makeAppointment(createdAt: OffsetDateTime, appointmentTime: OffsetDateTime, durationInMinutes: Int, deliusAppointmentId: Long? = null): Appointment {

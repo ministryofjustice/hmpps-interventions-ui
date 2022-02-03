@@ -1,15 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEvent
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanAppointmentEventType
@@ -70,13 +70,13 @@ class NotifyActionPlanAppointmentServiceTest {
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(generateAppointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, attended = Attended.NO))
     }
-    verifyZeroInteractions(emailSender)
+    verifyNoInteractions(emailSender)
   }
 
   @Test
   fun `appointment attendance recorded event does not send email when attended is YES`() {
     notifyService().onApplicationEvent(generateAppointmentEvent(ActionPlanAppointmentEventType.ATTENDANCE_RECORDED, false, Attended.YES))
-    verifyZeroInteractions(emailSender)
+    verifyNoInteractions(emailSender)
   }
 
   @Test
@@ -97,13 +97,13 @@ class NotifyActionPlanAppointmentServiceTest {
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(generateAppointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, true))
     }
-    verifyZeroInteractions(emailSender)
+    verifyNoInteractions(emailSender)
   }
 
   @Test
   fun `appointment behaviour recorded event does not send email when notifyPP is false`() {
     notifyService().onApplicationEvent(generateAppointmentEvent(ActionPlanAppointmentEventType.BEHAVIOUR_RECORDED, false))
-    verifyZeroInteractions(emailSender)
+    verifyNoInteractions(emailSender)
   }
 
   @Test

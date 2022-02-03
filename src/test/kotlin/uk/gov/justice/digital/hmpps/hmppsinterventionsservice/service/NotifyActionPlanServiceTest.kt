@@ -1,15 +1,15 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyZeroInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.component.EmailSender
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.AuthUserDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.events.ActionPlanEvent
@@ -74,7 +74,7 @@ class NotifyActionPlanServiceTest {
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(actionPlanSubmittedEvent)
     }
-    verifyZeroInteractions(emailSender)
+    verifyNoInteractions(emailSender)
   }
 
   @Test
@@ -83,7 +83,7 @@ class NotifyActionPlanServiceTest {
     assertThrows<RuntimeException> {
       notifyService().onApplicationEvent(actionPlanApprovedEvent)
     }
-    verifyZeroInteractions(emailSender)
+    verifyNoInteractions(emailSender)
   }
 
   @Test
