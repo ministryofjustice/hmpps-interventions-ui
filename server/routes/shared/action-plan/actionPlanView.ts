@@ -7,7 +7,7 @@ export default class ActionPlanView {
   actionPlanSummaryView: ActionPlanSummaryView
 
   constructor(private readonly presenter: ActionPlanPresenter) {
-    this.actionPlanSummaryView = new ActionPlanSummaryView(presenter.actionPlanSummaryPresenter, false)
+    this.actionPlanSummaryView = new ActionPlanSummaryView(presenter.actionPlanSummaryPresenter)
   }
 
   private readonly backLinkArgs = {

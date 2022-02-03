@@ -1,59 +1,46 @@
 import actionPlanFactory from '../../../../testutils/factories/actionPlan'
-import referralFactory from '../../../../testutils/factories/sentReferral'
 import ActionPlanSummaryPresenter from './actionPlanSummaryPresenter'
 
 describe(ActionPlanSummaryPresenter, () => {
-  const referral = referralFactory.build()
-  describe('createActionPlanFormAction', () => {
-    it('returns the relative URL for creating a draft action plan', () => {
-      const actionPlan = actionPlanFactory.approved().build({ referralId: referral.id })
-      const presenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'service-provider')
-
-      expect(presenter.createActionPlanFormAction).toEqual(
-        `/service-provider/referrals/${actionPlan.referralId}/action-plan`
-      )
-    })
-  })
-
   describe('actionPlanStatus', () => {
     describe('when there is no action plan', () => {
       it('returns the correct status', () => {
-        const presenter = new ActionPlanSummaryPresenter(referral, null, 'service-provider')
-        expect(presenter.text.actionPlanStatus).toEqual('Not submitted')
+        const presenter = new ActionPlanSummaryPresenter(null, 'service-provider')
+        expect(presenter.actionPlanStatus).toEqual('Not submitted')
       })
     })
 
     describe('when the action plan has not been submitted', () => {
       it('returns the correct status for service providers', () => {
-        const actionPlan = actionPlanFactory.notSubmitted().build({ referralId: referral.id })
-        const presenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'service-provider')
+        const actionPlan = actionPlanFactory.notSubmitted().build()
+        const presenter = new ActionPlanSummaryPresenter(actionPlan, 'service-provider')
 
-        expect(presenter.text.actionPlanStatus).toEqual('In draft')
+        expect(presenter.actionPlanStatus).toEqual('In draft')
       })
 
       it('returns the correct status for probation practitioners', () => {
-        const actionPlan = actionPlanFactory.notSubmitted().build({ referralId: referral.id })
-        const presenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'probation-practitioner')
+        const actionPlan = actionPlanFactory.notSubmitted().build()
+        const presenter = new ActionPlanSummaryPresenter(actionPlan, 'probation-practitioner')
 
-        expect(presenter.text.actionPlanStatus).toEqual('Not submitted')
+        expect(presenter.actionPlanStatus).toEqual('Not submitted')
       })
     })
 
     describe('when the action plan has been submitted', () => {
       it('returns the correct status', () => {
-        const actionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
-        const presenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'service-provider')
+        const actionPlan = actionPlanFactory.submitted().build()
+        const presenter = new ActionPlanSummaryPresenter(actionPlan, 'service-provider')
 
-        expect(presenter.text.actionPlanStatus).toEqual('Awaiting approval')
+        expect(presenter.actionPlanStatus).toEqual('Awaiting approval')
       })
     })
 
     describe('when the action plan has been approved', () => {
       it('returns the correct status', () => {
-        const actionPlan = actionPlanFactory.approved().build({ referralId: referral.id })
-        const presenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'service-provider')
+        const actionPlan = actionPlanFactory.approved().build()
+        const presenter = new ActionPlanSummaryPresenter(actionPlan, 'service-provider')
 
-        expect(presenter.text.actionPlanStatus).toEqual('Approved')
+        expect(presenter.actionPlanStatus).toEqual('Approved')
       })
     })
   })
@@ -61,7 +48,7 @@ describe(ActionPlanSummaryPresenter, () => {
   describe('actionPlanCreated', () => {
     describe('when there is no action plan', () => {
       it('returns false', () => {
-        const presenter = new ActionPlanSummaryPresenter(referral, null, 'service-provider')
+        const presenter = new ActionPlanSummaryPresenter(null, 'service-provider')
 
         expect(presenter.actionPlanCreated).toEqual(false)
       })
@@ -69,8 +56,8 @@ describe(ActionPlanSummaryPresenter, () => {
 
     describe('when there is an action plan', () => {
       it('returns true', () => {
-        const actionPlan = actionPlanFactory.notSubmitted().build({ referralId: referral.id })
-        const presenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'service-provider')
+        const actionPlan = actionPlanFactory.notSubmitted().build()
+        const presenter = new ActionPlanSummaryPresenter(actionPlan, 'service-provider')
 
         expect(presenter.actionPlanCreated).toEqual(true)
       })

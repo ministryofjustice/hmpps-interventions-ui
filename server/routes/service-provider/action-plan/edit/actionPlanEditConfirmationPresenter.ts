@@ -1,17 +1,16 @@
 import ActionPlan from '../../../../models/actionPlan'
-import SentReferral from '../../../../models/sentReferral'
 import ActionPlanSummaryPresenter from '../../../shared/action-plan/actionPlanSummaryPresenter'
 
 export default class ActionPlanEditConfirmationPresenter {
   actionPlanSummaryPresenter: ActionPlanSummaryPresenter
 
-  constructor(private readonly sentReferral: SentReferral, private readonly actionPlan: ActionPlan) {
-    this.actionPlanSummaryPresenter = new ActionPlanSummaryPresenter(sentReferral, actionPlan, 'service-provider')
+  constructor(private readonly actionPlan: ActionPlan) {
+    this.actionPlanSummaryPresenter = new ActionPlanSummaryPresenter(actionPlan, 'service-provider')
   }
 
-  readonly viewActionPlanUrl = `/service-provider/referrals/${this.sentReferral.id}/action-plan`
+  readonly viewActionPlanUrl = `/service-provider/referrals/${this.actionPlan.referralId}/action-plan`
 
-  readonly editConfirmAction = `/service-provider/referrals/${this.sentReferral.id}/action-plan/edit`
+  readonly editConfirmAction = `/service-provider/referrals/${this.actionPlan.referralId}/action-plan/edit`
 
   get text(): { title: string; note: string } {
     if (this.actionPlanSummaryPresenter.actionPlanApproved) {

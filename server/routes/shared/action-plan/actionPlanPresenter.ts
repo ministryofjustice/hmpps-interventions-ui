@@ -20,7 +20,7 @@ export default class ActionPlanPresenter {
     private readonly validationError: FormValidationError | null = null,
     private readonly approvedActionPlanSummaries: ApprovedActionPlanSummary[] = []
   ) {
-    this.actionPlanSummaryPresenter = new ActionPlanSummaryPresenter(referral, actionPlan, userType)
+    this.actionPlanSummaryPresenter = new ActionPlanSummaryPresenter(actionPlan, userType)
   }
 
   readonly text = {
