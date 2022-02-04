@@ -14,12 +14,14 @@ export default class CaseNotePresenter {
     private caseNote: CaseNote,
     private sentByUserName: string,
     public loggedInUserType: 'service-provider' | 'probation-practitioner',
-    private backlinkPageNumber: string
+    private backlinkPageNumber: number | null
   ) {}
 
   // There is the chance that further case notes are added which pushes the selected case note onto another page.
   // The backlink will now take them to the page they came from, but potentially not the page the case note now lives.
-  backLinkHref = `/${this.loggedInUserType}/referrals/${this.caseNote.referralId}/case-notes?page=${this.backlinkPageNumber}`
+  backLinkHref = `/${this.loggedInUserType}/referrals/${this.caseNote.referralId}/case-notes${
+    Number(this.backlinkPageNumber) ? `?page=${this.backlinkPageNumber}` : ''
+  }`
 
   readonly caseNoteSummary: CaseNoteSummary = {
     subject: this.caseNote.subject,
