@@ -293,21 +293,5 @@ describe.each([
           expect(res.text).toContain('firstName lastName')
         })
     })
-    it('incorrect backlink page should throw an error', async () => {
-      const caseNote = caseNoteFactory.build({
-        subject: 'case note subject text',
-        body: 'case note body text',
-        sentAt: '2021-01-01T09:45:21.986389Z',
-      })
-      const userDetails = userDetailsFactory.build({ name: 'firstName lastName' })
-      interventionsService.getCaseNote.mockResolvedValue(caseNote)
-      hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetails)
-      await request(app)
-        .get(`/${user.userType}/case-note/${caseNote.id}?backlinkPageNumber=abc`)
-        .expect(500)
-        .expect(res => {
-          expect(res.text).toContain('Incorrect url.')
-        })
-    })
   })
 })

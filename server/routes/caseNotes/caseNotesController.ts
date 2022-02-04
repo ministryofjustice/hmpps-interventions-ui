@@ -134,13 +134,8 @@ export default class CaseNotesController {
   ): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { caseNoteId } = req.params
-    const backlinkPageNumber = req.query.backlinkPageNumber as string
-    if (backlinkPageNumber && !Number(backlinkPageNumber)) {
-      // This is to prevent the url being manipulated.
-      throw createError(500, `The page number for a case not backlink should only ever be a number.`, {
-        userMessage: 'Incorrect url.',
-      })
-    }
+    const backlinkPageNumber = Number(req.query.backlinkPageNumber) ?? null
+
     const caseNote = await this.interventionsService.getCaseNote(accessToken, caseNoteId)
     const sentByUserDetails = await this.hmppsAuthService.getUserDetailsByUsername(
       accessToken,

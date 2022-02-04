@@ -67,7 +67,6 @@ export default class CaseNotesPresenter {
       sentByUserType: caseNote.sentBy.authSource === 'delius' ? 'probation practitioner' : 'service provider',
       subject: caseNote.subject,
       body: caseNote.body,
-      // caseNoteLink: `/${this.loggedInUserType}/case-note/${caseNote.id}`,
       caseNoteLink: `/${this.loggedInUserType}/case-note/${caseNote.id}?backlinkPageNumber=${this.backlinkPageNumber}`,
     }
   })

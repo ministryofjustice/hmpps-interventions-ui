@@ -8,7 +8,7 @@ describe('CaseNotePresenter', () => {
         caseNoteFactory.build({ referralId: '8b588c52-91fd-48fa-89fe-6438748bceda' }),
         'firstName lastName',
         'service-provider',
-        '2'
+        2
       )
       expect(presenter.backLinkHref).toEqual(
         '/service-provider/referrals/8b588c52-91fd-48fa-89fe-6438748bceda/case-notes?page=2'
@@ -20,7 +20,7 @@ describe('CaseNotePresenter', () => {
         caseNoteFactory.build({ referralId: '8b588c52-91fd-48fa-89fe-6438748bceda' }),
         'firstName lastName',
         'probation-practitioner',
-        '1'
+        1
       )
       expect(presenter.backLinkHref).toEqual(
         '/probation-practitioner/referrals/8b588c52-91fd-48fa-89fe-6438748bceda/case-notes?page=1'
@@ -38,7 +38,7 @@ describe('CaseNotePresenter', () => {
         }),
         'firstName lastName',
         'probation-practitioner',
-        '1'
+        1
       )
       expect(presenter.caseNoteSummary.subject).toEqual('Case note subject')
       expect(presenter.caseNoteSummary.body).toEqual('Case note body text')
