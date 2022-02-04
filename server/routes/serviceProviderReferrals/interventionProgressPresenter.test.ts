@@ -20,6 +20,7 @@ describe(InterventionProgressPresenter, () => {
         intervention,
         null,
         [],
+        [],
         supplierAssessmentFactory.build(),
         null
       )
@@ -33,6 +34,7 @@ describe(InterventionProgressPresenter, () => {
         referral,
         intervention,
         null,
+        [],
         [],
         supplierAssessmentFactory.build(),
         null
@@ -51,6 +53,7 @@ describe(InterventionProgressPresenter, () => {
         intervention,
         null,
         [],
+        [],
         supplierAssessmentFactory.build(),
         null
       )
@@ -66,6 +69,7 @@ describe(InterventionProgressPresenter, () => {
         referral,
         intervention,
         null,
+        [],
         [],
         supplierAssessmentFactory.build(),
         null
@@ -86,6 +90,7 @@ describe(InterventionProgressPresenter, () => {
         intervention,
         null,
         [],
+        [],
         supplierAssessmentFactory.build(),
         null
       )
@@ -102,6 +107,7 @@ describe(InterventionProgressPresenter, () => {
           referral,
           intervention,
           actionPlan,
+          [],
           [
             actionPlanAppointmentFactory.build({ sessionNumber: 2 }),
             actionPlanAppointmentFactory.build({ sessionNumber: 3 }),
@@ -123,6 +129,7 @@ describe(InterventionProgressPresenter, () => {
           referral,
           intervention,
           actionPlan,
+          [],
           [actionPlanAppointmentFactory.newlyCreated().build()],
           supplierAssessmentFactory.build(),
           null
@@ -152,6 +159,7 @@ describe(InterventionProgressPresenter, () => {
           referral,
           intervention,
           actionPlan,
+          [],
           [
             actionPlanAppointmentFactory.build({
               sessionNumber: 1,
@@ -192,6 +200,7 @@ describe(InterventionProgressPresenter, () => {
             referral,
             intervention,
             actionPlan,
+            [],
             [
               actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1 }),
               actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2 }),
@@ -236,6 +245,7 @@ describe(InterventionProgressPresenter, () => {
             referral,
             intervention,
             actionPlan,
+            [],
             [actionPlanAppointmentFactory.attended('no').build()],
             supplierAssessmentFactory.build(),
             null
@@ -269,6 +279,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -289,6 +300,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             null,
             [],
+            [],
             supplierAssessmentFactory.build(),
             null
           )
@@ -307,6 +319,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             null,
             [],
+            [],
             supplierAssessmentFactory.build(),
             null
           )
@@ -324,6 +337,7 @@ describe(InterventionProgressPresenter, () => {
             referral,
             intervention,
             null,
+            [],
             [],
             supplierAssessmentFactory.build(),
             null
@@ -347,6 +361,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           actionPlan,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -366,6 +381,7 @@ describe(InterventionProgressPresenter, () => {
           referral,
           intervention,
           actionPlan,
+          [],
           [],
           supplierAssessmentFactory.build(),
           assignee
@@ -388,6 +404,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           actionPlan,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -407,6 +424,7 @@ describe(InterventionProgressPresenter, () => {
           referral,
           intervention,
           actionPlan,
+          [],
           [],
           supplierAssessmentFactory.build(),
           assignee
@@ -429,6 +447,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           actionPlan,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -449,6 +468,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           actionPlan,
           [],
+          [],
           supplierAssessmentFactory.build(),
           assignee
         )
@@ -468,6 +488,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -486,6 +507,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -503,6 +525,7 @@ describe(InterventionProgressPresenter, () => {
           referral,
           intervention,
           null,
+          [],
           [],
           supplierAssessmentFactory.build(),
           null
@@ -523,6 +546,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -542,6 +566,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             null,
             [],
+            [],
             supplierAssessmentFactory.build(),
             null
           )
@@ -559,6 +584,7 @@ describe(InterventionProgressPresenter, () => {
             referral,
             intervention,
             null,
+            [],
             [],
             supplierAssessmentFactory.build(),
             null
@@ -580,6 +606,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             null,
             [],
+            [],
             supplierAssessmentFactory.build(),
             null
           )
@@ -600,6 +627,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -618,6 +646,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -635,6 +664,7 @@ describe(InterventionProgressPresenter, () => {
           referral,
           intervention,
           null,
+          [],
           [],
           supplierAssessmentFactory.build(),
           null
@@ -655,6 +685,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -673,6 +704,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           null,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -690,6 +722,7 @@ describe(InterventionProgressPresenter, () => {
           referral,
           intervention,
           null,
+          [],
           [],
           supplierAssessmentFactory.build(),
           null
@@ -716,6 +749,7 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           null,
           [],
+          [],
           supplierAssessmentFactory.build({ appointments: [firstScheduledAppointment, secondScheduledAppointment] }),
           null
         )
@@ -734,6 +768,7 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           null,
           [],
+          [],
           supplierAssessmentWithNoAppointmentScheduled,
           null
         )
@@ -751,6 +786,7 @@ describe(InterventionProgressPresenter, () => {
             referral,
             interventionFactory.build(),
             null,
+            [],
             [],
             supplierAssessmentFactory.build({ appointments: [] }),
             null
@@ -777,6 +813,7 @@ describe(InterventionProgressPresenter, () => {
               interventionFactory.build(),
               null,
               [],
+              [],
               supplierAssessmentFactory.withAnAppointment(appointment).build(),
               null
             )
@@ -799,6 +836,7 @@ describe(InterventionProgressPresenter, () => {
               referral,
               interventionFactory.build(),
               null,
+              [],
               [],
               supplierAssessmentFactory.withAnAppointment(appointment).build(),
               null
@@ -824,6 +862,7 @@ describe(InterventionProgressPresenter, () => {
             interventionFactory.build(),
             null,
             [],
+            [],
             supplierAssessmentFactory.withAnAppointment(appointment).build(),
             null
           )
@@ -847,6 +886,7 @@ describe(InterventionProgressPresenter, () => {
               referral,
               interventionFactory.build(),
               null,
+              [],
               [],
               supplierAssessmentFactory.withAnAppointment(appointment).build({ currentAppointmentId: appointment.id }),
               null
@@ -875,6 +915,7 @@ describe(InterventionProgressPresenter, () => {
               interventionFactory.build(),
               null,
               [],
+              [],
               supplierAssessmentFactory.build({ appointments: [appointment] }),
               null
             )
@@ -901,6 +942,7 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           null,
           [],
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -921,6 +963,7 @@ describe(InterventionProgressPresenter, () => {
             interventionFactory.build(),
             null,
             [],
+            [],
             supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inThePast.build()).build(),
             null
           )
@@ -939,6 +982,7 @@ describe(InterventionProgressPresenter, () => {
             referral,
             interventionFactory.build(),
             null,
+            [],
             [],
             supplierAssessmentFactory
               .withAnAppointment(initialAssessmentAppointmentFactory.inTheFuture.build())
@@ -962,6 +1006,7 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           null,
           [],
+          [],
           supplierAssessmentFactory.withAttendedAppointment.build(),
           null
         )
@@ -980,6 +1025,7 @@ describe(InterventionProgressPresenter, () => {
           referral,
           interventionFactory.build(),
           null,
+          [],
           [],
           supplierAssessmentFactory.withNonAttendedAppointment.build(),
           null

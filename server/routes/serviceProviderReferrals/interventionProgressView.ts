@@ -9,13 +9,13 @@ import {
 import ViewUtils from '../../utils/viewUtils'
 import InterventionProgressPresenter from './interventionProgressPresenter'
 import DateUtils from '../../utils/dateUtils'
-import ActionPlanSummaryView from '../shared/action-plan/actionPlanSummaryView'
+import ActionPlanProgressView from '../shared/action-plan/actionPlanProgressView'
 
 export default class InterventionProgressView {
-  actionPlanSummaryView: ActionPlanSummaryView
+  actionPlanProgressView: ActionPlanProgressView
 
   constructor(private readonly presenter: InterventionProgressPresenter) {
-    this.actionPlanSummaryView = new ActionPlanSummaryView(presenter.actionPlanSummaryPresenter, true)
+    this.actionPlanProgressView = new ActionPlanProgressView(presenter.actionPlanProgressPresenter)
   }
 
   get cancelledReferralNotificationBannerArgs(): NotificationBannerArgs {
@@ -144,7 +144,7 @@ export default class InterventionProgressView {
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         supplierAssessmentAppointmentsTableArgs: this.supplierAssessmentAppointmentsTableArgs.bind(this),
         supplierAssessmentMessage: this.presenter.supplierAssessmentMessage,
-        actionPlanSummaryListArgs: this.actionPlanSummaryView.summaryListArgs.bind(this.actionPlanSummaryView),
+        actionPlanTableArgs: this.actionPlanProgressView.tableArgs.bind(this.actionPlanProgressView),
         sessionTableArgs: this.sessionTableArgs.bind(this),
         backLinkArgs: this.backLinkArgs,
         endOfServiceReportSummaryListArgs: this.endOfServiceReportSummaryListArgs.bind(this),
