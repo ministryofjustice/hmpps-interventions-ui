@@ -228,6 +228,7 @@ export default class ServiceProviderReferralsController {
       sentReferral,
       intervention,
       actionPlan,
+      approvedActionPlanSummaries,
       actionPlanAppointments,
       supplierAssessment,
       assignee
@@ -832,7 +833,7 @@ export default class ServiceProviderReferralsController {
       await this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId),
     ])
 
-    const presenter = new ActionPlanEditConfirmationPresenter(sentReferral, actionPlan)
+    const presenter = new ActionPlanEditConfirmationPresenter(actionPlan)
     const view = new ActionPlanEditConfirmationView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }

@@ -8,9 +8,10 @@ import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import Intervention from '../../models/intervention'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
-import ActionPlanSummaryPresenter from '../shared/action-plan/actionPlanSummaryPresenter'
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../models/appointment'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import ActionPlanProgressPresenter from '../shared/action-plan/actionPlanProgressPresenter'
+import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
 
 interface EndedFields {
   endRequestedAt: string | null
@@ -40,12 +41,13 @@ interface SupplierAssessmentTableRow {
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
-  actionPlanSummaryPresenter: ActionPlanSummaryPresenter
+  actionPlanProgressPresenter: ActionPlanProgressPresenter
 
   constructor(
     private readonly referral: SentReferral,
     private readonly intervention: Intervention,
     private readonly actionPlan: ActionPlan | null,
+    private readonly approvedActionPlanSummaries: ApprovedActionPlanSummary[],
     private readonly actionPlanAppointments: ActionPlanAppointment[],
     private readonly supplierAssessment: SupplierAssessment,
     private readonly assignee: AuthUserDetails | null
@@ -56,7 +58,12 @@ export default class InterventionProgressPresenter {
       referral.id,
       subNavUrlPrefix
     )
-    this.actionPlanSummaryPresenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'service-provider')
+    this.actionPlanProgressPresenter = new ActionPlanProgressPresenter(
+      referral.id,
+      actionPlan,
+      approvedActionPlanSummaries,
+      'service-provider'
+    )
   }
 
   get referralAssigned(): boolean {
