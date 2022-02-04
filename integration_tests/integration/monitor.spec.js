@@ -215,7 +215,7 @@ describe('Probation Practitioner monitor journey', () => {
 
       cy.get('h1').contains('Accommodation progress')
 
-      cy.get('table')
+      cy.get('[data-cy=session-table]')
         .getTable()
         .should('deep.equal', [
           {
@@ -554,7 +554,7 @@ describe('Probation Practitioner monitor journey', () => {
 
       cy.stubGetActionPlan(actionPlanId, approvedActionPlan)
       cy.contains('Return to intervention progress').click()
-      cy.contains('Action plan status').next().contains('Approved')
+      cy.get('#action-plan-status').contains('Approved')
 
       cy.contains('View action plan').click()
       cy.contains('Action plan versions')
