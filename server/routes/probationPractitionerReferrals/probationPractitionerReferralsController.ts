@@ -162,6 +162,7 @@ export default class ProbationPractitionerReferralsController {
       intervention,
       actionPlanAppointments,
       actionPlan,
+      approvedActionPlanSummaries,
       supplierAssessment,
       assignee
     )

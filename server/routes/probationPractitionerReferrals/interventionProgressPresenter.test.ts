@@ -13,7 +13,15 @@ describe(InterventionProgressPresenter, () => {
       const referral = sentReferralFactory.build()
       const intervention = interventionFactory.build()
       const supplierAssessment = supplierAssessmentFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null
+      )
 
       expect(presenter.sessionTableRows).toEqual([])
     })
@@ -28,6 +36,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           [actionPlanAppointmentFactory.newlyCreated().build()],
           null,
+          [],
           supplierAssessment,
           null
         )
@@ -62,6 +71,7 @@ describe(InterventionProgressPresenter, () => {
               }),
             ],
             null,
+            [],
             supplierAssessment,
             null
           )
@@ -95,6 +105,7 @@ describe(InterventionProgressPresenter, () => {
               }),
             ],
             null,
+            [],
             supplierAssessment,
             null
           )
@@ -127,6 +138,7 @@ describe(InterventionProgressPresenter, () => {
               actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2 }),
             ],
             null,
+            [],
             supplierAssessment,
             null
           )
@@ -169,6 +181,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [actionPlanAppointmentFactory.attended('no').build()],
             null,
+            [],
             supplierAssessment,
             null
           )
@@ -197,7 +210,15 @@ describe(InterventionProgressPresenter, () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
         const supplierAssessment = supplierAssessmentFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          [],
+          supplierAssessment,
+          null
+        )
 
         expect(presenter.text).toMatchObject({
           title: 'Accommodation progress',
@@ -211,7 +232,15 @@ describe(InterventionProgressPresenter, () => {
       const referral = sentReferralFactory.build()
       const intervention = interventionFactory.build()
       const supplierAssessment = supplierAssessmentFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null
+      )
 
       expect(presenter.referralCancellationHref).toEqual(
         `/probation-practitioner/referrals/${referral.id}/cancellation/start`
@@ -226,7 +255,15 @@ describe(InterventionProgressPresenter, () => {
         const intervention = interventionFactory.build()
         const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          [],
+          supplierAssessment,
+          null
+        )
 
         expect(presenter.referralAssigned).toEqual(false)
       })
@@ -244,6 +281,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           [],
           null,
+          [],
           supplierAssessment,
           assignee
         )
@@ -258,7 +296,15 @@ describe(InterventionProgressPresenter, () => {
       const referral = sentReferralFactory.endRequested().build()
       const intervention = interventionFactory.build()
       const supplierAssessment = supplierAssessmentFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null
+      )
 
       expect(presenter.referralEndRequested).toEqual(true)
     })
@@ -268,7 +314,15 @@ describe(InterventionProgressPresenter, () => {
       const intervention = interventionFactory.build()
       const supplierAssessment = supplierAssessmentFactory.build()
 
-      const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null
+      )
 
       expect(presenter.referralEndRequested).toEqual(false)
     })
@@ -279,7 +333,15 @@ describe(InterventionProgressPresenter, () => {
       const referral = sentReferralFactory.endRequested().build({ endRequestedAt: '2021-04-28T20:45:21.986389Z' })
       const intervention = interventionFactory.build()
       const supplierAssessment = supplierAssessmentFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null
+      )
 
       expect(presenter.referralEndRequestedText).toEqual('You requested to end this service on 28 April 2021.')
     })
@@ -289,7 +351,15 @@ describe(InterventionProgressPresenter, () => {
       const intervention = interventionFactory.build()
       const supplierAssessment = supplierAssessmentFactory.build()
 
-      const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null
+      )
 
       expect(presenter.referralEndRequestedText).toEqual('')
     })
@@ -305,6 +375,7 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           [],
           null,
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -322,6 +393,7 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           [],
           null,
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -339,6 +411,7 @@ describe(InterventionProgressPresenter, () => {
           interventionFactory.build(),
           [],
           null,
+          [],
           supplierAssessmentFactory.build(),
           null
         )
@@ -354,7 +427,15 @@ describe(InterventionProgressPresenter, () => {
         const referral = sentReferralFactory.build({ endOfServiceReport: null })
         const intervention = interventionFactory.build()
         const supplierAssessment = supplierAssessmentFactory.build()
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          [],
+          supplierAssessment,
+          null
+        )
 
         expect(presenter.hasEndOfServiceReport).toEqual(false)
       })
@@ -372,6 +453,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [],
             null,
+            [],
             supplierAssessment,
             null
           )
@@ -392,6 +474,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [],
             null,
+            [],
             supplierAssessment,
             null
           )
@@ -407,7 +490,15 @@ describe(InterventionProgressPresenter, () => {
       const referral = sentReferralFactory.build()
       const intervention = interventionFactory.build()
       const supplierAssessment = supplierAssessmentFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null
+      )
 
       expect(presenter.endOfServiceReportTableHeaders).toEqual(['Caseworker', 'Status', 'Action'])
     })
@@ -422,7 +513,15 @@ describe(InterventionProgressPresenter, () => {
       })
       const intervention = interventionFactory.build()
       const supplierAssessment = supplierAssessmentFactory.build()
-      const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null
+      )
 
       expect(presenter.endOfServiceReportTableRows).toEqual([
         {
@@ -444,7 +543,15 @@ describe(InterventionProgressPresenter, () => {
         const intervention = interventionFactory.build()
         const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          [],
+          supplierAssessment,
+          null
+        )
 
         expect(presenter.shouldDisplaySupplierAssessmentSummaryList).toEqual(false)
       })
@@ -456,7 +563,15 @@ describe(InterventionProgressPresenter, () => {
         const intervention = interventionFactory.build()
         const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          [],
+          supplierAssessment,
+          null
+        )
 
         expect(presenter.shouldDisplaySupplierAssessmentSummaryList).toEqual(true)
       })
@@ -476,6 +591,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [],
             null,
+            [],
             supplierAssessment,
             null
           )
@@ -497,6 +613,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [],
             null,
+            [],
             supplierAssessment,
             hmppsAuthUserFactory.build()
           )
@@ -521,6 +638,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [],
             null,
+            [],
             supplierAssessment,
             null
           )
@@ -541,6 +659,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [],
             null,
+            [],
             supplierAssessment,
             null
           )
@@ -556,7 +675,15 @@ describe(InterventionProgressPresenter, () => {
         const intervention = interventionFactory.build()
         const supplierAssessment = supplierAssessmentFactory.withAttendedAppointment.build()
 
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          [],
+          supplierAssessment,
+          null
+        )
 
         expect(presenter.supplierAssessmentMessage).toEqual(
           'The initial assessment has been delivered and feedback added.'
@@ -570,7 +697,15 @@ describe(InterventionProgressPresenter, () => {
         const intervention = interventionFactory.build()
         const supplierAssessment = supplierAssessmentFactory.withNonAttendedAppointment.build()
 
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          [],
+          supplierAssessment,
+          null
+        )
 
         expect(presenter.supplierAssessmentMessage).toEqual(
           'The initial assessment has been delivered and feedback added.'
@@ -586,7 +721,15 @@ describe(InterventionProgressPresenter, () => {
         const intervention = interventionFactory.build()
         const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          [],
+          supplierAssessment,
+          null
+        )
 
         expect(presenter.assignedCaseworkerFullName).toEqual(null)
       })
@@ -604,6 +747,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           [],
           null,
+          [],
           supplierAssessment,
           assignee
         )
@@ -620,7 +764,15 @@ describe(InterventionProgressPresenter, () => {
         const intervention = interventionFactory.build()
         const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          [],
+          supplierAssessment,
+          null
+        )
 
         expect(presenter.assignedCaseworkerEmail).toEqual(null)
       })
@@ -638,6 +790,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           [],
           null,
+          [],
           supplierAssessment,
           assignee
         )
@@ -654,7 +807,15 @@ describe(InterventionProgressPresenter, () => {
         const intervention = interventionFactory.build()
         const supplierAssessment = supplierAssessmentFactory.justCreated.build()
 
-        const presenter = new InterventionProgressPresenter(referral, intervention, [], null, supplierAssessment, null)
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          [],
+          null,
+          [],
+          supplierAssessment,
+          null
+        )
 
         expect(presenter.supplierAssessmentLink).toBeNull()
       })
@@ -674,6 +835,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [],
             null,
+            [],
             supplierAssessment,
             assignee
           )
@@ -698,6 +860,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [],
             null,
+            [],
             supplierAssessment,
             assignee
           )
@@ -722,6 +885,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           [],
           null,
+          [],
           supplierAssessment,
           assignee
         )
@@ -745,6 +909,7 @@ describe(InterventionProgressPresenter, () => {
           intervention,
           [],
           null,
+          [],
           supplierAssessment,
           assignee
         )
