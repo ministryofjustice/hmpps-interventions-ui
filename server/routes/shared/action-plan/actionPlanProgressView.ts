@@ -50,7 +50,7 @@ export default class ActionPlanProgressView {
     const currentActionPlanSummary = this.presenter.currentActionPlanSummaryPresenter
     const row: TableArgsCell[] = [
       {
-        text: (this.presenter.approvedActionPlanSummaries.length + 1).toString(),
+        text: '',
         classes: 'action-plan-version',
       },
       {
@@ -73,13 +73,15 @@ export default class ActionPlanProgressView {
       row.push({
         html: `<a href="${this.presenter.continueInProgressActionPlanUrl}" class="govuk-link">Continue action plan</a>`,
       })
-    } else {
+    } else if (this.presenter.includeCreateActionPlanButton) {
       row.push({
         html: `<form method="post" action="${ViewUtils.escape(this.presenter.createNewActionPlanUrl)}">
                <input type="hidden" name="_csrf" value="${ViewUtils.escape(csrfToken!)}">
                <button class="button-link" data-module="govuk-button" data-prevent-double-click="true">Create action plan</button>
                </form>`,
       })
+    } else {
+      row.push({ text: '' })
     }
 
     return row

@@ -28,11 +28,19 @@ export default class ActionPlanProgressPresenter {
       return false
     }
 
-    // PPs should never see unsubmitted action plans
-    if (this.userType === 'probation-practitioner' && !this.currentActionPlanSummaryPresenter.actionPlanSubmitted) {
+    // PPs should never see draft action plans
+    if (
+      this.userType === 'probation-practitioner' &&
+      this.currentActionPlanSummaryPresenter.actionPlanCreated &&
+      !this.currentActionPlanSummaryPresenter.actionPlanSubmitted
+    ) {
       return false
     }
 
     return true
+  }
+
+  get includeCreateActionPlanButton(): boolean {
+    return this.userType === 'service-provider'
   }
 }

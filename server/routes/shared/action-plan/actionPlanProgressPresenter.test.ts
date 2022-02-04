@@ -42,30 +42,40 @@ describe(ActionPlanProgressPresenter, () => {
       expect(ppPresenter.includeCurrentActionPlanRow).toEqual(false)
     })
 
-    it('returns false for PPs if the referral has not been created', () => {
+    it('returns true if the referral has not been created', () => {
       const spPresenter = new ActionPlanProgressPresenter(referral.id, null, [], 'service-provider')
-      const ppPresemnter = new ActionPlanProgressPresenter(referral.id, null, [], 'probation-practitioner')
+      const ppPresenter = new ActionPlanProgressPresenter(referral.id, null, [], 'probation-practitioner')
 
       expect(spPresenter.includeCurrentActionPlanRow).toEqual(true)
-      expect(ppPresemnter.includeCurrentActionPlanRow).toEqual(false)
+      expect(ppPresenter.includeCurrentActionPlanRow).toEqual(true)
     })
 
     it('returns false for PPs if the referral is not submitted', () => {
       const actionPlan = actionPlanFactory.justCreated(referral.id).build()
       const spPresenter = new ActionPlanProgressPresenter(referral.id, actionPlan, [], 'service-provider')
-      const ppPresemnter = new ActionPlanProgressPresenter(referral.id, actionPlan, [], 'probation-practitioner')
+      const ppPresenter = new ActionPlanProgressPresenter(referral.id, actionPlan, [], 'probation-practitioner')
 
       expect(spPresenter.includeCurrentActionPlanRow).toEqual(true)
-      expect(ppPresemnter.includeCurrentActionPlanRow).toEqual(false)
+      expect(ppPresenter.includeCurrentActionPlanRow).toEqual(false)
     })
 
-    it('returns true for submitted action plans', () => {
+    it('returns true for submitted but not approved action plans', () => {
       const actionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
       const spPresenter = new ActionPlanProgressPresenter(referral.id, actionPlan, [], 'service-provider')
-      const ppPresemnter = new ActionPlanProgressPresenter(referral.id, actionPlan, [], 'probation-practitioner')
+      const ppPresenter = new ActionPlanProgressPresenter(referral.id, actionPlan, [], 'probation-practitioner')
 
       expect(spPresenter.includeCurrentActionPlanRow).toEqual(true)
-      expect(ppPresemnter.includeCurrentActionPlanRow).toEqual(true)
+      expect(ppPresenter.includeCurrentActionPlanRow).toEqual(true)
+    })
+  })
+
+  describe('includeCreateActionPlanButton', () => {
+    it('returns true for SPs and false for PPs', () => {
+      const spPresenter = new ActionPlanProgressPresenter(referral.id, null, [], 'service-provider')
+      const ppPresenter = new ActionPlanProgressPresenter(referral.id, null, [], 'probation-practitioner')
+
+      expect(spPresenter.includeCreateActionPlanButton).toEqual(true)
+      expect(ppPresenter.includeCreateActionPlanButton).toEqual(false)
     })
   })
 })
