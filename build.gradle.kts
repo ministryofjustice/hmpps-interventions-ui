@@ -61,7 +61,9 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
   implementation("com.nimbusds:oauth2-oidc-sdk:9.22.2")
 
-  // until bumped in upstream
+  // bumps for security, until bumped in upstream
+  implementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.58") // CVE-2022-23181
+  implementation("org.apache.tomcat.embed:tomcat-embed-websocket:9.0.58") // CVE-2022-23181
   implementation("org.postgresql:postgresql:42.3.2") // CVE-2022-21724
 
   // database
