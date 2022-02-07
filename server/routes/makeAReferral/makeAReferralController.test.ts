@@ -71,7 +71,7 @@ describe('GET /intervention/:id/refer', () => {
       .expect('Content-Type', /html/)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Enter the case identifier for the person on probation')
+        expect(res.text).toContain("Enter the person's case identifier")
       })
   })
 })
