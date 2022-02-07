@@ -63,11 +63,6 @@ dependencies {
 
   // until bumped in upstream
   implementation("org.postgresql:postgresql:42.3.2") // CVE-2022-21724
-  implementation("ch.qos.logback:logback-classic:1.2.10") // CVE-2021-42550
-  implementation("ch.qos.logback:logback-core:1.2.10") // CVE-2021-42550
-  implementation("io.netty:netty-codec:4.1.73.Final") // CVE-2021-43797
-  implementation("org.apache.logging.log4j:log4j-api:2.17.1") // CVE-2021-44228
-  implementation("org.apache.logging.log4j:log4j-to-slf4j:2.17.1") // CVE-2021-44228
 
   // database
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
