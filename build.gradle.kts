@@ -59,7 +59,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-  implementation("com.nimbusds:oauth2-oidc-sdk:9.22.2")
+  implementation("com.nimbusds:oauth2-oidc-sdk:9.24")
 
   // until bumped in upstream
   implementation("org.postgresql:postgresql:42.3.2") // CVE-2022-21724
