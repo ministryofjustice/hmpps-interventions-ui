@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: performance-report
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      {{- include "performanceReportApp.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "performanceReportApp.selectorLabels" . | nindent 8 }}
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ template "app.name" . }}
+                topologyKey: kubernetes.io/hostname
+      containers:
+        - name: hmpps-interventions-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.image.ports.app }}
+              protocol: TCP
+          volumeMounts:
+            - name: heap-dumps
+              mountPath: /dumps
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: {{ .Values.image.ports.app }}
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: {{ .Values.image.ports.app }}
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            failureThreshold: 10
+  {{- include "deployment.envs" . | nindent 10 }}
+      volumes:
+        - name: heap-dumps
+          emptyDir: {}

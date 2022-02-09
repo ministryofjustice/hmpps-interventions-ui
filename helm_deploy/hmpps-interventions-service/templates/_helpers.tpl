@@ -63,6 +63,10 @@ release: {{ .Release.Name }}
 app: api-suspect
 release: {{ .Release.Name }}
 {{- end }}
+{{- define "performanceReportApp.selectorLabels" -}}
+app: performance-report
+release: {{ .Release.Name }}
+{{- end }}
 {{- define "dataDictionary.selectorLabels" -}}
 app: data-dictionary
 release: {{ .Release.Name }}
