@@ -35,6 +35,8 @@ import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager
 import DraftsService from '../../services/draftsService'
 import approvedActionPlanSummaryFactory from '../../../testutils/factories/approvedActionPlanSummary'
 import { PPDashboardType } from './dashboardPresenter'
+import pageFactory from '../../../testutils/factories/page'
+import { Page } from '../../models/pagination'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -132,9 +134,10 @@ describe('GET /probation-practitioner/dashboard', () => {
           },
         }),
       ]
+      const page = pageFactory.pageContent(referrals).build() as Page<SentReferral>
 
       interventionsService.getIntervention.mockResolvedValue(intervention)
-      interventionsService.getSentReferralsForUserToken.mockResolvedValue(referrals)
+      interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
 
       await request(app)
         .get(dashboard.url)

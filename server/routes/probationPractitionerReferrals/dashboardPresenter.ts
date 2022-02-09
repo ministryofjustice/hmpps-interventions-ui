@@ -6,15 +6,21 @@ import PresenterUtils from '../../utils/presenterUtils'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
 import LoggedInUser from '../../models/loggedInUser'
+import { Page } from '../../models/pagination'
+import Pagination from '../../utils/pagination/pagination'
 
 export type PPDashboardType = 'Open cases' | 'Unassigned cases' | 'Completed cases' | 'Cancelled cases'
 export default class DashboardPresenter {
+  public readonly pagination: Pagination
+
   constructor(
-    private readonly sentReferrals: SentReferral[],
+    private readonly sentReferrals: Page<SentReferral>,
     private readonly interventions: Intervention[],
     private readonly loggedInUser: LoggedInUser,
     readonly dashboardType: PPDashboardType
-  ) {}
+  ) {
+    this.pagination = new Pagination(sentReferrals)
+  }
 
   private readonly showAssignedCaseworkerColumn = this.dashboardType === 'Unassigned cases'
 
@@ -42,7 +48,7 @@ export default class DashboardPresenter {
     .map(heading => heading.text)
     .indexOf(this.secondOrderColumn)
 
-  readonly tableRows: SortableTableRow[] = this.sentReferrals.map(referral => {
+  readonly tableRows: SortableTableRow[] = this.sentReferrals.content.map(referral => {
     const interventionForReferral = this.interventions.find(
       intervention => intervention.id === referral.referral.interventionId
     )

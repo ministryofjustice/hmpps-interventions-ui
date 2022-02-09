@@ -45,32 +45,41 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async showOpenCases(req: Request, res: Response): Promise<void> {
-    await this.showDashboard(res, { concluded: false }, 'Open cases')
+    await this.showDashboard(req, res, { concluded: false }, 'Open cases')
   }
 
   async showUnassignedCases(req: Request, res: Response): Promise<void> {
-    await this.showDashboard(res, { concluded: false, unassigned: true }, 'Unassigned cases')
+    await this.showDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases')
   }
 
   async showCompletedCases(req: Request, res: Response): Promise<void> {
-    await this.showDashboard(res, { concluded: true, cancelled: false }, 'Completed cases')
+    await this.showDashboard(req, res, { concluded: true, cancelled: false }, 'Completed cases')
   }
 
   async showCancelledCases(req: Request, res: Response): Promise<void> {
-    await this.showDashboard(res, { cancelled: true }, 'Cancelled cases')
+    await this.showDashboard(req, res, { cancelled: true }, 'Cancelled cases')
   }
 
   private async showDashboard(
+    req: Request,
     res: Response,
     getSentReferralsFilterParams: GetSentReferralsFilterParams,
     dashboardType: PPDashboardType
   ) {
-    const cases = await this.interventionsService.getSentReferralsForUserToken(
+    const pageNumber = req.query.page
+    const paginationQuery = {
+      page: pageNumber ? Number(pageNumber) : undefined,
+      size: 2,
+      sort: ['sentAt,DESC'],
+    }
+
+    const cases = await this.interventionsService.getSentReferralsForUserTokenPaged(
       res.locals.user.token.accessToken,
-      getSentReferralsFilterParams
+      getSentReferralsFilterParams,
+      paginationQuery
     )
 
-    const dedupedInterventionIds = Array.from(new Set(cases.map(referral => referral.referral.interventionId)))
+    const dedupedInterventionIds = Array.from(new Set(cases.content.map(referral => referral.referral.interventionId)))
     const interventions = await Promise.all(
       dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
     )
