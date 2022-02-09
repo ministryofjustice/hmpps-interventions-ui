@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.0.3"
   kotlin("plugin.spring") version "1.6.10"
   id("org.jetbrains.kotlin.plugin.jpa") version "1.6.10"
 }
@@ -62,8 +62,6 @@ dependencies {
   implementation("com.nimbusds:oauth2-oidc-sdk:9.24")
 
   // bumps for security, until bumped in upstream
-  implementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.58") // CVE-2022-23181
-  implementation("org.apache.tomcat.embed:tomcat-embed-websocket:9.0.58") // CVE-2022-23181
   implementation("org.postgresql:postgresql:42.3.2") // CVE-2022-21724
 
   // database
