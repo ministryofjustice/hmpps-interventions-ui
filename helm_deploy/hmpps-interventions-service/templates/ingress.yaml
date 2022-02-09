@@ -37,6 +37,10 @@ spec:
             backend:
               serviceName: api-suspect
               servicePort: http
+          - path: /reports/service-provider/performance
+            backend:
+              serviceName: performance-report
+              servicePort: http
           - path: /
             backend:
               serviceName: {{ $fullName }}
