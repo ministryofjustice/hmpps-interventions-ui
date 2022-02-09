@@ -4,6 +4,9 @@ import ServiceProviderSentReferralSummaryDTO
 import com.fasterxml.jackson.annotation.JsonView
 import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments.kv
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken
@@ -118,7 +121,7 @@ class ReferralController(
     @Nullable @RequestParam(name = "assignedTo", required = false) assignedToUserId: String?,
   ): List<SentReferralSummaryDTO> {
     val user = userMapper.fromToken(authentication)
-    val referrals = referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId)
+    val referrals = referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId, null) as List<Referral>
     logger.info(
       "returning list of referrals from /sent-referrals",
       kv("userType", user.authSource),
@@ -126,6 +129,20 @@ class ReferralController(
       kv("params", mapOf("concluded" to concluded, "cancelled" to cancelled, "unassigned" to unassigned, "assignedTo" to (assignedToUserId != null)))
     )
     return referrals.map { SentReferralSummaryDTO.from(it) }
+  }
+
+  @JsonView(Views.SentReferral::class)
+  @GetMapping("/sent-referrals/paged")
+  fun getSentReferrals(
+    authentication: JwtAuthenticationToken,
+    @Nullable @RequestParam(name = "concluded", required = false) concluded: Boolean?,
+    @Nullable @RequestParam(name = "cancelled", required = false) cancelled: Boolean?,
+    @Nullable @RequestParam(name = "unassigned", required = false) unassigned: Boolean?,
+    @Nullable @RequestParam(name = "assignedTo", required = false) assignedToUserId: String?,
+    @PageableDefault(page = 0, size = 50, sort = ["sentAt"]) page: Pageable,
+  ): Page<SentReferralSummaryDTO> {
+    val user = userMapper.fromToken(authentication)
+    return (referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId, page) as Page<Referral>).map { SentReferralSummaryDTO.from(it) }
   }
 
   @Deprecated(message = "This is a temporary solution to by-pass the extremely long wait times in production that occurs with /sent-referrals")
