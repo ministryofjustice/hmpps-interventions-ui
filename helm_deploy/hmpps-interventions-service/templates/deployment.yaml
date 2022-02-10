@@ -34,7 +34,7 @@ spec:
                         - {{ template "app.name" . }}
                 topologyKey: kubernetes.io/hostname
       containers:
-        - name: hmpps-interventions-service
+        - name: api
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           ports:
             - containerPort: {{ .Values.image.ports.app }}
