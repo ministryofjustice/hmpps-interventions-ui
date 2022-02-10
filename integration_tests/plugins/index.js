@@ -99,6 +99,10 @@ export default on => {
       return interventionsService.stubGetSentReferralsForUserToken(arg.responseJson)
     },
 
+    stubGetSentReferralsForUserTokenPaged: arg => {
+      return interventionsService.stubGetSentReferralsForUserTokenPaged(arg.responseJson)
+    },
+
     stubGetServiceProviderSentReferralsSummaryForUserToken: arg => {
       return interventionsService.stubGetServiceProviderSentReferralsSummaryForUserToken(arg.responseJson)
     },

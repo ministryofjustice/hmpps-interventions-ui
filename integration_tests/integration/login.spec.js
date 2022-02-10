@@ -1,3 +1,5 @@
+import pageFactory from '../../testutils/factories/page'
+
 const AuthLoginPage = require('../pages/authLogin')
 
 context('Login', () => {
@@ -16,7 +18,7 @@ context('Login', () => {
       cy.task('stubProbationPractitionerToken')
       cy.task('stubProbationPractitionerAuthUser')
 
-      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
       cy.stubGetDraftReferralsForUserToken([])
       cy.login()
     })

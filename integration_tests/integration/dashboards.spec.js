@@ -1,6 +1,7 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import interventionFactory from '../../testutils/factories/intervention'
 import serviceProviderSentReferralSummaryFactory from '../../testutils/factories/serviceProviderSentReferralSummary'
+import pageFactory from '../../testutils/factories/page'
 
 describe('Dashboards', () => {
   beforeEach(() => {
@@ -47,7 +48,7 @@ describe('Dashboards', () => {
 
       cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
       cy.stubGetIntervention(womensServicesIntervention.id, womensServicesIntervention)
-      cy.stubGetSentReferralsForUserToken(sentReferrals)
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
     })
 
     describe('Viewing the dashboard page', () => {
@@ -205,8 +206,9 @@ describe('Dashboards', () => {
               },
             }),
           ]
-
-          cy.stubGetSentReferralsForUserToken(sentReferralsWithIdenticalReferenceNumber)
+          cy.stubGetSentReferralsForUserTokenPaged(
+            pageFactory.pageContent(sentReferralsWithIdenticalReferenceNumber).build()
+          )
           cy.login()
 
           cy.get('table')

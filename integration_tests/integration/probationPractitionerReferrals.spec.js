@@ -11,6 +11,7 @@ import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffend
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
+import pageFactory from '../../testutils/factories/page'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -75,10 +76,13 @@ describe('Probation practitioner referrals dashboard', () => {
         },
       }),
     ]
+    const page = pageFactory
+      .pageContent(sentReferrals)
+      .build({ totalElements: sentReferrals.length, totalPages: 2, size: 1 })
 
     cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
     cy.stubGetIntervention(womensServicesIntervention.id, womensServicesIntervention)
-    cy.stubGetSentReferralsForUserToken(sentReferrals)
+    cy.stubGetSentReferralsForUserTokenPaged(page)
 
     cy.login()
 
@@ -106,10 +110,14 @@ describe('Probation practitioner referrals dashboard', () => {
           Action: 'View',
         },
       ])
+    cy.get('nav').contains('1')
+    cy.contains('Next')
+    cy.contains('Showing 1 to 1 of 2 results')
   })
 
   it('user views an end of service report', () => {
-    cy.stubGetSentReferralsForUserToken([])
+    const page = pageFactory.pageContent([]).build()
+    cy.stubGetSentReferralsForUserTokenPaged(page)
     cy.login()
     const serviceCategory1 = serviceCategoryFactory.build()
     const serviceCategory2 = serviceCategoryFactory.build({
@@ -176,8 +184,9 @@ describe('Probation practitioner referrals dashboard', () => {
   describe('probation practitioner views referral progress', () => {
     describe('for initial assessment feedback', () => {
       let assignedReferral
+      const page = pageFactory.pageContent([]).build()
       beforeEach(() => {
-        cy.stubGetSentReferralsForUserToken([])
+        cy.stubGetSentReferralsForUserTokenPaged(page)
         const intervention = interventionFactory.build()
         const conviction = deliusConvictionFactory.build()
         const hmppsAuthUser = hmppsAuthUserFactory.build({
@@ -325,7 +334,8 @@ describe('Probation practitioner referrals dashboard', () => {
   })
 
   it('probation practitioner views referral details', () => {
-    cy.stubGetSentReferralsForUserToken([])
+    const page = pageFactory.pageContent([]).build()
+    cy.stubGetSentReferralsForUserTokenPaged(page)
 
     const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })

@@ -8,6 +8,7 @@ import interventionFactory from '../../testutils/factories/intervention'
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
+import pageFactory from '../../testutils/factories/page'
 
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build({
@@ -131,7 +132,7 @@ describe('Referral form', () => {
       cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
       cy.stubGetDraftReferralsForUserToken([])
       cy.stubGetDraftReferral(draftReferral.id, draftReferral)
       cy.stubPatchDraftReferral(draftReferral.id, draftReferral)
@@ -563,7 +564,7 @@ describe('Referral form', () => {
       cy.stubCreateDraftReferral(draftReferral)
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
-      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
       cy.stubGetDraftReferralsForUserToken([])
       cy.stubGetDraftReferral(draftReferral.id, draftReferral)
       cy.stubPatchDraftReferral(draftReferral.id, draftReferral)
