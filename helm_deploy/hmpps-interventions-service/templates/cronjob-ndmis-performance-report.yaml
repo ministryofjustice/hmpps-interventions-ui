@@ -10,7 +10,7 @@ spec:
         spec:
           restartPolicy: "Never"
           containers:
-            - name: hmpps-interventions-service
+            - name: ndmis-performance-report
               image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
               imagePullPolicy: Always
               args: ["--jobName=ndmisPerformanceReportJob"]
