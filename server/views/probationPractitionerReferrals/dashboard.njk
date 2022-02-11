@@ -17,6 +17,8 @@
       <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
 
         {{ mojSubNavigation(subNavArgs) }}
+        {% include "../partials/pagination.njk" %}
+        <hr class="govuk-section-break govuk-section-break--m">
         {{ govukTable(tableArgs) }}
 
       <script src="/assets/mojSortableTable.js">
