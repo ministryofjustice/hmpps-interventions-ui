@@ -115,10 +115,10 @@ export default {
       agent: new AgentConfig(),
       dashboardPageSize: {
         pp: {
-          openCases: get('PP_OPEN_CASES_PAGE_SIZE', '50'),
-          unassignedCases: get('PP_UNASSIGNED_CASES_PAGE_SIZE', '50'),
-          completedCases: get('PP_MY_CASES_PAGE_SIZE', '50'),
-          cancelledCases: get('PP_CANCELLED_CASES_PAGE_SIZE', '50'),
+          openCases: get('PP_OPEN_CASES_PAGE_SIZE', '500'),
+          unassignedCases: get('PP_UNASSIGNED_CASES_PAGE_SIZE', '500'),
+          completedCases: get('PP_MY_CASES_PAGE_SIZE', '500'),
+          cancelledCases: get('PP_CANCELLED_CASES_PAGE_SIZE', '500'),
         },
       },
     },
