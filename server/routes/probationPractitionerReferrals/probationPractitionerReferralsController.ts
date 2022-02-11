@@ -45,32 +45,46 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async showOpenCases(req: Request, res: Response): Promise<void> {
-    await this.showDashboard(res, { concluded: false }, 'Open cases')
+    const pageSize = config.apis.interventionsService.dashboardPageSize.pp.openCases
+    await this.showDashboard(req, res, { concluded: false }, 'Open cases', pageSize)
   }
 
   async showUnassignedCases(req: Request, res: Response): Promise<void> {
-    await this.showDashboard(res, { concluded: false, unassigned: true }, 'Unassigned cases')
+    const pageSize = config.apis.interventionsService.dashboardPageSize.pp.unassignedCases
+    await this.showDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases', pageSize)
   }
 
   async showCompletedCases(req: Request, res: Response): Promise<void> {
-    await this.showDashboard(res, { concluded: true, cancelled: false }, 'Completed cases')
+    const pageSize = config.apis.interventionsService.dashboardPageSize.pp.completedCases
+    await this.showDashboard(req, res, { concluded: true, cancelled: false }, 'Completed cases', pageSize)
   }
 
   async showCancelledCases(req: Request, res: Response): Promise<void> {
-    await this.showDashboard(res, { cancelled: true }, 'Cancelled cases')
+    const pageSize = config.apis.interventionsService.dashboardPageSize.pp.cancelledCases
+    await this.showDashboard(req, res, { cancelled: true }, 'Cancelled cases', pageSize)
   }
 
   private async showDashboard(
+    req: Request,
     res: Response,
     getSentReferralsFilterParams: GetSentReferralsFilterParams,
-    dashboardType: PPDashboardType
+    dashboardType: PPDashboardType,
+    pageSize: string
   ) {
-    const cases = await this.interventionsService.getSentReferralsForUserToken(
+    const pageNumber = req.query.page
+    const paginationQuery = {
+      page: pageNumber ? Number(pageNumber) : undefined,
+      size: Number(pageSize),
+      sort: ['sentAt,DESC'],
+    }
+
+    const cases = await this.interventionsService.getSentReferralsForUserTokenPaged(
       res.locals.user.token.accessToken,
-      getSentReferralsFilterParams
+      getSentReferralsFilterParams,
+      paginationQuery
     )
 
-    const dedupedInterventionIds = Array.from(new Set(cases.map(referral => referral.referral.interventionId)))
+    const dedupedInterventionIds = Array.from(new Set(cases.content.map(referral => referral.referral.interventionId)))
     const interventions = await Promise.all(
       dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
     )

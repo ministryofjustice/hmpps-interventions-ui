@@ -1,6 +1,7 @@
 import interventionFactory from '../../testutils/factories/intervention'
 import pccRegionFactory from '../../testutils/factories/pccRegion'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
+import pageFactory from '../../testutils/factories/page'
 
 context('Find an intervention', () => {
   beforeEach(() => {
@@ -11,7 +12,7 @@ context('Find an intervention', () => {
   })
 
   it('Probation practitioner views a list of search results', () => {
-    cy.stubGetSentReferralsForUserToken([])
+    cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
     cy.stubGetDraftReferralsForUserToken([])
     cy.login()
 

@@ -256,6 +256,20 @@ export default class InterventionsService {
     })) as SentReferral[]
   }
 
+  async getSentReferralsForUserTokenPaged(
+    token: string,
+    filterParams: GetSentReferralsFilterParams,
+    paginationParams: PaginationParams
+  ): Promise<Page<SentReferral>> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/sent-referrals/paged`,
+      headers: { Accept: 'application/json' },
+      query: { ...filterParams, ...paginationParams },
+    })) as Page<SentReferral>
+  }
+
   async getServiceProviderSentReferralsSummaryForUserToken(
     token: string,
     dashboardType?: SPDashboardType

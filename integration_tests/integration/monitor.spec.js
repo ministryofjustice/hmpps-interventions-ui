@@ -11,6 +11,7 @@ import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import actionPlanActivity from '../../testutils/factories/actionPlanActivity'
+import pageFactory from '../../testutils/factories/page'
 
 describe('Probation Practitioner monitor journey', () => {
   beforeEach(() => {
@@ -24,7 +25,7 @@ describe('Probation Practitioner monitor journey', () => {
     describe('supplier assessment', () => {
       describe('when a caseworker has not yet been assigned', () => {
         it('contains an appropriate message about the supplier assessment', () => {
-          cy.stubGetSentReferralsForUserToken([])
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
 
           const serviceCategory = serviceCategoryFactory.build()
 
@@ -57,7 +58,7 @@ describe('Probation Practitioner monitor journey', () => {
 
       describe('when a caseworker has been assigned but the supplier assessment has not yet been scheduled', () => {
         it('contains an appropriate message about the supplier assessment', () => {
-          cy.stubGetSentReferralsForUserToken([])
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
 
           const serviceCategory = serviceCategoryFactory.build()
 
@@ -100,7 +101,7 @@ describe('Probation Practitioner monitor journey', () => {
 
       describe('when a caseworker has been assigned and the supplier assessment has been scheduled', () => {
         it('contains an appropriate message about the supplier assessment', () => {
-          cy.stubGetSentReferralsForUserToken([])
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
 
           const serviceCategory = serviceCategoryFactory.build()
 
@@ -188,7 +189,7 @@ describe('Probation Practitioner monitor journey', () => {
       })
 
       cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
-      cy.stubGetSentReferralsForUserToken([assignedReferral])
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([assignedReferral]).build())
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
@@ -272,7 +273,8 @@ describe('Probation Practitioner monitor journey', () => {
       })
 
       cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
-      cy.stubGetSentReferralsForUserToken([assignedReferral])
+
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([assignedReferral]).build())
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
@@ -349,7 +351,7 @@ describe('Probation Practitioner monitor journey', () => {
       })
 
       cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
-      cy.stubGetSentReferralsForUserToken([assignedReferral])
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([assignedReferral]).build())
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
@@ -396,7 +398,7 @@ describe('Probation Practitioner monitor journey', () => {
 
   describe('viewing a supplier assessment', () => {
     it('user views scheduled supplier assessment', () => {
-      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
 
       const serviceCategory = serviceCategoryFactory.build()
 
@@ -464,7 +466,7 @@ describe('Probation Practitioner monitor journey', () => {
 
   describe('Action plans', () => {
     it('the PP can view and approve an action plan', () => {
-      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
 
       const serviceCategory = serviceCategoryFactory.build()
 
@@ -576,7 +578,7 @@ describe('Probation Practitioner monitor journey', () => {
     })
 
     it('the PP can view previous versions of an action plan', () => {
-      cy.stubGetSentReferralsForUserToken([])
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
 
       const serviceCategory = serviceCategoryFactory.build()
 

@@ -38,6 +38,10 @@ Cypress.Commands.add('stubGetSentReferralsForUserToken', responseJson => {
   cy.task('stubGetSentReferralsForUserToken', { responseJson })
 })
 
+Cypress.Commands.add('stubGetSentReferralsForUserTokenPaged', responseJson => {
+  cy.task('stubGetSentReferralsForUserTokenPaged', { responseJson })
+})
+
 Cypress.Commands.add('stubGetServiceProviderSentReferralsSummaryForUserToken', responseJson => {
   cy.task('stubGetServiceProviderSentReferralsSummaryForUserToken', { responseJson })
 })

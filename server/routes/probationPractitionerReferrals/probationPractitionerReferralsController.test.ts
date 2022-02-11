@@ -35,6 +35,8 @@ import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager
 import DraftsService from '../../services/draftsService'
 import approvedActionPlanSummaryFactory from '../../../testutils/factories/approvedActionPlanSummary'
 import { PPDashboardType } from './dashboardPresenter'
+import pageFactory from '../../../testutils/factories/page'
+import { Page } from '../../models/pagination'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -132,9 +134,10 @@ describe('GET /probation-practitioner/dashboard', () => {
           },
         }),
       ]
+      const page = pageFactory.pageContent(referrals).build() as Page<SentReferral>
 
       interventionsService.getIntervention.mockResolvedValue(intervention)
-      interventionsService.getSentReferralsForUserToken.mockResolvedValue(referrals)
+      interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
 
       await request(app)
         .get(dashboard.url)
@@ -145,6 +148,44 @@ describe('GET /probation-practitioner/dashboard', () => {
           expect(res.text).toContain('Accommodation Services - West Midlands')
         })
     })
+  })
+  it('displays a dashboard page with invalid page number', async () => {
+    apiConfig.apis.interventionsService.dashboardPageSize.pp.openCases = '1'
+    const intervention = interventionFactory.build({ id: '1', title: 'Accommodation Services - West Midlands' })
+    const referrals = [
+      sentReferralFactory.assigned().build({
+        referral: {
+          interventionId: '1',
+          serviceUser: {
+            firstName: 'Alex',
+            lastName: 'River',
+          },
+        },
+      }),
+      sentReferralFactory.assigned().build({
+        referral: {
+          interventionId: '1',
+          serviceUser: {
+            firstName: 'George',
+            lastName: 'River',
+          },
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build({ totalPages: 2, totalElements: 2 }) as Page<SentReferral>
+
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/probation-practitioner/dashboard/open-cases?page=-200')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Open cases')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Accommodation Services - West Midlands')
+        expect(res.text).toContain('Showing <b>1</b> to <b>2</b> of <b>2</b>')
+      })
   })
 })
 

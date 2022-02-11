@@ -2,6 +2,9 @@ import interventionFactory from '../../../testutils/factories/intervention'
 import SentReferralFactory from '../../../testutils/factories/sentReferral'
 import DashboardPresenter from './dashboardPresenter'
 import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
+import pageFactory from '../../../testutils/factories/page'
+import { Page } from '../../models/pagination'
+import SentReferral from '../../models/sentReferral'
 
 describe('DashboardPresenter', () => {
   const interventions = [
@@ -51,7 +54,8 @@ describe('DashboardPresenter', () => {
 
   describe('tableRows', () => {
     it('returns a list of table rows with appropriate sort values', () => {
-      const presenter = new DashboardPresenter(referrals, interventions, loggedInUser, 'Open cases')
+      const page = pageFactory.pageContent(referrals).build() as Page<SentReferral>
+      const presenter = new DashboardPresenter(page, interventions, loggedInUser, 'Open cases')
 
       expect(presenter.tableRows).toEqual([
         [
