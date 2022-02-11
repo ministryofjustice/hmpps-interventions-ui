@@ -149,6 +149,44 @@ describe('GET /probation-practitioner/dashboard', () => {
         })
     })
   })
+  it('displays a dashboard page with invalid page number', async () => {
+    apiConfig.apis.interventionsService.dashboardPageSize.pp.openCases = '1'
+    const intervention = interventionFactory.build({ id: '1', title: 'Accommodation Services - West Midlands' })
+    const referrals = [
+      sentReferralFactory.assigned().build({
+        referral: {
+          interventionId: '1',
+          serviceUser: {
+            firstName: 'Alex',
+            lastName: 'River',
+          },
+        },
+      }),
+      sentReferralFactory.assigned().build({
+        referral: {
+          interventionId: '1',
+          serviceUser: {
+            firstName: 'George',
+            lastName: 'River',
+          },
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build({ totalPages: 2, totalElements: 2 }) as Page<SentReferral>
+
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/probation-practitioner/dashboard/open-cases?page=-200')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Open cases')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Accommodation Services - West Midlands')
+        expect(res.text).toContain('Showing <b>1</b> to <b>2</b> of <b>2</b>')
+      })
+  })
 })
 
 describe('GET /probation-practitioner/referrals/:id/progress', () => {
