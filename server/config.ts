@@ -113,7 +113,6 @@ export default {
         deadline: 22000,
       },
       agent: new AgentConfig(),
-      apiClientId: get('API_CLIENT_ID', 'interventions', requiredInProduction),
       dashboardPageSize: {
         pp: {
           openCases: get('PP_OPEN_CASES_PAGE_SIZE', '50'),
