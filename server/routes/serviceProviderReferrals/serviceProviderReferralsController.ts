@@ -58,6 +58,7 @@ import EndOfServiceReportView from '../shared/endOfServiceReport/endOfServiceRep
 import ActionPlanUtils from '../../utils/actionPlanUtils'
 import config from '../../config'
 import SentReferral from '../../models/sentReferral'
+import config from '../../config'
 
 export interface DraftAssignmentData {
   email: string | null
