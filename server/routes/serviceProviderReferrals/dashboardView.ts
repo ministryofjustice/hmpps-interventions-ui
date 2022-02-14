@@ -48,6 +48,7 @@ export default class DashboardView {
         tableArgs: this.tableArgs,
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
         subNavArgs: this.subNavArgs,
+        pagination: this.presenter.pagination.mojPaginationArgs,
       },
     ]
   }

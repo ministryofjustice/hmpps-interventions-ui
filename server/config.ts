@@ -125,6 +125,12 @@ export default {
           completedCases: Number(get('PP_MY_CASES_PAGE_SIZE', '500')),
           cancelledCases: Number(get('PP_CANCELLED_CASES_PAGE_SIZE', '500')),
         },
+        sp: {
+          myCases: get('SP_CANCELLED_CASES_PAGE_SIZE', '2'),
+          openCases: get('SP_OPEN_CASES_PAGE_SIZE', '1'),
+          unassignedCases: get('SP_UNASSIGNED_CASES_PAGE_SIZE', '500'),
+          completedCases: get('SP_MY_CASES_PAGE_SIZE', '500'),
+        },
       },
     },
     tokenVerification: {
