@@ -17,9 +17,9 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
       number: '1',
       status: referralFormStatus,
       tasks: [
-        { title: 'Confirm service user’s personal details', url: 'service-user-details' },
-        { title: 'Service user’s risk information', url: riskInformationUrl },
-        { title: 'Service user’s needs and requirements', url: needsAndRequirementsUrl },
+        { title: 'Confirm their personal details', url: 'service-user-details' },
+        { title: 'Risk information', url: riskInformationUrl },
+        { title: 'Their needs and requirements', url: needsAndRequirementsUrl },
       ],
     })
   }

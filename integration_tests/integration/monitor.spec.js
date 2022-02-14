@@ -93,7 +93,7 @@ describe('Probation Practitioner monitor journey', () => {
 
           cy.visit(`/probation-practitioner/referrals/${referral.id}/progress`)
 
-          cy.contains('A caseworker has been assigned and will book the assessment appointment with the service user.')
+          cy.contains('A caseworker has been assigned and will book the assessment appointment.')
           cy.contains('Liam Johnson')
           cy.get('#supplier-assessment-status').contains('not scheduled')
         })

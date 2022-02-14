@@ -66,15 +66,15 @@ class FormSectionBuilder {
       status: this.calculateStatus(this.sectionValues.reviewServiceUserInformation),
       tasks: [
         {
-          title: 'Confirm service user’s personal details',
+          title: 'Confirm their personal details',
           url: 'service-user-details',
         },
         {
-          title: 'Service user’s risk information',
+          title: 'Their risk information',
           url: this.calculateTaskUrl('risk-information', this.taskValues.serviceUserDetails),
         },
         {
-          title: 'Service user’s needs and requirements',
+          title: 'Their needs and requirements',
           url: this.calculateTaskUrl('needs-and-requirements', this.taskValues.riskInformation),
         },
       ],
