@@ -5,7 +5,6 @@ import CommunityApiService from '../../services/communityApiService'
 import InterventionsService, {
   GetSentReferralsFilterParams,
   InterventionsServiceError,
-  SPDashboardType,
 } from '../../services/interventionsService'
 import ActionPlan from '../../models/actionPlan'
 import HmppsAuthService from '../../services/hmppsAuthService'
@@ -56,8 +55,8 @@ import ReferenceDataService from '../../services/referenceDataService'
 import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 import EndOfServiceReportPresenter from '../shared/endOfServiceReport/endOfServiceReportPresenter'
 import EndOfServiceReportView from '../shared/endOfServiceReport/endOfServiceReportView'
-import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
 import ActionPlanUtils from '../../utils/actionPlanUtils'
+import config from '../../config'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -79,78 +78,33 @@ export default class ServiceProviderReferralsController {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
 
-  // async showMyCasesDashboard(req: Request, res: Response): Promise<void> {
-  //   const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-  //     res.locals.user.token.accessToken,
-  //     SPDashboardType.MyCases
-  //   )
-  //   this.renderDashboard(res, referralsSummary, 'My cases')
-  // }
-
   async showMyCasesDashboard(req: Request, res: Response): Promise<void> {
-    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken,
-      SPDashboardType.MyCases
-    )
-    this.renderDashboard(req, res, { concluded: false, assignedTo: res.locals.user.userID }, 'My cases', pageSize)
+    const pageSize = config.apis.interventionsService.dashboardPageSize.sp.myCases
+    await this.renderDashboard(req, res, { concluded: false, assignedTo: res.locals.user.userID }, 'My cases', pageSize)
   }
-
-  // async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
-  //   const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-  //     res.locals.user.token.accessToken,
-  //     SPDashboardType.OpenCases
-  //   )
-  //   this.renderDashboard(res, referralsSummary, 'All open cases')
-  // }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
-    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken,
-      SPDashboardType.OpenCases
-    )
-    this.renderDashboard(req, res, { concluded: false }, 'All open cases', pageSize)
+    const pageSize = config.apis.interventionsService.dashboardPageSize.sp.openCases
+    await this.renderDashboard(req, res, { concluded: false }, 'All open cases', pageSize)
   }
-
-  // async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
-  //   const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-  //     res.locals.user.token.accessToken,
-  //     SPDashboardType.UnassignedCases
-  //   )
-  //   this.renderDashboard(res, referralsSummary, 'Unassigned cases')
-  // }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
-    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken,
-      SPDashboardType.UnassignedCases
-    )
-    this.renderDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases', pageSize)
+    const pageSize = config.apis.interventionsService.dashboardPageSize.sp.unassignedCases
+    await this.renderDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases', pageSize)
   }
 
-  // async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
-  //   const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-  //     res.locals.user.token.accessToken,
-  //     SPDashboardType.CompletedCases
-  //   )
-  //   this.renderDashboard(res, referralsSummary, 'Completed cases')
-  // }
-
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
-    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken,
-      SPDashboardType.CompletedCases
-    )
-    this.renderDashboard(req, res, { concluded: true }, 'Completed cases', pageSize)
+    const pageSize = config.apis.interventionsService.dashboardPageSize.sp.completedCases
+    await this.renderDashboard(req, res, { concluded: true }, 'Completed cases', pageSize)
   }
 
   private async renderDashboard(
     req: Request,
     res: Response,
-    // referralsSummary: ServiceProviderSentReferralSummary[],
     getSentReferralsFilterParams: GetSentReferralsFilterParams,
     dashboardType: DashboardType,
-    pageSize
-  ): void {
+    pageSize: string
+  ) {
     const pageNumber = req.query.page
     const paginationQuery = {
       page: pageNumber ? Number(pageNumber) : undefined,
@@ -164,7 +118,12 @@ export default class ServiceProviderReferralsController {
       paginationQuery
     )
 
-    const presenter = new DashboardPresenter(referralsSummary, dashboardType, res.locals.user)
+    const dedupedInterventionIds = Array.from(new Set(cases.content.map(referral => referral.referral.interventionId)))
+    const interventions = await Promise.all(
+      dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
+    )
+
+    const presenter = new DashboardPresenter(cases, dashboardType, res.locals.user, interventions)
     const view = new DashboardView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)
