@@ -94,7 +94,7 @@
   "//": "TODO validator is pinned for CVE-2021-3765; remove when fixed upstream",
   "dependencies": {
     "@ministryofjustice/frontend": "1.0.1",
-    "@sentry/node": "^6.17.4",
+    "@sentry/node": "^6.17.7",
     "@types/connect-flash": "0.0.37",
     "@types/uuid": "^8.3.4",
     "agentkeepalive": "^4.2.0",
@@ -155,7 +155,7 @@
     "@types/superagent": "^4.1.15",
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
-    "@typescript-eslint/parser": "^5.10.2",
+    "@typescript-eslint/parser": "^5.11.0",
     "concurrently": "^7.0.0",
     "cypress": "^9.4.1",
     "cypress-multi-reporters": "^1.5.0",
