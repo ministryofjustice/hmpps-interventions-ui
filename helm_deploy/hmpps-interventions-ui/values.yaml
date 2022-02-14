@@ -62,3 +62,6 @@ generic-service:
       SecRuleUpdateActionById 959100 "t:none,deny,status:423,logdata:%{SERVER_NAME}"
       SecRuleRemoveById 921110
       SecRuleUpdateTargetById 942100 "!ARGS"  # disable libinjection testing on request args. to disable all SQLi testing, modify rules in the range 942100-942999
+      SecRuleRemoveByTag language-php
+      SecRuleRemoveByTag language-shell
+      SecRuleRemoveByTag platform-windows
