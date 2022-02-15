@@ -32,6 +32,7 @@ class ResourceServerConfiguration(private val tokenVerifier: TokenVerifier) : We
       sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
       authorizeRequests {
         authorize("/health/**", permitAll)
+        authorize("/prometheus/**", permitAll)
         authorize("/info", permitAll)
         authorize("/v3/api-docs/**", permitAll)
         authorize("/swagger-ui/**", permitAll)

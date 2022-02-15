@@ -40,6 +40,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-batch")
 
   // monitoring and logging
+  implementation("io.micrometer:micrometer-registry-prometheus")
   implementation("io.sentry:sentry-spring-boot-starter:5.6.2")
   implementation("io.sentry:sentry-logback:5.6.2")
   implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
