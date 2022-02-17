@@ -1,6 +1,5 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import interventionFactory from '../../testutils/factories/intervention'
-import serviceProviderSentReferralSummaryFactory from '../../testutils/factories/serviceProviderSentReferralSummary'
 import pageFactory from '../../testutils/factories/page'
 
 describe('Dashboards', () => {
@@ -485,6 +484,17 @@ describe('Dashboards', () => {
       title: "Women's Services - West Midlands",
     })
 
+    const sentReferrals = [
+      sentReferralFactory.assigned().build({
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'REFERRAL_REF',
+        referral: {
+          interventionId: accommodationIntervention.id,
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+        },
+      }),
+    ]
+
     beforeEach(() => {
       cy.task('stubServiceProviderToken')
       cy.task('stubServiceProviderAuthUser')
@@ -495,10 +505,7 @@ describe('Dashboards', () => {
 
     describe('SP logs in and accesses "My cases"', () => {
       beforeEach(() => {
-        const referralSummary = serviceProviderSentReferralSummaryFactory
-          .withAssignedUser('USER1')
-          .build({ referenceNumber: 'REFERRAL_REF' })
-        cy.stubGetServiceProviderSentReferralsSummaryForUserToken([referralSummary])
+        cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
         cy.login()
       })
 
@@ -511,7 +518,7 @@ describe('Dashboards', () => {
               'Date received': '26 Jan 2021',
               Referral: 'REFERRAL_REF',
               'Service user': 'Jenny Jones',
-              'Intervention type': 'Social Inclusion - West Midlands',
+              'Intervention type': 'Accommodation Services - West Midlands',
               Action: 'View',
             },
           ])
@@ -529,8 +536,8 @@ describe('Dashboards', () => {
                 'Date received': '26 Jan 2021',
                 Referral: 'REFERRAL_REF',
                 'Service user': 'Jenny Jones',
-                'Intervention type': 'Social Inclusion - West Midlands',
-                Caseworker: 'USER1',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
                 Action: 'View',
               },
             ])
@@ -549,7 +556,7 @@ describe('Dashboards', () => {
                 'Date received': '26 Jan 2021',
                 Referral: 'REFERRAL_REF',
                 'Service user': 'Jenny Jones',
-                'Intervention type': 'Social Inclusion - West Midlands',
+                'Intervention type': 'Accommodation Services - West Midlands',
                 Action: 'View',
               },
             ])
@@ -568,8 +575,8 @@ describe('Dashboards', () => {
                 'Date received': '26 Jan 2021',
                 Referral: 'REFERRAL_REF',
                 'Service user': 'Jenny Jones',
-                'Intervention type': 'Social Inclusion - West Midlands',
-                Caseworker: 'USER1',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
                 Action: 'View',
               },
             ])
@@ -581,25 +588,39 @@ describe('Dashboards', () => {
       describe('with "Date received" as second order sort', () => {
         it('should order by "Date received" when first order values are identical', () => {
           const sentReferralsWithIdenticalReferenceNumber = [
-            serviceProviderSentReferralSummaryFactory.withAssignedUser('USER1').build({
+            sentReferralFactory.assigned().build({
               sentAt: '2021-01-27T13:00:00.000000Z',
               referenceNumber: 'A',
+              referral: {
+                interventionId: accommodationIntervention.id,
+              },
             }),
-            serviceProviderSentReferralSummaryFactory.withAssignedUser('USER1').build({
+            sentReferralFactory.assigned().build({
               sentAt: '2021-01-26T13:00:00.000000Z',
               referenceNumber: 'A',
+              referral: {
+                interventionId: accommodationIntervention.id,
+              },
             }),
-            serviceProviderSentReferralSummaryFactory.withAssignedUser('USER1').build({
+            sentReferralFactory.assigned().build({
               sentAt: '2021-01-28T13:00:00.000000Z',
               referenceNumber: 'A',
+              referral: {
+                interventionId: accommodationIntervention.id,
+              },
             }),
-            serviceProviderSentReferralSummaryFactory.withAssignedUser('USER1').build({
+            sentReferralFactory.assigned().build({
               sentAt: '2021-01-26T13:00:00.000000Z',
               referenceNumber: 'B',
+              referral: {
+                interventionId: accommodationIntervention.id,
+              },
             }),
           ]
 
-          cy.stubGetServiceProviderSentReferralsSummaryForUserToken(sentReferralsWithIdenticalReferenceNumber)
+          cy.stubGetSentReferralsForUserTokenPaged(
+            pageFactory.pageContent(sentReferralsWithIdenticalReferenceNumber).build()
+          )
           cy.login()
 
           cy.get('table')
@@ -670,59 +691,58 @@ describe('Dashboards', () => {
         })
       })
 
-      const assignedToSelfA = serviceProviderSentReferralSummaryFactory.build({
+      const assignedToSelfA = sentReferralFactory.assigned().build({
         sentAt: '2020-12-13T13:00:00.000000Z',
         referenceNumber: 'A',
-        interventionTitle: accommodationIntervention.title,
-        serviceUserFirstName: 'Jenny',
-        serviceUserLastName: 'Jones',
-        assignedToUserName: 'USER1',
-        endOfServiceReportSubmitted: false,
+        referral: {
+          interventionId: accommodationIntervention.id,
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+        },
       })
-      const assignedToSelfB = serviceProviderSentReferralSummaryFactory.build({
+
+      const assignedToSelfB = sentReferralFactory.assigned().build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'B',
-        interventionTitle: womensServicesIntervention.title,
-        serviceUserFirstName: 'George',
-        serviceUserLastName: 'Michael',
-        assignedToUserName: 'USER1',
-        endOfServiceReportSubmitted: false,
+        referral: {
+          interventionId: womensServicesIntervention.id,
+          serviceUser: { firstName: 'George', lastName: 'Michael' },
+        },
       })
-      const unassignedA = serviceProviderSentReferralSummaryFactory.build({
+
+      const unassignedA = sentReferralFactory.unassigned().build({
         sentAt: '2020-12-13T13:00:00.000000Z',
         referenceNumber: 'A',
-        interventionTitle: accommodationIntervention.title,
-        serviceUserFirstName: 'Jenny',
-        serviceUserLastName: 'Jones',
-        assignedToUserName: '',
-        endOfServiceReportSubmitted: false,
+        referral: {
+          interventionId: accommodationIntervention.id,
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+        },
       })
-      const unassignedB = serviceProviderSentReferralSummaryFactory.build({
+
+      const unassignedB = sentReferralFactory.unassigned().build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'B',
-        interventionTitle: womensServicesIntervention.title,
-        serviceUserFirstName: 'George',
-        serviceUserLastName: 'Michael',
-        assignedToUserName: '',
-        endOfServiceReportSubmitted: false,
+        referral: {
+          interventionId: womensServicesIntervention.id,
+          serviceUser: { firstName: 'George', lastName: 'Michael' },
+        },
       })
-      const completedA = serviceProviderSentReferralSummaryFactory.build({
+
+      const completedA = sentReferralFactory.concluded().build({
         sentAt: '2020-12-13T13:00:00.000000Z',
         referenceNumber: 'A',
-        interventionTitle: accommodationIntervention.title,
-        serviceUserFirstName: 'Jenny',
-        serviceUserLastName: 'Jones',
-        assignedToUserName: 'USER1',
-        endOfServiceReportSubmitted: true,
+        referral: {
+          interventionId: accommodationIntervention.id,
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+        },
       })
-      const completedB = serviceProviderSentReferralSummaryFactory.build({
+
+      const completedB = sentReferralFactory.concluded().build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'B',
-        interventionTitle: womensServicesIntervention.title,
-        serviceUserFirstName: 'George',
-        serviceUserLastName: 'Michael',
-        assignedToUserName: 'USER1',
-        endOfServiceReportSubmitted: true,
+        referral: {
+          interventionId: womensServicesIntervention.id,
+          serviceUser: { firstName: 'George', lastName: 'Michael' },
+        },
       })
 
       const rowForReferralAWithNoCaseworkerColumn = {
@@ -745,7 +765,7 @@ describe('Dashboards', () => {
         Referral: 'A',
         'Service user': 'Jenny Jones',
         'Intervention type': 'Accommodation Services - West Midlands',
-        Caseworker: 'USER1',
+        Caseworker: 'UserABC',
         Action: 'View',
       }
 
@@ -754,7 +774,7 @@ describe('Dashboards', () => {
         Referral: 'B',
         'Service user': 'George Michael',
         'Intervention type': "Women's Services - West Midlands",
-        Caseworker: 'USER1',
+        Caseworker: 'UserABC',
         Action: 'View',
       }
 
@@ -802,7 +822,7 @@ describe('Dashboards', () => {
       dashBoardTables.forEach(({ dashboardType, referrals, initialTable, sortedTable }) => {
         describe(`sorting by "Date received" for dashboard "${dashboardType}"`, () => {
           beforeEach(() => {
-            cy.stubGetServiceProviderSentReferralsSummaryForUserToken(referrals)
+            cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(referrals).build())
           })
 
           it(`allows the user to sort by "Date received" for dashboard "${dashboardType}"`, () => {

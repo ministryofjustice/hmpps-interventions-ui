@@ -16,8 +16,8 @@ context('Case notes', () => {
     describe('when there is a case note made by a PP', () => {
       it('should display "Probation Practitioner" as the user type', () => {
         const sentReferral = sentReferralFactory.build()
-        cy.stubGetSentReferralsForUserToken([])
-        cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
+        // cy.stubGetSentReferralsForUserToken([])
+        cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.login()
 
         const ppCaseNote = caseNoteFactory.build({
@@ -46,7 +46,7 @@ context('Case notes', () => {
       it('should display "Service Provider" as the user type', () => {
         const sentReferral = sentReferralFactory.build()
         cy.stubGetSentReferralsForUserToken([])
-        cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
+        cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.login()
 
         const ppCaseNote = caseNoteFactory.build({
