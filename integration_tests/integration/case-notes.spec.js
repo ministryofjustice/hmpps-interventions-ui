@@ -16,7 +16,6 @@ context('Case notes', () => {
     describe('when there is a case note made by a PP', () => {
       it('should display "Probation Practitioner" as the user type', () => {
         const sentReferral = sentReferralFactory.build()
-        // cy.stubGetSentReferralsForUserToken([])
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.login()
 
