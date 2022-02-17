@@ -20,7 +20,7 @@ export default class CaseNotePresenter {
   // There is the chance that further case notes are added which pushes the selected case note onto another page.
   // The backlink will now take them to the page they came from, but potentially not the page the case note now lives.
   backLinkHref = `/${this.loggedInUserType}/referrals/${this.caseNote.referralId}/case-notes${
-    Number(this.backlinkPageNumber) ? `?page=${this.backlinkPageNumber}` : ''
+    this.backlinkPageNumber !== null ? `?page=${this.backlinkPageNumber}` : ''
   }`
 
   readonly caseNoteSummary: CaseNoteSummary = {
