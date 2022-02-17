@@ -63,7 +63,7 @@ context('Login', () => {
       cy.task('stubServiceProviderToken')
       cy.task('stubServiceProviderAuthUser')
       cy.stubGetSentReferralsForUserToken([])
-      cy.stubGetServiceProviderSentReferralsSummaryForUserToken([])
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
       cy.login()
     })
 
