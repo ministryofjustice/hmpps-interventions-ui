@@ -29,6 +29,7 @@ import ReferenceDataService from '../../services/referenceDataService'
 import SentReferral from '../../models/sentReferral'
 import ActionPlan from '../../models/actionPlan'
 import ActionPlanUtils from '../../utils/actionPlanUtils'
+import UserDataService from '../../services/userDataService'
 
 export default class ProbationPractitionerReferralsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -39,7 +40,8 @@ export default class ProbationPractitionerReferralsController {
     private readonly hmppsAuthService: HmppsAuthService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly draftsService: DraftsService,
-    private readonly referenceDataService: ReferenceDataService
+    private readonly referenceDataService: ReferenceDataService,
+    private readonly userDataService: UserDataService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }

@@ -31,6 +31,7 @@ import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from './r
 import DraftsService from './services/draftsService'
 import ReferenceDataService from './services/referenceDataService'
 import serviceEditorRoutes, { serviceEditorUrlPrefix } from './routes/serviceEditorRoutes'
+import UserDataService from './services/userDataService'
 
 const RedisStore = connectRedis(session)
 
@@ -214,6 +215,7 @@ export default function createApp(
 
   const clock = { now: () => new Date() }
   const draftsService = new DraftsService(redisClient, config.draftsService.expiry, clock)
+  const userDataService = new UserDataService(redisClient)
 
   const services = {
     communityApiService,
@@ -222,6 +224,7 @@ export default function createApp(
     assessRisksAndNeedsService,
     draftsService,
     referenceDataService,
+    userDataService,
   }
 
   app.use('/', indexRoutes(standardRouter(), services))
