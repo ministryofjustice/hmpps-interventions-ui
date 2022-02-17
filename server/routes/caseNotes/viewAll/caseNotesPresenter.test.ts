@@ -66,7 +66,7 @@ describe('CaseNotesPresenter', () => {
         'service-provider'
       )
       expect(presenter.tableRows[0].caseNoteLink).toEqual(
-        '/service-provider/case-note/025a807d-a631-4559-be74-664ba62db279'
+        '/service-provider/case-note/025a807d-a631-4559-be74-664ba62db279?backlinkPageNumber=1'
       )
       presenter = new CaseNotesPresenter(
         referralId,
@@ -77,7 +77,7 @@ describe('CaseNotesPresenter', () => {
         'probation-practitioner'
       )
       expect(presenter.tableRows[0].caseNoteLink).toEqual(
-        '/probation-practitioner/case-note/025a807d-a631-4559-be74-664ba62db279'
+        '/probation-practitioner/case-note/025a807d-a631-4559-be74-664ba62db279?backlinkPageNumber=1'
       )
     })
 

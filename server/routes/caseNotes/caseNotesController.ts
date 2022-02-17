@@ -134,13 +134,18 @@ export default class CaseNotesController {
   ): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { caseNoteId } = req.params
+
+    const parsedBacklinkPageNumber = Number(req.query.backlinkPageNumber)
+    const backlinkPageNumber =
+      Number.isNaN(parsedBacklinkPageNumber) || parsedBacklinkPageNumber < 1 ? null : parsedBacklinkPageNumber
+
     const caseNote = await this.interventionsService.getCaseNote(accessToken, caseNoteId)
     const sentByUserDetails = await this.hmppsAuthService.getUserDetailsByUsername(
       accessToken,
       caseNote.sentBy.username
     )
     const sentByUserName = sentByUserDetails.name
-    const presenter = new CaseNotePresenter(caseNote, sentByUserName, loggedInUserType)
+    const presenter = new CaseNotePresenter(caseNote, sentByUserName, loggedInUserType, backlinkPageNumber)
     const view = new CaseNoteView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }
