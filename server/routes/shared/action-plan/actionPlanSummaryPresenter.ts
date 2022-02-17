@@ -1,39 +1,29 @@
 import ActionPlan from '../../../models/actionPlan'
 import DateUtils from '../../../utils/dateUtils'
-import SentReferral from '../../../models/sentReferral'
+import { ActionPlanStatus } from '../../../utils/actionPlanUtils'
 
 export default class ActionPlanSummaryPresenter {
   constructor(
-    private readonly referral: SentReferral,
     private readonly actionPlan: ActionPlan | null,
-    readonly userType: 'service-provider' | 'probation-practitioner'
+    private readonly userType: 'service-provider' | 'probation-practitioner'
   ) {}
 
-  readonly viewActionPlanUrl = `/${this.userType}/referrals/${this.referral.id}/action-plan`
-
-  readonly createActionPlanFormAction = `/service-provider/referrals/${this.referral.id}/action-plan`
-
-  // this url is used to pick up action plan creation after it has been started.
-  readonly actionPlanFormUrl =
-    this.actionPlan !== null ? `/service-provider/action-plan/${this.actionPlan.id}/add-activity/1` : ''
-
   readonly text = {
-    actionPlanStatus: this.actionPlanStatus,
     actionPlanSubmittedDate: this.actionPlan?.submittedAt ? DateUtils.formattedDate(this.actionPlan?.submittedAt) : '',
     actionPlanApprovalDate: this.actionPlan?.approvedAt ? DateUtils.formattedDate(this.actionPlan?.approvedAt) : '',
   }
 
-  private get actionPlanStatus(): string {
+  get actionPlanStatus(): ActionPlanStatus {
     if (this.actionPlanApproved) {
-      return 'Approved'
+      return ActionPlanStatus.Approved
     }
     if (this.actionPlanUnderReview) {
-      return 'Awaiting approval'
+      return ActionPlanStatus.AwaitingApproval
     }
     if (this.actionPlanCreated && this.userType === 'service-provider') {
-      return 'In draft'
+      return ActionPlanStatus.InDraft
     }
-    return 'Not submitted'
+    return ActionPlanStatus.NotSubmitted
   }
 
   get actionPlanCreated(): boolean {

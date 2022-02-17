@@ -15,6 +15,12 @@
   }
 }
 
+.govuk-table {
+  .button-link {
+    @include button-link;
+  }
+}
+
 .form-input-reset {
   button {
     @include button-link;

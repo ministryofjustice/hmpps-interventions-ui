@@ -40,7 +40,7 @@
       Please complete the service user’s action plan and submit it to the probation practitioner for approval.
     </p>
 
-    {{ govukSummaryList(actionPlanSummaryListArgs(govukTag, csrfToken)) }}
+    {{ govukTable(actionPlanTableArgs(govukTag, csrfToken)) }}
 
   {% else %}
     <p class="govuk-body">

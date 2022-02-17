@@ -710,6 +710,7 @@ describe('Service provider referrals dashboard', () => {
     it('User edits an unapproved action plan and submits it for approval', () => {
       const activityId = '1'
       const submittedActionPlan = actionPlanFactory.submitted(assignedReferral.id).build({
+        referralId: assignedReferral.id,
         id: actionPlanId,
         activities: [actionPlanActivityFactory.build({ id: activityId, description: 'First activity version 1' })],
         submittedAt: '2021-08-19T11:03:47.061Z',
@@ -781,6 +782,7 @@ describe('Service provider referrals dashboard', () => {
     it('User edits an approved action plan and submits it for approval', () => {
       const activityId = '1'
       const approvedActionPlan = actionPlanFactory.approved(assignedReferral.id).build({
+        referralId: assignedReferral.id,
         id: actionPlanId,
         activities: [actionPlanActivityFactory.build({ id: activityId, description: 'First activity version 1' })],
         submittedAt: '2021-08-19T11:03:47.061Z',
@@ -799,8 +801,6 @@ describe('Service provider referrals dashboard', () => {
       cy.get('#action-plan-status').contains('Approved')
       cy.contains('19 August 2021')
       cy.contains('View action plan').click()
-
-      cy.location('pathname').should('equal', `/service-provider/referrals/${assignedReferral.id}/action-plan`)
 
       cy.contains('Create action plan').click()
       cy.contains('Are you sure you want to create a new action plan?')

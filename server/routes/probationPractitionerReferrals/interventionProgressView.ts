@@ -2,13 +2,13 @@ import { TagArgs, TableArgs, SummaryListArgs } from '../../utils/govukFrontendTy
 import ViewUtils from '../../utils/viewUtils'
 
 import InterventionProgressPresenter from './interventionProgressPresenter'
-import ActionPlanSummaryView from '../shared/action-plan/actionPlanSummaryView'
+import ActionPlanProgressView from '../shared/action-plan/actionPlanProgressView'
 
 export default class InterventionProgressView {
-  actionPlanSummaryView: ActionPlanSummaryView
+  actionPlanProgressView: ActionPlanProgressView
 
   constructor(private readonly presenter: InterventionProgressPresenter) {
-    this.actionPlanSummaryView = new ActionPlanSummaryView(presenter.actionPlanSummaryPresenter, true)
+    this.actionPlanProgressView = new ActionPlanProgressView(presenter.actionPlanProgressPresenter)
   }
 
   private supplierAssessmentSummaryListArgs(tagMacro: (args: TagArgs) => string): SummaryListArgs | null {
@@ -51,6 +51,7 @@ export default class InterventionProgressView {
           { html: row.link === null ? '' : ViewUtils.linkHtml([row.link]) },
         ]
       }),
+      attributes: { 'data-cy': 'session-table' },
     }
   }
 
@@ -84,7 +85,7 @@ export default class InterventionProgressView {
         supplierAssessmentSummaryListArgs: this.supplierAssessmentSummaryListArgs.bind(this),
         sessionTableArgs: this.sessionTableArgs.bind(this),
         endOfServiceReportTableArgs: this.endOfServiceReportTableArgs.bind(this),
-        actionPlanSummaryListArgs: this.actionPlanSummaryView.summaryListArgs.bind(this.actionPlanSummaryView),
+        actionPlanTableArgs: this.actionPlanProgressView.tableArgs.bind(this.actionPlanProgressView),
       },
     ]
   }

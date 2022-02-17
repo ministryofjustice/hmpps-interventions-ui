@@ -9,8 +9,9 @@ import Intervention from '../../models/intervention'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
-import ActionPlanSummaryPresenter from '../shared/action-plan/actionPlanSummaryPresenter'
 import { ActionPlanAppointment } from '../../models/appointment'
+import ActionPlanProgressPresenter from '../shared/action-plan/actionPlanProgressPresenter'
+import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
 
 interface ProgressSessionTableRow {
   sessionNumber: number
@@ -35,13 +36,14 @@ enum SupplierAssessmentStatus {
 export default class InterventionProgressPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
-  actionPlanSummaryPresenter: ActionPlanSummaryPresenter
+  actionPlanProgressPresenter: ActionPlanProgressPresenter
 
   constructor(
     private readonly referral: SentReferral,
     private readonly intervention: Intervention,
     private readonly actionPlanAppointments: ActionPlanAppointment[],
     private readonly actionPlan: ActionPlan | null,
+    private readonly approvedActionPlanSummaries: ApprovedActionPlanSummary[],
     private readonly supplierAssessment: SupplierAssessment,
     private readonly assignee: AuthUserDetails | null
   ) {
@@ -50,7 +52,12 @@ export default class InterventionProgressPresenter {
       referral.id,
       'probation-practitioner'
     )
-    this.actionPlanSummaryPresenter = new ActionPlanSummaryPresenter(referral, actionPlan, 'probation-practitioner')
+    this.actionPlanProgressPresenter = new ActionPlanProgressPresenter(
+      referral.id,
+      actionPlan,
+      approvedActionPlanSummaries,
+      'probation-practitioner'
+    )
   }
 
   get referralAssigned(): boolean {
