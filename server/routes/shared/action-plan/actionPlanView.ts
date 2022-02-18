@@ -12,9 +12,7 @@ export default class ActionPlanView {
 
   private readonly backLinkArgs = {
     text: 'Back',
-    href: this.presenter.showPreviousActionPlanNotificationBanner
-      ? this.presenter.viewProbationPractitionerLatestActionPlanURL
-      : this.presenter.interventionProgressURL,
+    href: this.presenter.interventionProgressURL,
   }
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
