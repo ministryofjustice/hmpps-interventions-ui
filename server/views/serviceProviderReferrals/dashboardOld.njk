@@ -1,0 +1,24 @@
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+{% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+
+{% extends "../partials/layout.njk" %}
+
+{% block primaryNav %}
+  {{ mojPrimaryNavigation(primaryNavArgs) }}
+{% endblock %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
+
+        {{ mojSubNavigation(subNavArgs) }}
+        <hr class="govuk-section-break govuk-section-break--m">
+        {{ govukTable(tableArgs) }}
+
+      <script src="/assets/mojSortableTable.js">
+      </script>
+    </div>
+  </div>
+{% endblock %}
