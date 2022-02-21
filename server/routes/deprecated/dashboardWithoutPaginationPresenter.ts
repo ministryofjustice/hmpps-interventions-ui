@@ -7,7 +7,7 @@ import DateUtils from '../../utils/dateUtils'
 import LoggedInUser from '../../models/loggedInUser'
 
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
-export default class DashboardPresenterOld {
+export default class DashboardWithoutPaginationPresenter {
   constructor(
     private readonly referralsSummary: ServiceProviderSentReferralSummary[],
     readonly dashboardType: DashboardType,
@@ -62,7 +62,7 @@ export default class DashboardPresenterOld {
       this.showAssignedCaseworkerColumn
         ? null
         : { text: referralSummary.assignedToUserName ?? '', sortValue: null, href: null },
-      { text: 'View', sortValue: null, href: DashboardPresenter.hrefForViewing(referralSummary) },
+      { text: 'View', sortValue: null, href: DashboardWithoutPaginationPresenter.hrefForViewing(referralSummary) },
     ].filter(row => row !== null) as SortableTableRow
   })
 
