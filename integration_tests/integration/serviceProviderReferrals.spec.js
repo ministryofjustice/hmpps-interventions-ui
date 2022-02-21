@@ -1099,7 +1099,7 @@ describe('Service provider referrals dashboard', () => {
 
             // schedule check your answers page
             cy.get('h1').contains('Confirm session 1 details')
-            cy.contains("You've chosen a data and time in the past")
+            cy.contains("You've chosen a date and time in the past")
             cy.contains('Midnight to 1:15am')
             cy.contains('Phone call')
 
@@ -1178,7 +1178,7 @@ describe('Service provider referrals dashboard', () => {
 
             // schedule check your answers page
             cy.get('h1').contains('Confirm session 1 details')
-            cy.contains("You've chosen a data and time in the past")
+            cy.contains("You've chosen a date and time in the past")
             cy.contains('9:02am to 10:17am')
             cy.contains('Phone call')
 
@@ -2000,7 +2000,7 @@ describe('Service provider referrals dashboard', () => {
 
             // // schedule check your answers page
             cy.get('h1').contains('Confirm appointment details')
-            cy.contains("You've chosen a data and time in the past")
+            cy.contains("You've chosen a date and time in the past")
             cy.contains('Midnight to 1:15am')
             cy.contains('Phone call')
 
@@ -2082,7 +2082,7 @@ describe('Service provider referrals dashboard', () => {
 
             // schedule check your answers page
             cy.get('h1').contains('Confirm appointment details')
-            cy.contains("You've chosen a data and time in the past")
+            cy.contains("You've chosen a date and time in the past")
             cy.contains('9:02am to 10:17am')
             cy.contains('Video call')
 
