@@ -9,14 +9,16 @@ export enum ActionPlanStatus {
 }
 
 export default class ActionPlanUtils {
+  static sortApprovedActionPlanSummaries(
+    actionPlanSummaries: ApprovedActionPlanSummary[]
+  ): ApprovedActionPlanSummary[] {
+    return actionPlanSummaries.sort((a, b) => new Date(b.approvedAt).getTime() - new Date(a.approvedAt).getTime())
+  }
+
   static getLatestApprovedActionPlanSummary(
     actionPlanSummaries: ApprovedActionPlanSummary[]
   ): ApprovedActionPlanSummary | null {
-    return (
-      actionPlanSummaries.sort((a, b) => {
-        return new Date(a.approvedAt) >= new Date(b.approvedAt) ? -1 : 1
-      })?.[0] ?? null
-    )
+    return ActionPlanUtils.sortApprovedActionPlanSummaries(actionPlanSummaries)?.[0] ?? null
   }
 
   private static actionPlanTagClass(actionPlanStatus: ActionPlanStatus): string {

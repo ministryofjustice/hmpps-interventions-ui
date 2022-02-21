@@ -684,7 +684,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.contains("You're looking at an older version of the action plan.")
       cy.contains('Achieve an older thing')
       cy.contains('Suggested number of sessions: 3')
-      cy.contains('View the current action plan').click()
+      cy.contains('View the latest approved action plan').click()
       cy.contains("You're looking at an older version of the action plan.").should('not.exist')
     })
   })
