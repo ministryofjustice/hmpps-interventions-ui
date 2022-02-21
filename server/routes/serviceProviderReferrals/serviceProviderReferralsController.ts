@@ -57,6 +57,7 @@ import EndOfServiceReportPresenter from '../shared/endOfServiceReport/endOfServi
 import EndOfServiceReportView from '../shared/endOfServiceReport/endOfServiceReportView'
 import ActionPlanUtils from '../../utils/actionPlanUtils'
 import config from '../../config'
+import SentReferral from '../../models/sentReferral'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -782,19 +783,8 @@ export default class ServiceProviderReferralsController {
       })
     }
 
-    const [serviceCategories, actionPlan, serviceUser] = await Promise.all([
-      Promise.all(
-        sentReferral.referral.serviceCategoryIds.map(id =>
-          this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
-        )
-      ),
-      this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId),
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
-    ])
-
-    const presenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
-    const view = new ActionPlanView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId)
+    return this.renderActionPlan(res, sentReferral, actionPlan)
   }
 
   async viewActionPlanById(req: Request, res: Response): Promise<void> {
@@ -804,16 +794,30 @@ export default class ServiceProviderReferralsController {
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, id)
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const [serviceCategories, serviceUser] = await Promise.all([
+    return this.renderActionPlan(res, sentReferral, actionPlan)
+  }
+
+  private async renderActionPlan(res: Response, sentReferral: SentReferral, actionPlan: ActionPlan) {
+    const { accessToken } = res.locals.user.token
+
+    const [serviceCategories, serviceUser, approvedActionPlanSummaries] = await Promise.all([
       Promise.all(
         sentReferral.referral.serviceCategoryIds.map(it =>
           this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, it)
         )
       ),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.interventionsService.getApprovedActionPlanSummaries(accessToken, sentReferral.id),
     ])
 
-    const presenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
+    const presenter = new ActionPlanPresenter(
+      sentReferral,
+      actionPlan,
+      serviceCategories,
+      'service-provider',
+      null,
+      approvedActionPlanSummaries
+    )
     const view = new ActionPlanView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }

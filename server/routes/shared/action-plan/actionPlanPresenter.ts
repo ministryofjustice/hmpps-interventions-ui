@@ -8,9 +8,12 @@ import ServiceCategory from '../../../models/serviceCategory'
 import ApprovedActionPlanSummary from '../../../models/approvedActionPlanSummary'
 import dateUtils from '../../../utils/dateUtils'
 import config from '../../../config'
+import ActionPlanUtils from '../../../utils/actionPlanUtils'
 
 export default class ActionPlanPresenter {
   actionPlanSummaryPresenter: ActionPlanSummaryPresenter
+
+  sortedApprovedActionPlanSummaries: ApprovedActionPlanSummary[]
 
   constructor(
     private readonly referral: SentReferral,
@@ -18,9 +21,11 @@ export default class ActionPlanPresenter {
     private readonly serviceCategories: ServiceCategory[],
     readonly userType: 'service-provider' | 'probation-practitioner',
     private readonly validationError: FormValidationError | null = null,
-    private readonly approvedActionPlanSummaries: ApprovedActionPlanSummary[] = []
+    approvedActionPlanSummaries: ApprovedActionPlanSummary[] = []
   ) {
     this.actionPlanSummaryPresenter = new ActionPlanSummaryPresenter(actionPlan, userType)
+    this.sortedApprovedActionPlanSummaries =
+      ActionPlanUtils.sortApprovedActionPlanSummaries(approvedActionPlanSummaries)
   }
 
   readonly text = {
@@ -33,8 +38,6 @@ export default class ActionPlanPresenter {
   readonly actionPlanApprovalUrl = `/probation-practitioner/referrals/${this.referral.id}/action-plan/approve`
 
   readonly actionPlanEditConfirmationUrl = `/service-provider/referrals/${this.referral.id}/action-plan/edit`
-
-  readonly viewProbationPractitionerLatestActionPlanURL = `/probation-practitioner/referrals/${this.referral.id}/action-plan`
 
   readonly errorSummary = PresenterUtils.errorSummary(this.validationError)
 
@@ -57,6 +60,14 @@ export default class ActionPlanPresenter {
     }
   })
 
+  get latestApprovedActionPlanId(): string | undefined {
+    return this.sortedApprovedActionPlanSummaries[0]?.id
+  }
+
+  get latestApprovedActionPlanUrl() {
+    return `/${this.userType}/action-plan/${this.latestApprovedActionPlanId}`
+  }
+
   get orderedActivities(): Activity[] {
     return this.actionPlan?.activities?.sort((a, b) => (a.createdAt < b.createdAt ? -1 : 1)) || []
   }
@@ -71,36 +82,20 @@ export default class ActionPlanPresenter {
   }
 
   get actionPlanVersions(): { approvalDate: string; versionNumber: number; href: string | null }[] {
-    return this.approvedActionPlanSummaries
-      .sort((summaryA, summaryB) => new Date(summaryB.approvedAt).getTime() - new Date(summaryA.approvedAt).getTime())
-      .map((summary, index) => ({
-        versionNumber: this.approvedActionPlanSummaries.length - index,
-        approvalDate: dateUtils.formattedDate(summary.approvedAt, { month: 'short' }),
-        href: this.determineActionPlanHref(summary.id),
-      }))
+    return this.sortedApprovedActionPlanSummaries.map((summary, index) => ({
+      versionNumber: this.sortedApprovedActionPlanSummaries.length - index,
+      approvalDate: dateUtils.formattedDate(summary.approvedAt, { month: 'short' }),
+      href: summary.id !== this.actionPlan.id ? `/${this.userType}/action-plan/${summary.id}` : null,
+    }))
   }
 
   get showActionPlanVersions(): boolean {
     return this.userType === 'probation-practitioner' && this.actionPlanVersions.length > 0
   }
 
-  private determineActionPlanHref(summaryId: string): string | null {
-    const isCurrentlyViewedActionPlan = summaryId === this.actionPlan.id
-    const isLatestActionPlan = summaryId === this.referral.actionPlanId
-
-    if (isCurrentlyViewedActionPlan) {
-      return null
-    }
-
-    if (isLatestActionPlan) {
-      return this.viewProbationPractitionerLatestActionPlanURL
-    }
-
-    return `/probation-practitioner/action-plan/${summaryId}`
-  }
-
   get showPreviousActionPlanNotificationBanner(): boolean {
-    return this.userType === 'probation-practitioner' && this.actionPlan.id !== this.referral.actionPlanId
+    // true for previously approved action plans
+    return this.actionPlan.approvedAt != null && this.actionPlan.id !== this.latestApprovedActionPlanId
   }
 
   get showEditButton(): boolean {

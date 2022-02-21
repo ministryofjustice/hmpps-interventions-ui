@@ -15,9 +15,9 @@ export default class ActionPlanProgressView {
     }
 
     rows.push(
-      ...this.presenter.approvedActionPlanSummaries.map((summary, i) => [
+      ...this.presenter.sortedApprovedActionPlanSummaries.map((summary, i) => [
         {
-          text: (this.presenter.approvedActionPlanSummaries.length - i).toString(),
+          text: (this.presenter.sortedApprovedActionPlanSummaries.length - i).toString(),
           classes: 'action-plan-version',
         },
         {
