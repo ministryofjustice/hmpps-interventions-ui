@@ -2059,7 +2059,7 @@ describe('Service provider referrals dashboard', () => {
 
             cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
             cy.get('form').contains('Confirm').click()
-            cy.contains('Initial assessment added')
+            cy.contains('Initial assessment feedback added')
           })
         })
         describe('that happened before today', () => {
@@ -2132,7 +2132,7 @@ describe('Service provider referrals dashboard', () => {
 
             cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
             cy.get('form').contains('Confirm').click()
-            cy.contains('Initial assessment added')
+            cy.contains('Initial assessment feedback added')
           })
         })
       })
@@ -2460,7 +2460,7 @@ describe('Service provider referrals dashboard', () => {
           cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithAttendanceFeedback)
           cy.get('form').contains('Confirm').click()
 
-          cy.contains('Initial assessment added')
+          cy.contains('Initial assessment feedback added')
 
           const hmppsAuthUser = hmppsAuthUserFactory.build({
             firstName: 'John',
@@ -2722,7 +2722,7 @@ describe('Service provider referrals dashboard', () => {
           cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithBehaviourFeedback)
           cy.get('form').contains('Confirm').click()
 
-          cy.contains('Initial assessment added')
+          cy.contains('Initial assessment feedback added')
 
           const submittedAppointment = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
