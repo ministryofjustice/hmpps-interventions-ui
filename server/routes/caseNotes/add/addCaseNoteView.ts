@@ -27,7 +27,7 @@ export default class AddCaseNoteView {
   private get bodyInputArgs(): InputArgs {
     return {
       label: {
-        text: 'Add notes about this intervention or service user',
+        text: 'Add notes about this intervention or the person on probation',
         classes: 'govuk-label--s',
       },
       id: AddNewCaseNoteForm.caseNoteBodyFormId,

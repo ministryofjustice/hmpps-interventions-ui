@@ -1017,7 +1017,7 @@ describe('GET /referrals/:id/relevant-sentence', () => {
       .get('/referrals/1/relevant-sentence')
       .expect(500)
       .expect(res => {
-        expect(res.text).toContain(`No active convictions found for service user ${serviceUserCRN}`)
+        expect(res.text).toContain(`No active convictions found for ${serviceUserCRN}`)
         expect(res.text).toContain(`No convictions were found in nDelius for ${serviceUserCRN}`)
       })
   })

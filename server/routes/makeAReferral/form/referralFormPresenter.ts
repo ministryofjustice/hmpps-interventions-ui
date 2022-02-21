@@ -61,7 +61,7 @@ class FormSectionBuilder {
   private buildReviewServiceUserInformationSection(): ReferralFormSingleListSectionPresenter {
     return {
       type: 'single',
-      title: 'Review service user’s information',
+      title: 'Review the person’s information',
       number: '1',
       status: this.calculateStatus(this.sectionValues.reviewServiceUserInformation),
       tasks: [

@@ -204,7 +204,7 @@ export default class MakeAReferralController {
     ])
 
     if (convictions.length < 1) {
-      throw createError(500, `No active convictions found for service user ${referral.serviceUser.crn}`, {
+      throw createError(500, `No active convictions found for ${referral.serviceUser.crn}`, {
         userMessage: `No convictions were found in nDelius for ${referral.serviceUser.crn}.`,
       })
     }
@@ -254,7 +254,7 @@ export default class MakeAReferralController {
       ])
 
       if (convictions.length < 1) {
-        throw createError(500, `No active convictions found for service user ${referral.serviceUser.crn}`, {
+        throw createError(500, `No active convictions found for ${referral.serviceUser.crn}`, {
           userMessage: `No convictions were found in nDelius for ${referral.serviceUser.crn}.`,
         })
       }
