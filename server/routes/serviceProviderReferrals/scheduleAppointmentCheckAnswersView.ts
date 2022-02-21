@@ -35,7 +35,7 @@ export default class ScheduleAppointmentCheckAnswersView {
     return this.presenter.pastAppointment
       ? {
           titleText: 'Important',
-          html: `<b>You've chosen a data and time in the past</b>
+          html: `<b>You've chosen a date and time in the past</b>
         <br>
         <p>
            If you're logging a session that's already happened you can add the attendance feedback next.
