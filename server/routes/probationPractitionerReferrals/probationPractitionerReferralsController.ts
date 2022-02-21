@@ -71,9 +71,8 @@ export default class ProbationPractitionerReferralsController {
     dashboardType: PPDashboardType,
     pageSize: string
   ) {
-    const pageNumber = req.query.page
     const paginationQuery = {
-      page: pageNumber ? Number(pageNumber) : undefined,
+      page: ControllerUtils.parseQueryParamAsPositiveInteger(req, 'page') ?? undefined,
       size: Number(pageSize),
       sort: ['sentAt,DESC'],
     }

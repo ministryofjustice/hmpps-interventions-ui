@@ -55,4 +55,9 @@ export default class ControllerUtils {
 
     return { rendered: false, draft }
   }
+
+  static parseQueryParamAsPositiveInteger(req: Request, name: string): number | null {
+    const param = Number(req.query[name])
+    return Number.isNaN(param) || param < 1 ? null : param
+  }
 }
