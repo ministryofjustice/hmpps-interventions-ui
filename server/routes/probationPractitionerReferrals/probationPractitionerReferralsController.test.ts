@@ -150,7 +150,7 @@ describe('GET /probation-practitioner/dashboard', () => {
     })
   })
   it('displays a dashboard page with invalid page number', async () => {
-    apiConfig.apis.interventionsService.dashboardPageSize.pp.openCases = '1'
+    apiConfig.apis.interventionsService.dashboardPageSize.pp.openCases = 1
     const intervention = interventionFactory.build({ id: '1', title: 'Accommodation Services - West Midlands' })
     const referrals = [
       sentReferralFactory.assigned().build({
