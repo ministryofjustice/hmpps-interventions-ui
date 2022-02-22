@@ -237,12 +237,12 @@ describe(InterventionProgressPresenter, () => {
         {
           approvalDate: '12 Jun 2021',
           versionNumber: 3,
-          href: `/probation-practitioner/referrals/${referralWithLatestActionPlan.id}/action-plan`,
+          href: `/service-provider/action-plan/${latestActionPlanId}`,
         },
         {
           approvalDate: '11 Jun 2021',
           versionNumber: 2,
-          href: `/probation-practitioner/action-plan/${otherActionPlanId}`,
+          href: `/service-provider/action-plan/${otherActionPlanId}`,
         },
         { approvalDate: '10 Jun 2021', versionNumber: 1, href: null },
       ])
@@ -304,8 +304,7 @@ describe(InterventionProgressPresenter, () => {
         referral,
         submittedActionPlan,
         serviceCategories,
-        'service-provider',
-        null
+        'service-provider'
       )
 
       expect(actionPlanPresenter.showActionPlanVersions).toEqual(false)
@@ -313,59 +312,46 @@ describe(InterventionProgressPresenter, () => {
   })
 
   describe('showPreviousActionPlanNotificationBanner', () => {
-    describe('when the user is an SP', () => {
-      it("returns false, as they can't view previous revisions", () => {
-        const actionPlan = actionPlanFactory.build()
-        const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
-
-        const actionPlanPresenter = new ActionPlanPresenter(
-          referral,
-          actionPlan,
-          serviceCategories,
-          'service-provider',
-          null,
-          approvedActionPlanSummaries
-        )
-
-        expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(false)
-      })
-    })
-
-    describe('when the user is a PP', () => {
+    describe('for both SP and PP users', () => {
+      const users: ('service-provider' | 'probation-practitioner')[] = ['probation-practitioner', 'service-provider']
       it("returns false when the viewed action plan's ID matches the latest action plan's ID on the referral", () => {
         const referralWithLatestActionPlan = referralFactory.assigned().build({ actionPlanId: 'latest-id' })
         const latestActionPlan = actionPlanFactory.build({ id: 'latest-id' })
 
         const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
 
-        const actionPlanPresenter = new ActionPlanPresenter(
-          referralWithLatestActionPlan,
-          latestActionPlan,
-          serviceCategories,
-          'probation-practitioner',
-          null,
-          approvedActionPlanSummaries
-        )
+        users.forEach(userType => {
+          const actionPlanPresenter = new ActionPlanPresenter(
+            referralWithLatestActionPlan,
+            latestActionPlan,
+            serviceCategories,
+            userType,
+            null,
+            approvedActionPlanSummaries
+          )
 
-        expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(false)
+          expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(false)
+        })
       })
 
-      it("returns true when the viewed action plan's ID doesn't match the latest action plan's ID on the referral", () => {
+      it("returns true when the viewed action plan is approved and its ID doesn't match the latest approved action plan id", () => {
         const referralWithNewerActionPlan = referralFactory.assigned().build({ actionPlanId: 'latest-id' })
-        const actionPlan = actionPlanFactory.build({ id: 'not-latest-id' })
+        const actionPlan = actionPlanFactory.approved().build({ id: 'not-latest-id' })
 
         const approvedActionPlanSummaries = approvedActionPlanSummaryFactory.buildList(3)
 
-        const actionPlanPresenter = new ActionPlanPresenter(
-          referralWithNewerActionPlan,
-          actionPlan,
-          serviceCategories,
-          'probation-practitioner',
-          null,
-          approvedActionPlanSummaries
-        )
+        users.forEach(userType => {
+          const actionPlanPresenter = new ActionPlanPresenter(
+            referralWithNewerActionPlan,
+            actionPlan,
+            serviceCategories,
+            userType,
+            null,
+            approvedActionPlanSummaries
+          )
 
-        expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(true)
+          expect(actionPlanPresenter.showPreviousActionPlanNotificationBanner).toEqual(true)
+        })
       })
     })
   })

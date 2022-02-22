@@ -1,17 +1,22 @@
 import ActionPlan from '../../../models/actionPlan'
 import ApprovedActionPlanSummary from '../../../models/approvedActionPlanSummary'
 import ActionPlanSummaryPresenter from './actionPlanSummaryPresenter'
+import ActionPlanUtils from '../../../utils/actionPlanUtils'
 
 export default class ActionPlanProgressPresenter {
   currentActionPlanSummaryPresenter: ActionPlanSummaryPresenter
 
+  readonly sortedApprovedActionPlanSummaries: ApprovedActionPlanSummary[]
+
   constructor(
     private readonly referralId: string,
     private readonly currentActionPlan: ActionPlan | null,
-    readonly approvedActionPlanSummaries: ApprovedActionPlanSummary[],
+    approvedActionPlanSummaries: ApprovedActionPlanSummary[],
     readonly userType: 'service-provider' | 'probation-practitioner'
   ) {
     this.currentActionPlanSummaryPresenter = new ActionPlanSummaryPresenter(currentActionPlan, userType)
+    this.sortedApprovedActionPlanSummaries =
+      ActionPlanUtils.sortApprovedActionPlanSummaries(approvedActionPlanSummaries)
   }
 
   readonly tableHeaders = ['Version', 'Status', 'Submitted', 'Approved', 'Action']
