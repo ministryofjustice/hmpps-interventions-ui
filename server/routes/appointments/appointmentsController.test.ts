@@ -1204,7 +1204,7 @@ describe('Adding supplier assessment feedback', () => {
         .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/confirmation`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Initial assessment added')
+          expect(res.text).toContain('Initial assessment feedback added and submitted to the probation practitioner')
         })
     })
   })
