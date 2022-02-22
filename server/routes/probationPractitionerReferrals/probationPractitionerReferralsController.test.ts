@@ -37,6 +37,7 @@ import approvedActionPlanSummaryFactory from '../../../testutils/factories/appro
 import { PPDashboardType } from './dashboardPresenter'
 import pageFactory from '../../../testutils/factories/page'
 import { Page } from '../../models/pagination'
+import UserDataService from '../../services/userDataService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -59,6 +60,11 @@ const draftsService = {
   deleteDraft: jest.fn(),
 } as unknown as jest.Mocked<DraftsService>
 
+const userDataService = {
+  store: jest.fn(),
+  retrieve: jest.fn(),
+} as unknown as jest.Mocked<UserDataService>
+
 let app: Express
 
 beforeEach(() => {
@@ -69,6 +75,7 @@ beforeEach(() => {
       hmppsAuthService,
       assessRisksAndNeedsService,
       draftsService,
+      userDataService,
     },
     userType: AppSetupUserType.serviceProvider,
   })
@@ -80,6 +87,7 @@ afterEach(() => {
 
 describe('GET /probation-practitioner/find', () => {
   interventionsService.getDraftReferralsForUserToken.mockResolvedValue([])
+  userDataService.retrieve.mockResolvedValue(Promise.resolve(null))
 
   it('displays a list in-progress referrals', async () => {
     const referral = draftReferralFactory.serviceUserSelected().build()

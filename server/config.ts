@@ -46,6 +46,11 @@ export default {
     serviceProviderReporting: get('FEATURE_SP_REPORTING_ENABLED', 'false') === 'true',
     previouslyApprovedActionPlans: get('FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS', 'false') === 'true',
   },
+  userData: {
+    ppDashboardSortOrder: {
+      storageDurationInSeconds: 60 * 60 * 24 * 7, // one week
+    },
+  },
   s3: {
     service: {
       region: 'eu-west-2',

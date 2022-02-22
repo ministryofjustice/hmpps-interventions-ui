@@ -55,7 +55,14 @@ describe('DashboardPresenter', () => {
   describe('tableRows', () => {
     it('returns a list of table rows with appropriate sort values', () => {
       const page = pageFactory.pageContent(referrals).build() as Page<SentReferral>
-      const presenter = new DashboardPresenter(page, interventions, loggedInUser, 'Open cases')
+      const presenter = new DashboardPresenter(
+        page,
+        interventions,
+        loggedInUser,
+        'Open cases',
+        'ppOpenCases',
+        'sentAt,ASC'
+      )
 
       expect(presenter.tableRows).toEqual([
         [
@@ -68,7 +75,7 @@ describe('DashboardPresenter', () => {
             href: null,
           },
           { text: 'Harmony Living', sortValue: 'Harmony Living', href: null },
-          { text: 'UserABC', sortValue: 'AUserABC', href: null },
+          { text: 'UserABC', sortValue: null, href: null },
           {
             text: 'View',
             sortValue: null,
@@ -81,7 +88,7 @@ describe('DashboardPresenter', () => {
           { text: 'Hardip Fraiser', sortValue: 'fraiser, hardip', href: null },
           { text: "Women's Services - West Midlands", sortValue: null, href: null },
           { text: 'Harmony Living', sortValue: 'Harmony Living', href: null },
-          { text: 'Unassigned', sortValue: 'Unassigned', href: null },
+          { text: 'Unassigned', sortValue: null, href: null },
           {
             text: 'View',
             sortValue: null,
@@ -98,7 +105,7 @@ describe('DashboardPresenter', () => {
             href: null,
           },
           { text: 'Harmony Living', sortValue: 'Harmony Living', href: null },
-          { text: 'UserABC', sortValue: 'AUserABC', href: null },
+          { text: 'UserABC', sortValue: null, href: null },
           {
             text: 'View',
             sortValue: null,
