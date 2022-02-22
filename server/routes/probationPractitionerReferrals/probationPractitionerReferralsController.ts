@@ -69,11 +69,11 @@ export default class ProbationPractitionerReferralsController {
     res: Response,
     getSentReferralsFilterParams: GetSentReferralsFilterParams,
     dashboardType: PPDashboardType,
-    pageSize: string
+    pageSize: number
   ) {
     const paginationQuery = {
       page: ControllerUtils.parseQueryParamAsPositiveInteger(req, 'page') ?? undefined,
-      size: Number(pageSize),
+      size: pageSize,
       sort: ['sentAt,DESC'],
     }
 
