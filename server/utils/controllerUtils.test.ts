@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { ParsedQs } from 'qs'
 import ControllerUtils from './controllerUtils'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import config from '../config'
@@ -6,6 +7,31 @@ import DraftsService from '../services/draftsService'
 import { createDraftFactory } from '../../testutils/factories/draft'
 
 describe(ControllerUtils, () => {
+  describe('parseQueryParamAsPositiveInteger', () => {
+    it('returns null for missing query param', () => {
+      expect(
+        ControllerUtils.parseQueryParamAsPositiveInteger({ query: {} as ParsedQs } as Request, 'missing')
+      ).toBeNull()
+    })
+
+    it('returns null for invalid int values', () => {
+      const req = {
+        query: { value1: '[]', value2: '-1', value3: 'NaN', value4: '0', value5: [] } as ParsedQs,
+      } as Request
+      expect(ControllerUtils.parseQueryParamAsPositiveInteger(req, 'value1')).toBeNull()
+      expect(ControllerUtils.parseQueryParamAsPositiveInteger(req, 'value2')).toBeNull()
+      expect(ControllerUtils.parseQueryParamAsPositiveInteger(req, 'value3')).toBeNull()
+      expect(ControllerUtils.parseQueryParamAsPositiveInteger(req, 'value4')).toBeNull()
+      expect(ControllerUtils.parseQueryParamAsPositiveInteger(req, 'value5')).toBeNull()
+    })
+
+    it('returns a number for valid int values', () => {
+      const req = { query: { value1: '12', value2: '345' } as ParsedQs } as Request
+      expect(ControllerUtils.parseQueryParamAsPositiveInteger(req, 'value1')).toEqual(12)
+      expect(ControllerUtils.parseQueryParamAsPositiveInteger(req, 'value2')).toEqual(345)
+    })
+  })
+
   describe('.renderWithLayout', () => {
     describe('with null serviceUser', () => {
       it('calls render on the response, passing the content view’s renderArgs augmented with a headerPresenter object in the locals', () => {

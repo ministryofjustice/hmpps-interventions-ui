@@ -135,9 +135,7 @@ export default class CaseNotesController {
     const { accessToken } = res.locals.user.token
     const { caseNoteId } = req.params
 
-    const parsedBacklinkPageNumber = Number(req.query.backlinkPageNumber)
-    const backlinkPageNumber =
-      Number.isNaN(parsedBacklinkPageNumber) || parsedBacklinkPageNumber < 1 ? null : parsedBacklinkPageNumber
+    const backlinkPageNumber = ControllerUtils.parseQueryParamAsPositiveInteger(req, 'backlinkPageNumber')
 
     const caseNote = await this.interventionsService.getCaseNote(accessToken, caseNoteId)
     const sentByUserDetails = await this.hmppsAuthService.getUserDetailsByUsername(
