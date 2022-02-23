@@ -57,7 +57,6 @@ import createFormValidationErrorOrRethrow from '../../utils/interventionsFormErr
 import EndOfServiceReportPresenter from '../shared/endOfServiceReport/endOfServiceReportPresenter'
 import EndOfServiceReportView from '../shared/endOfServiceReport/endOfServiceReportView'
 import ActionPlanUtils from '../../utils/actionPlanUtils'
-import config from '../../config'
 import SentReferral from '../../models/sentReferral'
 import config from '../../config'
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'

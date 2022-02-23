@@ -14,20 +14,12 @@ export default class DashboardPresenter {
   public readonly pagination: Pagination
 
   constructor(
-<<<<<<< HEAD
     private readonly sentReferrals: Page<SentReferral>,
-=======
-    private readonly referralsSummary: Page<SentReferral>,
->>>>>>> add paging to sp dashboard
     readonly dashboardType: DashboardType,
     private readonly loggedInUser: LoggedInUser,
     private readonly interventions: Intervention[]
   ) {
-<<<<<<< HEAD
     this.pagination = new Pagination(sentReferrals)
-=======
-    this.pagination = new Pagination(referralsSummary)
->>>>>>> add paging to sp dashboard
   }
 
   private readonly showAssignedCaseworkerColumn =
@@ -56,11 +48,7 @@ export default class DashboardPresenter {
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 
-<<<<<<< HEAD
   readonly tableRows: SortableTableRow[] = this.sentReferrals.content.map(referralSummary => {
-=======
-  readonly tableRows: SortableTableRow[] = this.referralsSummary.content.map(referralSummary => {
->>>>>>> add paging to sp dashboard
     const sentAtDay = CalendarDay.britishDayForDate(new Date(referralSummary.sentAt))
     const interventionForReferral = this.interventions.find(
       intervention => intervention.id === referralSummary.referral.interventionId
