@@ -72,7 +72,7 @@ export type DraftAppointmentBooking = null | AppointmentSchedulingDetails
 export default class ServiceProviderReferralsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
 
-  private paginationFlow = true
+  private paginationFlow = false
 
   constructor(
     private readonly interventionsService: InterventionsService,
