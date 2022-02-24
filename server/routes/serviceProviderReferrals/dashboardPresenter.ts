@@ -55,7 +55,7 @@ export default class DashboardPresenter {
     )
     if (interventionForReferral === undefined) {
       throw new Error(
-        `Expected referral to be linked to an intervention with ID ${referralSummary.referral.interventionId}`
+        `Expected referral ${referralSummary.id} to be linked to an intervention with ID ${referralSummary.referral.interventionId}`
       )
     }
     return [

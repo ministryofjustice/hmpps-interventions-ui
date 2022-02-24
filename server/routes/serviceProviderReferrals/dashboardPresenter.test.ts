@@ -79,11 +79,7 @@ describe(DashboardPresenter, () => {
             { text: '26 Jan 2021', sortValue: '2021-01-26', href: null },
             { text: 'ABCABCA1', sortValue: null, href: null },
             { text: 'Rob Shah-Brookes', sortValue: 'shah-brookes, rob', href: null },
-            {
-              text: 'Accommodation Services - West Midlands',
-              sortValue: null,
-              href: null,
-            },
+            { text: 'Accommodation Services - West Midlands', sortValue: null, href: null },
             { text: 'UserABC', sortValue: null, href: null },
             {
               text: 'View',

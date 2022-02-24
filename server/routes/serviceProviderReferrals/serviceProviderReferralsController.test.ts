@@ -178,7 +178,6 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
         expect(res.text).toContain('My cases')
         expect(res.text).toContain('Alex River')
         expect(res.text).toContain('Accommodation Services - West Midlands')
-        expect(res.text).toContain('')
         expect(res.text).toContain('George River')
       })
   })
