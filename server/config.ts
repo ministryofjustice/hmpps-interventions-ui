@@ -45,6 +45,7 @@ export default {
   features: {
     serviceProviderReporting: get('FEATURE_SP_REPORTING_ENABLED', 'false') === 'true',
     previouslyApprovedActionPlans: get('FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS', 'false') === 'true',
+    spDashboardPaginationFlow: get('FEATURE_SP_DASHBOARD_PAGINATION_ENABLED', 'false') === 'true',
   },
   userData: {
     ppDashboardSortOrder: {

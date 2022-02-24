@@ -79,6 +79,7 @@ beforeEach(() => {
     },
     userType: AppSetupUserType.serviceProvider,
   })
+  apiConfig.features.spDashboardPaginationFlow = true
 })
 
 afterEach(() => {
