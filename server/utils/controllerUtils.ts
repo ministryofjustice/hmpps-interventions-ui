@@ -5,6 +5,7 @@ import LayoutView, { PageContentView } from '../routes/shared/layoutView'
 import DeliusServiceUser from '../models/delius/deliusServiceUser'
 import DraftsService, { Draft } from '../services/draftsService'
 import DraftSoftDeletedView from '../routes/shared/draftSoftDeletedView'
+import UserDataService from '../services/userDataService'
 
 export interface DraftFetchSuccessResult<T> {
   rendered: false
@@ -59,5 +60,61 @@ export default class ControllerUtils {
   static parseQueryParamAsPositiveInteger(req: Request, name: string): number | null {
     const param = Number(req.query[name])
     return Number.isNaN(param) || param < 1 ? null : param
+  }
+
+  static ariaSortToSortOrder(ariaSort: string): string | undefined {
+    return { ascending: 'ASC', descending: 'DESC' }[ariaSort]
+  }
+
+  static sortOrderToAriaSort(sortOrder: string): string {
+    return { ASC: 'ascending', DESC: 'descending' }[sortOrder] ?? 'none'
+  }
+
+  static async getSortOrderFromMojServerSideSortableTable(
+    req: Request,
+    res: Response,
+    userDataService: UserDataService,
+    storageDuration: number,
+    tablePersistentId: string,
+    validSortFields: string[],
+    defaultPrimarySort: string,
+    secondarySort: string | null = null
+  ): Promise<string[]> {
+    const { userId } = res.locals.user
+    const userSortKey = `sortOrder:${tablePersistentId}`
+
+    const { sort: sortQueryParam } = req.query
+
+    let primarySort: string
+
+    // if query params are passed, try to use them, and store the resulting sort.
+    // otherwise, try to get the sort order from the user data service.
+    // if the query params are invalid, or there is no stored sort order, fall back to the defaults.
+    if (sortQueryParam !== undefined) {
+      const [sortFieldQueryParam, sortOrderQueryParam] = (sortQueryParam as string).split(',')
+      const sortOrder = this.ariaSortToSortOrder(sortOrderQueryParam)
+
+      // only use the URL params if the sort field _and_ order are valid
+      if (validSortFields.includes(sortFieldQueryParam) && sortOrder !== undefined) {
+        primarySort = `${sortFieldQueryParam},${sortOrder}`
+        await userDataService.store(userId, userSortKey, primarySort, storageDuration)
+      } else {
+        primarySort = defaultPrimarySort
+      }
+    } else {
+      const storedSort = await userDataService.retrieve(userId, `sortOrder:${tablePersistentId}`)
+      primarySort = storedSort ?? defaultPrimarySort
+    }
+
+    const sortList = [primarySort]
+
+    if (secondarySort !== null) {
+      const [secondarySortField] = secondarySort.split(',')
+      if (!primarySort.startsWith(secondarySortField)) {
+        sortList.push(secondarySort)
+      }
+    }
+
+    return Promise.resolve(sortList)
   }
 }

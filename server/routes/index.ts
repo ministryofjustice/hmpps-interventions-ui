@@ -11,6 +11,7 @@ import MakeAReferralController from './makeAReferral/makeAReferralController'
 import FindInterventionsController from './findInterventions/findInterventionsController'
 import DraftsService from '../services/draftsService'
 import ReferenceDataService from '../services/referenceDataService'
+import UserDataService from '../services/userDataService'
 
 export interface Services {
   communityApiService: CommunityApiService
@@ -19,6 +20,7 @@ export interface Services {
   assessRisksAndNeedsService: AssessRisksAndNeedsService
   draftsService: DraftsService
   referenceDataService: ReferenceDataService
+  userDataService: UserDataService
 }
 
 export const get = (router: Router, path: string, handler: RequestHandler): Router =>

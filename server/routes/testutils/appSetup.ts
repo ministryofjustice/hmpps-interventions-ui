@@ -17,6 +17,7 @@ import config from '../../config'
 import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from '../probationPractitionerRoutes'
 import DraftsService from '../../services/draftsService'
 import ReferenceDataService from '../../services/referenceDataService'
+import UserDataService from '../../services/userDataService'
 
 export enum AppSetupUserType {
   probationPractitioner = 'delius',
@@ -82,6 +83,7 @@ export default function appWithAllRoutes({
     assessRisksAndNeedsService: {} as AssessRisksAndNeedsService,
     draftsService: {} as DraftsService,
     referenceDataService: {} as ReferenceDataService,
+    userDataService: {} as UserDataService,
     ...overrides,
   }
 

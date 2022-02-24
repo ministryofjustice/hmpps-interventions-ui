@@ -29,6 +29,7 @@ import ReferenceDataService from '../../services/referenceDataService'
 import SentReferral from '../../models/sentReferral'
 import ActionPlan from '../../models/actionPlan'
 import ActionPlanUtils from '../../utils/actionPlanUtils'
+import UserDataService from '../../services/userDataService'
 
 export default class ProbationPractitionerReferralsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -39,29 +40,44 @@ export default class ProbationPractitionerReferralsController {
     private readonly hmppsAuthService: HmppsAuthService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly draftsService: DraftsService,
-    private readonly referenceDataService: ReferenceDataService
+    private readonly referenceDataService: ReferenceDataService,
+    private readonly userDataService: UserDataService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
 
   async showOpenCases(req: Request, res: Response): Promise<void> {
     const pageSize = config.apis.interventionsService.dashboardPageSize.pp.openCases
-    await this.showDashboard(req, res, { concluded: false }, 'Open cases', pageSize)
+    await this.showDashboard(req, res, { concluded: false }, 'Open cases', 'ppOpenCases', pageSize)
   }
 
   async showUnassignedCases(req: Request, res: Response): Promise<void> {
     const pageSize = config.apis.interventionsService.dashboardPageSize.pp.unassignedCases
-    await this.showDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases', pageSize)
+    await this.showDashboard(
+      req,
+      res,
+      { concluded: false, unassigned: true },
+      'Unassigned cases',
+      'ppUnassignedCases',
+      pageSize
+    )
   }
 
   async showCompletedCases(req: Request, res: Response): Promise<void> {
     const pageSize = config.apis.interventionsService.dashboardPageSize.pp.completedCases
-    await this.showDashboard(req, res, { concluded: true, cancelled: false }, 'Completed cases', pageSize)
+    await this.showDashboard(
+      req,
+      res,
+      { concluded: true, cancelled: false },
+      'Completed cases',
+      'ppCompletedCases',
+      pageSize
+    )
   }
 
   async showCancelledCases(req: Request, res: Response): Promise<void> {
     const pageSize = config.apis.interventionsService.dashboardPageSize.pp.cancelledCases
-    await this.showDashboard(req, res, { cancelled: true }, 'Cancelled cases', pageSize)
+    await this.showDashboard(req, res, { cancelled: true }, 'Cancelled cases', 'ppCancelledCases', pageSize)
   }
 
   private async showDashboard(
@@ -69,12 +85,24 @@ export default class ProbationPractitionerReferralsController {
     res: Response,
     getSentReferralsFilterParams: GetSentReferralsFilterParams,
     dashboardType: PPDashboardType,
+    tablePersistentId: string,
     pageSize: number
   ) {
+    const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
+      req,
+      res,
+      this.userDataService,
+      config.userData.ppDashboardSortOrder.storageDurationInSeconds,
+      tablePersistentId,
+      DashboardPresenter.headingsAndSortFields.map(it => it.sortField).filter(it => it) as string[],
+      'serviceUserData.lastName,ASC',
+      'sentAt,ASC'
+    )
+
     const paginationQuery = {
       page: ControllerUtils.parseQueryParamAsPositiveInteger(req, 'page') ?? undefined,
       size: pageSize,
-      sort: ['sentAt,DESC'],
+      sort,
     }
 
     const cases = await this.interventionsService.getSentReferralsForUserTokenPaged(
@@ -88,7 +116,14 @@ export default class ProbationPractitionerReferralsController {
       dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
     )
 
-    const presenter = new DashboardPresenter(cases, interventions, res.locals.user, dashboardType)
+    const presenter = new DashboardPresenter(
+      cases,
+      interventions,
+      res.locals.user,
+      dashboardType,
+      tablePersistentId,
+      sort[0]
+    )
     const view = new DashboardView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
   }

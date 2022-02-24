@@ -1,11 +1,15 @@
 import * as nunjucks from 'nunjucks'
 import { ListStyle, SummaryListItem, SummaryListItemContent } from './summaryList'
-import { ErrorSummaryArgs, SummaryListArgs, TableArgs, TagArgs } from './govukFrontendTypes'
+import { ErrorSummaryArgs, SummaryListArgs, TableArgs, TableArgsHeadElement, TagArgs } from './govukFrontendTypes'
 import SessionStatusPresenter from '../routes/shared/sessionStatusPresenter'
 import { PrimaryNavBarItem } from '../routes/shared/primaryNavBar/primaryNavBarPresenter'
 import AuthUserDetails from '../models/hmppsAuth/authUserDetails'
 
-export type SortableTableHeaders = { text: string; sort: 'ascending' | 'descending' | 'none'; persistentId: string }[]
+export type SortableTableHeaders = {
+  text: string
+  sort: 'ascending' | 'descending' | 'none'
+  persistentId: string | null
+}[]
 export type SortableTableRow = { text: string; sortValue: string | null; href: string | null }[]
 
 export default class ViewUtils {
@@ -114,13 +118,20 @@ export default class ViewUtils {
     return {
       attributes: tableAttributes,
       head: headers.map(heading => {
-        return {
-          text: heading.text,
-          attributes: {
+        const head: TableArgsHeadElement = { text: heading.text }
+        // headings without a defined persistent id cannot be sorted
+        if (heading.persistentId) {
+          head.attributes = {
             'aria-sort': heading.sort,
             'data-persistent-id': heading.persistentId,
-          },
+          }
+        } else {
+          // non-sortable headers use the default color (black),
+          // which looks weird - this class ensures they match.
+          head.classes = 'non-sortable__sortable-table-header'
         }
+
+        return head
       }),
       rows: rows.map(row => {
         return row.map(cell => {
