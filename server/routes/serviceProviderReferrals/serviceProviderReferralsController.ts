@@ -71,8 +71,6 @@ export type DraftAppointmentBooking = null | AppointmentSchedulingDetails
 export default class ServiceProviderReferralsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
 
-  private paginationFlow = false
-
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
@@ -85,7 +83,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showMyCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!this.paginationFlow) {
+    if (!config.features.spDashboardPaginationFlow) {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.MyCases
@@ -97,7 +95,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!this.paginationFlow) {
+    if (!config.features.spDashboardPaginationFlow) {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.OpenCases
@@ -109,7 +107,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!this.paginationFlow) {
+    if (!config.features.spDashboardPaginationFlow) {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.UnassignedCases
@@ -121,7 +119,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!this.paginationFlow) {
+    if (!config.features.spDashboardPaginationFlow) {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.CompletedCases
