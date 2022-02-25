@@ -136,12 +136,11 @@ export default class ServiceProviderReferralsController {
     res: Response,
     getSentReferralsFilterParams: GetSentReferralsFilterParams,
     dashboardType: DashboardType,
-    pageSize: string
+    pageSize: number
   ) {
-    const pageNumber = req.query.page
     const paginationQuery = {
-      page: pageNumber ? Number(pageNumber) : undefined,
-      size: Number(pageSize),
+      page: ControllerUtils.parseQueryParamAsPositiveInteger(req, 'page') ?? undefined,
+      size: pageSize,
       sort: ['sentAt,DESC'],
     }
 

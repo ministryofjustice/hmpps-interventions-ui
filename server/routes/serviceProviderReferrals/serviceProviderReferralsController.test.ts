@@ -183,7 +183,7 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
   })
 
   it('displays a dashboard page with invalid page number', async () => {
-    apiConfig.apis.interventionsService.dashboardPageSize.sp.openCases = '1'
+    apiConfig.apis.interventionsService.dashboardPageSize.sp.openCases = 1
     const intervention = interventionFactory.build({ id: '1', title: 'Accommodation Services - West Midlands' })
     const referrals = [
       sentReferralFactory.assigned().build({
