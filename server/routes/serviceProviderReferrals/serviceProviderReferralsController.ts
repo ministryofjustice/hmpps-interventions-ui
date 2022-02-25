@@ -91,7 +91,7 @@ export default class ServiceProviderReferralsController {
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'My cases')
     }
-    const pageSize = config.apis.interventionsService.dashboardPageSize.sp.myCases
+    const pageSize = config.dashboards.serviceProvider.myCases
     await this.renderDashboard(req, res, { concluded: false, assignedTo: res.locals.user.userId }, 'My cases', pageSize)
   }
 
@@ -103,7 +103,7 @@ export default class ServiceProviderReferralsController {
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'All open cases')
     }
-    const pageSize = config.apis.interventionsService.dashboardPageSize.sp.openCases
+    const pageSize = config.dashboards.serviceProvider.openCases
     await this.renderDashboard(req, res, { concluded: false }, 'All open cases', pageSize)
   }
 
@@ -115,7 +115,7 @@ export default class ServiceProviderReferralsController {
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'Unassigned cases')
     }
-    const pageSize = config.apis.interventionsService.dashboardPageSize.sp.unassignedCases
+    const pageSize = config.dashboards.serviceProvider.unassignedCases
     await this.renderDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases', pageSize)
   }
 
@@ -127,7 +127,7 @@ export default class ServiceProviderReferralsController {
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'Completed cases')
     }
-    const pageSize = config.apis.interventionsService.dashboardPageSize.sp.completedCases
+    const pageSize = config.dashboards.serviceProvider.completedCases
     await this.renderDashboard(req, res, { concluded: true }, 'Completed cases', pageSize)
   }
 
