@@ -45,6 +45,7 @@ export default {
   features: {
     serviceProviderReporting: get('FEATURE_SP_REPORTING_ENABLED', 'false') === 'true',
     previouslyApprovedActionPlans: get('FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS', 'false') === 'true',
+    spDashboardPaginationFlow: get('FEATURE_SP_DASHBOARD_PAGINATION_ENABLED', 'false') === 'true',
   },
   userData: {
     ppDashboardSortOrder: {
@@ -118,14 +119,6 @@ export default {
         deadline: 22000,
       },
       agent: new AgentConfig(),
-      dashboardPageSize: {
-        pp: {
-          openCases: Number(get('PP_OPEN_CASES_PAGE_SIZE', '500')),
-          unassignedCases: Number(get('PP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
-          completedCases: Number(get('PP_MY_CASES_PAGE_SIZE', '500')),
-          cancelledCases: Number(get('PP_CANCELLED_CASES_PAGE_SIZE', '500')),
-        },
-      },
     },
     tokenVerification: {
       url: get('TOKEN_VERIFICATION_API_URL', 'http://localhost:8100', requiredInProduction),
@@ -135,6 +128,20 @@ export default {
       },
       agent: new AgentConfig(),
       enabled: get('TOKEN_VERIFICATION_ENABLED', 'false') === 'true',
+    },
+  },
+  dashboards: {
+    probationPractitioner: {
+      openCases: Number(get('PP_OPEN_CASES_PAGE_SIZE', '500')),
+      unassignedCases: Number(get('PP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
+      completedCases: Number(get('PP_MY_CASES_PAGE_SIZE', '500')),
+      cancelledCases: Number(get('PP_CANCELLED_CASES_PAGE_SIZE', '500')),
+    },
+    serviceProvider: {
+      myCases: Number(get('SP_MY_CASES_PAGE_SIZE', '500')),
+      openCases: Number(get('SP_OPEN_CASES_PAGE_SIZE', '500')),
+      unassignedCases: Number(get('SP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
+      completedCases: Number(get('SP_COMPLETED_PAGE_SIZE', '500')),
     },
   },
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),

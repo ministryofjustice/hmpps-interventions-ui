@@ -1,9 +1,9 @@
-import DashboardPresenter from './dashboardPresenter'
 import ViewUtils from '../../utils/viewUtils'
 import { TableArgs } from '../../utils/govukFrontendTypes'
+import DashboardWithoutPaginationPresenter from './dashboardWithoutPaginationPresenter'
 
-export default class DashboardView {
-  constructor(private readonly presenter: DashboardPresenter) {}
+export default class DashboardWithoutPaginationView {
+  constructor(private readonly presenter: DashboardWithoutPaginationPresenter) {}
 
   private get tableArgs(): TableArgs {
     const { tableHeadings, tableRows, secondOrderColumnNumber } = this.presenter
@@ -42,13 +42,12 @@ export default class DashboardView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'serviceProviderReferrals/dashboard',
+      'serviceProviderReferrals/dashboardWithoutPagination',
       {
         presenter: this.presenter,
         tableArgs: this.tableArgs,
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
         subNavArgs: this.subNavArgs,
-        pagination: this.presenter.pagination.mojPaginationArgs,
       },
     ]
   }

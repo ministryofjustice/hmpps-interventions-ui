@@ -47,12 +47,12 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async showOpenCases(req: Request, res: Response): Promise<void> {
-    const pageSize = config.apis.interventionsService.dashboardPageSize.pp.openCases
+    const pageSize = config.dashboards.probationPractitioner.openCases
     await this.showDashboard(req, res, { concluded: false }, 'Open cases', 'ppOpenCases', pageSize)
   }
 
   async showUnassignedCases(req: Request, res: Response): Promise<void> {
-    const pageSize = config.apis.interventionsService.dashboardPageSize.pp.unassignedCases
+    const pageSize = config.dashboards.probationPractitioner.unassignedCases
     await this.showDashboard(
       req,
       res,
@@ -64,7 +64,7 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async showCompletedCases(req: Request, res: Response): Promise<void> {
-    const pageSize = config.apis.interventionsService.dashboardPageSize.pp.completedCases
+    const pageSize = config.dashboards.probationPractitioner.completedCases
     await this.showDashboard(
       req,
       res,
@@ -76,7 +76,7 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async showCancelledCases(req: Request, res: Response): Promise<void> {
-    const pageSize = config.apis.interventionsService.dashboardPageSize.pp.cancelledCases
+    const pageSize = config.dashboards.probationPractitioner.cancelledCases
     await this.showDashboard(req, res, { cancelled: true }, 'Cancelled cases', 'ppCancelledCases', pageSize)
   }
 
