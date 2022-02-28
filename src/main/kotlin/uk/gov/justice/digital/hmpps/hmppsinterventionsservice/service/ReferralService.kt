@@ -153,15 +153,8 @@ class ReferralService(
   }
 
   private fun getSentReferralsForServiceProviderUser(user: AuthUser, sentReferralFilterSpecification: Specification<Referral>, page: Pageable?): Iterable<Referral> {
-    val serviceProviders = serviceProviderUserAccessScopeMapper.fromUser(user).serviceProviders
-
     // todo: query for referrals where the service provider has been granted nominated access only
-    val specification = where(
-      ReferralSpecifications.matchingPrimeProviderReferrals(serviceProviders)
-        .or(ReferralSpecifications.matchingSubContractorReferrals(serviceProviders))
-    ).and(sentReferralFilterSpecification)
-
-    val filteredSpec = referralAccessFilter.serviceProviderReferrals(specification, user)
+    val filteredSpec = referralAccessFilter.serviceProviderReferrals(sentReferralFilterSpecification, user)
     return if (page == null) referralRepository.findAll(filteredSpec).sortedBy { it.sentAt } else referralRepository.findAll(filteredSpec, page)
   }
 
