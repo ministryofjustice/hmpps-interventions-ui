@@ -6,13 +6,8 @@ export default class DashboardView {
   constructor(private readonly presenter: DashboardPresenter) {}
 
   private get tableArgs(): TableArgs {
-    const { tableHeadings, tableRows, secondOrderColumnNumber } = this.presenter
-    return ViewUtils.sortableTable(
-      `serviceProvider${this.presenter.dashboardTypePersistentId}`,
-      tableHeadings,
-      tableRows,
-      { secondOrderColumnNumber }
-    )
+    const { tableHeadings, tableRows } = this.presenter
+    return ViewUtils.sortableTable(this.presenter.tablePersistentId, tableHeadings, tableRows)
   }
 
   readonly subNavArgs = {

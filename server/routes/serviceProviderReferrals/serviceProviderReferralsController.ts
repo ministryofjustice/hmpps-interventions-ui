@@ -63,6 +63,7 @@ import ServiceProviderSentReferralSummary from '../../models/serviceProviderSent
 import DashboardWithoutPaginationPresenter from '../deprecated/dashboardWithoutPaginationPresenter'
 import DashboardWithoutPaginationView from '../deprecated/dashboardWithoutPaginationView'
 import FeatureFlagService from '../../services/featureFlagService'
+import UserDataService from '../../services/userDataService'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -79,7 +80,8 @@ export default class ServiceProviderReferralsController {
     private readonly hmppsAuthService: HmppsAuthService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly draftsService: DraftsService,
-    private readonly referenceDataService: ReferenceDataService
+    private readonly referenceDataService: ReferenceDataService,
+    private readonly userDataService: UserDataService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
@@ -94,6 +96,7 @@ export default class ServiceProviderReferralsController {
         res,
         { concluded: false, assignedTo: res.locals.user.userId },
         'My cases',
+        'spMyCases',
         pageSize
       )
     } else {
@@ -110,7 +113,7 @@ export default class ServiceProviderReferralsController {
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
     ) {
       const pageSize = config.dashboards.serviceProvider.openCases
-      await this.renderDashboard(req, res, { concluded: false }, 'All open cases', pageSize)
+      await this.renderDashboard(req, res, { concluded: false }, 'All open cases', 'spAllOpenCases', pageSize)
     } else {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
@@ -125,7 +128,14 @@ export default class ServiceProviderReferralsController {
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
     ) {
       const pageSize = config.dashboards.serviceProvider.unassignedCases
-      await this.renderDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases', pageSize)
+      await this.renderDashboard(
+        req,
+        res,
+        { concluded: false, unassigned: true },
+        'Unassigned cases',
+        'spUnassignedCases',
+        pageSize
+      )
     } else {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
@@ -140,7 +150,7 @@ export default class ServiceProviderReferralsController {
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
     ) {
       const pageSize = config.dashboards.serviceProvider.completedCases
-      await this.renderDashboard(req, res, { concluded: true }, 'Completed cases', pageSize)
+      await this.renderDashboard(req, res, { concluded: true }, 'Completed cases', 'spCompletedCases', pageSize)
     } else {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
@@ -155,12 +165,24 @@ export default class ServiceProviderReferralsController {
     res: Response,
     getSentReferralsFilterParams: GetSentReferralsFilterParams,
     dashboardType: DashboardType,
+    tablePersistentId: string,
     pageSize: number
   ) {
+    const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
+      req,
+      res,
+      this.userDataService,
+      config.userData.spDashboardSortOrder.storageDurationInSeconds,
+      tablePersistentId,
+      DashboardPresenter.headingsAndSortFields.map(it => it.sortField).filter(it => it) as string[],
+      'sentAt,DESC',
+      'sentAt,DESC'
+    )
+
     const paginationQuery = {
       page: ControllerUtils.parseQueryParamAsPositiveInteger(req, 'page') ?? undefined,
       size: pageSize,
-      sort: ['sentAt,DESC'],
+      sort,
     }
 
     const cases = await this.interventionsService.getSentReferralsForUserTokenPaged(
@@ -174,7 +196,14 @@ export default class ServiceProviderReferralsController {
       dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
     )
 
-    const presenter = new DashboardPresenter(cases, dashboardType, res.locals.user, interventions)
+    const presenter = new DashboardPresenter(
+      cases,
+      dashboardType,
+      res.locals.user,
+      interventions,
+      tablePersistentId,
+      sort[0]
+    )
     const view = new DashboardView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)

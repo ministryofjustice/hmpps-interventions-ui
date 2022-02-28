@@ -50,6 +50,9 @@ export default {
     ppDashboardSortOrder: {
       storageDurationInSeconds: 60 * 60 * 24 * 7, // one week
     },
+    spDashboardSortOrder: {
+      storageDurationInSeconds: 60 * 60 * 24 * 7, // one week
+    },
   },
   s3: {
     service: {
