@@ -12,3 +12,13 @@ CREATE TABLE referral_details(
     primary key(id),
     foreign key (superseded_by_id) references referral_details(id)
 );
+
+INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','id',FALSE, TRUE);
+INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','superseded_by_id',FALSE, TRUE);
+INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','created_at',FALSE, TRUE);
+INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','created_by',FALSE, TRUE);
+INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','reason_for_change',FALSE, TRUE);
+INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','referral_id',FALSE, TRUE);
+INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','completion_deadline',FALSE, TRUE);
+INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','further_information',TRUE, TRUE);
+INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','maximum_enforceable_days',FALSE, TRUE);

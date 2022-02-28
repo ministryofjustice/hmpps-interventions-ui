@@ -165,4 +165,6 @@ COMMENT ON TABLE end_of_service_report_outcome IS 'outcome progress recorded in 
 COMMENT ON TABLE referral_complexity_level_ids IS 'selected complexity levels for each referral';
 COMMENT ON TABLE referral_selected_service_category IS 'selected service categories for each referral';
 
+COMMENT ON TABLE referral_details IS 'details about a referral that can change that are not used to determine state';
+
 -- some definitions are in V1_34__document_contract_table.sql; needs lifting
