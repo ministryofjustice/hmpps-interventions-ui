@@ -45,7 +45,7 @@ export default {
   features: {
     serviceProviderReporting: get('FEATURE_SP_REPORTING_ENABLED', 'false') === 'true',
     previouslyApprovedActionPlans: get('FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS', 'false') === 'true',
-    spDashboardPaginationFlow: get('FEATURE_SP_DASHBOARD_PAGINATION_ENABLED', 'false') === 'true',
+    // spDashboardPaginationFlow: get('FEATURE_SP_DASHBOARD_PAGINATION_ENABLED', 'false') === 'true',
   },
   userData: {
     ppDashboardSortOrder: {
@@ -138,6 +138,7 @@ export default {
       cancelledCases: Number(get('PP_CANCELLED_CASES_PAGE_SIZE', '500')),
     },
     serviceProvider: {
+      filteredUserPercentage: Number(get('SP_FILTERED_USER_PERCENTAGE', '0')),
       myCases: Number(get('SP_MY_CASES_PAGE_SIZE', '500')),
       openCases: Number(get('SP_OPEN_CASES_PAGE_SIZE', '500')),
       unassignedCases: Number(get('SP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
