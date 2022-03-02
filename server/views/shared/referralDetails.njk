@@ -30,14 +30,14 @@
         {{ govukSummaryList(section.summaryListArgs(govukTag)) }}
       {% endfor %}
 
-      <h2 class="govuk-heading-m">Service user's personal details</h2>
+      <h2 class="govuk-heading-m">The person on probation's details</h2>
       {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
 
-      <h2 class="govuk-heading-m">Service user's risk information</h2>
+      <h2 class="govuk-heading-m">Their risk information</h2>
 
       {% if presenter.roshPanelPresenter.riskInformationAvailable %}
 
-        <p class="govuk-body">This shows the service user's Risk of Serious Harm (ROSH) levels. Additional information from the probation practitioner may also be shown.</p>
+        <p class="govuk-body">This shows their Risk of Serious Harm (ROSH) levels. Additional information from the probation practitioner may also be shown.</p>
 
         {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
 
