@@ -21,9 +21,9 @@ export default Factory.define<RiskSummary>(() => ({
   },
   summary: {
     riskInCommunity: {
-      LOW: ['public'],
-      HIGH: ['children', 'known adult'],
-      VERY_HIGH: ['staff'],
+      LOW: ['Public'],
+      HIGH: ['Known adult', 'Children'],
+      VERY_HIGH: ['Staff'],
     },
     natureOfRisk: 'physically aggressive',
     riskImminence: 'can happen at the drop of a hat',
