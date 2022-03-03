@@ -29,4 +29,4 @@ COPY --from=builder --chown=appuser:appgroup /app/applicationinsights.json /app
 
 USER 2000
 
-ENTRYPOINT ["java", "-javaagent:/app/agent.jar", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-XX:+AlwaysActAsServerClassMachine", "-XX:+HeapDumpOnOutOfMemoryError", "-XX:HeapDumpPath=/dumps", "-javaagent:/app/agent.jar", "-jar", "/app/app.jar"]

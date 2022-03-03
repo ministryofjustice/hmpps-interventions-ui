@@ -13,7 +13,7 @@ env:
   {{ end }}
 
   - name: JAVA_OPTS
-    value: "-Xmx750m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/dumps"
+    value: "-Xmx750m"
 
   - name: APPLICATIONINSIGHTS_CONNECTION_STRING
     valueFrom:
