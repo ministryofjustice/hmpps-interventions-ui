@@ -104,7 +104,7 @@ export default class RoshPanelPresenter {
     roshGroupsDisplayOrder.forEach(group => {
       // We get the index here and then push/splice using that index value to save having to `find` on the array twice
       const matchingRoshGroupIndex = unsortedRiskGroups.findIndex(obj => {
-        return obj.riskTo === group
+        return obj.riskTo.toLowerCase() === group
       })
       if (matchingRoshGroupIndex !== -1) {
         sortedRiskGroups.push(unsortedRiskGroups[matchingRoshGroupIndex])

@@ -56,10 +56,10 @@ describe(RoshPanelPresenter, () => {
     it('returns rows for each risk group in the correct order', () => {
       const presenter = new RoshPanelPresenter(riskSummary.build())
       expect(presenter.roshAnalysisRows).toEqual([
-        { riskTo: 'children', riskScore: 'HIGH' },
-        { riskTo: 'public', riskScore: 'LOW' },
-        { riskTo: 'known adult', riskScore: 'HIGH' },
-        { riskTo: 'staff', riskScore: 'VERY_HIGH' },
+        { riskTo: 'Children', riskScore: 'HIGH' },
+        { riskTo: 'Public', riskScore: 'LOW' },
+        { riskTo: 'Known adult', riskScore: 'HIGH' },
+        { riskTo: 'Staff', riskScore: 'VERY_HIGH' },
       ])
     })
   })
