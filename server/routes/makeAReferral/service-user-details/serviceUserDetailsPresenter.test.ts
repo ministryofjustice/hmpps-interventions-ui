@@ -61,7 +61,7 @@ describe(ServiceUserDetailsPresenter, () => {
     it("falls back to an empty string if the service user's name is null", () => {
       const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser)
 
-      expect(presenter.title).toEqual("Person on probation's information")
+      expect(presenter.title).toEqual("The person on probation's information")
     })
   })
 
