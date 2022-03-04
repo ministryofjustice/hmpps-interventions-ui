@@ -79,7 +79,7 @@ beforeEach(() => {
     },
     userType: AppSetupUserType.serviceProvider,
   })
-  apiConfig.features.spDashboardPaginationFlow = true
+  apiConfig.dashboards.serviceProvider.filteredUserPercentage = 100
 })
 
 afterEach(() => {

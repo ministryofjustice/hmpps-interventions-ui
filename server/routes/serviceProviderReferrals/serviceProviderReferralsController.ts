@@ -415,7 +415,7 @@ export default class ServiceProviderReferralsController {
       req.params.id
     )
 
-    res.redirect(303, `/service-providers/action-plan/${draftActionPlan.id}/add-activity/1`)
+    res.redirect(303, `/service-provider/action-plan/${draftActionPlan.id}/add-activity/1`)
   }
 
   async showActionPlanAddActivitiesForm(req: Request, res: Response): Promise<void> {
