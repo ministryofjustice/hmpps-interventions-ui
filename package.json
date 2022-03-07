@@ -101,7 +101,7 @@
     "@types/qs": "^6.9.7",
     "@types/uuid": "^8.3.4",
     "agentkeepalive": "^4.2.1",
-    "applicationinsights": "^2.2.1",
+    "applicationinsights": "^2.2.2",
     "aws-sdk": "^2.1082.0",
     "body-parser": "^1.19.1",
     "bunyan": "^1.8.15",
