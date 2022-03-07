@@ -90,9 +90,16 @@ export default class ServiceProviderReferralsController {
         SPDashboardType.MyCases
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'My cases')
+    } else {
+      const pageSize = config.dashboards.serviceProvider.myCases
+      await this.renderDashboard(
+        req,
+        res,
+        { concluded: false, assignedTo: res.locals.user.userId },
+        'My cases',
+        pageSize
+      )
     }
-    const pageSize = config.dashboards.serviceProvider.myCases
-    await this.renderDashboard(req, res, { concluded: false, assignedTo: res.locals.user.userId }, 'My cases', pageSize)
   }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -102,9 +109,10 @@ export default class ServiceProviderReferralsController {
         SPDashboardType.OpenCases
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'All open cases')
+    } else {
+      const pageSize = config.dashboards.serviceProvider.openCases
+      await this.renderDashboard(req, res, { concluded: false }, 'All open cases', pageSize)
     }
-    const pageSize = config.dashboards.serviceProvider.openCases
-    await this.renderDashboard(req, res, { concluded: false }, 'All open cases', pageSize)
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -114,9 +122,10 @@ export default class ServiceProviderReferralsController {
         SPDashboardType.UnassignedCases
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'Unassigned cases')
+    } else {
+      const pageSize = config.dashboards.serviceProvider.unassignedCases
+      await this.renderDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases', pageSize)
     }
-    const pageSize = config.dashboards.serviceProvider.unassignedCases
-    await this.renderDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases', pageSize)
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -126,9 +135,10 @@ export default class ServiceProviderReferralsController {
         SPDashboardType.CompletedCases
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'Completed cases')
+    } else {
+      const pageSize = config.dashboards.serviceProvider.completedCases
+      await this.renderDashboard(req, res, { concluded: true }, 'Completed cases', pageSize)
     }
-    const pageSize = config.dashboards.serviceProvider.completedCases
-    await this.renderDashboard(req, res, { concluded: true }, 'Completed cases', pageSize)
   }
 
   private async renderDashboard(
