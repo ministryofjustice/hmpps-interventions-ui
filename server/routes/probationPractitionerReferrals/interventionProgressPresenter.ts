@@ -218,7 +218,7 @@ export default class InterventionProgressPresenter {
   get supplierAssessmentMessage(): string {
     switch (this.supplierAssessmentStatus) {
       case SupplierAssessmentStatus.notScheduled:
-        return 'A caseworker has been assigned and will book the assessment appointment with the service user.'
+        return 'A caseworker has been assigned and will book the assessment appointment.'
       case SupplierAssessmentStatus.awaitingCaseworker:
         return 'Once a caseworker has been assigned the assessment will be booked.'
       case SupplierAssessmentStatus.scheduled:

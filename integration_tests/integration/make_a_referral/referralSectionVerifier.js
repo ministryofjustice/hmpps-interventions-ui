@@ -10,13 +10,13 @@ function hrefAttrChainer(isActive) {
 class _ReferralSectionChecker {
   reviewServiceUserInformation(activeLinks) {
     cy.get('[data-cy=url]')
-      .contains('Confirm service user’s personal details')
+      .contains('Confirm their personal details')
       .should(hrefAttrChainer(activeLinks.confirmServiceUserDetails), 'href')
     cy.get('[data-cy=url]')
-      .contains('Service user’s risk information')
+      .contains('Their risk information')
       .should(hrefAttrChainer(activeLinks.riskInformation), 'href')
     cy.get('[data-cy=url]')
-      .contains('Service user’s needs and requirements')
+      .contains('Their needs and requirements')
       .should(hrefAttrChainer(activeLinks.needsAndRequirements), 'href')
     return this
   }

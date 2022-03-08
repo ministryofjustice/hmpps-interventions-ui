@@ -151,7 +151,7 @@ describe('Referral form', () => {
 
       cy.visit(`/intervention/${randomInterventionId}/refer`)
 
-      cy.contains('Service user CRN').type(' x123456 ')
+      cy.contains('The person’s CRN').type(' x123456 ')
 
       cy.contains('Continue').click()
 
@@ -198,7 +198,7 @@ describe('Referral form', () => {
 
       cy.stubGetExpandedServiceUserByCRN('X123456', expandedDeliusServiceUser)
 
-      cy.contains('Confirm service user’s personal details').click()
+      cy.contains('Confirm their personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
       cy.get('h1').contains("Alex's information")
@@ -264,7 +264,7 @@ describe('Referral form', () => {
         })
         .checkYourAnswers({ checkAnswers: false })
 
-      cy.contains('Confirm service user’s personal details').should('have.attr', 'href')
+      cy.contains('Confirm their personal details').should('have.attr', 'href')
 
       cy.contains('Confirm the relevant sentence for the Accommodation referral').click()
 
@@ -583,7 +583,7 @@ describe('Referral form', () => {
 
       cy.visit(`/intervention/${randomInterventionId}/refer`)
 
-      cy.contains('Service user CRN').type('X123456')
+      cy.contains('The person’s CRN').type('X123456')
 
       cy.contains('Continue').click()
 
@@ -624,7 +624,7 @@ describe('Referral form', () => {
 
       cy.stubGetExpandedServiceUserByCRN('X123456', expandedDeliusServiceUser)
 
-      cy.contains('Confirm service user’s personal details').click()
+      cy.contains('Confirm their personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
       cy.get('h1').contains("Alex's information")

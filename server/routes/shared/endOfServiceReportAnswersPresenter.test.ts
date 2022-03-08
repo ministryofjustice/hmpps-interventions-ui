@@ -65,7 +65,7 @@ describe(EndOfServiceReportAnswersPresenter, () => {
 
       expect(presenter.interventionSummary).toEqual([
         {
-          key: 'Service user’s name',
+          key: 'Name',
           lines: ['Alex River'],
         },
       ])

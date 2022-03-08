@@ -10,7 +10,7 @@ export default class ServiceUserDetailsPresenter {
     private readonly deliusServiceUserDetails: ExpandedDeliusServiceUser
   ) {}
 
-  readonly title = `${this.serviceUser.firstName || 'Service user'}'s information`
+  readonly title = `${this.serviceUser.firstName || 'The person on probation'}'s information`
 
   // required to force type erasure of type null[] from list of (string[] | null[])
   private notEmpty(value: string | null | undefined): value is string {

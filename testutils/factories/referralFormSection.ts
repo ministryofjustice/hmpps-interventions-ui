@@ -13,13 +13,13 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
   ) {
     return this.params({
       type: 'single',
-      title: 'Review service user’s information',
+      title: 'Review the person’s information',
       number: '1',
       status: referralFormStatus,
       tasks: [
-        { title: 'Confirm service user’s personal details', url: 'service-user-details' },
-        { title: 'Service user’s risk information', url: riskInformationUrl },
-        { title: 'Service user’s needs and requirements', url: needsAndRequirementsUrl },
+        { title: 'Confirm their personal details', url: 'service-user-details' },
+        { title: 'Their risk information', url: riskInformationUrl },
+        { title: 'Their needs and requirements', url: needsAndRequirementsUrl },
       ],
     })
   }

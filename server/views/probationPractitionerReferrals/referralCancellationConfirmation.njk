@@ -11,10 +11,8 @@
     <div class="govuk-grid-column-two-thirds">
       {{ govukPanel({titleText: presenter.text.confirmationText }) }}
 
-      <h2 class="govuk-heading-m">Service user details</h2>
       {{ govukSummaryList(summaryListArgs) }}
 
-      <h2 class="govuk-heading-m">What happens next?</h2>
       <p class="govuk-body">{{presenter.text.whatHappensNextText}}</p>
 
       <a href="{{ presenter.myCasesHref }}" class="govuk-button">Go back to My Cases</a>

@@ -10,7 +10,7 @@ export default class ReferralStartView {
       id: 'service-user-crn',
       name: 'service-user-crn',
       label: {
-        text: 'Service user CRN',
+        text: 'The person’s CRN',
         classes: 'govuk-label--m',
         isPageHeading: false,
       },

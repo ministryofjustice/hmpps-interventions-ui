@@ -619,7 +619,7 @@ describe(InterventionProgressPresenter, () => {
           )
 
           expect(presenter.supplierAssessmentMessage).toEqual(
-            'A caseworker has been assigned and will book the assessment appointment with the service user.'
+            'A caseworker has been assigned and will book the assessment appointment.'
           )
         })
       })
