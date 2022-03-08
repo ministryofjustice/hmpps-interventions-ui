@@ -9,7 +9,7 @@ parameters:
     default: main
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.11
+  hmpps: ministryofjustice/hmpps@3.14
   gradle: circleci/gradle@2.2.0
   mem: circleci/rememborb@0.0.1
 
