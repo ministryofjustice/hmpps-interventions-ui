@@ -13,7 +13,8 @@ generic-service:
     ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs.hmpps.service.justice.gov.uk
     TOKEN_VERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
     GA_ID: G-THWB3S7TLX
-    SP_FILTERED_USER_PERCENTAGE: 0
+    FEATURE_SP_REPORTING_ENABLED: true
+    SP_PERCENTAGE_OF_DASHBOARD_PAGINATION_USERS: 0
     FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS: true
     ASSESS_RISKS_AND_NEEDS_API_RISK_SUMMARY_ENABLED: true
     FEATURE_SP_DASHBOARD_PAGINATION_ENABLED: false
