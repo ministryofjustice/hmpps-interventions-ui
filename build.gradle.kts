@@ -43,7 +43,7 @@ dependencies {
   implementation("io.sentry:sentry-spring-boot-starter:5.6.1")
   implementation("io.sentry:sentry-logback:5.6.1")
   implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
-  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.1") // needed for OffsetDateTime for AppInsights
+  runtimeOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2") // needed for OffsetDateTime for AppInsights
 
   // openapi
   implementation("org.springdoc:springdoc-openapi-ui:1.6.5")
