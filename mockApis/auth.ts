@@ -15,6 +15,7 @@ export default class AuthServiceMocks {
       authorities: authSource === 'auth' ? ['ROLE_CRS_PROVIDER'] : ['ROLE_PROBATION'],
       jti: '83b50a10-cca6-41db-985f-e87efb303ddb',
       client_id: 'interventions',
+      user_id: '9C2744E3-65CD-4B40-B036-95DBD6F9A871',
     }
 
     return jwt.sign(payload, 'secret', { expiresIn: '1h' })
