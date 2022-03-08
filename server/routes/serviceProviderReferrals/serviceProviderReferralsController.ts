@@ -85,13 +85,9 @@ export default class ServiceProviderReferralsController {
   }
 
   async showMyCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.filteredUserPercentage)) {
-      const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-        res.locals.user.token.accessToken,
-        SPDashboardType.MyCases
-      )
-      this.renderDashboardWithoutPagination(res, referralsSummary, 'My cases')
-    } else {
+    if (
+      FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
+    ) {
       const pageSize = config.dashboards.serviceProvider.myCases
       await this.renderDashboard(
         req,
@@ -100,45 +96,57 @@ export default class ServiceProviderReferralsController {
         'My cases',
         pageSize
       )
+    } else {
+      const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+        res.locals.user.token.accessToken,
+        SPDashboardType.MyCases
+      )
+      this.renderDashboardWithoutPagination(res, referralsSummary, 'My cases')
     }
   }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.filteredUserPercentage)) {
+    if (
+      FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
+    ) {
+      const pageSize = config.dashboards.serviceProvider.openCases
+      await this.renderDashboard(req, res, { concluded: false }, 'All open cases', pageSize)
+    } else {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.OpenCases
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'All open cases')
-    } else {
-      const pageSize = config.dashboards.serviceProvider.openCases
-      await this.renderDashboard(req, res, { concluded: false }, 'All open cases', pageSize)
     }
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.filteredUserPercentage)) {
+    if (
+      FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
+    ) {
+      const pageSize = config.dashboards.serviceProvider.unassignedCases
+      await this.renderDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases', pageSize)
+    } else {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.UnassignedCases
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'Unassigned cases')
-    } else {
-      const pageSize = config.dashboards.serviceProvider.unassignedCases
-      await this.renderDashboard(req, res, { concluded: false, unassigned: true }, 'Unassigned cases', pageSize)
     }
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.filteredUserPercentage)) {
+    if (
+      FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
+    ) {
+      const pageSize = config.dashboards.serviceProvider.completedCases
+      await this.renderDashboard(req, res, { concluded: true }, 'Completed cases', pageSize)
+    } else {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.CompletedCases
       )
       this.renderDashboardWithoutPagination(res, referralsSummary, 'Completed cases')
-    } else {
-      const pageSize = config.dashboards.serviceProvider.completedCases
-      await this.renderDashboard(req, res, { concluded: true }, 'Completed cases', pageSize)
     }
   }
 

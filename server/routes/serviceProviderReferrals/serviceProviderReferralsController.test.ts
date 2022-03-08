@@ -79,7 +79,7 @@ beforeEach(() => {
     },
     userType: AppSetupUserType.serviceProvider,
   })
-  apiConfig.dashboards.serviceProvider.filteredUserPercentage = 100
+  apiConfig.dashboards.serviceProvider.percentageOfPaginationUsers = 100
 })
 
 afterEach(() => {
