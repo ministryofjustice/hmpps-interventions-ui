@@ -62,6 +62,7 @@ import config from '../../config'
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
 import DashboardWithoutPaginationPresenter from '../deprecated/dashboardWithoutPaginationPresenter'
 import DashboardWithoutPaginationView from '../deprecated/dashboardWithoutPaginationView'
+import FeatureFlagService from '../../services/featureFlagService'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -84,7 +85,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showMyCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!config.features.spDashboardPaginationFlow) {
+    if (!FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.filteredUserPercentage)) {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.MyCases
@@ -103,7 +104,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!config.features.spDashboardPaginationFlow) {
+    if (!FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.filteredUserPercentage)) {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.OpenCases
@@ -116,7 +117,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!config.features.spDashboardPaginationFlow) {
+    if (!FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.filteredUserPercentage)) {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.UnassignedCases
@@ -129,7 +130,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (!config.features.spDashboardPaginationFlow) {
+    if (!FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.filteredUserPercentage)) {
       const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
         res.locals.user.token.accessToken,
         SPDashboardType.CompletedCases

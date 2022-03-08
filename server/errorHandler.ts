@@ -2,11 +2,17 @@ import type { Request, Response, NextFunction } from 'express'
 import createError, { HttpError } from 'http-errors'
 import ControllerUtils from './utils/controllerUtils'
 import logger from '../log'
+import config from './config'
 
 export default function createErrorHandler(production: boolean) {
   return (err: Error, req: Request, res: Response, next: NextFunction): void => {
     if (res.headersSent) {
       return next(err)
+    }
+    // Added so exceptions are visible in tests to help with debugging.
+    if (config.testMode) {
+      // eslint-disable-next-line no-console
+      console.log(err)
     }
 
     if (createError.isHttpError(err)) {
