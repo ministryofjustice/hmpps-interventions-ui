@@ -60,7 +60,7 @@ describe(DashboardPresenter, () => {
         'sentAt',
         'referenceNumber',
         'serviceUserData.lastName',
-        'intervention.dynamicFrameworkContract.contractType',
+        'intervention.title',
         null,
       ])
     })
