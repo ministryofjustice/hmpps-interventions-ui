@@ -2,8 +2,8 @@ insert into referral_details (id, superseded_by_id, created_at, created_by, reas
       select
             gen_random_uuid(),
             null,
-            now(),
-            'migration',
+            ref.created_at,
+            ref.created_by_id,
             'initial value',
             ref.id,
             ref.completion_deadline,
