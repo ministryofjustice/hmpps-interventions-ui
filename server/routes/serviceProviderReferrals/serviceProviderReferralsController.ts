@@ -99,13 +99,14 @@ export default class ServiceProviderReferralsController {
         'spMyCases',
         pageSize
       )
-    } else {
-      const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-        res.locals.user.token.accessToken,
-        SPDashboardType.MyCases
-      )
-      this.renderDashboardWithoutPagination(res, referralsSummary, 'My cases')
+      return
     }
+
+    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+      res.locals.user.token.accessToken,
+      SPDashboardType.MyCases
+    )
+    this.renderDashboardWithoutPagination(res, referralsSummary, 'My cases')
   }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -114,13 +115,14 @@ export default class ServiceProviderReferralsController {
     ) {
       const pageSize = config.dashboards.serviceProvider.openCases
       await this.renderDashboard(req, res, { concluded: false }, 'All open cases', 'spAllOpenCases', pageSize)
-    } else {
-      const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-        res.locals.user.token.accessToken,
-        SPDashboardType.OpenCases
-      )
-      this.renderDashboardWithoutPagination(res, referralsSummary, 'All open cases')
+      return
     }
+
+    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+      res.locals.user.token.accessToken,
+      SPDashboardType.OpenCases
+    )
+    this.renderDashboardWithoutPagination(res, referralsSummary, 'All open cases')
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -136,13 +138,14 @@ export default class ServiceProviderReferralsController {
         'spUnassignedCases',
         pageSize
       )
-    } else {
-      const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-        res.locals.user.token.accessToken,
-        SPDashboardType.UnassignedCases
-      )
-      this.renderDashboardWithoutPagination(res, referralsSummary, 'Unassigned cases')
+      return
     }
+
+    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+      res.locals.user.token.accessToken,
+      SPDashboardType.UnassignedCases
+    )
+    this.renderDashboardWithoutPagination(res, referralsSummary, 'Unassigned cases')
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -151,13 +154,14 @@ export default class ServiceProviderReferralsController {
     ) {
       const pageSize = config.dashboards.serviceProvider.completedCases
       await this.renderDashboard(req, res, { concluded: true }, 'Completed cases', 'spCompletedCases', pageSize)
-    } else {
-      const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-        res.locals.user.token.accessToken,
-        SPDashboardType.CompletedCases
-      )
-      this.renderDashboardWithoutPagination(res, referralsSummary, 'Completed cases')
+      return
     }
+
+    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+      res.locals.user.token.accessToken,
+      SPDashboardType.CompletedCases
+    )
+    this.renderDashboardWithoutPagination(res, referralsSummary, 'Completed cases')
   }
 
   private async renderDashboard(
