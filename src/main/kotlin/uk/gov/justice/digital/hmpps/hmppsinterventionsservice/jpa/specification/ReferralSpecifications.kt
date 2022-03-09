@@ -1,14 +1,12 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.specification
 
 import org.springframework.data.jpa.domain.Specification
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthGroupID
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DynamicFrameworkContract
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Intervention
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProvider
 import java.time.OffsetDateTime
 import java.util.UUID
 import javax.persistence.criteria.JoinType
@@ -56,25 +54,6 @@ class ReferralSpecifications {
         val interventionJoin = root.join<Referral, Intervention>("intervention", JoinType.INNER)
         val dynamicContractJoin = interventionJoin.join<Intervention, DynamicFrameworkContract>("dynamicFrameworkContract", JoinType.LEFT)
         dynamicContractJoin.`in`(contracts)
-      }
-    }
-
-    fun matchingPrimeProviderReferrals(serviceProviders: Set<ServiceProvider>): Specification<Referral> {
-      return Specification<Referral> { root, query, cb ->
-        val interventionJoin = root.join<Referral, Intervention>("intervention", JoinType.INNER)
-        val dynamicContractJoin = interventionJoin.join<Intervention, DynamicFrameworkContract>("dynamicFrameworkContract", JoinType.LEFT)
-        query.distinct(true)
-        dynamicContractJoin.get<ServiceProvider>("primeProvider").`in`(serviceProviders)
-      }
-    }
-
-    fun matchingSubContractorReferrals(serviceProviders: Set<ServiceProvider>): Specification<Referral> {
-      return Specification<Referral> { root, query, cb ->
-        val interventionJoin = root.join<Referral, Intervention>("intervention", JoinType.INNER)
-        val dynamicContractJoin = interventionJoin.join<Intervention, DynamicFrameworkContract>("dynamicFrameworkContract", JoinType.INNER)
-        val serviceProviderJoin = dynamicContractJoin.joinSet<DynamicFrameworkContract, ServiceProvider>("subcontractorProviders", JoinType.LEFT)
-        query.distinct(true)
-        serviceProviderJoin.get<AuthGroupID>("id").`in`(serviceProviders.map { it.id })
       }
     }
 

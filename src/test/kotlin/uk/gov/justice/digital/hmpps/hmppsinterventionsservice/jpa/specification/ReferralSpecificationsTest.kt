@@ -131,64 +131,6 @@ class ReferralSpecificationsTest @Autowired constructor(
   }
 
   @Nested
-  inner class matchingPrimeProviderReferrals {
-    @Test
-    fun `only referrals with that are prime providers of the service providers are returned`() {
-      val userServiceProvider_1 = serviceProviderFactory.create("userServiceProvider_1")
-      val grantedReferral = referralFactory.createSent(
-        intervention = interventionFactory.create(contract = dynamicFrameworkContractFactory.create(primeProvider = userServiceProvider_1))
-      )
-      val userServiceProvider_2 = serviceProviderFactory.create("userServiceProvider_2 ${1 + 1}")
-      interventionFactory.create(contract = dynamicFrameworkContractFactory.create(primeProvider = userServiceProvider_2))
-
-      val someOtherServiceProvider = serviceProviderFactory.create("someOtherServiceProvider")
-      val restrictedReferral = referralFactory.createSent(
-        intervention = interventionFactory.create(contract = dynamicFrameworkContractFactory.create(primeProvider = someOtherServiceProvider))
-      )
-
-      val result = referralRepository.findAll(ReferralSpecifications.matchingPrimeProviderReferrals(setOf(userServiceProvider_1, userServiceProvider_2)))
-      Assertions.assertThat(result).containsExactly(grantedReferral)
-      Assertions.assertThat(result).doesNotContain(restrictedReferral)
-    }
-  }
-
-  @Nested
-  inner class matchingSubContractorReferrals {
-    @Test
-    fun `only referrals with that are sub contractors of the service providers are returned`() {
-      val userServiceProvider_1 = serviceProviderFactory.create("userServiceProvider_1")
-      val userServiceProvider_2 = serviceProviderFactory.create("userServiceProvider_2")
-      val someOtherServiceProvider = serviceProviderFactory.create("someOtherServiceProvider")
-
-      val grantedReferral = referralFactory.createSent(
-        intervention = interventionFactory.create(
-          contract = dynamicFrameworkContractFactory.create(
-            primeProvider = serviceProviderFactory.create("randomServiceProvider_1"),
-            subcontractorProviders = setOf(
-              userServiceProvider_1, someOtherServiceProvider
-            )
-          )
-        )
-      )
-
-      val restrictedReferral = referralFactory.createSent(
-        intervention = interventionFactory.create(
-          contract = dynamicFrameworkContractFactory.create(
-            primeProvider = serviceProviderFactory.create("randomServiceProvider_2"),
-            subcontractorProviders = setOf(
-              someOtherServiceProvider
-            )
-          )
-        )
-      )
-
-      val result = referralRepository.findAll(ReferralSpecifications.matchingSubContractorReferrals(setOf(userServiceProvider_1, userServiceProvider_2)))
-      Assertions.assertThat(result).containsExactly(grantedReferral)
-      Assertions.assertThat(result).doesNotContain(restrictedReferral)
-    }
-  }
-
-  @Nested
   inner class assignedTo {
     @Test
     fun `returns referral if user is currently assigned`() {
