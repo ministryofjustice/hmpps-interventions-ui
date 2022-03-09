@@ -37,6 +37,7 @@ import MockReferenceDataService from '../testutils/mocks/mockReferenceDataServic
 import ReferenceDataService from '../../services/referenceDataService'
 import pageFactory from '../../../testutils/factories/page'
 import { Page } from '../../models/pagination'
+import UserDataService from '../../services/userDataService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -58,6 +59,11 @@ const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthSe
 
 const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 
+const userDataService = {
+  store: jest.fn(),
+  retrieve: jest.fn(),
+} as unknown as jest.Mocked<UserDataService>
+
 const draftsService = {
   createDraft: jest.fn(),
   fetchDraft: jest.fn(),
@@ -76,6 +82,7 @@ beforeEach(() => {
       assessRisksAndNeedsService,
       draftsService,
       referenceDataService,
+      userDataService,
     },
     userType: AppSetupUserType.serviceProvider,
   })

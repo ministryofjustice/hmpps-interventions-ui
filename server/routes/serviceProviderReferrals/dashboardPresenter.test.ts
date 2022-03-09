@@ -53,15 +53,15 @@ describe(DashboardPresenter, () => {
   ]
 
   describe('tableHeadings', () => {
-    it('incorporates dashboard type name into persistent id', () => {
+    it('persistentId is the database sort field', () => {
       const page = pageFactory.pageContent([]).build() as Page<SentReferral>
       const presenter = new DashboardPresenter(page, 'My cases', loggedInUser, interventions, 'tableId', 'sentAt,DESC')
       expect(presenter.tableHeadings.map(headers => headers.persistentId)).toEqual([
-        'MycasesDateReceived',
-        'MycasesReferenceNumber',
-        'MycasesServiceUser',
-        'MycasesInterventionType',
-        'MycasesAction',
+        'sentAt',
+        'referenceNumber',
+        'serviceUserData.lastName',
+        'intervention.dynamicFrameworkContract.contractType',
+        null,
       ])
     })
   })
