@@ -54,7 +54,7 @@ export default class DashboardPresenter {
     },
     {
       columnName: 'Intervention type',
-      sortField: 'intervention.dynamicFrameworkContract.contractType',
+      sortField: 'intervention.title',
     },
     {
       columnName: 'Provider',
