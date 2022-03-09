@@ -8,43 +8,79 @@ import { Page } from '../../models/pagination'
 import SentReferral from '../../models/sentReferral'
 import Intervention from '../../models/intervention'
 import Pagination from '../../utils/pagination/pagination'
+import ControllerUtils from '../../utils/controllerUtils'
 
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
 export default class DashboardPresenter {
   public readonly pagination: Pagination
 
+  private readonly requestedSortField: string
+
+  private readonly requestedSortOrder: string
+
   constructor(
     private readonly sentReferrals: Page<SentReferral>,
     readonly dashboardType: DashboardType,
     private readonly loggedInUser: LoggedInUser,
-    private readonly interventions: Intervention[]
+    private readonly interventions: Intervention[],
+    readonly tablePersistentId: string,
+    private readonly requestedSort: string
   ) {
     this.pagination = new Pagination(sentReferrals)
+    const [sortField, sortOrder] = this.requestedSort.split(',')
+    this.requestedSortField = sortField
+    this.requestedSortOrder = ControllerUtils.sortOrderToAriaSort(sortOrder)
   }
 
-  private readonly showAssignedCaseworkerColumn =
-    this.dashboardType === 'My cases' || this.dashboardType === 'Unassigned cases'
+  // this maps the column headings in the table to the database field used
+  // for sorting in the backend. it feels strange that the presenter class owns
+  // this information, since it's used in the controller to make the API call
+  // to populate this table. however, the controller reads these sort fields
+  // from query params which are populated from the table. so in the end this
+  // does seem like the best place to define these values.
+  static readonly headingsAndSortFields = [
+    {
+      columnName: 'Date received',
+      sortField: 'sentAt',
+    },
+    {
+      columnName: 'Referral',
+      sortField: 'referenceNumber',
+    },
+    {
+      columnName: 'Service user',
+      sortField: 'serviceUserData.lastName',
+    },
+    {
+      columnName: 'Intervention type',
+      sortField: 'intervention.dynamicFrameworkContract.contractType',
+    },
+    {
+      columnName: 'Caseworker',
+      sortField: null,
+    },
+    {
+      columnName: 'Action',
+      sortField: null,
+    },
+  ]
 
-  readonly dashboardTypePersistentId = this.dashboardType.replace(/\s/g, '')
+  private readonly showAssignedCaseworkerColumn =
+    this.dashboardType === 'All open cases' || this.dashboardType === 'Completed cases'
 
   readonly title = this.dashboardType
 
-  private readonly secondOrderColumn = 'Date received'
-
-  readonly tableHeadings: SortableTableHeaders = [
-    { text: this.secondOrderColumn, sort: 'none', persistentId: `${this.dashboardTypePersistentId}DateReceived` },
-    { text: 'Referral', sort: 'none', persistentId: `${this.dashboardTypePersistentId}ReferenceNumber` },
-    { text: 'Service user', sort: 'none', persistentId: `${this.dashboardTypePersistentId}ServiceUser` },
-    { text: 'Intervention type', sort: 'none', persistentId: `${this.dashboardTypePersistentId}InterventionType` },
-    this.showAssignedCaseworkerColumn
-      ? null
-      : { text: 'Caseworker', sort: 'none', persistentId: `${this.dashboardTypePersistentId}Caseworker` },
-    { text: 'Action', sort: 'none', persistentId: `${this.dashboardTypePersistentId}Action` },
-  ].filter(row => row !== null) as SortableTableHeaders
-
-  readonly secondOrderColumnNumber: number = this.tableHeadings
-    .map(heading => heading.text)
-    .indexOf(this.secondOrderColumn)
+  get tableHeadings(): SortableTableHeaders {
+    return DashboardPresenter.headingsAndSortFields
+      .map(heading => {
+        return {
+          text: heading.columnName,
+          persistentId: heading.sortField,
+          sort: this.requestedSortField === heading.sortField ? this.requestedSortOrder : 'none',
+        }
+      })
+      .filter(row => row.text !== 'Caseworker' || this.showAssignedCaseworkerColumn) as SortableTableHeaders
+  }
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 
@@ -78,8 +114,8 @@ export default class DashboardPresenter {
       },
       { text: interventionForReferral.title, sortValue: null, href: null },
       this.showAssignedCaseworkerColumn
-        ? null
-        : { text: referralSummary.assignedTo?.username ?? '', sortValue: null, href: null },
+        ? { text: referralSummary.assignedTo?.username ?? '', sortValue: null, href: null }
+        : null,
       { text: 'View', sortValue: null, href: DashboardPresenter.hrefForViewing(referralSummary) },
     ].filter(row => row !== null) as SortableTableRow
   })

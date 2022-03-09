@@ -53,15 +53,15 @@ describe(DashboardPresenter, () => {
   ]
 
   describe('tableHeadings', () => {
-    it('incorporates dashboard type name into persistent id', () => {
+    it('persistentId is the database sort field', () => {
       const page = pageFactory.pageContent([]).build() as Page<SentReferral>
-      const presenter = new DashboardPresenter(page, 'My cases', loggedInUser, interventions)
+      const presenter = new DashboardPresenter(page, 'My cases', loggedInUser, interventions, 'tableId', 'sentAt,DESC')
       expect(presenter.tableHeadings.map(headers => headers.persistentId)).toEqual([
-        'MycasesDateReceived',
-        'MycasesReferenceNumber',
-        'MycasesServiceUser',
-        'MycasesInterventionType',
-        'MycasesAction',
+        'sentAt',
+        'referenceNumber',
+        'serviceUserData.lastName',
+        'intervention.dynamicFrameworkContract.contractType',
+        null,
       ])
     })
   })
@@ -72,7 +72,14 @@ describe(DashboardPresenter, () => {
       it('returns the table’s rows', () => {
         const page = pageFactory.pageContent(referrals).build() as Page<SentReferral>
 
-        const presenter = new DashboardPresenter(page, dashboardType, loggedInUser, interventions)
+        const presenter = new DashboardPresenter(
+          page,
+          dashboardType,
+          loggedInUser,
+          interventions,
+          'tableId',
+          'sentAt,DESC'
+        )
 
         expect(presenter.tableRows).toEqual([
           [
@@ -121,7 +128,14 @@ describe(DashboardPresenter, () => {
       describe('when a referral has been assigned to a caseworker', () => {
         it('includes the caseworker’s username', () => {
           const page = pageFactory.pageContent(referrals).build() as Page<SentReferral>
-          const presenter = new DashboardPresenter(page, dashboardType, loggedInUser, interventions)
+          const presenter = new DashboardPresenter(
+            page,
+            dashboardType,
+            loggedInUser,
+            interventions,
+            'tableId',
+            'sentAt,DESC'
+          )
 
           expect(presenter.tableRows[0][4]).toMatchObject({ text: 'UserABC' })
         })
@@ -132,7 +146,14 @@ describe(DashboardPresenter, () => {
     describe.each(dontDisplayCaseworkerDashboardTypes)('with %s dashboard type', dashboardType => {
       it('does not display the case worker column', () => {
         const page = pageFactory.pageContent(referrals).build() as Page<SentReferral>
-        const presenter = new DashboardPresenter(page, dashboardType, loggedInUser, interventions)
+        const presenter = new DashboardPresenter(
+          page,
+          dashboardType,
+          loggedInUser,
+          interventions,
+          'tableId',
+          'sentAt,DESC'
+        )
 
         expect(presenter.tableRows).toEqual([
           [
@@ -165,7 +186,14 @@ describe(DashboardPresenter, () => {
     describe('when a referral has been assigned to a caseworker', () => {
       it('links to the intervention progress page', () => {
         const page = pageFactory.pageContent(referrals).build() as Page<SentReferral>
-        const presenter = new DashboardPresenter(page, 'All open cases', loggedInUser, interventions)
+        const presenter = new DashboardPresenter(
+          page,
+          'All open cases',
+          loggedInUser,
+          interventions,
+          'tableId',
+          'sentAt,DESC'
+        )
 
         expect(presenter.tableRows[0][5]).toMatchObject({
           href: `/service-provider/referrals/1/progress`,
