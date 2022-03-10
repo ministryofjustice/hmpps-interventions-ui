@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
 import ServiceProviderSentReferralSummaryDTO
 import com.fasterxml.jackson.annotation.JsonView
+import com.microsoft.applicationinsights.TelemetryClient
 import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.data.domain.Page
@@ -60,6 +61,7 @@ class ReferralController(
   private val cancellationReasonMapper: CancellationReasonMapper,
   private val actionPlanService: ActionPlanService,
   private val draftOasysRiskInformationService: DraftOasysRiskInformationService,
+  private val telemetryClient: TelemetryClient,
 ) {
   companion object : KLogging()
 
@@ -142,7 +144,13 @@ class ReferralController(
     @PageableDefault(page = 0, size = 50, sort = ["sentAt"]) page: Pageable,
   ): Page<SentReferralSummaryDTO> {
     val user = userMapper.fromToken(authentication)
-    return (referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId, page) as Page<Referral>).map { SentReferralSummaryDTO.from(it) }
+    return (referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId, page) as Page<Referral>).map { SentReferralSummaryDTO.from(it) }.also {
+      telemetryClient.trackEvent(
+        "PagedDashboardRequest",
+        null,
+        mutableMapOf("totalNumberOfReferrals" to it.totalElements.toDouble(), "pageSize" to page.pageSize.toDouble())
+      )
+    }
   }
 
   @Deprecated(message = "This is a temporary solution to by-pass the extremely long wait times in production that occurs with /sent-referrals")
