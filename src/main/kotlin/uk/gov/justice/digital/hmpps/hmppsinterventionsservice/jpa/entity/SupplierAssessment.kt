@@ -28,13 +28,4 @@ data class SupplierAssessment(
 ) {
   val currentAppointment: Appointment?
     get() = appointments.maxByOrNull { it.createdAt }
-
-  val firstAppointment: Appointment?
-    get() = appointments.minByOrNull { it.createdAt }
-
-  val firstAppointmentWithNonAttendance: Appointment?
-    get() = appointments.filter { it.attended == Attended.NO }.minByOrNull { it.appointmentTime }
-
-  val firstAttendedAppointment: Appointment?
-    get() = appointments.filter { listOf(Attended.YES, Attended.LATE).contains(it.attended) }.minByOrNull { it.appointmentTime }
 }
