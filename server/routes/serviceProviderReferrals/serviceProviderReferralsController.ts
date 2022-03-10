@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
 import querystring from 'querystring'
+import { defaultClient } from 'applicationinsights'
 import CommunityApiService from '../../services/communityApiService'
 import InterventionsService, {
   GetSentReferralsFilterParams,
@@ -172,6 +173,7 @@ export default class ServiceProviderReferralsController {
     tablePersistentId: string,
     pageSize: number
   ) {
+    const { user } = res.locals
     const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
       req,
       res,
@@ -190,24 +192,22 @@ export default class ServiceProviderReferralsController {
     }
 
     const cases = await this.interventionsService.getSentReferralsForUserTokenPaged(
-      res.locals.user.token.accessToken,
+      user.token.accessToken,
       getSentReferralsFilterParams,
       paginationQuery
     )
 
+    defaultClient.trackEvent({
+      name: 'ServiceProviderDashboardLoad',
+      measurements: { totalNumberOfCases: cases.totalElements, pageSize },
+    })
+
     const dedupedInterventionIds = Array.from(new Set(cases.content.map(referral => referral.referral.interventionId)))
     const interventions = await Promise.all(
-      dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
+      dedupedInterventionIds.map(id => this.interventionsService.getIntervention(user.token.accessToken, id))
     )
 
-    const presenter = new DashboardPresenter(
-      cases,
-      dashboardType,
-      res.locals.user,
-      interventions,
-      tablePersistentId,
-      sort[0]
-    )
+    const presenter = new DashboardPresenter(cases, dashboardType, user, interventions, tablePersistentId, sort[0])
     const view = new DashboardView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)
