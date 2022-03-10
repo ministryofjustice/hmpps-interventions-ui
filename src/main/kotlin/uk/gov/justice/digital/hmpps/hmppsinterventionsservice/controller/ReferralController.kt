@@ -162,13 +162,14 @@ class ReferralController(
   ): List<ServiceProviderSentReferralSummaryDTO> {
     val user = userMapper.fromToken(authentication)
     var dashboardType = dashboardTypeSelection?.let { DashboardType.valueOf(it) }
-    val referrals = referralService.getServiceProviderSummaries(user, dashboardType)
-    logger.info(
-      "returning list of referrals from /sent-referrals/summary/service-provider",
-      kv("numberOfReferrals", referrals.size),
-      kv("dashboardType", dashboardType),
-    )
-    return referrals.map { ServiceProviderSentReferralSummaryDTO.from(it) }
+    return referralService.getServiceProviderSummaries(user, dashboardType)
+      .map { ServiceProviderSentReferralSummaryDTO.from(it) }.also {
+        telemetryClient.trackEvent(
+          "ServiceProviderReferralSummaryRequest",
+          null,
+          mutableMapOf("totalNumberOfReferrals" to it.size.toDouble())
+        )
+      }
   }
 
   @JsonView(Views.SentReferral::class)
