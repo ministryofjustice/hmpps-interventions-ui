@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.controller
 
+import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
@@ -52,8 +53,17 @@ internal class ReferralControllerTest {
   private val cancellationReasonMapper = mock<CancellationReasonMapper>()
   private val actionPlanService = mock<ActionPlanService>()
   private val draftOasysRiskInformationService = mock<DraftOasysRiskInformationService>()
+  private val telemetryClient = mock<TelemetryClient>()
   private val referralController = ReferralController(
-    referralService, referralConcluder, serviceCategoryService, userMapper, clientApiAccessChecker, cancellationReasonMapper, actionPlanService, draftOasysRiskInformationService
+    referralService,
+    referralConcluder,
+    serviceCategoryService,
+    userMapper,
+    clientApiAccessChecker,
+    cancellationReasonMapper,
+    actionPlanService,
+    draftOasysRiskInformationService,
+    telemetryClient,
   )
   private val tokenFactory = JwtTokenFactory()
   private val referralFactory = ReferralFactory()
