@@ -48,7 +48,7 @@ export default class DashboardPresenter {
       sortField: 'referenceNumber',
     },
     {
-      columnName: 'Service user',
+      columnName: 'Person',
       sortField: 'serviceUserData.lastName',
     },
     {
