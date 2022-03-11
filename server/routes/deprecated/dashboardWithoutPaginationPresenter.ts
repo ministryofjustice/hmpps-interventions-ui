@@ -26,7 +26,7 @@ export default class DashboardWithoutPaginationPresenter {
   readonly tableHeadings: SortableTableHeaders = [
     { text: this.secondOrderColumn, sort: 'none', persistentId: `${this.dashboardTypePersistentId}DateReceived` },
     { text: 'Referral', sort: 'none', persistentId: `${this.dashboardTypePersistentId}ReferenceNumber` },
-    { text: 'Service user', sort: 'none', persistentId: `${this.dashboardTypePersistentId}ServiceUser` },
+    { text: 'Person', sort: 'none', persistentId: `${this.dashboardTypePersistentId}ServiceUser` },
     { text: 'Intervention type', sort: 'none', persistentId: `${this.dashboardTypePersistentId}InterventionType` },
     this.showAssignedCaseworkerColumn
       ? null

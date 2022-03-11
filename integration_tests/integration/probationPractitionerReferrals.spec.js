@@ -94,7 +94,7 @@ describe('Probation practitioner referrals dashboard', () => {
         {
           'Date sent': '26 Jan 2021',
           Referral: 'ABCABCA1',
-          'Service user': 'George Michael',
+          Person: 'George Michael',
           'Intervention type': 'Accommodation Services - West Midlands',
           Provider: 'Harmony Living',
           Caseworker: 'Unassigned',
@@ -103,7 +103,7 @@ describe('Probation practitioner referrals dashboard', () => {
         {
           'Date sent': '13 Dec 2020',
           Referral: 'ABCABCA2',
-          'Service user': 'Jenny Jones',
+          Person: 'Jenny Jones',
           'Intervention type': "Women's Services - West Midlands",
           Provider: 'Harmony Living',
           Caseworker: 'A. Caseworker',

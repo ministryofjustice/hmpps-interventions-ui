@@ -62,7 +62,7 @@ describe('Dashboards', () => {
             {
               'Date sent': '26 Jan 2021',
               Referral: 'ABCABCA1',
-              'Service user': 'George Michael',
+              Person: 'George Michael',
               'Intervention type': 'Accommodation Services - West Midlands',
               Provider: 'Harmony Living',
               Caseworker: 'Unassigned',
@@ -71,7 +71,7 @@ describe('Dashboards', () => {
             {
               'Date sent': '13 Dec 2020',
               Referral: 'ABCABCA2',
-              'Service user': 'Jenny Jones',
+              Person: 'Jenny Jones',
               'Intervention type': "Women's Services - West Midlands",
               Provider: 'Forward Solutions',
               Caseworker: 'A. Caseworker',
@@ -92,7 +92,7 @@ describe('Dashboards', () => {
               {
                 'Date sent': '26 Jan 2021',
                 Referral: 'ABCABCA1',
-                'Service user': 'George Michael',
+                Person: 'George Michael',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Provider: 'Harmony Living',
                 Action: 'View',
@@ -100,7 +100,7 @@ describe('Dashboards', () => {
               {
                 'Date sent': '13 Dec 2020',
                 Referral: 'ABCABCA2',
-                'Service user': 'Jenny Jones',
+                Person: 'Jenny Jones',
                 'Intervention type': "Women's Services - West Midlands",
                 Provider: 'Forward Solutions',
                 Action: 'View',
@@ -121,7 +121,7 @@ describe('Dashboards', () => {
               {
                 'Date sent': '26 Jan 2021',
                 Referral: 'ABCABCA1',
-                'Service user': 'George Michael',
+                Person: 'George Michael',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Provider: 'Harmony Living',
                 Caseworker: 'Unassigned',
@@ -130,7 +130,7 @@ describe('Dashboards', () => {
               {
                 'Date sent': '13 Dec 2020',
                 Referral: 'ABCABCA2',
-                'Service user': 'Jenny Jones',
+                Person: 'Jenny Jones',
                 'Intervention type': "Women's Services - West Midlands",
                 Provider: 'Forward Solutions',
                 Caseworker: 'A. Caseworker',
@@ -152,7 +152,7 @@ describe('Dashboards', () => {
               {
                 'Date sent': '26 Jan 2021',
                 Referral: 'ABCABCA1',
-                'Service user': 'George Michael',
+                Person: 'George Michael',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Provider: 'Harmony Living',
                 Caseworker: 'Unassigned',
@@ -161,7 +161,7 @@ describe('Dashboards', () => {
               {
                 'Date sent': '13 Dec 2020',
                 Referral: 'ABCABCA2',
-                'Service user': 'Jenny Jones',
+                Person: 'Jenny Jones',
                 'Intervention type': "Women's Services - West Midlands",
                 Provider: 'Forward Solutions',
                 Caseworker: 'A. Caseworker',
@@ -177,7 +177,7 @@ describe('Dashboards', () => {
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.login()
 
-        const headings = ['Date sent', 'Referral', 'Service user', 'Intervention type', 'Provider']
+        const headings = ['Date sent', 'Referral', 'Person', 'Intervention type', 'Provider']
         headings.forEach(heading => {
           cy.get('table').within(() => cy.contains('button', heading).click())
 
@@ -240,7 +240,7 @@ describe('Dashboards', () => {
             {
               'Date received': '26 Jan 2021',
               Referral: 'REFERRAL_REF',
-              'Service user': 'Jenny Jones',
+              Person: 'Jenny Jones',
               'Intervention type': 'Accommodation Services - West Midlands',
               Action: 'View',
             },
@@ -258,7 +258,7 @@ describe('Dashboards', () => {
               {
                 'Date received': '26 Jan 2021',
                 Referral: 'REFERRAL_REF',
-                'Service user': 'Jenny Jones',
+                Person: 'Jenny Jones',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
                 Action: 'View',
@@ -278,7 +278,7 @@ describe('Dashboards', () => {
               {
                 'Date received': '26 Jan 2021',
                 Referral: 'REFERRAL_REF',
-                'Service user': 'Jenny Jones',
+                Person: 'Jenny Jones',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Action: 'View',
               },
@@ -297,7 +297,7 @@ describe('Dashboards', () => {
               {
                 'Date received': '26 Jan 2021',
                 Referral: 'REFERRAL_REF',
-                'Service user': 'Jenny Jones',
+                Person: 'Jenny Jones',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
                 Action: 'View',
@@ -312,7 +312,7 @@ describe('Dashboards', () => {
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.login()
 
-        const headings = ['Date received', 'Referral', 'Service user', 'Intervention type']
+        const headings = ['Date received', 'Referral', 'Person', 'Intervention type']
         headings.forEach(heading => {
           cy.get('table').within(() => cy.contains('button', heading).click())
 
@@ -343,7 +343,7 @@ describe('Dashboards', () => {
         },
         {
           dashboardType: 'Unassigned cases',
-          sortField: 'Service user',
+          sortField: 'Person',
         },
         {
           dashboardType: 'Completed cases',
