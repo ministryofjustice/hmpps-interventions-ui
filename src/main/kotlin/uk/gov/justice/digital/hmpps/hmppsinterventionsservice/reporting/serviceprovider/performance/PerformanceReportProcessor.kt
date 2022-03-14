@@ -4,6 +4,7 @@ import mu.KLogging
 import net.logstash.logback.argument.StructuredArguments.kv
 import org.springframework.batch.item.ItemProcessor
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Attended
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 
@@ -20,8 +21,8 @@ class PerformanceReportProcessor(
 
     // note: all referrals here are 'sent', we can safely access fields like 'referenceNumber'
     val contract = referral.intervention.dynamicFrameworkContract
-    val initialAssessmentAppointment = referral.supplierAssessment?.currentAppointment
     val approvedActionPlan = referral.approvedActionPlan
+    val saa = referral.supplierAssessment
 
     return PerformanceReportData(
       referralReference = referral.referenceNumber!!,
@@ -31,8 +32,6 @@ class PerformanceReportProcessor(
       currentAssigneeEmail = referral.currentAssignee?.userName,
       serviceUserCRN = referral.serviceUserCRN,
       dateReferralReceived = referral.sentAt!!,
-      initialAssessmentBookedAt = initialAssessmentAppointment?.createdAt,
-      initialAssessmentAttendedAt = initialAssessmentAppointment?.attended?.let { initialAssessmentAppointment.appointmentTime },
       firstActionPlanSubmittedAt = referral.actionPlans?.mapNotNull { it.submittedAt }?.minOrNull(),
       firstActionPlanApprovedAt = referral.actionPlans?.mapNotNull { it.approvedAt }?.minOrNull(),
       firstSessionAttendedAt = approvedActionPlan?.let { actionPlanService.getFirstAttendedAppointment(it)?.appointmentTime },
@@ -44,6 +43,12 @@ class PerformanceReportProcessor(
       endRequestedReason = referral.endRequestedReason?.description,
       eosrSubmittedAt = referral.endOfServiceReport?.submittedAt,
       concludedAt = referral.concludedAt,
+      referralEndState = referral.endState,
+      dateSupplierAssessmentBooked = saa?.firstAppointment?.createdAt,
+      dateSupplierAssessmentFirstScheduledFor = saa?.firstAppointment?.appointmentTime,
+      dateSupplierAssessmentFirstNotAttended = saa?.firstAppointmentWithNonAttendance?.appointmentTime,
+      dateSupplierAssessmentFirstAttended = saa?.firstAttendedAppointment?.appointmentTime,
+      supplierAssessmentAttendedOnTime = saa?.firstAttendedAppointment?.attended?.let { it == Attended.YES },
     )
   }
 }
