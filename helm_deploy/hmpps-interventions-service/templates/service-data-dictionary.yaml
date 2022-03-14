@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: data-dictionary
   labels:
+    app: data-dictionary
     {{- include "app.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
