@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: {{ template "app.fullname" . }}
   labels:
+    app: hmpps-interventions-service
     {{- include "app.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
@@ -18,6 +19,7 @@ kind: Service
 metadata:
   name: api-suspect
   labels:
+    app: hmpps-interventions-service
     {{- include "app.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
@@ -33,6 +35,7 @@ kind: Service
 metadata:
   name: performance-report
   labels:
+    app: hmpps-interventions-service
     {{- include "app.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
