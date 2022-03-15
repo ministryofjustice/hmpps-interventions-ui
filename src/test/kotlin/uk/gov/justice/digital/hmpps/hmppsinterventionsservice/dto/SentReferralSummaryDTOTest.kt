@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUse
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SampleData
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -19,6 +20,7 @@ import java.util.UUID
 class SentReferralSummaryDTOTest(@Autowired private val json: JacksonTester<SentReferralSummaryDTO>) {
   private val referralFactory = ReferralFactory()
   private val actionPlanFactory = ActionPlanFactory()
+  private val interventionFactory = InterventionFactory()
 
   @Test
   fun `sent referral requires reference number, sent timestamp, sentBy, and risk id`() {
@@ -230,6 +232,19 @@ class SentReferralSummaryDTOTest(@Autowired private val json: JacksonTester<Sent
         "concludedAt": "2021-01-13T21:57:13Z"
       }
     }
+    """
+    )
+  }
+
+  @Test
+  fun `sent referral DTO includes intervention title`() {
+    val referral = referralFactory.createSent(intervention = interventionFactory.create(title = "Accommodation Services for Yorkshire"))
+    val out = json.write(SentReferralSummaryDTO.from(referral))
+    Assertions.assertThat(out).isEqualToJson(
+      """
+      {
+        "interventionTitle": "Accommodation Services for Yorkshire"
+      }
     """
     )
   }
