@@ -4,7 +4,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class SentReferralSummaryDTO(
+data class SentReferralSummaryDTO(
   val id: UUID,
   val sentAt: OffsetDateTime,
   val sentBy: AuthUserDTO,
@@ -17,7 +17,8 @@ class SentReferralSummaryDTO(
   val endRequestedComments: String?,
   val endOfServiceReport: EndOfServiceReportDTO?,
   val concludedAt: OffsetDateTime?,
-  val supplementaryRiskId: UUID
+  val supplementaryRiskId: UUID,
+  val interventionTitle: String
 ) {
   companion object {
     fun from(referral: Referral): SentReferralSummaryDTO {
@@ -35,6 +36,7 @@ class SentReferralSummaryDTO(
         endOfServiceReport = referral.endOfServiceReport?.let { EndOfServiceReportDTO.from(it) },
         concludedAt = referral.concludedAt,
         supplementaryRiskId = referral.supplementaryRiskId!!,
+        interventionTitle = referral.intervention.title
       )
     }
   }
