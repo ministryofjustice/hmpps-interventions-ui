@@ -13,6 +13,7 @@ LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 RUN apk upgrade --no-cache && \
     apk add --no-cache \
       curl \
+      openssl>1.1.1n-r0 \
       tzdata
 
 ENV TZ=Europe/London
