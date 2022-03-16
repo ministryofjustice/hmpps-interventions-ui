@@ -10,10 +10,12 @@ RUN ./gradlew clean assemble -Dorg.gradle.daemon=false
 FROM adoptopenjdk/openjdk11:alpine-jre
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
+ARG BUILD_NUMBER
+ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
+
 RUN apk upgrade --no-cache && \
     apk add --no-cache \
       curl \
-      openssl>1.1.1n-r0 \
       tzdata
 
 ENV TZ=Europe/London
