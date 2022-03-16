@@ -16,7 +16,8 @@ RUN addgroup --gid 2000 --system appgroup && \
     adduser --uid 2000 --system appuser && \
     adduser appuser appgroup
 
-RUN apk upgrade --no-cache
+RUN apk upgrade --no-cache && \
+    apk add openssl>1.1.1n-r0
 
 WORKDIR /app
 
