@@ -1,7 +1,4 @@
 # Build stage 1.
-ARG BUILD_NUMBER
-ARG GIT_REF
-
 FROM node:14-alpine3.15 as base
 
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
@@ -16,15 +13,10 @@ RUN addgroup --gid 2000 --system appgroup && \
     adduser --uid 2000 --system appuser && \
     adduser appuser appgroup
 
-RUN apk upgrade --no-cache && \
-    apk add openssl>1.1.1n-r0
-
 WORKDIR /app
 
 # Stage: build assets
 FROM base as build
-ARG BUILD_NUMBER
-ARG GIT_REF
 
 RUN apk add --no-cache make python3
 
@@ -34,6 +26,8 @@ RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit
 COPY . .
 RUN npm run build:prod
 
+ARG BUILD_NUMBER
+ARG GIT_REF
 ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
 ENV GIT_REF ${GIT_REF:-dummy}
 RUN export BUILD_NUMBER=${BUILD_NUMBER} && \
@@ -44,6 +38,11 @@ RUN npm prune --no-audit --production
 
 # Stage: copy production assets and dependencies
 FROM base
+
+# force a rebuild of `apk upgrade` below by invalidating the BUILD_NUMBER env variable on every commit
+ARG BUILD_NUMBER
+ENV BUILD_NUMBER ${BUILD_NUMBER:-1_0_0}
+RUN apk upgrade --no-cache
 
 COPY --from=build --chown=appuser:appgroup \
         /app/package.json \
