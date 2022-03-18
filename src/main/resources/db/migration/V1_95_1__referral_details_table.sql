@@ -12,7 +12,7 @@ CREATE TABLE referral_details(
     primary key(id),
     foreign key (superseded_by_id) references referral_details(id)
 );
-create unique index idx_referral_detail_referral_id on referral_details (referral_id);
+create index idx_referral_detail_referral_id on referral_details (referral_id);
 
 INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','id',FALSE, TRUE);
 INSERT INTO metadata (table_name, column_name, sensitive, domain_data) VALUES ('referral_details','superseded_by_id',FALSE, TRUE);
