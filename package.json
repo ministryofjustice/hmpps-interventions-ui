@@ -137,7 +137,7 @@
     "validator": "^13.7.0"
   },
   "devDependencies": {
-    "@pact-foundation/pact": "^9.17.2",
+    "@pact-foundation/pact": "^9.17.3",
     "@types/bunyan": "^1.8.8",
     "@types/bunyan-format": "^0.2.4",
     "@types/compression": "^1.7.2",
