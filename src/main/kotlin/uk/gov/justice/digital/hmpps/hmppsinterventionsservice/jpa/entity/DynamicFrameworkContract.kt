@@ -8,8 +8,36 @@ import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
 import javax.persistence.ManyToMany
 import javax.persistence.ManyToOne
+import javax.persistence.NamedAttributeNode
+import javax.persistence.NamedEntityGraph
+import javax.persistence.NamedSubgraph
 import javax.validation.constraints.NotNull
 
+@NamedEntityGraph(
+  name = "entity-dynamicFrameWorkContract-graph",
+  attributeNodes =
+  [
+    NamedAttributeNode("primeProvider"),
+    NamedAttributeNode("npsRegion"),
+    NamedAttributeNode(value = "pccRegion", subgraph = "pcc-region"),
+    NamedAttributeNode("subcontractorProviders"),
+    NamedAttributeNode(value = "contractType", subgraph = "contractType")
+  ],
+  subgraphs = [
+    NamedSubgraph(
+      name = "pcc-region",
+      attributeNodes = [
+        NamedAttributeNode("npsRegion"),
+      ]
+    ),
+    NamedSubgraph(
+      name = "contractType",
+      attributeNodes = [
+        NamedAttributeNode("serviceCategories"),
+      ]
+    )
+  ]
+)
 @Entity
 data class DynamicFrameworkContract(
   @Id val id: UUID,
