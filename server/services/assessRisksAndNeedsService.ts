@@ -36,7 +36,7 @@ export default class AssessRisksAndNeedsService {
         return null
       }
 
-      throw createError(restClientError.status, restClientError, {
+      throw createError(restClientError.status || 500, restClientError, {
         userMessage: "Could not get service user's risk scores from OASys.",
       })
     }

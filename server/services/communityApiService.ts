@@ -37,7 +37,7 @@ export default class CommunityApiService {
       })) as ExpandedDeliusServiceUser
     } catch (err) {
       const restClientError = err as RestClientError
-      throw createError(restClientError.status, restClientError, {
+      throw createError(restClientError.status || 500, restClientError, {
         userMessage: 'Could not retrieve service user details from nDelius.',
       })
     }
@@ -80,7 +80,7 @@ export default class CommunityApiService {
       return deliusOffenderManagers.find(offenderManager => offenderManager.isResponsibleOfficer) || null
     } catch (err) {
       const restClientError = err as RestClientError
-      throw createError(restClientError.status, restClientError, {
+      throw createError(restClientError.status || 500, restClientError, {
         userMessage: 'Could retrieve Responsible Officer from nDelius.',
       })
     }
