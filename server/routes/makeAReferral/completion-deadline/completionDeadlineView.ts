@@ -1,6 +1,6 @@
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
 import ViewUtils from '../../../utils/viewUtils'
-import { DateInputArgs } from '../../../utils/govukFrontendTypes'
+import {DateInputArgs, TextareaArgs} from '../../../utils/govukFrontendTypes'
 
 export default class CompletionDeadlineView {
   constructor(private readonly presenter: CompletionDeadlinePresenter) {}
@@ -46,6 +46,38 @@ export default class CompletionDeadlineView {
     }
   }
 
+  private get textAreaArgs(): TextareaArgs {
+    return {
+      name: 'reason-for-change',
+      id: 'reason-for-change',
+      label: {
+        text: "What is the reason for changing the completion date?",
+        classes: 'govuk-label--l',
+        isPageHeading: true,
+      },
+      // errorMessage: ViewUtils.govukErrorMessage("error"),
+      hint: {
+        text: this.presenter.hint,
+      },
+      // value: this.presenter.value,
+    }
+  }
+  //
+  // private readonly addActivityTextareaArgs = {
+  //   name: 'description',
+  //   id: 'description',
+  //   label: {
+  //     html: `<h2 class="govuk-heading-m">${ViewUtils.escape(`Activity ${this.presenter.activityNumber}`)}</h2>`,
+  //   },
+  //   hint: {
+  //     text: 'Please write the details of the activity here.',
+  //   },
+  //   value: this.presenter.existingActivity?.description,
+  //   errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
+  // }
+
+
+
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   get renderArgs(): [string, Record<string, unknown>] {
@@ -55,6 +87,8 @@ export default class CompletionDeadlineView {
         presenter: this.presenter,
         dateInputArgs: this.dateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
+        sentReferral: this.presenter.sentReferral,
+        textAreaArgs: this.textAreaArgs
       },
     ]
   }

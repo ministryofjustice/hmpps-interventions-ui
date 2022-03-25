@@ -12,6 +12,10 @@
 
       {{ govukBackLink(backLinkArgs) }}
 
+      {% if presenter.showSuccess %}
+         {{ govukNotificationBanner(notificationBannerArgs) }}
+      {% endif %}
+
       <h1 class="govuk-heading-l">{{ presenter.text.title }}</h1>
 
       {{ mojSubNavigation(subNavArgs) }}

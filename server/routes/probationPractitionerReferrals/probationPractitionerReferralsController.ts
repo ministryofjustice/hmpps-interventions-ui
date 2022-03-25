@@ -208,6 +208,8 @@ export default class ProbationPractitionerReferralsController {
   async showReferral(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
+    const successfulChange = req.query.success
+    const showSuccess = !!successfulChange
 
     const { crn } = sentReferral.referral.serviceUser
     const [intervention, sentBy, expandedServiceUser, conviction, riskInformation, riskSummary, responsibleOfficer] =
@@ -241,7 +243,8 @@ export default class ProbationPractitionerReferralsController {
       false,
       expandedServiceUser,
       riskSummary,
-      responsibleOfficer
+      responsibleOfficer,
+      showSuccess
     )
     const view = new ShowReferralView(presenter)
     ControllerUtils.renderWithLayout(res, view, expandedServiceUser)
