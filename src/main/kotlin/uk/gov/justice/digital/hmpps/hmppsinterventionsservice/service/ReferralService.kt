@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralDetails
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProviderSentReferralSummary
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
@@ -34,6 +35,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Aut
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralDetailsRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.specification.ReferralSpecifications
@@ -73,6 +75,7 @@ class ReferralService(
   val hmppsAuthService: HMPPSAuthService,
   val telemetryService: TelemetryService,
   val draftOasysRiskInformationService: DraftOasysRiskInformationService,
+  val referralDetailsRepository: ReferralDetailsRepository,
 ) {
   companion object {
     private val logger = KotlinLogging.logger {}
@@ -345,9 +348,39 @@ class ReferralService(
     }
   }
 
-  fun updateDraftReferral(referral: Referral, update: DraftReferralDTO): Referral {
-    validateDraftReferralUpdate(referral, update)
+  private fun updateContainsReferralDetails(update: DraftReferralDTO): Boolean {
+    return update.completionDeadline != null || update.furtherInformation != null || update.maximumEnforceableDays != null
+  }
 
+  private fun updateReferralDetails(referral: Referral, update:DraftReferralDTO, actor: AuthUser, reason: String) {
+    if (!updateContainsReferralDetails(update)) {
+      return
+    }
+
+    val existingDetails = referralDetailsRepository.findLatestByReferralId(referral.id)
+
+    val newDetails = ReferralDetails(
+      UUID.randomUUID(),
+      null,
+      referral.id,
+      OffsetDateTime.now(),
+      actor.id,
+      reason,
+      update.completionDeadline ?: existingDetails?.completionDeadline,
+      update.furtherInformation ?: existingDetails?.furtherInformation,
+      update.maximumEnforceableDays ?: existingDetails?.maximumEnforceableDays,
+    )
+
+    referralDetailsRepository.saveAndFlush(newDetails)
+
+    existingDetails?.let {
+      it.supersededBy = newDetails
+      referralDetailsRepository.saveAndFlush(it)
+    }
+
+    // TODO: currently we are duplicating these fields in both the referral, and
+    //       referral_details tables. once we solely rely on the latter, we can
+    //       remove the code to set these fields in this method.
     update.completionDeadline?.let {
       referral.completionDeadline = it
     }
@@ -356,6 +389,12 @@ class ReferralService(
       referral.furtherInformation = it
     }
 
+    update.maximumEnforceableDays?.let {
+      referral.maximumEnforceableDays = it
+    }
+  }
+
+  private fun updateServiceUserNeeds(referral: Referral, update: DraftReferralDTO) {
     update.additionalNeedsInformation?.let {
       referral.additionalNeedsInformation = it
     }
@@ -373,20 +412,15 @@ class ReferralService(
       referral.hasAdditionalResponsibilities = it
       referral.whenUnavailable = if (it) update.whenUnavailable else null
     }
+  }
 
+  private fun updateDraftRiskInformation(referral: Referral, update: DraftReferralDTO) {
     update.additionalRiskInformation?.let {
       referral.additionalRiskInformation = it
       referral.additionalRiskInformationUpdatedAt = OffsetDateTime.now()
     }
-
-    update.maximumEnforceableDays?.let {
-      referral.maximumEnforceableDays = it
-    }
-
-    update.relevantSentenceId?.let {
-      referral.relevantSentenceId = it
-    }
-
+  }
+  private fun updateServiceUserDetails(referral: Referral, update: DraftReferralDTO) {
     update.serviceUser?.let {
       referral.serviceUserData = ServiceUserData(
         referral = referral,
@@ -401,11 +435,17 @@ class ReferralService(
         disabilities = it.disabilities,
       )
     }
+  }
 
+  private fun updateServiceCategoryDetails(referral: Referral, update: DraftReferralDTO) {
     // The selected complexity levels and desired outcomes need to be removed if the user has unselected service categories that are linked to them
     update.serviceCategoryIds?.let { serviceCategoryIds ->
-      referral.complexityLevelIds = referral.complexityLevelIds?.filterKeys { serviceCategoryId -> serviceCategoryIds.contains(serviceCategoryId) }?.toMutableMap()
-      referral.selectedDesiredOutcomes = referral.selectedDesiredOutcomes?.filter { desiredOutcome -> serviceCategoryIds.contains(desiredOutcome.serviceCategoryId) }?.toMutableList()
+      referral.complexityLevelIds =
+        referral.complexityLevelIds?.filterKeys { serviceCategoryId -> serviceCategoryIds.contains(serviceCategoryId) }
+          ?.toMutableMap()
+      referral.selectedDesiredOutcomes =
+        referral.selectedDesiredOutcomes?.filter { desiredOutcome -> serviceCategoryIds.contains(desiredOutcome.serviceCategoryId) }
+          ?.toMutableList()
     }
 
     // Need to save and flush the entity before removing selected service categories due to constraint violations being thrown from selected complexity levels and desired outcomes
@@ -427,6 +467,22 @@ class ReferralService(
         referral.selectedServiceCategories = updatedServiceCategories.toMutableSet()
       }
     }
+  }
+
+  fun updateDraftReferral(referral: Referral, update: DraftReferralDTO): Referral {
+    validateDraftReferralUpdate(referral, update)
+
+    updateReferralDetails(referral, update, referral.createdBy, "draft referral update")
+    updateServiceUserDetails(referral, update)
+    updateServiceUserNeeds(referral, update)
+    updateDraftRiskInformation(referral, update)
+    updateServiceCategoryDetails(referral, update)
+
+    // this field doesn't fit into any other categories - is this a smell?
+    update.relevantSentenceId?.let {
+      referral.relevantSentenceId = it
+    }
+
     return referralRepository.save(referral)
   }
 
