@@ -93,7 +93,7 @@
   },
   "//": "TODO validator is pinned for CVE-2021-3765; remove when fixed upstream",
   "dependencies": {
-    "@ministryofjustice/frontend": "1.0.1",
+    "@ministryofjustice/frontend": "1.2.0",
     "@sentry/node": "^6.19.2",
     "@types/connect-flash": "0.0.37",
     "@types/express-serve-static-core": "^4.17.28",
