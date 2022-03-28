@@ -352,6 +352,25 @@ class ReferralService(
     return update.completionDeadline != null || update.furtherInformation != null || update.maximumEnforceableDays != null
   }
 
+  @Deprecated("""
+    currently we are duplicating these fields in both the referral 
+    and referral_details tables. once we solely rely on the latter, 
+    we can remove this method entirely.
+  """)
+  private fun legacyUpdateReferralDetails(referral: Referral, update: DraftReferralDTO) {
+    update.completionDeadline?.let {
+      referral.completionDeadline = it
+    }
+
+    update.furtherInformation?.let {
+      referral.furtherInformation = it
+    }
+
+    update.maximumEnforceableDays?.let {
+      referral.maximumEnforceableDays = it
+    }
+  }
+
   private fun updateReferralDetails(referral: Referral, update:DraftReferralDTO, actor: AuthUser, reason: String) {
     if (!updateContainsReferralDetails(update)) {
       return
@@ -380,21 +399,15 @@ class ReferralService(
         existingDetails?.maximumEnforceableDays,
       )
 
-    // fixme: currently we are duplicating these fields in both the referral, and
-    //        referral_details tables. once we solely rely on the latter, we can
-    //        remove the code to set the old fields in this method.
     update.completionDeadline?.let {
-      referral.completionDeadline = it
       newDetails.completionDeadline = it
     }
 
     update.furtherInformation?.let {
-      referral.furtherInformation = it
       newDetails.furtherInformation = it
     }
 
     update.maximumEnforceableDays?.let {
-      referral.maximumEnforceableDays = it
       newDetails.maximumEnforceableDays = it
     }
 
@@ -484,6 +497,7 @@ class ReferralService(
   fun updateDraftReferral(referral: Referral, update: DraftReferralDTO): Referral {
     validateDraftReferralUpdate(referral, update)
 
+    legacyUpdateReferralDetails(referral, update)
     updateReferralDetails(referral, update, referral.createdBy, "initial referral details")
     updateServiceUserDetails(referral, update)
     updateServiceUserNeeds(referral, update)
