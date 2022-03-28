@@ -352,11 +352,13 @@ class ReferralService(
     return update.completionDeadline != null || update.furtherInformation != null || update.maximumEnforceableDays != null
   }
 
-  @Deprecated("""
+  @Deprecated(
+    """
     currently we are duplicating these fields in both the referral 
     and referral_details tables. once we solely rely on the latter, 
     we can remove this method entirely.
-  """)
+  """
+  )
   private fun legacyUpdateReferralDetails(referral: Referral, update: DraftReferralDTO) {
     update.completionDeadline?.let {
       referral.completionDeadline = it
@@ -371,7 +373,7 @@ class ReferralService(
     }
   }
 
-  private fun updateReferralDetails(referral: Referral, update:DraftReferralDTO, actor: AuthUser, reason: String) {
+  private fun updateReferralDetails(referral: Referral, update: DraftReferralDTO, actor: AuthUser, reason: String) {
     if (!updateContainsReferralDetails(update)) {
       return
     }
