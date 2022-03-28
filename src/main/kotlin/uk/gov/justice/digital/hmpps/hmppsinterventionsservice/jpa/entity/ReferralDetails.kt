@@ -11,7 +11,7 @@ import javax.persistence.OneToOne
 @Entity
 data class ReferralDetails (
   @Id val id: UUID,
-  @OneToOne var supersededBy: ReferralDetails?,
+  var supersededById: UUID?,
   val referralId: UUID,
   val createdAt: OffsetDateTime,
   @Column(name="created_by") val createdByUserId: String,

@@ -6,6 +6,9 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referra
 import java.util.UUID
 
 interface ReferralDetailsRepository: JpaRepository<ReferralDetails, UUID> {
-  @Query("select rd from ReferralDetails rd where rd.referralId = :referralId and rd.supersededBy is null")
+  @Query("select rd from ReferralDetails rd where rd.referralId = :referralId and rd.supersededById is null")
   fun findLatestByReferralId(referralId: UUID): ReferralDetails?
+
+  @Query("select rd from ReferralDetails rd where rd.supersededById = :currentId")
+  fun getPreviousVersion(currentId: UUID): ReferralDetails?
 }

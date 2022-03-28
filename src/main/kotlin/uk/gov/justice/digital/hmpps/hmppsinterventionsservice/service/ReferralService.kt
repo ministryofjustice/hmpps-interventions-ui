@@ -401,7 +401,7 @@ class ReferralService(
     referralDetailsRepository.saveAndFlush(newDetails)
 
     if (existingDetails !== null && existingDetails !== newDetails) {
-      existingDetails.supersededBy = newDetails
+      existingDetails.supersededById = newDetails.id
       referralDetailsRepository.saveAndFlush(existingDetails)
     }
   }
