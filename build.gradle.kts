@@ -66,7 +66,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework.boot:spring-boot-starter-validation")
   implementation("org.hibernate:hibernate-core:5.6.7.Final")
-  implementation("com.vladmihalcea:hibernate-types-52:2.14.0")
+  implementation("com.vladmihalcea:hibernate-types-52:2.14.1")
   runtimeOnly("org.flywaydb:flyway-core")
   runtimeOnly("org.postgresql:postgresql:42.2.25")
 
