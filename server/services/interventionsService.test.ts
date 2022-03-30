@@ -1478,6 +1478,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       createdAt: '2021-01-11T10:32:12.382884Z',
       completionDeadline: '2021-04-01',
       serviceProvider: {
+        id: '12345',
         name: 'Harmony Living',
       },
       interventionId: '000b2538-914b-4641-a1cc-a293409536bf',

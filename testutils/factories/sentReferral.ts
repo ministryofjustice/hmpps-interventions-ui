@@ -11,6 +11,7 @@ const exampleReferralFields = () => {
     createdAt: '2020-12-07T20:45:21.986389Z',
     completionDeadline: '2021-04-01',
     serviceProvider: {
+      id: '1234',
       name: 'Harmony Living',
     },
     interventionId: interventionFactory.build().id,
