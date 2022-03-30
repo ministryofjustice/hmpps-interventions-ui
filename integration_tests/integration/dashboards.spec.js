@@ -1,4 +1,4 @@
-import sentReferralFactory from '../../testutils/factories/sentReferral'
+import sentReferralDashboardFactory from '../../testutils/factories/sentReferralForDashboard'
 import interventionFactory from '../../testutils/factories/intervention'
 import pageFactory from '../../testutils/factories/page'
 
@@ -17,15 +17,12 @@ describe('Dashboards', () => {
     })
 
     const sentReferrals = [
-      sentReferralFactory.build({
+      sentReferralDashboardFactory.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'ABCABCA1',
-        referral: {
-          interventionId: accommodationIntervention.id,
-          serviceUser: { firstName: 'George', lastName: 'Michael' },
-        },
+        serviceUser: { firstName: 'George', lastName: 'Michael' },
       }),
-      sentReferralFactory.build({
+      sentReferralDashboardFactory.build({
         sentAt: '2020-12-13T13:00:00.000000Z',
         assignedTo: {
           username: 'A. Caseworker',
@@ -33,11 +30,8 @@ describe('Dashboards', () => {
           authSource: 'auth',
         },
         referenceNumber: 'ABCABCA2',
-        referral: {
-          interventionId: womensServicesIntervention.id,
-          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
-          serviceProvider: { name: 'Forward Solutions' },
-        },
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+        serviceProvider: { name: 'Forward Solutions' },
       }),
     ]
 
@@ -208,13 +202,10 @@ describe('Dashboards', () => {
     })
 
     const sentReferrals = [
-      sentReferralFactory.assigned().build({
+      sentReferralDashboardFactory.assigned().build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'REFERRAL_REF',
-        referral: {
-          interventionId: accommodationIntervention.id,
-          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
-        },
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
       }),
     ]
 

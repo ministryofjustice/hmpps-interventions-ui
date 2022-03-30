@@ -174,7 +174,7 @@ export default class InterventionsServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `${this.mockPrefix}/sent-referrals/paged\\?.*`,
+        urlPattern: `${this.mockPrefix}/sent-referrals/summaries\\?.*`,
       },
       response: {
         status: 200,
