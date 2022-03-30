@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Dyn
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.NPSRegionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralDetailsRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceProviderRepository
@@ -53,6 +54,7 @@ abstract class IntegrationTestBase {
   @Autowired protected lateinit var appointmentDeliveryRepository: AppointmentDeliveryRepository
   @Autowired protected lateinit var appointmentDeliveryAddressRepository: AppointmentDeliveryAddressRepository
   @Autowired protected lateinit var caseNoteRepository: CaseNoteRepository
+  @Autowired protected lateinit var referralDetailsRepository: ReferralDetailsRepository
   protected lateinit var setupAssistant: SetupAssistant
 
   @BeforeEach
@@ -76,6 +78,7 @@ abstract class IntegrationTestBase {
       appointmentDeliveryRepository,
       appointmentDeliveryAddressRepository,
       caseNoteRepository,
+      referralDetailsRepository,
     )
     setupAssistant.cleanAll()
   }
