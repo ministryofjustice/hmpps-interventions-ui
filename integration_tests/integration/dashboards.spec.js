@@ -20,6 +20,7 @@ describe('Dashboards', () => {
       sentReferralDashboardFactory.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'ABCABCA1',
+        assignedTo: null,
         serviceUser: { firstName: 'George', lastName: 'Michael' },
       }),
       sentReferralDashboardFactory.build({
@@ -32,6 +33,7 @@ describe('Dashboards', () => {
         referenceNumber: 'ABCABCA2',
         serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
         serviceProvider: { name: 'Forward Solutions' },
+        interventionTitle: "Women's Services - West Midlands",
       }),
     ]
 
