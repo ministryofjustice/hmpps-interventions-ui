@@ -2,6 +2,7 @@ plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.1.1"
   kotlin("plugin.spring") version "1.6.10"
   id("org.jetbrains.kotlin.plugin.jpa") version "1.6.10"
+  id("jacoco")
 }
 
 repositories {
@@ -14,10 +15,35 @@ configurations {
   }
 }
 
+jacoco {
+  toolVersion = "0.8.7"
+}
+
 tasks {
   test {
     useJUnitPlatform {
       exclude("**/*PactTest*")
+    }
+    finalizedBy(jacocoTestReport)
+    minHeapSize = "128m"
+    maxHeapSize = "512m"
+  }
+
+  jacocoTestReport {
+    dependsOn(test)
+
+    reports {
+      html.required.set(true)
+    }
+  }
+
+  jacocoTestCoverageVerification {
+    violationRules {
+      rule {
+        limit {
+          minimum = "0.8".toBigDecimal()
+        }
+      }
     }
   }
 
