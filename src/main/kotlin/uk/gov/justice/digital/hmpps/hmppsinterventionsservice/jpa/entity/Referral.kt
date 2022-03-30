@@ -34,10 +34,10 @@ class SelectedDesiredOutcomesMapping(
 )
 
 @Entity
-@Table(indexes = arrayOf(Index(columnList = "created_by_id")))
+@Table(name = "referral", indexes = arrayOf(Index(columnList = "created_by_id")))
 class Referral(
-  @ElementCollection val assignments: MutableList<ReferralAssignment> = mutableListOf(),
-
+  @ElementCollection
+  val assignments: MutableList<ReferralAssignment> = mutableListOf(),
   // sent referral fields
   var sentAt: OffsetDateTime? = null,
   @ManyToOne @Fetch(FetchMode.JOIN) var sentBy: AuthUser? = null,

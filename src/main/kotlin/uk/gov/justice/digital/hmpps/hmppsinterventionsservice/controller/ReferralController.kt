@@ -33,7 +33,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.EndReferralReq
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ReferralAssignmentDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SelectedDesiredOutcomesDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralDTO
-import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralSummaryDTO
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SentReferralSummaryForDashboardDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.ServiceCategoryFullDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SetComplexityLevelRequestDTO
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.SupplierAssessmentDTO
@@ -41,6 +41,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.dto.Views
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.CancellationReason
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralForDashboard
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SupplierAssessment
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.ActionPlanService
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service.DraftOasysRiskInformationService
@@ -121,16 +122,16 @@ class ReferralController(
     @Nullable @RequestParam(name = "cancelled", required = false) cancelled: Boolean?,
     @Nullable @RequestParam(name = "unassigned", required = false) unassigned: Boolean?,
     @Nullable @RequestParam(name = "assignedTo", required = false) assignedToUserId: String?,
-  ): List<SentReferralSummaryDTO> {
+  ): List<SentReferralSummaryForDashboardDTO> {
     val user = userMapper.fromToken(authentication)
-    val referrals = referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId, null) as List<Referral>
+    val referrals = referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId, null) as List<ReferralForDashboard>
     logger.info(
       "returning list of referrals from /sent-referrals",
       kv("userType", user.authSource),
       kv("numberOfReferrals", referrals.size),
       kv("params", mapOf("concluded" to concluded, "cancelled" to cancelled, "unassigned" to unassigned, "assignedTo" to (assignedToUserId != null)))
     )
-    return referrals.map { SentReferralSummaryDTO.from(it) }
+    return referrals.map { SentReferralSummaryForDashboardDTO.from(it) }
   }
 
   @JsonView(Views.SentReferral::class)
@@ -142,9 +143,29 @@ class ReferralController(
     @Nullable @RequestParam(name = "unassigned", required = false) unassigned: Boolean?,
     @Nullable @RequestParam(name = "assignedTo", required = false) assignedToUserId: String?,
     @PageableDefault(page = 0, size = 50, sort = ["sentAt"]) page: Pageable,
-  ): Page<SentReferralSummaryDTO> {
+  ): Page<SentReferralSummaryForDashboardDTO> {
     val user = userMapper.fromToken(authentication)
-    return (referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId, page) as Page<Referral>).map { SentReferralSummaryDTO.from(it) }.also {
+    return (referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId, page) as Page<ReferralForDashboard>).map { SentReferralSummaryForDashboardDTO.from(it) }.also {
+      telemetryClient.trackEvent(
+        "PagedDashboardRequest",
+        null,
+        mutableMapOf("totalNumberOfReferrals" to it.totalElements.toDouble(), "pageSize" to page.pageSize.toDouble())
+      )
+    }
+  }
+
+  @JsonView(Views.SentReferral::class)
+  @GetMapping("/sent-referrals/summaries")
+  fun getSentReferralsForDashboard(
+    authentication: JwtAuthenticationToken,
+    @Nullable @RequestParam(name = "concluded", required = false) concluded: Boolean?,
+    @Nullable @RequestParam(name = "cancelled", required = false) cancelled: Boolean?,
+    @Nullable @RequestParam(name = "unassigned", required = false) unassigned: Boolean?,
+    @Nullable @RequestParam(name = "assignedTo", required = false) assignedToUserId: String?,
+    @PageableDefault(page = 0, size = 50, sort = ["sentAt"]) page: Pageable,
+  ): Page<SentReferralSummaryForDashboardDTO> {
+    val user = userMapper.fromToken(authentication)
+    return (referralService.getSentReferralsForUser(user, concluded, cancelled, unassigned, assignedToUserId, page) as Page<ReferralForDashboard>).map { SentReferralSummaryForDashboardDTO.from(it) }.also {
       telemetryClient.trackEvent(
         "PagedDashboardRequest",
         null,
