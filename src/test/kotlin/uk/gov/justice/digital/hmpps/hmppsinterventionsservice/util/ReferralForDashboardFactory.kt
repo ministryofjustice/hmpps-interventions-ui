@@ -18,7 +18,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
+class ReferralForDashboardFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   private val authUserFactory = AuthUserFactory(em)
   private val interventionFactory = InterventionFactory(em)
   private val cancellationReasonFactory = CancellationReasonFactory(em)
@@ -56,6 +56,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
   fun createSent(
     id: UUID = UUID.randomUUID(),
     createdAt: OffsetDateTime = OffsetDateTime.now(),
+    concludedAt: OffsetDateTime? = createdAt.plusHours(3),
     createdBy: AuthUser = authUserFactory.create(),
     serviceUserCRN: String = "X123456",
     relevantSentenceId: Long = 1234567L,
@@ -72,8 +73,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     assignments: List<ReferralAssignment> = emptyList(),
 
     supplierAssessment: SupplierAssessment? = null,
-  ): Referral {
-    val referral = create(
+  ): ReferralForDashboard {
+    create(
       id = id,
       createdAt = createdAt,
       createdBy = createdBy,
@@ -90,14 +91,29 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       supplementaryRiskId = supplementaryRiskId,
 
       assignments = assignments,
+      concludedAt = concludedAt,
       supplierAssessment = supplierAssessment
     )
-    return referral
+
+    return ReferralForDashboard(
+      id = id,
+      serviceUserCRN = serviceUserCRN,
+      intervention = intervention,
+      createdBy = createdBy,
+      sentAt = sentAt,
+      sentBy = sentBy,
+      referenceNumber = referenceNumber,
+      supplementaryRiskId = supplementaryRiskId,
+      concludedAt = concludedAt,
+      assignments = assignments.toMutableList(),
+
+    )
   }
 
   fun createAssigned(
     id: UUID = UUID.randomUUID(),
     createdAt: OffsetDateTime = OffsetDateTime.now(),
+    concludedAt: OffsetDateTime? = createdAt.plusHours(3),
     createdBy: AuthUser = authUserFactory.create(),
     serviceUserCRN: String = "X123456",
     relevantSentenceId: Long = 1234567L,
@@ -116,7 +132,7 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     ),
 
     supplierAssessment: SupplierAssessment? = null,
-  ): Referral {
+  ): ReferralForDashboard {
     val referral = create(
       id = id,
       createdAt = createdAt,
@@ -134,9 +150,23 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
       supplementaryRiskId = supplementaryRiskId,
 
       assignments = assignments,
+      concludedAt = concludedAt,
       supplierAssessment = supplierAssessment
     )
-    return referral
+
+    return ReferralForDashboard(
+      id = id,
+      serviceUserCRN = serviceUserCRN,
+      intervention = intervention,
+      createdBy = createdBy,
+      sentAt = sentAt,
+      sentBy = sentBy,
+      referenceNumber = referenceNumber,
+      supplementaryRiskId = supplementaryRiskId,
+      concludedAt = concludedAt,
+      assignments = assignments.toMutableList()
+
+    )
   }
 
   fun createEnded(
@@ -163,8 +193,8 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
     concludedAt: OffsetDateTime? = null,
 
     endOfServiceReport: EndOfServiceReport? = null,
-  ): Referral {
-    return create(
+  ): ReferralForDashboard {
+    create(
       id = id,
       createdAt = createdAt,
       createdBy = createdBy,
@@ -190,23 +220,18 @@ class ReferralFactory(em: TestEntityManager? = null) : EntityFactory(em) {
 
       endOfServiceReport = endOfServiceReport,
     )
-  }
-
-  fun getReferralForDashboard(referral: Referral, endOfServiceReport: EndOfServiceReport? = null): ReferralForDashboard {
 
     return ReferralForDashboard(
-      id = referral.id,
-      serviceUserCRN = referral.serviceUserCRN,
-      createdBy = referral.createdBy,
-      intervention = referral.intervention,
-      sentAt = referral.sentAt,
-      sentBy = referral.sentBy,
-      referenceNumber = referral.referenceNumber,
-      supplementaryRiskId = referral.supplementaryRiskId,
-      concludedAt = referral.concludedAt,
-      assignments = referral.assignments,
-      endRequestedAt = referral.endRequestedAt,
-      endOfServiceReport = referral.endOfServiceReport ?: endOfServiceReport
+      id = id,
+      serviceUserCRN = serviceUserCRN,
+      intervention = intervention,
+      createdBy = createdBy,
+      sentAt = sentAt,
+      sentBy = sentBy,
+      referenceNumber = referenceNumber,
+      supplementaryRiskId = supplementaryRiskId,
+      concludedAt = concludedAt,
+      assignments = assignments.toMutableList()
     )
   }
 

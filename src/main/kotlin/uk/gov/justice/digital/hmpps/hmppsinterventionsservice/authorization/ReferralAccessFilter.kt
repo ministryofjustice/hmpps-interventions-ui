@@ -4,6 +4,7 @@ import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.AuthUser
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralForDashboard
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProviderSentReferralSummary
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.specification.ReferralSpecifications
 import java.util.UUID
@@ -13,7 +14,7 @@ class ReferralAccessFilter(
   private val serviceProviderAccessScopeMapper: ServiceProviderAccessScopeMapper,
 ) {
 
-  fun serviceProviderReferrals(referralSpec: Specification<Referral>, user: AuthUser): Specification<Referral> {
+  fun serviceProviderReferrals(referralSpec: Specification<ReferralForDashboard>, user: AuthUser): Specification<ReferralForDashboard> {
     val userScope = serviceProviderAccessScopeMapper.fromUser(user)
     return referralSpec.and(ReferralSpecifications.withSPAccess(userScope.contracts))
   }

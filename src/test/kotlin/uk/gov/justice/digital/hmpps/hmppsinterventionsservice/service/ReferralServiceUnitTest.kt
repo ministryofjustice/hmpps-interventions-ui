@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Aut
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralForDashboardRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.AuthUserFactory
@@ -51,6 +52,7 @@ import java.util.UUID
 class ReferralServiceUnitTest {
   private val authUserRepository: AuthUserRepository = mock()
   private val referralRepository: ReferralRepository = mock()
+  private val referralForDashboardRepository: ReferralForDashboardRepository = mock()
   private val interventionRepository: InterventionRepository = mock()
   private val referralEventPublisher: ReferralEventPublisher = mock()
   private val referralConcluder: ReferralConcluder = mock()
@@ -81,7 +83,7 @@ class ReferralServiceUnitTest {
   private val draftOasysRiskInformationFactory = DraftOasysRiskInformationFactory()
 
   private val referralService = ReferralService(
-    referralRepository, authUserRepository, interventionRepository, referralConcluder,
+    referralRepository, referralForDashboardRepository, authUserRepository, interventionRepository, referralConcluder,
     referralEventPublisher, referralReferenceGenerator, cancellationReasonRepository,
     deliverySessionRepository, serviceCategoryRepository, referralAccessChecker, userTypeChecker,
     serviceProviderAccessScopeMapper, referralAccessFilter, communityAPIReferralService, serviceUserAccessChecker,

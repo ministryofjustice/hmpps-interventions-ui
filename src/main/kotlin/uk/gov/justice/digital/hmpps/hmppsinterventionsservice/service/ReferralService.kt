@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.EndOfServiceReport
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralAssignment
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralForDashboard
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.SelectedDesiredOutcomesMapping
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceProviderSentReferralSummary
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ServiceUserData
@@ -34,6 +35,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Aut
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralForDashboardRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.specification.ReferralSpecifications
@@ -53,6 +55,7 @@ data class ResponsibleProbationPractitioner(
 @Transactional
 class ReferralService(
   val referralRepository: ReferralRepository,
+  val referralForDashboardRepository: ReferralForDashboardRepository,
   val authUserRepository: AuthUserRepository,
   val interventionRepository: InterventionRepository,
   val referralConcluder: ReferralConcluder,
@@ -120,12 +123,12 @@ class ReferralService(
     return assignedReferral
   }
 
-  private fun applyOptionalConjunction(existingSpec: Specification<Referral>, predicate: Boolean?, specToJoin: Specification<Referral>): Specification<Referral> {
+  private fun applyOptionalConjunction(existingSpec: Specification<ReferralForDashboard>, predicate: Boolean?, specToJoin: Specification<ReferralForDashboard>): Specification<ReferralForDashboard> {
     if (predicate == null) return existingSpec
     return existingSpec.and(if (predicate) specToJoin else not(specToJoin))
   }
 
-  fun getSentReferralsForUser(user: AuthUser, concluded: Boolean?, cancelled: Boolean?, unassigned: Boolean?, assignedToUserId: String?, page: Pageable?): Iterable<Referral> {
+  fun getSentReferralsForUser(user: AuthUser, concluded: Boolean?, cancelled: Boolean?, unassigned: Boolean?, assignedToUserId: String?, page: Pageable?): Iterable<ReferralForDashboard> {
     var findSentReferralsSpec = ReferralSpecifications.sent()
     findSentReferralsSpec = applyOptionalConjunction(findSentReferralsSpec, concluded, ReferralSpecifications.concluded())
     findSentReferralsSpec = applyOptionalConjunction(findSentReferralsSpec, cancelled, ReferralSpecifications.cancelled())
@@ -152,10 +155,10 @@ class ReferralService(
     throw AccessError(user, "unsupported user type", listOf("logins from ${user.authSource} are not supported"))
   }
 
-  private fun getSentReferralsForServiceProviderUser(user: AuthUser, sentReferralFilterSpecification: Specification<Referral>, page: Pageable?): Iterable<Referral> {
+  private fun getSentReferralsForServiceProviderUser(user: AuthUser, sentReferralFilterSpecification: Specification<ReferralForDashboard>, page: Pageable?): Iterable<ReferralForDashboard> {
     // todo: query for referrals where the service provider has been granted nominated access only
     val filteredSpec = referralAccessFilter.serviceProviderReferrals(sentReferralFilterSpecification, user)
-    return if (page == null) referralRepository.findAll(filteredSpec).sortedBy { it.sentAt } else referralRepository.findAll(filteredSpec, page)
+    return if (page == null) referralForDashboardRepository.findAll(filteredSpec).sortedBy { it.sentAt } else referralForDashboardRepository.findAll(filteredSpec, page)
   }
 
   private fun getSentReferralSummariesForServiceProviderUser(user: AuthUser, dashboardType: DashboardType?): List<ServiceProviderSentReferralSummary> {
@@ -164,7 +167,7 @@ class ReferralService(
     return referralAccessFilter.serviceProviderReferralSummaries(referralSummaries, user)
   }
 
-  private fun getSentReferralsForProbationPractitionerUser(user: AuthUser, sentReferralFilterSpecification: Specification<Referral>, page: Pageable?): Iterable<Referral> {
+  private fun getSentReferralsForProbationPractitionerUser(user: AuthUser, sentReferralFilterSpecification: Specification<ReferralForDashboard>, page: Pageable?): Iterable<ReferralForDashboard> {
     var referralsForPPUser = ReferralSpecifications.createdBy(user)
     try {
       val serviceUserCRNs = communityAPIOffenderService.getManagedOffendersForDeliusUser(user).map { it.crnNumber }
@@ -180,8 +183,7 @@ class ReferralService(
 
     // todo: filter out referrals for limited access offenders (LAOs)
     val referralSpecification = where(referralsForPPUser).and(sentReferralFilterSpecification)
-    val filteredSpec = referralAccessFilter.probationPractitionerReferrals(referralSpecification, user)
-    return if (page == null) referralRepository.findAll(filteredSpec).sortedBy { it.sentAt } else referralRepository.findAll(filteredSpec, page)
+    return if (page == null) referralForDashboardRepository.findAll(referralSpecification).sortedBy { it.sentAt } else referralForDashboardRepository.findAll(referralSpecification, page)
   }
 
   fun requestReferralEnd(referral: Referral, user: AuthUser, reason: CancellationReason, comments: String?): Referral {
