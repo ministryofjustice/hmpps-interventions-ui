@@ -9,7 +9,7 @@ data:
 {{ (.Files.Glob "reports/team_kpi*.sql").AsConfig | indent 2 }}
 
 ---
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: team-kpis

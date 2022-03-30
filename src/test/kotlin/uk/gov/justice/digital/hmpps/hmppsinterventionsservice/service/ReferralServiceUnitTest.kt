@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.hmppsinterventionsservice.service
 import io.netty.handler.timeout.ReadTimeoutException
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -30,10 +31,12 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Cancell
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ComplexityLevel
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.DesiredOutcome
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.Referral
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.entity.ReferralDetails
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.AuthUserRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.CancellationReasonRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralDetailsRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralForDashboardRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
@@ -45,6 +48,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.DynamicFramew
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.InterventionFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ReferralFactory
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ServiceCategoryFactory
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.Optional
 import java.util.UUID
@@ -72,6 +76,7 @@ class ReferralServiceUnitTest {
   private val hmppsAuthService: HMPPSAuthService = mock()
   private val telemetryService: TelemetryService = mock()
   private val draftOasysRiskInformationService: DraftOasysRiskInformationService = mock()
+  private val referralDetailsRepository: ReferralDetailsRepository = mock()
 
   private val referralFactory = ReferralFactory()
   private val authUserFactory = AuthUserFactory()
@@ -88,7 +93,7 @@ class ReferralServiceUnitTest {
     deliverySessionRepository, serviceCategoryRepository, referralAccessChecker, userTypeChecker,
     serviceProviderAccessScopeMapper, referralAccessFilter, communityAPIReferralService, serviceUserAccessChecker,
     assessRisksAndNeedsService, communityAPIOffenderService, supplierAssessmentService, hmppsAuthService,
-    telemetryService, draftOasysRiskInformationService
+    telemetryService, draftOasysRiskInformationService, referralDetailsRepository
   )
 
   @Test
@@ -796,5 +801,111 @@ class ReferralServiceUnitTest {
 
     assertThat(response).isSameAs(sentReferral)
     verify(referralRepository).findByIdAndSentAtIsNotNull(sentReferral.id)
+  }
+
+  @Nested
+  inner class UpdateDraftReferralDetails {
+    @BeforeEach
+    fun setup() {
+      whenever(referralRepository.save(any())).thenAnswer { it.arguments[0] }
+    }
+
+    @Test
+    fun `new referral details have the same created time as the referral`() {
+      val draftReferral = referralFactory.createDraft()
+
+      // there is no existing referral details for this referral id
+      whenever(referralDetailsRepository.findLatestByReferralId(draftReferral.id)).thenReturn(null)
+
+      referralService.updateDraftReferral(
+        draftReferral,
+        DraftReferralDTO(
+          completionDeadline = LocalDate.of(3022, 3, 28)
+        )
+      )
+
+      val captor = ArgumentCaptor.forClass(ReferralDetails::class.java)
+      verify(referralDetailsRepository).saveAndFlush(captor.capture())
+
+      val referralDetails = captor.value
+      assertThat(referralDetails.createdAt).isEqualTo(draftReferral.createdAt)
+    }
+
+    @Test
+    fun `updates to the referral details for draft referrals do not create new versions`() {
+      val draftReferral = referralFactory.createDraft()
+      val existingDetails = ReferralDetails(
+        UUID.randomUUID(),
+        null,
+        draftReferral.id,
+        draftReferral.createdAt,
+        draftReferral.createdBy.id,
+        "initial version",
+        LocalDate.of(2022, 3, 28),
+        null,
+        null,
+      )
+
+      whenever(referralDetailsRepository.findLatestByReferralId(draftReferral.id)).thenReturn(existingDetails)
+      referralService.updateDraftReferral(draftReferral, DraftReferralDTO(furtherInformation = "nothing to see here"))
+
+      val captor = ArgumentCaptor.forClass(ReferralDetails::class.java)
+      verify(referralDetailsRepository).saveAndFlush(captor.capture())
+
+      val savedDetails = captor.value
+      assertThat(savedDetails.id).isEqualTo(existingDetails.id)
+      assertThat(savedDetails.createdAt).isEqualTo(existingDetails.createdAt)
+      assertThat(savedDetails.reasonForChange).isEqualTo(existingDetails.reasonForChange)
+    }
+
+    @Test
+    fun `updates to the referral details for draft referrals are saved in the existing version`() {
+      val draftReferral = referralFactory.createDraft()
+      val existingDetails = ReferralDetails(
+        UUID.randomUUID(),
+        null,
+        draftReferral.id,
+        draftReferral.createdAt,
+        draftReferral.createdBy.id,
+        "initial version",
+        LocalDate.of(2022, 3, 28),
+        null,
+        null,
+      )
+
+      whenever(referralDetailsRepository.findLatestByReferralId(draftReferral.id)).thenReturn(existingDetails)
+      referralService.updateDraftReferral(draftReferral, DraftReferralDTO(maximumEnforceableDays = 22))
+
+      val captor = ArgumentCaptor.forClass(ReferralDetails::class.java)
+      verify(referralDetailsRepository).saveAndFlush(captor.capture())
+
+      val savedDetails = captor.value
+      assertThat(savedDetails.completionDeadline).isEqualTo(existingDetails.completionDeadline)
+      assertThat(savedDetails.maximumEnforceableDays).isEqualTo(22)
+    }
+
+    @Test
+    fun `all referral details fields are persisted`() {
+      val draftReferral = referralFactory.createDraft()
+
+      whenever(referralDetailsRepository.findLatestByReferralId(draftReferral.id)).thenReturn(null)
+
+      referralService.updateDraftReferral(
+        draftReferral,
+        DraftReferralDTO(
+          completionDeadline = LocalDate.of(3022, 3, 28),
+          furtherInformation = "nothing to see here",
+          maximumEnforceableDays = 25,
+        )
+      )
+
+      val captor = ArgumentCaptor.forClass(ReferralDetails::class.java)
+      verify(referralDetailsRepository).saveAndFlush(captor.capture())
+
+      val referralDetails = captor.value
+      assertThat(referralDetails.completionDeadline).isEqualTo(LocalDate.of(3022, 3, 28))
+      assertThat(referralDetails.furtherInformation).isEqualTo("nothing to see here")
+      assertThat(referralDetails.maximumEnforceableDays).isEqualTo(25)
+    }
   }
 }
