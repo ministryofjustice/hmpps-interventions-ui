@@ -34,11 +34,13 @@ jobs:
           cache_checksum_file: "build.gradle.kts"
           cache_key: v2
           steps:
-            - run: ./gradlew check
+            - run: ./gradlew check jacocoTestCoverageVerification
       - store_test_results:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
+      - store_artifacts:
+          path: build/reports/jacoco/test
 
   validate_db:
     executor: hmpps/java
