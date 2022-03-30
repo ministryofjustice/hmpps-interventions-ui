@@ -40,6 +40,7 @@ import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.Can
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.DeliverySessionRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.EndOfServiceReportRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.InterventionRepository
+import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralDetailsRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ReferralRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.jpa.repository.ServiceCategoryRepository
 import uk.gov.justice.digital.hmpps.hmppsinterventionsservice.util.ActionPlanFactory
@@ -103,6 +104,7 @@ class ReferralServiceTest @Autowired constructor(
   private val hmppsAuthService: HMPPSAuthService = mock()
   private val telemetryService: TelemetryService = mock()
   private val draftOasysRiskInformationService: DraftOasysRiskInformationService = mock()
+  private val referralDetailsRepository: ReferralDetailsRepository = mock()
 
   private val referralService = ReferralService(
     referralRepository,
@@ -125,7 +127,8 @@ class ReferralServiceTest @Autowired constructor(
     supplierAssessmentService,
     hmppsAuthService,
     telemetryService,
-    draftOasysRiskInformationService
+    draftOasysRiskInformationService,
+    referralDetailsRepository,
   )
 
   @AfterEach
