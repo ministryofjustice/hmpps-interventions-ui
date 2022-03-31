@@ -648,6 +648,24 @@ describe('GET /referrals/:id/completion-deadline', () => {
         expect(res.text).toContain('What date does the Women&#39;s service intervention need to be completed by?')
       })
   })
+
+  it('renders a form page for amend completion-deadline', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue({
+      status: 404,
+      message: 'Some backend error message',
+    })
+    interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
+
+    await request(app)
+        .get('/referrals/1/completion-deadline')
+        .expect(200)
+        .expect(res => {
+          expect(res.text).toContain('What date does the Women&#39;s service intervention need to be completed by?')
+        })
+        .expect(res => {
+          expect(res.text).toContain('What is the reason for changing the completion date?')
+        })
+  })
   // TODO how do we (or indeed, do we) test what happens when the request has a completion deadline - i.e. that the
   // day/month/year fields are correctly populated? Do we just do it as a presenter test?
 })
@@ -673,6 +691,30 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(302)
         .expect('Location', '/referrals/1/further-information')
+
+      expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+        'token',
+        '1',
+        { completionDeadline: '2021-09-15' },
+      ])
+    })
+
+    it('successfully calls the backend and redirects if the sent referral is being amended ', async () => {
+      const referral = sentReferralFactory.build()
+
+      interventionsService.patchDraftReferral.mockRejectedValue({
+        status: 404,
+        message: 'draft referral not found',
+      })
+
+      interventionsService.updateReferralDetails.mockResolvedValue(referral)
+
+      await request(app)
+          .post('/referrals/1/completion-deadline')
+          .type('form')
+          .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
+          .expect(302)
+          .expect('Location', '/probation-practitioner/referrals/1/details?success=true')
 
       expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
         'token',

@@ -13,7 +13,7 @@ describe('CompletionDeadlineForm', () => {
 
         const data = await new CompletionDeadlineForm(request).data()
 
-        expect(data.paramsForUpdate).toEqual({ completionDeadline: '2021-09-12' })
+        expect(data.paramsForUpdate).toEqual({ "draftReferral": {completionDeadline: '2021-09-12' }, "reasdonForUpdate": undefined})
       })
     })
 

@@ -351,27 +351,29 @@ export default class MakeAReferralController {
 
   async updateCompletionDeadline(req: Request, res: Response): Promise<void> {
     // decide if updating a draft or not
-    const data = await new CompletionDeadlineForm(req).data()
+    const isSentReferral = await this.isSentReferral(req, res)
+    const data = await new CompletionDeadlineForm(req, isSentReferral).data()
 
     let error: FormValidationError | null = null
-    let isSentReferral = false
 
     if (data.paramsForUpdate) {
       try {
         await this.interventionsService.patchDraftReferral(
           res.locals.user.token.accessToken,
           req.params.id,
-          data.paramsForUpdate
+          data.paramsForUpdate.draftReferral
         )
       }
       catch (e) {
         const interventionsServiceError = e as InterventionsServiceError
         if(interventionsServiceError.message == "Not Found"){
           try{
-            console.log("call PATCH: sent-referral/{id}")
-            isSentReferral = true
+            await this.interventionsService.updateReferralDetails(
+                res.locals.user.token.accessToken,
+                req.params.id,
+                data.paramsForUpdate,
+            )
           } catch (e) {
-            // RE-LOOK at this once actual call is implemented.
             const interventionsServiceError = e as InterventionsServiceError
             error = createFormValidationErrorOrRethrow(interventionsServiceError)
           }
@@ -384,6 +386,9 @@ export default class MakeAReferralController {
     }
 
     if(isSentReferral && error === null){
+      // const subject = ` This was because ???the service provider called to say the time was to tight???`
+      // const message = `The completion date for this referral has been changed from <date> to ${data.paramsForUpdate?.draftReferral.completionDeadline}\n${data.paramsForUpdate?.reasonForUpdate}`
+      // await this.generateCaseNote(res.locals.user.token.accessToken, req.params.id, subject, message)
       res.redirect(`/probation-practitioner/referrals/${req.params.id}/details?success=true`)
       return
     }
@@ -391,17 +396,31 @@ export default class MakeAReferralController {
     if (error === null) {
       res.redirect(`/referrals/${req.params.id}/further-information`)
     } else {
-      const referral = await this.interventionsService.getDraftReferral(
-        res.locals.user.token.accessToken,
-        req.params.id
-      )
+      let referral, interventionId, serviceUserCrn, completionDeadline
+      if(isSentReferral){
+        referral = await this.interventionsService.getSentReferral(
+            res.locals.user.token.accessToken,
+            req.params.id
+        )
+        interventionId = referral.referral.interventionId
+        serviceUserCrn = referral.referral.serviceUser.crn
+        completionDeadline = referral.referral.completionDeadline
+      } else{
+        referral = await this.interventionsService.getDraftReferral(
+            res.locals.user.token.accessToken,
+            req.params.id
+        )
+        interventionId = referral.interventionId
+        serviceUserCrn = referral.serviceUser.crn
+        completionDeadline = referral.completionDeadline
+      }
 
       const [intervention, serviceUser] = await Promise.all([
-        this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
-        this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+        this.interventionsService.getIntervention(res.locals.user.token.accessToken, interventionId),
+        this.communityApiService.getServiceUserByCRN(serviceUserCrn),
       ])
 
-      const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, isSentReferral, error, req.body)
+      const presenter = new CompletionDeadlinePresenter(completionDeadline, intervention, isSentReferral, error, req.body)
       const view = new CompletionDeadlineView(presenter)
 
       res.status(400)
@@ -834,5 +853,37 @@ export default class MakeAReferralController {
     const view = new ConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async generateCaseNote(
+      accessToken: string,
+      referralId: string,
+      subject: string,
+      message: string
+  ): Promise<void> {
+
+    const caseNote = {
+      referralId: referralId,
+      subject: subject,
+      body: message,
+    }
+    await this.interventionsService.addCaseNotes(accessToken, caseNote)
+    return
+  }
+
+  async isSentReferral(req: Request, res: Response): Promise<boolean>{
+    try{
+      await this.interventionsService.getDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id
+      )
+      return false
+    } catch (e) {
+      await this.interventionsService.getSentReferral(
+          res.locals.user.token.accessToken,
+          req.params.id
+      )
+      return true
+    }
   }
 }

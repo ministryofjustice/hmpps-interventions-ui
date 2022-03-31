@@ -3,6 +3,7 @@ import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 import Intervention from '../../../models/intervention'
 import utils from '../../../utils/utils'
+import AddNewCaseNoteForm from "../../caseNotes/add/AddNewCaseNoteForm";
 
 export default class CompletionDeadlinePresenter {
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
@@ -29,7 +30,16 @@ export default class CompletionDeadlinePresenter {
       'completion-deadline',
       this.error
     ),
+    body: {
+      value: this.utils.stringValue(
+          this.caseNote ? this.caseNote.body : null,
+          AddNewCaseNoteForm.caseNoteBodyFormId
+      ),
+      errorMessage: PresenterUtils.errorMessage(this.error, AddNewCaseNoteForm.caseNoteBodyFormId),
+    },
   }
+
+  reasonForChangeErrorMessage = this.sentReferral && this.error ? 'aaa' : null
 
   // get value(): string {
   //   if (this.userInputData !== null) {

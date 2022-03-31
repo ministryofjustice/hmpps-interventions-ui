@@ -55,28 +55,13 @@ export default class CompletionDeadlineView {
         classes: 'govuk-label--l',
         isPageHeading: true,
       },
-      // errorMessage: ViewUtils.govukErrorMessage("error"),
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.reasonForChangeErrorMessage),
       hint: {
         text: this.presenter.hint,
       },
       // value: this.presenter.value,
     }
   }
-  //
-  // private readonly addActivityTextareaArgs = {
-  //   name: 'description',
-  //   id: 'description',
-  //   label: {
-  //     html: `<h2 class="govuk-heading-m">${ViewUtils.escape(`Activity ${this.presenter.activityNumber}`)}</h2>`,
-  //   },
-  //   hint: {
-  //     text: 'Please write the details of the activity here.',
-  //   },
-  //   value: this.presenter.existingActivity?.description,
-  //   errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
-  // }
-
-
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 

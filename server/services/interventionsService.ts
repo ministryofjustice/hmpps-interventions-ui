@@ -29,6 +29,7 @@ import { Page } from '../models/pagination'
 import { CaseNote } from '../models/caseNote'
 import { DraftOasysRiskInformation } from '../models/draftOasysRiskInformation'
 import ReferralDetails, { ReferralDetailsUpdate } from '../models/referralDetails'
+import {ReferralUpdate} from "../models/referralUpdate";
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -178,6 +179,20 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
       data: patch,
     })) as DraftReferral
+  }
+
+  async updateReferralDetails(token: string, id: string, patch: ReferralUpdate): Promise<SentReferral> {
+    const restClient = this.createRestClient(token)
+
+    console.log('-----------------------')
+    console.log({...patch.draftReferral, reasonForChange: patch.reasonForUpdate})
+    console.log('-----------------------')
+
+    return (await restClient.post({
+      path: `/sent-referral/${id}/referral-details`,
+      headers: { Accept: 'application/json' },
+      data: {...patch.draftReferral, reasonForChange: patch.reasonForUpdate},
+    })) as SentReferral
   }
 
   async setDesiredOutcomesForServiceCategory(
