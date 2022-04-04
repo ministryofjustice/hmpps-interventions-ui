@@ -19,7 +19,6 @@ import CaseNotePresenter from './view/caseNotePresenter'
 import CaseNoteView from './view/caseNoteView'
 import AddCaseNoteConfirmationPresenter from './add/confirmation/addCaseNoteConfirmationPresenter'
 import AddCaseNoteConfirmationView from './add/confirmation/addCaseNoteConfirmationView'
-import caseNote from "../../../testutils/factories/caseNote";
 
 export type DraftCaseNote = null | CaseNote
 

@@ -1,9 +1,8 @@
 import ShowReferralPresenter from './showReferralPresenter'
 import ViewUtils from '../../utils/viewUtils'
-import {InputArgs, NotificationBannerArgs, SummaryListArgs, TagArgs} from '../../utils/govukFrontendTypes'
+import { InputArgs, NotificationBannerArgs, SummaryListArgs, TagArgs } from '../../utils/govukFrontendTypes'
 import RoshPanelView from './roshPanelView'
 import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
-import DateUtils from "../../utils/dateUtils";
 
 interface ServiceCategorySection {
   name: string
@@ -64,11 +63,11 @@ export default class ShowReferralView {
 
   private readonly insetTextArgs = {
     html: `${ViewUtils.escape(`You can amend the completion date on this referral.`)}<br>
-          ${ViewUtils.escape(`This will send a notification to the service provider`)}`
+          ${ViewUtils.escape(`This will send a notification to the service provider`)}`,
   }
 
   get notificationBannerArgs(): NotificationBannerArgs {
-      const html = `<b>Referral changes saved</b>
+    const html = `<b>Referral changes saved</b>
           <br>
           <p>
              The service provider has been notified of the changes to this referral.
@@ -102,7 +101,7 @@ export default class ShowReferralView {
         riskLevelDetailsArgs: this.roshPanelView.riskLevelDetailsArgs,
         supplementaryRiskInformation: this.supplementaryRiskInformationView.supplementaryRiskInformationArgs,
         insetTextArgs: this.insetTextArgs,
-        notificationBannerArgs: this.notificationBannerArgs
+        notificationBannerArgs: this.notificationBannerArgs,
       },
     ]
   }

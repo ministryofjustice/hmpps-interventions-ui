@@ -1,4 +1,4 @@
-import DraftReferral from "./draftReferral";
+import DraftReferral from './draftReferral'
 
 export interface ReferralUpdate {
   draftReferral: Partial<DraftReferral>

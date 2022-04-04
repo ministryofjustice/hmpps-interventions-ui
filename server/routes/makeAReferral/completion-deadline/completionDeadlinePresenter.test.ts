@@ -59,7 +59,7 @@ describe('CompletionDeadlinePresenter', () => {
     describe('when a non-null error is passed in', () => {
       it('returns error information', () => {
         const referral = draftReferralFactory.build()
-        const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, undefined,{
+        const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, undefined, {
           errors: [
             {
               errorSummaryLinkedField: 'completion-deadline-month',

@@ -3,8 +3,7 @@ import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 import Intervention from '../../../models/intervention'
 import utils from '../../../utils/utils'
-import AddNewCaseNoteForm from "../../caseNotes/add/AddNewCaseNoteForm";
-import CompletionDeadlineForm from "./completionDeadlineForm";
+import CompletionDeadlineForm from './completionDeadlineForm'
 
 export default class CompletionDeadlinePresenter {
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
@@ -18,7 +17,7 @@ export default class CompletionDeadlinePresenter {
   constructor(
     private readonly completionDeadline: string | null,
     private readonly intervention: Intervention,
-    readonly sentReferral: Boolean | undefined = undefined,
+    readonly sentReferral: boolean | undefined = undefined,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
@@ -32,10 +31,7 @@ export default class CompletionDeadlinePresenter {
       this.error
     ),
     reasonForChange: {
-      value: this.utils.stringValue(
-          null,
-          CompletionDeadlineForm.reasonForChangeFieldId
-      ),
+      value: this.utils.stringValue(null, CompletionDeadlineForm.reasonForChangeFieldId),
       errorMessage: PresenterUtils.errorMessage(this.error, CompletionDeadlineForm.reasonForChangeFieldId),
     },
   }

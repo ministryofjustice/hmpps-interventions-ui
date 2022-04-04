@@ -1,6 +1,6 @@
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
 import ViewUtils from '../../../utils/viewUtils'
-import {DateInputArgs, TextareaArgs} from '../../../utils/govukFrontendTypes'
+import { DateInputArgs, TextareaArgs } from '../../../utils/govukFrontendTypes'
 
 export default class CompletionDeadlineView {
   constructor(private readonly presenter: CompletionDeadlinePresenter) {}
@@ -51,7 +51,7 @@ export default class CompletionDeadlineView {
       name: 'reason-for-change',
       id: 'reason-for-change',
       label: {
-        text: "What is the reason for changing the completion date?",
+        text: `What is the reason for changing the completion date?`,
         classes: 'govuk-label--l',
         isPageHeading: true,
       },
@@ -73,7 +73,7 @@ export default class CompletionDeadlineView {
         dateInputArgs: this.dateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         sentReferral: this.presenter.sentReferral,
-        textAreaArgs: this.textAreaArgs
+        textAreaArgs: this.textAreaArgs,
       },
     ]
   }

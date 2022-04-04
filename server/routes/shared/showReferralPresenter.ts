@@ -59,7 +59,7 @@ export default class ShowReferralPresenter {
     noCaseworkerAssigned: 'This intervention is not yet assigned to a caseworker.',
   }
 
-  get closeHref(): String{
+  get closeHref(): string {
     return `/probation-practitioner/referrals/${this.sentReferral.id}/details`
   }
 
@@ -228,7 +228,10 @@ export default class ShowReferralPresenter {
             ? DateUtils.formattedDate(this.sentReferral.referral.completionDeadline)
             : '',
         ],
-        changeLink: this.userType === 'probation-practitioner' ? `/referrals/${this.sentReferral.id}/completion-deadline` : undefined
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/referrals/${this.sentReferral.id}/completion-deadline`
+            : undefined,
       },
       {
         key: 'Maximum number of enforceable days',
