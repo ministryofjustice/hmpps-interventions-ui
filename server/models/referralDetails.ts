@@ -1,0 +1,13 @@
+interface ReferralDetailsFields {
+  maximumEnforceableDays: number | null
+  completionDeadline: string | null
+  furtherInformation: string | null
+}
+
+export default interface ReferralDetails extends ReferralDetailsFields {
+  referralId: string
+}
+
+export interface ReferralDetailsUpdate extends ReferralDetailsFields {
+  reasonForChange: string
+}
