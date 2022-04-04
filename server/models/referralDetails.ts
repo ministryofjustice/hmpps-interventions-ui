@@ -1,7 +1,7 @@
 interface ReferralDetailsFields {
-  maximumEnforceableDays: number | null
-  completionDeadline: string | null
-  furtherInformation: string | null
+  maximumEnforceableDays?: number | null
+  completionDeadline?: string | null
+  furtherInformation?: string | null
 }
 
 export default interface ReferralDetails extends ReferralDetailsFields {
