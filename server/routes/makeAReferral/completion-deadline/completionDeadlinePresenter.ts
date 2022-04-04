@@ -4,6 +4,7 @@ import PresenterUtils from '../../../utils/presenterUtils'
 import Intervention from '../../../models/intervention'
 import utils from '../../../utils/utils'
 import AddNewCaseNoteForm from "../../caseNotes/add/AddNewCaseNoteForm";
+import CompletionDeadlineForm from "./completionDeadlineForm";
 
 export default class CompletionDeadlinePresenter {
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
@@ -30,26 +31,12 @@ export default class CompletionDeadlinePresenter {
       'completion-deadline',
       this.error
     ),
-    body: {
+    reasonForChange: {
       value: this.utils.stringValue(
-          this.caseNote ? this.caseNote.body : null,
-          AddNewCaseNoteForm.caseNoteBodyFormId
+          null,
+          CompletionDeadlineForm.reasonForChangeFieldId
       ),
-      errorMessage: PresenterUtils.errorMessage(this.error, AddNewCaseNoteForm.caseNoteBodyFormId),
+      errorMessage: PresenterUtils.errorMessage(this.error, CompletionDeadlineForm.reasonForChangeFieldId),
     },
   }
-
-  reasonForChangeErrorMessage = this.sentReferral && this.error ? 'aaa' : null
-
-  // get value(): string {
-  //   if (this.userInputData !== null) {
-  //     return this.userInputData['further-information'] ?? ''
-  //   }
-  //
-  //   if (this.referral.furtherInformation) {
-  //     return this.referral.furtherInformation
-  //   }
-  //
-  //   return ''
-  // }
 }

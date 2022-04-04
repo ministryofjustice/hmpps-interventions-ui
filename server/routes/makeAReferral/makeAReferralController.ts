@@ -386,9 +386,6 @@ export default class MakeAReferralController {
     }
 
     if(isSentReferral && error === null){
-      // const subject = ` This was because ???the service provider called to say the time was to tight???`
-      // const message = `The completion date for this referral has been changed from <date> to ${data.paramsForUpdate?.draftReferral.completionDeadline}\n${data.paramsForUpdate?.reasonForUpdate}`
-      // await this.generateCaseNote(res.locals.user.token.accessToken, req.params.id, subject, message)
       res.redirect(`/probation-practitioner/referrals/${req.params.id}/details?success=true`)
       return
     }

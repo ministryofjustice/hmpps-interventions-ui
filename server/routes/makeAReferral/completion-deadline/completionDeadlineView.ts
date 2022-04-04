@@ -55,11 +55,11 @@ export default class CompletionDeadlineView {
         classes: 'govuk-label--l',
         isPageHeading: true,
       },
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.reasonForChangeErrorMessage),
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.reasonForChange.errorMessage),
       hint: {
         text: this.presenter.hint,
       },
-      // value: this.presenter.value,
+      value: this.presenter.fields.reasonForChange.value,
     }
   }
 
