@@ -1,12 +1,12 @@
 import { Request } from 'express'
+import * as ExpressValidator from 'express-validator'
 import errorMessages from '../../../utils/errorMessages'
 import CalendarDayInput from '../../../utils/forms/inputs/calendarDayInput'
 import { FormData } from '../../../utils/forms/formData'
 import { ReferralUpdate } from '../../../models/referralUpdate'
 import { FormValidationError } from '../../../utils/formValidationError'
 import FormUtils from '../../../utils/formUtils'
-import * as ExpressValidator from 'express-validator'
-import {FormValidationResult} from "../../../utils/forms/formValidationResult";
+import { FormValidationResult } from '../../../utils/forms/formValidationResult'
 
 export default class CompletionDeadlineForm {
   constructor(private readonly request: Request, private readonly isSentReferral: boolean) {}
@@ -19,38 +19,38 @@ export default class CompletionDeadlineForm {
     const input = new CalendarDayInput(this.request, 'completion-deadline', errorMessages.completionDeadline)
     const completionDeadlineResult = await input.validate()
     let reasonForChangeResult: FormValidationResult<string> | null = null
+
     if (this.isSentReferral) {
       reasonForChangeResult = await CompletionDeadlineForm.validate(this.request)
-      if (
-          completionDeadlineResult.error ||
-          reasonForChangeResult!.error
-      ) {
-        return {
-          paramsForUpdate: null,
-          error: {
-            errors: [
-              ...(completionDeadlineResult.error?.errors ?? []),
-              ...(reasonForChangeResult!.error?.errors ?? []),
-            ],
-          },
-        }
-      } else{
-        return {
+
+      return completionDeadlineResult.error || reasonForChangeResult!.error
+        ? {
+            paramsForUpdate: null,
+            error: {
+              errors: [
+                ...(completionDeadlineResult.error?.errors ?? []),
+                ...(reasonForChangeResult!.error?.errors ?? []),
+              ],
+            },
+          }
+        : {
+            error: null,
+            paramsForUpdate: {
+              draftReferral: { completionDeadline: completionDeadlineResult.value.iso8601 },
+              reasonForUpdate: this.request.body[CompletionDeadlineForm.reasonForChangeFieldId],
+            },
+          }
+    }
+    return completionDeadlineResult.value
+      ? {
           error: null,
           paramsForUpdate: {
             draftReferral: { completionDeadline: completionDeadlineResult.value.iso8601 },
-            reasonForUpdate: this.request.body[CompletionDeadlineForm.reasonForChangeFieldId],
+            reasonForUpdate: null,
           },
         }
-      }
-    } else{
-      if (completionDeadlineResult.value) {
-        return { error: null, paramsForUpdate: { draftReferral : {completionDeadline: completionDeadlineResult.value.iso8601 }, reasonForUpdate: null } }
-      }
-      return { error: completionDeadlineResult.error, paramsForUpdate: null }
-    }
+      : { error: completionDeadlineResult.error, paramsForUpdate: null }
   }
-
 
   static get validations() {
     return [
@@ -60,9 +60,9 @@ export default class CompletionDeadlineForm {
     ]
   }
 
-  static async validate(request: Request) :Promise<FormValidationResult<string>>{
+  static async validate(request: Request): Promise<FormValidationResult<string>> {
     const validationResult = await FormUtils.runValidations({
-      request: request,
+      request,
       validations: CompletionDeadlineForm.validations,
     })
 
@@ -83,6 +83,4 @@ export default class CompletionDeadlineForm {
     }
     return null
   }
-
-
 }
