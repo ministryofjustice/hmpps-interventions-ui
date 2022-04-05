@@ -28,6 +28,7 @@ import ApprovedActionPlanSummary from '../models/approvedActionPlanSummary'
 import { Page } from '../models/pagination'
 import { CaseNote } from '../models/caseNote'
 import { DraftOasysRiskInformation } from '../models/draftOasysRiskInformation'
+import ReferralDetails, { ReferralDetailsUpdate } from '../models/referralDetails'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -241,6 +242,15 @@ export default class InterventionsService {
       path: `/sent-referral/${id}`,
       headers: { Accept: 'application/json' },
     })) as SentReferral
+  }
+
+  async updateSentReferralDetails(token: string, id: string, update: ReferralDetailsUpdate): Promise<ReferralDetails> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/sent-referral/${id}/referral-details`,
+      data: { ...update },
+      headers: { Accept: 'application/json' },
+    })) as ReferralDetails
   }
 
   async getSentReferralsForUserToken(

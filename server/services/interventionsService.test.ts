@@ -1,6 +1,5 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
-
 import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
 import SentReferral from '../models/sentReferral'
 import ServiceUser from '../models/serviceUser'
@@ -16,6 +15,7 @@ import initialAssessmentAppointmentFactory from '../../testutils/factories/initi
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import CalendarDay from '../utils/calendarDay'
 import approvedActionPlanSummaryFactory from '../../testutils/factories/approvedActionPlanSummary'
+import referralDetailsFactory from '../../testutils/factories/referralDetails'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -1670,6 +1670,75 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         expect(referral.endRequestedReason).not.toBeNull()
         expect(referral.endRequestedComments).not.toBeNull()
       })
+    })
+  })
+
+  describe('updateSentReferralDetails', () => {
+    it('returns the updated referral details', async () => {
+      const update = {
+        reasonForChange: "change in the service user's circumstances",
+        furtherInformation: 'this person now has 4 children',
+      }
+
+      await provider.addInteraction({
+        state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
+        uponReceiving: 'a request to create a new version of the referral details with updated fields',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e/referral-details',
+          body: update,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(
+            referralDetailsFactory.build({
+              referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+              furtherInformation: update.furtherInformation,
+            })
+          ),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      const updatedDetails = await interventionsService.updateSentReferralDetails(
+        probationPractitionerToken,
+        '81d754aa-d868-4347-9c0f-50690773014e',
+        update
+      )
+      expect(updatedDetails.furtherInformation).toBe(update.furtherInformation)
+      // these fields are already set in the existing version of the referral details
+      expect(updatedDetails.maximumEnforceableDays).not.toBeNull()
+      expect(updatedDetails.completionDeadline).not.toBeNull()
+    })
+
+    it('fails if no fields to update are included', async () => {
+      const update = {
+        reasonForChange: 'some reason or another',
+      }
+
+      await provider.addInteraction({
+        state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
+        uponReceiving: 'a request to create a new version of the referral details but with no fields to update',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e/referral-details',
+          body: update,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      await expect(async () =>
+        interventionsService.updateSentReferralDetails(
+          probationPractitionerToken,
+          '81d754aa-d868-4347-9c0f-50690773014e',
+          update
+        )
+      ).rejects.toThrow(Error)
     })
   })
 
