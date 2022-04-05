@@ -819,7 +819,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubUpdateReferralDetails = async (id: string, responseJson: unknown): Promise<unknown> => {
+  stubUpdateSentReferralDetails = async (id: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'POST',

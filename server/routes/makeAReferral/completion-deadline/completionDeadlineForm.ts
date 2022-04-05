@@ -3,7 +3,7 @@ import * as ExpressValidator from 'express-validator'
 import errorMessages from '../../../utils/errorMessages'
 import CalendarDayInput from '../../../utils/forms/inputs/calendarDayInput'
 import { FormData } from '../../../utils/forms/formData'
-import { ReferralUpdate } from '../../../models/referralUpdate'
+import { ReferralDetailsFormUpdate } from '../../../models/referralUpdate'
 import { FormValidationError } from '../../../utils/formValidationError'
 import FormUtils from '../../../utils/formUtils'
 import { FormValidationResult } from '../../../utils/forms/formValidationResult'
@@ -15,7 +15,7 @@ export default class CompletionDeadlineForm {
 
   static readonly reasonForChangeFieldId = 'reason-for-change'
 
-  async data(): Promise<FormData<ReferralUpdate>> {
+  async data(): Promise<FormData<ReferralDetailsFormUpdate>> {
     const input = new CalendarDayInput(this.request, 'completion-deadline', errorMessages.completionDeadline)
     const completionDeadlineResult = await input.validate()
     let reasonForChangeResult: FormValidationResult<string> | null = null
@@ -37,7 +37,7 @@ export default class CompletionDeadlineForm {
             error: null,
             paramsForUpdate: {
               draftReferral: { completionDeadline: completionDeadlineResult.value.iso8601 },
-              reasonForUpdate: this.request.body[CompletionDeadlineForm.reasonForChangeFieldId],
+              reasonForChange: this.request.body[CompletionDeadlineForm.reasonForChangeFieldId],
             },
           }
     }
@@ -46,7 +46,7 @@ export default class CompletionDeadlineForm {
           error: null,
           paramsForUpdate: {
             draftReferral: { completionDeadline: completionDeadlineResult.value.iso8601 },
-            reasonForUpdate: null,
+            reasonForChange: null,
           },
         }
       : { error: completionDeadlineResult.error, paramsForUpdate: null }

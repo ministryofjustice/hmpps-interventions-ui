@@ -271,8 +271,8 @@ export default on => {
       return interventionsService.stubGetDraftOasysRiskInformation(arg.referralId, arg.responseJson)
     },
 
-    stubUpdateReferralDetails: arg => {
-      return interventionsService.stubUpdateReferralDetails(arg.referralId, arg.responseJson)
+    stubUpdateSentReferralDetails: arg => {
+      return interventionsService.stubUpdateSentReferralDetails(arg.referralId, arg.responseJson)
     },
   })
 }

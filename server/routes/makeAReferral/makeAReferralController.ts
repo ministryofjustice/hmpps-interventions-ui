@@ -355,11 +355,10 @@ export default class MakeAReferralController {
         }
       } else {
         try {
-          await this.interventionsService.updateReferralDetails(
-            res.locals.user.token.accessToken,
-            req.params.id,
-            data.paramsForUpdate
-          )
+          await this.interventionsService.updateSentReferralDetails(res.locals.user.token.accessToken, req.params.id, {
+            completionDeadline: data.paramsForUpdate.draftReferral.completionDeadline,
+            reasonForChange: data.paramsForUpdate.reasonForChange!,
+          })
         } catch (e) {
           const interventionsServiceError = e as InterventionsServiceError
           error = createFormValidationErrorOrRethrow(interventionsServiceError)

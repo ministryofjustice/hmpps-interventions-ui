@@ -664,7 +664,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
-    cy.stubUpdateReferralDetails(referral.id, referral)
+    cy.stubUpdateSentReferralDetails(referral.id, referral)
 
     cy.login()
 

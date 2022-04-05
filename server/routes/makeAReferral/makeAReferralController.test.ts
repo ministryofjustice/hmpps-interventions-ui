@@ -18,6 +18,7 @@ import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAn
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import draftOasysRiskInformation from '../../../testutils/factories/draftOasysRiskInformation'
+import referralDetailsFactory from '../../../testutils/factories/referralDetails'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -701,6 +702,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
 
     it('successfully calls the backend and redirects if the sent referral is being amended ', async () => {
       const referral = sentReferralFactory.build()
+      const referralDetails = referralDetailsFactory.build()
 
       interventionsService.getDraftReferral.mockRejectedValue({
         status: 404,
@@ -709,7 +711,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
 
       interventionsService.getSentReferral.mockResolvedValue(referral)
 
-      interventionsService.updateReferralDetails.mockResolvedValue(referral)
+      interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails)
 
       await request(app)
         .post('/referrals/1/completion-deadline')
@@ -723,10 +725,10 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .expect(302)
         .expect('Location', '/probation-practitioner/referrals/1/details?success=true')
 
-      expect(interventionsService.updateReferralDetails.mock.calls[0]).toEqual([
+      expect(interventionsService.updateSentReferralDetails.mock.calls[0]).toEqual([
         'token',
         '1',
-        { draftReferral: { completionDeadline: '2021-09-15' }, reasonForUpdate: 'reason' },
+        { completionDeadline: '2021-09-15', reasonForChange: 'reason' },
       ])
     })
 

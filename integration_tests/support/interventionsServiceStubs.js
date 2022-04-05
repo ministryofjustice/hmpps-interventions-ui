@@ -198,6 +198,6 @@ Cypress.Commands.add('stubGetDraftOasysRiskInformation', (referralId, responseJs
   cy.task('stubGetDraftOasysRiskInformation', { referralId, responseJson })
 })
 
-Cypress.Commands.add('stubUpdateReferralDetails', (referralId, responseJson) => {
-  cy.task('stubUpdateReferralDetails', { referralId, responseJson })
+Cypress.Commands.add('stubUpdateSentReferralDetails', (referralId, responseJson) => {
+  cy.task('stubUpdateSentReferralDetails', { referralId, responseJson })
 })

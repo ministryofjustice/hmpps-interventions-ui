@@ -1,6 +1,6 @@
 import DraftReferral from './draftReferral'
 
-export interface ReferralUpdate {
+export interface ReferralDetailsFormUpdate {
   draftReferral: Partial<DraftReferral>
-  reasonForUpdate: string | null
+  reasonForChange: string | null
 }

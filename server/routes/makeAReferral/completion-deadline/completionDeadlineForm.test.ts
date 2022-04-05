@@ -15,7 +15,7 @@ describe('CompletionDeadlineForm', () => {
 
         expect(data.paramsForUpdate).toEqual({
           draftReferral: { completionDeadline: '2021-09-12' },
-          reasonForUpdate: null,
+          reasonForChange: null,
         })
       })
     })
@@ -54,24 +54,10 @@ describe('CompletionDeadlineForm', () => {
       const data = await new CompletionDeadlineForm(request, true).data()
       expect(data.paramsForUpdate).toEqual({
         draftReferral: { completionDeadline: '2021-09-12' },
-        reasonForUpdate: 'reason',
+        reasonForChange: 'reason',
       })
     })
 
-    it('no errors for valid data', async () => {
-      const request = TestUtils.createRequest({
-        'completion-deadline-year': '2021',
-        'completion-deadline-month': '09',
-        'completion-deadline-day': '12',
-        'reason-for-change': 'reason',
-      })
-
-      const data = await new CompletionDeadlineForm(request, true).data()
-      expect(data.paramsForUpdate).toEqual({
-        draftReferral: { completionDeadline: '2021-09-12' },
-        reasonForUpdate: 'reason',
-      })
-    })
     it('returns an error if reason for change is invalid but completion date is valid', async () => {
       const request = TestUtils.createRequest({
         'completion-deadline-year': '2021',
