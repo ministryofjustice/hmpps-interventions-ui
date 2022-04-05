@@ -818,4 +818,20 @@ export default class InterventionsServiceMocks {
       },
     })
   }
+
+  stubUpdateReferralDetails = async (id: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/sent-referral/${id}/referral-details`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }
