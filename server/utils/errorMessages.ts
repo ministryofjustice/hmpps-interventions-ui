@@ -162,4 +162,7 @@ export default {
         'You must confirm that you understand that this information will be shared with the Service Provider',
     },
   },
+  amendReferralFields: {
+    missingReason: 'A reason for changing the referral must be supplied',
+  },
 }

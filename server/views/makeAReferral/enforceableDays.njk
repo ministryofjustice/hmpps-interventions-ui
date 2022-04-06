@@ -1,6 +1,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% extends "../partials/layout.njk" %}
@@ -20,6 +21,10 @@
         {% endif %}
 
         {{ govukInput(maximumEnforceableDaysInputArgs) }}
+
+        {% if reasonForChangeInputArgs %}
+          {{ govukTextarea(reasonForChangeInputArgs) }}
+        {% endif %}
 
         {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
       </form>

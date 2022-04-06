@@ -1,11 +1,9 @@
-import draftReferralFactory from '../../../../testutils/factories/draftReferral'
 import EnforceableDaysPresenter from './enforceableDaysPresenter'
 
 describe(EnforceableDaysPresenter, () => {
   describe('text', () => {
     it('contains a title and hint text', () => {
-      const draftReferral = draftReferralFactory.build()
-      const presenter = new EnforceableDaysPresenter(draftReferral)
+      const presenter = new EnforceableDaysPresenter(10)
 
       expect(presenter.text.title).toEqual('How many days will you use for this service?')
       expect(presenter.text.hintParagraphs).toEqual([
@@ -18,8 +16,7 @@ describe(EnforceableDaysPresenter, () => {
   describe('errorMessage', () => {
     describe('when no error is passed in', () => {
       it('returns null', () => {
-        const draftReferral = draftReferralFactory.build()
-        const presenter = new EnforceableDaysPresenter(draftReferral)
+        const presenter = new EnforceableDaysPresenter(10)
 
         expect(presenter.errorMessage).toBeNull()
       })
@@ -27,8 +24,7 @@ describe(EnforceableDaysPresenter, () => {
 
     describe('when an error is passed in', () => {
       it('returns an error message', () => {
-        const draftReferral = draftReferralFactory.build()
-        const presenter = new EnforceableDaysPresenter(draftReferral, {
+        const presenter = new EnforceableDaysPresenter(null, {
           errors: [
             {
               formFields: ['maximum-enforceable-days'],
@@ -46,8 +42,7 @@ describe(EnforceableDaysPresenter, () => {
   describe('errorSummary', () => {
     describe('when no error is passed in', () => {
       it('returns null', () => {
-        const draftReferral = draftReferralFactory.build()
-        const presenter = new EnforceableDaysPresenter(draftReferral)
+        const presenter = new EnforceableDaysPresenter(10)
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -55,8 +50,7 @@ describe(EnforceableDaysPresenter, () => {
 
     describe('when an error is passed in', () => {
       it('returns error information', () => {
-        const draftReferral = draftReferralFactory.build()
-        const presenter = new EnforceableDaysPresenter(draftReferral, {
+        const presenter = new EnforceableDaysPresenter(null, {
           errors: [
             {
               formFields: ['maximum-enforceable-days'],
@@ -80,8 +74,7 @@ describe(EnforceableDaysPresenter, () => {
     describe('maximumEnforceableDays', () => {
       describe('when no maximum enforceable days have been set', () => {
         it('uses an empty string value as the field value', () => {
-          const draftReferral = draftReferralFactory.build({ maximumEnforceableDays: null })
-          const presenter = new EnforceableDaysPresenter(draftReferral)
+          const presenter = new EnforceableDaysPresenter(null)
 
           expect(presenter.fields.maximumEnforceableDays).toEqual('')
         })
@@ -89,8 +82,7 @@ describe(EnforceableDaysPresenter, () => {
 
       describe('when the referral already has enforceable days set and there is no user input data', () => {
         it('uses that value as the field value', () => {
-          const draftReferral = draftReferralFactory.build({ maximumEnforceableDays: 4 })
-          const presenter = new EnforceableDaysPresenter(draftReferral)
+          const presenter = new EnforceableDaysPresenter(4)
 
           expect(presenter.fields.maximumEnforceableDays).toEqual('4')
         })
@@ -98,8 +90,7 @@ describe(EnforceableDaysPresenter, () => {
 
       describe('when there is user input data but no enforceable days value set on the referral', () => {
         it('uses that value as the field value', () => {
-          const draftReferral = draftReferralFactory.build({ maximumEnforceableDays: null })
-          const presenter = new EnforceableDaysPresenter(draftReferral, null, {
+          const presenter = new EnforceableDaysPresenter(null, null, {
             'maximum-enforceable-days': '6',
           })
 
@@ -109,8 +100,7 @@ describe(EnforceableDaysPresenter, () => {
 
       describe('when the referral already has further information and there is user input data', () => {
         it('sets the new input data as the value', () => {
-          const draftReferral = draftReferralFactory.build({ maximumEnforceableDays: 4 })
-          const presenter = new EnforceableDaysPresenter(draftReferral, null, {
+          const presenter = new EnforceableDaysPresenter(4, null, {
             'maximum-enforceable-days': '6',
           })
 

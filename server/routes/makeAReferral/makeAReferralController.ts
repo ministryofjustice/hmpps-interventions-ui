@@ -735,7 +735,7 @@ export default class MakeAReferralController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
-    const presenter = new EnforceableDaysPresenter(referral)
+    const presenter = new EnforceableDaysPresenter(referral.maximumEnforceableDays)
     const view = new EnforceableDaysView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -767,7 +767,7 @@ export default class MakeAReferralController {
       res.redirect(`/referrals/${req.params.id}/completion-deadline`)
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
-      const presenter = new EnforceableDaysPresenter(referral, error, req.body)
+      const presenter = new EnforceableDaysPresenter(referral.maximumEnforceableDays, error, req.body)
       const view = new EnforceableDaysView(presenter)
 
       res.status(400)

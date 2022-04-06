@@ -4,6 +4,7 @@ import ProbationPractitionerReferralsController from './probationPractitionerRef
 import CaseNotesController from './caseNotes/caseNotesController'
 import ReferralCancellationController from './referral/cancellation/referralCancellationController'
 import AppointmentsController from './appointments/appointmentsController'
+import AmendAReferralController from './amendAReferral/amendAReferralController'
 
 export const probationPractitionerUrlPrefix = '/probation-practitioner'
 
@@ -24,6 +25,10 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     services.draftsService,
     services.referenceDataService
   )
+  const amendAReferralController = new AmendAReferralController(
+    services.interventionsService,
+    services.communityApiService
+  )
 
   get(router, '/dashboard', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
   get(router, '/dashboard/open-cases', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
@@ -43,6 +48,14 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     probationPractitionerReferralsController.showInterventionProgress(req, res)
   )
   get(router, '/referrals/:id/details', (req, res) => probationPractitionerReferralsController.showReferral(req, res))
+
+  get(router, '/referrals/:id/update-maximum-enforceable-days', (req, res) =>
+    amendAReferralController.updateMaximumEnforceableDays(req, res)
+  )
+  post(router, '/referrals/:id/update-maximum-enforceable-days', (req, res) =>
+    amendAReferralController.updateMaximumEnforceableDays(req, res)
+  )
+
   // Legacy route to keep links in old emails still working. We'll monitor and remove once traffic drops off
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
     appointmentsController.viewLegacySubmittedPostSessionFeedbackAsProbationPractitioner(req, res)
