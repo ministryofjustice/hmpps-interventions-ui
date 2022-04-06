@@ -7,7 +7,7 @@ import LoggedInUser from '../../models/loggedInUser'
 import { Page } from '../../models/pagination'
 import Pagination from '../../utils/pagination/pagination'
 import ControllerUtils from '../../utils/controllerUtils'
-import SentReferralDashboard from '../../models/sentReferralDashboard'
+import SentReferralSummaries from '../../models/sentReferralSummaries'
 
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
 export default class DashboardPresenter {
@@ -18,13 +18,13 @@ export default class DashboardPresenter {
   private readonly requestedSortOrder: string
 
   constructor(
-    private readonly sentReferralDashboard: Page<SentReferralDashboard>,
+    private readonly sentReferralSummaries: Page<SentReferralSummaries>,
     readonly dashboardType: DashboardType,
     private readonly loggedInUser: LoggedInUser,
     readonly tablePersistentId: string,
     private readonly requestedSort: string
   ) {
-    this.pagination = new Pagination(sentReferralDashboard)
+    this.pagination = new Pagination(sentReferralSummaries)
     const [sortField, sortOrder] = this.requestedSort.split(',')
     this.requestedSortField = sortField
     this.requestedSortOrder = ControllerUtils.sortOrderToAriaSort(sortOrder)
@@ -82,16 +82,8 @@ export default class DashboardPresenter {
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 
-  readonly tableRows: SortableTableRow[] = this.sentReferralDashboard.content.map(referralSummary => {
+  readonly tableRows: SortableTableRow[] = this.sentReferralSummaries.content.map(referralSummary => {
     const sentAtDay = CalendarDay.britishDayForDate(new Date(referralSummary.sentAt))
-    // const interventionForReferral = this.interventions.find(
-    //   intervention => intervention.id === referralSummary.referral.interventionId
-    // )
-    // if (interventionForReferral === undefined) {
-    //   throw new Error(
-    //     `Expected referral ${referralSummary.id} to be linked to an intervention with ID ${referralSummary.referral.interventionId}`
-    //   )
-    // }
     return [
       {
         text: DateUtils.formattedDate(sentAtDay, { month: 'short' }),
@@ -116,7 +108,7 @@ export default class DashboardPresenter {
     ].filter(row => row !== null) as SortableTableRow
   })
 
-  private static hrefForViewing(referralSummary: SentReferralDashboard): string {
+  private static hrefForViewing(referralSummary: SentReferralSummaries): string {
     if (referralSummary.assignedTo?.username === null || referralSummary.assignedTo?.username === undefined) {
       return `/service-provider/referrals/${referralSummary.id}/details`
     }

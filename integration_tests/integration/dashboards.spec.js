@@ -1,4 +1,4 @@
-import sentReferralDashboardFactory from '../../testutils/factories/sentReferralForDashboard'
+import sentReferralSummaries from '../../testutils/factories/sentReferralSummaries'
 import interventionFactory from '../../testutils/factories/intervention'
 import pageFactory from '../../testutils/factories/page'
 
@@ -17,13 +17,13 @@ describe('Dashboards', () => {
     })
 
     const sentReferrals = [
-      sentReferralDashboardFactory.build({
+      sentReferralSummaries.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'ABCABCA1',
         assignedTo: null,
         serviceUser: { firstName: 'George', lastName: 'Michael' },
       }),
-      sentReferralDashboardFactory.build({
+      sentReferralSummaries.build({
         sentAt: '2020-12-13T13:00:00.000000Z',
         assignedTo: {
           username: 'A. Caseworker',
@@ -204,7 +204,7 @@ describe('Dashboards', () => {
     })
 
     const sentReferrals = [
-      sentReferralDashboardFactory.assigned().build({
+      sentReferralSummaries.assigned().build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'REFERRAL_REF',
         serviceUser: { firstName: 'Jenny', lastName: 'Jones' },

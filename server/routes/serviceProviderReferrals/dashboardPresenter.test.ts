@@ -2,14 +2,14 @@ import DashboardPresenter, { DashboardType } from './dashboardPresenter'
 import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 import pageFactory from '../../../testutils/factories/page'
 import { Page } from '../../models/pagination'
-import SentReferralForDashboardFactory from '../../../testutils/factories/sentReferralForDashboard'
-import SentReferralDashboard from '../../models/sentReferralDashboard'
+import SentReferralSummariesFactory from '../../../testutils/factories/sentReferralSummaries'
+import SentReferralSummaries from '../../models/sentReferralSummaries'
 
 describe(DashboardPresenter, () => {
   const loggedInUser = loggedInUserFactory.crsServiceProviderUser().build()
 
   const referrals = [
-    SentReferralForDashboardFactory.assigned().build({
+    SentReferralSummariesFactory.assigned().build({
       id: '1',
       sentAt: '2021-01-26T13:00:00.000000Z',
       referenceNumber: 'ABCABCA1',
@@ -18,7 +18,7 @@ describe(DashboardPresenter, () => {
         lastName: 'shah-brookes',
       },
     }),
-    SentReferralForDashboardFactory.unassigned().build({
+    SentReferralSummariesFactory.unassigned().build({
       id: '2',
       sentAt: '2020-10-14T13:00:00.000000Z',
       referenceNumber: 'ABCABCA2',
@@ -28,7 +28,7 @@ describe(DashboardPresenter, () => {
       },
       interventionTitle: "Women's Services - West Midlands",
     }),
-    SentReferralForDashboardFactory.assigned().build({
+    SentReferralSummariesFactory.assigned().build({
       id: '3',
       sentAt: '2020-10-13T13:00:00.000000Z',
       referenceNumber: 'ABCABCA3',
@@ -41,7 +41,7 @@ describe(DashboardPresenter, () => {
 
   describe('tableHeadings', () => {
     it('persistentId is the database sort field', () => {
-      const page = pageFactory.pageContent([]).build() as Page<SentReferralDashboard>
+      const page = pageFactory.pageContent([]).build() as Page<SentReferralSummaries>
       const presenter = new DashboardPresenter(page, 'My cases', loggedInUser, 'tableId', 'sentAt,DESC')
       expect(presenter.tableHeadings.map(headers => headers.persistentId)).toEqual([
         'sentAt',
@@ -57,7 +57,7 @@ describe(DashboardPresenter, () => {
     const displayCaseworkerDashboardTypes: DashboardType[] = ['All open cases', 'Completed cases']
     describe.each(displayCaseworkerDashboardTypes)('with %s dashboard type', dashboardType => {
       it('returns the table’s rows', () => {
-        const page = pageFactory.pageContent(referrals).build() as Page<SentReferralDashboard>
+        const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
         const presenter = new DashboardPresenter(page, dashboardType, loggedInUser, 'tableId', 'sentAt,DESC')
 
@@ -107,7 +107,7 @@ describe(DashboardPresenter, () => {
 
       describe('when a referral has been assigned to a caseworker', () => {
         it('includes the caseworker’s username', () => {
-          const page = pageFactory.pageContent(referrals).build() as Page<SentReferralDashboard>
+          const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
           const presenter = new DashboardPresenter(page, dashboardType, loggedInUser, 'tableId', 'sentAt,DESC')
 
           expect(presenter.tableRows[0][4]).toMatchObject({ text: 'UserABC' })
@@ -118,7 +118,7 @@ describe(DashboardPresenter, () => {
     const dontDisplayCaseworkerDashboardTypes: DashboardType[] = ['My cases', 'Unassigned cases']
     describe.each(dontDisplayCaseworkerDashboardTypes)('with %s dashboard type', dashboardType => {
       it('does not display the case worker column', () => {
-        const page = pageFactory.pageContent(referrals).build() as Page<SentReferralDashboard>
+        const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
         const presenter = new DashboardPresenter(page, dashboardType, loggedInUser, 'tableId', 'sentAt,DESC')
 
         expect(presenter.tableRows).toEqual([
@@ -151,7 +151,7 @@ describe(DashboardPresenter, () => {
   describe('the View link', () => {
     describe('when a referral has been assigned to a caseworker', () => {
       it('links to the intervention progress page', () => {
-        const page = pageFactory.pageContent(referrals).build() as Page<SentReferralDashboard>
+        const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
         const presenter = new DashboardPresenter(page, 'All open cases', loggedInUser, 'tableId', 'sentAt,DESC')
 
         expect(presenter.tableRows[0][5]).toMatchObject({

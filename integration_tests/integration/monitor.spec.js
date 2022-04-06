@@ -12,7 +12,7 @@ import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import actionPlanActivity from '../../testutils/factories/actionPlanActivity'
 import pageFactory from '../../testutils/factories/page'
-import sentReferralForDashboardFactory from '../../testutils/factories/sentReferralForDashboard'
+import sentReferralSummariesFactory from '../../testutils/factories/sentReferralSummaries'
 
 describe('Probation Practitioner monitor journey', () => {
   beforeEach(() => {
@@ -189,13 +189,13 @@ describe('Probation Practitioner monitor journey', () => {
         actionPlanId: actionPlan.id,
       })
 
-      const assignedReferralForDashboard = sentReferralForDashboardFactory.assigned().build({
+      const assignedReferralSummaries = sentReferralSummariesFactory.assigned().build({
         id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
         assignedTo: { username: probationPractitioner.username },
       })
 
       cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
-      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([assignedReferralForDashboard]).build())
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([assignedReferralSummaries]).build())
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
@@ -278,14 +278,14 @@ describe('Probation Practitioner monitor journey', () => {
         actionPlanId: actionPlan.id,
       })
 
-      const assignedReferralForDashboard = sentReferralForDashboardFactory.assigned().build({
+      const assignedReferralSummaries = sentReferralSummariesFactory.assigned().build({
         id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
         assignedTo: { username: probationPractitioner.username },
       })
 
       cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
 
-      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([assignedReferralForDashboard]).build())
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([assignedReferralSummaries]).build())
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
@@ -361,13 +361,13 @@ describe('Probation Practitioner monitor journey', () => {
         actionPlanId: actionPlan.id,
       })
 
-      const assignedReferralForDashboard = sentReferralForDashboardFactory.assigned().build({
+      const assignedReferralSummaries = sentReferralSummariesFactory.assigned().build({
         id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
         assignedTo: { username: probationPractitioner.username },
       })
 
       cy.stubGetIntervention(assignedReferral.referral.interventionId, intervention)
-      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([assignedReferralForDashboard]).build())
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([assignedReferralSummaries]).build())
       cy.stubGetActionPlan(actionPlan.id, actionPlan)
       cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
       cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)

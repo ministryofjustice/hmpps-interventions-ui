@@ -1,5 +1,5 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
-import sentReferralForDashboardFactory from '../../testutils/factories/sentReferralForDashboard'
+import sentReferralSummariesFactory from '../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
@@ -33,13 +33,13 @@ describe('Probation practitioner referrals dashboard', () => {
     })
 
     const sentReferrals = [
-      sentReferralForDashboardFactory.build({
+      sentReferralSummariesFactory.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'ABCABCA1',
         assignedTo: null,
         serviceUser: { firstName: 'George', lastName: 'Michael' },
       }),
-      sentReferralForDashboardFactory.build({
+      sentReferralSummariesFactory.build({
         sentAt: '2020-12-13T13:00:00.000000Z',
         assignedTo: {
           username: 'A. Caseworker',

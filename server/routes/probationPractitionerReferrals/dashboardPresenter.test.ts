@@ -1,14 +1,14 @@
-import SentReferralForDashboardFactory from '../../../testutils/factories/sentReferralForDashboard'
+import SentReferralSummariesFactory from '../../../testutils/factories/sentReferralSummaries'
 import DashboardPresenter from './dashboardPresenter'
 import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 import pageFactory from '../../../testutils/factories/page'
 import { Page } from '../../models/pagination'
 
-import SentReferralDashboard from '../../models/sentReferralDashboard'
+import SentReferralSummaries from '../../models/sentReferralSummaries'
 
 describe('DashboardPresenter', () => {
   const referrals = [
-    SentReferralForDashboardFactory.assigned().build({
+    SentReferralSummariesFactory.assigned().build({
       id: '1',
       sentAt: '2021-01-26T13:00:00.000000Z',
       referenceNumber: 'ABCABCA1',
@@ -17,7 +17,7 @@ describe('DashboardPresenter', () => {
         lastName: 'shah-brookes',
       },
     }),
-    SentReferralForDashboardFactory.unassigned().build({
+    SentReferralSummariesFactory.unassigned().build({
       id: '2',
       sentAt: '2020-10-14T13:00:00.000000Z',
       referenceNumber: 'ABCABCA2',
@@ -27,7 +27,7 @@ describe('DashboardPresenter', () => {
       },
       interventionTitle: "Women's Services - West Midlands",
     }),
-    SentReferralForDashboardFactory.assigned().build({
+    SentReferralSummariesFactory.assigned().build({
       id: '3',
       sentAt: '2020-10-13T13:00:00.000000Z',
       referenceNumber: 'ABCABCA3',
@@ -42,7 +42,7 @@ describe('DashboardPresenter', () => {
 
   describe('tableRows', () => {
     it('returns a list of table rows with appropriate sort values', () => {
-      const page = pageFactory.pageContent(referrals).build() as Page<SentReferralDashboard>
+      const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
       const presenter = new DashboardPresenter(page, loggedInUser, 'Open cases', 'ppOpenCases', 'sentAt,ASC')
 
       expect(presenter.tableRows).toEqual([

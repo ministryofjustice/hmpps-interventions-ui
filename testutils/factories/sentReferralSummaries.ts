@@ -1,7 +1,7 @@
 import { Factory } from 'fishery'
-import SentReferralDashboard from '../../server/models/sentReferralDashboard'
+import SentReferralSummaries from '../../server/models/sentReferralSummaries'
 
-class SentReferralForDashboardFactory extends Factory<SentReferralDashboard> {
+class SentReferralSummariesFactory extends Factory<SentReferralSummaries> {
   assigned() {
     return this.params({
       assignedTo: {
@@ -31,7 +31,7 @@ class SentReferralForDashboardFactory extends Factory<SentReferralDashboard> {
   }
 }
 
-export default SentReferralForDashboardFactory.define(({ sequence }) => ({
+export default SentReferralSummariesFactory.define(({ sequence }) => ({
   id: sequence.toString(),
   sentAt: new Date().toISOString(),
   sentBy: {

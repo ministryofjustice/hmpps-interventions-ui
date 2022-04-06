@@ -2,7 +2,7 @@ import User from './hmppsAuth/user'
 import ServiceProvider from './serviceProvider'
 import ServiceUser from './serviceUser'
 
-export default interface SentReferralDashboard {
+export default interface SentReferralSummaries {
   id: string
   sentAt: string
   sentBy: User

@@ -5,7 +5,7 @@ import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import sentReferralForDashboardFactory from '../../../testutils/factories/sentReferralForDashboard'
+import sentReferralSummariesFactory from '../../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
@@ -39,7 +39,7 @@ import { PPDashboardType } from './dashboardPresenter'
 import pageFactory from '../../../testutils/factories/page'
 import { Page } from '../../models/pagination'
 import UserDataService from '../../services/userDataService'
-import SentReferralDashboard from '../../models/sentReferralDashboard'
+import SentReferralSummaries from '../../models/sentReferralSummaries'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -132,8 +132,8 @@ describe('GET /probation-practitioner/dashboard', () => {
   ]
   describe.each(dashboardRequests)('for dashboard %s', dashboard => {
     it('displays a dashboard page', async () => {
-      const referrals = [sentReferralForDashboardFactory.build()]
-      const page = pageFactory.pageContent(referrals).build() as Page<SentReferralDashboard>
+      const referrals = [sentReferralSummariesFactory.build()]
+      const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
       interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
 
@@ -150,13 +150,13 @@ describe('GET /probation-practitioner/dashboard', () => {
   it('displays a dashboard page with invalid page number', async () => {
     apiConfig.dashboards.probationPractitioner.openCases = 1
     const referrals = [
-      sentReferralForDashboardFactory.assigned().build({
+      sentReferralSummariesFactory.assigned().build({
         serviceUser: {
           firstName: 'Alex',
           lastName: 'River',
         },
       }),
-      sentReferralForDashboardFactory.assigned().build({
+      sentReferralSummariesFactory.assigned().build({
         serviceUser: {
           firstName: 'George',
           lastName: 'River',
@@ -165,7 +165,7 @@ describe('GET /probation-practitioner/dashboard', () => {
     ]
     const page = pageFactory
       .pageContent(referrals)
-      .build({ totalPages: 2, totalElements: 2 }) as Page<SentReferralDashboard>
+      .build({ totalPages: 2, totalElements: 2 }) as Page<SentReferralSummaries>
 
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
 

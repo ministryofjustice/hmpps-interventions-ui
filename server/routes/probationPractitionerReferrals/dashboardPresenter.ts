@@ -7,7 +7,7 @@ import LoggedInUser from '../../models/loggedInUser'
 import { Page } from '../../models/pagination'
 import Pagination from '../../utils/pagination/pagination'
 import ControllerUtils from '../../utils/controllerUtils'
-import SentReferralDashboard from '../../models/sentReferralDashboard'
+import SentReferralSummaries from '../../models/sentReferralSummaries'
 
 export type PPDashboardType = 'Open cases' | 'Unassigned cases' | 'Completed cases' | 'Cancelled cases'
 export default class DashboardPresenter {
@@ -18,7 +18,7 @@ export default class DashboardPresenter {
   private readonly requestedSortOrder: string
 
   constructor(
-    private readonly sentReferrals: Page<SentReferralDashboard>,
+    private readonly sentReferrals: Page<SentReferralSummaries>,
     private readonly loggedInUser: LoggedInUser,
     readonly dashboardType: PPDashboardType,
     readonly tablePersistentId: string,
