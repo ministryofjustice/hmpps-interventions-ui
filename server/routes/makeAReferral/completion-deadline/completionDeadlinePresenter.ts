@@ -21,11 +21,16 @@ export default class CompletionDeadlinePresenter {
     private readonly completionDeadline: string | null,
     private readonly intervention: Intervention,
     readonly sentReferral: boolean | undefined = undefined,
+    private readonly referralId: string,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
   private readonly utils = new PresenterUtils(this.userInputData)
+
+  get backLinkHref(): string | null {
+    return this.sentReferral ? `/probation-practitioner/referrals/${this.referralId}/details` : null
+  }
 
   fields = {
     completionDeadline: this.utils.dateValue(

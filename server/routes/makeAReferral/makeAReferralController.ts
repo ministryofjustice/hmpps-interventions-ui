@@ -328,7 +328,7 @@ export default class MakeAReferralController {
       this.communityApiService.getServiceUserByCRN(serviceUserCrn),
     ])
 
-    const presenter = new CompletionDeadlinePresenter(completionDeadline, intervention, isSentReferral)
+    const presenter = new CompletionDeadlinePresenter(completionDeadline, intervention, isSentReferral, req.params.id)
 
     const view = new CompletionDeadlineView(presenter)
 
@@ -389,6 +389,7 @@ export default class MakeAReferralController {
         completionDeadline,
         intervention,
         isSentReferral,
+        req.params.id,
         error,
         req.body
       )

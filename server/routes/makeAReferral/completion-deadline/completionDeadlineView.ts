@@ -67,6 +67,11 @@ export default class CompletionDeadlineView {
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
+  private readonly backLinkArgs = {
+    text: 'Back',
+    href: this.presenter.backLinkHref,
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'makeAReferral/completionDeadline',
@@ -75,6 +80,7 @@ export default class CompletionDeadlineView {
         dateInputArgs: this.dateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         textAreaArgs: this.textAreaArgs,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }
