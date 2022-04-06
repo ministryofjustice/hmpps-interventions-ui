@@ -4,8 +4,8 @@ import supplementaryRiskInformationFactory from '../../testutils/factories/suppl
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 
-Cypress.Commands.add('login', () => {
-  cy.request(`/`)
+Cypress.Commands.add('login', (redirectUrl = '/') => {
+  cy.request(redirectUrl)
   cy.task('getLoginUrl').then(cy.visit)
 })
 
