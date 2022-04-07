@@ -14,7 +14,7 @@ describe('CompletionDeadlineForm', () => {
         const data = await new CompletionDeadlineForm(request, false).data()
 
         expect(data.paramsForUpdate).toEqual({
-          draftReferral: { completionDeadline: '2021-09-12' },
+          completionDeadline: '2021-09-12',
           reasonForChange: null,
         })
       })
@@ -53,7 +53,7 @@ describe('CompletionDeadlineForm', () => {
 
       const data = await new CompletionDeadlineForm(request, true).data()
       expect(data.paramsForUpdate).toEqual({
-        draftReferral: { completionDeadline: '2021-09-12' },
+        completionDeadline: '2021-09-12',
         reasonForChange: 'reason',
       })
     })

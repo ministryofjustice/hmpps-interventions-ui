@@ -61,25 +61,30 @@ export default class ShowReferralView {
     href: this.presenter.referralOverviewPagePresenter.dashboardURL,
   }
 
-  private readonly insetTextArgs = {
-    html: `${ViewUtils.escape(`You can amend the completion date on this referral.`)}<br>
+  private readonly insetTextArgs =
+    this.presenter.userType === 'probation-practitioner'
+      ? {
+          html: `${ViewUtils.escape(`You can amend the completion date on this referral.`)}<br>
           ${ViewUtils.escape(`This will send a notification to the service provider`)}`,
-  }
+        }
+      : null
 
-  get notificationBannerArgs(): NotificationBannerArgs {
-    const html = `<b>Referral changes saved</b>
-          <br>
+  get notificationBannerArgs(): NotificationBannerArgs | null {
+    const html = `<strong>Referral changes saved</strong>
+          <hr class="govuk-section-break govuk-section-break--s">
           <p>
              The service provider has been notified of the changes to this referral.
           </p>
           <p>
-              <a href= ${this.presenter.closeHref}> close</a>
+              <a href= ${this.presenter.closeHref}>Close</a>
           </p>`
-    return {
-      titleText: 'Success',
-      html,
-      classes: 'govuk-notification-banner--success',
-    }
+    return this.presenter.showSuccess
+      ? {
+          titleText: 'Success',
+          html,
+          classes: 'govuk-notification-banner--success',
+        }
+      : null
   }
 
   get renderArgs(): [string, Record<string, unknown>] {

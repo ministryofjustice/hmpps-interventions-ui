@@ -17,7 +17,7 @@ export default class CompletionDeadlineView {
         },
       },
       hint: {
-        text: this.presenter.hint,
+        text: this.presenter.completionDeadlineHint,
       },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.completionDeadline.errorMessage),
       items: [
@@ -46,21 +46,23 @@ export default class CompletionDeadlineView {
     }
   }
 
-  private get textAreaArgs(): TextareaArgs {
-    return {
-      name: 'reason-for-change',
-      id: 'reason-for-change',
-      label: {
-        text: `What is the reason for changing the completion date?`,
-        classes: 'govuk-label--l',
-        isPageHeading: true,
-      },
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.reasonForChange.errorMessage),
-      hint: {
-        text: this.presenter.hint,
-      },
-      value: this.presenter.fields.reasonForChange.value,
-    }
+  private get textAreaArgs(): TextareaArgs | null {
+    return this.presenter.sentReferral
+      ? {
+          name: 'reason-for-change',
+          id: 'reason-for-change',
+          label: {
+            text: `What is the reason for changing the completion date?`,
+            classes: 'govuk-label--l',
+            isPageHeading: false,
+          },
+          errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.reasonForChange.errorMessage),
+          hint: {
+            text: this.presenter.reasonForChangeHint,
+          },
+          value: this.presenter.fields.reasonForChange.value,
+        }
+      : null
   }
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
@@ -72,7 +74,6 @@ export default class CompletionDeadlineView {
         presenter: this.presenter,
         dateInputArgs: this.dateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
-        sentReferral: this.presenter.sentReferral,
         textAreaArgs: this.textAreaArgs,
       },
     ]

@@ -344,11 +344,9 @@ export default class MakeAReferralController {
     if (data.paramsForUpdate) {
       if (!isSentReferral) {
         try {
-          await this.interventionsService.patchDraftReferral(
-            res.locals.user.token.accessToken,
-            req.params.id,
-            data.paramsForUpdate.draftReferral
-          )
+          await this.interventionsService.patchDraftReferral(res.locals.user.token.accessToken, req.params.id, {
+            completionDeadline: data.paramsForUpdate.completionDeadline,
+          })
         } catch (e) {
           const interventionsServiceError = e as InterventionsServiceError
           error = createFormValidationErrorOrRethrow(interventionsServiceError)
@@ -356,7 +354,7 @@ export default class MakeAReferralController {
       } else {
         try {
           await this.interventionsService.updateSentReferralDetails(res.locals.user.token.accessToken, req.params.id, {
-            completionDeadline: data.paramsForUpdate.draftReferral.completionDeadline,
+            completionDeadline: data.paramsForUpdate.completionDeadline,
             reasonForChange: data.paramsForUpdate.reasonForChange!,
           })
         } catch (e) {
@@ -850,22 +848,16 @@ export default class MakeAReferralController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async generateCaseNote(accessToken: string, referralId: string, subject: string, message: string): Promise<void> {
-    const caseNote = {
-      referralId,
-      subject,
-      body: message,
-    }
-    await this.interventionsService.addCaseNotes(accessToken, caseNote)
-  }
-
   async isSentReferral(req: Request, res: Response): Promise<boolean> {
     try {
       await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
       return false
     } catch (e) {
-      await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
-      return true
+      const interventionsServiceError = e as InterventionsServiceError
+      if (interventionsServiceError.status === 404) {
+        return true
+      }
+      throw e
     }
   }
 }

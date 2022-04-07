@@ -18,6 +18,8 @@ export default {
     yearEmpty: 'The date by which the service needs to be completed must include a year',
     invalidDate: 'The date by which the service needs to be completed must be a real date',
     mustBeInFuture: 'The date by which the service needs to be completed must be in the future',
+  },
+  reasonForChange: {
     cannotBeEmpty: 'Reason for change cannot be empty',
   },
   reportingDate: {

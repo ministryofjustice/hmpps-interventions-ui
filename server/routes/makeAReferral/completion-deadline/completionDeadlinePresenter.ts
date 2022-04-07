@@ -12,7 +12,10 @@ export default class CompletionDeadlinePresenter {
     this.intervention.contractType.name
   )} intervention need to be completed by?`
 
-  readonly hint = 'For example, 27 10 2021'
+  readonly completionDeadlineHint = 'For example, 27 10 2021'
+
+  readonly reasonForChangeHint =
+    'For example, there are not enough days to delivery the intervention based on the complexity levels.'
 
   constructor(
     private readonly completionDeadline: string | null,

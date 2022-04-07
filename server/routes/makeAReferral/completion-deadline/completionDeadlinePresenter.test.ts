@@ -90,11 +90,19 @@ describe('CompletionDeadlinePresenter', () => {
   })
 
   describe('hint', () => {
-    it('returns a hint', () => {
+    it('returns a completion deadline hint', () => {
       const referral = draftReferralFactory.build()
       const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention)
 
-      expect(presenter.hint).toEqual('For example, 27 10 2021')
+      expect(presenter.completionDeadlineHint).toEqual('For example, 27 10 2021')
+    })
+    it('returns a reason for change hint', () => {
+      const referral = draftReferralFactory.build()
+      const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention)
+
+      expect(presenter.reasonForChangeHint).toEqual(
+        'For example, there are not enough days to delivery the intervention based on the complexity levels.'
+      )
     })
   })
 })
