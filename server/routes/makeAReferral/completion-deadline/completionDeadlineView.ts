@@ -1,6 +1,6 @@
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
 import ViewUtils from '../../../utils/viewUtils'
-import { DateInputArgs } from '../../../utils/govukFrontendTypes'
+import { DateInputArgs, TextareaArgs } from '../../../utils/govukFrontendTypes'
 
 export default class CompletionDeadlineView {
   constructor(private readonly presenter: CompletionDeadlinePresenter) {}
@@ -17,7 +17,7 @@ export default class CompletionDeadlineView {
         },
       },
       hint: {
-        text: this.presenter.hint,
+        text: this.presenter.completionDeadlineHint,
       },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.completionDeadline.errorMessage),
       items: [
@@ -46,6 +46,25 @@ export default class CompletionDeadlineView {
     }
   }
 
+  private get textAreaArgs(): TextareaArgs | null {
+    return this.presenter.sentReferral
+      ? {
+          name: 'reason-for-change',
+          id: 'reason-for-change',
+          label: {
+            text: `What is the reason for changing the completion date?`,
+            classes: 'govuk-label--l',
+            isPageHeading: false,
+          },
+          errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.reasonForChange.errorMessage),
+          hint: {
+            text: this.presenter.reasonForChangeHint,
+          },
+          value: this.presenter.fields.reasonForChange.value,
+        }
+      : null
+  }
+
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   get renderArgs(): [string, Record<string, unknown>] {
@@ -55,6 +74,7 @@ export default class CompletionDeadlineView {
         presenter: this.presenter,
         dateInputArgs: this.dateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
+        textAreaArgs: this.textAreaArgs,
       },
     ]
   }

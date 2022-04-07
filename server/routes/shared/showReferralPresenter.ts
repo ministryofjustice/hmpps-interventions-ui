@@ -40,7 +40,8 @@ export default class ShowReferralPresenter {
     readonly canAssignReferral: boolean,
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
     readonly riskSummary: RiskSummary | null,
-    private readonly responsibleOfficer: DeliusOffenderManager | null
+    private readonly responsibleOfficer: DeliusOffenderManager | null,
+    readonly showSuccess: boolean = false
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
@@ -56,6 +57,10 @@ export default class ShowReferralPresenter {
   readonly text = {
     errorMessage: PresenterUtils.errorMessage(this.assignEmailError, 'email'),
     noCaseworkerAssigned: 'This intervention is not yet assigned to a caseworker.',
+  }
+
+  get closeHref(): string {
+    return `/probation-practitioner/referrals/${this.sentReferral.id}/details`
   }
 
   get referralAssigned(): boolean {
@@ -223,6 +228,10 @@ export default class ShowReferralPresenter {
             ? DateUtils.formattedDate(this.sentReferral.referral.completionDeadline)
             : '',
         ],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/referrals/${this.sentReferral.id}/completion-deadline`
+            : undefined,
       },
       {
         key: 'Maximum number of enforceable days',
