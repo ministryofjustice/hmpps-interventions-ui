@@ -15,7 +15,7 @@ export default class CompletionDeadlinePresenter {
   readonly completionDeadlineHint = 'For example, 27 10 2021'
 
   readonly reasonForChangeHint =
-    'For example, there are not enough days to delivery the intervention based on the complexity levels.'
+    'For example, there are not enough days to deliver the intervention based on the complexity levels.'
 
   constructor(
     private readonly completionDeadline: string | null,

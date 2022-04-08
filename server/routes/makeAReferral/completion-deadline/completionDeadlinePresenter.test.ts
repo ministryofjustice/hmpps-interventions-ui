@@ -111,10 +111,10 @@ describe('CompletionDeadlinePresenter', () => {
     })
     it('returns a reason for change hint', () => {
       const referral = draftReferralFactory.build()
-      const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention)
+      const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, false, referral.id)
 
       expect(presenter.reasonForChangeHint).toEqual(
-        'For example, there are not enough days to delivery the intervention based on the complexity levels.'
+        'For example, there are not enough days to deliver the intervention based on the complexity levels.'
       )
     })
   })
