@@ -1,6 +1,6 @@
 import CompletionDeadlinePresenter from './completionDeadlinePresenter'
 import ViewUtils from '../../../utils/viewUtils'
-import { DateInputArgs, TextareaArgs } from '../../../utils/govukFrontendTypes'
+import { BackLinkArgs, DateInputArgs, TextareaArgs } from '../../../utils/govukFrontendTypes'
 
 export default class CompletionDeadlineView {
   constructor(private readonly presenter: CompletionDeadlinePresenter) {}
@@ -67,6 +67,13 @@ export default class CompletionDeadlineView {
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
+  private readonly backLinkArgs: BackLinkArgs | null = this.presenter.backLinkHref
+    ? {
+        text: 'Back',
+        href: this.presenter.backLinkHref,
+      }
+    : null
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'makeAReferral/completionDeadline',
@@ -75,6 +82,7 @@ export default class CompletionDeadlineView {
         dateInputArgs: this.dateInputArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         textAreaArgs: this.textAreaArgs,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }
