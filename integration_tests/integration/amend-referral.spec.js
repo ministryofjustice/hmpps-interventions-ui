@@ -38,6 +38,18 @@ context('Amend a referral', () => {
         )
       })
 
+      it('takes you back to referral details when back link is clicked', () => {
+        cy.stubGetSentReferral(sentReferral.id, sentReferral)
+        cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
+        cy.contains('Back').click()
+        cy.url().should(
+          'be.equal',
+          `${Cypress.config('baseUrl')}/probation-practitioner/referrals/${sentReferral.id}/details`
+        )
+      })
+
       it('shows a validation error if the reason for change is not supplied', () => {
         cy.stubGetSentReferral(sentReferral.id, sentReferral)
         cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())

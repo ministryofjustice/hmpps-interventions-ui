@@ -35,6 +35,7 @@ export default class AmendMaximumEnforceableDaysView {
         maximumEnforceableDaysInputArgs: this.enforceableDaysView.renderArgs[1].maximumEnforceableDaysInputArgs,
         reasonForChangeInputArgs: this.textAreaArgs,
         errorSummaryArgs: this.errorSummaryArgs,
+        backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
   }

@@ -34,6 +34,7 @@ export default class AmendAReferralController {
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const presenter = new AmendMaximumEnforceableDaysPresenter(
+      referral.id,
       referral.referral.maximumEnforceableDays,
       error,
       userInputData

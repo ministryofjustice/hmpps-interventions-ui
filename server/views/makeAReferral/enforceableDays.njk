@@ -1,3 +1,4 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
@@ -12,6 +13,10 @@
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+
+      {% if backLinkArgs %}
+        {{ govukBackLink(backLinkArgs) }}
+      {% endif %}
 
       <form method="post" novalidate>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">

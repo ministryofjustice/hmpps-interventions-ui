@@ -16,7 +16,10 @@ export default class AmendMaximumEnforceableDaysPresenter {
 
   readonly title = 'What is the reason for changing the maximum number of days?'
 
+  readonly backLinkUrl: string
+
   constructor(
+    referralId: string,
     private readonly maximumEnforceableDays: number,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null
@@ -26,5 +29,6 @@ export default class AmendMaximumEnforceableDaysPresenter {
       reasonForChange: this.utils.stringValue(null, AmendMaximumEnforceableDaysForm.reasonForChangeId),
       ...this.enforceableDaysPresenter.fields,
     }
+    this.backLinkUrl = `/probation-practitioner/referrals/${referralId}/details`
   }
 }
