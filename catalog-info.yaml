@@ -1,0 +1,23 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  annotations:
+    circleci.com/project-slug: github/ministryofjustice/hmpps-interventions-ui
+    sentry.io/project-slug: interventions-ui-prod
+  name: hmpps-interventions-ui
+  title: Intervention UI
+  description: Responsible for curating and delivering published interventions and services
+  tags:
+    - node
+    - express
+spec:
+  type: website
+  owner: group:hmpps-interventions-dev
+  system: system:hmpps-interventions # system is defined in hmpps-interventions-service
+  lifecycle: production
+  consumesApis:
+    - api:hmpps-interventions
+    # - api:hmpps-assess-risks-and-needs # not yet defined
+    # - api:hmpps-auth # not yet defined
+    # - api:community-api # not yet defined
