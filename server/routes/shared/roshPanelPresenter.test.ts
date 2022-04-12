@@ -69,7 +69,7 @@ describe(RoshPanelPresenter, () => {
       it('shortens the "assessed on date"', () => {
         const presenter = new RoshPanelPresenter(riskSummary.build({ assessedOn: '2021-09-21T16:03:16.943Z' }))
 
-        expect(presenter.lastUpdated).toEqual('Last updated: 21 Sep 2021')
+        expect(presenter.lastUpdated).toEqual('Last updated: 21 Sept 2021')
       })
     })
 
