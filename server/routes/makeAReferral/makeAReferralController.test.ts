@@ -723,7 +723,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
           'reason-for-change': 'reason',
         })
         .expect(302)
-        .expect('Location', '/probation-practitioner/referrals/1/details?success=true')
+        .expect('Location', '/probation-practitioner/referrals/1/details?detailsUpdated=true')
 
       expect(interventionsService.updateSentReferralDetails.mock.calls[0]).toEqual([
         'token',
