@@ -1,10 +1,9 @@
-import DraftReferral from '../../../models/draftReferral'
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 
 export default class EnforceableDaysPresenter {
   constructor(
-    private readonly referral: DraftReferral,
+    private readonly maximumEnforceableDays: number | null,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {}
@@ -24,6 +23,6 @@ export default class EnforceableDaysPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    maximumEnforceableDays: this.utils.stringValue(this.referral.maximumEnforceableDays, 'maximum-enforceable-days'),
+    maximumEnforceableDays: this.utils.stringValue(this.maximumEnforceableDays, 'maximum-enforceable-days'),
   }
 }
