@@ -7,7 +7,7 @@ orbs:
 executors:
   integration:
     docker:
-      - image: cimg/node:14.16.0-browsers
+      - image: cimg/node:16.14.2-browsers
       - image: rodolpheche/wiremock:2.27.2-alpine
         command: ["--port", "9091"]
       - image: bitnami/redis:6.0
@@ -22,7 +22,7 @@ jobs:
       PACT_BROKER_USERNAME: "interventions"
     executor:
       name: hmpps/node
-      tag: 14.16.0-browsers
+      tag: 16.14.2-browsers
     steps:
       - checkout
       - node/install-npm:
