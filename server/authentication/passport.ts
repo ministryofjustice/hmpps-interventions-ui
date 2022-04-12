@@ -123,4 +123,11 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
     res.render('logoutSuccess')
   }
   app.get('/sign-out/success', signOutSuccess)
+
+  // deprecated endpoints that we need to keep around due to bookmarks etc.
+  app.get('/login', signIn)
+  app.get('/login/callback', signInCallback('/sign-in'))
+  app.get('/logout', (req, res) => {
+    signOut('sign-out', req, res)
+  })
 }
