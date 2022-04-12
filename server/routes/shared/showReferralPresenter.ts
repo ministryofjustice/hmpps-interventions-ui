@@ -236,6 +236,10 @@ export default class ShowReferralPresenter {
       {
         key: 'Maximum number of enforceable days',
         lines: [String(this.sentReferral.referral.maximumEnforceableDays)],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-maximum-enforceable-days`
+            : undefined,
       },
       {
         key: 'Further information for the provider',

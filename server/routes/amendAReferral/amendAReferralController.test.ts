@@ -55,7 +55,7 @@ describe('POST /probation-practitioner/referrals/:id/update-maximum-enforceable-
       .post(`/probation-practitioner/referrals/${referral.id}/update-maximum-enforceable-days`)
       .send({ 'reason-for-change': 'new value', 'maximum-enforceable-days': 10 })
       .expect(302)
-      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details`)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
   })
 
   describe('with form validation errors', () => {

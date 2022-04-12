@@ -23,7 +23,7 @@ export default class AmendAReferralController {
 
       if (!formData.error) {
         await this.interventionsService.updateSentReferralDetails(accessToken, referralId, formData.paramsForUpdate)
-        return res.redirect(`/probation-practitioner/referrals/${req.params.id}/details`)
+        return res.redirect(`/probation-practitioner/referrals/${req.params.id}/details?detailsUpdated=true`)
       }
 
       error = formData.error
