@@ -1,5 +1,6 @@
 import express, { Router, Express } from 'express'
 import bodyParser from 'body-parser'
+// eslint-disable-next-line import/no-extraneous-dependencies
 import cookieSession from 'cookie-session'
 import path from 'path'
 
