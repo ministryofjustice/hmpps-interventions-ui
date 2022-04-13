@@ -64,8 +64,9 @@ export default class ShowReferralView {
   private readonly insetTextArgs =
     this.presenter.userType === 'probation-practitioner'
       ? {
-          html: `${ViewUtils.escape(`You can amend the completion date on this referral.`)}<br>
-          ${ViewUtils.escape(`This will send a notification to the service provider`)}`,
+          html:
+            'You can amend the number of enforceable days or the completion date on this referral.<br/>' +
+            'This will send a notification to the service provider',
         }
       : null
 

@@ -367,7 +367,7 @@ export default class MakeAReferralController {
     }
 
     if (isSentReferral && error === null) {
-      res.redirect(`/probation-practitioner/referrals/${req.params.id}/details?success=true`)
+      res.redirect(`/probation-practitioner/referrals/${req.params.id}/details?detailsUpdated=true`)
       return
     }
 
