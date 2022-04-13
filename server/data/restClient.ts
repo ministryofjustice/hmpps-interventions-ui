@@ -29,6 +29,9 @@ interface PostRequest {
 
 export type RestClientError = HttpError
 
+const readRetryCount = 1
+const writeRetryCount = 1
+
 export default class RestClient {
   agent: Agent
 
@@ -83,7 +86,7 @@ export default class RestClient {
       const unauthenticatedRequest = superagent
         .get(`${this.apiUrl()}${path}`)
         .agent(this.agent)
-        .retry(0)
+        .retry(readRetryCount)
         .query(query)
         .set(headers)
         .responseType(responseType)
@@ -114,7 +117,7 @@ export default class RestClient {
         .post(`${this.apiUrl()}${path}`)
         .send(data)
         .agent(this.agent)
-        .retry(0)
+        .retry(writeRetryCount)
         .set(headers)
         .responseType(responseType)
         .timeout(this.timeoutConfig())
@@ -145,7 +148,7 @@ export default class RestClient {
         .patch(`${this.apiUrl()}${path}`)
         .send(data)
         .agent(this.agent)
-        .retry(0)
+        .retry(writeRetryCount)
         .set(headers)
         .responseType(responseType)
         .timeout(this.timeoutConfig())
@@ -176,7 +179,7 @@ export default class RestClient {
         .put(`${this.apiUrl()}${path}`)
         .send(data)
         .agent(this.agent)
-        .retry(0)
+        .retry(writeRetryCount)
         .set(headers)
         .responseType(responseType)
         .timeout(this.timeoutConfig())
