@@ -25,6 +25,7 @@ integration_tests/videos/
 integration_tests/screenshots/
 .localstack
 */*.iml
+*.iml
 *secrets*.yaml
 !secrets-example.yaml
 !**/templates/secrets.yaml

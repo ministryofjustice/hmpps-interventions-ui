@@ -195,19 +195,7 @@ export default class ServiceProviderReferralsController {
       paginationQuery
     )
 
-    const dedupedInterventionIds = Array.from(new Set(cases.content.map(referral => referral.referral.interventionId)))
-    const interventions = await Promise.all(
-      dedupedInterventionIds.map(id => this.interventionsService.getIntervention(res.locals.user.token.accessToken, id))
-    )
-
-    const presenter = new DashboardPresenter(
-      cases,
-      dashboardType,
-      res.locals.user,
-      interventions,
-      tablePersistentId,
-      sort[0]
-    )
+    const presenter = new DashboardPresenter(cases, dashboardType, res.locals.user, tablePersistentId, sort[0])
     const view = new DashboardView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)

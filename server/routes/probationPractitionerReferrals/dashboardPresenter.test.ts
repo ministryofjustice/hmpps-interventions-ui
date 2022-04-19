@@ -1,51 +1,39 @@
-import interventionFactory from '../../../testutils/factories/intervention'
-import SentReferralFactory from '../../../testutils/factories/sentReferral'
+import SentReferralSummariesFactory from '../../../testutils/factories/sentReferralSummaries'
 import DashboardPresenter from './dashboardPresenter'
 import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 import pageFactory from '../../../testutils/factories/page'
 import { Page } from '../../models/pagination'
-import SentReferral from '../../models/sentReferral'
+
+import SentReferralSummaries from '../../models/sentReferralSummaries'
 
 describe('DashboardPresenter', () => {
-  const interventions = [
-    interventionFactory.build({ id: '1', title: 'Accommodation Services - West Midlands' }),
-    interventionFactory.build({ id: '2', title: "Women's Services - West Midlands" }),
-  ]
   const referrals = [
-    SentReferralFactory.assigned().build({
+    SentReferralSummariesFactory.assigned().build({
       id: '1',
       sentAt: '2021-01-26T13:00:00.000000Z',
       referenceNumber: 'ABCABCA1',
-      referral: {
-        interventionId: '1',
-        serviceUser: {
-          firstName: 'rob',
-          lastName: 'shah-brookes',
-        },
+      serviceUser: {
+        firstName: 'rob',
+        lastName: 'shah-brookes',
       },
     }),
-    SentReferralFactory.unassigned().build({
+    SentReferralSummariesFactory.unassigned().build({
       id: '2',
       sentAt: '2020-10-14T13:00:00.000000Z',
       referenceNumber: 'ABCABCA2',
-      referral: {
-        interventionId: '2',
-        serviceUser: {
-          firstName: 'HARDIP',
-          lastName: 'fraiser',
-        },
+      serviceUser: {
+        firstName: 'HARDIP',
+        lastName: 'fraiser',
       },
+      interventionTitle: "Women's Services - West Midlands",
     }),
-    SentReferralFactory.assigned().build({
+    SentReferralSummariesFactory.assigned().build({
       id: '3',
       sentAt: '2020-10-13T13:00:00.000000Z',
       referenceNumber: 'ABCABCA3',
-      referral: {
-        interventionId: '1',
-        serviceUser: {
-          firstName: 'Jenny',
-          lastName: 'Catherine',
-        },
+      serviceUser: {
+        firstName: 'Jenny',
+        lastName: 'Catherine',
       },
     }),
   ]
@@ -54,15 +42,8 @@ describe('DashboardPresenter', () => {
 
   describe('tableRows', () => {
     it('returns a list of table rows with appropriate sort values', () => {
-      const page = pageFactory.pageContent(referrals).build() as Page<SentReferral>
-      const presenter = new DashboardPresenter(
-        page,
-        interventions,
-        loggedInUser,
-        'Open cases',
-        'ppOpenCases',
-        'sentAt,ASC'
-      )
+      const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+      const presenter = new DashboardPresenter(page, loggedInUser, 'Open cases', 'ppOpenCases', 'sentAt,ASC')
 
       expect(presenter.tableRows).toEqual([
         [

@@ -15,6 +15,7 @@ import AppointmentAttendance from '../models/appointmentAttendance'
 import AppointmentBehaviour from '../models/appointmentBehaviour'
 import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
+import SentReferralSummaries from '../models/sentReferralSummaries'
 import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
 import ReferralComplexityLevel from '../models/referralComplexityLevel'
 import SupplierAssessment from '../models/supplierAssessment'
@@ -270,14 +271,14 @@ export default class InterventionsService {
     token: string,
     filterParams: GetSentReferralsFilterParams,
     paginationParams: PaginationParams
-  ): Promise<Page<SentReferral>> {
+  ): Promise<Page<SentReferralSummaries>> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.get({
-      path: `/sent-referrals/paged`,
+      path: `/sent-referrals/summaries`,
       headers: { Accept: 'application/json' },
       query: { ...filterParams, ...paginationParams },
-    })) as Page<SentReferral>
+    })) as Page<SentReferralSummaries>
   }
 
   async getServiceProviderSentReferralsSummaryForUserToken(

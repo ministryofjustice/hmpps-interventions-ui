@@ -1,4 +1,5 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
+import sentReferralSummariesFactory from '../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
@@ -22,7 +23,6 @@ describe('Probation practitioner referrals dashboard', () => {
   })
 
   it("user logs in and sees 'Open cases' screen with list of sent referrals", () => {
-    const serviceCategory = serviceCategoryFactory.build()
     const accommodationIntervention = interventionFactory.build({
       contractType: { name: 'accommodation' },
       title: 'Accommodation Services - West Midlands',
@@ -33,26 +33,13 @@ describe('Probation practitioner referrals dashboard', () => {
     })
 
     const sentReferrals = [
-      sentReferralFactory.build({
+      sentReferralSummariesFactory.build({
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'ABCABCA1',
-        referral: {
-          interventionId: accommodationIntervention.id,
-          serviceUser: { firstName: 'George', lastName: 'Michael' },
-          serviceCategoryIds: [serviceCategory.id],
-          desiredOutcomes: [
-            {
-              serviceCategoryId: serviceCategory.id,
-              desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
-            },
-          ],
-          desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
-          complexityLevels: [
-            { serviceCategoryId: serviceCategory.id, complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78' },
-          ],
-        },
+        assignedTo: null,
+        serviceUser: { firstName: 'George', lastName: 'Michael' },
       }),
-      sentReferralFactory.build({
+      sentReferralSummariesFactory.build({
         sentAt: '2020-12-13T13:00:00.000000Z',
         assignedTo: {
           username: 'A. Caseworker',
@@ -60,20 +47,8 @@ describe('Probation practitioner referrals dashboard', () => {
           authSource: 'auth',
         },
         referenceNumber: 'ABCABCA2',
-        referral: {
-          interventionId: womensServicesIntervention.id,
-          serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-          serviceCategoryIds: [serviceCategory.id],
-          desiredOutcomes: [
-            {
-              serviceCategoryId: serviceCategory.id,
-              desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
-            },
-          ],
-          complexityLevels: [
-            { serviceCategoryId: serviceCategory.id, complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78' },
-          ],
-        },
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
+        interventionTitle: "Women's Services - West Midlands",
       }),
     ]
     const page = pageFactory

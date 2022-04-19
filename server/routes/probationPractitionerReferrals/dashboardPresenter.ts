@@ -1,5 +1,3 @@
-import Intervention from '../../models/intervention'
-import SentReferral from '../../models/sentReferral'
 import CalendarDay from '../../utils/calendarDay'
 import DateUtils from '../../utils/dateUtils'
 import PresenterUtils from '../../utils/presenterUtils'
@@ -9,6 +7,7 @@ import LoggedInUser from '../../models/loggedInUser'
 import { Page } from '../../models/pagination'
 import Pagination from '../../utils/pagination/pagination'
 import ControllerUtils from '../../utils/controllerUtils'
+import SentReferralSummaries from '../../models/sentReferralSummaries'
 
 export type PPDashboardType = 'Open cases' | 'Unassigned cases' | 'Completed cases' | 'Cancelled cases'
 export default class DashboardPresenter {
@@ -19,8 +18,7 @@ export default class DashboardPresenter {
   private readonly requestedSortOrder: string
 
   constructor(
-    private readonly sentReferrals: Page<SentReferral>,
-    private readonly interventions: Intervention[],
+    private readonly sentReferrals: Page<SentReferralSummaries>,
     private readonly loggedInUser: LoggedInUser,
     readonly dashboardType: PPDashboardType,
     readonly tablePersistentId: string,
@@ -89,13 +87,6 @@ export default class DashboardPresenter {
   }
 
   readonly tableRows: SortableTableRow[] = this.sentReferrals.content.map(referral => {
-    const interventionForReferral = this.interventions.find(
-      intervention => intervention.id === referral.referral.interventionId
-    )
-    if (interventionForReferral === undefined) {
-      throw new Error(`Expected referral to be linked to an intervention with ID ${referral.referral.interventionId}`)
-    }
-
     // i really want the actual names here, but that's an API call for each row - how can we improve this?
     const assignee = referral.assignedTo?.username || 'Unassigned'
     const sentAtDay = CalendarDay.britishDayForDate(new Date(referral.sentAt))
@@ -112,18 +103,18 @@ export default class DashboardPresenter {
         href: null,
       },
       {
-        text: PresenterUtils.fullName(referral.referral.serviceUser),
-        sortValue: PresenterUtils.fullNameSortValue(referral.referral.serviceUser),
+        text: PresenterUtils.fullName(referral.serviceUser),
+        sortValue: PresenterUtils.fullNameSortValue(referral.serviceUser),
         href: null,
       },
       {
-        text: interventionForReferral.title,
+        text: referral.interventionTitle,
         sortValue: null,
         href: null,
       },
       {
-        text: referral.referral.serviceProvider.name,
-        sortValue: referral.referral.serviceProvider.name,
+        text: referral.serviceProvider.name,
+        sortValue: referral.serviceProvider.name,
         href: null,
       },
       this.showAssignedCaseworkerColumn
