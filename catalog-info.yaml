@@ -18,6 +18,6 @@ spec:
   lifecycle: production
   consumesApis:
     - api:hmpps-interventions
-    # - api:hmpps-assess-risks-and-needs # not yet defined
+    - api:hmpps-risks-and-needs
+    - api:hmpps-community
     # - api:hmpps-auth # not yet defined
-    # - api:community-api # not yet defined
