@@ -134,14 +134,13 @@ export default {
   },
   dashboards: {
     probationPractitioner: {
-      percentageOfPaginationUsers: Number(get('SP_PERCENTAGE_OF_DASHBOARD_PAGINATION_USERS', '100')),
       openCases: Number(get('PP_OPEN_CASES_PAGE_SIZE', '500')),
       unassignedCases: Number(get('PP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
       completedCases: Number(get('PP_MY_CASES_PAGE_SIZE', '500')),
       cancelledCases: Number(get('PP_CANCELLED_CASES_PAGE_SIZE', '500')),
     },
     serviceProvider: {
-      percentageOfPaginationUsers: Number(get('SP_PERCENTAGE_OF_DASHBOARD_PAGINATION_USERS', '100')),
+      percentageOfPaginationUsers: Number(get('SP_PERCENTAGE_OF_DASHBOARD_PAGINATION_USERS', '0')),
       myCases: Number(get('SP_MY_CASES_PAGE_SIZE', '500')),
       openCases: Number(get('SP_OPEN_CASES_PAGE_SIZE', '500')),
       unassignedCases: Number(get('SP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
