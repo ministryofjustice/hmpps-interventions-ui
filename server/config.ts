@@ -68,10 +68,12 @@ export default {
     },
   },
   redis: {
-    host: process.env.REDIS_HOST,
-    port: Number(process.env.REDIS_PORT) || 6379,
+    socket: {
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT) || 6379,
+      tls: get('REDIS_TLS_ENABLED', 'false') === 'true',
+    },
     password: process.env.REDIS_AUTH_TOKEN,
-    tls_enabled: get('REDIS_TLS_ENABLED', 'false'),
   },
   applicationInsights: {
     connectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', null, requiredInProduction),

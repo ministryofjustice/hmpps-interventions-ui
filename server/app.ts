@@ -32,6 +32,7 @@ import DraftsService from './services/draftsService'
 import ReferenceDataService from './services/referenceDataService'
 import serviceEditorRoutes, { serviceEditorUrlPrefix } from './routes/serviceEditorRoutes'
 import UserDataService from './services/userDataService'
+import logger from '../log'
 
 const RedisStore = connectRedis(session)
 
@@ -101,11 +102,9 @@ export default function createApp(
 
   app.use(addRequestId())
 
-  const redisClient = redis.createClient({
-    port: config.redis.port,
-    password: config.redis.password,
-    host: config.redis.host,
-    tls: config.redis.tls_enabled === 'true' ? {} : false,
+  const redisClient = redis.createClient({ ...config.redis, legacyMode: true })
+  redisClient.connect().catch(err => {
+    logger.error({ err }, 'redis client could not connect')
   })
 
   app.use(

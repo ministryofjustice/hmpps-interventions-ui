@@ -1,6 +1,5 @@
-import { RedisClient } from 'redis'
 import { v4 as uuidv4 } from 'uuid'
-import { promisify } from 'util'
+import { RedisClientType } from 'redis'
 
 export interface Draft<T> {
   id: string
@@ -35,7 +34,7 @@ export interface Clock {
 
 export default class DraftsService {
   constructor(
-    private readonly redis: RedisClient,
+    private readonly redis: RedisClientType,
     private readonly expiry: { seconds: number },
     private readonly clock: Clock
   ) {}
@@ -45,7 +44,7 @@ export default class DraftsService {
   }
 
   private async fetchDraftDTO(id: string): Promise<LatestDraftDTO | null> {
-    const response = await promisify(this.redis.get).bind(this.redis)(this.redisKey(id))
+    const response = await this.redis.v4.get(this.redisKey(id))
 
     if (response === null) {
       return null
@@ -72,12 +71,7 @@ export default class DraftsService {
       updatedAt: draft.updatedAt.toISOString(),
     }
 
-    await promisify<string, string, string, number>(this.redis.set).bind(this.redis)(
-      this.redisKey(draft.id),
-      JSON.stringify(dto),
-      'EX', // Set the following expiry time on this key
-      this.expiry.seconds
-    )
+    await this.redis.v4.setEx(this.redisKey(draft.id), this.expiry.seconds, JSON.stringify(dto))
   }
 
   async createDraft<Data>(type: string, initialData: Data, { userId }: { userId: string }): Promise<Draft<Data>> {

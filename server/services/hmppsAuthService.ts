@@ -1,7 +1,6 @@
 import superagent, { Response } from 'superagent'
 import querystring from 'querystring'
 import redis from 'redis'
-import { promisify } from 'util'
 import logger from '../../log'
 import config from '../config'
 import RestClient from '../data/restClient'
@@ -13,20 +12,15 @@ import ServiceProviderOrganization from '../models/hmppsAuth/serviceProviderOrga
 import User from '../models/hmppsAuth/user'
 import generateOauthClientBaiscAuthHeader from '../authentication/clientCredentials'
 
-const redisClient = redis.createClient({
-  port: config.redis.port,
-  password: config.redis.password,
-  host: config.redis.host,
-  tls: config.redis.tls_enabled === 'true' ? {} : false,
-  prefix: 'systemToken:',
+const redisClient = redis.createClient(config.redis)
+
+redisClient.connect().catch(err => {
+  logger.error({ err }, 'redis client (for hmpps auth service) could not connect')
 })
 
 redisClient.on('error', error => {
   logger.error({ err: error }, 'Redis error')
 })
-
-const getRedisAsync = promisify(redisClient.get).bind(redisClient)
-const setRedisAsync = promisify<string, string, string, number>(redisClient.set).bind(redisClient)
 
 export default class HmppsAuthService {
   private restClient(token: string): RestClient {
@@ -93,9 +87,9 @@ export default class HmppsAuthService {
   }
 
   async getApiClientToken(): Promise<string> {
-    const redisKey = '%ANONYMOUS%'
+    const redisKey = 'systemToken:%ANONYMOUS%'
 
-    const tokenFromRedis = await getRedisAsync(redisKey)
+    const tokenFromRedis = await redisClient.get(redisKey)
     if (tokenFromRedis) {
       return tokenFromRedis
     }
@@ -103,7 +97,7 @@ export default class HmppsAuthService {
     const newToken = await this.apiClientTokenRequest()
 
     // set TTL slightly less than expiry of token. Async but no need to wait
-    await setRedisAsync(redisKey, newToken.body.access_token, 'EX', newToken.body.expires_in - 60)
+    await redisClient.setEx(redisKey, newToken.body.expires_in - 60, newToken.body.access_token)
 
     return newToken.body.access_token
   }
