@@ -59,14 +59,7 @@ describe(DashboardPresenter, () => {
       it('returns the table’s rows', () => {
         const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
-        const presenter = new DashboardPresenter(
-          page,
-          dashboardType,
-          loggedInUser,
-          interventions,
-          'tableId',
-          'sentAt,DESC'
-        )
+        const presenter = new DashboardPresenter(page, dashboardType, loggedInUser, 'tableId', 'sentAt,DESC')
 
         expect(presenter.tableRows).toEqual([
           [
