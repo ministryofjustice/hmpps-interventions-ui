@@ -38,9 +38,9 @@ describe('FindStartPresenter', () => {
       )
 
       expect(presenter.orderedReferrals).toEqual([
-        expect.objectContaining({ createdAt: '1 Jan 2021', serviceUserFullName: 'Jenny Catherine' }),
-        expect.objectContaining({ createdAt: '2 Jan 2021', serviceUserFullName: 'Rob Shah-Brookes' }),
         expect.objectContaining({ createdAt: '3 Jan 2021', serviceUserFullName: 'Hardip Fraiser' }),
+        expect.objectContaining({ createdAt: '2 Jan 2021', serviceUserFullName: 'Rob Shah-Brookes' }),
+        expect.objectContaining({ createdAt: '1 Jan 2021', serviceUserFullName: 'Jenny Catherine' }),
       ])
     })
   })
