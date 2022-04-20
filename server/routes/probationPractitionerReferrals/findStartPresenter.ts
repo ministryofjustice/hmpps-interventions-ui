@@ -16,7 +16,7 @@ export default class FindStartPresenter {
 
   get orderedReferrals(): DraftReferralSummaryPresenter[] {
     return this.draftReferrals
-      .sort((a, b) => (new Date(a.createdAt) < new Date(b.createdAt) ? -1 : 1))
+      .sort((a, b) => (new Date(a.createdAt) > new Date(b.createdAt) ? -1 : 1))
       .map(referral => ({
         serviceUserFullName: PresenterUtils.fullName(referral.serviceUser),
         createdAt: DateUtils.formattedDate(referral.createdAt, { month: 'short' }),
