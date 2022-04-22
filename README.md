@@ -18,6 +18,16 @@ docker-compose pull
 npm install
 ```
 
+### Initial setup part 2 (If using Apple M1 chipset)
+
+```
+Pull down following repositories:
+hmpps-assess-risks-and-needs, community-api, hmpps-auth, and offender-assessments-api
+
+Go into each folder of downloaded repo's and run following command in each:
+docker buildx build --platform linux/arm64 --load --tag quay.io/hmpps/REPLACE-ME-WITH-REPO-NAME:latest .
+```
+
 You'll also need to add the following line to your `/etc/hosts` file:
 
 ```
@@ -27,9 +37,12 @@ You'll also need to add the following line to your `/etc/hosts` file:
 ### Running the app
 
 ```
-bin/start-dependencies
+If not using Apple chipset use: 'bin/start-dependencies'
+If using Apple chipset use: 'docker-compose up -d'
+
 npm run start:dev
 ```
+
 
 Navigate to `http://localhost:3000` and log in:
 
