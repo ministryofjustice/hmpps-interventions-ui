@@ -31,16 +31,6 @@ export default class InterventionDetailsPresenter {
     return `${firstLine.substring(0, 500)}${firstLine.length > 500 ? '...' : ''}`
   }
 
-  get tabs(): { id: string; title: string; items: SummaryListItem[] }[] {
-    return [
-      {
-        id: 'service-provider-tab',
-        title: 'Service Provider',
-        items: this.serviceProviderSummary,
-      },
-    ]
-  }
-
   get summary(): SummaryListItem[] {
     const summary = [
       {

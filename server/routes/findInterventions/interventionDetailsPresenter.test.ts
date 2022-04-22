@@ -1,7 +1,6 @@
 import { DeepPartial } from 'fishery'
 import interventionFactory from '../../../testutils/factories/intervention'
 import eligibilityFactory from '../../../testutils/factories/eligibility'
-import serviceProviderFactory from '../../../testutils/factories/serviceProvider'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import Intervention from '../../models/intervention'
 import InterventionDetailsPresenter from './interventionDetailsPresenter'
@@ -104,30 +103,6 @@ three lines.`,
         loggedInUser
       )
       expect(presenter.truncatedDescription).toEqual(`${new Array(501).join('x')}...`)
-    })
-  })
-
-  describe('tabs', () => {
-    const presenter = new InterventionDetailsPresenter(
-      interventionFactory.build({
-        serviceProvider: serviceProviderFactory.build({ name: 'Harmony Living' }),
-      }),
-      loggedInUser
-    )
-
-    it('returns an array of summary lists, each with an id and title', () => {
-      expect(presenter.tabs).toEqual([
-        {
-          id: 'service-provider-tab',
-          title: 'Service Provider',
-          items: [
-            {
-              key: 'Name',
-              lines: ['Harmony Living'],
-            },
-          ],
-        },
-      ])
     })
   })
 
