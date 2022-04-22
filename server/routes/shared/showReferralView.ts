@@ -74,7 +74,7 @@ export default class ShowReferralView {
     const html = `<strong>Referral changes saved</strong>
           <hr class="govuk-section-break govuk-section-break--s">
           <p>
-             The service provider has been notified of the changes to this referral.
+          The service provider has been notified about the change to this referral. If there are details of a responsible officer, a notification will also be sent to them.
           </p>
           <p>
               <a href= ${this.presenter.closeHref}>Close</a>
