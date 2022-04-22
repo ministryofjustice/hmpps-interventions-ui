@@ -70,7 +70,5 @@ context('Find an intervention', () => {
 
     cy.get('h1').contains('Better solutions (anger management)')
     cy.contains('Thinking and behaviour')
-
-    cy.get('#service-provider-tab').contains('Harmony Living')
   })
 })
