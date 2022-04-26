@@ -10,7 +10,13 @@ describe(EndOfServiceReportFurtherInformationPresenter, () => {
 
   describe('text', () => {
     it('returns text to be displayed', () => {
-      const presenter = new EndOfServiceReportFurtherInformationPresenter(endOfServiceReport, serviceCategory, referral)
+      const presenter = new EndOfServiceReportFurtherInformationPresenter(
+        endOfServiceReport,
+        serviceCategory,
+        referral,
+        null,
+        'Personal wellbeing'
+      )
 
       expect(presenter.text).toEqual({
         subTitle: 'Would you like to give any additional information about this intervention (optional)?',
@@ -26,7 +32,8 @@ describe(EndOfServiceReportFurtherInformationPresenter, () => {
             endOfServiceReport,
             serviceCategory,
             referral,
-            null
+            null,
+            'Personal wellbeing'
           )
 
           expect(presenter.fields).toEqual({ furtherInformation: { value: 'Some further information' } })
@@ -41,7 +48,8 @@ describe(EndOfServiceReportFurtherInformationPresenter, () => {
             referral,
             {
               'further-information': 'Some user input further information',
-            }
+            },
+            'Personal wellbeing'
           )
 
           expect(presenter.fields).toEqual({ furtherInformation: { value: 'Some user input further information' } })

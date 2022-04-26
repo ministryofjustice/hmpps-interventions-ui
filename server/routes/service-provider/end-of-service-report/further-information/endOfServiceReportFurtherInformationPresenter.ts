@@ -9,17 +9,17 @@ export default class EndOfServiceReportFurtherInformationPresenter {
     private readonly endOfServiceReport: EndOfServiceReport,
     private readonly serviceCategory: ServiceCategory,
     private readonly referral: SentReferral,
-    private readonly userInputData: Record<string, unknown> | null = null
+    private readonly userInputData: Record<string, unknown> | null = null,
+    private readonly title: string
   ) {}
 
   readonly text = {
     subTitle: 'Would you like to give any additional information about this intervention (optional)?',
   }
 
-  readonly formPagePresenter = new EndOfServiceReportFormPresenter(this.serviceCategory, this.referral)
-    .furtherInformationPage
-
   private readonly utils = new PresenterUtils(this.userInputData)
+
+  readonly formPagePresenter = new EndOfServiceReportFormPresenter(this.title, this.referral).furtherInformationPage
 
   readonly fields = {
     furtherInformation: {

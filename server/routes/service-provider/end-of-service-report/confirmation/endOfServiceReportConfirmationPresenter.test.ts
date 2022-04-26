@@ -1,13 +1,11 @@
 import EndOfServiceReportConfirmationPresenter from './endOfServiceReportConfirmationPresenter'
 import sentReferralFactory from '../../../../../testutils/factories/sentReferral'
-import serviceCategoryFactory from '../../../../../testutils/factories/serviceCategory'
 
 describe(EndOfServiceReportConfirmationPresenter, () => {
   describe('progressHref', () => {
     it('returns the relative URL of the service provider referral progress page', () => {
       const sentReferral = sentReferralFactory.build()
-      const serviceCategory = serviceCategoryFactory.build()
-      const presenter = new EndOfServiceReportConfirmationPresenter(sentReferral, serviceCategory)
+      const presenter = new EndOfServiceReportConfirmationPresenter(sentReferral, 'Personal wellbeing')
 
       expect(presenter.progressHref).toEqual(`/service-provider/referrals/${sentReferral.id}/progress`)
     })
@@ -19,8 +17,7 @@ describe(EndOfServiceReportConfirmationPresenter, () => {
         referenceNumber: 'CEF345',
         referral: { serviceUser: { firstName: 'Johnny', lastName: 'Davis' } },
       })
-      const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
-      const presenter = new EndOfServiceReportConfirmationPresenter(sentReferral, serviceCategory)
+      const presenter = new EndOfServiceReportConfirmationPresenter(sentReferral, 'Social inclusion')
 
       expect(presenter.summary).toEqual([
         { key: 'Name', lines: ['Johnny Davis'] },

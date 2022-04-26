@@ -1,11 +1,10 @@
 import SentReferral from '../../../../models/sentReferral'
-import ServiceCategory from '../../../../models/serviceCategory'
 import PresenterUtils from '../../../../utils/presenterUtils'
 import { SummaryListItem } from '../../../../utils/summaryList'
 import utils from '../../../../utils/utils'
 
 export default class EndOfServiceReportConfirmationPresenter {
-  constructor(private readonly referral: SentReferral, private readonly serviceCategory: ServiceCategory) {}
+  constructor(private readonly referral: SentReferral, private readonly interventionTitle: string) {}
 
   progressHref = `/service-provider/referrals/${this.referral.id}/progress`
 
@@ -20,7 +19,7 @@ export default class EndOfServiceReportConfirmationPresenter {
     },
     {
       key: 'Service category',
-      lines: [utils.convertToProperCase(this.serviceCategory.name)],
+      lines: [utils.convertToProperCase(this.interventionTitle)],
     },
   ]
 }

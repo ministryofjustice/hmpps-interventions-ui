@@ -1,7 +1,6 @@
 import DesiredOutcome from '../../../../models/desiredOutcome'
 import EndOfServiceReport, { EndOfServiceReportOutcome } from '../../../../models/endOfServiceReport'
 import SentReferral from '../../../../models/sentReferral'
-import ServiceCategory from '../../../../models/serviceCategory'
 import { FormValidationError } from '../../../../utils/formValidationError'
 import PresenterUtils from '../../../../utils/presenterUtils'
 import EndOfServiceReportFormPresenter from '../endOfServiceReportFormPresenter'
@@ -10,9 +9,9 @@ export default class EndOfServiceReportOutcomePresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategory: ServiceCategory,
     private readonly desiredOutcome: DesiredOutcome,
     private readonly desiredOutcomeNumber: number,
+    private readonly interventionTitle: string,
     private readonly outcome: EndOfServiceReportOutcome | null,
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly error: FormValidationError | null = null
@@ -30,7 +29,7 @@ export default class EndOfServiceReportOutcomePresenter {
   }
 
   readonly formPagePresenter = new EndOfServiceReportFormPresenter(
-    this.serviceCategory,
+    this.interventionTitle,
     this.referral
   ).desiredOutcomePage(this.desiredOutcomeNumber)
 

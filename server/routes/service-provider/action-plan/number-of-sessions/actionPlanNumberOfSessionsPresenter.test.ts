@@ -9,13 +9,16 @@ describe(ActionPlanNumberOfSessionsPresenter, () => {
       const presenter = new ActionPlanNumberOfSessionsPresenter(
         actionPlanFactory.build({ numberOfSessions: 10 }),
         serviceUserFactory.build({ firstName: 'Alex', surname: 'River' }),
-        serviceCategoryFactory.build({ name: 'accommodation' })
+        serviceCategoryFactory.build({ name: 'accommodation' }),
+        null,
+        null,
+        'Personal wellbeing'
       )
 
       expect(presenter.text).toMatchObject({
-        serviceCategoryName: 'Accommodation',
+        serviceCategoryName: 'Personal wellbeing',
         serviceUserFirstName: 'Alex',
-        title: 'Accommodation - create action plan',
+        title: 'Personal wellbeing - create action plan',
       })
     })
 
@@ -34,7 +37,9 @@ describe(ActionPlanNumberOfSessionsPresenter, () => {
                   message: 'Enter the number of sessions',
                 },
               ],
-            }
+            },
+            null,
+            'Personal wellbeing'
           )
 
           expect(presenter.text.numberOfSessions.errorMessage).toEqual('Enter the number of sessions')
@@ -47,7 +52,9 @@ describe(ActionPlanNumberOfSessionsPresenter, () => {
             actionPlanFactory.build(),
             serviceUserFactory.build(),
             serviceCategoryFactory.build(),
-            null
+            null,
+            null,
+            'Womens services'
           )
 
           expect(presenter.text.numberOfSessions.errorMessage).toBeNull()
@@ -71,7 +78,9 @@ describe(ActionPlanNumberOfSessionsPresenter, () => {
                 message: 'Enter the number of sessions',
               },
             ],
-          }
+          },
+          null,
+          'Personal wellbeing'
         )
 
         expect(presenter.errorSummary).toEqual([
@@ -86,7 +95,9 @@ describe(ActionPlanNumberOfSessionsPresenter, () => {
           actionPlanFactory.build(),
           serviceUserFactory.build(),
           serviceCategoryFactory.build(),
-          null
+          null,
+          null,
+          'Personal wellbeing'
         )
 
         expect(presenter.errorSummary).toBeNull()
@@ -102,7 +113,8 @@ describe(ActionPlanNumberOfSessionsPresenter, () => {
           serviceUserFactory.build(),
           serviceCategoryFactory.build(),
           null,
-          { 'number-of-sessions': '4' }
+          { 'number-of-sessions': '4' },
+          'Personal wellbeing'
         )
 
         expect(presenter.fields.numberOfSessions).toEqual('4')
@@ -117,7 +129,8 @@ describe(ActionPlanNumberOfSessionsPresenter, () => {
           serviceUserFactory.build(),
           serviceCategoryFactory.build(),
           null,
-          null
+          null,
+          'Personal wellbeing'
         )
 
         expect(presenter.fields.numberOfSessions).toEqual('10')
