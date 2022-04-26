@@ -1846,7 +1846,7 @@ describe('Service provider referrals dashboard', () => {
         `/service-provider/end-of-service-report/${draftEndOfServiceReport.id}/outcomes/1`
       )
 
-      cy.contains('Accommodation: End of service report')
+      cy.contains('Social inclusion: End of service report')
       cy.contains('About desired outcome 1')
       cy.contains(selectedDesiredOutcomes[0].description)
 
@@ -1874,7 +1874,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Save and continue').click()
 
-      cy.contains('Accommodation: End of service report')
+      cy.contains('Social inclusion: End of service report')
       cy.contains('About desired outcome 2')
       cy.contains(selectedDesiredOutcomes[1].description)
 
@@ -1905,7 +1905,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Save and continue').click()
 
-      cy.contains('Accommodation: End of service report')
+      cy.contains('Social inclusion: End of service report')
       cy.contains('Would you like to give any additional information about this intervention (optional)?')
       cy.contains(
         'Provide any further information that you believe is important for the probation practitioner to know.'

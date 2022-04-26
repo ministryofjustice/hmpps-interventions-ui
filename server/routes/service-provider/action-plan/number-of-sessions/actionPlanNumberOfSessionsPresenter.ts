@@ -11,18 +11,19 @@ export default class ActionPlanNumberOfSessionsPresenter {
     private readonly serviceUser: DeliusServiceUser,
     private readonly serviceCategory: ServiceCategory,
     private readonly error: FormValidationError | null = null,
-    private readonly userInputData: Record<string, unknown> | null = null
+    private readonly userInputData: Record<string, unknown> | null = null,
+    private readonly interventionTitle: string
   ) {}
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   readonly text = {
-    title: `${utils.convertToProperCase(this.serviceCategory.name)} - create action plan`,
+    title: `${utils.convertToProperCase(this.interventionTitle)} - create action plan`,
     numberOfSessions: {
       errorMessage: PresenterUtils.errorMessage(this.error, 'number-of-sessions'),
     },
     serviceUserFirstName: this.serviceUser.firstName,
-    serviceCategoryName: utils.convertToProperCase(this.serviceCategory.name),
+    serviceCategoryName: utils.convertToProperCase(this.interventionTitle),
   }
 
   private readonly utils = new PresenterUtils(this.userInputData)

@@ -1,11 +1,10 @@
 import SentReferral from '../../../../models/sentReferral'
-import ServiceCategory from '../../../../models/serviceCategory'
 import { SummaryListItem } from '../../../../utils/summaryList'
 import utils from '../../../../utils/utils'
 import PresenterUtils from '../../../../utils/presenterUtils'
 
 export default class ActionPlanConfirmationPresenter {
-  constructor(private readonly sentReferral: SentReferral, private readonly serviceCategory: ServiceCategory) {}
+  constructor(private readonly sentReferral: SentReferral, private readonly interventionTitle: string) {}
 
   progressHref = `/service-provider/referrals/${this.sentReferral.id}/progress`
 
@@ -25,7 +24,7 @@ export default class ActionPlanConfirmationPresenter {
     },
     {
       key: 'Service category',
-      lines: [utils.convertToProperCase(this.serviceCategory.name)],
+      lines: [utils.convertToProperCase(this.interventionTitle)],
     },
   ]
 }

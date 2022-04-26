@@ -16,9 +16,9 @@ describe(EndOfServiceReportOutcomePresenter, () => {
       const presenter = new EndOfServiceReportOutcomePresenter(
         referral,
         endOfServiceReport,
-        serviceCategory,
         desiredOutcome,
         desiredOutcomeNumber,
+        'Personal wellbeing',
         null
       )
 
@@ -39,9 +39,9 @@ describe(EndOfServiceReportOutcomePresenter, () => {
         const presenter = new EndOfServiceReportOutcomePresenter(
           referral,
           endOfServiceReport,
-          serviceCategory,
           desiredOutcome,
           desiredOutcomeNumber,
+          'Personal wellbeing',
           null
         )
 
@@ -85,9 +85,9 @@ describe(EndOfServiceReportOutcomePresenter, () => {
           const presenter = new EndOfServiceReportOutcomePresenter(
             referral,
             endOfServiceReport,
-            serviceCategory,
             desiredOutcome,
             desiredOutcomeNumber,
+            'Personal wellbeing',
             outcome
           )
 
@@ -135,9 +135,9 @@ describe(EndOfServiceReportOutcomePresenter, () => {
           const presenter = new EndOfServiceReportOutcomePresenter(
             referral,
             endOfServiceReport,
-            serviceCategory,
             desiredOutcome,
             desiredOutcomeNumber,
+            'Personal wellbeing',
             outcome,
             userInputData
           )
@@ -181,9 +181,9 @@ describe(EndOfServiceReportOutcomePresenter, () => {
         const presenter = new EndOfServiceReportOutcomePresenter(
           referral,
           endOfServiceReport,
-          serviceCategory,
           desiredOutcome,
           desiredOutcomeNumber,
+          'Personal wellbeing',
           null,
           userInputData
         )
@@ -229,9 +229,9 @@ describe(EndOfServiceReportOutcomePresenter, () => {
         const presenter = new EndOfServiceReportOutcomePresenter(
           referral,
           endOfServiceReport,
-          serviceCategory,
           desiredOutcome,
           desiredOutcomeNumber,
+          'Personal wellbeing',
           null,
           null,
           error
@@ -261,9 +261,9 @@ describe(EndOfServiceReportOutcomePresenter, () => {
         const presenter = new EndOfServiceReportOutcomePresenter(
           referral,
           endOfServiceReport,
-          serviceCategory,
           desiredOutcome,
           desiredOutcomeNumber,
+          'Personal wellbeing',
           null,
           null,
           error
@@ -278,9 +278,9 @@ describe(EndOfServiceReportOutcomePresenter, () => {
         const presenter = new EndOfServiceReportOutcomePresenter(
           referral,
           endOfServiceReport,
-          serviceCategory,
           desiredOutcome,
           desiredOutcomeNumber,
+          'Personal wellbeing',
           null
         )
 

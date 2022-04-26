@@ -593,20 +593,17 @@ export default class ServiceProviderReferralsController {
       throw new Error('Trying to view confirmation page for action plan that hasn’t been submitted')
     }
 
-    const sentReferral = await this.interventionsService.getSentReferral(
-      res.locals.user.token.accessToken,
-      actionPlan.referralId
-    )
+    const { accessToken: token } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(token, actionPlan.referralId)
 
-    const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(
-        res.locals.user.token.accessToken,
-        sentReferral.referral.serviceCategoryIds[0]
-      ),
+    const referral = await this.interventionsService.getSentReferral(token, actionPlan.referralId)
+
+    const [interventionForPresenterTitle, serviceUser] = await Promise.all([
+      this.interventionsService.getIntervention(token, referral.referral.interventionId),
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new ActionPlanConfirmationPresenter(sentReferral, serviceCategory)
+    const presenter = new ActionPlanConfirmationPresenter(sentReferral, interventionForPresenterTitle.contractType.name)
     const view = new ActionPlanConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -642,13 +639,18 @@ export default class ServiceProviderReferralsController {
       token,
       referral.referral.serviceCategoryIds[0]
     )
+    const interventionForPresenterTitle = await this.interventionsService.getIntervention(
+      token,
+      referral.referral.interventionId
+    )
 
     const presenter = new AddActionPlanNumberOfSessionsPresenter(
       actionPlan,
       serviceUser,
       serviceCategory,
       formError,
-      userInputData
+      userInputData,
+      interventionForPresenterTitle.contractType.name
     )
     const view = new AddActionPlanNumberOfSessionsView(presenter)
     res.status(formError === null ? 200 : 400)
@@ -743,12 +745,17 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
+    const interventionForPresenterTitle = await this.interventionsService.getIntervention(
+      accessToken,
+      referral.referral.interventionId
+    )
+
     const presenter = new EndOfServiceReportOutcomePresenter(
       referral,
       endOfServiceReport,
-      matchedServiceCategory,
       matchedDesiredOutcome,
       desiredOutcomeNumber,
+      interventionForPresenterTitle.contractType.name,
       outcome,
       userInputData,
       formValidationError
@@ -778,11 +785,17 @@ export default class ServiceProviderReferralsController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
+    const interventionForPresenterTitle = await this.interventionsService.getIntervention(
+      accessToken,
+      referral.referral.interventionId
+    )
+
     const presenter = new EndOfServiceReportFurtherInformationPresenter(
       endOfServiceReport,
       serviceCategories[0],
       referral,
-      null
+      null,
+      interventionForPresenterTitle.contractType.name
     )
     const view = new EndOfServiceReportFurtherInformationView(presenter)
 
@@ -800,8 +813,17 @@ export default class ServiceProviderReferralsController {
       referral.referral.serviceCategoryIds
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const interventionForPresenterTitle = await this.interventionsService.getIntervention(
+      accessToken,
+      referral.referral.interventionId
+    )
 
-    const presenter = new EndOfServiceReportCheckAnswersPresenter(referral, endOfServiceReport, serviceCategories)
+    const presenter = new EndOfServiceReportCheckAnswersPresenter(
+      referral,
+      endOfServiceReport,
+      serviceCategories,
+      interventionForPresenterTitle.contractType.name
+    )
     const view = new EndOfServiceReportCheckAnswersView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -817,14 +839,16 @@ export default class ServiceProviderReferralsController {
 
     const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
-    const serviceCategories = await this.findSelectedServiceCategories(
-      accessToken,
-      referral.referral.interventionId,
-      referral.referral.serviceCategoryIds
-    )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const interventionForPresenterTitle = await this.interventionsService.getIntervention(
+      accessToken,
+      referral.referral.interventionId
+    )
 
-    const presenter = new EndOfServiceReportConfirmationPresenter(referral, serviceCategories[0])
+    const presenter = new EndOfServiceReportConfirmationPresenter(
+      referral,
+      interventionForPresenterTitle.contractType.name
+    )
     const view = new EndOfServiceReportConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

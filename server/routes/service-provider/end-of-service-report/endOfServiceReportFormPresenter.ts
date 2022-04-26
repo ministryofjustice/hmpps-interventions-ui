@@ -1,5 +1,4 @@
 import SentReferral from '../../../models/sentReferral'
-import ServiceCategory from '../../../models/serviceCategory'
 import utils from '../../../utils/utils'
 
 interface EndOfServiceReportFormPagePresenter {
@@ -11,14 +10,14 @@ interface EndOfServiceReportFormPagePresenter {
 }
 
 export default class EndOfServiceReportFormPresenter {
-  constructor(private readonly serviceCategory: ServiceCategory, private readonly referral: SentReferral) {}
+  constructor(private readonly interventionTitle: string, private readonly referral: SentReferral) {}
 
   private get numberOfDesiredOutcomes(): number {
     return this.referral.referral.desiredOutcomes.flatMap(desiredOutcome => desiredOutcome.desiredOutcomesIds).length
   }
 
   private get title(): string {
-    return `${utils.convertToProperCase(this.serviceCategory.name)}: End of service report`
+    return `${utils.convertToProperCase(this.interventionTitle)}: End of service report`
   }
 
   private get numberOfPages(): string {

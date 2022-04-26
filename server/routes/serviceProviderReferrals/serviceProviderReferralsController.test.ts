@@ -839,6 +839,12 @@ describe('GET /service-provider/action-plan/:actionPlanId/number-of-sessions', (
   it('displays a page to set the number of sessions on an action plan', async () => {
     const deliusServiceUser = deliusServiceUserFactory.build()
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const interventionForTest = interventionFactory.build({
+      contractType: {
+        code: 'ACC',
+        name: 'Accommodation',
+      },
+    })
     const referral = sentReferralFactory.assigned().build({
       referral: {
         serviceCategoryIds: [serviceCategory.id],
@@ -851,6 +857,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/number-of-sessions', (
     interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(interventionForTest)
 
     await request(app)
       .get(`/service-provider/action-plan/${draftActionPlan.id}/number-of-sessions`)
@@ -887,11 +894,18 @@ describe('POST /service-provider/action-plan/:actionPlanId/number-of-sessions', 
         },
       })
       const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
+      const interventionForTest = interventionFactory.build({
+        contractType: {
+          code: 'ACC',
+          name: 'Accommodation',
+        },
+      })
 
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
       interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      interventionsService.getIntervention.mockResolvedValue(interventionForTest)
 
       await request(app)
         .post(`/service-provider/action-plan/1/number-of-sessions`)
@@ -917,11 +931,18 @@ describe('POST /service-provider/action-plan/:actionPlanId/number-of-sessions', 
         },
       })
       const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
+      const interventionForTest = interventionFactory.build({
+        contractType: {
+          code: 'ACC',
+          name: 'Accommodation',
+        },
+      })
 
       communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
       interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+      interventionsService.getIntervention.mockResolvedValue(interventionForTest)
 
       interventionsService.updateDraftActionPlan.mockRejectedValue(
         createError(400, 'bad request', {
@@ -962,10 +983,17 @@ describe('GET /service-provider/action-plan/:actionPlanId/review', () => {
       activities: [{ id: '1', description: 'Do a thing', createdAt: '2021-03-01T10:00:00Z' }],
       numberOfSessions: 10,
     })
+    const interventionForTest = interventionFactory.build({
+      contractType: {
+        code: 'ACC',
+        name: 'Accommodation',
+      },
+    })
 
     interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(interventionForTest)
 
     await request(app)
       .get(`/service-provider/action-plan/${draftActionPlan.id}/review`)
@@ -1006,10 +1034,17 @@ describe('GET /service-provider/action-plan/:actionPlanId/confirmation', () => {
       },
     })
     const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
+    const interventionForTest = interventionFactory.build({
+      contractType: {
+        code: 'ACC',
+        name: 'Accommodation',
+      },
+    })
 
     interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(interventionForTest)
 
     await request(app)
       .get(`/service-provider/action-plan/${submittedActionPlan.id}/confirmation`)
@@ -1152,7 +1187,13 @@ describe('POST /service-provider/referrals/:id/end-of-service-report', () => {
 describe('GET /service-provider/end-of-service-report/:id/outcomes/:number', () => {
   it('renders a form', async () => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
-    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
+    const intervention = interventionFactory.build({
+      serviceCategories: [serviceCategory],
+      contractType: {
+        code: 'ACC',
+        name: 'Accommodation',
+      },
+    })
     const desiredOutcome = serviceCategory.desiredOutcomes[0]
     const referral = sentReferralFactory.build({
       referral: {
@@ -1173,7 +1214,6 @@ describe('GET /service-provider/end-of-service-report/:id/outcomes/:number', () 
       .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Social inclusion: End of service report')
         expect(res.text).toContain('About desired outcome 1')
         expect(res.text).toContain(desiredOutcome.description)
       })
