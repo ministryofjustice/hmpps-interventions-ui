@@ -134,6 +134,7 @@ export default {
   },
   dashboards: {
     probationPractitioner: {
+      percentageOfPaginationUsers: Number(get('SP_PERCENTAGE_OF_DASHBOARD_PAGINATION_USERS', '0')),
       openCases: Number(get('PP_OPEN_CASES_PAGE_SIZE', '500')),
       unassignedCases: Number(get('PP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
       completedCases: Number(get('PP_MY_CASES_PAGE_SIZE', '500')),

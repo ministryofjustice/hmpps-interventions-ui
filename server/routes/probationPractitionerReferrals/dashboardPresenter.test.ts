@@ -56,7 +56,7 @@ describe('DashboardPresenter', () => {
             href: null,
           },
           { text: 'Harmony Living', sortValue: 'Harmony Living', href: null },
-          { text: 'UserABC', sortValue: null, href: null },
+          { text: 'UserABC', sortValue: 'UserABC', href: null },
           {
             text: 'View',
             sortValue: null,
@@ -69,7 +69,7 @@ describe('DashboardPresenter', () => {
           { text: 'Hardip Fraiser', sortValue: 'fraiser, hardip', href: null },
           { text: "Women's Services - West Midlands", sortValue: null, href: null },
           { text: 'Harmony Living', sortValue: 'Harmony Living', href: null },
-          { text: 'Unassigned', sortValue: null, href: null },
+          { text: 'Unassigned', sortValue: 'Unassigned', href: null },
           {
             text: 'View',
             sortValue: null,
@@ -86,7 +86,7 @@ describe('DashboardPresenter', () => {
             href: null,
           },
           { text: 'Harmony Living', sortValue: 'Harmony Living', href: null },
-          { text: 'UserABC', sortValue: null, href: null },
+          { text: 'UserABC', sortValue: 'UserABC', href: null },
           {
             text: 'View',
             sortValue: null,

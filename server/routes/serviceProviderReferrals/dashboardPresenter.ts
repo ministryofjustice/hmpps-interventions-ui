@@ -55,7 +55,7 @@ export default class DashboardPresenter {
     },
     {
       columnName: 'Caseworker',
-      sortField: null,
+      sortField: 'assignments.assignedTo.userName',
     },
     {
       columnName: 'Action',
@@ -84,6 +84,7 @@ export default class DashboardPresenter {
 
   readonly tableRows: SortableTableRow[] = this.sentReferralSummaries.content.map(referralSummary => {
     const sentAtDay = CalendarDay.britishDayForDate(new Date(referralSummary.sentAt))
+    const assignee = referralSummary.assignedTo?.username || 'Unassigned'
     return [
       {
         text: DateUtils.formattedDate(sentAtDay, { month: 'short' }),
@@ -102,7 +103,7 @@ export default class DashboardPresenter {
       },
       { text: referralSummary.interventionTitle, sortValue: null, href: null },
       this.showAssignedCaseworkerColumn
-        ? { text: referralSummary.assignedTo?.username ?? '', sortValue: null, href: null }
+        ? { text: referralSummary.assignedTo?.username ?? '', sortValue: assignee, href: null }
         : null,
       { text: 'View', sortValue: null, href: DashboardPresenter.hrefForViewing(referralSummary) },
     ].filter(row => row !== null) as SortableTableRow
