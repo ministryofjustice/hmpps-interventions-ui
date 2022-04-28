@@ -921,4 +921,42 @@ describe(InterventionProgressPresenter, () => {
       })
     })
   })
+
+  describe('back link', () => {
+    it('should default the hrefBackLink if dashboardOriginPage not passed in', () => {
+      const referral = sentReferralFactory.build()
+      const intervention = interventionFactory.build()
+      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null,
+        undefined
+      )
+
+      expect(presenter.hrefBackLink).toEqual('/probation-practioner/dashboard')
+    })
+
+    it('should populate the hrefBackLink from dashboardOriginPage when passed in', () => {
+      const referral = sentReferralFactory.build()
+      const intervention = interventionFactory.build()
+      const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null,
+        '/probation-practioner/dashboard/backlink'
+      )
+
+      expect(presenter.hrefBackLink).toEqual('/probation-practioner/dashboard/backlink')
+    })
+  })
 })

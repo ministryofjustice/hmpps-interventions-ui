@@ -79,9 +79,7 @@ export default class InterventionProgressPresenter {
     return this.referralAssigned ? `${this.assignee!.email}` : null
   }
 
-  get hrefBackLink(): string {
-    return this.dashboardOriginPage ? `${this.dashboardOriginPage}` : '/service-provider/dashboard'
-  }
+  readonly hrefBackLink = this.dashboardOriginPage || '/service-provider/dashboard'
 
   readonly text = {
     title: utils.convertToTitleCase(this.intervention.contractType.name),

@@ -657,4 +657,211 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.contains('Save and continue').click()
     cy.contains('Success')
   })
+
+  describe('Returns to correct dashboard after user clicks back', () => {
+    const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+
+    const personalWellbeingIntervention = interventionFactory.build({
+      contractType: { code: 'PWB', name: 'Personal wellbeing' },
+      serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
+    })
+
+    const conviction = deliusConvictionFactory.build({
+      offences: [
+        {
+          mainOffence: true,
+          detail: {
+            mainCategoryDescription: 'Burglary',
+            subCategoryDescription: 'Theft act, 1968',
+          },
+        },
+      ],
+      sentence: {
+        expectedSentenceEndDate: '2025-11-15',
+      },
+    })
+
+    const referral = sentReferralFactory.build({
+      sentAt: '2020-12-13T13:00:00.000000Z',
+      referenceNumber: 'ABCABCA2',
+      referral: {
+        interventionId: personalWellbeingIntervention.id,
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
+        relevantSentenceId: conviction.convictionId,
+        serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+        complexityLevels: [
+          {
+            serviceCategoryId: accommodationServiceCategory.id,
+            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          },
+          {
+            serviceCategoryId: socialInclusionServiceCategory.id,
+            complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
+          },
+        ],
+        desiredOutcomes: [
+          {
+            serviceCategoryId: accommodationServiceCategory.id,
+            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+          },
+          {
+            serviceCategoryId: socialInclusionServiceCategory.id,
+            desiredOutcomesIds: ['9b30ffad-dfcb-44ce-bdca-0ea49239a21a', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
+          },
+        ],
+      },
+    })
+
+    const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+      riskSummaryComments: 'They are low risk.',
+    })
+
+    const deliusUser = deliusUserFactory.build({
+      firstName: 'Bernard',
+      surname: 'Beaks',
+      email: 'bernard.beaks@justice.gov.uk',
+    })
+
+    const deliusServiceUser = deliusServiceUserFactory.build({
+      firstName: 'Jenny',
+      surname: 'Jones',
+      dateOfBirth: '1980-01-01',
+      contactDetails: {
+        emailAddresses: ['jenny.jones@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+      },
+    })
+
+    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+      ...deliusServiceUser,
+      contactDetails: {
+        emailAddresses: ['jenny.jones@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+        addresses: [
+          {
+            addressNumber: 'Flat 2',
+            buildingName: null,
+            streetName: 'Test Walk',
+            postcode: 'SW16 1AQ',
+            town: 'London',
+            district: 'City of London',
+            county: 'Greater London',
+            from: '2019-01-01',
+            to: null,
+            noFixedAbode: false,
+          },
+        ],
+      },
+    })
+
+    const responsibleOfficer = deliusOffenderManagerFactory.build({
+      staff: {
+        forenames: 'Peter',
+        surname: 'Practitioner',
+        email: 'p.practitioner@justice.gov.uk',
+        phoneNumber: '01234567890',
+      },
+      team: {
+        telephone: '07890 123456',
+        emailAddress: 'probation-team4692@justice.gov.uk',
+        startDate: '2021-01-01',
+      },
+    })
+
+    const sentReferrals = [
+      sentReferralSummariesFactory.build({
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'ABCABCA1',
+        assignedTo: null,
+        serviceUser: { firstName: 'George', lastName: 'Michael' },
+      }),
+      sentReferralSummariesFactory.build({
+        sentAt: '2020-12-13T13:00:00.000000Z',
+        assignedTo: {
+          username: 'A. Caseworker',
+          userId: '123',
+          authSource: 'auth',
+        },
+        referenceNumber: 'ABCABCA2',
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
+        interventionTitle: "Women's Services - West Midlands",
+      }),
+    ]
+
+    const appointmentWithNoFeedback = initialAssessmentAppointmentFactory.inThePast.build({
+      durationInMinutes: 75,
+      appointmentDeliveryType: 'PHONE_CALL',
+    })
+    const supplierAssessment = supplierAssessmentFactory.build({
+      appointments: [appointmentWithNoFeedback],
+      currentAppointmentId: appointmentWithNoFeedback.id,
+    })
+
+    const dashBoardTables = [
+      {
+        dashboardType: 'Open cases',
+        pathname: 'open-cases',
+      },
+      {
+        dashboardType: 'Unassigned cases',
+        pathname: 'unassigned-cases',
+      },
+      {
+        dashboardType: 'Completed cases',
+        pathname: 'completed-cases',
+      },
+      {
+        dashboardType: 'Cancelled cases',
+        pathname: 'cancelled-cases',
+      },
+    ]
+
+    dashBoardTables.forEach(table => {
+      it(`returns to dashboard "${table.dashboardType}" when clicking back`, () => {
+        const page = pageFactory
+          .pageContent(sentReferrals)
+          .build({ totalElements: sentReferrals.length, totalPages: 2, size: 1 })
+        cy.stubGetSentReferralsForUserTokenPaged(page)
+
+        cy.stubGetSentReferral(referral.id, referral)
+        cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
+        cy.stubGetApprovedActionPlanSummaries(referral.id, [])
+
+        cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
+        cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+        cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
+        cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+        cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+        cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
+        cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
+
+        cy.login()
+
+        cy.get('a').contains(table.dashboardType).click()
+        cy.location('pathname').should('equal', `/probation-practitioner/dashboard/${table.pathname}`)
+
+        cy.contains('Next').click()
+
+        cy.contains('.govuk-table__row', 'George Michael').within(() => {
+          cy.contains('View').click()
+        })
+        cy.location('pathname').should('equal', `/probation-practitioner/referrals/${referral.id}/progress`)
+
+        cy.contains('Back').click()
+        cy.location('pathname').should('equal', `/probation-practitioner/dashboard/${table.pathname}`)
+        cy.location('search').should('equal', `?page=2`)
+      })
+    })
+  })
 })

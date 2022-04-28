@@ -1,6 +1,7 @@
 import request from 'supertest'
 import { Express } from 'express'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
+import getCookieValue from '../testutils/responseUtils'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
@@ -108,26 +109,36 @@ describe('GET /probation-practitioner/find', () => {
 })
 
 describe('GET /probation-practitioner/dashboard', () => {
-  const dashboardRequests: { type: PPDashboardType; url: string }[] = [
+  const dashboardRequests: { type: PPDashboardType; url: string; dashboardType: string; searchString: string }[] = [
     {
       type: 'Open cases',
-      url: '/probation-practitioner/dashboard',
+      url: '/probation-practitioner/dashboard?page=2',
+      dashboardType: '',
+      searchString: 'page=2',
     },
     {
       type: 'Open cases',
-      url: '/probation-practitioner/dashboard/open-cases',
+      url: '/probation-practitioner/dashboard/open-cases?page=2',
+      dashboardType: '/open-cases',
+      searchString: 'page=2',
     },
     {
       type: 'Unassigned cases',
-      url: '/probation-practitioner/dashboard/unassigned-cases',
+      url: '/probation-practitioner/dashboard/unassigned-cases?page=2',
+      dashboardType: '/unassigned-cases',
+      searchString: 'page=2',
     },
     {
       type: 'Completed cases',
-      url: '/probation-practitioner/dashboard/completed-cases',
+      url: '/probation-practitioner/dashboard/completed-cases?page=2',
+      dashboardType: '/completed-cases',
+      searchString: 'page=2',
     },
     {
       type: 'Cancelled cases',
-      url: '/probation-practitioner/dashboard/cancelled-cases',
+      url: '/probation-practitioner/dashboard/cancelled-cases?page=2',
+      dashboardType: '/cancelled-cases',
+      searchString: 'page=2',
     },
   ]
   describe.each(dashboardRequests)('for dashboard %s', dashboard => {
@@ -144,6 +155,22 @@ describe('GET /probation-practitioner/dashboard', () => {
           expect(res.text).toContain(dashboard.type)
           expect(res.text).toContain('Alex River')
           expect(res.text).toContain('Accommodation Services - West Midlands')
+        })
+    })
+
+    it('stores dashboard link in cookies', async () => {
+      const referrals = [sentReferralSummariesFactory.build()]
+      const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+      interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+      await request(app)
+        .get(dashboard.url)
+        .expect(res => {
+          const cookieVal = getCookieValue(res.header['set-cookie'])
+          expect(cookieVal).toMatchObject({
+            dashboardOriginPage: `/probation-practitioner/dashboard${dashboard.dashboardType}?${dashboard.searchString}`,
+          })
         })
     })
   })

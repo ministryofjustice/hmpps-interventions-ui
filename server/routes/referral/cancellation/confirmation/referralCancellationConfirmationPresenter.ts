@@ -5,7 +5,11 @@ import utils from '../../../../utils/utils'
 import Intervention from '../../../../models/intervention'
 
 export default class ReferralCancellationConfirmationPresenter {
-  constructor(private readonly referral: SentReferral, private readonly intervention: Intervention) {}
+  constructor(
+    private readonly referral: SentReferral,
+    private readonly intervention: Intervention,
+    private readonly dashboardOriginPage?: string
+  ) {}
 
   readonly text = {
     confirmationText: 'This referral has been cancelled',
@@ -13,7 +17,7 @@ export default class ReferralCancellationConfirmationPresenter {
     whatHappensNextText: `You need to contact the service provider outside the service to let them know about the change.`,
   }
 
-  readonly myCasesHref = '/probation-practitioner/dashboard'
+  readonly myCasesHref = this.dashboardOriginPage || '/probation-practitioner/dashboard'
 
   readonly serviceUserSummary: SummaryListItem[] = [
     {

@@ -111,6 +111,8 @@ export default class ProbationPractitionerReferralsController {
       paginationQuery
     )
 
+    req.session.dashboardOriginPage = req.originalUrl
+
     const presenter = new DashboardPresenter(cases, res.locals.user, dashboardType, tablePersistentId, sort[0])
     const view = new DashboardView(presenter)
     ControllerUtils.renderWithLayout(res, view, null)
@@ -186,7 +188,8 @@ export default class ProbationPractitionerReferralsController {
       actionPlan,
       approvedActionPlanSummaries,
       supplierAssessment,
-      assignee
+      assignee,
+      req.session.dashboardOriginPage
     )
     const view = new InterventionProgressView(presenter)
 
@@ -230,7 +233,8 @@ export default class ProbationPractitionerReferralsController {
       expandedServiceUser,
       riskSummary,
       responsibleOfficer,
-      req.query.detailsUpdated === 'true'
+      req.query.detailsUpdated === 'true',
+      req.session.dashboardOriginPage
     )
     const view = new ShowReferralView(presenter)
     ControllerUtils.renderWithLayout(res, view, expandedServiceUser)

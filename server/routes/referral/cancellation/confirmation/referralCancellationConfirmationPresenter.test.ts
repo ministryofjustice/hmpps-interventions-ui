@@ -40,4 +40,24 @@ describe(ReferralCancellationConfirmationPresenter, () => {
       ])
     })
   })
+
+  describe('back link', () => {
+    it('should default the hrefBackLink if dashboardOriginPage not passed in', () => {
+      const sentReferral = sentReferralFactory.build()
+      const intervention = interventionFactory.build()
+      const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, intervention)
+      expect(presenter.myCasesHref).toEqual('/probation-practitioner/dashboard')
+    })
+
+    it('should populate the hrefBackLink from dashboardOriginPage when passed in', () => {
+      const sentReferral = sentReferralFactory.build()
+      const intervention = interventionFactory.build()
+      const presenter = new ReferralCancellationConfirmationPresenter(
+        sentReferral,
+        intervention,
+        '/probation-practitioner/dashboard/backlink'
+      )
+      expect(presenter.myCasesHref).toEqual('/probation-practitioner/dashboard/backlink')
+    })
+  })
 })

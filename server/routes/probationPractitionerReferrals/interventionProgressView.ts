@@ -72,7 +72,7 @@ export default class InterventionProgressView {
 
   private readonly backLinkArgs = {
     text: 'Back',
-    href: '/probation-practitioner/dashboard',
+    href: this.presenter.hrefBackLink,
   }
 
   get renderArgs(): [string, Record<string, unknown>] {
