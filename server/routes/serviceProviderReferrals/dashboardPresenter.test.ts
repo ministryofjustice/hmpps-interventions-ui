@@ -67,7 +67,7 @@ describe(DashboardPresenter, () => {
             { text: 'ABCABCA1', sortValue: null, href: null },
             { text: 'Rob Shah-Brookes', sortValue: 'shah-brookes, rob', href: null },
             { text: 'Accommodation Services - West Midlands', sortValue: null, href: null },
-            { text: 'UserABC', sortValue: null, href: null },
+            { text: 'UserABC', sortValue: 'UserABC', href: null },
             {
               text: 'View',
               sortValue: null,
@@ -79,7 +79,7 @@ describe(DashboardPresenter, () => {
             { text: 'ABCABCA2', sortValue: null, href: null },
             { text: 'Hardip Fraiser', sortValue: 'fraiser, hardip', href: null },
             { text: "Women's Services - West Midlands", sortValue: null, href: null },
-            { text: '', sortValue: null, href: null },
+            { text: '', sortValue: 'Unassigned', href: null },
             {
               text: 'View',
               sortValue: null,
@@ -95,7 +95,7 @@ describe(DashboardPresenter, () => {
               sortValue: null,
               href: null,
             },
-            { text: 'UserABC', sortValue: null, href: null },
+            { text: 'UserABC', sortValue: 'UserABC', href: null },
             {
               text: 'View',
               sortValue: null,

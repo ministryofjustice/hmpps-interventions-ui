@@ -60,7 +60,7 @@ export default class DashboardPresenter {
     },
     {
       columnName: 'Caseworker',
-      sortField: null,
+      sortField: 'assignments.assignedTo.userName',
     },
     {
       columnName: 'Action',
@@ -120,7 +120,7 @@ export default class DashboardPresenter {
       this.showAssignedCaseworkerColumn
         ? {
             text: assignee,
-            sortValue: null,
+            sortValue: assignee,
             href: null,
           }
         : null,
