@@ -1,10 +1,12 @@
 import { Callback, RedisClient } from 'redis'
-import { mocked } from 'ts-jest/utils'
-import { v4 } from 'uuid'
 import DraftsService from './draftsService'
 
-jest.mock('uuid')
-const mockedUuid = mocked(v4)
+let mockedUuid: string
+jest.mock('uuid', () => {
+  return {
+    v4: () => mockedUuid,
+  }
+})
 
 interface ChosenRedisOverloads {
   get: (key: string, cb?: Callback<string | null>) => boolean
@@ -27,7 +29,7 @@ describe(DraftsService, () => {
 
   describe('.createDraft', () => {
     it('generates a random UUID and stores the data in Redis under a key derived from that UUID, with the given expiry time', async () => {
-      mockedUuid.mockReturnValue('2dc7ef56-58dd-4339-9924-c33318738068')
+      mockedUuid = '2dc7ef56-58dd-4339-9924-c33318738068'
 
       redis.set.mockImplementation((_key, _value, _mode, _duration, cb) => {
         cb!(null, 'OK')
