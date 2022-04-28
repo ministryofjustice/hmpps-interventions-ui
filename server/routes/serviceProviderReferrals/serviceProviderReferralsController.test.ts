@@ -2,6 +2,7 @@ import request from 'supertest'
 import { Express } from 'express'
 import createError from 'http-errors'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
+import getCookieValue from '../testutils/responseUtils'
 import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
@@ -110,6 +111,52 @@ describe('GET /service-provider/dashboard', () => {
         expect(res.text).toContain('Accommodation Services - West Midlands')
       })
   })
+
+  it('stores dashboard link in cookies', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'Michael',
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/service-provider/dashboard')
+      .expect(res => {
+        const cookieVal = getCookieValue(res.header['set-cookie'])
+        expect(cookieVal).toMatchObject({
+          dashboardOriginPage: '/service-provider/dashboard',
+        })
+      })
+  })
+
+  it('stores dashboard link in cookies with correct page number', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'Michael',
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/service-provider/dashboard?page=2')
+      .expect(res => {
+        const cookieVal = getCookieValue(res.header['set-cookie'])
+        expect(cookieVal).toMatchObject({
+          dashboardOriginPage: '/service-provider/dashboard?page=2',
+        })
+      })
+  })
 })
 
 describe('GET /service-provider/dashboard/my-cases', () => {
@@ -132,6 +179,52 @@ describe('GET /service-provider/dashboard/my-cases', () => {
         expect(res.text).toContain('My cases')
         expect(res.text).toContain('George Michael')
         expect(res.text).toContain('Accommodation Services - West Midlands')
+      })
+  })
+
+  it('stores dashboard link in cookies', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'Michael',
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/service-provider/dashboard/my-cases')
+      .expect(res => {
+        const cookieVal = getCookieValue(res.header['set-cookie'])
+        expect(cookieVal).toMatchObject({
+          dashboardOriginPage: '/service-provider/dashboard/my-cases',
+        })
+      })
+  })
+
+  it('stores dashboard link in cookies with correct page number', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'Michael',
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/service-provider/dashboard/my-cases?page=2')
+      .expect(res => {
+        const cookieVal = getCookieValue(res.header['set-cookie'])
+        expect(cookieVal).toMatchObject({
+          dashboardOriginPage: '/service-provider/dashboard/my-cases?page=2',
+        })
       })
   })
 })
@@ -198,6 +291,52 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
         expect(res.text).toContain('Showing <b>1</b> to <b>2</b> of <b>2</b>')
       })
   })
+
+  it('stores dashboard link in cookies', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'Michael',
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/service-provider/dashboard/all-open-cases')
+      .expect(res => {
+        const cookieVal = getCookieValue(res.header['set-cookie'])
+        expect(cookieVal).toMatchObject({
+          dashboardOriginPage: '/service-provider/dashboard/all-open-cases',
+        })
+      })
+  })
+
+  it('stores dashboard link in cookies with correct page number', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'Michael',
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/service-provider/dashboard/all-open-cases?page=2')
+      .expect(res => {
+        const cookieVal = getCookieValue(res.header['set-cookie'])
+        expect(cookieVal).toMatchObject({
+          dashboardOriginPage: '/service-provider/dashboard/all-open-cases?page=2',
+        })
+      })
+  })
 })
 
 describe('GET /service-provider/dashboard/unassigned-cases', () => {
@@ -222,6 +361,52 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         expect(res.text).toContain('Accommodation Services - West Midlands')
       })
   })
+
+  it('stores dashboard link in cookies', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'Michael',
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/service-provider/dashboard/unassigned-cases')
+      .expect(res => {
+        const cookieVal = getCookieValue(res.header['set-cookie'])
+        expect(cookieVal).toMatchObject({
+          dashboardOriginPage: '/service-provider/dashboard/unassigned-cases',
+        })
+      })
+  })
+
+  it('stores dashboard link in cookies with correct page number', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'Michael',
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/service-provider/dashboard/unassigned-cases?page=2')
+      .expect(res => {
+        const cookieVal = getCookieValue(res.header['set-cookie'])
+        expect(cookieVal).toMatchObject({
+          dashboardOriginPage: '/service-provider/dashboard/unassigned-cases?page=2',
+        })
+      })
+  })
 })
 
 describe('GET /service-provider/dashboard/completed-cases', () => {
@@ -244,6 +429,52 @@ describe('GET /service-provider/dashboard/completed-cases', () => {
         expect(res.text).toContain('My cases')
         expect(res.text).toContain('George Michael')
         expect(res.text).toContain('Accommodation Services - West Midlands')
+      })
+  })
+
+  it('stores dashboard link in cookies', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'Michael',
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/service-provider/dashboard/completed-cases')
+      .expect(res => {
+        const cookieVal = getCookieValue(res.header['set-cookie'])
+        expect(cookieVal).toMatchObject({
+          dashboardOriginPage: '/service-provider/dashboard/completed-cases',
+        })
+      })
+  })
+
+  it('stores dashboard link in cookies with correct page number', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'Michael',
+        },
+      }),
+    ]
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+
+    await request(app)
+      .get('/service-provider/dashboard/completed-cases?page=2')
+      .expect(res => {
+        const cookieVal = getCookieValue(res.header['set-cookie'])
+        expect(cookieVal).toMatchObject({
+          dashboardOriginPage: '/service-provider/dashboard/completed-cases?page=2',
+        })
       })
   })
 })

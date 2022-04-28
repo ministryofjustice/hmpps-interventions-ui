@@ -9,10 +9,11 @@ export default class AssignmentConfirmationPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly intervention: Intervention,
-    private readonly assignee: AuthUserDetails
+    private readonly assignee: AuthUserDetails,
+    private readonly dashboardOriginPage?: string
   ) {}
 
-  readonly dashboardHref = '/service-provider/dashboard'
+  readonly dashboardHref = this.dashboardOriginPage || '/service-provider/dashboard'
 
   readonly summary: SummaryListItem[] = [
     {

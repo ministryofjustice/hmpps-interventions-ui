@@ -8,7 +8,8 @@ export default class ReferralOverviewPagePresenter {
   constructor(
     private readonly section: ReferralOverviewPageSection,
     private readonly referralId: string,
-    private readonly subNavUrlPrefix: 'service-provider' | 'probation-practitioner'
+    private readonly subNavUrlPrefix: 'service-provider' | 'probation-practitioner',
+    private readonly dashboardOriginPage?: string
   ) {}
 
   readonly subNavArgs = {
@@ -31,5 +32,7 @@ export default class ReferralOverviewPagePresenter {
     ],
   }
 
-  readonly dashboardURL = `/${this.subNavUrlPrefix}/dashboard`
+  readonly dashboardURL = this.dashboardOriginPage
+    ? `${this.dashboardOriginPage}`
+    : `/${this.subNavUrlPrefix}/dashboard`
 }

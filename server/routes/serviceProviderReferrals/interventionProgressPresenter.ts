@@ -50,7 +50,8 @@ export default class InterventionProgressPresenter {
     private readonly approvedActionPlanSummaries: ApprovedActionPlanSummary[],
     private readonly actionPlanAppointments: ActionPlanAppointment[],
     private readonly supplierAssessment: SupplierAssessment,
-    private readonly assignee: AuthUserDetails | null
+    private readonly assignee: AuthUserDetails | null,
+    private readonly dashboardOriginPage?: string
   ) {
     const subNavUrlPrefix = 'service-provider'
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
@@ -76,6 +77,10 @@ export default class InterventionProgressPresenter {
 
   get assignedCaseworkerEmail(): string | null {
     return this.referralAssigned ? `${this.assignee!.email}` : null
+  }
+
+  get hrefBackLink(): string {
+    return this.dashboardOriginPage ? `${this.dashboardOriginPage}` : '/service-provider/dashboard'
   }
 
   readonly text = {

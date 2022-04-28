@@ -140,4 +140,27 @@ describe(AssignmentConfirmationPresenter, () => {
       })
     })
   })
+
+  describe('back link', () => {
+    it('should default the hrefBackLink if dashboardOriginPage not passed in', () => {
+      const sentReferral = sentReferralFactory.build()
+      const intervention = interventionFactory.build()
+      const assignee = hmppsAuthUserFactory.build()
+      const presenter = new AssignmentConfirmationPresenter(sentReferral, intervention, assignee)
+      expect(presenter.dashboardHref).toEqual('/service-provider/dashboard')
+    })
+
+    it('should populate the hrefBackLink from dashboardOriginPage when passed in', () => {
+      const sentReferral = sentReferralFactory.build()
+      const intervention = interventionFactory.build()
+      const assignee = hmppsAuthUserFactory.build()
+      const presenter = new AssignmentConfirmationPresenter(
+        sentReferral,
+        intervention,
+        assignee,
+        '/service-provider/dashboard/backlink'
+      )
+      expect(presenter.dashboardHref).toEqual('/service-provider/dashboard/backlink')
+    })
+  })
 })

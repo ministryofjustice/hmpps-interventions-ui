@@ -42,12 +42,34 @@ describe(ReferralOverviewPagePresenter, () => {
   })
 
   describe('dashboardURL', () => {
-    const values: ('service-provider' | 'probation-practitioner')[] = ['service-provider', 'probation-practitioner']
-    it.each(values)('returns a relative URL for the %s dashboard', prefix => {
-      const sentReferral = sentReferralFactory.build()
-      const presenter = new ReferralOverviewPagePresenter(ReferralOverviewPageSection.Details, sentReferral.id, prefix)
+    describe('dashboard origin page not passed in', () => {
+      const values: ('service-provider' | 'probation-practitioner')[] = ['service-provider', 'probation-practitioner']
+      it.each(values)('returns a relative URL for the %s dashboard', prefix => {
+        const sentReferral = sentReferralFactory.build()
+        const presenter = new ReferralOverviewPagePresenter(
+          ReferralOverviewPageSection.Details,
+          sentReferral.id,
+          prefix,
+          undefined
+        )
 
-      expect(presenter.dashboardURL).toEqual(`/${prefix}/dashboard`)
+        expect(presenter.dashboardURL).toEqual(`/${prefix}/dashboard`)
+      })
+    })
+
+    describe('dashboard origin page passed in', () => {
+      const values: ('service-provider' | 'probation-practitioner')[] = ['service-provider', 'probation-practitioner']
+      it.each(values)('returns a relative URL for the %s dashboard', prefix => {
+        const sentReferral = sentReferralFactory.build()
+        const presenter = new ReferralOverviewPagePresenter(
+          ReferralOverviewPageSection.Details,
+          sentReferral.id,
+          prefix,
+          '/service-provider/dashboard/backlink'
+        )
+
+        expect(presenter.dashboardURL).toEqual('/service-provider/dashboard/backlink')
+      })
     })
   })
 })

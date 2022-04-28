@@ -41,12 +41,14 @@ export default class ShowReferralPresenter {
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
     readonly riskSummary: RiskSummary | null,
     private readonly responsibleOfficer: DeliusOffenderManager | null,
-    readonly showSuccess: boolean = false
+    readonly showSuccess: boolean = false,
+    private readonly dashboardOriginPage?: string
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
       sentReferral.id,
-      userType
+      userType,
+      dashboardOriginPage
     )
 
     this.roshPanelPresenter = new RoshPanelPresenter(riskSummary)

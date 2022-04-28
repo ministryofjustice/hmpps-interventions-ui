@@ -72,7 +72,8 @@ export default class CaseNotesController {
       caseNotesPage,
       userDetails,
       serviceUser,
-      loggedInUserType
+      loggedInUserType,
+      req.session.dashboardOriginPage
     )
     const view = new CaseNotesView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
