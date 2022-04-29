@@ -3,6 +3,7 @@ import createError, { HttpError } from 'http-errors'
 import ControllerUtils from './utils/controllerUtils'
 import logger from '../log'
 import config from './config'
+import errorMessages from './utils/errorMessages'
 
 export default function createErrorHandler(production: boolean) {
   return (err: Error, req: Request, res: Response, next: NextFunction): void => {
@@ -20,9 +21,33 @@ export default function createErrorHandler(production: boolean) {
       if (err.status === 403 && (!err.external || err.response?.body?.accessErrors)) {
         res.status(403)
 
+        const returnedError = err.response?.body?.message
+        let userMessage
+        let userHeader
+
+        const userHeaderTypes = {
+          userHeaderService: 'You do not have permission to view this service',
+          userHeaderPage: 'You do not have permission to view this page',
+        }
+
+        const lookupError = errorMessages.returnedError[returnedError]
+        if (lookupError) {
+          userMessage = lookupError.mappedMessage
+          userHeader = userHeaderTypes[lookupError.userHeaderType]
+        } else if (returnedError?.includes('unidentified provider')) {
+          userMessage = errorMessages.errorHandlerAccessErrorMessages.providerGroupNotRecognised
+          userHeader = userHeaderTypes.userHeaderService
+        } else if (returnedError?.includes('unidentified contract')) {
+          userMessage = errorMessages.errorHandlerAccessErrorMessages.contractGroupNotRecognised
+          userHeader = userHeaderTypes.userHeaderService
+        } else if (returnedError?.includes('is not accessible to providers')) {
+          userMessage = errorMessages.errorHandlerAccessErrorMessages.groupsDoNotMatch
+          userHeader = userHeaderTypes.userHeaderService
+        }
+
         const args = {
-          message: err.response?.body?.message,
-          accessErrors: err.response?.body?.accessErrors,
+          userHeader,
+          userMessage,
         }
 
         return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/authError', args] }, null)
