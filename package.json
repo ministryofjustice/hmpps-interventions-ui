@@ -181,7 +181,7 @@
     "mocha": "^9.2.2",
     "mocha-junit-reporter": "^2.0.2",
     "nock": "^13.2.4",
-    "nodemon": "^2.0.15",
+    "nodemon": "^2.0.16",
     "prettier": "^2.6.2",
     "sass": "^1.50.1",
     "stylelint": "^14.7.1",
