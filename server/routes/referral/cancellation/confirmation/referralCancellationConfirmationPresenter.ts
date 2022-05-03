@@ -9,8 +9,8 @@ export default class ReferralCancellationConfirmationPresenter {
 
   readonly text = {
     confirmationText: 'This referral has been cancelled',
-    whatHappensNextText:
-      "Service provider will be notified about the cancellation. You don't have to do anything else.",
+    headingText: 'What you need to do next',
+    whatHappensNextText: `You need to contact the service provider outside the service to let them know about the change.`,
   }
 
   readonly myCasesHref = '/probation-practitioner/dashboard'

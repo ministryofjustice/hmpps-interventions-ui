@@ -11,8 +11,9 @@ describe(ReferralCancellationConfirmationPresenter, () => {
 
       expect(presenter.text).toMatchObject({
         confirmationText: 'This referral has been cancelled',
+        headingText: 'What you need to do next',
         whatHappensNextText:
-          "Service provider will be notified about the cancellation. You don't have to do anything else.",
+          'You need to contact the service provider outside the service to let them know about the change.',
       })
     })
   })
