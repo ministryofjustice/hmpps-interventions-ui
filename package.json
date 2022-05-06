@@ -25,6 +25,7 @@
     "test": "jest --runInBand",
     "int-test": "cypress run --config video=false",
     "int-test-ui": "cypress open",
+    "int-test-video": "CYPRESS_NO_COMMAND_LOG=1 cypress run --config video=true,slowTestThreshold=15000 --env CYPRESS_COMMAND_DELAY=1200",
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
     "lint": "eslint . --cache --max-warnings 0 && stylelint **/*.scss",
