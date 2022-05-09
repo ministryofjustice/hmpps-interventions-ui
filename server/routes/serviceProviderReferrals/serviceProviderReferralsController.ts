@@ -106,7 +106,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.MyCases
     )
-    this.renderDashboardWithoutPagination(res, referralsSummary, 'My cases')
+    this.renderDashboardWithoutPagination(req, res, referralsSummary, 'My cases')
   }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -122,7 +122,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.OpenCases
     )
-    this.renderDashboardWithoutPagination(res, referralsSummary, 'All open cases')
+    this.renderDashboardWithoutPagination(req, res, referralsSummary, 'All open cases')
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -145,7 +145,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.UnassignedCases
     )
-    this.renderDashboardWithoutPagination(res, referralsSummary, 'Unassigned cases')
+    this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Unassigned cases')
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -161,7 +161,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.CompletedCases
     )
-    this.renderDashboardWithoutPagination(res, referralsSummary, 'Completed cases')
+    this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Completed cases')
   }
 
   private async renderDashboard(
@@ -195,6 +195,8 @@ export default class ServiceProviderReferralsController {
       paginationQuery
     )
 
+    req.session.dashboardOriginPage = req.originalUrl
+
     const presenter = new DashboardPresenter(cases, dashboardType, res.locals.user, tablePersistentId, sort[0])
     const view = new DashboardView(presenter)
 
@@ -203,10 +205,13 @@ export default class ServiceProviderReferralsController {
 
   // To be removed once we are happy with the pagination work.
   private renderDashboardWithoutPagination(
+    req: Request,
     res: Response,
     referralsSummary: ServiceProviderSentReferralSummary[],
     dashboardType: DashboardType
   ): void {
+    req.session.dashboardOriginPage = req.originalUrl
+
     const presenter = new DashboardWithoutPaginationPresenter(referralsSummary, dashboardType, res.locals.user)
     const view = new DashboardWithoutPaginationView(presenter)
 
@@ -261,7 +266,9 @@ export default class ServiceProviderReferralsController {
       true,
       expandedServiceUser,
       riskSummary,
-      responsibleOfficer
+      responsibleOfficer,
+      false,
+      req.session.dashboardOriginPage
     )
     const view = new ShowReferralView(presenter)
 
@@ -315,7 +322,8 @@ export default class ServiceProviderReferralsController {
       approvedActionPlanSummaries,
       actionPlanAppointments,
       supplierAssessment,
-      assignee
+      assignee,
+      req.session.dashboardOriginPage
     )
     const view = new InterventionProgressView(presenter)
 
@@ -432,7 +440,12 @@ export default class ServiceProviderReferralsController {
       this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
     ])
 
-    const presenter = new AssignmentConfirmationPresenter(referral, intervention, assignee)
+    const presenter = new AssignmentConfirmationPresenter(
+      referral,
+      intervention,
+      assignee,
+      req.session.dashboardOriginPage
+    )
     const view = new AssignmentConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

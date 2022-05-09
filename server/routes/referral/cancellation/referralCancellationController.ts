@@ -144,7 +144,11 @@ export default class ReferralCancellationController {
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
 
-    const presenter = new ReferralCancellationConfirmationPresenter(sentReferral, intervention)
+    const presenter = new ReferralCancellationConfirmationPresenter(
+      sentReferral,
+      intervention,
+      req.session.dashboardOriginPage
+    )
     const view = new ReferralCancellationConfirmationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)

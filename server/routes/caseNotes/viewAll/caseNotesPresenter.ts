@@ -29,7 +29,8 @@ export default class CaseNotesPresenter {
     private caseNotes: Page<CaseNote>,
     private officerUserNameMapping: Map<string, undefined | string>,
     private serviceUser: DeliusServiceUser,
-    public loggedInUserType: 'service-provider' | 'probation-practitioner'
+    public loggedInUserType: 'service-provider' | 'probation-practitioner',
+    private readonly dashboardOriginPage?: string
   ) {
     this.pagination = new Pagination(caseNotes)
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
@@ -45,7 +46,7 @@ export default class CaseNotesPresenter {
 
   readonly backlinkPageNumber = this.caseNotes.number + 1
 
-  readonly hrefBackLink = `/${this.loggedInUserType}/dashboard`
+  readonly hrefBackLink = this.dashboardOriginPage || `/${this.loggedInUserType}/dashboard`
 
   readonly hrefCaseNoteStart = `/${this.loggedInUserType}/referrals/${this.referralId}/add-case-note/start`
 

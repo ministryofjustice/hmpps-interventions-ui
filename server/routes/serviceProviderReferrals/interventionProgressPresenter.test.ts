@@ -1037,4 +1037,40 @@ describe(InterventionProgressPresenter, () => {
       })
     })
   })
+
+  describe('back link', () => {
+    it('should default the hrefBackLink if dashboardOriginPage not passed in', () => {
+      const referral = sentReferralFactory.build()
+      const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        null,
+        [],
+        [],
+        supplierAssessmentFactory.build(),
+        null,
+        undefined
+      )
+
+      expect(presenter.hrefBackLink).toEqual('/service-provider/dashboard')
+    })
+
+    it('should populate the hrefBackLink from dashboardOriginPage when passed in', () => {
+      const referral = sentReferralFactory.build()
+      const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        null,
+        [],
+        [],
+        supplierAssessmentFactory.build(),
+        null,
+        '/service-provider/dashboard/backlink'
+      )
+
+      expect(presenter.hrefBackLink).toEqual('/service-provider/dashboard/backlink')
+    })
+  })
 })

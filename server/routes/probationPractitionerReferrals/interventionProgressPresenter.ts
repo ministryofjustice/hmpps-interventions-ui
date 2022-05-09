@@ -45,7 +45,8 @@ export default class InterventionProgressPresenter {
     private readonly actionPlan: ActionPlan | null,
     private readonly approvedActionPlanSummaries: ApprovedActionPlanSummary[],
     private readonly supplierAssessment: SupplierAssessment,
-    private readonly assignee: AuthUserDetails | null
+    private readonly assignee: AuthUserDetails | null,
+    private readonly dashboardOriginPage?: string
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Progress,
@@ -118,6 +119,8 @@ export default class InterventionProgressPresenter {
       }
     })
   }
+
+  readonly hrefBackLink = this.dashboardOriginPage || '/probation-practioner/dashboard'
 
   private sessionTableParams(appointment: ActionPlanAppointment): {
     text: string

@@ -35,6 +35,12 @@ import UserDataService from './services/userDataService'
 
 const RedisStore = connectRedis(session)
 
+declare module 'express-session' {
+  export interface SessionData {
+    dashboardOriginPage: string
+  }
+}
+
 export default function createApp(
   communityApiService: CommunityApiService,
   interventionsService: InterventionsService,

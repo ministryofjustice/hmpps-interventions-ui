@@ -165,4 +165,35 @@ describe('CaseNotesPresenter', () => {
       expect(presenter.serviceUserName).toEqual('Firstname Surname')
     })
   })
+
+  describe('back link', () => {
+    it('should default the hrefBackLink if dashboardOriginPage not passed in', () => {
+      const caseNote = caseNoteFactory.build()
+      const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
+      const presenter = new CaseNotesPresenter(
+        referralId,
+        interventionFactory.build(),
+        page,
+        new Map(),
+        deliusServiceUserFactory.build({ firstName: 'FIRSTNAME', surname: 'SURNAME' }),
+        'service-provider'
+      )
+      expect(presenter.hrefBackLink).toEqual('/service-provider/dashboard')
+    })
+
+    it('should populate the hrefBackLink from dashboardOriginPage when passed in', () => {
+      const caseNote = caseNoteFactory.build()
+      const page = pageFactory.pageContent([caseNote]).build() as Page<CaseNote>
+      const presenter = new CaseNotesPresenter(
+        referralId,
+        interventionFactory.build(),
+        page,
+        new Map(),
+        deliusServiceUserFactory.build({ firstName: 'FIRSTNAME', surname: 'SURNAME' }),
+        'service-provider',
+        '/service-provider/dashboard/backlink'
+      )
+      expect(presenter.hrefBackLink).toEqual('/service-provider/dashboard/backlink')
+    })
+  })
 })

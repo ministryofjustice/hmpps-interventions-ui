@@ -89,7 +89,7 @@ export default class InterventionProgressView {
 
   private readonly backLinkArgs = {
     text: 'Back',
-    href: '/service-provider/dashboard',
+    href: this.presenter.hrefBackLink,
   }
 
   private endOfServiceReportSummaryListArgs(tagMacro: (args: TagArgs) => string, csrfToken: string): SummaryListArgs {
