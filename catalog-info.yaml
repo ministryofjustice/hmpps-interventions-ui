@@ -20,4 +20,4 @@ spec:
     - api:hmpps-interventions
     - api:hmpps-risks-and-needs
     - api:hmpps-community
-    # - api:hmpps-auth # not yet defined
+    - api:hmpps-auth
