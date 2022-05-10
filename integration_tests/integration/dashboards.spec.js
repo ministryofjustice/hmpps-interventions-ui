@@ -169,29 +169,40 @@ describe('Dashboards', () => {
     })
 
     describe('table sort headings', () => {
-      it('should show which column the table is currently sorted by', () => {
+      beforeEach(() => {
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.login()
-
-        const headings = ['Date sent', 'Referral', 'Person', 'Intervention type', 'Provider']
-        headings.forEach(heading => {
-          cy.get('table').within(() => cy.contains('button', heading).click())
-
-          // check the clicked heading is sorted and all others are not
-          cy.get('thead')
-            .find('th')
-            .each($el => {
-              const sort = $el.text() === heading ? 'ascending' : 'none'
-              cy.wrap($el).should('have.attr', { 'aria-sort': sort })
-            })
-
-          // clicking again sorts in the other direction
-          cy.get('table').within(() => cy.contains('button', heading).click())
-          cy.get('table').within(() =>
-            cy.contains('button', heading).should('have.attr', { 'aria-sort': 'descending' })
-          )
-        })
       })
+
+      it(
+        'should show which column the table is currently sorted by',
+        {
+          retries: {
+            runMode: 2,
+            openMode: 1,
+          },
+        },
+        () => {
+          const headings = ['Date sent', 'Referral', 'Person', 'Intervention type', 'Provider']
+          headings.forEach(heading => {
+            cy.get('table').within(() => cy.contains('button', heading).click())
+
+            // check the clicked heading is sorted and all others are not
+            cy.get('thead')
+              .find('th')
+              .each($el => {
+                const sort = $el.text() === heading ? 'ascending' : 'none'
+                cy.wrap($el).should('have.attr', { 'aria-sort': sort })
+              })
+
+            // clicking again sorts in the other direction
+            cy.get('table').within(() => cy.contains('button', heading).click())
+            cy.get('table').within(() =>
+              cy.contains('button', heading).should('have.attr', { 'aria-sort': 'descending' })
+            )
+          })
+        }
+      )
     })
   })
 
@@ -301,29 +312,40 @@ describe('Dashboards', () => {
     })
 
     describe('table sort headings', () => {
-      it('should show which column the table is currently sorted by', () => {
+      beforeEach(() => {
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.login()
-
-        const headings = ['Date received', 'Referral', 'Person', 'Intervention type']
-        headings.forEach(heading => {
-          cy.get('table').within(() => cy.contains('button', heading).click())
-
-          // check the clicked heading is sorted and all others are not
-          cy.get('thead')
-            .find('th')
-            .each($el => {
-              const sort = $el.text() === heading ? 'ascending' : 'none'
-              cy.wrap($el).should('have.attr', { 'aria-sort': sort })
-            })
-
-          // clicking again sorts in the other direction
-          cy.get('table').within(() => cy.contains('button', heading).click())
-          cy.get('table').within(() =>
-            cy.contains('button', heading).should('have.attr', { 'aria-sort': 'descending' })
-          )
-        })
       })
+
+      it(
+        'should show which column the table is currently sorted by',
+        {
+          retries: {
+            runMode: 2,
+            openMode: 1,
+          },
+        },
+        () => {
+          const headings = ['Date received', 'Referral', 'Person', 'Intervention type']
+          headings.forEach(heading => {
+            cy.get('table').within(() => cy.contains('button', heading).click())
+
+            // check the clicked heading is sorted and all others are not
+            cy.get('thead')
+              .find('th')
+              .each($el => {
+                const sort = $el.text() === heading ? 'ascending' : 'none'
+                cy.wrap($el).should('have.attr', { 'aria-sort': sort })
+              })
+
+            // clicking again sorts in the other direction
+            cy.get('table').within(() => cy.contains('button', heading).click())
+            cy.get('table').within(() =>
+              cy.contains('button', heading).should('have.attr', { 'aria-sort': 'descending' })
+            )
+          })
+        }
+      )
 
       const dashBoardTables = [
         {
@@ -346,9 +368,6 @@ describe('Dashboards', () => {
 
       dashBoardTables.forEach(table => {
         it(`persists the sort order when coming back to the page for dashboard "${table.dashboardType}"`, () => {
-          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
-          cy.login()
-
           cy.contains(table.dashboardType).click()
 
           cy.get('table').within(() => cy.contains('button', table.sortField).click())
