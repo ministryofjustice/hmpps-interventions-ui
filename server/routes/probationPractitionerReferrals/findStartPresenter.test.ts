@@ -9,17 +9,29 @@ describe('FindStartPresenter', () => {
         firstName: 'rob',
         lastName: 'shah-brookes',
       },
+      serviceProvider: {
+        id: 'testingid1',
+        name: 'service provider name 1',
+      },
     }),
     draftReferralFactory.createdAt(new Date('2021-01-03T12:00:00Z')).build({
       serviceUser: {
         firstName: 'HARDIP',
         lastName: 'fraiser',
       },
+      serviceProvider: {
+        id: 'testingid2',
+        name: 'service provider name 2',
+      },
     }),
     draftReferralFactory.createdAt(new Date('2021-01-01T12:00:00Z')).build({
       serviceUser: {
         firstName: 'Jenny',
         lastName: 'Catherine',
+      },
+      serviceProvider: {
+        id: 'testingid3',
+        name: 'service provider name 3',
       },
     }),
   ]
@@ -37,9 +49,24 @@ describe('FindStartPresenter', () => {
       )
 
       expect(presenter.orderedReferrals).toEqual([
-        expect.objectContaining({ createdAt: '3 Jan 2021', serviceUserFullName: 'Hardip Fraiser' }),
-        expect.objectContaining({ createdAt: '2 Jan 2021', serviceUserFullName: 'Rob Shah-Brookes' }),
-        expect.objectContaining({ createdAt: '1 Jan 2021', serviceUserFullName: 'Jenny Catherine' }),
+        {
+          createdAt: '3 Jan 2021',
+          providerName: 'service provider name 2',
+          serviceUserFullName: 'Hardip Fraiser',
+          url: '/referrals/2/form',
+        },
+        {
+          createdAt: '2 Jan 2021',
+          providerName: 'service provider name 1',
+          serviceUserFullName: 'Rob Shah-Brookes',
+          url: '/referrals/1/form',
+        },
+        {
+          createdAt: '1 Jan 2021',
+          providerName: 'service provider name 3',
+          serviceUserFullName: 'Jenny Catherine',
+          url: '/referrals/3/form',
+        },
       ])
     })
   })
