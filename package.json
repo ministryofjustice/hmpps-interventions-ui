@@ -23,6 +23,7 @@
     "start:dev": "npm run build && NODE_ENV=development npm run watch",
     "start:test": "export $(cat test.env) && npm run start",
     "test": "jest --runInBand",
+    "test-debug": "npm test --watch -t",
     "int-test": "cypress run --config video=false",
     "int-test-ui": "cypress open",
     "int-test-video": "CYPRESS_NO_COMMAND_LOG=1 cypress run --config video=true,slowTestThreshold=15000 --env CYPRESS_COMMAND_DELAY=1200",
