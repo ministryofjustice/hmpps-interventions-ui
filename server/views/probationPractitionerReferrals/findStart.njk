@@ -18,7 +18,7 @@
 
       <p class="govuk-body govuk-!-margin-bottom-7">Use this service to find interventions.</p>
       <form action="/find-interventions">
-        <button role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button">
+        <button role="button" draggable="false" class="govuk-button govuk-button--start" data-module="govuk-button" data-cy="find-interventions-button">
           Find interventions
           <svg class="govuk-button__start-icon" xmlns="http://www.w3.org/2000/svg" width="17.5" height="19" viewbox="0 0 33 40" aria-hidden="true" focusable="false">
             <path fill="currentColor" d="M0 0h13l20 20-20 20H0l20-20z"/>
@@ -26,11 +26,11 @@
         </button>
       </form>
 
-      <h2 class="govuk-heading-l govuk-!-margin-top-7">
+      <h2 class="govuk-heading-l govuk-!-margin-top-7" data-cy="download-interventions-header">
         Download structured interventions
       </h2>
-      <p class="govuk-body-m">
-        You can't use this service to search for structured interventions. You can download information about structured interventions.
+      <p class="govuk-body-m" data-cy="download-interventions-content">
+        You can download information about structured interventions. You cannot use this service to search for (or refer) to these interventions. This list was updated in April 2022.
       </p>
       <div class="refer-and-monitor-download-section">
         <svg width="78" height="110" viewbox="0 0 78 110" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -42,9 +42,6 @@
         <span class="refer-and-monitor-download-links">
           <p class="govuk-body-l"> <a href="{{ presenter.structuredInterventionsDownloadHrefs.xlsx }}" download>Structured interventions data</a></p>
           <p class="govuk-body-m">{{ presenter.fileInformation }}</p>
-          <p class="govuk-body-m">This file is available in a
-            <a href="{{ presenter.structuredInterventionsDownloadHrefs.pdf }}" download>pdf format</a>.
-          </p>
         </span>
       </div>
 

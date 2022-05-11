@@ -124,8 +124,7 @@ export default class ProbationPractitionerReferralsController {
     const existingDraftReferrals = await this.interventionsService.getDraftReferralsForUserToken(accessToken)
 
     const structuredInterventionsFileDownloadPaths = {
-      xlsx: 'assets/downloads/Structured interventions list v1_3_3.xlsx',
-      pdf: 'assets/downloads/Structured interventions list v1_3_3.pdf',
+      xlsx: 'assets/downloads/Structured interventions list v1_3_4.xlsx',
     }
 
     const downloadFileSize = await FileUtils.fileSize(structuredInterventionsFileDownloadPaths.xlsx)

@@ -7,7 +7,7 @@ import LoggedInUser from '../../models/loggedInUser'
 export default class FindStartPresenter {
   constructor(
     private readonly draftReferrals: DraftReferral[],
-    private readonly downloadPaths: { xlsx: string; pdf: string },
+    private readonly downloadPaths: { xlsx: string },
     private readonly downloadFileSize: { bytes: number },
     private readonly loggedInUser: LoggedInUser
   ) {}
@@ -31,7 +31,6 @@ export default class FindStartPresenter {
 
   readonly structuredInterventionsDownloadHrefs = {
     xlsx: `/${this.downloadPaths.xlsx}`,
-    pdf: `/${this.downloadPaths.pdf}`,
   }
 
   readonly text = {
