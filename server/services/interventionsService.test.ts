@@ -2,6 +2,7 @@ import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
 import SentReferral from '../models/sentReferral'
+import SentReferralSummaries from '../models/sentReferralSummaries'
 import ServiceUser from '../models/serviceUser'
 import config from '../config'
 import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
@@ -16,6 +17,7 @@ import supplierAssessmentFactory from '../../testutils/factories/supplierAssessm
 import CalendarDay from '../utils/calendarDay'
 import approvedActionPlanSummaryFactory from '../../testutils/factories/approvedActionPlanSummary'
 import referralDetailsFactory from '../../testutils/factories/referralDetails'
+import { Page } from '../models/pagination'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -1508,6 +1510,64 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     },
   }
 
+  const sentReferralSummaries1: SentReferralSummaries = {
+    id: 'eb25cf36-4956-4924-a887-989fe3d6638d',
+    sentAt: '2021-01-14T15:56:45.382884Z',
+    sentBy: {
+      username: 'BERNARD.BEAKS',
+      userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+      authSource: 'delius',
+    },
+    assignedTo: null,
+    concludedAt: null,
+    referenceNumber: 'HDJ2123F',
+    serviceProvider: {
+      id: '12345',
+      name: 'Harmony Living',
+    },
+    serviceUser,
+    interventionTitle: 'Womens Care Home',
+    supplementaryRiskId: '12345',
+  }
+
+  const sentReferralSummaries2: SentReferralSummaries = {
+    id: 'bfabb659-1200-4479-bae7-8927e1e87a0d',
+    sentAt: '2021-01-14T15:56:45.382884Z',
+    sentBy: {
+      username: 'BERNARD.BEAKS',
+      userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+      authSource: 'delius',
+    },
+    assignedTo: null,
+    concludedAt: null,
+    referenceNumber: 'HDJ2123F',
+    serviceProvider: {
+      id: '12345',
+      name: 'Harmony Living',
+    },
+    serviceUser,
+    interventionTitle: 'Womens Care Home',
+    supplementaryRiskId: '12345',
+  }
+
+  const sentReferralSummariesPages: Page<SentReferralSummaries> = {
+    content: [sentReferralSummaries1, sentReferralSummaries2],
+    size: 2,
+    totalElements: 2,
+    totalPages: 1,
+    numberOfElements: 2,
+    number: 2,
+  }
+
+  const sentReferralSummariesCancelledPages: Page<SentReferralSummaries> = {
+    content: [sentReferralSummaries1],
+    size: 1,
+    totalElements: 1,
+    totalPages: 1,
+    numberOfElements: 1,
+    number: 1,
+  }
+
   describe('sendDraftReferral', () => {
     beforeEach(async () => {
       await provider.addInteraction({
@@ -1798,20 +1858,24 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         uponReceiving: 'a request for all sent referrals for the probation practitioner user',
         withRequest: {
           method: 'GET',
-          path: '/sent-referrals',
+          path: '/sent-referrals/summaries',
+          query: { page: '0', size: '10', sort: ['sentAt,DESC'] },
           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like([sentReferral, sentReferral]),
+          body: Matchers.like(sentReferralSummariesPages),
           headers: { 'Content-Type': 'application/json' },
         },
       })
 
-      expect(await interventionsService.getSentReferralsForUserToken(probationPractitionerToken, {})).toEqual([
-        sentReferral,
-        sentReferral,
-      ])
+      expect(
+        await interventionsService.getSentReferralsForUserTokenPaged(
+          probationPractitionerToken,
+          {},
+          { page: 0, size: 10, sort: ['sentAt,DESC'] }
+        )
+      ).toEqual(sentReferralSummariesPages)
     })
 
     describe('with "concluded" option', () => {
@@ -1821,25 +1885,24 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           uponReceiving: 'a request for sent referrals which are concluded',
           withRequest: {
             method: 'GET',
-            path: '/sent-referrals',
-            query: { concluded: 'true' },
+            path: '/sent-referrals/summaries',
+            query: { concluded: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like([
-              { id: 'eb25cf36-4956-4924-a887-989fe3d6638d' },
-              { id: 'bfabb659-1200-4479-bae7-8927e1e87a0d' },
-            ]),
+            body: Matchers.like(sentReferralSummariesPages),
             headers: { 'Content-Type': 'application/json' },
           },
         })
 
-        const sentReferrals = await interventionsService.getSentReferralsForUserToken(probationPractitionerToken, {
-          concluded: true,
-        })
-        expect(sentReferrals.length).toEqual(2)
-        const sentReferralIds = sentReferrals.map(referral => referral.id)
+        const actualSentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
+          probationPractitionerToken,
+          { concluded: true },
+          { page: 0, size: 10, sort: ['sentAt,DESC'] }
+        )
+        expect(actualSentReferralSummaries.content.length).toEqual(2)
+        const sentReferralIds = actualSentReferralSummaries.content.map(referral => referral.id)
         expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
         expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
       })
@@ -1852,23 +1915,25 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           uponReceiving: 'a request for sent referrals which are cancelled',
           withRequest: {
             method: 'GET',
-            path: '/sent-referrals',
-            query: { cancelled: 'true' },
+            path: '/sent-referrals/summaries',
+            query: { cancelled: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like([{ id: 'bfabb659-1200-4479-bae7-8927e1e87a0d' }]),
+            body: Matchers.like(sentReferralSummariesCancelledPages),
             headers: { 'Content-Type': 'application/json' },
           },
         })
 
-        const sentReferrals = await interventionsService.getSentReferralsForUserToken(probationPractitionerToken, {
-          cancelled: true,
-        })
-        expect(sentReferrals.length).toEqual(1)
-        const sentReferralIds = sentReferrals.map(referral => referral.id)
-        expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
+        const sentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
+          probationPractitionerToken,
+          { cancelled: true },
+          { page: 0, size: 10, sort: ['sentAt,DESC'] }
+        )
+        expect(sentReferralSummaries.content.length).toEqual(1)
+        const sentReferralIds = sentReferralSummaries.content.map(referral => referral.id)
+        expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
       })
     })
 
@@ -1879,23 +1944,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           uponReceiving: 'a request for sent referrals which are unassigned',
           withRequest: {
             method: 'GET',
-            path: '/sent-referrals',
-            query: { unassigned: 'true' },
+            path: '/sent-referrals/summaries',
+            query: { unassigned: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like([{ id: '995b30f5-182d-4409-aed9-0f3f4ae56802' }]),
+            body: Matchers.like(sentReferralSummariesPages),
             headers: { 'Content-Type': 'application/json' },
           },
         })
 
-        const sentReferrals = await interventionsService.getSentReferralsForUserToken(probationPractitionerToken, {
-          unassigned: true,
-        })
-        expect(sentReferrals.length).toEqual(1)
-        const sentReferralIds = sentReferrals.map(referral => referral.id)
-        expect(sentReferralIds).toContain('995b30f5-182d-4409-aed9-0f3f4ae56802')
+        const actualSentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
+          probationPractitionerToken,
+          { unassigned: true },
+          { page: 0, size: 10, sort: ['sentAt,DESC'] }
+        )
+        expect(actualSentReferralSummaries.content.length).toEqual(2)
+        const sentReferralIds = actualSentReferralSummaries.content.map(referral => referral.id)
+        expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
+        expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
       })
     })
 
@@ -1906,23 +1974,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           uponReceiving: 'a request for sent referrals which are assigned',
           withRequest: {
             method: 'GET',
-            path: '/sent-referrals',
-            query: { assignedTo: 'AUTH_USER' },
+            path: '/sent-referrals/summaries',
+            query: { assignedTo: 'AUTH_USER', page: '0', size: '10', sort: ['sentAt,DESC'] },
             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like([{ id: '4b56a623-2f85-4670-87a7-68d458378646' }]),
+            body: Matchers.like(sentReferralSummariesPages),
             headers: { 'Content-Type': 'application/json' },
           },
         })
 
-        const sentReferrals = await interventionsService.getSentReferralsForUserToken(probationPractitionerToken, {
-          assignedTo: 'AUTH_USER',
-        })
-        expect(sentReferrals.length).toEqual(1)
-        const sentReferralIds = sentReferrals.map(referral => referral.id)
-        expect(sentReferralIds).toContain('4b56a623-2f85-4670-87a7-68d458378646')
+        const actualSentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
+          probationPractitionerToken,
+          { assignedTo: 'AUTH_USER' },
+          { page: 0, size: 10, sort: ['sentAt,DESC'] }
+        )
+        expect(actualSentReferralSummaries.content.length).toEqual(2)
+        const sentReferralIds = actualSentReferralSummaries.content.map(referral => referral.id)
+        expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
+        expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
       })
     })
   })
