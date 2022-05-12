@@ -31,7 +31,6 @@ describe('FindStartPresenter', () => {
         referrals,
         {
           xlsx: 'example.xlsx',
-          pdf: 'example.pdf',
         },
         { bytes: 0 },
         loggedInUser
@@ -47,12 +46,7 @@ describe('FindStartPresenter', () => {
 
   describe('fileInformation', () => {
     it('returns the file type and size in KB, rounded to one decimal place', async () => {
-      const presenter = new FindStartPresenter(
-        referrals,
-        { xlsx: 'example.xlsx', pdf: 'example.pdf' },
-        { bytes: 11126 },
-        loggedInUser
-      )
+      const presenter = new FindStartPresenter(referrals, { xlsx: 'example.xlsx' }, { bytes: 11126 }, loggedInUser)
 
       expect(presenter.fileInformation).toEqual('XLSX, 10.9KB')
     })
@@ -60,16 +54,10 @@ describe('FindStartPresenter', () => {
 
   describe('structuredInterventionsDownloadHrefs', () => {
     it('prepends a slash to the passed-in filepaths', () => {
-      const presenter = new FindStartPresenter(
-        referrals,
-        { xlsx: 'example.xlsx', pdf: 'example.pdf' },
-        { bytes: 0 },
-        loggedInUser
-      )
+      const presenter = new FindStartPresenter(referrals, { xlsx: 'example.xlsx' }, { bytes: 0 }, loggedInUser)
 
       expect(presenter.structuredInterventionsDownloadHrefs).toEqual({
         xlsx: '/example.xlsx',
-        pdf: '/example.pdf',
       })
     })
   })
