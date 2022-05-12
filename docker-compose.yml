@@ -70,7 +70,7 @@ services:
       - ./testutils/docker/postgres:/docker-entrypoint-initdb.d:ro
 
   wiremock:
-    image: rodolpheche/wiremock
+    image: wiremock/wiremock
     networks:
       - hmpps
     restart: always
