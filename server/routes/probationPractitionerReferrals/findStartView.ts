@@ -8,10 +8,11 @@ export default class FindStartView {
   private get tableArgs(): TableArgs {
     return {
       firstCellIsHeader: true,
-      head: [{ text: 'Service user' }, { text: 'Started on' }],
+      head: [{ text: 'Service user' }, { text: 'Provider' }, { text: 'Started on' }],
       rows: this.presenter.orderedReferrals.map(referral => {
         return [
           { html: `<a href="${ViewUtils.escape(referral.url)}">${ViewUtils.escape(referral.serviceUserFullName)}</a>` },
+          { text: referral.providerName },
           { text: referral.createdAt },
         ]
       }),

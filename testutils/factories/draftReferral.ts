@@ -151,7 +151,10 @@ export default DraftReferralFactory.define(({ sequence }) => ({
     disabilities: null,
   },
   completionDeadline: null,
-  serviceProvider: null,
+  serviceProvider: {
+    id: 'spId',
+    name: 'Test Service Provider',
+  },
   interventionId: interventionFactory.build().id,
   serviceCategoryIds: [],
   complexityLevelId: null,

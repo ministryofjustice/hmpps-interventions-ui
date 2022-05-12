@@ -19,6 +19,7 @@ export default class FindStartPresenter {
       .sort((a, b) => (new Date(a.createdAt) > new Date(b.createdAt) ? -1 : 1))
       .map(referral => ({
         serviceUserFullName: PresenterUtils.fullName(referral.serviceUser),
+        providerName: referral.serviceProvider?.name ?? '',
         createdAt: DateUtils.formattedDate(referral.createdAt, { month: 'short' }),
         url: `/referrals/${referral.id}/form`,
       }))
@@ -50,6 +51,7 @@ export default class FindStartPresenter {
 
 interface DraftReferralSummaryPresenter {
   serviceUserFullName: string
+  providerName: string
   createdAt: string
   url: string
 }
