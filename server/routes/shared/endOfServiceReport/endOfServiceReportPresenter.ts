@@ -8,8 +8,11 @@ export default class EndOfServiceReportPresenter {
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
-    private readonly serviceCategories: ServiceCategory[]
+    private readonly serviceCategories: ServiceCategory[],
+    private readonly userType?: 'probation-practitioner' | 'service-provider'
   ) {}
+
+  readonly hrefBackLink = `/${this.userType}/referrals/${this.endOfServiceReport.referralId}/progress`
 
   readonly text = {
     introduction: `The service provider has created an end of service report for ${PresenterUtils.fullName(

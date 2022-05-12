@@ -887,7 +887,12 @@ export default class ServiceProviderReferralsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new EndOfServiceReportPresenter(referral, endOfServiceReport, serviceCategories)
+    const presenter = new EndOfServiceReportPresenter(
+      referral,
+      endOfServiceReport,
+      serviceCategories,
+      'service-provider'
+    )
     const view = new EndOfServiceReportView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
