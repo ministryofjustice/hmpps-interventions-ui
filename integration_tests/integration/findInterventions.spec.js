@@ -15,7 +15,7 @@ context('Find an intervention', () => {
     cy.login()
   })
 
-  it('Probation practitioner clicks the find intervetions tab', () => {
+  it('Probation practitioner clicks the find interventions tab', () => {
     cy.contains('Find interventions').click()
 
     cy.url().should('contain', '/find')
