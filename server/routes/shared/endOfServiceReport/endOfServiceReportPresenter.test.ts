@@ -54,4 +54,36 @@ describe(EndOfServiceReportPresenter, () => {
       expect(presenter.answersPresenter).toBeDefined()
     })
   })
+
+  describe('back link probation practitioner user', () => {
+    it('returns correct link with Id', () => {
+      const referralId = '81d754aa-d868-4347-9c0f-50690773014e'
+      const probationPractitioner = 'probation-practitioner'
+      const backLinkUrl = `/${probationPractitioner}/referrals/${referralId}/progress`
+      const presenter = new EndOfServiceReportPresenter(
+        referral,
+        buildEndOfServiceReport(),
+        [serviceCategory],
+        probationPractitioner
+      )
+
+      expect(presenter.hrefBackLink).toBeDefined()
+      expect(presenter.hrefBackLink).toBe(backLinkUrl)
+    })
+  })
+  describe('back link service provider user', () => {
+    it('returns correct link with Id', () => {
+      const referralId = '81d754aa-d868-4347-9c0f-50690773014e'
+      const serviceProvider = 'service-provider'
+      const backLinkUrl = `/${serviceProvider}/referrals/${referralId}/progress`
+      const presenter = new EndOfServiceReportPresenter(
+        referral,
+        buildEndOfServiceReport(),
+        [serviceCategory],
+        serviceProvider
+      )
+      expect(presenter.hrefBackLink).toBeDefined()
+      expect(presenter.hrefBackLink).toBe(backLinkUrl)
+    })
+  })
 })

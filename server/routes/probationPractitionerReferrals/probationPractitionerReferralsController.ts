@@ -252,7 +252,12 @@ export default class ProbationPractitionerReferralsController {
     }
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
-    const presenter = new EndOfServiceReportPresenter(referral, endOfServiceReport, serviceCategories)
+    const presenter = new EndOfServiceReportPresenter(
+      referral,
+      endOfServiceReport,
+      serviceCategories,
+      'probation-practitioner'
+    )
     const view = new EndOfServiceReportView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
