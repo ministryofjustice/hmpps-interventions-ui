@@ -33,4 +33,5 @@ export default interface DraftReferral extends WithNullableValues<ReferralFields
   interventionId: string
   // risk information is a special field which is only set on the draft referral
   additionalRiskInformation: string | null
+  contractTypeName: string
 }

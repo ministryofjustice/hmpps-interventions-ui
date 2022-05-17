@@ -20,6 +20,7 @@ export default class FindStartPresenter {
       .map(referral => ({
         serviceUserFullName: PresenterUtils.fullName(referral.serviceUser),
         providerName: referral.serviceProvider?.name ?? '',
+        contractTypeName: referral.contractTypeName,
         createdAt: DateUtils.formattedDate(referral.createdAt, { month: 'short' }),
         url: `/referrals/${referral.id}/form`,
       }))
@@ -52,6 +53,7 @@ export default class FindStartPresenter {
 interface DraftReferralSummaryPresenter {
   serviceUserFullName: string
   providerName: string
+  contractTypeName: string
   createdAt: string
   url: string
 }

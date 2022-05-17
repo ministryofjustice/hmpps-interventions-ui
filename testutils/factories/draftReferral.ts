@@ -171,4 +171,5 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   whenUnavailable: null,
   additionalRiskInformation: null,
   maximumEnforceableDays: null,
+  contractTypeName: interventionFactory.build().contractType.name,
 }))
