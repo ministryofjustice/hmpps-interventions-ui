@@ -104,6 +104,7 @@ describe('GET /probation-practitioner/find', () => {
         expect(res.text).toContain('Refer and monitor an intervention')
         expect(res.text).toContain('Find interventions')
         expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Accommodation')
       })
   })
 })
