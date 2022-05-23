@@ -127,7 +127,7 @@
     "jquery": "^3.5.1",
     "jwt-decode": "^2.2.0",
     "md5": "^2.3.0",
-    "nocache": "^3.0.3",
+    "nocache": "^3.0.4",
     "nunjucks": "^3.2.3",
     "passport": "^0.5.2",
     "passport-oauth2": "^1.6.1",
