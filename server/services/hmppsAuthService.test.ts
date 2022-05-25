@@ -1,5 +1,5 @@
 import nock from 'nock'
-import redis from 'redis'
+import * as redis from 'redis'
 
 import config from '../config'
 import HmppsAuthService from './hmppsAuthService'
@@ -10,21 +10,27 @@ const deliusUser = { username: 'bernard.beaks', authSource: 'delius', userId: '1
 
 jest.mock('redis', () => ({
   createClient: jest.fn().mockReturnThis(),
+  connect: jest.fn().mockResolvedValue('connected'),
   on: jest.fn(),
-  get: jest.fn(),
-  set: jest.fn().mockImplementation((key, value, command, ttl, callback) => callback(null, null)),
+  v4: {
+    get: jest.fn().mockResolvedValue(true),
+    set: jest.fn().mockImplementation((_key, _value, _options) => Promise.resolve(true)),
+  },
 }))
 
 interface MockRedis {
+  connect: jest.Mock
   on: jest.Mock
-  get: jest.Mock
-  set: jest.Mock
+  v4: {
+    get: jest.Mock
+    set: jest.Mock
+  }
 }
 
 const mockRedis = redis as unknown as MockRedis
 
 function givenRedisResponse(storedToken: string | null) {
-  mockRedis.get.mockImplementation((key, callback) => callback(null, storedToken))
+  mockRedis.v4.get.mockImplementation(_key => storedToken)
 }
 
 describe('hmppsAuthService', () => {
@@ -234,7 +240,7 @@ describe('hmppsAuthService', () => {
       const output = await hmppsAuthService.getApiClientToken()
 
       expect(output).toEqual(token.access_token)
-      expect(mockRedis.set).toBeCalledWith('%ANONYMOUS%', token.access_token, 'EX', 240, expect.any(Function))
+      expect(mockRedis.v4.set).toBeCalledWith('systemToken:%ANONYMOUS%', token.access_token, { EX: 240 })
     })
   })
 

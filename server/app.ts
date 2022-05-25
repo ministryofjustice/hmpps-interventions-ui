@@ -9,7 +9,7 @@ import path from 'path'
 import compression from 'compression'
 import bodyParser from 'body-parser'
 import flash from 'connect-flash'
-import redis from 'redis'
+import { createClient } from 'redis'
 import session from 'express-session'
 import connectRedis from 'connect-redis'
 import { randomBytes } from 'crypto'
@@ -32,6 +32,7 @@ import DraftsService from './services/draftsService'
 import ReferenceDataService from './services/referenceDataService'
 import serviceEditorRoutes, { serviceEditorUrlPrefix } from './routes/serviceEditorRoutes'
 import UserDataService from './services/userDataService'
+import logger from '../log'
 
 const RedisStore = connectRedis(session)
 
@@ -107,12 +108,21 @@ export default function createApp(
 
   app.use(addRequestId())
 
-  const redisClient = redis.createClient({
-    port: config.redis.port,
+  const redisClient = createClient({
+    legacyMode: true, // connect-redis only supports legacy mode for redis v4
+    socket: {
+      port: config.redis.port,
+      host: config.redis.host,
+      tls: config.redis.tls_enabled === 'true',
+    },
     password: config.redis.password,
-    host: config.redis.host,
-    tls: config.redis.tls_enabled === 'true' ? {} : false,
   })
+  redisClient
+    .connect()
+    .then(() => logger.info('App Redis connected'))
+    .catch((error: Error) => {
+      logger.error({ err: error }, 'App Redis connect error')
+    })
 
   app.use(
     session({
