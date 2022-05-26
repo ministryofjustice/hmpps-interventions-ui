@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build:views": "cp -R server/views dist/server/",
-    "build:sass": "sass --no-source-map --load-path=node_modules/govuk-frontend --load-path=node_modules/@ministryofjustice/frontend ./assets/sass/application.sass:./assets/stylesheets/application.css ./assets/sass/application-ie8.sass:./assets/stylesheets/application-ie8.css --style compressed",
+    "build:sass": "sass --no-source-map --quiet-deps --load-path=node_modules/govuk-frontend --load-path=node_modules/@ministryofjustice/frontend ./assets/sass/application.sass:./assets/stylesheets/application.css ./assets/sass/application-ie8.sass:./assets/stylesheets/application-ie8.css --style compressed",
     "build:typecheck": "tsc",
     "build:typecheck:prod": "tsc --build tsconfig.prod.json",
     "build:typecheck:browser": "cd browser && tsc",
