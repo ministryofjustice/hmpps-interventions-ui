@@ -45,6 +45,11 @@ context('Login', () => {
       )
     })
 
+    it('the user can view the accessibility statement', () => {
+      cy.contains('Accessibility').click()
+      cy.location('pathname').should('equal', `/accessibility-statement`)
+    })
+
     it('the user can sign out', () => {
       cy.get('[data-qa=sign-out]').click()
       AuthLoginPage.verifyOnPage()
