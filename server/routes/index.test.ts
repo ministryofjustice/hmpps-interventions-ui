@@ -65,6 +65,13 @@ describe('check response headers are set correctly', () => {
         "font-src 'self'",
         "img-src 'self' https://www.google-analytics.com",
         "connect-src 'self' https://www.google-analytics.com",
+        "base-uri 'self'",
+        "block-all-mixed-content",
+        "form-action 'self'",
+        "frame-ancestors 'self'",
+        "object-src 'none'",
+        "script-src-attr 'none'",
+        "upgrade-insecure-requests",
       ]
     `)
   })
