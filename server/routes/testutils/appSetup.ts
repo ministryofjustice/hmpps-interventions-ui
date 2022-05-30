@@ -3,6 +3,8 @@ import bodyParser from 'body-parser'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import cookieSession from 'cookie-session'
 import path from 'path'
+import helmet from 'helmet'
+import { randomBytes } from 'crypto'
 
 import indexRoutes, { Services } from '../index'
 import serviceProviderRoutes, { serviceProviderUrlPrefix } from '../serviceProviderRoutes'
@@ -37,6 +39,36 @@ function appSetup(
   app.set('view engine', 'njk')
 
   nunjucksSetup(app, path)
+
+  const nonce = randomBytes(16).toString('base64')
+  // Secure code best practice - see:
+  // 1. https://expressjs.com/en/advanced/best-practice-security.html,
+  // 2. https://www.npmjs.com/package/helmet
+
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: [
+            "'self'",
+            'code.jquery.com',
+            // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
+            "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
+            'https://www.google-analytics.com',
+            'https://ssl.google-analytics.com',
+            'https://www.googletagmanager.com/',
+            // Used to allow inline script to set Google Analytics uaId in `layout.njk`
+            `'nonce-${nonce}'`,
+          ],
+          styleSrc: ["'self'", 'code.jquery.com'],
+          fontSrc: ["'self'"],
+          imgSrc: ["'self'", 'https://www.google-analytics.com'],
+          connectSrc: ["'self'", 'https://www.google-analytics.com'],
+        },
+      },
+    })
+  )
 
   const user = LoggedInUserFactory.build()
   user.authSource = userType
