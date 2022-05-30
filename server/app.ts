@@ -97,6 +97,7 @@ export default function createApp(
           connectSrc: ["'self'", 'https://www.google-analytics.com'],
         },
       },
+      crossOriginEmbedderPolicy: false,
     })
   )
 

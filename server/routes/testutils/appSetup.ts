@@ -67,6 +67,7 @@ function appSetup(
           connectSrc: ["'self'", 'https://www.google-analytics.com'],
         },
       },
+      crossOriginEmbedderPolicy: false,
     })
   )
 
