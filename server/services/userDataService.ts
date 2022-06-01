@@ -1,11 +1,10 @@
-import { RedisClient } from 'redis'
-import { promisify } from 'util'
+import { createClient } from 'redis'
 
 // a simple persistent key value store for user data
 export default class UserDataService {
-  constructor(private readonly client: RedisClient) {}
+  constructor(private readonly client: ReturnType<typeof createClient>) {}
 
-  async store(userId: string, key: string, value: string, expireAfterSeconds: number): Promise<boolean> {
+  async store(userId: string, key: string, value: string, expireAfterSeconds: number): Promise<string | null> {
     return this.set(this.makeRedisKey(userId, key), value, expireAfterSeconds)
   }
 
@@ -17,11 +16,11 @@ export default class UserDataService {
     return `${userId}:${key}`
   }
 
-  private async set(key: string, value: string, ex: number): Promise<boolean> {
-    return this.client.setex(key, ex, value)
+  private async set(key: string, value: string, ex: number): Promise<string | null> {
+    return this.client.v4.set(key, value, { EX: ex })
   }
 
   private async get(key: string): Promise<string | null> {
-    return promisify(this.client.get).bind(this.client)(key)
+    return this.client.v4.get(key)
   }
 }

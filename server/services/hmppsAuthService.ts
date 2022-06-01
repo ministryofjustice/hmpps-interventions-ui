@@ -1,7 +1,7 @@
 import superagent, { Response } from 'superagent'
 import querystring from 'querystring'
-import redis from 'redis'
-import { promisify } from 'util'
+// import { createClient } from 'redis'
+import * as redis from 'redis'
 import logger from '../../log'
 import config from '../config'
 import RestClient from '../data/restClient'
@@ -14,19 +14,26 @@ import User from '../models/hmppsAuth/user'
 import generateOauthClientBaiscAuthHeader from '../authentication/clientCredentials'
 
 const redisClient = redis.createClient({
-  port: config.redis.port,
+  legacyMode: true, // connect-redis only supports legacy mode for redis v4
+  socket: {
+    port: config.redis.port,
+    host: config.redis.host,
+    tls: config.redis.tls_enabled === 'true',
+  },
   password: config.redis.password,
-  host: config.redis.host,
-  tls: config.redis.tls_enabled === 'true' ? {} : false,
-  prefix: 'systemToken:',
 })
 
+const REDIS_PREFIX = 'systemToken:' // prefix has been removed from redis config, so manually add it to key
+
+redisClient
+  .connect()
+  .then(() => logger.info('hmppsAuthService Redis connected'))
+  .catch((error: Error) => {
+    logger.error({ err: error }, 'hmppsAuthService Redis connect error')
+  })
 redisClient.on('error', error => {
-  logger.error({ err: error }, 'Redis error')
+  logger.error({ err: error }, 'hmppsAuthService Redis error')
 })
-
-const getRedisAsync = promisify(redisClient.get).bind(redisClient)
-const setRedisAsync = promisify<string, string, string, number>(redisClient.set).bind(redisClient)
 
 export default class HmppsAuthService {
   private restClient(token: string): RestClient {
@@ -93,17 +100,17 @@ export default class HmppsAuthService {
   }
 
   async getApiClientToken(): Promise<string> {
-    const redisKey = '%ANONYMOUS%'
+    const redisKey = `${REDIS_PREFIX}%ANONYMOUS%`
 
-    const tokenFromRedis = await getRedisAsync(redisKey)
+    const tokenFromRedis = await redisClient.v4.get(redisKey)
     if (tokenFromRedis) {
       return tokenFromRedis
     }
 
     const newToken = await this.apiClientTokenRequest()
 
-    // set TTL slightly less than expiry of token. Async but no need to wait
-    await setRedisAsync(redisKey, newToken.body.access_token, 'EX', newToken.body.expires_in - 60)
+    // set TTL slightly less than expiry of token.
+    await redisClient.v4.set(redisKey, newToken.body.access_token, { EX: newToken.body.expires_in - 60 })
 
     return newToken.body.access_token
   }

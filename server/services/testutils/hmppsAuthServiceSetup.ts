@@ -7,9 +7,12 @@ const MockedHmppsAuthService = <jest.Mock<HmppsAuthService>>HmppsAuthService
 jest.mock('../../services/hmppsAuthService')
 jest.mock('redis', () => ({
   createClient: jest.fn().mockImplementation(() => ({
+    connect: jest.fn().mockResolvedValue('connected'),
     on: jest.fn(),
-    get: jest.fn(),
-    set: jest.fn(),
+    v4: {
+      get: jest.fn().mockResolvedValue(true),
+      set: jest.fn().mockImplementation((_key, _value, _options) => Promise.resolve(true)),
+    },
   })),
 }))
 
