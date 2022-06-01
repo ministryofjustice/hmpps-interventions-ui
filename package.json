@@ -129,7 +129,7 @@
     "md5": "^2.3.0",
     "nocache": "^3.0.4",
     "nunjucks": "^3.2.3",
-    "passport": "^0.5.2",
+    "passport": "^0.5.3",
     "passport-oauth2": "^1.6.1",
     "redis": "^4.1.0",
     "superagent": "^7.1.2",
