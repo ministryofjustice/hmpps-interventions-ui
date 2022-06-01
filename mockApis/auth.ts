@@ -78,11 +78,11 @@ export default class AuthServiceMocks {
         urlPattern: '/auth/sign-out.*',
       },
       response: {
-        status: 200,
+        status: 302,
         headers: {
           'Content-Type': 'text/html',
+          Location: 'http://localhost:3007/sign-out/success',
         },
-        body: '<html><body>Sign-in page<h1>Sign in</h1></body></html>',
       },
     })
   }

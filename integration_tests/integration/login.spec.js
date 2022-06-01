@@ -51,8 +51,9 @@ context('Login', () => {
     })
 
     it('the user can sign out', () => {
+      cy.location('pathname').should('eq', '/probation-practitioner/dashboard')
       cy.get('[data-qa=sign-out]').click()
-      AuthLoginPage.verifyOnPage()
+      cy.location('pathname').should('eq', '/sign-out/success')
     })
 
     it('the user cannot access service provider pages', () => {
@@ -96,8 +97,9 @@ context('Login', () => {
     })
 
     it('the user can sign out', () => {
+      cy.location('pathname').should('eq', '/service-provider/dashboard')
       cy.get('[data-qa=sign-out]').click()
-      AuthLoginPage.verifyOnPage()
+      cy.location('pathname').should('eq', '/sign-out/success')
     })
 
     it('the user cannot access probation practitioner pages', () => {
