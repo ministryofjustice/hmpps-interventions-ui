@@ -133,32 +133,26 @@ describe(ControllerUtils, () => {
     })
 
     describe('when a draft is not found by the drafts service', () => {
-      it('throws an error', async () => {
+      it('renders an explanatory page', async () => {
         draftsService.fetchDraft.mockResolvedValue(null)
 
-        let thrownError: unknown = null
+        const res = { status: jest.fn(), locals: { user: { userId: 'jane.bloggs' } }, render: jest.fn() }
 
-        try {
-          await ControllerUtils.fetchDraftOrRenderMessage(
-            { params: { draftBookingId: 'abc123' } } as unknown as Request,
-            { locals: { user: { userId: 'jane.bloggs' } } } as unknown as Response,
-            draftsService,
-            {
-              idParamName: 'draftBookingId',
-              typeName: 'booking',
-              notFoundUserMessage: 'Timed out, start again',
-            }
-          )
-        } catch (e) {
-          thrownError = e
-        }
+        const result = await ControllerUtils.fetchDraftOrRenderMessage(
+          { params: { draftBookingId: 'abc123' } } as unknown as Request,
+          res as unknown as Response,
+          draftsService,
+          {
+            idParamName: 'draftBookingId',
+            typeName: 'booking',
+            notFoundUserMessage: 'Timed out, start again',
+          }
+        )
 
-        expect(thrownError).toBeInstanceOf(Error)
-        expect(thrownError).toMatchObject({
-          status: 500,
-          message: `UI-only draft booking with ID abc123 not found`,
-          userMessage: 'Timed out, start again',
-        })
+        expect(result).toEqual({ rendered: true })
+
+        expect(res.status).toHaveBeenCalledWith(410)
+        expect(res.render).toHaveBeenCalledWith('shared/draftNotFound', expect.anything())
       })
     })
   })
