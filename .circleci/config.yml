@@ -117,7 +117,6 @@ workflows:
             - integration_test
             - hmpps/helm_lint
             - build_docker_publish
-            - vulnerability_scan
           context:
             - hmpps-common-vars
             - hmpps-interventions-dev-deploy
