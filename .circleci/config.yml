@@ -91,7 +91,7 @@ workflows:
           persist_container_image: true
           filters:
             branches:
-              only: [main]
+              only: [main,split-referrals-to-draft-and-live-referrals]
       - hmpps/build_docker:
           name: build_docker
           git-lfs: true
@@ -103,6 +103,24 @@ workflows:
       - hmpps/trivy_pipeline_scan:
           name: vulnerability_scan
           requires: [build_docker, build_docker_publish]
+      - hmpps/deploy_env:
+          name: deploy_dev_split
+          env: "dev"
+          slack_notification: false
+          slack_channel_name: "interventions-dev-notifications"
+          filters:
+            branches:
+              only:
+                - split-referrals-to-draft-and-live-referrals
+          requires:
+            - build
+            - integration_test
+            - hmpps/helm_lint
+            - build_docker_publish
+            - vulnerability_scan
+          context:
+            - hmpps-common-vars
+            - hmpps-interventions-dev-deploy
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
@@ -120,7 +138,7 @@ workflows:
             - vulnerability_scan
           context:
             - hmpps-common-vars
-            - hmpps-interventions-dev-deploy
+            - hmpps-interventions-dev-deploy            
       - tag_pact_version:
           name: "tag_pact_version_dev"
           tag: "deployed:dev"
