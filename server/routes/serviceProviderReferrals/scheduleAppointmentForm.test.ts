@@ -17,10 +17,11 @@ describe(ScheduleAppointmentForm, () => {
     describe('with valid data', () => {
       describe('with a phone call appointment', () => {
         it('returns a paramsForUpdate with the completionDeadline key, an ISO-formatted date and phone call', async () => {
+          const today = new Date()
           const request = TestUtils.createRequest({
-            'date-year': '2025',
-            'date-month': '09',
-            'date-day': '12',
+            'date-year': today.getFullYear(),
+            'date-month': today.getUTCMonth() + 1,
+            'date-day': today.getUTCDate(),
             'time-hour': '1',
             'time-minute': '05',
             'time-part-of-day': 'pm',
@@ -33,7 +34,7 @@ describe(ScheduleAppointmentForm, () => {
           const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
 
           expect(data.paramsForUpdate).toEqual({
-            appointmentTime: '2025-09-12T12:05:00.000Z',
+            appointmentTime: `${today.toISOString().split('T')[0]}T12:05:00.000Z`,
             durationInMinutes: 90,
             sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'PHONE_CALL',
@@ -45,10 +46,11 @@ describe(ScheduleAppointmentForm, () => {
 
       describe('with an other locations appointment', () => {
         it('returns a paramsForUpdate with the completionDeadline key, an ISO-formatted date and phone call', async () => {
+          const today = new Date()
           const request = TestUtils.createRequest({
-            'date-year': '2025',
-            'date-month': '09',
-            'date-day': '12',
+            'date-year': today.getFullYear(),
+            'date-month': today.getUTCMonth() + 1,
+            'date-day': today.getUTCDate(),
             'time-hour': '1',
             'time-minute': '05',
             'time-part-of-day': 'pm',
@@ -66,7 +68,7 @@ describe(ScheduleAppointmentForm, () => {
           const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
 
           expect(data.paramsForUpdate).toEqual({
-            appointmentTime: '2025-09-12T12:05:00.000Z',
+            appointmentTime: `${today.toISOString().split('T')[0]}T12:05:00.000Z`,
             durationInMinutes: 90,
             sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -83,10 +85,11 @@ describe(ScheduleAppointmentForm, () => {
 
         describe('with a missing second address line', () => {
           it('returns a paramsForUpdate with the completionDeadline key, an ISO-formatted date and phone call', async () => {
+            const today = new Date()
             const request = TestUtils.createRequest({
-              'date-year': '2025',
-              'date-month': '09',
-              'date-day': '12',
+              'date-year': today.getFullYear(),
+              'date-month': today.getUTCMonth() + 1,
+              'date-day': today.getUTCDate(),
               'time-hour': '1',
               'time-minute': '05',
               'time-part-of-day': 'pm',
@@ -102,7 +105,7 @@ describe(ScheduleAppointmentForm, () => {
 
             const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
             expect(data.paramsForUpdate).toEqual({
-              appointmentTime: '2025-09-12T12:05:00.000Z',
+              appointmentTime: `${today.toISOString().split('T')[0]}T12:05:00.000Z`,
               durationInMinutes: 90,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -120,10 +123,11 @@ describe(ScheduleAppointmentForm, () => {
       })
       describe('with a delius office location appointment', () => {
         it('returns a valid appointment with an office location code', async () => {
+          const today = new Date()
           const request = TestUtils.createRequest({
-            'date-year': '2025',
-            'date-month': '09',
-            'date-day': '12',
+            'date-year': today.getFullYear(),
+            'date-month': today.getUTCMonth() + 1,
+            'date-day': today.getUTCDate(),
             'time-hour': '1',
             'time-minute': '05',
             'time-part-of-day': 'pm',
@@ -137,7 +141,7 @@ describe(ScheduleAppointmentForm, () => {
           const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
 
           expect(data.paramsForUpdate).toEqual({
-            appointmentTime: '2025-09-12T12:05:00.000Z',
+            appointmentTime: `${today.toISOString().split('T')[0]}T12:05:00.000Z`,
             durationInMinutes: 90,
             sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
@@ -196,10 +200,11 @@ describe(ScheduleAppointmentForm, () => {
       describe('with a delius office location appointment', () => {
         describe('having an empty office location selection', () => {
           it('returns an error message for missing office location', async () => {
+            const today = new Date()
             const request = TestUtils.createRequest({
-              'date-year': '2025',
-              'date-month': '09',
-              'date-day': '12',
+              'date-year': today.getFullYear(),
+              'date-month': today.getUTCMonth(),
+              'date-day': today.getUTCDate(),
               'time-hour': '1',
               'time-minute': '05',
               'time-part-of-day': 'pm',
@@ -225,10 +230,11 @@ describe(ScheduleAppointmentForm, () => {
         })
         describe('having an invalid office location selection', () => {
           it('returns an error message for invalid office location', async () => {
+            const today = new Date()
             const request = TestUtils.createRequest({
-              'date-year': '2025',
-              'date-month': '09',
-              'date-day': '12',
+              'date-year': today.getFullYear(),
+              'date-month': today.getUTCMonth(),
+              'date-day': today.getUTCDate(),
               'time-hour': '1',
               'time-minute': '05',
               'time-part-of-day': 'pm',
@@ -247,6 +253,127 @@ describe(ScheduleAppointmentForm, () => {
                   errorSummaryLinkedField: 'delius-office-location-code',
                   formFields: ['delius-office-location-code'],
                   message: 'Select an office from the list',
+                },
+              ],
+            })
+          })
+        })
+        describe('having an early date selection', () => {
+          it('returns an error message for early appointment date', async () => {
+            const request = TestUtils.createRequest({
+              'date-year': '1999',
+              'date-month': '04',
+              'date-day': '11',
+              'time-hour': '1',
+              'time-minute': '05',
+              'time-part-of-day': 'pm',
+              'duration-hours': '1',
+              'duration-minutes': '30',
+              'session-type': 'ONE_TO_ONE',
+              'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
+              'delius-office-location-code': 'CRS0001',
+            })
+
+            const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
+
+            expect(data.error).toEqual({
+              errors: [
+                {
+                  errorSummaryLinkedField: 'date-year',
+                  formFields: ['date-year'],
+                  message: 'The session date must be a real date',
+                },
+              ],
+            })
+          })
+        })
+        describe('having a late date selection', () => {
+          it('returns an error message for late appointment date', async () => {
+            const maximumDate = new Date()
+            maximumDate.setMonth(maximumDate.getMonth() + 6)
+
+            const today = new Date()
+            const request = TestUtils.createRequest({
+              'date-year': today.getFullYear() + 10,
+              'date-month': today.getUTCMonth(),
+              'date-day': today.getUTCDate(),
+              'time-hour': '1',
+              'time-minute': '05',
+              'time-part-of-day': 'pm',
+              'duration-hours': '1',
+              'duration-minutes': '30',
+              'session-type': 'ONE_TO_ONE',
+              'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
+              'delius-office-location-code': 'CRS0001',
+            })
+
+            const data = await new ScheduleAppointmentForm(
+              request,
+              deliusOfficeLocations,
+              false,
+              '2022-01-10T09:38:07.827Z'
+            ).data()
+
+            const formattedDateMaxDate = maximumDate
+              .toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })
+              .replace(/ /g, ' ')
+
+            expect(data.error).toEqual({
+              errors: [
+                {
+                  errorSummaryLinkedField: 'date-day',
+                  formFields: ['date-day'],
+                  message: `Date must be no later than ${formattedDateMaxDate}`,
+                },
+              ],
+            })
+          })
+        })
+        describe('having an early date selection', () => {
+          it('returns an error message for early appointment date', async () => {
+            const maximumDate = new Date()
+            maximumDate.setMonth(maximumDate.getMonth() + 6)
+
+            const today = new Date()
+            const request = TestUtils.createRequest({
+              'date-year': today.getFullYear(),
+              'date-month': today.getUTCMonth(),
+              'date-day': today.getUTCDate(),
+              'time-hour': '1',
+              'time-minute': '05',
+              'time-part-of-day': 'pm',
+              'duration-hours': '1',
+              'duration-minutes': '30',
+              'session-type': 'ONE_TO_ONE',
+              'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
+              'delius-office-location-code': 'CRS0001',
+            })
+
+            const data = await new ScheduleAppointmentForm(
+              request,
+              deliusOfficeLocations,
+              false,
+              '2022-01-10T09:38:07.827Z'
+            ).data()
+
+            const formattedToday = today
+              .toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })
+              .replace(/ /g, ' ')
+
+            expect(data.error).toEqual({
+              errors: [
+                {
+                  errorSummaryLinkedField: 'date-day',
+                  formFields: ['date-day'],
+                  message: `Date must be no earlier than ${formattedToday}`,
                 },
               ],
             })

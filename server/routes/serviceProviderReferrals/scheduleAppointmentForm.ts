@@ -17,7 +17,8 @@ export default class ScheduleAppointmentForm {
   constructor(
     private readonly request: Request,
     private readonly deliusOfficeLocations: DeliusOfficeLocation[],
-    private readonly allowPastAppointments = false
+    private readonly allowPastAppointments = false,
+    private readonly referralDate: string | null = null
   ) {}
 
   async data(): Promise<FormData<AppointmentSchedulingDetails>> {
@@ -26,7 +27,9 @@ export default class ScheduleAppointmentForm {
         this.request,
         'date',
         'time',
-        errorMessages.scheduleAppointment.time
+        errorMessages.scheduleAppointment.time,
+        null,
+        this.referralDate
       ).validate(),
       new DurationInput(this.request, 'duration', errorMessages.scheduleAppointment.duration).validate(),
       FormUtils.runValidations({ request: this.request, validations: this.validateSessionType() }),

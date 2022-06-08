@@ -168,6 +168,9 @@ describe(CalendarDayInput, () => {
 
       const result = await new CalendarDayInput(request, 'deadline', messages).validate()
 
+      const maximumDate = new Date()
+      maximumDate.setMonth(maximumDate.getMonth() + 6)
+
       expect(result.error).toEqual({
         errors: [
           {
@@ -182,12 +185,16 @@ describe(CalendarDayInput, () => {
 
   describe('.createErrors', () => {
     it('creates a formError object from the key and message passed in', () => {
-      expect(CalendarDayInput.createError('deadline', 'The deadline must be a real date')).toEqual({
+      const maximumDate = new Date()
+      maximumDate.setMonth(maximumDate.getMonth() + 6)
+      expect(
+        CalendarDayInput.createError('deadline', `Date must be no later than ${maximumDate.toDateString()}`)
+      ).toEqual({
         errors: [
           {
             errorSummaryLinkedField: 'deadline-day',
             formFields: ['deadline-day', 'deadline-month', 'deadline-year'],
-            message: 'The deadline must be a real date',
+            message: `Date must be no later than ${maximumDate.toDateString()}`,
           },
         ],
       })
