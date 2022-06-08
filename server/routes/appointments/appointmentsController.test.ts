@@ -164,9 +164,11 @@ describe('Scheduling a supplier assessment appointment', () => {
 
         await request(app)
           .get(`/service-provider/referrals/1/supplier-assessment/schedule/abc/details`)
-          .expect(410)
+          .expect(500)
           .expect(res => {
-            expect(res.text).toContain('This page is no longer available')
+            expect(res.text).toContain(
+              'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.'
+            )
           })
       })
     })
@@ -233,7 +235,7 @@ describe('Scheduling a supplier assessment appointment', () => {
         expect(draftsService.updateDraft).toHaveBeenCalledWith(
           draftBooking.id,
           {
-            appointmentTime: '2022-03-01T09:02:00.000Z',
+            appointmentTime: `${dateOfAppointment.toISOString().split('T')[0]}T08:02:00.000Z`,
             durationInMinutes: 75,
             sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'PHONE_CALL',
@@ -614,13 +616,15 @@ describe('Scheduling a delivery session', () => {
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
+        const today = new Date()
+
         await request(app)
           .post(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/${draftBooking.id}/details`)
           .type('form')
           .send({
-            'date-year': '2022',
-            'date-month': '3',
-            'date-day': '24',
+            'date-year': today.getFullYear(),
+            'date-month': today.getUTCMonth() + 1,
+            'date-day': today.getUTCDate(),
             'time-hour': '9',
             'time-minute': '02',
             'time-part-of-day': 'am',
@@ -639,7 +643,7 @@ describe('Scheduling a delivery session', () => {
           draftBooking.id,
           {
             appointmentDeliveryAddress: null,
-            appointmentTime: '2022-03-24T09:02:00.000Z',
+            appointmentTime: `${today.toISOString().split('T')[0]}T08:02:00.000Z`,
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
             npsOfficeCode: null,
@@ -663,12 +667,14 @@ describe('Scheduling a delivery session', () => {
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
 
+        const today = new Date()
+
         await request(app)
           .post(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/${draftBooking.id}/details`)
           .type('form')
           .send({
-            'date-year': '2022',
-            'date-month': '2',
+            'date-year': today.getFullYear(),
+            'date-month': today.getUTCMonth() + 1,
             'date-day': '32',
             'time-hour': '9',
             'time-minute': '02',

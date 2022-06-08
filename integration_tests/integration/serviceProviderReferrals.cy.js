@@ -2510,9 +2510,13 @@ describe('Service provider referrals dashboard', () => {
             new RegExp(`/service-provider/referrals/${sentReferral.id}/supplier-assessment/schedule/[a-z0-9-]+/details`)
           )
 
+          const today = new Date()
+
           cy.get('#date-day').clear().type('10')
-          cy.get('#date-month').clear().type('3')
-          cy.get('#date-year').clear().type('2022')
+          cy.get('#date-month')
+            .clear()
+            .type((today.getMonth() + 1).toString())
+          cy.get('#date-year').clear().type(today.getFullYear())
           cy.get('#time-hour').clear().type('4')
           cy.get('#time-minute').clear().type('15')
           cy.get('#time-part-of-day').select('PM')
@@ -2523,7 +2527,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
 
           const rescheduledAppointment = initialAssessmentAppointmentFactory.build({
-            appointmentTime: '2022-03-10T016:15:00Z',
+            appointmentTime: `${today.toISOString().split('T')[0]}T16:15:00Z`,
             durationInMinutes: 45,
           })
 
@@ -2542,6 +2546,12 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('4:15pm to 5:00pm')
 
           cy.get('button').contains('Confirm').click()
+
+          cy.get('h1').contains('Initial assessment appointment added')
+
+          cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessmentWithRescheduledAppointment)
+
+          cy.contains('Return to progress').click()
         })
       })
 
