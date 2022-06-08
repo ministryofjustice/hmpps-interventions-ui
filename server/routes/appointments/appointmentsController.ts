@@ -100,7 +100,7 @@ export default class AppointmentsController {
     let serverError: FormValidationError | null = null
 
     if (req.method === 'POST') {
-      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations).data()
+      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations, false, referral.sentAt).data()
       if (data.error) {
         res.status(400)
         formError = data.error
@@ -296,7 +296,7 @@ export default class AppointmentsController {
     let serverError: FormValidationError | null = null
 
     if (req.method === 'POST') {
-      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations, true).data()
+      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations, true, referral.sentAt).data()
 
       if (data.error) {
         res.status(400)
