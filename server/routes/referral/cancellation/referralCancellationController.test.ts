@@ -114,11 +114,9 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
 
       await request(app)
         .get(`/probation-practitioner/referrals/abc/cancellation/def/reason`)
-        .expect(500)
+        .expect(410)
         .expect(res => {
-          expect(res.text).toContain(
-            'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.'
-          )
+          expect(res.text).toContain('This page is no longer available')
         })
     })
   })
@@ -161,11 +159,9 @@ describe('POST /probation-practitioner/referrals/:id/cancellation/:draftCancella
         .post(`/probation-practitioner/referrals/abc/cancellation/def/reason`)
         .type('form')
         .send({ 'cancellation-reason': 'MOV', 'cancellation-comments': 'Alex has moved out of the area' })
-        .expect(500)
+        .expect(410)
         .expect(res => {
-          expect(res.text).toContain(
-            'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.'
-          )
+          expect(res.text).toContain('This page is no longer available')
         })
     })
   })
@@ -231,11 +227,9 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
 
       await request(app)
         .get(`/probation-practitioner/referrals/abc/cancellation/def/check-your-answers`)
-        .expect(500)
+        .expect(410)
         .expect(res => {
-          expect(res.text).toContain(
-            'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.'
-          )
+          expect(res.text).toContain('This page is no longer available')
         })
     })
   })
@@ -299,11 +293,9 @@ describe('POST /probation-practitioner/referrals/:id/cancellation/:draftCancella
 
       await request(app)
         .post(`/probation-practitioner/referrals/abc/cancellation/def/submit`)
-        .expect(500)
+        .expect(410)
         .expect(res => {
-          expect(res.text).toContain(
-            'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.'
-          )
+          expect(res.text).toContain('This page is no longer available')
         })
     })
   })

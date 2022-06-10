@@ -689,11 +689,9 @@ describe('GET /service-provider/referrals/:id/assignment/:draftAssignmentId/chec
 
       await request(app)
         .get(`/service-provider/referrals/abc/assignment/def/check`)
-        .expect(500)
+        .expect(410)
         .expect(res => {
-          expect(res.text).toContain(
-            'Too much time has passed since you started assigning this intervention to a caseworker. The referral has not been assigned, and you will need to start again.'
-          )
+          expect(res.text).toContain('This page is no longer available')
         })
     })
   })
@@ -758,11 +756,9 @@ describe('POST /service-provider/referrals/:id/:draftAssignmentId/submit', () =>
 
       await request(app)
         .post(`/service-provider/referrals/abc/assignment/def/submit`)
-        .expect(500)
+        .expect(410)
         .expect(res => {
-          expect(res.text).toContain(
-            'Too much time has passed since you started assigning this intervention to a caseworker. The referral has not been assigned, and you will need to start again.'
-          )
+          expect(res.text).toContain('This page is no longer available')
         })
     })
   })

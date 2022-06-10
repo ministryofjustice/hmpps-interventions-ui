@@ -1,9 +1,10 @@
 import { Request, Response } from 'express'
-import createError from 'http-errors'
+import { StatusCodes } from 'http-status-codes'
 import LayoutPresenter from '../routes/shared/layoutPresenter'
 import LayoutView, { PageContentView } from '../routes/shared/layoutView'
 import DeliusServiceUser from '../models/delius/deliusServiceUser'
 import DraftsService, { Draft } from '../services/draftsService'
+import DraftNotFoundView from '../routes/shared/draftNotFoundView'
 import DraftSoftDeletedView from '../routes/shared/draftSoftDeletedView'
 import UserDataService from '../services/userDataService'
 
@@ -30,11 +31,7 @@ export default class ControllerUtils {
     req: Request,
     res: Response,
     draftsService: DraftsService,
-    {
-      idParamName,
-      notFoundUserMessage,
-      typeName,
-    }: { idParamName: string; notFoundUserMessage: string; typeName: string }
+    { idParamName }: { idParamName: string; notFoundUserMessage: string; typeName: string }
   ): Promise<DraftFetchResult<T>> {
     const id = req.params[idParamName]
     const draft = await draftsService.fetchDraft<T>(id, {
@@ -42,13 +39,14 @@ export default class ControllerUtils {
     })
 
     if (draft === null) {
-      throw createError(500, `UI-only draft ${typeName} with ID ${id} not found`, {
-        userMessage: notFoundUserMessage,
-      })
+      res.status(StatusCodes.GONE)
+      const view = new DraftNotFoundView()
+      this.renderWithLayout(res, view, null)
+      return { rendered: true }
     }
 
     if (draft.softDeleted) {
-      res.status(410 /* Gone */)
+      res.status(StatusCodes.GONE)
       const view = new DraftSoftDeletedView()
       this.renderWithLayout(res, view, null)
       return { rendered: true }

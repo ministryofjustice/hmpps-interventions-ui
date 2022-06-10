@@ -185,11 +185,9 @@ describe.each([
         draftsService.fetchDraft.mockResolvedValue(null)
         await request(app)
           .get(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/non-existent-draft/details`)
-          .expect(500)
+          .expect(410)
           .expect(res => {
-            expect(res.text).toContain(
-              'Too much time has passed since you started creating this case note. Your answers have not been saved, and you will need to start again.'
-            )
+            expect(res.text).toContain('This page is no longer available')
           })
       })
     })
