@@ -117,6 +117,7 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
         .expect(410)
         .expect(res => {
           expect(res.text).toContain('This page is no longer available')
+          expect(res.text).toContain('You have not cancelled this referral.')
         })
     })
   })
@@ -162,6 +163,7 @@ describe('POST /probation-practitioner/referrals/:id/cancellation/:draftCancella
         .expect(410)
         .expect(res => {
           expect(res.text).toContain('This page is no longer available')
+          expect(res.text).toContain('You have not cancelled this referral.')
         })
     })
   })
@@ -254,6 +256,7 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
         .expect(410)
         .expect(res => {
           expect(res.text).toContain('This page is no longer available')
+          expect(res.text).toContain('You have not cancelled this referral.')
         })
     })
   })

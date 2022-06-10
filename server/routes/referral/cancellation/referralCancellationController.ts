@@ -155,11 +155,16 @@ export default class ReferralCancellationController {
   }
 
   private async fetchDraftCancellationOrRenderMessage(req: Request, res: Response) {
+    const backLink = {
+      target: `/probation-practitioner/referrals/${req.params.id}/progress`,
+      message: 'go to the referral to cancel it',
+    }
     return ControllerUtils.fetchDraftOrRenderMessage<DraftCancellationData>(req, res, this.draftsService, {
       idParamName: 'draftCancellationId',
       notFoundUserMessage:
-        'Too much time has passed since you started cancelling this referral. Your answers have not been saved, and you will need to start again.',
+        'You have not cancelled this referral. This is because too much time has passed since you started it.',
       typeName: 'cancellation',
+      backLink,
     })
   }
 }

@@ -188,6 +188,7 @@ describe.each([
           .expect(410)
           .expect(res => {
             expect(res.text).toContain('This page is no longer available')
+            expect(res.text).toContain('You have not sent this case note.')
           })
       })
     })

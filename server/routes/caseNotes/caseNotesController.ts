@@ -97,7 +97,7 @@ export default class CaseNotesController {
     loggedInUserType: 'service-provider' | 'probation-practitioner'
   ): Promise<void> {
     const referralId = req.params.id
-    const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res, loggedInUserType)
     if (fetchResult.rendered) {
       return
     }
@@ -156,7 +156,7 @@ export default class CaseNotesController {
   ): Promise<void> {
     const { accessToken } = res.locals.user.token
     const referralId = req.params.id
-    const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res, loggedInUserType)
     if (fetchResult.rendered) {
       return
     }
@@ -187,7 +187,7 @@ export default class CaseNotesController {
   ): Promise<void> {
     const { accessToken } = res.locals.user.token
     const referralId = req.params.id
-    const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res, loggedInUserType)
     if (fetchResult.rendered) {
       return
     }
@@ -220,12 +220,21 @@ export default class CaseNotesController {
     ControllerUtils.renderWithLayout(res, view, null)
   }
 
-  private async fetchDraftCaseNoteOrRenderMessage(req: Request, res: Response) {
+  private async fetchDraftCaseNoteOrRenderMessage(
+    req: Request,
+    res: Response,
+    loggedInUserType: 'service-provider' | 'probation-practitioner'
+  ) {
+    const backLink = {
+      target: `/${loggedInUserType}/referrals/${req.params.id}/case-notes`,
+      message: 'go to case notes',
+    }
     return ControllerUtils.fetchDraftOrRenderMessage<DraftCaseNote>(req, res, this.draftsService, {
       idParamName: 'draftCaseNoteId',
       notFoundUserMessage:
-        'Too much time has passed since you started creating this case note. Your answers have not been saved, and you will need to start again.',
+        'You have not sent this case note. This is because too much time has passed since you started it.',
       typeName: 'case note',
+      backLink,
     })
   }
 }

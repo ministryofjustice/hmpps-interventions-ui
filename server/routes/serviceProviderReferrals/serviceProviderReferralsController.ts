@@ -363,11 +363,16 @@ export default class ServiceProviderReferralsController {
   }
 
   private async fetchDraftAssignmentOrRenderMessage(req: Request, res: Response) {
+    const backLink = {
+      target: `/service-provider/referrals/${req.params.id}/details`,
+      message: 'assign the referral',
+    }
     return ControllerUtils.fetchDraftOrRenderMessage<DraftAssignmentData>(req, res, this.draftsService, {
       idParamName: 'draftAssignmentId',
       notFoundUserMessage:
-        'Too much time has passed since you started assigning this intervention to a caseworker. The referral has not been assigned, and you will need to start again.',
+        'You have not assigned this referral to a caseworker. This is because too much time has passed since you started assigning it.',
       typeName: 'assignment',
+      backLink,
     })
   }
 

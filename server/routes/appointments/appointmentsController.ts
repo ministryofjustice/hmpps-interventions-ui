@@ -277,7 +277,8 @@ export default class AppointmentsController {
   }
 
   async editActionPlanSessionAppointment(req: Request, res: Response): Promise<void> {
-    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
+    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
     if (fetchResult.rendered) {
       return
     }
@@ -285,7 +286,6 @@ export default class AppointmentsController {
     const { accessToken } = res.locals.user.token
     const sessionNumber = Number(req.params.sessionNumber)
 
-    const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
     const intervention = await this.interventionsService.getIntervention(accessToken, referral.referral.interventionId)
     const deliusOfficeLocations: DeliusOfficeLocation[] =
@@ -355,7 +355,7 @@ export default class AppointmentsController {
 
     const sessionNumber = Number(req.params.sessionNumber)
 
-    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
     if (fetchResult.rendered) {
       return
     }
@@ -379,7 +379,7 @@ export default class AppointmentsController {
     const actionPlanId = req.params.id
     const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, actionPlanId)
 
-    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
     if (fetchResult.rendered) {
       return
     }
@@ -1143,7 +1143,11 @@ export default class AppointmentsController {
   }
 
   // TODO: Remove DraftAppointmentBooking from here once this has gone live for at least a week.
-  private async fetchDraftAppointmentOrRenderMessage(req: Request, res: Response) {
+  private async fetchDraftAppointmentOrRenderMessage(req: Request, res: Response, referralId?: string) {
+    const backLink = {
+      target: `/service-provider/referrals/${referralId || req.params.id}/progress`,
+      message: 'book or change the appointment',
+    }
     return ControllerUtils.fetchDraftOrRenderMessage<DraftAppointmentBooking | DraftAppointment>(
       req,
       res,
@@ -1151,18 +1155,24 @@ export default class AppointmentsController {
       {
         idParamName: 'draftBookingId',
         notFoundUserMessage:
-          'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.',
+          'You have not saved the appointment details. This is because too much time has passed since you started.',
         typeName: 'booking',
+        backLink,
       }
     )
   }
 
   private async fetchDraftBookingOrRenderMessage(req: Request, res: Response) {
+    const backLink = {
+      target: `/service-provider/referrals/${req.params.id}/progress`,
+      message: 'book or change the appointment',
+    }
     return ControllerUtils.fetchDraftOrRenderMessage<DraftAppointmentBooking>(req, res, this.draftsService, {
       idParamName: 'draftBookingId',
       notFoundUserMessage:
-        'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.',
+        'You have not saved the appointment details. This is because too much time has passed since you started.',
       typeName: 'booking',
+      backLink,
     })
   }
 

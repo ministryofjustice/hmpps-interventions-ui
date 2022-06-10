@@ -5,10 +5,16 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">This page is no longer available</h2>
 
-      <p class="govuk-body">
-      You can’t view this page any more. If you want to perform this action again, 
-      you will need to <a href="/" class="govuk-link">return to the dashboard</a> and start again.
-      </p>
+      {% if softDeletedUserMessage %}
+        <p class="govuk-body">{{ softDeletedUserMessage }}</p>
+
+        <p class="govuk-body">You can <a href="{{ backLinkArgs.href }}" class="govuk-link">{{ backLinkArgs.text }}</a>.</p>
+      {% else %}
+        <p class="govuk-body">
+        You can’t view this page any more. If you want to perform this action again, 
+        you will need to <a href="/" class="govuk-link">return to the dashboard</a> and start again.
+        </p>
+      {% endif %}
     </div>
   </div>
 {% endblock %}
