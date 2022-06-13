@@ -164,11 +164,9 @@ describe('Scheduling a supplier assessment appointment', () => {
 
         await request(app)
           .get(`/service-provider/referrals/1/supplier-assessment/schedule/abc/details`)
-          .expect(500)
+          .expect(410)
           .expect(res => {
-            expect(res.text).toContain(
-              'Too much time has passed since you started booking this appointment. Your answers have not been saved, and you will need to start again.'
-            )
+            expect(res.text).toContain('This page is no longer available')
           })
       })
     })
