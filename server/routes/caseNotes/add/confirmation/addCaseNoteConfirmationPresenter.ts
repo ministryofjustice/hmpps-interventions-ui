@@ -14,7 +14,7 @@ export default class AddCaseNoteConfirmationPresenter {
   caseNotesHref = `/${this.loggedInUserType}/referrals/${this.referral.id}/case-notes`
 
   text = {
-    whatHappensNext: `The case note will now be available to view by the ${this.loggedInUserTypeText}.`,
+    whatHappensNext: `The ${this.targetUserType} will now be able to view the case note.`,
   }
 
   readonly serviceUserSummary: SummaryListItem[] = [
@@ -32,10 +32,7 @@ export default class AddCaseNoteConfirmationPresenter {
     },
   ]
 
-  private get loggedInUserTypeText(): string {
-    if (this.loggedInUserType === 'service-provider') {
-      return 'service provider'
-    }
-    return 'probation practitioner'
+  private get targetUserType(): string {
+    return this.loggedInUserType === 'service-provider' ? 'probation practitioner' : 'service provider'
   }
 }
