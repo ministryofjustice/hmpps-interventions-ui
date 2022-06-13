@@ -96,7 +96,7 @@ class SentReferralFactory extends Factory<SentReferral> {
 
 export default SentReferralFactory.define(({ sequence }) => ({
   id: sequence.toString(),
-  sentAt: new Date().toISOString(),
+  sentAt: '2022-01-01T09:02:00.000Z',
   sentBy: {
     username: 'BERNARD.BEAKS',
     userId: sequence.toString(),
