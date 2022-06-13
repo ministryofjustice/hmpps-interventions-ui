@@ -4,7 +4,6 @@
 
 ### Requirements
 
-- nvm (optional)
 - Node.js >= 14
 - npm >= 7.5
 - Docker
