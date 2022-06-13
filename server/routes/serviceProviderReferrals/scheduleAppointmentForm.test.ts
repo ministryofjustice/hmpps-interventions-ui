@@ -238,6 +238,7 @@ describe(ScheduleAppointmentForm, () => {
               'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
               'delius-office-location-code': 'CRS0002',
             })
+
             const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations).data()
 
             expect(data.error).toEqual({
