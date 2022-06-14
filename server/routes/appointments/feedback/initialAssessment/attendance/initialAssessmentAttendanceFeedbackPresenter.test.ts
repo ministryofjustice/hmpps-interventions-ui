@@ -17,7 +17,7 @@ describe(InitialAssessmentAttendanceFeedbackPresenter, () => {
       expect(presenter.text).toMatchObject({
         title: 'Add feedback',
         subTitle: 'Appointment details',
-        attendanceQuestion: 'Did Alex attend the initial assessment appointment?',
+        attendanceQuestion: 'Did Alex attend the supplier assessment appointment?',
         attendanceQuestionHint: 'Select one option',
         additionalAttendanceInformationLabel: "Add additional information about Alex's attendance:",
       })

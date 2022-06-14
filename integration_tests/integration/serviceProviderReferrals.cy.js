@@ -2517,7 +2517,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.contains('24 March 2021')
           cy.contains('9:02am to 10:17am')
-          cy.contains('Did Alex attend the initial assessment appointment?')
+          cy.contains('Did Alex attend the supplier assessment appointment?')
           cy.contains('No')
           cy.contains("Add additional information about Alex's attendance:")
           cy.contains('Alex did not attend the session')
@@ -2616,7 +2616,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.contains('24 March 2025')
           cy.contains('9:02am to 10:17am')
-          cy.contains('Did Alex attend the initial assessment appointment?')
+          cy.contains('Did Alex attend the supplier assessment appointment?')
           cy.contains('No')
           cy.contains('Alex did not attend the session')
 
@@ -2775,7 +2775,7 @@ describe('Service provider referrals dashboard', () => {
           )
           cy.contains('24 March 2021')
           cy.contains('9:02am to 10:17am')
-          cy.contains('Did Alex attend the initial assessment appointment?')
+          cy.contains('Did Alex attend the supplier assessment appointment?')
           cy.contains('Yes, they were on time')
           cy.contains("Add additional information about Alex's attendance:")
           cy.contains('Alex attended the session')
