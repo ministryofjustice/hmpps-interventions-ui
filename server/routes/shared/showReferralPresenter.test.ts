@@ -67,26 +67,6 @@ describe(ShowReferralPresenter, () => {
       expect(presenter.canShowFullSupplementaryRiskInformation).toBeFalsy()
     })
 
-    it("don't show full risk information if probabation practitioner", () => {
-      const referral = sentReferralFactory.build(referralParams)
-
-      const presenter = new ShowReferralPresenter(
-        referral,
-        intervention,
-        deliusConviction,
-        supplementaryRiskInformationFactory.build(),
-        deliusUser,
-        null,
-        null,
-        'probation-practitioner',
-        true,
-        deliusServiceUser,
-        riskSummary,
-        responsibleOfficer
-      )
-      expect(presenter.canShowFullSupplementaryRiskInformation).toBeFalsy()
-    })
-
     it('show full risk information if redacted risk is available and service provider', () => {
       const referral = sentReferralFactory.build(referralParams)
       config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
