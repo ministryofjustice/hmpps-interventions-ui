@@ -220,7 +220,7 @@ describe('Probation Practitioner monitor journey', () => {
 
       cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
 
-      cy.get('h1').contains('Accommodation progress')
+      cy.get('h1').contains('Accommodation: progress')
 
       cy.get('[data-cy=session-table]')
         .getTable()
