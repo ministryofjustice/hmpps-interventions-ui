@@ -19,12 +19,13 @@ export default class TwelveHourBritishDateTimeInput {
     private readonly dayKey: string,
     private readonly timeKey: string,
     private readonly errorMessages: TwelveHourBritishDateTimeErrorMessages,
-    private readonly earliestAllowedTime: Date | null = null
+    private readonly earliestAllowedTime: Date | null = null,
+    private readonly referralDate: string | null = null
   ) {}
 
   async validate(): Promise<FormValidationResult<Date>> {
     const [dayResult, timeResult] = await Promise.all([
-      new CalendarDayInput(this.request, this.dayKey, this.errorMessages.calendarDay).validate(),
+      new CalendarDayInput(this.request, this.dayKey, this.errorMessages.calendarDay, this.referralDate).validate(),
       new TwelveHourClockTimeInput(this.request, this.timeKey, this.errorMessages.clockTime).validate(),
     ])
 

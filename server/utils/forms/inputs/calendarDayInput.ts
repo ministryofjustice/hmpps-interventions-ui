@@ -16,7 +16,8 @@ export default class CalendarDayInput {
   constructor(
     private readonly request: Request,
     private readonly key: string,
-    private readonly errorMessages: CalendarDayErrorMessages
+    private readonly errorMessages: CalendarDayErrorMessages,
+    private readonly referralDate: string | null = null
   ) {}
 
   private static keys(key: string) {
@@ -95,8 +96,52 @@ export default class CalendarDayInput {
         .withMessage(this.errorMessages.yearEmpty)
         .bail()
         .trim()
-        .isInt({ max: 9999 }) // sure, dates bigger than this are real dates, but they're not valid here
+        .isInt({
+          min: 2000,
+          max: 9999,
+        }) // sure, dates bigger than this are real dates, but they're not valid here - minimum date protects from submission errors
         .withMessage(this.errorMessages.invalidDate),
+      ExpressValidator.body(this.keys.day).custom(() => {
+        const enteredDate = new Date(
+          Number(this.request.body[this.keys.year]),
+          Number(this.request.body[this.keys.month] - 1),
+          Number(this.request.body[this.keys.day]),
+          23,
+          59,
+          59
+        )
+
+        if (this.referralDate != null) {
+          const maximumDate = new Date()
+          maximumDate.setMonth(maximumDate.getMonth() + 6)
+
+          if (enteredDate > maximumDate) {
+            const formattedDateMaxDate = maximumDate
+              .toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })
+              .replace(/ /g, ' ')
+
+            throw new Error(`Date must be no later than ${formattedDateMaxDate}`)
+          }
+          const dateReferralMade = new Date(this.referralDate)
+
+          if (enteredDate < dateReferralMade) {
+            const formattedDateReferralMade = dateReferralMade
+              .toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })
+              .replace(/ /g, ' ')
+
+            throw new Error(`Date must be no earlier than ${formattedDateReferralMade}`)
+          }
+        }
+        return true
+      }),
     ]
   }
 

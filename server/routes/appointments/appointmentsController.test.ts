@@ -209,9 +209,9 @@ describe('Scheduling a supplier assessment appointment', () => {
           .post(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule/${draftBooking.id}/details`)
           .type('form')
           .send({
-            'date-day': '24',
+            'date-day': '5',
             'date-month': '3',
-            'date-year': '2025',
+            'date-year': '2022',
             'time-hour': '9',
             'time-minute': '02',
             'time-part-of-day': 'am',
@@ -229,7 +229,7 @@ describe('Scheduling a supplier assessment appointment', () => {
         expect(draftsService.updateDraft).toHaveBeenCalledWith(
           draftBooking.id,
           {
-            appointmentTime: '2025-03-24T09:02:00.000Z',
+            appointmentTime: '2022-03-05T09:02:00.000Z',
             durationInMinutes: 75,
             sessionType: 'ONE_TO_ONE',
             appointmentDeliveryType: 'PHONE_CALL',
@@ -255,7 +255,7 @@ describe('Scheduling a supplier assessment appointment', () => {
             .send({
               'date-day': '32',
               'date-month': '3',
-              'date-year': '2021',
+              'date-year': 'test',
               'time-hour': '9',
               'time-minute': '02',
               'time-part-of-day': 'am',
@@ -614,9 +614,9 @@ describe('Scheduling a delivery session', () => {
           .post(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/${draftBooking.id}/details`)
           .type('form')
           .send({
-            'date-day': '24',
+            'date-year': '2022',
             'date-month': '3',
-            'date-year': '2025',
+            'date-day': '24',
             'time-hour': '9',
             'time-minute': '02',
             'time-part-of-day': 'am',
@@ -635,7 +635,7 @@ describe('Scheduling a delivery session', () => {
           draftBooking.id,
           {
             appointmentDeliveryAddress: null,
-            appointmentTime: '2025-03-24T09:02:00.000Z',
+            appointmentTime: '2022-03-24T09:02:00.000Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
             npsOfficeCode: null,
@@ -663,9 +663,9 @@ describe('Scheduling a delivery session', () => {
           .post(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/${draftBooking.id}/details`)
           .type('form')
           .send({
+            'date-year': '2022',
+            'date-month': '2',
             'date-day': '32',
-            'date-month': '3',
-            'date-year': '2021',
             'time-hour': '9',
             'time-minute': '02',
             'time-part-of-day': 'am',
