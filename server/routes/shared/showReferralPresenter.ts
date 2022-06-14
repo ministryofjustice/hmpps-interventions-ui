@@ -57,6 +57,7 @@ export default class ShowReferralPresenter {
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/start`
 
   readonly text = {
+    title: `${utils.convertToTitleCase(this.intervention.contractType.name)}: referral details`,
     errorMessage: PresenterUtils.errorMessage(this.assignEmailError, 'email'),
     noCaseworkerAssigned: 'This intervention is not yet assigned to a caseworker.',
   }

@@ -84,7 +84,7 @@ export default class InterventionProgressPresenter {
   }
 
   readonly text = {
-    title: `${utils.convertToTitleCase(this.intervention.contractType.name)} progress`,
+    title: `${utils.convertToTitleCase(this.intervention.contractType.name)}: progress`,
   }
 
   get assignedCaseworkerFullName(): string | null {

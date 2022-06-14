@@ -285,7 +285,7 @@ describe(InterventionProgressPresenter, () => {
         )
 
         expect(presenter.text).toMatchObject({
-          title: 'Accommodation',
+          title: 'Accommodation: progress',
         })
       })
     })

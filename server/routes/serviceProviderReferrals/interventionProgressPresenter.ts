@@ -82,7 +82,7 @@ export default class InterventionProgressPresenter {
   readonly hrefBackLink = this.dashboardOriginPage || '/service-provider/dashboard'
 
   readonly text = {
-    title: utils.convertToTitleCase(this.intervention.contractType.name),
+    title: `${utils.convertToTitleCase(this.intervention.contractType.name)}: progress`,
     endOfServiceReportStatus: this.endOfServiceReportSubmitted ? 'Submitted' : 'Not submitted',
   }
 

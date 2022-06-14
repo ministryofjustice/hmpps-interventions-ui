@@ -837,4 +837,31 @@ describe(ShowReferralPresenter, () => {
       })
     })
   })
+
+  describe('text', () => {
+    describe('title', () => {
+      it('returns a title to be displayed', () => {
+        const referral = sentReferralFactory.build(referralParams)
+
+        const presenter = new ShowReferralPresenter(
+          referral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformationFactory.build({ redactedRisk: undefined }),
+          deliusUser,
+          null,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          responsibleOfficer
+        )
+
+        expect(presenter.text).toMatchObject({
+          title: 'Accommodation: referral details',
+        })
+      })
+    })
+  })
 })
