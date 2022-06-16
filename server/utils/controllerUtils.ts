@@ -39,12 +39,10 @@ export default class ControllerUtils {
     {
       idParamName,
       notFoundUserMessage,
-      softDeletedUserMessage,
       backLink,
     }: {
       idParamName: string
       notFoundUserMessage?: string
-      softDeletedUserMessage?: string
       typeName: string
       backLink?: BackLink
     }
@@ -63,7 +61,7 @@ export default class ControllerUtils {
 
     if (draft.softDeleted) {
       res.status(StatusCodes.GONE)
-      const message = softDeletedUserMessage || notFoundUserMessage
+      const message = notFoundUserMessage
       const view = new DraftSoftDeletedView(backLink, message)
       this.renderWithLayout(res, view, null)
       return { rendered: true }

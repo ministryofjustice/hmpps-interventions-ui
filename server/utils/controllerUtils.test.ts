@@ -108,36 +108,7 @@ describe(ControllerUtils, () => {
     })
 
     describe('when the draft has been soft-deleted', () => {
-      it('renders an explanatory page when softDeletedUserMessage is passed in', async () => {
-        const draft = exampleDraftFactory.build({ softDeleted: true })
-        draftsService.fetchDraft.mockResolvedValue(draft)
-
-        const res = { status: jest.fn(), locals: { user: { userId: 'jane.bloggs' } }, render: jest.fn() }
-
-        const result = await ControllerUtils.fetchDraftOrRenderMessage(
-          { params: { draftBookingId: 'abc123' } } as unknown as Request,
-          res as unknown as Response,
-          draftsService,
-          {
-            idParamName: 'draftBookingId',
-            typeName: 'booking',
-            notFoundUserMessage: 'not found message',
-            softDeletedUserMessage: 'soft deleted message',
-          }
-        )
-
-        expect(result).toEqual({ rendered: true })
-
-        expect(res.status).toHaveBeenCalledWith(410)
-        expect(res.render).toHaveBeenCalledWith(
-          'shared/draftSoftDeleted',
-          expect.objectContaining({
-            softDeletedUserMessage: 'soft deleted message',
-          })
-        )
-      })
-
-      it('renders an explanatory page when only notFoundUserMessage is passed in', async () => {
+      it('renders an explanatory page when notFoundUserMessage is passed in', async () => {
         const draft = exampleDraftFactory.build({ softDeleted: true })
         draftsService.fetchDraft.mockResolvedValue(draft)
 
