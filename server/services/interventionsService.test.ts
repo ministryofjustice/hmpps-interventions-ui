@@ -2758,24 +2758,28 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('getActionPlanAppointments', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setHours(0, 0, 0, 0)
+
     const actionPlanAppointments = [
       actionPlanAppointmentFactory.build({
         sessionNumber: 1,
-        appointmentTime: '2021-05-13T12:30:00Z',
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 120,
         sessionType: 'GROUP',
         appointmentDeliveryType: 'PHONE_CALL',
       }),
       actionPlanAppointmentFactory.build({
         sessionNumber: 2,
-        appointmentTime: '2021-05-20T12:30:00Z',
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 120,
         sessionType: 'ONE_TO_ONE',
         appointmentDeliveryType: 'PHONE_CALL',
       }),
       actionPlanAppointmentFactory.build({
         sessionNumber: 3,
-        appointmentTime: '2021-05-27T12:30:00Z',
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 120,
         sessionType: 'GROUP',
         appointmentDeliveryType: 'PHONE_CALL',
@@ -2812,9 +2816,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('getActionPlanAppointment', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setDate(appointmentTime.getDate() + 1)
+
     const actionPlanAppointment = actionPlanAppointmentFactory.build({
       sessionNumber: 1,
-      appointmentTime: '2021-05-13T12:30:00Z',
+      appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
       durationInMinutes: 120,
       sessionType: 'ONE_TO_ONE',
       appointmentDeliveryType: 'PHONE_CALL',
@@ -2848,7 +2855,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         1
       )
       expect(appointment.sessionNumber).toEqual(1)
-      expect(appointment.appointmentTime).toEqual('2021-05-13T12:30:00Z')
+      expect(appointment.appointmentTime).toContain(`${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`)
       expect(appointment.durationInMinutes).toEqual(120)
       expect(appointment.sessionType).toEqual('ONE_TO_ONE')
       expect(appointment.appointmentDeliveryType).toEqual('PHONE_CALL')
@@ -2900,11 +2907,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('updateActionPlanAppointment', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setDate(appointmentTime.getDate() + 1)
+
     describe('with a past appointment time', () => {
       it('returns a scheduled action plan appointment with feedback', async () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
-          appointmentTime: '2021-05-13T12:30:00Z',
+          appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
           durationInMinutes: 60,
           sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -2942,7 +2952,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'PATCH',
             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
             body: {
-              appointmentTime: '2021-05-13T12:30:00Z',
+              appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -2981,7 +2991,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             '345059d4-1697-467b-8914-fedec9957279',
             2,
             {
-              appointmentTime: '2021-05-13T12:30:00Z',
+              appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3010,7 +3020,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       it('returns an updated action plan appointment', async () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
-          appointmentTime: '3000-05-13T12:30:00Z',
+          appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
           durationInMinutes: 60,
           sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3032,7 +3042,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'PATCH',
             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
             body: {
-              appointmentTime: '3000-05-13T12:30:00Z',
+              appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3063,7 +3073,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             '345059d4-1697-467b-8914-fedec9957279',
             2,
             {
-              appointmentTime: '3000-05-13T12:30:00Z',
+              appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3083,6 +3093,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('recordActionPlanAppointmentAttendance', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setDate(appointmentTime.getDate() + 1)
+
     it('returns an updated action plan appointment with the service user‘s attendance', async () => {
       await provider.addInteraction({
         state:
@@ -3102,7 +3115,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: Matchers.like({
             sessionNumber: 2,
-            appointmentTime: '2021-05-13T12:30:00Z',
+            appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
             durationInMinutes: 60,
             sessionType: 'GROUP',
             appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3147,6 +3160,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('recordActionPlanAppointmentBehavior', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setDate(appointmentTime.getDate() + 1)
+
     it('returns an updated action plan appointment with the service user‘s behaviour', async () => {
       await provider.addInteraction({
         state:
@@ -3166,7 +3182,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: Matchers.like({
             sessionNumber: 1,
-            appointmentTime: '2021-05-13T12:30:00Z',
+            appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
             durationInMinutes: 120,
             sessionFeedback: {
               attendance: {
@@ -3202,6 +3218,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('submitActionPlanSessionFeedback', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setDate(appointmentTime.getDate() + 1)
+
     it('submits attendance and behaviour feedback to the PP', async () => {
       await provider.addInteraction({
         state:
@@ -3217,7 +3236,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           status: 200,
           body: Matchers.like({
             sessionNumber: 1,
-            appointmentTime: '2021-05-13T12:30:00Z',
+            appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
             durationInMinutes: 120,
             sessionFeedback: {
               attendance: {
@@ -3519,8 +3538,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('scheduleSupplierAssessmentAppointment', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setDate(appointmentTime.getDate() + 1)
+
     const appointmentParams = {
-      appointmentTime: '3000-05-13T12:30:00Z',
+      appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
       durationInMinutes: 60,
     }
 
@@ -3572,9 +3594,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('recordSupplierAssessmentAppointmentAttendance', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setDate(appointmentTime.getDate() + 1)
+
     it('returns an updated appointment with the service user‘s attendance', async () => {
       const appointment = initialAssessmentAppointmentFactory.build({
-        appointmentTime: '2021-05-13T12:30:00Z',
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 60,
         sessionFeedback: {
           attendance: {
@@ -3627,9 +3652,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('recordSupplierAssessmentAppointmentBehaviour', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setDate(appointmentTime.getDate() + 1)
+
     it('returns an supplier with the service user‘s behaviour', async () => {
       const appointment = initialAssessmentAppointmentFactory.build({
-        appointmentTime: '2021-05-13T12:30:00Z',
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 120,
         sessionFeedback: {
           attendance: {
@@ -3682,9 +3710,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('submitSupplierAssessmentAppointmentFeedback', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setDate(appointmentTime.getDate() + 1)
+
     it('submits attendance and behaviour feedback', async () => {
       const appointment = initialAssessmentAppointmentFactory.build({
-        appointmentTime: '2021-05-13T12:30:00Z',
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 120,
         sessionFeedback: {
           attendance: {
