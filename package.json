@@ -164,7 +164,7 @@
     "cookie-session": "^2.0.0",
     "cypress": "^10.1.0",
     "cypress-multi-reporters": "^1.6.1",
-    "eslint": "^8.17.0",
+    "eslint": "^8.18.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-import-resolver-typescript": "^2.7.1",
