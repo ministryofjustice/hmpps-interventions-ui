@@ -108,7 +108,7 @@ describe(ControllerUtils, () => {
     })
 
     describe('when the draft has been soft-deleted', () => {
-      it('renders an explanatory page', async () => {
+      it('renders an explanatory page when notFoundUserMessage is passed in', async () => {
         const draft = exampleDraftFactory.build({ softDeleted: true })
         draftsService.fetchDraft.mockResolvedValue(draft)
 
@@ -121,19 +121,51 @@ describe(ControllerUtils, () => {
           {
             idParamName: 'draftBookingId',
             typeName: 'booking',
-            notFoundUserMessage: 'Timed out, start again',
+            notFoundUserMessage: 'not found message',
           }
         )
 
         expect(result).toEqual({ rendered: true })
 
         expect(res.status).toHaveBeenCalledWith(410)
-        expect(res.render).toHaveBeenCalledWith('shared/draftSoftDeleted', expect.anything())
+        expect(res.render).toHaveBeenCalledWith(
+          'shared/draftSoftDeleted',
+          expect.objectContaining({
+            softDeletedUserMessage: 'not found message',
+          })
+        )
+      })
+
+      it('renders a default explanatory page when no user message is passed in', async () => {
+        const draft = exampleDraftFactory.build({ softDeleted: true })
+        draftsService.fetchDraft.mockResolvedValue(draft)
+
+        const res = { status: jest.fn(), locals: { user: { userId: 'jane.bloggs' } }, render: jest.fn() }
+
+        const result = await ControllerUtils.fetchDraftOrRenderMessage(
+          { params: { draftBookingId: 'abc123' } } as unknown as Request,
+          res as unknown as Response,
+          draftsService,
+          {
+            idParamName: 'draftBookingId',
+            typeName: 'booking',
+          }
+        )
+
+        expect(result).toEqual({ rendered: true })
+
+        expect(res.status).toHaveBeenCalledWith(410)
+        expect(res.render).toHaveBeenCalledWith(
+          'shared/draftSoftDeleted',
+          expect.not.objectContaining({
+            softDeletedUserMessage: expect.anything(),
+          })
+        )
       })
     })
 
     describe('when a draft is not found by the drafts service', () => {
-      it('renders an explanatory page', async () => {
+      it('renders an explanatory page when notFoundUserMessage is passed in', async () => {
         draftsService.fetchDraft.mockResolvedValue(null)
 
         const res = { status: jest.fn(), locals: { user: { userId: 'jane.bloggs' } }, render: jest.fn() }
@@ -145,14 +177,45 @@ describe(ControllerUtils, () => {
           {
             idParamName: 'draftBookingId',
             typeName: 'booking',
-            notFoundUserMessage: 'Timed out, start again',
+            notFoundUserMessage: 'not found message',
           }
         )
 
         expect(result).toEqual({ rendered: true })
 
         expect(res.status).toHaveBeenCalledWith(410)
-        expect(res.render).toHaveBeenCalledWith('shared/draftNotFound', expect.anything())
+        expect(res.render).toHaveBeenCalledWith(
+          'shared/draftNotFound',
+          expect.objectContaining({
+            notFoundUserMessage: 'not found message',
+          })
+        )
+      })
+
+      it('renders an explanatory page when no user message is passed in', async () => {
+        draftsService.fetchDraft.mockResolvedValue(null)
+
+        const res = { status: jest.fn(), locals: { user: { userId: 'jane.bloggs' } }, render: jest.fn() }
+
+        const result = await ControllerUtils.fetchDraftOrRenderMessage(
+          { params: { draftBookingId: 'abc123' } } as unknown as Request,
+          res as unknown as Response,
+          draftsService,
+          {
+            idParamName: 'draftBookingId',
+            typeName: 'booking',
+          }
+        )
+
+        expect(result).toEqual({ rendered: true })
+
+        expect(res.status).toHaveBeenCalledWith(410)
+        expect(res.render).toHaveBeenCalledWith(
+          'shared/draftNotFound',
+          expect.not.objectContaining({
+            notFoundUserMessage: expect.anything(),
+          })
+        )
       })
     })
   })

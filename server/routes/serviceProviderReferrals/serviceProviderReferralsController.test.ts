@@ -715,6 +715,7 @@ describe('GET /service-provider/referrals/:id/assignment/:draftAssignmentId/chec
         .expect(410)
         .expect(res => {
           expect(res.text).toContain('This page is no longer available')
+          expect(res.text).toContain('You have not assigned this referral to a caseworker.')
         })
     })
   })
@@ -759,6 +760,7 @@ describe('POST /service-provider/referrals/:id/:draftAssignmentId/submit', () =>
         .expect(410)
         .expect(res => {
           expect(res.text).toContain('This page is no longer available')
+          expect(res.text).toContain('You have not assigned this referral to a caseworker.')
         })
     })
   })

@@ -19,6 +19,11 @@ interface DraftFetchRenderedResult {
 
 export type DraftFetchResult<T> = DraftFetchSuccessResult<T> | DraftFetchRenderedResult
 
+type BackLink = {
+  target?: string
+  message?: string
+}
+
 export default class ControllerUtils {
   static renderWithLayout(res: Response, contentView: PageContentView, serviceUser: DeliusServiceUser | null): void {
     const presenter = new LayoutPresenter(res.locals.user, serviceUser)
@@ -31,7 +36,16 @@ export default class ControllerUtils {
     req: Request,
     res: Response,
     draftsService: DraftsService,
-    { idParamName }: { idParamName: string; notFoundUserMessage: string; typeName: string }
+    {
+      idParamName,
+      notFoundUserMessage,
+      backLink,
+    }: {
+      idParamName: string
+      notFoundUserMessage?: string
+      typeName: string
+      backLink?: BackLink
+    }
   ): Promise<DraftFetchResult<T>> {
     const id = req.params[idParamName]
     const draft = await draftsService.fetchDraft<T>(id, {
@@ -40,14 +54,15 @@ export default class ControllerUtils {
 
     if (draft === null) {
       res.status(StatusCodes.GONE)
-      const view = new DraftNotFoundView()
+      const view = new DraftNotFoundView(backLink, notFoundUserMessage)
       this.renderWithLayout(res, view, null)
       return { rendered: true }
     }
 
     if (draft.softDeleted) {
       res.status(StatusCodes.GONE)
-      const view = new DraftSoftDeletedView()
+      const message = notFoundUserMessage
+      const view = new DraftSoftDeletedView(backLink, message)
       this.renderWithLayout(res, view, null)
       return { rendered: true }
     }
