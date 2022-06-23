@@ -93,7 +93,6 @@
       "prettier --write"
     ]
   },
-  "//": "TODO validator is pinned for CVE-2021-3765; remove when fixed upstream",
   "dependencies": {
     "@ministryofjustice/frontend": "1.4.2",
     "@sentry/node": "^7.1.1",
@@ -135,8 +134,7 @@
     "redis": "^4.1.0",
     "superagent": "^7.1.6",
     "timezone-support": "^2.0.2",
-    "uuid": "^8.3.2",
-    "validator": "^13.7.0"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@pact-foundation/pact": "^9.17.3",
