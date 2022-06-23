@@ -106,18 +106,26 @@ export default class InterventionProgressPresenter {
       return []
     }
 
-    return this.actionPlanAppointments.map(appointment => {
-      const sessionTableParams = this.sessionTableParams(appointment)
-
-      return {
-        sessionNumber: appointment.sessionNumber,
-        appointmentTime: appointment.appointmentTime
-          ? DateUtils.formattedDateTime(appointment.appointmentTime, { month: 'short', timeCasing: 'capitalized' })
-          : '',
-        tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.tagClass },
-        link: sessionTableParams.link,
-      }
-    })
+    return this.actionPlanAppointments
+      .map((appointment, index, array) => {
+        const isParent =
+          array.indexOf(appointment) === 0 ||
+          (index > 0 && array[index - 1].sessionNumber !== appointment.sessionNumber)
+        const sessionTableParams = this.sessionTableParams(appointment)
+        return {
+          isParent,
+          sessionNumber: appointment.sessionNumber,
+          appointmentTime: appointment.appointmentTime
+            ? DateUtils.formattedDateTime(appointment.appointmentTime, { month: 'short', timeCasing: 'capitalized' })
+            : '',
+          tagArgs: { text: sessionTableParams.text, classes: sessionTableParams.tagClass },
+          link: sessionTableParams.link,
+        }
+      })
+      .sort((a, b) => {
+        return a.sessionNumber - b.sessionNumber
+      })
+      .filter(x => x.isParent || (!x.isParent && x.tagArgs.text === 'did not attend'))
   }
 
   readonly hrefBackLink = this.dashboardOriginPage || '/probation-practioner/dashboard'
@@ -137,7 +145,7 @@ export default class InterventionProgressPresenter {
           tagClass: presenter.tagClass,
           link: {
             text: 'View feedback form',
-            href: `/probation-practitioner/referrals/${this.referral.id}/appointment/${appointment.sessionNumber}/post-session-feedback`,
+            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.id}/post-session-feedback`,
           },
         }
       case SessionStatus.completed:
@@ -146,7 +154,7 @@ export default class InterventionProgressPresenter {
           tagClass: presenter.tagClass,
           link: {
             text: 'View feedback form',
-            href: `/probation-practitioner/referrals/${this.referral.id}/appointment/${appointment.sessionNumber}/post-session-feedback`,
+            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.id}/post-session-feedback`,
           },
         }
       case SessionStatus.awaitingFeedback:

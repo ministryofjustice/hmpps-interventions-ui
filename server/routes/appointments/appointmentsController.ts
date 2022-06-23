@@ -1041,7 +1041,7 @@ export default class AppointmentsController {
     userType: 'service-provider' | 'probation-practitioner'
   ): Promise<void> {
     const { accessToken } = res.locals.user.token
-    const { sessionNumber, actionPlanId } = req.params
+    const { sessionNumber, actionPlanId, appointmentId } = req.params
     let { referralId } = req.params
 
     // SP journey doesn't pass a referralId
@@ -1064,11 +1064,19 @@ export default class AppointmentsController {
       referral.actionPlanId,
       Number(sessionNumber)
     )
+
+    const appointmentToReturn = {
+      sessionNumber: currentAppointment.sessionNumber,
+      id: appointmentId,
+      oldAppointments: [],
+      ...(currentAppointment.oldAppointments?.filter(x => x.id && x.id === appointmentId)[0] ?? currentAppointment),
+    } as ActionPlanAppointment
+
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     const presenter = new SubmittedFeedbackPresenter(
-      currentAppointment,
-      await this.createAppointmentSummary(accessToken, currentAppointment, referral),
+      appointmentToReturn,
+      await this.createAppointmentSummary(accessToken, appointmentToReturn, referral),
       serviceUser,
       userType,
       referral.id
@@ -1219,6 +1227,7 @@ export default class AppointmentsController {
           submitted: false,
           submittedBy: null,
         },
+
         sessionNumber: Number(sessionNumber),
         ...appointmentSchedulingDetails,
       }

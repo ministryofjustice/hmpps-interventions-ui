@@ -1,62 +1,93 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
-
 {% extends "../partials/referralNavigationTemplate.njk" %}
-
 {% set pageTitle = "Referral" %}
 {% set pageSubTitle = "Progress" %}
-
 {% block referralPageSection %}
-
-  {% if presenter.referralAssigned %}
-    <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.assignedCaseworkerFullName }}</strong> (<a href="mailto:{{ presenter.assignedCaseworkerEmail }}">{{ presenter.assignedCaseworkerEmail }}</a>).</p>
-  {% endif %}
-
-  <h2 class="govuk-heading-m">Supplier assessment appointment</h2>
-
-  <p class="govuk-body">
+{% if presenter.referralAssigned %}
+<p class="govuk-body">This intervention is assigned to <strong>{{ presenter.assignedCaseworkerFullName }}</strong> (<a href="mailto:{{ presenter.assignedCaseworkerEmail }}">{{ presenter.assignedCaseworkerEmail }}</a>).</p>
+{% endif %}
+<h2 class="govuk-heading-m">Supplier assessment appointment</h2>
+<p class="govuk-body">
   {{ presenter.supplierAssessmentMessage }}
-  </p>
-
-  {% if supplierAssessmentSummaryListArgs(govukTag) !== null %}
-    {{ govukSummaryList(supplierAssessmentSummaryListArgs(govukTag)) }}
-  {% endif %}
-
-  <h2 class="govuk-heading-m">Action plan</h2>
-  <p class="govuk-body">
-    This is the action plan created by the service provider. When they submit changes, you'll need to review them and decide if you want to approve.
-  </p>
-
-  {{ govukTable(actionPlanTableArgs(govukTag)) }}
-
-  <h2 class="govuk-heading-m">Intervention sessions</h2>
-  <p class="govuk-body">
-    These show the progress of each intervention session.
-  </p>
-
-  {% if presenter.hasSessions %}
-    {{ govukTable(sessionTableArgs(govukTag)) }}
-  {% else %}
-    <p class="govuk-body">
-      Sessions will appear here when the action plan is approved.
-    </p>
-
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-  {% endif %}
-
-  <h2 class="govuk-heading-m">End of service report</h2>
-  {% if presenter.hasEndOfServiceReport %}
-    <p>This is the end of service report created by the service provider.</p>
-
-    {{ govukTable(endOfServiceReportTableArgs(govukTag)) }}
-  {% else %}
-    <p>Below you will be able to find the end of service report created by the service provider. Once submitted, you will be able to read and download it.</p>
-  {% endif %}
-
-  {% if presenter.canCancelReferral %}
-    <a href='{{ presenter.referralCancellationHref }}'>Cancel this referral</a>
-  {% elseif presenter.referralEndRequested %}
-    <p class="govuk-body">{{ presenter.referralEndRequestedText }}</p>
-  {% endif %}
+</p>
+{% if supplierAssessmentSummaryListArgs(govukTag) !== null %}
+{{ govukSummaryList(supplierAssessmentSummaryListArgs(govukTag)) }}
+{% endif %}
+<h2 class="govuk-heading-m">Action plan</h2>
+<p class="govuk-body">
+  This is the action plan created by the service provider. When they submit changes, you'll need to review them and decide if you want to approve.
+</p>
+{{ govukTable(actionPlanTableArgs(govukTag)) }}
+<h2 class="govuk-heading-m">Intervention sessions</h2>
+<p class="govuk-body">
+  These show the progress of each intervention session.
+</p>
+{% if presenter.hasSessions %}
+<table class="govuk-table" data-cy="session-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      {% for row in presenter.sessionTableHeaders %}
+      <th scope="col" class="govuk-table__header">{{row}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for row in presenter.sessionTableRows %} 
+    {% if row.isParent %}  
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">Session {{row.sessionNumber}} </td>
+      <td class="govuk-table__cell">{{row.appointmentTime}}</td>
+      <td class="govuk-table__cell">{{govukTag({ text: row.tagArgs.text, classes: row.tagArgs.classes })}} </td>
+      <td class="govuk-table__cell">
+        <span class="govuk-table__cell">
+        <a class="govuk-link" href="{{row.link.href}}">{{row.link.text}}</a><br/>
+        </span>
+      </td>
+      {% if loop.index0 < presenter.sessionTableRows.length  and not presenter.sessionTableRows[loop.index0+1].isParent and presenter.sessionTableRows[loop.index0+1] is defined %}
+    <tr rowspan="2">
+      <td colspan="4">
+        <details class="govuk-details" data-module="govuk-details">
+          <summary class="govuk-details__summary govuk-!-margin-bottom-3 govuk-!-margin-top-2">
+            <span class="govuk-details__summary-text">Previous appointments</span>
+          </summary>
+          {% endif %}
+          {% endif %}
+          {% if not row.isParent %}
+          <div class="govuk-!-margin-bottom-1 govuk-!-margin-left-5 govuk-template govuk-!-padding-bottom-2 govuk-!-padding-top-2 govuk-!-padding-left-1">
+            <span class="govuk-table__cell">Session {{row.sessionNumber}} </span>
+            <span class="govuk-table__cell">{{row.appointmentTime}}</span>
+            <span class="govuk-table__cell">{{govukTag({ text: row.tagArgs.text, classes: row.tagArgs.classes })}} </span>
+            <span class="govuk-table__cell">
+            <a class="govuk-link" href="{{row.link.href}}">{{row.link.text}}</a><br/>
+            </span>
+          </div>
+          {% endif %}
+          {% if loop.index0 <presenter.sessionTableRows.length and row.sessionNumber!=presenter.sessionTableRows[loop.index0+1].sessionNumber%}
+        </details>
+      </td>
+    </tr>
+    {% endif %}
+    {%- endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="govuk-body">
+  Sessions will appear here when the action plan is approved.
+</p>
+<hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+{% endif %}
+<h2 class="govuk-heading-m">End of service report</h2>
+{% if presenter.hasEndOfServiceReport %}
+<p>This is the end of service report created by the service provider.</p>
+{{ govukTable(endOfServiceReportTableArgs(govukTag)) }}
+{% else %}
+<p>Below you will be able to find the end of service report created by the service provider. Once submitted, you will be able to read and download it.</p>
+{% endif %}
+{% if presenter.canCancelReferral %}
+<a href='{{ presenter.referralCancellationHref }}'>Cancel this referral</a>
+{% elseif presenter.referralEndRequested %}
+<p class="govuk-body">{{ presenter.referralEndRequestedText }}</p>
+{% endif %}
 {% endblock %}

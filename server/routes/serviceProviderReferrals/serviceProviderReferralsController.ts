@@ -304,10 +304,24 @@ export default class ServiceProviderReferralsController {
       ActionPlanUtils.getLatestApprovedActionPlanSummary(approvedActionPlanSummaries)
     let actionPlanAppointments: ActionPlanAppointment[] = []
     if (latestApprovedActionPlanSummary !== null) {
-      actionPlanAppointments = await this.interventionsService.getActionPlanAppointments(
-        accessToken,
-        latestApprovedActionPlanSummary.id
-      )
+      actionPlanAppointments = await this.interventionsService
+        .getActionPlanAppointments(accessToken, latestApprovedActionPlanSummary.id)
+        .then(actionPlanAppointmentsReturned => {
+          return actionPlanAppointmentsReturned.flatMap(x => {
+            return [
+              x,
+              ...(x.oldAppointments
+                ? x.oldAppointments!.map(y => {
+                    const actionPlanAppointment: ActionPlanAppointment = {
+                      sessionNumber: x.sessionNumber,
+                      ...y,
+                    }
+                    return actionPlanAppointment
+                  })
+                : []),
+            ]
+          })
+        })
     }
 
     const assignee =

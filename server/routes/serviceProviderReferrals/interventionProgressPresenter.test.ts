@@ -137,6 +137,7 @@ describe(InterventionProgressPresenter, () => {
         expect(presenter.sessionTableRows).toEqual([
           {
             sessionNumber: 1,
+            isParent: true,
             appointmentTime: '',
             statusPresenter: new SessionStatusPresenter(SessionStatus.notScheduled),
             links: [
@@ -174,6 +175,7 @@ describe(InterventionProgressPresenter, () => {
           {
             sessionNumber: 1,
             appointmentTime: 'Midday on 7 Dec 2020',
+            isParent: true,
             statusPresenter: new SessionStatusPresenter(SessionStatus.scheduled),
             links: [
               {
@@ -202,8 +204,8 @@ describe(InterventionProgressPresenter, () => {
             actionPlan,
             [],
             [
-              actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1 }),
-              actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2 }),
+              actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1, id: '1' }),
+              actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2, id: '2' }),
             ],
             supplierAssessmentFactory.build(),
             null
@@ -213,21 +215,55 @@ describe(InterventionProgressPresenter, () => {
             {
               sessionNumber: 1,
               appointmentTime: '',
+              isParent: true,
               statusPresenter: new SessionStatusPresenter(SessionStatus.completed),
               links: [
                 {
-                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
+                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/session/1/appointment/1/post-session-feedback',
                   text: 'View feedback form',
                 },
               ],
             },
             {
               sessionNumber: 2,
+              isParent: true,
               appointmentTime: '',
               statusPresenter: new SessionStatusPresenter(SessionStatus.completed),
               links: [
                 {
-                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/2/post-session-feedback',
+                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/session/2/appointment/2/post-session-feedback',
+                  text: 'View feedback form',
+                },
+              ],
+            },
+          ])
+        })
+        it('populates the table with the "completed" status against that session and a link to view it with children', () => {
+          const referral = sentReferralFactory.build()
+          const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
+          const intervention = interventionFactory.build()
+          const presenter = new InterventionProgressPresenter(
+            referral,
+            intervention,
+            actionPlan,
+            [],
+            [
+              actionPlanAppointmentFactory.attended('yes').build({ id: '1', sessionNumber: 1 }),
+              actionPlanAppointmentFactory.attended('late').build({ id: '2', sessionNumber: 1 }),
+            ],
+            supplierAssessmentFactory.build(),
+            null
+          )
+
+          expect(presenter.sessionTableRows).toEqual([
+            {
+              sessionNumber: 1,
+              appointmentTime: '',
+              isParent: true,
+              statusPresenter: new SessionStatusPresenter(SessionStatus.completed),
+              links: [
+                {
+                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/session/1/appointment/1/post-session-feedback',
                   text: 'View feedback form',
                 },
               ],
@@ -246,7 +282,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             actionPlan,
             [],
-            [actionPlanAppointmentFactory.attended('no').build()],
+            [actionPlanAppointmentFactory.attended('no').build({ id: '1' })],
             supplierAssessmentFactory.build(),
             null
           )
@@ -255,11 +291,16 @@ describe(InterventionProgressPresenter, () => {
             {
               sessionNumber: 1,
               appointmentTime: '',
+              isParent: true,
               statusPresenter: new SessionStatusPresenter(SessionStatus.didNotAttend),
               links: [
                 {
-                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback',
+                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/session/1/appointment/1/post-session-feedback',
                   text: 'View feedback form',
+                },
+                {
+                  href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit/start',
+                  text: 'Reschedule session',
                 },
               ],
             },

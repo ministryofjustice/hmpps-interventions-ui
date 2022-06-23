@@ -25,6 +25,8 @@ import supplementaryRiskInformationFactory from '../../../testutils/factories/su
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
+import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
+import approvedActionPlanSummary from '../../../testutils/factories/approvedActionPlanSummary'
 import SentReferral from '../../models/sentReferral'
 import DeliusUser from '../../models/delius/deliusUser'
 import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
@@ -41,6 +43,8 @@ import pageFactory from '../../../testutils/factories/page'
 import { Page } from '../../models/pagination'
 import UserDataService from '../../services/userDataService'
 import SentReferralSummaries from '../../models/sentReferralSummaries'
+import { ActionPlanAppointment } from '../../models/appointment'
+import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -617,6 +621,212 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Session progress')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/progress', () => {
+  it('displays information about the intervention progress with Action plan appointment not attended', async () => {
+    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const hmppsAuthUser = hmppsAuthUserFactory.build({
+      firstName: 'caseWorkerFirstName',
+      lastName: 'caseWorkerLastName',
+    })
+    const actionPlan = actionPlanFactory.build()
+    const sentReferral = sentReferralFactory.assigned().build({
+      referral: { interventionId: intervention.id },
+      assignedTo: hmppsAuthUser,
+      actionPlanId: actionPlan.id,
+    })
+    const appointment = actionPlanAppointmentFactory
+      .attended('no')
+      .scheduled()
+      .build({
+        appointmentTime: `${new Date().toDateString()} ${new Date().getHours()}:${new Date().getMinutes()}`,
+        durationInMinutes: 1,
+        sessionType: 'ONE_TO_ONE',
+        appointmentDeliveryType: 'PHONE_CALL',
+        appointmentDeliveryAddress: null,
+      })
+    const approvedSummary = approvedActionPlanSummary.build()
+    const approvedSummaries: ApprovedActionPlanSummary[] = [approvedSummary]
+    const actionPlanAppointments: ActionPlanAppointment[] = [appointment]
+
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedSummaries)
+    interventionsService.getActionPlanAppointments.mockResolvedValue(actionPlanAppointments)
+    interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+
+    await request(app)
+      .get(`/service-provider/referrals/${sentReferral.id}/progress`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Session progress')
+        expect(res.text).toContain('Reschedule session')
+        expect(res.text).not.toContain('Previous appointments')
+      })
+  })
+})
+
+describe('GET /service-provider/referrals/:id/progress', () => {
+  it('displays information about the intervention progress with Action plan appointment not attended with same session number', async () => {
+    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const hmppsAuthUser = hmppsAuthUserFactory.build({
+      firstName: 'caseWorkerFirstName',
+      lastName: 'caseWorkerLastName',
+    })
+    const actionPlan = actionPlanFactory.build()
+    const sentReferral = sentReferralFactory.assigned().build({
+      referral: { interventionId: intervention.id },
+      assignedTo: hmppsAuthUser,
+      actionPlanId: actionPlan.id,
+    })
+    const appointment = actionPlanAppointmentFactory.scheduled().build({
+      sessionNumber: 1,
+      appointmentTime: `Thu Jun 18 2022 17:20`,
+      durationInMinutes: 1,
+      sessionType: 'ONE_TO_ONE',
+      appointmentDeliveryType: 'PHONE_CALL',
+      appointmentDeliveryAddress: null,
+      oldAppointments: [
+        actionPlanAppointmentFactory.attended('no').build({
+          sessionNumber: 1,
+          appointmentTime: `Thu Jun 17 2022 17:20`,
+          durationInMinutes: 1,
+          sessionType: 'ONE_TO_ONE',
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+        }),
+        actionPlanAppointmentFactory.attended('no').build({
+          sessionNumber: 1,
+          appointmentTime: `Thu Jun 16 2022 17:20`,
+          durationInMinutes: 1,
+          sessionType: 'ONE_TO_ONE',
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+        }),
+      ],
+    })
+
+    const appointmentDuplicate3 = actionPlanAppointmentFactory.scheduled().build({
+      sessionNumber: 2,
+      appointmentTime: `Thu Jun 19 2022 17:20`,
+      durationInMinutes: 1,
+      sessionType: 'ONE_TO_ONE',
+      appointmentDeliveryType: 'PHONE_CALL',
+      appointmentDeliveryAddress: null,
+      oldAppointments: [
+        actionPlanAppointmentFactory.attended('no').build({
+          sessionNumber: 2,
+          appointmentTime: `Thu Jun 20 2022 17:20`,
+          durationInMinutes: 1,
+          sessionType: 'ONE_TO_ONE',
+          appointmentDeliveryType: 'PHONE_CALL',
+          appointmentDeliveryAddress: null,
+        }),
+      ],
+    })
+
+    const appointmentDuplicate5 = actionPlanAppointmentFactory.scheduled().build({
+      sessionNumber: 3,
+      appointmentTime: `Thu Jun 20 2022 17:20`,
+      durationInMinutes: 1,
+      sessionType: 'ONE_TO_ONE',
+      appointmentDeliveryType: 'PHONE_CALL',
+      appointmentDeliveryAddress: null,
+    })
+    const approvedSummary = approvedActionPlanSummary.build()
+    const approvedSummaries: ApprovedActionPlanSummary[] = [approvedSummary]
+    const actionPlanAppointments: ActionPlanAppointment[] = [appointment, appointmentDuplicate3, appointmentDuplicate5]
+
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedSummaries)
+    interventionsService.getActionPlanAppointments.mockResolvedValue(actionPlanAppointments)
+    interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+
+    await request(app)
+      .get(`/service-provider/referrals/${sentReferral.id}/progress`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Session progress')
+        expect(res.text).toContain('Reschedule session')
+        expect(res.text).toContain(`17 Jun 2022`)
+        expect(res.text).toContain(`18 Jun 2022`)
+        expect(res.text).toContain(`19 Jun 2022`)
+        expect(res.text).toContain(`20 Jun 2022`)
+        expect(res.text).toContain('did not attend')
+        expect(res.text).toContain('scheduled')
+      })
+  })
+  it('does not show previous appointments drop down when no children available', async () => {
+    const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
+    const deliusServiceUser = deliusServiceUserFactory.build()
+    const hmppsAuthUser = hmppsAuthUserFactory.build({
+      firstName: 'caseWorkerFirstName',
+      lastName: 'caseWorkerLastName',
+    })
+    const actionPlan = actionPlanFactory.build()
+    const sentReferral = sentReferralFactory.assigned().build({
+      referral: { interventionId: intervention.id },
+      assignedTo: hmppsAuthUser,
+      actionPlanId: actionPlan.id,
+    })
+    const appointment = actionPlanAppointmentFactory.scheduled().build({
+      sessionNumber: 1,
+      appointmentTime: `Thu Jun 18 2022 17:20`,
+      durationInMinutes: 1,
+      sessionType: 'ONE_TO_ONE',
+      appointmentDeliveryType: 'PHONE_CALL',
+      appointmentDeliveryAddress: null,
+      oldAppointments: [],
+    })
+
+    const appointmentDuplicate3 = actionPlanAppointmentFactory.scheduled().build({
+      sessionNumber: 2,
+      appointmentTime: `Thu Jun 19 2022 17:20`,
+      durationInMinutes: 1,
+      sessionType: 'ONE_TO_ONE',
+      appointmentDeliveryType: 'PHONE_CALL',
+      appointmentDeliveryAddress: null,
+      oldAppointments: [],
+    })
+
+    const appointmentDuplicate5 = actionPlanAppointmentFactory.scheduled().build({
+      sessionNumber: 3,
+      appointmentTime: `Thu Jun 20 2022 17:20`,
+      durationInMinutes: 1,
+      sessionType: 'ONE_TO_ONE',
+      appointmentDeliveryType: 'PHONE_CALL',
+      appointmentDeliveryAddress: null,
+    })
+    const approvedSummary = approvedActionPlanSummary.build()
+    const approvedSummaries: ApprovedActionPlanSummary[] = [approvedSummary]
+    const actionPlanAppointments: ActionPlanAppointment[] = [appointment, appointmentDuplicate3, appointmentDuplicate5]
+
+    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedSummaries)
+    interventionsService.getActionPlanAppointments.mockResolvedValue(actionPlanAppointments)
+    interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+
+    await request(app)
+      .get(`/service-provider/referrals/${sentReferral.id}/progress`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).not.toContain('Previous appointments')
       })
   })
 })
