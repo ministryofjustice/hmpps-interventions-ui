@@ -173,7 +173,7 @@
     "husky": "^8.0.1",
     "jest": "^27.5.1",
     "jest-html-reporter": "^3.5.0",
-    "jest-junit": "^13.2.0",
+    "jest-junit": "^14.0.0",
     "jest-pact": "^0.9.4",
     "jsonwebtoken": "^8.5.1",
     "lint-staged": "^13.0.3",
