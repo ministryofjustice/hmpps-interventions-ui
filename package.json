@@ -132,7 +132,7 @@
     "passport": "^0.5.3",
     "passport-oauth2": "^1.6.1",
     "redis": "^4.1.0",
-    "superagent": "^7.1.6",
+    "superagent": "^8.0.0",
     "timezone-support": "^2.0.2",
     "uuid": "^8.3.2"
   },
