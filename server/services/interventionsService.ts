@@ -84,6 +84,7 @@ export interface GetSentReferralsFilterParams {
   cancelled?: boolean
   unassigned?: boolean
   assignedTo?: string
+  search?: string
 }
 
 export enum SPDashboardType {
@@ -290,6 +291,20 @@ export default class InterventionsService {
     return (await restClient.get({
       path: `/sent-referrals/summary/service-provider`,
       query,
+      headers: { Accept: 'application/json' },
+    })) as ServiceProviderSentReferralSummary[]
+  }
+
+  async getServiceProviderSentReferralsSummaryForUserTokenWithSearchText(
+    token: string,
+    searchText: string,
+    dashboardType?: SPDashboardType
+  ): Promise<ServiceProviderSentReferralSummary[]> {
+    const restClient = this.createRestClient(token)
+    const query = dashboardType ? { dashboardType } : undefined
+    return (await restClient.get({
+      path: `/sent-referrals/summaries`,
+      query: { ...query, searchText },
       headers: { Accept: 'application/json' },
     })) as ServiceProviderSentReferralSummary[]
   }

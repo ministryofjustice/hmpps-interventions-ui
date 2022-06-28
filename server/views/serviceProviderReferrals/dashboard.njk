@@ -1,6 +1,9 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -13,14 +16,62 @@
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
 
-        {{ mojSubNavigation(subNavArgs) }}
-        {% include "../partials/pagination.njk" %}
+      {{ mojSubNavigation(subNavArgs) }}
+
+      {% if presenter.dashboardType === 'All open cases' %}
+        <div class="govuk-grid-row govuk-template">
+          <form action="{{presenter.hrefSearchText}}" method="get">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+            {{ govukInput(subjectInputArgs) }}
+
+            <div class="govuk-button-group govuk-!-margin-left-9">
+              {{ govukButton({ text: "Search", name: "searchButtonAllOpenCases", preventDoubleClick: true}) }}
+              <a class="govuk-link" data-ga-action="click" data-ga-value="1" href={{ clearHref }}>Clear</a>
+            </div>
+          </form>
+        </div>
+
+        <div class="govuk-!-margin-top-8 govuk-!-margin-bottom-7">
+          {% include "../partials/pagination.njk" %}
+        </div>
+        
+        {% if presenter.SearchText == '' %}
+          <div class="govuk-width-container govuk-!-margin-left-7">
+            <h2 class="govuk-heading-m govuk-!-margin-top-7">You have not entered any search terms</h2>
+            <div class="govuk-list--bullet govuk-!-margin-bottom-5">
+              <li class="govuk-body govuk-!-margin-bottom-0">Enter the full name of the person on probation</li>
+            </div>
+          </div>
+        {% elif tableArgs.rows.length <1 and presenter.SearchText !== '' %}
+          <div class="govuk-width-container govuk-!-margin-left-7">
+              <h2 class="govuk-heading-m govuk-!-margin-top-7"> There are no results for "{{presenter.SearchText | escape }}"</h2>
+                <div class="govuk-list--bullet govuk-!-margin-bottom-5">
+                  <li class="govuk-body govuk-!-margin-bottom-0">Check the Spelling</li>
+                  <li class="govuk-body govuk-!-margin-bottom-0">Make sure that you have entered their full name or how it appears in open cases</li>
+                </div>
+              <p>If the referral has finished or was cancelled, look in <a href="/service-provider/dashboard/completed-cases"> Completed Cases </a>. </p>
+              <p>If you think referral is missing from cases, <a href="/report-a-problem"> raise a support ticket </a>. </p>
+          </div>
+        {% else %}
+          {{ govukTable(tableArgs) }}
+        {% endif %}
+
+      {% endif %}
+
+      <hr class="govuk-section-break govuk-section-break--m">
+
+      {% if presenter.dashboardType !== 'All open cases'%}
         <hr class="govuk-section-break govuk-section-break--m">
         {{ govukTable(tableArgs) }}
+      {% endif %}
 
-      <script src="/assets/mojServerSideSortableTable.js">
-      </script>
+      <script src="/assets/mojSortableTable.js"></script>
     </div>
   </div>
   {% include "../partials/pagination.njk" %}
 {% endblock %}
+
+
+
+
