@@ -6,7 +6,7 @@
 
 - nvm (optional)
 - Node.js >= 14
-- npm >= 7.5
+- npm >= 7.5 (`npm i -g npm` to update)
 - Docker
 - git lfs (`brew install git-lfs`)
 
@@ -20,13 +20,14 @@ npm install
 
 ### Initial setup part 2 (If using Apple M1 chipset)
 
-```
 Pull down following repositories:
 hmpps-assess-risks-and-needs, community-api, hmpps-auth, and offender-assessments-api
 
 Go into each folder of downloaded repo's and run following command in each:
+```
 docker buildx build --platform linux/arm64 --load --tag quay.io/hmpps/REPLACE-ME-WITH-REPO-NAME:latest .
 ```
+### Update hosts 
 
 You'll also need to add the following line to your `/etc/hosts` file:
 
@@ -37,8 +38,7 @@ You'll also need to add the following line to your `/etc/hosts` file:
 ### Running the app
 
 ```
-If not using Apple chipset use: 'bin/start-dependencies'
-If using Apple chipset use: 'docker-compose up -d'
+./bin/start-dependencies
 
 npm run start:dev
 ```
@@ -139,6 +139,22 @@ features: {
 ```
 
 You can then set whether the feature should be enabled in the config for each environment in the respective `helm_deploy/values-[ENVIRONMENT].yaml` file.
+
+### Environment Variables
+
+The project uses [dotenv](https://github.com/motdotla/dotenv#readme) so if you create a `.env` file in the project root you can setup all environment variables you need, including switching feature flags on or off.  See the `helm_deploy/values-[ENVIRONMENT].yaml` files for what env variables are currently set for each enviornment.
+This file is listed in `.gitignore` so your version won't get included in any changes you make.
+
+Example `.env` file
+
+```
+FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS=true
+SP_PERCENTAGE_OF_DASHBOARD_PAGINATION_USERS=100
+SP_MY_CASES_PAGE_SIZE=10
+SP_OPEN_CASES_PAGE_SIZE=10
+SP_UNASSIGNED_CASES_PAGE_SIZE=10
+SP_COMPLETED_PAGE_SIZE=10
+```
 
 ## Dependencies
 
