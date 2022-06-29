@@ -60,8 +60,10 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
     appointmentsController.viewLegacySubmittedPostSessionFeedbackAsProbationPractitioner(req, res)
   )
-  get(router, '/referrals/:referralId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
-    appointmentsController.viewSubmittedPostSessionFeedback(req, res, 'probation-practitioner')
+  get(
+    router,
+    '/referrals/:referralId/session/:sessionNumber/appointment/:appointmentId/post-session-feedback',
+    (req, res) => appointmentsController.viewSubmittedPostSessionFeedback(req, res, 'probation-practitioner')
   )
   get(router, '/action-plan/:actionPlanId', (req, res) =>
     probationPractitionerReferralsController.viewActionPlanById(req, res)

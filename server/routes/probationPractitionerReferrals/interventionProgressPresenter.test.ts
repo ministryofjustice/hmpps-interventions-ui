@@ -42,6 +42,7 @@ describe(InterventionProgressPresenter, () => {
         )
         expect(presenter.sessionTableRows).toEqual([
           {
+            isParent: true,
             sessionNumber: 1,
             appointmentTime: '',
             tagArgs: {
@@ -65,6 +66,13 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [
               actionPlanAppointmentFactory.build({
+                id: '1',
+                sessionNumber: 1,
+                appointmentTime: '3020-12-07T12:00:00.000000Z',
+                durationInMinutes: 120,
+              }),
+              actionPlanAppointmentFactory.attended('no').build({
+                id: '2',
                 sessionNumber: 1,
                 appointmentTime: '3020-12-07T12:00:00.000000Z',
                 durationInMinutes: 120,
@@ -77,13 +85,27 @@ describe(InterventionProgressPresenter, () => {
           )
           expect(presenter.sessionTableRows).toEqual([
             {
+              isParent: true,
               sessionNumber: 1,
               appointmentTime: 'Midday on 7 Dec 3020',
+              link: null,
               tagArgs: {
                 text: 'scheduled',
                 classes: 'govuk-tag--blue',
               },
-              link: null,
+            },
+            {
+              isParent: false,
+              sessionNumber: 1,
+              appointmentTime: 'Midday on 7 Dec 3020',
+              tagArgs: {
+                text: 'did not attend',
+                classes: 'govuk-tag--purple',
+              },
+              link: {
+                href: '/probation-practitioner/referrals/3/session/1/appointment/2/post-session-feedback',
+                text: 'View feedback form',
+              },
             },
           ])
         })
@@ -111,6 +133,7 @@ describe(InterventionProgressPresenter, () => {
           )
           expect(presenter.sessionTableRows).toEqual([
             {
+              isParent: true,
               sessionNumber: 1,
               appointmentTime: '1:00pm on 7 Dec 1920',
               tagArgs: {
@@ -134,8 +157,8 @@ describe(InterventionProgressPresenter, () => {
             referral,
             intervention,
             [
-              actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1 }),
-              actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2 }),
+              actionPlanAppointmentFactory.attended('yes').build({ id: '1', sessionNumber: 1 }),
+              actionPlanAppointmentFactory.attended('late').build({ id: '2', sessionNumber: 2 }),
             ],
             null,
             [],
@@ -144,6 +167,7 @@ describe(InterventionProgressPresenter, () => {
           )
           expect(presenter.sessionTableRows).toEqual([
             {
+              isParent: true,
               sessionNumber: 1,
               appointmentTime: '',
               tagArgs: {
@@ -151,11 +175,12 @@ describe(InterventionProgressPresenter, () => {
                 classes: 'govuk-tag--green',
               },
               link: {
-                href: `/probation-practitioner/referrals/${referral.id}/appointment/1/post-session-feedback`,
+                href: `/probation-practitioner/referrals/${referral.id}/session/1/appointment/1/post-session-feedback`,
                 text: 'View feedback form',
               },
             },
             {
+              isParent: true,
               sessionNumber: 2,
               appointmentTime: '',
               tagArgs: {
@@ -163,7 +188,7 @@ describe(InterventionProgressPresenter, () => {
                 classes: 'govuk-tag--green',
               },
               link: {
-                href: `/probation-practitioner/referrals/${referral.id}/appointment/2/post-session-feedback`,
+                href: `/probation-practitioner/referrals/${referral.id}/session/2/appointment/2/post-session-feedback`,
                 text: 'View feedback form',
               },
             },
@@ -179,7 +204,7 @@ describe(InterventionProgressPresenter, () => {
           const presenter = new InterventionProgressPresenter(
             referral,
             intervention,
-            [actionPlanAppointmentFactory.attended('no').build()],
+            [actionPlanAppointmentFactory.attended('no').build({ id: '1' })],
             null,
             [],
             supplierAssessment,
@@ -187,6 +212,7 @@ describe(InterventionProgressPresenter, () => {
           )
           expect(presenter.sessionTableRows).toEqual([
             {
+              isParent: true,
               sessionNumber: 1,
               appointmentTime: '',
               tagArgs: {
@@ -194,7 +220,7 @@ describe(InterventionProgressPresenter, () => {
                 classes: 'govuk-tag--purple',
               },
               link: {
-                href: `/probation-practitioner/referrals/${referral.id}/appointment/1/post-session-feedback`,
+                href: `/probation-practitioner/referrals/${referral.id}/session/1/appointment/1/post-session-feedback`,
                 text: 'View feedback form',
               },
             },

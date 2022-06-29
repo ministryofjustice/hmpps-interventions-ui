@@ -20,6 +20,7 @@ interface EndedFields {
 }
 
 interface ProgressSessionTableRow {
+  isParent?: boolean
   sessionNumber: number
   appointmentTime: string
   statusPresenter: SessionStatusPresenter
@@ -112,10 +113,14 @@ export default class InterventionProgressPresenter {
     }
 
     return this.actionPlanAppointments
-      .map(appointment => {
-        const sessionTableParams = this.sessionTableParams(appointment)
+      .map((appointment, index, array) => {
+        const isDifferentSessionNumberFromPrevious =
+          index > 0 && array[index - 1].sessionNumber !== appointment.sessionNumber
+        const isParent = array.indexOf(appointment) === 0 || isDifferentSessionNumberFromPrevious
+        const sessionTableParams = this.sessionTableParams(appointment, isParent)
 
         return {
+          isParent,
           sessionNumber: appointment.sessionNumber,
           appointmentTime: appointment.appointmentTime
             ? DateUtils.formattedDateTime(appointment.appointmentTime, { month: 'short', timeCasing: 'capitalized' })
@@ -123,19 +128,25 @@ export default class InterventionProgressPresenter {
           ...sessionTableParams,
         }
       })
-      .sort((a, b) => a.sessionNumber - b.sessionNumber)
+      .sort((a, b) => {
+        return a.sessionNumber - b.sessionNumber
+      })
+      .filter(x => x.isParent || (!x.isParent && x.statusPresenter.text === 'did not attend'))
   }
 
-  private sessionTableParams(appointment: ActionPlanAppointment): {
+  private sessionTableParams(
+    appointment: ActionPlanAppointment,
+    isParent: boolean
+  ): {
     statusPresenter: SessionStatusPresenter
     links: { text: string; href: string }[]
   } {
     const status = sessionStatus.forAppointment(appointment)
     const presenter = new SessionStatusPresenter(status)
 
-    const viewHref = `/service-provider/action-plan/${this.actionPlan!.id}/appointment/${
+    const viewHref = `/service-provider/action-plan/${this.actionPlan!.id}/session/${
       appointment.sessionNumber
-    }/post-session-feedback`
+    }/appointment/${appointment.id}/post-session-feedback`
     const editHref = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${
       appointment.sessionNumber
     }/edit/start`
@@ -145,12 +156,26 @@ export default class InterventionProgressPresenter {
 
     switch (status) {
       case SessionStatus.didNotAttend:
-        links = [
-          {
-            text: 'View feedback form',
-            href: viewHref,
-          },
-        ]
+        if (isParent) {
+          links = [
+            {
+              text: 'View feedback form',
+              href: viewHref,
+            },
+            {
+              text: 'Reschedule session',
+              href: editHref,
+            },
+          ]
+        } else {
+          links = [
+            {
+              text: 'View feedback form',
+              href: viewHref,
+            },
+          ]
+        }
+
         break
       case SessionStatus.completed:
         links = [
@@ -182,7 +207,6 @@ export default class InterventionProgressPresenter {
         ]
         break
     }
-
     return { statusPresenter: presenter, links }
   }
 

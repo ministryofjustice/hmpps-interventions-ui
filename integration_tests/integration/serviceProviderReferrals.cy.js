@@ -1404,25 +1404,24 @@ describe('Service provider referrals dashboard', () => {
 
       const updatedAppointments = [appointmentWithSubmittedFeedback, appointments[1]]
       cy.stubGetActionPlanAppointments(actionPlan.id, updatedAppointments)
-
-      cy.contains('Return to service progress').click()
-
+      cy.contains('Return to service progress').click().getTable()
       cy.get('[data-cy=session-table]')
         .getTable()
-        .should('deep.equal', [
-          {
+        .should(result => {
+          expect(result).to.have.length(2)
+          expect(result[0]).to.deep.equal({
             'Session details': 'Session 1',
             'Date and time': '9:02am on 24 Mar 2021',
             Status: 'completed',
             Action: 'View feedback form',
-          },
-          {
+          })
+          expect(result[1]).to.deep.include({
             'Session details': 'Session 2',
             'Date and time': '10:02am on 31 Mar 2021',
             Status: 'scheduled',
-            Action: 'Reschedule sessionGive feedback',
-          },
-        ])
+          })
+          expect(result[1]).to.contains(/^Reschedule session[\n|\t]*Give feedback$/)
+        })
     })
 
     it('user records the Service user as having not attended, and skips behaviour screen', () => {
@@ -1551,20 +1550,136 @@ describe('Service provider referrals dashboard', () => {
 
       cy.get('[data-cy=session-table]')
         .getTable()
-        .should('deep.equal', [
-          {
+        .should(result => {
+          expect(result).to.have.length(2)
+          expect(result[0]).to.deep.contains({
             'Session details': 'Session 1',
             'Date and time': '9:02am on 24 Mar 2021',
             Status: 'did not attend',
-            Action: 'View feedback form',
-          },
-          {
+          })
+          expect(result[0].Action).to.contains('View feedback form')
+          expect(result[1]).to.deep.include({
             'Session details': 'Session 2',
             'Date and time': '10:02am on 31 Mar 2021',
             Status: 'scheduled',
-            Action: 'Reschedule sessionGive feedback',
-          },
-        ])
+          })
+          expect(result[1]).to.contain(/^Reschedule session[\n|\t]*Give feedback$/)
+        })
+    })
+    it('user records the Service user as having not attended, and skips behaviour screen with previous history', () => {
+      const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+      const intervention = interventionFactory.build({
+        contractType: { code: 'ACC', name: 'accommodation' },
+        serviceCategories: [serviceCategory],
+      })
+      const referralParams = {
+        id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
+        referral: { interventionId: intervention.id, serviceCategoryIds: [serviceCategory.id] },
+      }
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      const probationPractitioner = deliusUserFactory.build({
+        firstName: 'John',
+        surname: 'Smith',
+        username: 'john.smith',
+      })
+      const serviceProvider = hmppsAuthUserFactory.build({
+        firstName: 'Case',
+        lastName: 'Worker',
+        username: 'case.worker',
+      })
+      const actionPlan = actionPlanFactory.submitted().build({
+        referralId: referralParams.id,
+        numberOfSessions: 4,
+      })
+
+      const appointments = [
+        actionPlanAppointmentFactory.build({
+          sessionNumber: 1,
+          appointmentTime: '2021-03-24T09:02:02Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+        }),
+        actionPlanAppointmentFactory.attended('no').build({
+          sessionNumber: 1,
+          appointmentTime: '2021-04-23T09:02:02Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+        }),
+        actionPlanAppointmentFactory.attended('no').build({
+          sessionNumber: 1,
+          appointmentTime: '2021-05-23T09:02:02Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+        }),
+
+        actionPlanAppointmentFactory.build({
+          sessionNumber: 2,
+          appointmentTime: '2021-08-31T09:02:02Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+        }),
+        actionPlanAppointmentFactory.attended('no').build({
+          sessionNumber: 2,
+          appointmentTime: '2021-05-31T09:02:02Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+        }),
+        actionPlanAppointmentFactory.build({
+          sessionNumber: 3,
+          appointmentTime: '2021-07-31T09:02:02Z',
+          durationInMinutes: 75,
+          appointmentDeliveryType: 'PHONE_CALL',
+        }),
+      ]
+
+      const assignedReferral = sentReferralFactory.assigned().build({
+        ...referralParams,
+        assignedTo: { username: serviceProvider.username },
+        actionPlanId: actionPlan.id,
+      })
+
+      cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+      cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
+      cy.stubGetIntervention(intervention.id, intervention)
+      cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+      cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
+      cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+      cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
+
+      cy.stubGetActionPlan(actionPlan.id, actionPlan)
+      cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [
+        { id: actionPlan.id, submittedAt: actionPlan.submittedAt, approvedAt: actionPlan.approvedAt },
+      ])
+      cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
+
+      cy.login()
+      cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
+      cy.get('[data-cy=session-table]')
+        .getTable()
+        .should(result => {
+          expect(result).to.have.length(5)
+          expect(result[0]).to.deep.include({
+            'Session details': 'Session 1',
+            'Date and time': '9:02am on 24 Mar 2021',
+            Status: 'scheduled',
+          })
+          expect(result[0]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
+          expect(result[1]).to.contains(/^Previous appointments/gi)
+          expect(result[2]).to.deep.include({
+            'Session details': 'Session 2',
+            'Date and time': '10:02am on 31 Aug 2021',
+            Status: 'scheduled',
+          })
+          expect(result[2]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
+          expect(result[3]).to.contains(/^Previous appointments/gi)
+          expect(result[4]).to.deep.include({
+            'Session details': 'Session 3',
+            'Date and time': '10:02am on 31 Jul 2021',
+            Status: 'scheduled',
+          })
+          expect(result[4]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
+        })
     })
   })
 

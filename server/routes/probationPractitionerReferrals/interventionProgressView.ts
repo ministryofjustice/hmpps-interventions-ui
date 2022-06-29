@@ -38,23 +38,6 @@ export default class InterventionProgressView {
     }
   }
 
-  private sessionTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
-    return {
-      head: this.presenter.sessionTableHeaders.map((header: string) => {
-        return { text: header }
-      }),
-      rows: this.presenter.sessionTableRows.map(row => {
-        return [
-          { text: `Session ${row.sessionNumber}` },
-          { text: `${row.appointmentTime}` },
-          { text: tagMacro(row.tagArgs as TagArgs) },
-          { html: row.link === null ? '' : ViewUtils.linkHtml([row.link]) },
-        ]
-      }),
-      attributes: { 'data-cy': 'session-table' },
-    }
-  }
-
   private endOfServiceReportTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
     return {
       head: this.presenter.endOfServiceReportTableHeaders.map((header: string) => {
@@ -83,7 +66,6 @@ export default class InterventionProgressView {
         backLinkArgs: this.backLinkArgs,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         supplierAssessmentSummaryListArgs: this.supplierAssessmentSummaryListArgs.bind(this),
-        sessionTableArgs: this.sessionTableArgs.bind(this),
         endOfServiceReportTableArgs: this.endOfServiceReportTableArgs.bind(this),
         actionPlanTableArgs: this.actionPlanProgressView.tableArgs.bind(this.actionPlanProgressView),
       },

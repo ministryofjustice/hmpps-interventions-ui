@@ -1923,6 +1923,7 @@ describe('Adding post delivery session feedback', () => {
           const deliusServiceUser = deliusServiceUserFactory.build()
 
           const appointmentWithSubmittedFeedback = actionPlanAppointmentFactory.build({
+            id: '1',
             appointmentTime: '2021-02-01T13:00:00Z',
             durationInMinutes: 60,
             appointmentDeliveryType: 'PHONE_CALL',
@@ -1946,7 +1947,9 @@ describe('Adding post delivery session feedback', () => {
           interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
 
           await request(app)
-            .get(`/service-provider/action-plan/${submittedActionPlan.id}/appointment/1/post-session-feedback`)
+            .get(
+              `/service-provider/action-plan/${submittedActionPlan.id}/session/1/appointment/1/post-session-feedback`
+            )
             .expect(200)
             .expect(res => {
               expect(res.text).toContain('View feedback')
@@ -2003,8 +2006,9 @@ describe('Adding post delivery session feedback', () => {
 
           await request(app)
             .get(
-              `/probation-practitioner/referrals/${referral.id}/appointment/${appointmentWithSubmittedFeedback.sessionNumber}/post-session-feedback`
+              `/probation-practitioner/referrals/${referral.id}/session/${appointmentWithSubmittedFeedback.sessionNumber}/appointment/${appointmentWithSubmittedFeedback.id}/post-session-feedback`
             )
+
             .expect(200)
             .expect(res => {
               expect(res.text).toContain('View feedback')
@@ -2019,7 +2023,7 @@ describe('Adding post delivery session feedback', () => {
       })
 
       // This is left to keep links in old emails still working - we'll monitor the endpoint and remove it when usage drops off.
-      describe('GET /probation-practitioner/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', () => {
+      describe('GET /probation-practitioner/action-plan/:actionPlanId/session/:sessionNumber/appointment/:appointmentId/post-session-feedback', () => {
         it('renders a page displaying feedback answers', async () => {
           const actionPlanId = '05f39e99-b5c7-4a9b-a857-bec04a28eb34'
           const referral = sentReferralFactory
@@ -2031,6 +2035,7 @@ describe('Adding post delivery session feedback', () => {
           const serviceUser = deliusServiceUserFactory.build()
 
           const appointmentWithSubmittedFeedback = actionPlanAppointmentFactory.build({
+            id: '1',
             appointmentTime: '2021-02-01T13:00:00Z',
             durationInMinutes: 60,
             appointmentDeliveryType: 'PHONE_CALL',
@@ -2062,7 +2067,7 @@ describe('Adding post delivery session feedback', () => {
 
           await request(app)
             .get(
-              `/probation-practitioner/action-plan/${actionPlanId}/appointment/${appointmentWithSubmittedFeedback.sessionNumber}/post-session-feedback`
+              `/probation-practitioner/referrals/${referral.id}/session/${appointmentWithSubmittedFeedback.sessionNumber}/appointment/${appointmentWithSubmittedFeedback.id}/post-session-feedback`
             )
             .expect(200)
             .expect(res => {

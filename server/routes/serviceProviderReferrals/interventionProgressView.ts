@@ -70,23 +70,6 @@ export default class InterventionProgressView {
     }
   }
 
-  private sessionTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
-    return {
-      head: this.presenter.sessionTableHeaders.map((header: string) => {
-        return { text: header }
-      }),
-      rows: this.presenter.sessionTableRows.map(row => {
-        return [
-          { text: `Session ${row.sessionNumber}` },
-          { text: `${row.appointmentTime}` },
-          { text: ViewUtils.sessionStatusTagHtml(row.statusPresenter, tagMacro) },
-          { html: ViewUtils.linkHtml(row.links) },
-        ]
-      }),
-      attributes: { 'data-cy': 'session-table' },
-    }
-  }
-
   private readonly backLinkArgs = {
     text: 'Back',
     href: this.presenter.hrefBackLink,
@@ -145,7 +128,6 @@ export default class InterventionProgressView {
         supplierAssessmentAppointmentsTableArgs: this.supplierAssessmentAppointmentsTableArgs.bind(this),
         supplierAssessmentMessage: this.presenter.supplierAssessmentMessage,
         actionPlanTableArgs: this.actionPlanProgressView.tableArgs.bind(this.actionPlanProgressView),
-        sessionTableArgs: this.sessionTableArgs.bind(this),
         backLinkArgs: this.backLinkArgs,
         endOfServiceReportSummaryListArgs: this.endOfServiceReportSummaryListArgs.bind(this),
         cancelledReferralNotificationBannerArgs: this.cancelledReferralNotificationBannerArgs,

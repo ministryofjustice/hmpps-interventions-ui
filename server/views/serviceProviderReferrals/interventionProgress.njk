@@ -2,75 +2,103 @@
 {% from "govuk/components/tag/macro.njk" import govukTag %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
-
 {% extends "../partials/referralNavigationTemplate.njk" %}
-
 {% set pageTitle = "Referral" %}
 {% set pageSubTitle = "Progress" %}
-
 {% block referralPageSection %}
-
-  {% if presenter.referralEnded %}
-     {{ govukNotificationBanner(cancelledReferralNotificationBannerArgs) }}
-  {% endif %}
-
-  {% if presenter.referralAssigned %}
-    <p class="govuk-body">This intervention is assigned to <strong>{{ presenter.assignedCaseworkerFullName }}</strong> (<a href="mailto:{{ presenter.assignedCaseworkerEmail }}">{{ presenter.assignedCaseworkerEmail }}</a>).</p>
-  {% endif %}
-
-  <h2 class="govuk-heading-m">Supplier assessment appointment</h2>
-
-  {% if presenter.referralAssigned %}
-    <p class="govuk-body">
-     {{ supplierAssessmentMessage }}
-    </p>
-
-    {{ govukTable(supplierAssessmentAppointmentsTableArgs(govukTag)) }}
-  {% else %}
-    <p class="govuk-body">
-      Once a caseworker has been assigned the initial assessment can be booked.
-    </p>
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-  {% endif %}
-
-  <h2 class="govuk-heading-m">Action plan</h2>
-
-  {% if presenter.referralAssigned %}
-    <p class="govuk-body">
-      Complete the action plan and submit it to the probation practitioner for approval.
-    </p>
-
-    {{ govukTable(actionPlanTableArgs(govukTag, csrfToken)) }}
-
-  {% else %}
-    <p class="govuk-body">
-      Once a caseworker has been assigned the action plan can be sumbitted.
-    </p>
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-
-  {% endif %}
-
-  <h2 class="govuk-heading-m">Session progress</h2>
-  <p class="govuk-body">
-    Track the progress of each intervention session.
-  </p>
-
-  {% if presenter.hasSessions %}
-    {{ govukTable(sessionTableArgs(govukTag)) }}
-  {% else %}
-    <p class="govuk-body">
-      Sessions will appear here when the action plan is approved.
-    </p>
-
-    <hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
-  {% endif %}
-
-  <h2 class="govuk-heading-m">End of service report</h2>
-
-  <p class="govuk-body">
+{% if presenter.referralEnded %}
+{{ govukNotificationBanner(cancelledReferralNotificationBannerArgs) }}
+{% endif %}
+{% if presenter.referralAssigned %}
+<p class="govuk-body">This intervention is assigned to <strong>{{ presenter.assignedCaseworkerFullName }}</strong> (<a href="mailto:{{ presenter.assignedCaseworkerEmail }}">{{ presenter.assignedCaseworkerEmail }}</a>).</p>
+{% endif %}
+<h2 class="govuk-heading-m">Supplier assessment appointment</h2>
+{% if presenter.referralAssigned %}
+<p class="govuk-body">
+  {{ supplierAssessmentMessage }}
+</p>
+{{ govukTable(supplierAssessmentAppointmentsTableArgs(govukTag)) }}
+{% else %}
+<p class="govuk-body">
+  Once a caseworker has been assigned the initial assessment can be booked.
+</p>
+<hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+{% endif %}
+<h2 class="govuk-heading-m">Action plan</h2>
+{% if presenter.referralAssigned %}
+<p class="govuk-body">
+  Complete the action plan and submit it to the probation practitioner for approval.
+</p>
+{{ govukTable(actionPlanTableArgs(govukTag, csrfToken)) }}
+{% else %}
+<p class="govuk-body">
+  Once a caseworker has been assigned the action plan can be sumbitted.
+</p>
+<hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+{% endif %}
+<h2 class="govuk-heading-m">Session progress</h2>
+<p class="govuk-body">
+  Track the progress of each intervention session.
+</p>
+{% if presenter.hasSessions %}
+<table class="govuk-table" data-cy="session-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      {% for row in presenter.sessionTableHeaders %}
+      <th scope="col" class="govuk-table__header">{{row}}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    {% for row in presenter.sessionTableRows %} 
+    {% if row.isParent %}  
+    <tr class="govuk-table__row">
+      <td class="govuk-table__cell">Session {{row.sessionNumber}} </td>
+      <td class="govuk-table__cell">{{row.appointmentTime}}</td>
+      <td class="govuk-table__cell">{{govukTag({ text: row.statusPresenter.text, classes: row.statusPresenter.tagClass })}} </td>
+      <td class="govuk-table__cell">
+        {% for link in row.links %}
+        <a class="govuk-link" href="{{link.href}}">{{link.text}}</a><br/>
+        {% endfor %}
+      </td>
+      {% if loop.index0 < presenter.sessionTableRows.length  and not presenter.sessionTableRows[loop.index0+1].isParent and presenter.sessionTableRows[loop.index0+1] is defined %}
+    <tr rowspan="2">
+      <td colspan="4">
+        <details class="govuk-details" data-module="govuk-details">
+          <summary class="govuk-details__summary govuk-!-margin-bottom-3 govuk-!-margin-top-2">
+            <span class="govuk-details__summary-text">Previous appointments</span>
+          </summary>
+          {% endif %}
+          {% endif %}
+          {% if not row.isParent %}
+          <div class="govuk-!-margin-bottom-1 govuk-!-margin-left-5 govuk-template govuk-!-padding-bottom-2 govuk-!-padding-top-2 govuk-!-padding-left-1">
+            <span class="govuk-table__cell">Session {{row.sessionNumber}} </span>
+            <span class="govuk-table__cell">{{row.appointmentTime}}</span>
+            <span class="govuk-table__cell">{{govukTag({ text: row.statusPresenter.text, classes: row.statusPresenter.tagClass })}}</span>
+            <span class="govuk-table__cell">
+            {% for link in row.links %}
+            <a class="govuk-link" href="{{link.href}}">{{link.text}}</a><br/>
+            {% endfor %}
+            </span>
+          </div>
+          {% endif %}
+          {% if loop.index0 <presenter.sessionTableRows.length and row.sessionNumber!=presenter.sessionTableRows[loop.index0+1].sessionNumber%}
+        </details>
+      </td>
+    </tr>
+    {% endif %}
+    {%- endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="govuk-body">
+  Sessions will appear here when the action plan is approved.
+</p>
+<hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
+{% endif %}
+<h2 class="govuk-heading-m">End of service report</h2>
+<p class="govuk-body">
   Please complete the end of service report once the intervention has ended.
-  </p>
-
-  {{ govukSummaryList(endOfServiceReportSummaryListArgs(govukTag, csrfToken)) }}
-
+</p>
+{{ govukSummaryList(endOfServiceReportSummaryListArgs(govukTag, csrfToken)) }}
 {% endblock %}

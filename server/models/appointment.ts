@@ -9,9 +9,11 @@ export interface InitialAssessmentAppointment extends Appointment {
 
 export interface ActionPlanAppointment extends Appointment {
   sessionNumber: number
+  oldAppointments?: Appointment[]
 }
 
 interface Appointment extends AppointmentSchedulingDetails {
+  id?: string
   sessionFeedback: SessionFeedback
 }
 
