@@ -259,6 +259,98 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
       })
   })
 
+  it('all open cases and no cases when there are no open cases to be viewed', async () => {
+    const referrals: SentReferralSummaries[] = []
+    const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+    await request(app)
+      .get('/service-provider/dashboard/all-open-cases')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('All open cases')
+        expect(res.text).not.toContain('Alex River')
+        expect(res.text).not.toContain('Accommodation Services - West Midlands')
+        expect(res.text).not.toContain('George River')
+        expect(res.text).toContain(`There are no results for`)
+      })
+  })
+
+  it('displays a list of all open cases when no search is present', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'Alex',
+          lastName: 'River',
+        },
+      }),
+      sentReferralSummariesFactory.build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'River',
+        },
+      }),
+    ]
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
+      return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
+    })
+
+    await request(app)
+      .get('/service-provider/dashboard/all-open-cases')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('All open cases')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Accommodation Services - West Midlands')
+        expect(res.text).toContain('George River')
+      })
+  })
+
+  it('displays a list of all open cases with search text is not empty', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.assigned().build({
+        serviceUser: {
+          firstName: 'Alex',
+          lastName: 'River',
+        },
+      }),
+    ]
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
+      return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
+    })
+
+    await request(app)
+      .get('/service-provider/dashboard/all-open-cases?open-case-search-text=Alex%20River')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('All open cases')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Accommodation Services - West Midlands')
+        expect(res.text).not.toContain('George River')
+      })
+  })
+
+  it('displays no records found when the search yields no results', async () => {
+    const searchText = 'nonsense'
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
+      return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
+    })
+
+    await request(app)
+      .get(`/service-provider/dashboard/all-open-cases?open-case-search-text=${searchText}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('All open cases')
+        expect(res.text).not.toContain('Alex River')
+        expect(res.text).not.toContain('Accommodation Services - West Midlands')
+        expect(res.text).not.toContain('George River')
+        expect(res.text).toContain(`There are no results for "${searchText}"`)
+      })
+  })
+
   it('displays a dashboard page with invalid page number', async () => {
     apiConfig.dashboards.serviceProvider.openCases = 1
     const referrals = [

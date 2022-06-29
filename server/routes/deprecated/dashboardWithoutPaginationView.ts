@@ -1,5 +1,5 @@
 import ViewUtils from '../../utils/viewUtils'
-import { TableArgs } from '../../utils/govukFrontendTypes'
+import { TableArgs, InputArgs } from '../../utils/govukFrontendTypes'
 import DashboardWithoutPaginationPresenter from './dashboardWithoutPaginationPresenter'
 
 export default class DashboardWithoutPaginationView {
@@ -40,6 +40,19 @@ export default class DashboardWithoutPaginationView {
     ],
   }
 
+  private get subjectInputArgs(): InputArgs {
+    return {
+      label: {
+        text: 'Search by a person on probation in open cases',
+        classes: 'govuk-label--l',
+      },
+
+      autocomplete: 'off',
+      id: 'open-case-search-text',
+      name: 'open-case-search-text',
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/dashboardWithoutPagination',
@@ -48,6 +61,8 @@ export default class DashboardWithoutPaginationView {
         tableArgs: this.tableArgs,
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
         subNavArgs: this.subNavArgs,
+        subjectInputArgs: this.subjectInputArgs,
+        showSearchResult: {},
       },
     ]
   }

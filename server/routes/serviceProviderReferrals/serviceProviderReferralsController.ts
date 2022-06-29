@@ -110,11 +110,20 @@ export default class ServiceProviderReferralsController {
   }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
+    const searchText = (req.query['open-case-search-text'] as string) ?? null
+
     if (
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
     ) {
       const pageSize = config.dashboards.serviceProvider.openCases
-      await this.renderDashboard(req, res, { concluded: false }, 'All open cases', 'spAllOpenCases', pageSize)
+      await this.renderDashboard(
+        req,
+        res,
+        { concluded: false, search: searchText?.trim() },
+        'All open cases',
+        'spAllOpenCases',
+        pageSize
+      )
       return
     }
 
@@ -197,7 +206,14 @@ export default class ServiceProviderReferralsController {
 
     req.session.dashboardOriginPage = req.originalUrl
 
-    const presenter = new DashboardPresenter(cases, dashboardType, res.locals.user, tablePersistentId, sort[0])
+    const presenter = new DashboardPresenter(
+      cases,
+      dashboardType,
+      res.locals.user,
+      tablePersistentId,
+      sort[0],
+      getSentReferralsFilterParams.search
+    )
     const view = new DashboardView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)
@@ -208,11 +224,16 @@ export default class ServiceProviderReferralsController {
     req: Request,
     res: Response,
     referralsSummary: ServiceProviderSentReferralSummary[],
-    dashboardType: DashboardType
+    dashboardType: DashboardType,
+    searchText?: string
   ): void {
     req.session.dashboardOriginPage = req.originalUrl
-
-    const presenter = new DashboardWithoutPaginationPresenter(referralsSummary, dashboardType, res.locals.user)
+    const presenter = new DashboardWithoutPaginationPresenter(
+      referralsSummary,
+      dashboardType,
+      res.locals.user,
+      searchText
+    )
     const view = new DashboardWithoutPaginationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, null)

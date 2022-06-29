@@ -1,6 +1,9 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
 
 {% extends "../partials/layout.njk" %}
 
@@ -12,11 +15,22 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
-
+     
         {{ mojSubNavigation(subNavArgs) }}
+
+        {% if presenter.dashboardType === 'All open cases' %}
+        <form action="{{presenter.hrefSearchText}}" method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        {{ govukInput(subjectInputArgs) }}
+        {{ govukButton({ text: "Search" , preventDoubleClick: true}) }}
+        </form>
+        <a class="govuk-link" data-ga-action="click" data-ga-value="1" href="">Clear</a>
+        
+      {% endif %}
+
         <hr class="govuk-section-break govuk-section-break--m">
         {{ govukTable(tableArgs) }}
-
+      
       <script src="/assets/mojSortableTable.js">
       </script>
     </div>

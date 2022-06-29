@@ -44,6 +44,7 @@ export default class DashboardView {
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
         subNavArgs: this.subNavArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
+        showSearchResult: {},
       },
     ]
   }

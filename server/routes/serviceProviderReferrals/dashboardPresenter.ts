@@ -8,6 +8,7 @@ import { Page } from '../../models/pagination'
 import Pagination from '../../utils/pagination/pagination'
 import ControllerUtils from '../../utils/controllerUtils'
 import SentReferralSummaries from '../../models/sentReferralSummaries'
+import PresenterUtils from '../../utils/presenterUtils'
 
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
 export default class DashboardPresenter {
@@ -22,9 +23,14 @@ export default class DashboardPresenter {
     readonly dashboardType: DashboardType,
     private readonly loggedInUser: LoggedInUser,
     readonly tablePersistentId: string,
-    private readonly requestedSort: string
+    private readonly requestedSort: string,
+    readonly searchText: string | null = null,
+    private readonly userInputData: Record<string, string> | null = null
   ) {
-    this.pagination = new Pagination(sentReferralSummaries)
+    this.pagination = new Pagination(
+      sentReferralSummaries,
+      this.searchText ? `open-case-search-text=${searchText}` : null
+    )
     const [sortField, sortOrder] = this.requestedSort.split(',')
     this.requestedSortField = sortField
     this.requestedSortOrder = ControllerUtils.sortOrderToAriaSort(sortOrder)
@@ -67,6 +73,14 @@ export default class DashboardPresenter {
     this.dashboardType === 'All open cases' || this.dashboardType === 'Completed cases'
 
   readonly title = this.dashboardType
+
+  readonly SearchText = this.searchText
+
+  readonly hrefSearchText = `/service-provider/dashboard/all-open-cases`
+
+  readonly presenterUtils = new PresenterUtils(this.userInputData).selectionValue
+
+  readonly borderStyle = 'govuk-width-container--grey'
 
   get tableHeadings(): SortableTableHeaders {
     return DashboardPresenter.headingsAndSortFields

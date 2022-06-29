@@ -313,7 +313,7 @@ describe('Dashboards', () => {
 
     describe('table sort headings', () => {
       beforeEach(() => {
-        cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+        cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
         cy.login()
       })
 

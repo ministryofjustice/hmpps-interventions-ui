@@ -1,6 +1,6 @@
 import DashboardPresenter from './dashboardPresenter'
 import ViewUtils from '../../utils/viewUtils'
-import { TableArgs } from '../../utils/govukFrontendTypes'
+import { TableArgs, InputArgs } from '../../utils/govukFrontendTypes'
 
 export default class DashboardView {
   constructor(private readonly presenter: DashboardPresenter) {}
@@ -35,6 +35,24 @@ export default class DashboardView {
     ],
   }
 
+  private get subjectInputArgs(): InputArgs {
+    return {
+      classes: 'moj-search__input govuk-!-width-two-thirds govuk-!-margin-left-9',
+      label: {
+        classes: 'govuk-label--m govuk-!-margin-left-9 govuk-!-margin-top-8',
+        text: 'Search by a person on probation in open cases',
+      },
+      autocomplete: 'off',
+      hint: {
+        classes: 'moj-search__hint govuk-!-margin-left-9 govuk-details__summary-text',
+        text: 'You need to enter their first and last name, for example Matt Jones.',
+      },
+      id: 'open-case-search-text',
+      name: 'open-case-search-text',
+      value: this.presenter.searchText ?? undefined,
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/dashboard',
@@ -43,7 +61,9 @@ export default class DashboardView {
         tableArgs: this.tableArgs,
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
         subNavArgs: this.subNavArgs,
+        subjectInputArgs: this.subjectInputArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
+        clearHref: this.presenter.hrefSearchText,
       },
     ]
   }

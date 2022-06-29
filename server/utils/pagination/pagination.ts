@@ -29,7 +29,7 @@ interface MojPaginationArgs {
 }
 
 export default class Pagination {
-  constructor(private readonly page: Page<unknown>) {}
+  constructor(private readonly page: Page<unknown>, private readonly params: string | null = null) {}
 
   private constructPageItems(pageNumberRange: number[], chosenPageNumber: number): MojPaginationArgs['items'] {
     return pageNumberRange.map(pageNumber => {
@@ -37,7 +37,7 @@ export default class Pagination {
         type: 'pageNumber',
         selected: chosenPageNumber === pageNumber,
         text: pageNumber,
-        href: `?page=${pageNumber}`,
+        href: this.params ? `?${this.params}&page=${pageNumber}` : `?page=${pageNumber}`,
       }
     })
   }
@@ -86,8 +86,20 @@ export default class Pagination {
     }
     return {
       items,
-      previous: chosenPageNumber === 1 ? undefined : { text: 'Previous', href: `?page=${chosenPageNumber - 1}` },
-      next: chosenPageNumber === totalPages ? undefined : { text: 'Next', href: `?page=${chosenPageNumber + 1}` },
+      previous:
+        chosenPageNumber === 1
+          ? undefined
+          : {
+              text: 'Previous',
+              href: this.params ? `?${this.params}&page=${chosenPageNumber - 1}` : `?page=${chosenPageNumber - 1}`,
+            },
+      next:
+        chosenPageNumber === totalPages
+          ? undefined
+          : {
+              text: 'Next',
+              href: this.params ? `?${this.params}&page=${chosenPageNumber + 1}` : `?page=${chosenPageNumber + 1}`,
+            },
       results: { from, to, count },
     }
   }

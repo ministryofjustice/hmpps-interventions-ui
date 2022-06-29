@@ -6,16 +6,24 @@ import utils from '../../utils/utils'
 import DateUtils from '../../utils/dateUtils'
 import LoggedInUser from '../../models/loggedInUser'
 
+import PresenterUtils from '../../utils/presenterUtils'
+
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
 export default class DashboardWithoutPaginationPresenter {
   constructor(
     private readonly referralsSummary: ServiceProviderSentReferralSummary[],
     readonly dashboardType: DashboardType,
-    private readonly loggedInUser: LoggedInUser
+    private readonly loggedInUser: LoggedInUser,
+    readonly searchText?: string,
+    private readonly userInputData: Record<string, string> | null = null
   ) {}
 
   private readonly showAssignedCaseworkerColumn =
     this.dashboardType === 'My cases' || this.dashboardType === 'Unassigned cases'
+
+  readonly hrefSearchText = `/service-provider/dashboard/all-open-cases`
+
+  readonly presenterUtils = new PresenterUtils(this.userInputData).selectionValue
 
   readonly dashboardTypePersistentId = this.dashboardType.replace(/\s/g, '')
 
