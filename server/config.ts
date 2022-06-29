@@ -142,7 +142,7 @@ export default {
     serviceProvider: {
       percentageOfPaginationUsers: Number(get('SP_PERCENTAGE_OF_DASHBOARD_PAGINATION_USERS', '100')),
       myCases: Number(get('SP_MY_CASES_PAGE_SIZE', '500')),
-      openCases: Number(get('SP_OPEN_CASES_PAGE_SIZE', '1')),
+      openCases: Number(get('SP_OPEN_CASES_PAGE_SIZE', '500')),
       unassignedCases: Number(get('SP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
       completedCases: Number(get('SP_COMPLETED_PAGE_SIZE', '500')),
     },

@@ -322,7 +322,7 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     })
 
     await request(app)
-      .get('/service-provider/dashboard/all-open-cases?open-case-search-text=Alex River')
+      .get('/service-provider/dashboard/all-open-cases?open-case-search-text=Alex%20River')
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('All open cases')
