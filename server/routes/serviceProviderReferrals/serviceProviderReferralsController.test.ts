@@ -269,10 +269,7 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('All open cases')
-        expect(res.text).not.toContain('Alex River')
-        expect(res.text).not.toContain('Accommodation Services - West Midlands')
-        expect(res.text).not.toContain('George River')
-        expect(res.text).toContain(`There are no results for`)
+        expect(res.text).toContain('Date received') // Proves tables existence
       })
   })
 
