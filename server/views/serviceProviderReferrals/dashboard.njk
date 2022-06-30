@@ -43,7 +43,7 @@
               <li class="govuk-body govuk-!-margin-bottom-0">Enter the full name of the person on probation</li>
             </div>
           </div>
-        {% elif tableArgs.rows.length <1 and presenter.SearchText !== '' %}
+        {% elif tableArgs.rows.length <1 and presenter.SearchText !== null %}
           <div class="govuk-width-container govuk-!-margin-left-7">
               <h2 class="govuk-heading-m govuk-!-margin-top-7"> There are no results for "{{presenter.SearchText | escape }}"</h2>
                 <div class="govuk-list--bullet govuk-!-margin-bottom-5">
