@@ -263,7 +263,7 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
       })
   })
 
-  it('all open cases and no cases when there are no open cases to be viewed', async () => {
+  it('all open cases tab when there are no open cases to be viewed shows empty table', async () => {
     const referrals: SentReferralSummaries[] = []
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
@@ -349,6 +349,22 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
         expect(res.text).not.toContain('Accommodation Services - West Midlands')
         expect(res.text).not.toContain('George River')
         expect(res.text).toContain(`There are no results for "${searchText}"`)
+      })
+  })
+
+  it('displays no records found when the search yields no results - empty search', async () => {
+    const searchText = ''
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
+      return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
+    })
+
+    await request(app)
+      .get(`/service-provider/dashboard/all-open-cases?open-case-search-text=${searchText}`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('You have not entered any search terms')
+        expect(res.text).toContain('Enter the full name of the person on probation')
       })
   })
 
