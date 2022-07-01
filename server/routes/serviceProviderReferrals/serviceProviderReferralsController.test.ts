@@ -757,7 +757,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       .expect(res => {
         expect(res.text).toContain('Session progress')
         expect(res.text).toContain('Reschedule session')
-        expect(res.text).not.toContain('Previous appointments')
+        expect(res.text).not.toContain('Session 1 history')
       })
   })
 })
@@ -857,7 +857,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
         expect(res.text).toContain('scheduled')
       })
   })
-  it('does not show previous appointments drop down when no children available', async () => {
+  it('does not show session history drop down when no children available', async () => {
     const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
     const deliusServiceUser = deliusServiceUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({
@@ -915,7 +915,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       .get(`/service-provider/referrals/${sentReferral.id}/progress`)
       .expect(200)
       .expect(res => {
-        expect(res.text).not.toContain('Previous appointments')
+        expect(res.text).not.toContain('Session 1 history')
       })
   })
 })
