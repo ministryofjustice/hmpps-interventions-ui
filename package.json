@@ -180,7 +180,7 @@
     "mocha": "^10.0.0",
     "mocha-junit-reporter": "^2.0.2",
     "mockdate": "^3.0.5",
-    "nock": "^13.2.7",
+    "nock": "^13.2.8",
     "nodemon": "^2.0.18",
     "prettier": "^2.7.1",
     "sass": "^1.53.0",
