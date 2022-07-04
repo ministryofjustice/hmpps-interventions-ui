@@ -26,8 +26,8 @@
             {{ govukInput(subjectInputArgs) }}
 
             <div class="govuk-button-group govuk-!-margin-left-9">
-              {{ govukButton({ text: "Search", name: "searchButtonAllOpenCases", preventDoubleClick: true}) }}
-              <a class="govuk-link" data-ga-action="click" data-ga-value="1" href={{ clearHref }}>Clear</a>
+              {{ govukButton({ text: "Search", name: "searchButtonAllOpenCases", attributes: { id: 'search-button-all-open-cases' }, preventDoubleClick: true}) }}
+              <a class="govuk-link" id="clear-search-button" data-ga-action="click" data-ga-value="1" href={{ clearHref }}>Clear</a>
             </div>
           </form>
         </div>

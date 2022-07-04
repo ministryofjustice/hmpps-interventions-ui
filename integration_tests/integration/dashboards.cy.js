@@ -269,6 +269,70 @@ describe('Dashboards', () => {
               },
             ])
         })
+        it('should filter open cases by PoP name - displaying no results', () => {
+          cy.get('h1').contains('My cases')
+          cy.contains('All open cases').click()
+          cy.get('h1').contains('All open cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
+                Action: 'View',
+              },
+            ])
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+          cy.get('#open-case-search-text').type('Hello, World')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('h2').contains('There are no results for "Hello, World"')
+
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
+          cy.get('#clear-search-button').click()
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
+                Action: 'View',
+              },
+            ])
+        })
+        it('should filter open cases by PoP name - displaying error, no values input', () => {
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
+          cy.get('h1').contains('My cases')
+          cy.contains('All open cases').click()
+          cy.get('h1').contains('All open cases')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('h2').contains('You have not entered any search terms')
+        })
+        it('should filter open cases by PoP name - displaying correct results', () => {
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
+          cy.get('h1').contains('My cases')
+          cy.contains('All open cases').click()
+          cy.get('h1').contains('All open cases')
+          cy.get('#open-case-search-text').type('Jenny Jones')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
+                Action: 'View',
+              },
+            ])
+        })
       })
 
       describe('Selecting "Unassigned cases"', () => {
@@ -313,7 +377,7 @@ describe('Dashboards', () => {
 
     describe('table sort headings', () => {
       beforeEach(() => {
-        cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
+        cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.login()
       })
 
