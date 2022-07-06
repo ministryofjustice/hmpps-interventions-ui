@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import jwt from 'jsonwebtoken'
 import Wiremock from './wiremock'
 import TokenVerifiationMocks from './tokenVerification'
@@ -24,8 +25,12 @@ export default class AuthServiceMocks {
   getLoginUrl = async (): Promise<string> => {
     return this.wiremock.getRequests().then(data => {
       const { requests } = data.body
-      const stateParam = requests[0].request.queryParams.state
-      const stateValue = stateParam ? stateParam.values[0] : requests[1].request.queryParams.state.values[0]
+      const stateParam = requests?.[0]?.request?.queryParams?.state
+      const stateValue = stateParam ? stateParam?.values?.[0] : requests?.[1]?.request?.queryParams?.state?.values[0]
+      if (!stateValue) {
+        console.error(`Unable to retrieve query params from login request - ${requests[0]?.request?.url}`)
+        throw new Error(`getLoginUrl - unable to retrieve query params`)
+      }
       return `/sign-in/callback?code=codexxxx&state=${stateValue}`
     })
   }
