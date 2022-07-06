@@ -44,7 +44,7 @@ export default class DashboardView {
       },
       autocomplete: 'off',
       hint: {
-        classes: 'moj-search__hint govuk-!-margin-left-9 govuk-details__summary-text',
+        classes: 'moj-search__hint govuk-!-margin-left-9',
         text: 'You need to enter their first and last name, for example Matt Jones.',
       },
       id: 'open-case-search-text',

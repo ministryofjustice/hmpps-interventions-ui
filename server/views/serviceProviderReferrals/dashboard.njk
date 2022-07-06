@@ -19,7 +19,7 @@
       {{ mojSubNavigation(subNavArgs) }}
 
       {% if presenter.dashboardType === 'All open cases' %}
-        <div class="govuk-grid-row govuk-template">
+        <div class="govuk-template">
           <form action="{{presenter.hrefSearchText}}" method="get">
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
