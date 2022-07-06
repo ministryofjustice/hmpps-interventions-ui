@@ -251,7 +251,7 @@ describe('Probation Practitioner monitor journey', () => {
           },
         ])
     })
-    it('displays the referral progress page with previous history of unattended sessions', () => {
+    it('displays the referral progress page with session history of unattended sessions', () => {
       const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
       const referralParams = {
         id: 'f478448c-2e29-42c1-ac3d-78707df23e50',
@@ -348,14 +348,14 @@ describe('Probation Practitioner monitor journey', () => {
             Status: 'completed',
             Action: 'View feedback form',
           })
-          expect(result[1]).to.contains(/^Previous appointments/gi)
+          expect(result[1]).to.contains(/^Session 1 history/gi)
           expect(result[2]).to.deep.include({
             'Session details': 'Session 3',
             'Date and time': '10:02am on 31 Jul 2021',
             Status: 'scheduled',
             Action: '',
           })
-          expect(result[3]).to.contains(/^Previous appointments/gi)
+          expect(result[3]).to.contains(/^Session 2 history/gi)
           expect(result[4]).to.deep.include({
             'Session details': 'Session 4',
             'Date and time': '',

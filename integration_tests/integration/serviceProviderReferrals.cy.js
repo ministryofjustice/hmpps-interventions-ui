@@ -1566,7 +1566,7 @@ describe('Service provider referrals dashboard', () => {
           expect(result[1]).to.contain(/^Reschedule session[\n|\t]*Give feedback$/)
         })
     })
-    it('user records the Service user as having not attended, and skips behaviour screen with previous history', () => {
+    it('user records the Service user as having not attended, and skips behaviour screen with session history', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const intervention = interventionFactory.build({
         contractType: { code: 'ACC', name: 'accommodation' },
@@ -1665,14 +1665,14 @@ describe('Service provider referrals dashboard', () => {
             Status: 'scheduled',
           })
           expect(result[0]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
-          expect(result[1]).to.contains(/^Previous appointments/gi)
+          expect(result[1]).to.contains(/^Session 1 history/gi)
           expect(result[2]).to.deep.include({
             'Session details': 'Session 2',
             'Date and time': '10:02am on 31 Aug 2021',
             Status: 'scheduled',
           })
           expect(result[2]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
-          expect(result[3]).to.contains(/^Previous appointments/gi)
+          expect(result[3]).to.contains(/^Session 2 history/gi)
           expect(result[4]).to.deep.include({
             'Session details': 'Session 3',
             'Date and time': '10:02am on 31 Jul 2021',
