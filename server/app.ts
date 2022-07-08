@@ -133,6 +133,7 @@ export default function createApp(
       resave: false, // redis implements touch so shouldn't need this
       saveUninitialized: false,
       rolling: true,
+      unset: 'destroy',
     })
   )
 

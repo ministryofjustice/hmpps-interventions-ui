@@ -6,6 +6,7 @@ import deliusConviction from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformation from '../../testutils/factories/supplementaryRiskInformation'
 import riskSummary from '../../testutils/factories/riskSummary'
 import deliusOffenderManager from '../../testutils/factories/deliusOffenderManager'
+import pageFactory from '../../testutils/factories/page'
 
 context('Amend a referral', () => {
   beforeEach(() => {
@@ -13,6 +14,7 @@ context('Amend a referral', () => {
     cy.task('stubLogin')
     cy.task('stubProbationPractitionerToken')
     cy.task('stubProbationPractitionerAuthUser')
+    cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
   })
 
   describe('updating maximum enforceable days ', () => {
@@ -43,13 +45,15 @@ context('Amend a referral', () => {
       })
 
       it('takes the pp to the form when clicking the change link in the details page', () => {
-        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
+        cy.login()
+        cy.visit(`/probation-practitioner/referrals/${sentReferral.id}/details`)
         cy.contains('.govuk-summary-list__key', 'enforceable days').next().next().contains('Change').click()
         cy.contains('How many days will you use for this service?')
       })
 
       it('shows the existing number of days in the form', () => {
-        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
+        cy.login()
+        cy.visit(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
         cy.get('input[name="maximum-enforceable-days"]').should(
           'have.value',
           sentReferral.referral.maximumEnforceableDays.toString()
@@ -57,7 +61,8 @@ context('Amend a referral', () => {
       })
 
       it('redirects to referral details on submission', () => {
-        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
+        cy.login()
+        cy.visit(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
         cy.contains('What is the reason for changing the maximum number of days?').type('reason')
         cy.contains('Save and continue').click()
         cy.url().should(
@@ -69,7 +74,8 @@ context('Amend a referral', () => {
       })
 
       it('takes you back to referral details when back link is clicked', () => {
-        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
+        cy.login()
+        cy.visit(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
         cy.contains('Back').click()
         cy.url().should(
           'be.equal',
@@ -78,7 +84,8 @@ context('Amend a referral', () => {
       })
 
       it('shows a validation error if the reason for change is not supplied', () => {
-        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
+        cy.login()
+        cy.visit(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
         cy.contains('What is the reason for changing the maximum number of days?').type('    ')
         cy.contains('Save and continue').click()
 
@@ -89,7 +96,8 @@ context('Amend a referral', () => {
       })
 
       it('shows a validation error if the number of days is not supplied', () => {
-        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
+        cy.login()
+        cy.visit(`/probation-practitioner/referrals/${sentReferral.id}/update-maximum-enforceable-days`)
         cy.get('input[name="maximum-enforceable-days"]').clear()
         cy.contains('What is the reason for changing the maximum number of days?').type('something')
         cy.contains('Save and continue').click()
