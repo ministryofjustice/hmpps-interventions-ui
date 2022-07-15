@@ -1,0 +1,37 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% extends "../partials/layout.njk" %}
+
+
+{% set pageTitle = "Make a referral" %}
+{% set pageSubTitle = "Select complexity level" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+    {{ govukBackLink(backLinkArgs) }}
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {% if errorSummaryArgs !== null %}
+          {{ govukErrorSummary(errorSummaryArgs) }}
+        {% endif %}
+
+        {{ govukRadios(radioButtonArgs) }}
+
+        {% if reasonForChangeInputArgs %}
+          {{ govukTextarea(reasonForChangeInputArgs) }}
+        {% endif %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({ text: "Save and continue" }) }}
+          <a class="govuk-link data-cy="cancel" href="{{ backLinkArgs.href }}">Cancel and go back</a>
+      </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

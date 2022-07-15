@@ -63,6 +63,13 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     amendAReferralController.updateDesiredOutcomes(req, res)
   )
 
+  get(router, '/referrals/:referralId/service-category/:serviceCategoryId/update-complexity-level', (req, res) =>
+    amendAReferralController.updateComplexityLevel(req, res)
+  )
+  post(router, '/referrals/:referralId/service-category/:serviceCategoryId/update-complexity-level', (req, res) =>
+    amendAReferralController.updateComplexityLevel(req, res)
+  )
+
   // Legacy route to keep links in old emails still working. We'll monitor and remove once traffic drops off
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>
     appointmentsController.viewLegacySubmittedPostSessionFeedbackAsProbationPractitioner(req, res)

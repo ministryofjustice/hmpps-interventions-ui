@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import ControllerUtils from '../../utils/controllerUtils'
-import InterventionsService from '../../services/interventionsService'
+import InterventionsService, { InterventionsServiceError } from '../../services/interventionsService'
 import AmendMaximumEnforceableDaysPresenter from './maximumEnforceableDays/amendMaximumEnforceableDaysPresenter'
 import CommunityApiService from '../../services/communityApiService'
 import AmendMaximumEnforceableDaysView from './maximumEnforceableDays/amendMaximumEnforceableDaysView'
@@ -9,6 +9,11 @@ import AmendDesiredOutcomesView from './desired-outcomes/amendDesiredOutcomesVie
 import AmendDesiredOutcomesPresenter from './desired-outcomes/amendDesiredOutcomesPresenter'
 import AmendDesiredOutcomesForm from './desired-outcomes/amendDesiredOutcomesForm'
 import ReferralDesiredOutcomes from '../../models/referralDesiredOutcomes'
+import { FormValidationError } from '../../utils/formValidationError'
+import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
+import AmendComplexityLevelPresenter from './complexityLevel/amendComplexityLevelPresenter'
+import AmendComplexityLevelView from './complexityLevel/amendComplexityLevelView'
+import AmendComplexityLevelForm from './complexityLevel/amendComplexityLevelForm'
 
 export default class AmendAReferralController {
   constructor(
@@ -80,6 +85,51 @@ export default class AmendAReferralController {
     const serviceCategory = await this.interventionsService.getServiceCategory(accessToken, serviceCategoryId)
     const presenter = new AmendDesiredOutcomesPresenter(referral, serviceCategory, error, userInputData)
     const view = new AmendDesiredOutcomesView(presenter)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async updateComplexityLevel(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId, serviceCategoryId } = req.params
+    let formError: FormValidationError | null = null
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    if (req.method === 'POST') {
+      const data = await new AmendComplexityLevelForm(req).data()
+
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+      } else {
+        try {
+          await this.interventionsService.amendComplexityLevelForServiceCategory(
+            accessToken,
+            referralId,
+            serviceCategoryId,
+            data.paramsForUpdate
+          )
+          return res.redirect(`/probation-practitioner/referrals/${req.params.referralId}/details?detailsUpdated=true`)
+        } catch (e) {
+          const interventionsServiceError = e as InterventionsServiceError
+          formError = createFormValidationErrorOrRethrow(interventionsServiceError)
+        }
+      }
+    }
+
+    const [serviceCategory, serviceUser] = await Promise.all([
+      this.interventionsService.getServiceCategory(accessToken, serviceCategoryId),
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
+
+    const presenter = new AmendComplexityLevelPresenter(
+      sentReferral,
+      sentReferral.referral.complexityLevels,
+      serviceCategory,
+      formError
+    )
+    const view = new AmendComplexityLevelView(presenter)
+
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 }

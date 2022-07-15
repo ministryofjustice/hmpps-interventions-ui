@@ -225,6 +225,21 @@ export default class InterventionsService {
     })) as DraftReferral
   }
 
+  async amendComplexityLevelForServiceCategory(
+    token: string,
+    referralId: string,
+    serviceCategoryId: string,
+    complexityLevel: Partial<ReferralComplexityLevel>
+  ): Promise<null> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/sent-referral/${referralId}/service-category/${serviceCategoryId}/amend-complexity-level`,
+      headers: { Accept: 'application/json' },
+      data: complexityLevel,
+    })) as null
+  }
+
   async getServiceCategory(token: string, id: string): Promise<ServiceCategory> {
     const restClient = this.createRestClient(token)
 

@@ -128,3 +128,40 @@ describe('POST /probation-practitioner/referrals/:referralId/:serviceCategoryId/
     })
   })
 })
+
+describe('POST /probation-practitioner/referrals/:id/update-complexity-level', () => {
+  const socialInclusionServiceCategory = serviceCategoryFactory.build({
+    id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+    name: 'social inclusion',
+  })
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+  })
+
+  it('redirects to the referral details page on success', () => {
+    return request(app)
+      .post(
+        `/probation-practitioner/referrals/${referral.id}/service-category/${socialInclusionServiceCategory.id}/update-complexity-level`
+      )
+      .send({ 'reason-for-change': 'new value', 'complexity-level-id': '10' })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
+  })
+
+  describe('with form validation errors', () => {
+    it('renders an error message', () => {
+      return request(app)
+        .post(
+          `/probation-practitioner/referrals/${referral.id}/service-category/${socialInclusionServiceCategory.id}/update-complexity-level`
+        )
+        .send({ 'reason-for-change': ' ' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('A reason for changing the referral must be supplied')
+        })
+    })
+  })
+})
