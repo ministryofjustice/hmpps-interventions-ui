@@ -42,7 +42,8 @@ export default class ShowReferralPresenter {
     readonly riskSummary: RiskSummary | null,
     private readonly responsibleOfficer: DeliusOffenderManager | null,
     readonly showSuccess: boolean = false,
-    private readonly dashboardOriginPage?: string
+    private readonly dashboardOriginPage?: string,
+    private readonly hasApprovedActionPlan: boolean = true
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Details,
@@ -137,6 +138,10 @@ export default class ShowReferralPresenter {
         desiredOutcomes.length > 0
           ? desiredOutcomes.map(it => it.description)
           : ['No desired outcomes found for this service category'],
+      changeLink:
+        this.userType === 'probation-practitioner' && !this.hasApprovedActionPlan
+          ? `/probation-practitioner/referrals/${this.sentReferral.id}/${serviceCategory.id}/update-desired-outcomes`
+          : undefined,
     })
 
     return items

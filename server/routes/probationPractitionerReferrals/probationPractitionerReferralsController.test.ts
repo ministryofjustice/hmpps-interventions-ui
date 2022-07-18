@@ -536,6 +536,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(expandedDeliusServiceUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     communityApiService.getResponsibleOfficerForServiceUser.mockResolvedValue(responsibleOfficer)
+    interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
 
     await request(app)
       .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
@@ -561,6 +562,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     it('mentions the assigned caseworker', async () => {
       sentReferral = sentReferralFactory.assigned().build()
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+      interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
       await request(app)
         .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
         .expect(200)

@@ -834,4 +834,24 @@ export default class InterventionsServiceMocks {
       },
     })
   }
+
+  stubUpdateDesiredOutcomesForServiceCategory = async (
+    referralId: string,
+    serviceCategoryId: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/sent-referral/${referralId}/service-category/${serviceCategoryId}/amend-desired-outcomes`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }

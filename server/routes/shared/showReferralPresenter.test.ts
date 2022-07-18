@@ -576,6 +576,110 @@ describe(ShowReferralPresenter, () => {
         },
       ])
     })
+
+    describe('amend desired outcomes', () => {
+      it('should show amend link if no approved action plans are found for probabation practitioner', () => {
+        const presenter = new ShowReferralPresenter(
+          referral,
+          cohortIntervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          null,
+          null,
+          'probation-practitioner',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          responsibleOfficer,
+          true,
+          'dashboardOriginPage',
+          false
+        )
+        expect(
+          presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
+            return args.text!
+          })
+        ).toEqual([
+          expect.objectContaining({
+            key: 'Complexity level',
+          }),
+          {
+            key: 'Desired outcomes',
+            lines: expect.any(Array),
+            changeLink: '/probation-practitioner/referrals/3/2/update-desired-outcomes',
+          },
+        ])
+      })
+
+      it('should not show amend link if approved action plans are found for probabation practitioner', () => {
+        const presenter = new ShowReferralPresenter(
+          referral,
+          cohortIntervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          null,
+          null,
+          'probation-practitioner',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          responsibleOfficer,
+          true,
+          'dashboardOriginPage',
+          true
+        )
+        expect(
+          presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
+            return args.text!
+          })
+        ).toEqual([
+          expect.objectContaining({
+            key: 'Complexity level',
+          }),
+          {
+            key: 'Desired outcomes',
+            lines: expect.any(Array),
+            changeLink: undefined,
+          },
+        ])
+      })
+
+      it('should not show amend link for service provider', () => {
+        const presenter = new ShowReferralPresenter(
+          referral,
+          cohortIntervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          null,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          responsibleOfficer,
+          true,
+          'dashboardOriginPage',
+          false
+        )
+        expect(
+          presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
+            return args.text!
+          })
+        ).toEqual([
+          expect.objectContaining({
+            key: 'Complexity level',
+          }),
+          {
+            key: 'Desired outcomes',
+            lines: expect.any(Array),
+            changeLink: undefined,
+          },
+        ])
+      })
+    })
   })
 
   describe('serviceUserPersonalDetails', () => {
