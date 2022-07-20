@@ -242,6 +242,11 @@ export default class ProbationPractitionerReferralsController {
             sentReferral.assignedTo.username
           )
 
+    const approvedActionPlanSummaries = await this.interventionsService.getApprovedActionPlanSummaries(
+      accessToken,
+      req.params.id
+    )
+
     const presenter = new ShowReferralPresenter(
       sentReferral,
       intervention,
