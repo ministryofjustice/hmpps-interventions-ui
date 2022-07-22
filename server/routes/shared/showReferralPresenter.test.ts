@@ -710,24 +710,33 @@ describe(ShowReferralPresenter, () => {
           {
             key: 'Identify needs',
             lines: ["Alex is currently sleeping on her aunt's sofa"],
+            changeLink: undefined,
+            listStyle: 0,
           },
           {
             key: 'Other mobility, disability or accessibility needs',
             lines: ['She uses a wheelchair'],
+            changeLink: undefined,
+            listStyle: 0,
           },
-          { key: 'Interpreter required', lines: ['Yes'] },
-          { key: 'Interpreter language', lines: ['Spanish'] },
+          { key: 'Interpreter required', lines: ['Yes'], changeLink: undefined },
+          { key: 'Interpreter language', lines: ['Spanish'], changeLink: undefined, listStyle: 0 },
           {
             key: 'Primary language',
             lines: ['Catalan'],
+            changeLink: undefined,
+            listStyle: 0,
           },
           {
             key: 'Caring or employment responsibilities',
             lines: ['Yes'],
+            changeLink: undefined,
           },
           {
             key: `Provide details of when Alex will not be able to attend sessions`,
             lines: ['She works Mondays 9am - midday'],
+            changeLink: undefined,
+            listStyle: 0,
           },
         ])
       })
@@ -794,24 +803,33 @@ describe(ShowReferralPresenter, () => {
           {
             key: 'Identify needs',
             lines: ['N/A'],
+            changeLink: undefined,
+            listStyle: 0,
           },
           {
             key: 'Other mobility, disability or accessibility needs',
             lines: ['N/A'],
+            changeLink: undefined,
+            listStyle: 0,
           },
-          { key: 'Interpreter required', lines: ['No'] },
-          { key: 'Interpreter language', lines: ['N/A'] },
+          { key: 'Interpreter required', lines: ['No'], changeLink: undefined },
+          { key: 'Interpreter language', lines: ['N/A'], changeLink: undefined, listStyle: 0 },
           {
             key: 'Primary language',
             lines: ['English'],
+            changeLink: undefined,
+            listStyle: 0,
           },
           {
             key: 'Caring or employment responsibilities',
             lines: ['No'],
+            changeLink: undefined,
           },
           {
             key: `Provide details of when Alex will not be able to attend sessions`,
             lines: ['N/A'],
+            changeLink: undefined,
+            listStyle: 0,
           },
         ])
       })

@@ -5,12 +5,17 @@ import AmendMaximumEnforceableDaysPresenter from './maximumEnforceableDays/amend
 import CommunityApiService from '../../services/communityApiService'
 import AmendMaximumEnforceableDaysView from './maximumEnforceableDays/amendMaximumEnforceableDaysView'
 import AmendMaximumEnforceableDaysForm from './maximumEnforceableDays/amendMaximumEnforceableDaysForm'
+import NeedsAndRequirementsPresenter from '../makeAReferral/needs-and-requirements/needsAndRequirementsPresenter'
+import NeedsAndRequirementsView from '../makeAReferral/needs-and-requirements/needsAndRequirementsView'
+import AmendNeedsAndRequirementsForm from '../makeAReferral/needs-and-requirements/amendNeedsAndRequirementsForm'
 
 export default class AmendAReferralController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService
   ) {}
+
+  static readonly reasonForChangeId = 'reason-for-change'
 
   async updateMaximumEnforceableDays(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
@@ -40,6 +45,32 @@ export default class AmendAReferralController {
       userInputData
     )
     const view = new AmendMaximumEnforceableDaysView(presenter)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async updateNeedsAndRequirements(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { id: referralId } = req.params
+    let error = null
+    let userInputData = null
+
+    if (req.method === 'POST') {
+      const formData = await new AmendNeedsAndRequirementsForm(req).data()
+      if (!formData.error) {
+        await this.interventionsService.amendNeedsAndRequirements(accessToken, referralId, formData.paramsForUpdate)
+        return res.redirect(`/probation-practitioner/referrals/${req.params.id}/details?detailsUpdated=true`)
+      }
+
+      error = formData.error
+      userInputData = req.body
+      res.status(400)
+    }
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new NeedsAndRequirementsPresenter(null, referral, error, userInputData)
+    const view = new NeedsAndRequirementsView(presenter)
+
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 }

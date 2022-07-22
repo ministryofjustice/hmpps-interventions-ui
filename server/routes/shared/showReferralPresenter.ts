@@ -1,6 +1,6 @@
 import SentReferral from '../../models/sentReferral'
 import DeliusUser from '../../models/delius/deliusUser'
-import { SummaryListItem } from '../../utils/summaryList'
+import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../makeAReferral/service-user-details/serviceUserDetailsPresenter'
@@ -288,27 +288,63 @@ export default class ShowReferralPresenter {
       {
         key: 'Identify needs',
         lines: [this.sentReferral.referral.additionalNeedsInformation || 'N/A'],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-needs-requirements`
+            : undefined,
+        listStyle: ListStyle.noMarkers,
       },
       {
         key: 'Other mobility, disability or accessibility needs',
         lines: [this.sentReferral.referral.accessibilityNeeds || 'N/A'],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-needs-requirements`
+            : undefined,
+        listStyle: ListStyle.noMarkers,
       },
       {
         key: 'Interpreter required',
         lines: [this.sentReferral.referral.needsInterpreter ? 'Yes' : 'No'],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-needs-requirements`
+            : undefined,
       },
-      { key: 'Interpreter language', lines: [this.sentReferral.referral.interpreterLanguage || 'N/A'] },
+      {
+        key: 'Interpreter language',
+        lines: [this.sentReferral.referral.interpreterLanguage || 'N/A'],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-needs-requirements`
+            : undefined,
+        listStyle: ListStyle.noMarkers,
+      },
       {
         key: 'Primary language',
         lines: [this.sentReferral.referral.serviceUser.preferredLanguage || 'N/A'],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-needs-requirements`
+            : undefined,
+        listStyle: ListStyle.noMarkers,
       },
       {
         key: 'Caring or employment responsibilities',
         lines: [this.sentReferral.referral.hasAdditionalResponsibilities ? 'Yes' : 'No'],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-needs-requirements`
+            : undefined,
       },
       {
         key: `Provide details of when ${this.sentReferral.referral.serviceUser.firstName} will not be able to attend sessions`,
         lines: [this.sentReferral.referral.whenUnavailable || 'N/A'],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-needs-requirements`
+            : undefined,
+        listStyle: ListStyle.noMarkers,
       },
     ]
   }

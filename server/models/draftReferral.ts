@@ -23,6 +23,7 @@ export interface ReferralFields {
   whenUnavailable: string | null
   serviceUser: ServiceUser
   maximumEnforceableDays: number
+  reasonForChange?: string | null
 }
 
 export default interface DraftReferral extends WithNullableValues<ReferralFields> {

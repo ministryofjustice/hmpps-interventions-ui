@@ -526,6 +526,9 @@ describe('GET /referrals/:id/needs-and-requirements', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Geoffrey’s needs and requirements')
+        expect(res.text).not.toContain(
+          'For example, there are not enough days to deliver the intervention based on complexity levels'
+        )
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])

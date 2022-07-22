@@ -30,6 +30,7 @@ import { Page } from '../models/pagination'
 import { CaseNote } from '../models/caseNote'
 import { DraftOasysRiskInformation } from '../models/draftOasysRiskInformation'
 import ReferralDetails, { ReferralDetailsUpdate } from '../models/referralDetails'
+import ReferralNeedsAndRequirement, { ReferralNeedsAndRequirementUpdate } from '../models/referralNeedsAndRequirents'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -210,6 +211,20 @@ export default class InterventionsService {
     })) as DraftReferral
   }
 
+  async amendNeedsAndRequirements(
+    token: string,
+    referralId: string,
+    needsAndRequirements: Partial<ReferralNeedsAndRequirement>
+  ): Promise<ReferralNeedsAndRequirementUpdate> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.patch({
+      path: `/sent-referral/${referralId}/amend-needs-and-requirement`,
+      headers: { Accept: 'application/json' },
+      data: needsAndRequirements,
+    })) as ReferralNeedsAndRequirementUpdate
+  }
+
   async getServiceCategory(token: string, id: string): Promise<ServiceCategory> {
     const restClient = this.createRestClient(token)
 
@@ -239,7 +254,6 @@ export default class InterventionsService {
 
   async getSentReferral(token: string, id: string): Promise<SentReferral> {
     const restClient = this.createRestClient(token)
-
     return (await restClient.get({
       path: `/sent-referral/${id}`,
       headers: { Accept: 'application/json' },

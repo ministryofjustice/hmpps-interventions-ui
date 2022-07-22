@@ -213,6 +213,9 @@ export default {
   amendReferralFields: {
     missingReason: 'A reason for changing the referral must be supplied',
   },
+  amendNeedsAndRequirements: {
+    missingReason: 'You need to add a reason for changing the needs and requirements',
+  },
   returnedError,
   userHeaderTypes,
   errorHandlerAccessErrorMessages,

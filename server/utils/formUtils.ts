@@ -1,6 +1,7 @@
 import { body, Result, ValidationChain, ValidationError, validationResult } from 'express-validator'
 import { Request } from 'express'
 import { FormValidationError } from './formValidationError'
+import errorMessages from './errorMessages'
 
 export default class FormUtils {
   static yesNoRadioWithConditionalInputValidationChain({
@@ -30,6 +31,16 @@ export default class FormUtils {
     const clonedRequest = { ...request }
     await Promise.all(validations.map(validation => validation.run(clonedRequest)))
     return validationResult(clonedRequest)
+  }
+
+  static readonly reasonForChangeId = 'reason-for-change'
+
+  static get validations(): ValidationChain[] {
+    return [
+      body(this.reasonForChangeId)
+        .notEmpty({ ignore_whitespace: true })
+        .withMessage(errorMessages.amendNeedsAndRequirements.missingReason),
+    ]
   }
 
   static validationErrorFromResult(result: Result): FormValidationError | null {

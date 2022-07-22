@@ -562,7 +562,7 @@ export default class MakeAReferralController {
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
-      const presenter = new NeedsAndRequirementsPresenter(referral, error, req.body)
+      const presenter = new NeedsAndRequirementsPresenter(referral, null, error, req.body)
       const view = new NeedsAndRequirementsView(presenter)
 
       res.status(400)

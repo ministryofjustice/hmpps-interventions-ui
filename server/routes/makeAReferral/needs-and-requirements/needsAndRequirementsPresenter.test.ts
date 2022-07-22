@@ -15,7 +15,7 @@ describe('NeedsAndRequirementsPresenter', () => {
     describe('when error is not null', () => {
       it('returns a summary of the errors sorted into the order their fields appear on the page', () => {
         const referral = draftReferralFactory.serviceCategorySelected().build()
-        const presenter = new NeedsAndRequirementsPresenter(referral, {
+        const presenter = new NeedsAndRequirementsPresenter(referral, null, {
           errors: [
             {
               formFields: ['has-additional-responsibilities'],
@@ -51,6 +51,7 @@ describe('NeedsAndRequirementsPresenter', () => {
           errorMessage: null,
           hint: 'For example, if they use a wheelchair, use a hearing aid or have a learning difficulty.',
           label: 'Does Geoffrey have any other mobility, disability or accessibility needs? (optional)',
+          value: undefined,
         },
         additionalNeedsInformation: {
           errorMessage: null,
@@ -69,6 +70,9 @@ describe('NeedsAndRequirementsPresenter', () => {
           errorMessage: null,
           label: 'Does Geoffrey need an interpreter?',
         },
+        reasonForChange: {
+          errorMessage: null,
+        },
         title: 'Geoffrey’s needs and requirements',
         whenUnavailable: {
           errorMessage: null,
@@ -83,7 +87,7 @@ describe('NeedsAndRequirementsPresenter', () => {
           .serviceCategorySelected()
           .serviceUserSelected()
           .build({ serviceUser: { firstName: 'Geoffrey' } })
-        const presenter = new NeedsAndRequirementsPresenter(referral, {
+        const presenter = new NeedsAndRequirementsPresenter(referral, null, {
           errors: [
             {
               formFields: ['accessibility-needs'],
@@ -128,15 +132,16 @@ describe('NeedsAndRequirementsPresenter', () => {
     describe('when there is no data on the referral', () => {
       it('replays empty answers', () => {
         const referral = draftReferralFactory.build()
-        const presenter = new NeedsAndRequirementsPresenter(referral)
+        const presenter = new NeedsAndRequirementsPresenter(referral, null)
 
         expect(presenter.fields).toEqual({
           additionalNeedsInformation: '',
           accessibilityNeeds: '',
-          needsInterpreter: null,
+          needsInterpreter: false,
           interpreterLanguage: '',
-          hasAdditionalResponsibilities: null,
+          hasAdditionalResponsibilities: false,
           whenUnavailable: '',
+          reasonForChange: '',
         })
       })
     })
@@ -150,6 +155,7 @@ describe('NeedsAndRequirementsPresenter', () => {
           interpreterLanguage: 'Spanish',
           hasAdditionalResponsibilities: false,
           whenUnavailable: null,
+          reasonForChange: '',
         })
         const presenter = new NeedsAndRequirementsPresenter(referral)
 
@@ -160,6 +166,7 @@ describe('NeedsAndRequirementsPresenter', () => {
           interpreterLanguage: 'Spanish',
           hasAdditionalResponsibilities: false,
           whenUnavailable: '',
+          reasonForChange: '',
         })
       })
     })
@@ -173,6 +180,7 @@ describe('NeedsAndRequirementsPresenter', () => {
           interpreterLanguage: 'Spanish',
           hasAdditionalResponsibilities: false,
           whenUnavailable: null,
+          reasonForChange: '',
         })
         const userInputData = {
           'additional-needs-information': '',
@@ -181,8 +189,9 @@ describe('NeedsAndRequirementsPresenter', () => {
           'interpreter-language': '',
           'has-additional-responsibilities': 'yes',
           'when-unavailable': 'She works Fridays 9am - midday',
+          'reason-for-change': '',
         }
-        const presenter = new NeedsAndRequirementsPresenter(referral, null, userInputData)
+        const presenter = new NeedsAndRequirementsPresenter(referral, null, null, userInputData)
 
         expect(presenter.fields).toEqual({
           additionalNeedsInformation: '',
@@ -191,6 +200,7 @@ describe('NeedsAndRequirementsPresenter', () => {
           interpreterLanguage: '',
           hasAdditionalResponsibilities: true,
           whenUnavailable: 'She works Fridays 9am - midday',
+          reasonForChange: '',
         })
       })
     })

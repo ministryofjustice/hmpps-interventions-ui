@@ -6,10 +6,10 @@ import FormUtils from '../../../utils/formUtils'
 import { FormValidationError } from '../../../utils/formValidationError'
 
 export default class NeedsAndRequirementsForm {
-  private constructor(
+  constructor(
     private readonly request: Request,
     private readonly result: Result<ValidationError>,
-    private readonly referral: DraftReferral
+    private readonly referral?: DraftReferral
   ) {}
 
   static async createForm(request: Request, referral: DraftReferral): Promise<NeedsAndRequirementsForm> {
@@ -65,7 +65,7 @@ export default class NeedsAndRequirementsForm {
   }
 
   get error(): FormValidationError | null {
-    if (this.result.isEmpty()) {
+    if (this.result?.isEmpty()) {
       return null
     }
 

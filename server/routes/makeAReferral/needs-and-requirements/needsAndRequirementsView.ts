@@ -78,6 +78,25 @@ export default class NeedsAndRequirementsView {
     }
   }
 
+  private get reasonForChangeTextAreaArgs(): TextareaArgs | null {
+    return this.presenter.sentReferral
+      ? {
+          name: 'reason-for-change',
+          id: 'reason-for-change',
+          label: {
+            text: `What's the reason for changing the needs and requirement?`,
+            isPageHeading: false,
+            classes: 'govuk-label--l',
+          },
+          hint: {
+            text: `For example, there are not enough days to deliver the intervention based on complexity levels`,
+          },
+          value: this.presenter.fields.reasonForChange,
+          errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.reasonForChange.errorMessage),
+        }
+      : null
+  }
+
   private responsibilitiesRadiosArgs(yesHtml: string): RadiosArgs {
     return {
       idPrefix: 'has-additional-responsibilities',
@@ -131,6 +150,7 @@ export default class NeedsAndRequirementsView {
         interpreterLanguageInputArgs: this.interpreterLanguageInputArgs,
         responsibilitiesRadiosArgs: this.responsibilitiesRadiosArgs.bind(this),
         whenUnavailableTextareaArgs: this.whenUnavailableTextareaArgs,
+        reasonForChangeTextAreaArgs: this.reasonForChangeTextAreaArgs,
       },
     ]
   }
