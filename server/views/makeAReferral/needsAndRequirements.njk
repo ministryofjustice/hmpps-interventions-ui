@@ -5,6 +5,8 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
 
 {% extends "../partials/layout.njk" %}
 
@@ -17,6 +19,8 @@
       {% if errorSummaryArgs !== null %}
         {{ govukErrorSummary(errorSummaryArgs) }}
       {% endif %}
+
+{{ govukBackLink(backLinkArgs) }}
 
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
 

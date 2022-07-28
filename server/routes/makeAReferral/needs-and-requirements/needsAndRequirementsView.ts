@@ -151,6 +151,7 @@ export default class NeedsAndRequirementsView {
         responsibilitiesRadiosArgs: this.responsibilitiesRadiosArgs.bind(this),
         whenUnavailableTextareaArgs: this.whenUnavailableTextareaArgs,
         reasonForChangeTextAreaArgs: this.reasonForChangeTextAreaArgs,
+        backLinkArgs: { href: this.presenter.backLink },
       },
     ]
   }

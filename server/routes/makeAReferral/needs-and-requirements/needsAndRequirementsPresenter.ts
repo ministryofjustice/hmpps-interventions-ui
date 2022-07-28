@@ -15,6 +15,8 @@ export default class NeedsAndRequirementsPresenter {
     return PresenterUtils.errorMessage(this.error, field)
   }
 
+  readonly backLink: string = `/probation-practitioner/referrals/${this.sentReferral?.id}/details`
+
   readonly text = {
     title: this.referral
       ? `${this.referral?.serviceUser?.firstName}’s needs and requirements`
@@ -77,7 +79,7 @@ export default class NeedsAndRequirementsPresenter {
 
   readonly fields = {
     additionalNeedsInformation: this.utils.stringValue(
-      this.referral?.additionalNeedsInformation ?? '',
+      this.referral?.additionalNeedsInformation ?? this.sentReferral?.referral.additionalNeedsInformation ?? '',
       'additional-needs-information'
     ),
     accessibilityNeeds: this.utils.stringValue(

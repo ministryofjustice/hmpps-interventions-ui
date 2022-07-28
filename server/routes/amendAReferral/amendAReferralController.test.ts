@@ -61,6 +61,7 @@ describe('GET /probation-practitioner/referrals/:id/update-needs-requirements', 
         expect(res.text).toContain('Do you want to change the needs and requirements? (optional)')
         expect(res.text).toContain('What&#39;s the reason for changing the needs and requirement?')
         expect(res.text).not.toContain('You need to add a reason for changing the needs and requirements')
+        expect(res.text).toContain(`/probation-practitioner/referrals/${referral.id}/details`)
       })
   })
 
