@@ -25,7 +25,7 @@ describe('tokenVerificationMiddleware', () => {
     return {
       isAuthenticated: () => authenticated,
       session: {},
-      logout: jest.fn(fn => fn()),
+      logout: jest.fn(),
     } as unknown as Request
   }
 

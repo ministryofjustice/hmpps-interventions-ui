@@ -21,12 +21,8 @@ export default function tokenVerificationMiddleware(tokenVerifier: TokenVerifier
 
     log.info('access token expired or invalid - redirecting to login')
 
-    return req.logout(err => {
-      if (err) {
-        return next(err)
-      }
-      req.session!.returnTo = req.originalUrl
-      return res.redirect('/sign-in')
-    })
+    req.logout()
+    req.session!.returnTo = req.originalUrl
+    return res.redirect('/sign-in')
   }
 }
