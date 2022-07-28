@@ -14,6 +14,8 @@ import createFormValidationErrorOrRethrow from '../../utils/interventionsFormErr
 import AmendComplexityLevelPresenter from './complexityLevel/amendComplexityLevelPresenter'
 import AmendComplexityLevelView from './complexityLevel/amendComplexityLevelView'
 import AmendComplexityLevelForm from './complexityLevel/amendComplexityLevelForm'
+import ChangelogPresenter from './changelog/changelogPresenter'
+import ChangelogView from './changelog/changelogView'
 
 export default class AmendAReferralController {
   constructor(
@@ -140,6 +142,32 @@ export default class AmendAReferralController {
       formError
     )
     const view = new AmendComplexityLevelView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async getChangelog(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId } = req.params
+    let formError: FormValidationError | null = null
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    if (req.method === 'GET') {
+      try {
+        await this.interventionsService.getChangelog(accessToken, referralId)
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        formError = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    }
+
+    const [serviceUser] = await Promise.all([
+      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+    ])
+
+    const presenter = new ChangelogPresenter(formError)
+    const view = new ChangelogView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }

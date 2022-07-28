@@ -2,6 +2,7 @@ export enum ReferralOverviewPageSection {
   Progress = 1,
   CaseNotes,
   Details,
+  Changelog,
 }
 
 export default class ReferralOverviewPagePresenter {
@@ -28,6 +29,11 @@ export default class ReferralOverviewPagePresenter {
         text: 'Case notes',
         href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/case-notes`,
         active: this.section === ReferralOverviewPageSection.CaseNotes,
+      },
+      {
+        text: 'Change history',
+        href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/changelog`,
+        active: this.section === ReferralOverviewPageSection.Changelog,
       },
     ],
   }
