@@ -33,7 +33,6 @@ export default class DashboardView {
         active: this.presenter.dashboardType === 'Completed cases',
       },
     ],
-    attributes: { 'data-cy': 'dashboard-navigation' },
   }
 
   private get subjectInputArgs(): InputArgs {
