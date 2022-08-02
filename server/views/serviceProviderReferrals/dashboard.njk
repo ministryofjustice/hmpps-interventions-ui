@@ -47,11 +47,11 @@
           <div class="govuk-width-container govuk-!-margin-left-7">
               <h2 class="govuk-heading-m govuk-!-margin-top-7"> There are no results for "{{presenter.SearchText | escape }}"</h2>
                 <div class="govuk-list--bullet govuk-!-margin-bottom-5">
-                  <li class="govuk-body govuk-!-margin-bottom-0">Check the Spelling</li>
+                  <li class="govuk-body govuk-!-margin-bottom-0">Check the spelling</li>
                   <li class="govuk-body govuk-!-margin-bottom-0">Make sure that you have entered their full name or how it appears in open cases</li>
                 </div>
-              <p>If the referral has finished or was cancelled, look in <a href="/service-provider/dashboard/completed-cases"> Completed Cases </a>. </p>
-              <p>If you think referral is missing from cases, <a href="/report-a-problem"> raise a support ticket </a>. </p>
+              <p>If the referral has finished or was cancelled, look in <a href="/service-provider/dashboard/completed-cases"> Completed cases </a>. </p>
+              <p>If you think referral is missing from open cases, <a href="/report-a-problem"> raise a support ticket </a>. </p>
           </div>
         {% else %}
           {{ govukTable(tableArgs) }}
