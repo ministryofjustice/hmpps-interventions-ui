@@ -62,6 +62,7 @@
       <hr class="govuk-section-break govuk-section-break--m">
 
       {% if presenter.dashboardType !== 'All open cases'%}
+      {% include "../partials/pagination.njk" %}
         <hr class="govuk-section-break govuk-section-break--m">
         {{ govukTable(tableArgs) }}
       {% endif %}
