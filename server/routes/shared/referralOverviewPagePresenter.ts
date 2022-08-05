@@ -31,7 +31,7 @@ export default class ReferralOverviewPagePresenter {
         active: this.section === ReferralOverviewPageSection.CaseNotes,
       },
       {
-        text: 'Change history',
+        text: 'Change log',
         href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/changelog`,
         active: this.section === ReferralOverviewPageSection.Changelog,
       },

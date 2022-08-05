@@ -569,6 +569,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
         .expect(res => {
           expect(res.text).toContain('This intervention is assigned to')
           expect(res.text).toContain('John Smith')
+          expect(res.text).toContain('change-link')
         })
     })
   })

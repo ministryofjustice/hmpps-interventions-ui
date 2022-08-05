@@ -22,6 +22,7 @@ context('Amend a referral', () => {
       cy.stubUpdateSentReferralDetails(sentReferral.id, { referralId: sentReferral.id })
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser

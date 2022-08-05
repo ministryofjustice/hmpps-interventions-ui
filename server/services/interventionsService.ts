@@ -250,13 +250,13 @@ export default class InterventionsService {
     })) as ServiceCategory
   }
 
-  async getChangelog(token: string, referralId: string): Promise<Changelog> {
+  async getChangelog(token: string, referralId: string): Promise<Changelog[]> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.get({
       path: `/sent-referral/${referralId}/change-log`,
       headers: { Accept: 'application/json' },
-    })) as Changelog
+    })) as Changelog[]
   }
 
   async getDraftReferralsForUserToken(token: string): Promise<DraftReferral[]> {

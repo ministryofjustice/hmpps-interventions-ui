@@ -4,6 +4,11 @@ export default class ChangelogView {
   constructor(readonly presenter: ChangelogPresenter) {}
 
   get renderArgs(): [string, Record<string, unknown>] {
-    return ['amendAReferral/changelog', {}]
+    return [
+      'amendAReferral/changelog',
+      {
+        presenter: this.presenter,
+      },
+    ]
   }
 }
