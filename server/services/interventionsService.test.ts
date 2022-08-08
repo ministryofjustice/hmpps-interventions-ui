@@ -2759,7 +2759,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('getActionPlanAppointments', () => {
     const appointmentTime = new Date()
-    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
     appointmentTime.setHours(0, 0, 0, 0)
 
     const actionPlanAppointments = [
@@ -2817,7 +2817,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('getActionPlanAppointment', () => {
     const appointmentTime = new Date()
-    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
     const actionPlanAppointment = actionPlanAppointmentFactory.build({
       sessionNumber: 1,
@@ -2908,7 +2908,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('updateActionPlanAppointment', () => {
     const appointmentTime = new Date()
-    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
     describe('with a past appointment time', () => {
       it('returns a scheduled action plan appointment with feedback', async () => {
@@ -3094,7 +3094,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('recordActionPlanAppointmentAttendance', () => {
     const appointmentTime = new Date()
-    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
     it('returns an updated action plan appointment with the service user‘s attendance', async () => {
       await provider.addInteraction({
@@ -3161,7 +3161,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('recordActionPlanAppointmentBehavior', () => {
     const appointmentTime = new Date()
-    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
     it('returns an updated action plan appointment with the service user‘s behaviour', async () => {
       await provider.addInteraction({
@@ -3219,7 +3219,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('submitActionPlanSessionFeedback', () => {
     const appointmentTime = new Date()
-    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
     it('submits attendance and behaviour feedback to the PP', async () => {
       await provider.addInteraction({
@@ -3539,7 +3539,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('scheduleSupplierAssessmentAppointment', () => {
     const appointmentTime = new Date()
-    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
     const appointmentParams = {
       appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
@@ -3595,7 +3595,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('recordSupplierAssessmentAppointmentAttendance', () => {
     const appointmentTime = new Date()
-    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
     it('returns an updated appointment with the service user‘s attendance', async () => {
       const appointment = initialAssessmentAppointmentFactory.build({
@@ -3653,7 +3653,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('recordSupplierAssessmentAppointmentBehaviour', () => {
     const appointmentTime = new Date()
-    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
     it('returns an supplier with the service user‘s behaviour', async () => {
       const appointment = initialAssessmentAppointmentFactory.build({
@@ -3711,7 +3711,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
   describe('submitSupplierAssessmentAppointmentFeedback', () => {
     const appointmentTime = new Date()
-    appointmentTime.setDate(appointmentTime.getDate() + 1)
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
     it('submits attendance and behaviour feedback', async () => {
       const appointment = initialAssessmentAppointmentFactory.build({
