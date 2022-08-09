@@ -447,9 +447,18 @@ export default class AppointmentsController {
       this.interventionsService.getSentReferral(accessToken, referralId),
       this.interventionsService.getSupplierAssessment(accessToken, referralId),
     ])
-    const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(req, res, supplierAssessment)
+    const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(
+      req,
+      res,
+      supplierAssessment,
+      referralId
+    )
 
     if (appointment === null) {
+      if (draftBookingId) {
+        logger.warn(`Attempting to add supplier assessment attendance feedback without a draft appointment`)
+        return
+      }
       throw new Error('Attempting to add supplier assessment attendance feedback without a current appointment')
     }
     let formError: FormValidationError | null = null
@@ -542,9 +551,18 @@ export default class AppointmentsController {
       this.interventionsService.getSentReferral(accessToken, referralId),
       this.interventionsService.getSupplierAssessment(accessToken, referralId),
     ])
-    const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(req, res, supplierAssessment)
+    const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(
+      req,
+      res,
+      supplierAssessment,
+      referralId
+    )
 
     if (appointment === null) {
+      if (draftBookingId) {
+        logger.warn(`Attempting to add initial assessment behaviour feedback without a draft appointment`)
+        return
+      }
       throw new Error('Attempting to add initial assessment behaviour feedback without a current appointment')
     }
     let formError: FormValidationError | null = null
@@ -612,9 +630,18 @@ export default class AppointmentsController {
       this.interventionsService.getSentReferral(accessToken, referralId),
       this.interventionsService.getSupplierAssessment(accessToken, referralId),
     ])
-    const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(req, res, supplierAssessment)
+    const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(
+      req,
+      res,
+      supplierAssessment,
+      referralId
+    )
 
     if (appointment === null) {
+      if (draftBookingId) {
+        logger.warn(`Attempting to check supplier assessment feedback answers without a draft appointment`)
+        return
+      }
       throw new Error('Attempting to check supplier assessment feedback answers without a current appointment')
     }
 
@@ -629,7 +656,7 @@ export default class AppointmentsController {
     )
     const view = new CheckFeedbackAnswersView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async submitSupplierAssessmentFeedback(req: Request, res: Response): Promise<void> {
@@ -640,8 +667,17 @@ export default class AppointmentsController {
 
     const supplierAssessment = await this.interventionsService.getSupplierAssessment(accessToken, referralId)
 
-    const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(req, res, supplierAssessment)
+    const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(
+      req,
+      res,
+      supplierAssessment,
+      referralId
+    )
     if (appointment === null) {
+      if (draftBookingId) {
+        logger.warn(`Attempting to submit supplier assessment feedback without a draft appointment`)
+        return
+      }
       throw new Error('Attempting to submit supplier assessment feedback without a current appointment')
     }
     if (draftBookingId) {
@@ -763,7 +799,8 @@ export default class AppointmentsController {
         let basePath
         let redirectPath
         if (draftBookingId) {
-          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+          const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
           if (fetchResult.rendered) {
             return
           }
@@ -816,7 +853,7 @@ export default class AppointmentsController {
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res)
+    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res, referral.id)
     // return because draft service already renders page.
     if (appointment === null) {
       return
@@ -864,7 +901,8 @@ export default class AppointmentsController {
           )
           redirectUrl = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/check-your-answers`
         } else {
-          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+          const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
           if (fetchResult.rendered) {
             return
           }
@@ -891,7 +929,7 @@ export default class AppointmentsController {
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res)
+    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res, referral.id)
     // return because draft service already renders page.
     if (appointment === null) {
       return
@@ -920,7 +958,7 @@ export default class AppointmentsController {
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res)
+    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res, referral.id)
     // return because draft service already renders page.
     if (appointment === null) {
       return
@@ -945,7 +983,8 @@ export default class AppointmentsController {
     const { actionPlanId, sessionNumber, draftBookingId } = req.params
 
     if (draftBookingId) {
-      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+      const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
       if (fetchResult.rendered) {
         return
       }
@@ -1237,13 +1276,14 @@ export default class AppointmentsController {
 
   private async getActionPlanAppointmentFromDraftOrService(
     req: Request,
-    res: Response
+    res: Response,
+    referralId?: string
   ): Promise<ActionPlanAppointment | null> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { draftBookingId, sessionNumber, actionPlanId } = req.params
     if (draftBookingId) {
-      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, referralId)
       if (fetchResult.rendered) {
         return null
       }
@@ -1294,11 +1334,12 @@ export default class AppointmentsController {
   private async getSupplierAssessmentAppointmentFromDraftOrService(
     req: Request,
     res: Response,
-    supplierAssessment: SupplierAssessment
+    supplierAssessment: SupplierAssessment,
+    referralId?: string
   ): Promise<InitialAssessmentAppointment | null> {
     const { draftBookingId, id } = req.params
     if (draftBookingId) {
-      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, referralId)
       if (fetchResult.rendered) {
         return null
       }
