@@ -65,8 +65,8 @@ export default class ShowReferralView {
     this.presenter.userType === 'probation-practitioner'
       ? {
           html:
-            'You can amend the number of enforceable days or the completion date on this referral.<br/>' +
-            'This will send a notification to the service provider',
+            'You can change some of these referral details.  What you can change will depend on how much progress has been made on the referral.<br/>' +
+            'When you make a change it will send a notification to the service provider.',
         }
       : null
 

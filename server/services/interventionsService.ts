@@ -16,7 +16,7 @@ import AppointmentBehaviour from '../models/appointmentBehaviour'
 import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
 import SentReferralSummaries from '../models/sentReferralSummaries'
-import ReferralDesiredOutcomes from '../models/referralDesiredOutcomes'
+import ReferralDesiredOutcomes, { ReferralDesiredOutcomesUpdate } from '../models/referralDesiredOutcomes'
 import ReferralComplexityLevel from '../models/referralComplexityLevel'
 import SupplierAssessment from '../models/supplierAssessment'
 import ServiceProviderSentReferralSummary from '../models/serviceProviderSentReferralSummary'
@@ -194,6 +194,21 @@ export default class InterventionsService {
       headers: { Accept: 'application/json' },
       data: desiredOutcomes,
     })) as DraftReferral
+  }
+
+  async updateDesiredOutcomesForServiceCategory(
+    token: string,
+    referralId: string,
+    serviceCategoryId: string,
+    update: Partial<ReferralDesiredOutcomesUpdate>
+  ): Promise<null> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/sent-referral/${referralId}/service-category/${serviceCategoryId}/amend-desired-outcomes`,
+      headers: { Accept: 'application/json' },
+      data: { ...update },
+    })) as null
   }
 
   async setComplexityLevelForServiceCategory(

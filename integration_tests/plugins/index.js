@@ -274,5 +274,13 @@ export default on => {
     stubUpdateSentReferralDetails: arg => {
       return interventionsService.stubUpdateSentReferralDetails(arg.referralId, arg.responseJson)
     },
+
+    stubUpdateDesiredOutcomesForServiceCategory: arg => {
+      return interventionsService.stubUpdateDesiredOutcomesForServiceCategory(
+        arg.referralId,
+        arg.serviceCategoryId,
+        arg.responseJson
+      )
+    },
   })
 }

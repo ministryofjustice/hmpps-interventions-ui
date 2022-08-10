@@ -1,0 +1,37 @@
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+{% extends "../partials/layout.njk" %}
+
+
+{% set pageTitle = "Amend a referral" %}
+{% set pageSubTitle = "Select desired outcomes" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukBackLink(backLinkArgs) }}
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {% if errorSummaryArgs !== null %}
+          {{ govukErrorSummary(errorSummaryArgs) }}
+        {% endif %}
+
+        {{ govukCheckboxes(checkboxArgs) }}
+
+        {{ govukTextarea(reasonForChangeInputArgs) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({ text: "Save changes", preventDoubleClick: true }) }}
+
+          <a href="{{ backLinkArgs.href }}" data-cy="cancel" class="govuk-link">Cancel and go back</a>
+        </p>
+      </form>
+    </div>
+  </div>
+{% endblock %}

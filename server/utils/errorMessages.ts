@@ -99,6 +99,7 @@ export default {
   },
   desiredOutcomes: {
     empty: 'Select desired outcomes',
+    noChanges: 'You have not changed any desired outcomes.',
   },
   needsInterpreter: {
     empty: (name: string) => `Select yes if ${name} needs an interpreter`,
