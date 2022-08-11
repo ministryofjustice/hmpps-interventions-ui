@@ -366,6 +366,8 @@ describe('Probation practitioner referrals dashboard', () => {
       },
     })
 
+    cy.stubGetApprovedActionPlanSummaries(referral.id, [])
+
     const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
       riskSummaryComments: 'They are low risk.',
     })
@@ -578,6 +580,8 @@ describe('Probation practitioner referrals dashboard', () => {
           ],
         },
       })
+
+      cy.stubGetApprovedActionPlanSummaries(referral.id, [])
 
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
         riskSummaryComments: 'They are low risk.',

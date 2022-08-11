@@ -282,5 +282,13 @@ export default on => {
         arg.responseJson
       )
     },
+
+    stubAmendComplexityLevelForServiceCategory: arg => {
+      return interventionsService.stubAmendComplexityLevelForServiceCategory(
+        arg.referralId,
+        arg.serviceCategoryId,
+        arg.responseJson
+      )
+    },
   })
 }

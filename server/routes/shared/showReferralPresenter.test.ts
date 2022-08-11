@@ -680,6 +680,163 @@ describe(ShowReferralPresenter, () => {
         ])
       })
     })
+
+    describe('amend complexity level', () => {
+      it('amend link is shown if action plan is not approved and user is a probation practitioner', () => {
+        const presenter = new ShowReferralPresenter(
+          referral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          null,
+          null,
+          'probation-practitioner',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          deliusOffenderManagerFactory.build({
+            staff: {
+              forenames: 'Peter',
+              surname: 'Practitioner',
+              email: 'p.practitioner@example.com',
+              phoneNumber: '01234567890',
+            },
+            team: {
+              telephone: '01141234567',
+              emailAddress: 'team@nps.gov.uk',
+            },
+          }),
+          false,
+          undefined,
+          false
+        )
+
+        expect(
+          presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
+            return args.text!
+          })
+        ).toEqual([
+          {
+            key: 'Complexity level',
+            lines: [
+              'LOW COMPLEXITY',
+              'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
+            ],
+            changeLink: `/probation-practitioner/referrals/${referral.id}/service-category/${cohortServiceCategories[0].id}/update-complexity-level`,
+          },
+          expect.objectContaining({
+            key: 'Desired outcomes',
+          }),
+        ])
+      })
+
+      it('amend link is not shown if action plan is approved', () => {
+        const presenter = new ShowReferralPresenter(
+          referral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          null,
+          null,
+          'probation-practitioner',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          deliusOffenderManagerFactory.build({
+            staff: {
+              forenames: 'Peter',
+              surname: 'Practitioner',
+              email: 'p.practitioner@example.com',
+              phoneNumber: '01234567890',
+            },
+            team: {
+              telephone: '01141234567',
+              emailAddress: 'team@nps.gov.uk',
+            },
+          }),
+          false,
+          undefined,
+          true
+        )
+
+        expect(
+          presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
+            return args.text!
+          })
+        ).toEqual([
+          {
+            key: 'Complexity level',
+            lines: [
+              'LOW COMPLEXITY',
+              'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
+            ],
+            changeLink: undefined,
+          },
+          {
+            key: 'Desired outcomes',
+            lines: [
+              'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+              'Service user makes progress in obtaining accommodation',
+            ],
+          },
+        ])
+      })
+
+      it('amend link is not if the user is a service provider', () => {
+        const presenter = new ShowReferralPresenter(
+          referral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          null,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          deliusOffenderManagerFactory.build({
+            staff: {
+              forenames: 'Peter',
+              surname: 'Practitioner',
+              email: 'p.practitioner@example.com',
+              phoneNumber: '01234567890',
+            },
+            team: {
+              telephone: '01141234567',
+              emailAddress: 'team@nps.gov.uk',
+            },
+          }),
+          false,
+          undefined,
+          false
+        )
+
+        expect(
+          presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
+            return args.text!
+          })
+        ).toEqual([
+          {
+            key: 'Complexity level',
+            lines: [
+              'LOW COMPLEXITY',
+              'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
+            ],
+            changeLink: undefined,
+          },
+          {
+            key: 'Desired outcomes',
+            lines: [
+              'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+              'Service user makes progress in obtaining accommodation',
+            ],
+          },
+        ])
+      })
+    })
   })
 
   describe('serviceUserPersonalDetails', () => {

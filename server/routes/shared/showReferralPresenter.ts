@@ -129,6 +129,10 @@ export default class ShowReferralPresenter {
         complexityLevel !== null
           ? [tagMacro(PresenterUtils.complexityLevelTagArgs(complexityLevel)), complexityLevel.description]
           : ['No complexity level found for this service category'],
+      changeLink:
+        this.userType === 'probation-practitioner' && !this.hasApprovedActionPlan
+          ? `/probation-practitioner/referrals/${this.sentReferral.id}/service-category/${serviceCategory.id}/update-complexity-level`
+          : undefined,
     })
 
     const desiredOutcomes = this.getReferralDesiredOutcomesForServiceCategory(serviceCategory)
