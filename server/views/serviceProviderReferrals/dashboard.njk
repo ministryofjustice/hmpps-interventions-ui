@@ -39,19 +39,22 @@
         {% if presenter.SearchText == '' %}
           <div class="govuk-width-container govuk-!-margin-left-7">
             <h2 class="govuk-heading-m govuk-!-margin-top-7">You have not entered any search terms</h2>
+            <p>Search by one of the following:</p>
             <div class="govuk-list--bullet govuk-!-margin-bottom-5">
-              <li class="govuk-body govuk-!-margin-bottom-0">Enter the full name of the person on probation</li>
+              <li class="govuk-body govuk-!-margin-bottom-0">referral number, for example KW5219ED</li>
+              <li class="govuk-body govuk-!-margin-bottom-0">first and last name of the person on probation, for example James Baker</li>
             </div>
           </div>
         {% elif tableArgs.rows.length <1 and presenter.SearchText !== null %}
           <div class="govuk-width-container govuk-!-margin-left-7">
-              <h2 class="govuk-heading-m govuk-!-margin-top-7"> There are no results for "{{presenter.SearchText | escape }}"</h2>
+              <h2 class="govuk-heading-m govuk-!-margin-top-7"> There are no results for "{{presenter.SearchText | escape }}" in open cases</h2>
+              <p>If you searched by:</p>
                 <div class="govuk-list--bullet govuk-!-margin-bottom-5">
-                  <li class="govuk-body govuk-!-margin-bottom-0">Check the spelling</li>
-                  <li class="govuk-body govuk-!-margin-bottom-0">Make sure that you have entered their full name or how it appears in open cases</li>
+                  <li class="govuk-body govuk-!-margin-bottom-0">person on probation, make sure you use their first and last name, for example James Baker</li>
+                  <li class="govuk-body govuk-!-margin-bottom-0">referral number, check it's 8 characters long (2 letters, 4 numbers and then 2 letters)</li>
                 </div>
-              <p>If the referral has finished or was cancelled, look in <a href="/service-provider/dashboard/completed-cases"> Completed cases </a>. </p>
-              <p>If you think referral is missing from open cases, <a href="/report-a-problem"> raise a support ticket </a>. </p>
+              <p>If you still cannot find it, it may not be in open cases. Check in other case lists.</p>
+              <p>If the referral is missing from every case list, <a href="/report-a-problem"> raise a support ticket </a>. </p>
           </div>
         {% else %}
           {{ govukTable(tableArgs) }}
