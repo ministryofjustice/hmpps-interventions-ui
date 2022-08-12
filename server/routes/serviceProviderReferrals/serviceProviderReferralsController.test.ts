@@ -348,7 +348,13 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
         expect(res.text).not.toContain('Alex River')
         expect(res.text).not.toContain('Accommodation Services - West Midlands')
         expect(res.text).not.toContain('George River')
-        expect(res.text).toContain(`There are no results for "${searchText}"`)
+        expect(res.text).toContain(`There are no results for "${searchText}" in open cases`)
+        expect(res.text).toContain(
+          `person on probation, make sure you use their first and last name, for example James Baker`
+        )
+        expect(res.text).toContain(
+          `referral number, check it's 8 characters long (2 letters, 4 numbers and then 2 letters)`
+        )
       })
   })
 
@@ -364,7 +370,8 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('You have not entered any search terms')
-        expect(res.text).toContain('Enter the full name of the person on probation')
+        expect(res.text).toContain('referral number, for example KW5219ED')
+        expect(res.text).toContain('first and last name of the person on probation, for example James Baker')
       })
   })
 
