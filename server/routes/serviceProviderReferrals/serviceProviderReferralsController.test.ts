@@ -802,7 +802,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('End of service report')
-        expect(res.text).not.toContain('Not submitted')
+        expect(res.text).toContain('Not submitted')
       })
   })
 })
