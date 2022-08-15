@@ -183,7 +183,7 @@
     "nock": "^13.2.9",
     "nodemon": "^2.0.18",
     "prettier": "^2.7.1",
-    "sass": "^1.54.3",
+    "sass": "^1.54.4",
     "stylelint": "^14.10.0",
     "stylelint-config-sass-guidelines": "^9.0.1",
     "supertest": "^6.2.4",
