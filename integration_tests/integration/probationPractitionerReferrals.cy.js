@@ -581,8 +581,6 @@ describe('Probation practitioner referrals dashboard', () => {
         },
       })
 
-      cy.stubGetApprovedActionPlanSummaries(referral.id, [])
-
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
         riskSummaryComments: 'They are low risk.',
       })
@@ -657,24 +655,20 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
-      cy.stubUpdateSentReferralDetails(referral.id, referral)
+      cy.stubUpdateDesiredOutcomesForServiceCategory(referral.id, accommodationServiceCategory.id, referral)
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
+      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
 
       cy.login()
 
       cy.visit(`/probation-practitioner/referrals/${referral.id}/details`)
-
-      cy.contains('This intervention is not yet assigned to a caseworker')
-      cy.contains('Change').click()
+      cy.contains('End of sentence date')
+      cy.contains('Date to be completed by')
+      cy.contains('Maximum number of enforceable days')
+      cy.visit(`/referrals/${referral.id}/completion-deadline`)
       cy.contains('What date does the Personal wellbeing intervention need to be completed by?')
-      cy.contains('Day').type('{selectall}{backspace}').type('10')
-      cy.contains('Month').type('{selectall}{backspace}').type('10')
-      cy.contains('Year').type('{selectall}{backspace}').type('2030')
-
       cy.contains('What is the reason for changing the completion date?').type('Random reason')
-
       cy.contains('Save and continue').click()
-      cy.contains('Success')
     })
 
     it('probation practitioner amends desired outcomes', () => {
