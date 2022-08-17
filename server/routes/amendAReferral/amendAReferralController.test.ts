@@ -117,10 +117,27 @@ describe('POST /probation-practitioner/referrals/:referralId/:serviceCategoryId/
   })
 
   describe('with form validation errors', () => {
+    it('redirects to amend referral with changesMade query param set if no changes made', () => {
+      const desiredOutcomes = referral.referral.desiredOutcomes[0]
+      return request(app)
+        .post(
+          `/probation-practitioner/referrals/${referral.id}/${desiredOutcomes.serviceCategoryId}/update-desired-outcomes`
+        )
+        .send({
+          'reason-for-change': 'no changes to outcomes',
+          'desired-outcomes-ids': desiredOutcomes.desiredOutcomesIds,
+        })
+        .expect(302)
+        .expect(
+          'Location',
+          `/probation-practitioner/referrals/${referral.id}/${desiredOutcomes.serviceCategoryId}/update-desired-outcomes?noChanges=true`
+        )
+    })
+
     it('renders an error message', () => {
       return request(app)
         .post(`/probation-practitioner/referrals/${referral.id}/${serviceCategory.id}/update-desired-outcomes`)
-        .send({ 'reason-for-change': ' ' })
+        .send({ 'reason-for-change': ' ', 'desired-outcomes-ids': ['3415a6f2-38ef-4613-bb95-33355deff17e'] })
         .expect(400)
         .expect(res => {
           expect(res.text).toContain('A reason for changing the referral must be supplied')

@@ -292,6 +292,10 @@ context('Amend a referral', () => {
         )
         cy.contains('What are the desired outcomes for Accommodation?')
 
+        cy.get('[data-cy=desired-outcomes]').within(() => {
+          cy.get(':checkbox').last().check()
+        })
+
         cy.contains('Save changes').click()
 
         cy.get('.govuk-error-summary').within(() => {
@@ -329,9 +333,9 @@ context('Amend a referral', () => {
 
         cy.contains('Save changes').click()
 
-        cy.get('.govuk-error-summary').within(() => {
-          cy.contains('There is a problem')
-          cy.contains('You have not changed any desired outcomes.')
+        cy.get('.govuk-notification-banner').within(() => {
+          cy.contains('Important')
+          cy.contains('You have not made any changes to desired outcomes.')
         })
       })
     })

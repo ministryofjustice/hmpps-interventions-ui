@@ -1,4 +1,4 @@
-import { CheckboxesArgs, TextareaArgs } from '../../../utils/govukFrontendTypes'
+import { CheckboxesArgs, TextareaArgs, NotificationBannerArgs } from '../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../utils/viewUtils'
 import AmendDesiredOutcomesForm from './amendDesiredOutcomesForm'
 import AmendDesiredOutcomesPresenter from './amendDesiredOutcomesPresenter'
@@ -31,6 +31,7 @@ export default class AmendDesiredOutcomesView {
         errorSummaryArgs: this.errorSummaryArgs,
         reasonForChangeInputArgs: this.textAreaArgs,
         backLinkArgs: { href: this.presenter.backLinkUrl },
+        notificationBannerArgs: this.notificationBannerArgs,
       },
     ]
   }
@@ -61,5 +62,18 @@ export default class AmendDesiredOutcomesView {
         'data-cy': 'desired-outcomes',
       },
     }
+  }
+
+  get notificationBannerArgs(): NotificationBannerArgs | null {
+    const html = `<hr class="govuk-section-break govuk-section-break--s">
+          <p>
+          You have not made any changes to desired outcomes. If you want to leave the desired outcomes as they are, <a href= ${this.presenter.backLinkUrl}>cancel and go back</a>.
+          </p>`
+    return this.presenter.showNoChangesBanner
+      ? {
+          titleText: 'Important',
+          html,
+        }
+      : null
   }
 }

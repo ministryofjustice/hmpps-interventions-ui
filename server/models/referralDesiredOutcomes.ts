@@ -4,4 +4,5 @@ export default interface ReferralDesiredOutcomes {
 }
 export interface ReferralDesiredOutcomesUpdate extends ReferralDesiredOutcomes {
   reasonForChange: string
+  changesMade: boolean
 }

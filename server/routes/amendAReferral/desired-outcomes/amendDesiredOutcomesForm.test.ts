@@ -83,12 +83,8 @@ describe(AmendDesiredOutcomesForm, () => {
       }
       const data = await new AmendDesiredOutcomesForm(request).data()
 
-      expect(data.paramsForUpdate).toBeNull()
-      expect(data.error?.errors).toContainEqual({
-        errorSummaryLinkedField: AmendDesiredOutcomesForm.desiredOutcomesId,
-        formFields: [AmendDesiredOutcomesForm.desiredOutcomesId],
-        message: errorMessages.desiredOutcomes.noChanges,
-      })
+      expect(data.paramsForUpdate).toMatchObject({ changesMade: false })
+      expect(data.error).toBeNull()
     })
   })
 })
