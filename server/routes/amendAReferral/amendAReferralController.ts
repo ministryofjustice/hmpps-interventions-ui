@@ -14,8 +14,6 @@ import createFormValidationErrorOrRethrow from '../../utils/interventionsFormErr
 import AmendComplexityLevelPresenter from './complexityLevel/amendComplexityLevelPresenter'
 import AmendComplexityLevelView from './complexityLevel/amendComplexityLevelView'
 import AmendComplexityLevelForm from './complexityLevel/amendComplexityLevelForm'
-import ChangelogPresenter from './changelog/changelogPresenter'
-import ChangelogView from './changelog/changelogView'
 
 export default class AmendAReferralController {
   constructor(
