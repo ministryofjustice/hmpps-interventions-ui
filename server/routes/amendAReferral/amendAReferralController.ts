@@ -145,20 +145,4 @@ export default class AmendAReferralController {
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
-
-  async getChangelog(req: Request, res: Response): Promise<void> {
-    const { accessToken } = res.locals.user.token
-    const { referralId } = req.params
-    const formError: FormValidationError | null = null
-
-    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
-    const changeLog = await this.interventionsService.getChangelog(accessToken, referralId)
-    const [serviceUser] = await Promise.all([
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
-    ])
-    const presenter = new ChangelogPresenter(formError, changeLog)
-    const view = new ChangelogView(presenter)
-
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
 }
