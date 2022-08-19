@@ -19,6 +19,16 @@ export default class AmendDesiredOutcomesForm {
       validations: AmendDesiredOutcomesForm.validations,
     })
 
+    const noChangesMade = this.checkForNoChangesError(validationResult)
+
+    if (noChangesMade) {
+      return {
+        paramsForUpdate: {
+          changesMade: false,
+        },
+        error: null,
+      }
+    }
     const error = this.error(validationResult)
 
     if (error) {
@@ -32,6 +42,7 @@ export default class AmendDesiredOutcomesForm {
       paramsForUpdate: {
         desiredOutcomesIds: this.request.body[AmendDesiredOutcomesForm.desiredOutcomesId],
         reasonForChange: this.request.body[AmendDesiredOutcomesForm.reasonForChangeId],
+        changesMade: true,
       },
       error: null,
     }
@@ -65,5 +76,15 @@ export default class AmendDesiredOutcomesForm {
         message: validationError.msg,
       })),
     }
+  }
+
+  private checkForNoChangesError(validationResult: Result<ValidationError>): boolean | null {
+    if (validationResult.isEmpty()) {
+      return null
+    }
+
+    return validationResult.array().some(validationError => {
+      return validationError.msg === errorMessages.desiredOutcomes.noChanges
+    })
   }
 }

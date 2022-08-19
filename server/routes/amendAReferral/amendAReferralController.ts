@@ -66,6 +66,10 @@ export default class AmendAReferralController {
       )?.desiredOutcomesIds
       const formData = await new AmendDesiredOutcomesForm(req).data()
 
+      if (!formData.error && !formData.paramsForUpdate?.changesMade) {
+        return res.redirect(`${req.baseUrl}${req.path}?noChanges=true`)
+      }
+
       if (!formData.error) {
         await this.interventionsService.updateDesiredOutcomesForServiceCategory(
           accessToken,
@@ -76,6 +80,7 @@ export default class AmendAReferralController {
         return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
       }
 
+      delete req.query.noChanges
       error = formData.error
       userInputData = req.body
       res.status(400)
@@ -83,7 +88,13 @@ export default class AmendAReferralController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const serviceCategory = await this.interventionsService.getServiceCategory(accessToken, serviceCategoryId)
-    const presenter = new AmendDesiredOutcomesPresenter(referral, serviceCategory, error, userInputData)
+    const presenter = new AmendDesiredOutcomesPresenter(
+      referral,
+      serviceCategory,
+      error,
+      userInputData,
+      req.query.noChanges === 'true'
+    )
     const view = new AmendDesiredOutcomesView(presenter)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }

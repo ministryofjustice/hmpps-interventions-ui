@@ -3,6 +3,7 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -14,6 +15,10 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{ govukBackLink(backLinkArgs) }}
+
+      {% if notificationBannerArgs %}
+         {{ govukNotificationBanner(notificationBannerArgs) }}
+      {% endif %}
 
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">

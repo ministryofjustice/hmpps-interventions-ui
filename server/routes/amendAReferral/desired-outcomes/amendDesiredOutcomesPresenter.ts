@@ -10,7 +10,8 @@ export default class AmendDesiredOutcomesPresenter {
     private readonly referral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly error: FormValidationError | null = null,
-    private readonly userInputData: Record<string, string[]> | null = null
+    private readonly userInputData: Record<string, string[]> | null = null,
+    readonly showNoChangesBanner: boolean = false
   ) {
     this.backLinkUrl = `/probation-practitioner/referrals/${referral.id}/details`
     this.fields = {
