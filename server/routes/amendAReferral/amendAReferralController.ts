@@ -24,6 +24,8 @@ import AmendNeedsAndRequirementsIntepreterForm from './interpreter-required/amen
 import AmendAdditionalInformationPresenter from './additionalInformation/amendAdditionalInformationPresenter'
 import AmendAdditionalInformationView from './additionalInformation/amendAdditionalInformationView'
 import AmendAdditionalInformationForm from './additionalInformation/amendAdditionalInformationForm'
+import AmendEmploymentResponsibilitiesPresenter from './employment-responsibilities/amendEmploymentResponsibilitiesPresenter'
+import AmendEmploymentResponsibilitiesView from './employment-responsibilities/amendEmploymentResponsibilitiesView'
 
 export default class AmendAReferralController {
   constructor(
@@ -283,4 +285,32 @@ export default class AmendAReferralController {
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
+
+  async updateEmploymentResponsibilities(req: Request, res: Response): Promise<void> {
+    const {accessToken} = res.locals.user.token
+    const {referralId} = req.params
+    const error = null
+    const userInputData = null
+
+    // if (req.method === 'POST') {
+    //   const formData = await new AmendMaximumEnforceableDaysForm(req).data()
+    //
+    //   if (!formData.error) {
+    //     await this.interventionsService.updateSentReferralDetails(accessToken, referralId, formData.paramsForUpdate)
+    //     return res.redirect(`/probation-practitioner/referrals/${req.params.id}/details?detailsUpdated=true`)
+    //   }
+    //
+    //   error = formData.error
+    //   userInputData = req.body
+    //   res.status(400)
+    // }
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, error, userInputData)
+    const view = new AmendEmploymentResponsibilitiesView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
 }
