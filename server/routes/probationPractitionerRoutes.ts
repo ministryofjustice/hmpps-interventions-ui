@@ -5,6 +5,7 @@ import CaseNotesController from './caseNotes/caseNotesController'
 import ReferralCancellationController from './referral/cancellation/referralCancellationController'
 import AppointmentsController from './appointments/appointmentsController'
 import AmendAReferralController from './amendAReferral/amendAReferralController'
+import ChangeLogController from './amendAReferral/changeLogController'
 
 export const probationPractitionerUrlPrefix = '/probation-practitioner'
 
@@ -29,6 +30,7 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     services.interventionsService,
     services.communityApiService
   )
+  const changeLogController = new ChangeLogController(services.interventionsService, services.communityApiService)
 
   get(router, '/dashboard', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
   get(router, '/dashboard/open-cases', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
@@ -69,6 +71,7 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   post(router, '/referrals/:referralId/service-category/:serviceCategoryId/update-complexity-level', (req, res) =>
     amendAReferralController.updateComplexityLevel(req, res)
   )
+  get(router, '/referrals/:referralId/changelog', (req, res) => changeLogController.getChangelog(req, res))
 
   // Legacy route to keep links in old emails still working. We'll monitor and remove once traffic drops off
   get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback', (req, res) =>

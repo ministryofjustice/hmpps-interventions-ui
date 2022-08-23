@@ -130,6 +130,9 @@ export default on => {
     stubApproveActionPlan: arg => {
       return interventionsService.stubApproveActionPlan(arg.id, arg.responseJson)
     },
+    stubGetChangeLog: arg => {
+      return interventionsService.stubGetChangeLog(arg.id, arg.responseJson)
+    },
 
     stubGetApprovedActionPlanSummaries: arg => {
       return interventionsService.stubGetApprovedActionPlanSummaries(arg.id, arg.responseJson)

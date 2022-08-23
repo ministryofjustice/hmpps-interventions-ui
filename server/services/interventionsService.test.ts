@@ -281,6 +281,36 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
+    describe('getChangelog', () => {
+      it('returns a referral for the given ID', async () => {
+        await provider.addInteraction({
+          state: 'got change log entires successfully',
+          uponReceiving: 'put request for change log entries',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referral/ac386c25-52c8-41fa-9213-fcf42e24b0b5/change-log',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like([
+              {
+                referralId: 'ac386c25-52c8-41fa-9213-fcf42e24b0b5',
+                changedAt: '2020-12-07T18:02:01.599803Z',
+              },
+            ]),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const changeLog = await interventionsService.getChangelog(
+          probationPractitionerToken,
+          'ac386c25-52c8-41fa-9213-fcf42e24b0b5'
+        )
+        expect(changeLog[0].referralId).toBe('ac386c25-52c8-41fa-9213-fcf42e24b0b5')
+      })
+    })
+
     describe('for a single-service referral that has had desired outcomes selected', () => {
       beforeEach(async () => {
         await provider.addInteraction({

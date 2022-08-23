@@ -30,6 +30,7 @@ import { Page } from '../models/pagination'
 import { CaseNote } from '../models/caseNote'
 import { DraftOasysRiskInformation } from '../models/draftOasysRiskInformation'
 import ReferralDetails, { ReferralDetailsUpdate } from '../models/referralDetails'
+import Changelog from '../models/changelog'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -247,6 +248,15 @@ export default class InterventionsService {
       path: `/service-category/${id}`,
       headers: { Accept: 'application/json' },
     })) as ServiceCategory
+  }
+
+  async getChangelog(token: string, referralId: string): Promise<Changelog[]> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/sent-referral/${referralId}/change-log`,
+      headers: { Accept: 'application/json' },
+    })) as Changelog[]
   }
 
   async getDraftReferralsForUserToken(token: string): Promise<DraftReferral[]> {

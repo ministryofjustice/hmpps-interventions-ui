@@ -68,7 +68,7 @@ export default class ViewUtils {
   ): SummaryListArgs {
     return {
       classes: options.showBorders ? undefined : 'govuk-summary-list--no-border',
-      rows: summaryListItems.map(item => {
+      rows: summaryListItems.map((item, index) => {
         return {
           key: {
             text: item.key,
@@ -94,6 +94,7 @@ export default class ViewUtils {
                   {
                     href: item.changeLink,
                     text: 'Change',
+                    attributes: { id: `change-link-${index}` },
                   },
                 ],
               }
