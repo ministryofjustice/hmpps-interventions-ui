@@ -240,7 +240,7 @@ describe('Probation Practitioner monitor journey', () => {
           {
             'Session details': 'Session 3',
             'Date and time': '10:02am on 31 May 2021',
-            Status: 'scheduled',
+            Status: 'awaiting feedback',
             Action: '',
           },
           {
@@ -352,7 +352,7 @@ describe('Probation Practitioner monitor journey', () => {
           expect(result[2]).to.deep.include({
             'Session details': 'Session 3',
             'Date and time': '10:02am on 31 Jul 2021',
-            Status: 'scheduled',
+            Status: 'awaiting feedback',
             Action: '',
           })
           expect(result[3]).to.contains(/^Session 2 history/gi)

@@ -151,7 +151,7 @@ describe(InterventionProgressPresenter, () => {
       })
     })
 
-    describe('when an appointment has been scheduled', () => {
+    describe('when an appointment has been scheduled in the past', () => {
       it('populates the table with formatted session information, with the "Reschedule session" and "Give feedback" links displayed', () => {
         const referral = sentReferralFactory.build()
         const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
@@ -176,7 +176,7 @@ describe(InterventionProgressPresenter, () => {
             sessionNumber: 1,
             appointmentTime: 'Midday on 7 Dec 2020',
             isParent: true,
-            statusPresenter: new SessionStatusPresenter(SessionStatus.scheduled),
+            statusPresenter: new SessionStatusPresenter(SessionStatus.awaitingFeedback),
             links: [
               {
                 href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit/start',
@@ -188,6 +188,41 @@ describe(InterventionProgressPresenter, () => {
               },
             ],
           },
+        ])
+      })
+    })
+
+    describe('when an appointment has been scheduled in the future', () => {
+      it('populates the table with formatted session information, with the "Reschedule session" link displayed', () => {
+        const referral = sentReferralFactory.build()
+        const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
+        const intervention = interventionFactory.build()
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          [
+            actionPlanAppointmentFactory.build({
+              sessionNumber: 1,
+              appointmentTime: new Date(Date.now() + 1000000).toISOString(),
+              durationInMinutes: 120,
+            }),
+          ],
+          supplierAssessmentFactory.build(),
+          null
+        )
+        expect(presenter.sessionTableRows).toEqual([
+          expect.objectContaining({
+            sessionNumber: 1,
+            statusPresenter: new SessionStatusPresenter(SessionStatus.scheduled),
+            links: [
+              {
+                href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit/start',
+                text: 'Reschedule session',
+              },
+            ],
+          }),
         ])
       })
     })

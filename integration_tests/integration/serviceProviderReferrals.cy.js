@@ -1418,7 +1418,7 @@ describe('Service provider referrals dashboard', () => {
           expect(result[1]).to.deep.include({
             'Session details': 'Session 2',
             'Date and time': '10:02am on 31 Mar 2021',
-            Status: 'scheduled',
+            Status: 'awaiting feedback',
           })
           expect(result[1]).to.contains(/^Reschedule session[\n|\t]*Give feedback$/)
         })
@@ -1561,7 +1561,7 @@ describe('Service provider referrals dashboard', () => {
           expect(result[1]).to.deep.include({
             'Session details': 'Session 2',
             'Date and time': '10:02am on 31 Mar 2021',
-            Status: 'scheduled',
+            Status: 'awaiting feedback',
           })
           expect(result[1]).to.contain(/^Reschedule session[\n|\t]*Give feedback$/)
         })
@@ -1626,7 +1626,7 @@ describe('Service provider referrals dashboard', () => {
         }),
         actionPlanAppointmentFactory.build({
           sessionNumber: 3,
-          appointmentTime: '2021-07-31T09:02:02Z',
+          appointmentTime: new Date(Date.now() + 100000000).toISOString(),
           durationInMinutes: 75,
           appointmentDeliveryType: 'PHONE_CALL',
         }),
@@ -1662,20 +1662,19 @@ describe('Service provider referrals dashboard', () => {
           expect(result[0]).to.deep.include({
             'Session details': 'Session 1',
             'Date and time': '9:02am on 24 Mar 2021',
-            Status: 'scheduled',
+            Status: 'awaiting feedback',
           })
           expect(result[0]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
           expect(result[1]).to.contains(/^Session 1 history/gi)
           expect(result[2]).to.deep.include({
             'Session details': 'Session 2',
             'Date and time': '10:02am on 31 Aug 2021',
-            Status: 'scheduled',
+            Status: 'awaiting feedback',
           })
           expect(result[2]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
           expect(result[3]).to.contains(/^Session 2 history/gi)
           expect(result[4]).to.deep.include({
             'Session details': 'Session 3',
-            'Date and time': '10:02am on 31 Jul 2021',
             Status: 'scheduled',
           })
           expect(result[4]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)

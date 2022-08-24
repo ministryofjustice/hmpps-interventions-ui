@@ -50,8 +50,8 @@ describe(sessionStatus.forAppointment, () => {
         const pastAppointment = actionPlanAppointmentFactory.scheduled().build({
           appointmentTime: pastDate,
         })
-        it('returns "scheduled" status', () => {
-          expect(sessionStatus.forAppointment(pastAppointment)).toEqual(SessionStatus.scheduled)
+        it('returns "awaiting feedback" status', () => {
+          expect(sessionStatus.forAppointment(pastAppointment)).toEqual(SessionStatus.awaitingFeedback)
         })
       })
 
