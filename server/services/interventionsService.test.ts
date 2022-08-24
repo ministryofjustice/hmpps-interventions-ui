@@ -2937,14 +2937,16 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   })
 
   describe('updateActionPlanAppointment', () => {
-    const appointmentTime = new Date()
-    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
+    const futureAppointmentTime = new Date()
+    futureAppointmentTime.setMonth(futureAppointmentTime.getMonth() + 4)
+    const pastAppointmentTime = new Date()
+    pastAppointmentTime.setHours(0, 0, 0, 0) // set to start of current day
 
     describe('with a past appointment time', () => {
       it('returns a scheduled action plan appointment with feedback', async () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
-          appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+          appointmentTime: `${pastAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
           durationInMinutes: 60,
           sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -2982,7 +2984,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'PATCH',
             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
             body: {
-              appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+              appointmentTime: `${pastAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3021,7 +3023,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             '345059d4-1697-467b-8914-fedec9957279',
             2,
             {
-              appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+              appointmentTime: `${pastAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3050,7 +3052,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       it('returns an updated action plan appointment', async () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
-          appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+          appointmentTime: `${futureAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
           durationInMinutes: 60,
           sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3072,7 +3074,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'PATCH',
             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
             body: {
-              appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+              appointmentTime: `${futureAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3103,7 +3105,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             '345059d4-1697-467b-8914-fedec9957279',
             2,
             {
-              appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+              appointmentTime: `${futureAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
