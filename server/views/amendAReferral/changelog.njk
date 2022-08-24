@@ -4,13 +4,17 @@
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
-{% extends "../partials/layout.njk" %}
-{% set pageTitle = "Make a referral" %}
-{% set pageSubTitle = "Select complexity level" %}
-{% block pageContent %}
+{% extends "../partials/referralNavigationTemplate.njk" %}
+
+
+{% block referralPageSection %}
+
 <div class="govuk-grid-row">
-   <div class="govuk-grid-column-three-quarters">
+   <div class="govuk-grid-column-full">
       <table class="govuk-table">
+      {% if presenter.changeLogs.length == 0 %}
+      <p>No referral amend changed</p>
+      {% endif %}
          {% for row in presenter.changeLogs %} 
          <thead class="govuk-table__head">
             <tr class="govuk-table__row">
@@ -18,9 +22,9 @@
                   <div class="govuk-template">
                      <div class="govuk-!-margin-top-5 govuk-!-margin-bottom-7">
                         <div class="govuk-!-margin-left-7 govuk-!-margin-top-5">
-                           <h3><a class="govuk-link--no-visited-state:visited govuk-label govuk-label--m" href="row.changeLogUrl">{{ row.changeLog.topic }}</a></h3>
+                           <h3><a class="govuk-link--no-visited-state:visited govuk-label govuk-label--m" href="row.changeLogUrl">{{ row.changeLog.description }}</a></h3>
                            <p>{{ row.changeLog.changedAt }}</p>
-                           <p><strong>{{ row.changeLog.name }}</strong></p>
+                           <p><strong>Change made by {{ row.changeLog.name }}</strong></p>
                         </div>
                      </div>
                   </div>
@@ -32,17 +36,14 @@
                <th scope="row" class="govuk-table__header">
                   <div class="govuk-template__body">
                      <div class="govuk-!-margin-left-7 govuk-!-margin-top-5">
-                        {% if row.changeLog.reasonForChange.length >=40 %}
-                        <p>{{ row.changeLog.reasonForChange.substring(0, 40)}}... <a class="govuk-link--no-visited-state:visited  govuk-label--xs" href="row.changeLogUrl">Read full details of the change</a></p>
-                        {% else %}
-                        <p>{{ row.changeLog.reasonForChange }}</p>
-                        {% endif %}
+                        <p>{{ row.changeLog.reasonForChange }}</p>   
                      </div>
                   </div>
                </th>
             </tr>
          </tbody>
          {% endfor %}
+         
       </table>
    </div>
 </div>

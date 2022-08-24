@@ -24,7 +24,12 @@ describe('ChangeLogPresenter', () => {
   const formError: FormValidationError | null = null
   describe('generated links', () => {
     it('check the value changelog object', () => {
-      const presenter = new ChangelogPresenter(formError, [changeLog1, changeLog2, changeLog3])
+      const presenter = new ChangelogPresenter(
+        formError,
+        [changeLog1, changeLog2, changeLog3],
+        '',
+        'probation-practitioner'
+      )
       expect(presenter.changeLogs[0].changeLog.reasonForChange).toEqual(changeLog1.reasonForChange)
       expect(presenter.changeLogs[0].changeLog.topic).toEqual(changeLog1.topic)
       expect(presenter.changeLogs[0].changeLog.name).toEqual(changeLog1.name)

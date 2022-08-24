@@ -242,7 +242,7 @@ export default class ShowReferralPresenter {
         ],
         changeLink:
           this.userType === 'probation-practitioner'
-            ? `/referrals/${this.sentReferral.id}/completion-deadline`
+            ? `/referrals/${this.sentReferral.id}/update-completion-deadline`
             : undefined,
       },
       {
