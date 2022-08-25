@@ -104,6 +104,9 @@ export default {
   accessibilityneeds: {
     noChanges: 'You have not changed the accessibility needs',
   },
+  additionalInformation: {
+    noChanges: 'You have not changed any additional information.',
+  },
   needsInterpreter: {
     empty: (name: string) => `Select yes if ${name} needs an interpreter`,
     noChanges: (link:string) =>'You have not changes to whether an interpreter is needed.',

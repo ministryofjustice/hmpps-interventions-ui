@@ -34,6 +34,7 @@ import { CaseNote } from '../models/caseNote'
 import { DraftOasysRiskInformation } from '../models/draftOasysRiskInformation'
 import ReferralDetails, { ReferralDetailsUpdate } from '../models/referralDetails'
 import Changelog from '../models/changelog'
+import { ReferralAdditionalInformationUpdate } from '../models/referralAdditionalInformation'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -255,6 +256,20 @@ export default class InterventionsService {
       path: `/sent-referral/${referralId}/service-category/${serviceCategoryId}/amend-complexity-level`,
       headers: { Accept: 'application/json' },
       data: complexityLevel,
+    })) as null
+  }
+
+  async amendAdditionalInformation(
+    token: string,
+    referralId: string,
+    additionalInformation: Partial<ReferralAdditionalInformationUpdate>
+  ): Promise<null> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/sent-referral/${referralId}/amend-needs-and-requirements/identify-needs`,
+      headers: { Accept: 'application/json' },
+      data: { ...additionalInformation },
     })) as null
   }
 

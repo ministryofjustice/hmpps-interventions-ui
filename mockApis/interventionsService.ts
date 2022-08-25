@@ -890,4 +890,20 @@ export default class InterventionsServiceMocks {
       },
     })
   }
+
+  stubAmendAdditionalInformation = async (referralId: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/sent-referral/${referralId}/amend-needs-and-requirements/identify-needs`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }
