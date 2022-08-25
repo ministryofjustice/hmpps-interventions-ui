@@ -310,7 +310,6 @@ describe('Referral form', () => {
 
       cy.contains('Save and continue').click()
       cy.visit(`/referrals/${draftReferral.id}/further-information`)
-      // cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/further-information`)
       cy.get('h1').contains(
         'Do you have further information for the Accommodation referral service provider? (optional)'
       )
