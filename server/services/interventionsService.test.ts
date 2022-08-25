@@ -2940,13 +2940,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     const futureAppointmentTime = new Date()
     futureAppointmentTime.setMonth(futureAppointmentTime.getMonth() + 4)
     const pastAppointmentTime = new Date()
-    pastAppointmentTime.setHours(0, 0, 0, 0) // set to start of current day
+    pastAppointmentTime.setUTCHours(0, 0, 0, 0) // set to start of current day
+    const pastAppointmentTimeString = pastAppointmentTime.toISOString().replace(/(.*)(:00\.000Z)$/, '$1:00Z')
 
     describe('with a past appointment time', () => {
       it('returns a scheduled action plan appointment with feedback', async () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
-          appointmentTime: `${pastAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+          appointmentTime: pastAppointmentTimeString,
           durationInMinutes: 60,
           sessionType: 'ONE_TO_ONE',
           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -2984,7 +2985,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             method: 'PATCH',
             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
             body: {
-              appointmentTime: `${pastAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+              appointmentTime: pastAppointmentTimeString,
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -3023,7 +3024,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             '345059d4-1697-467b-8914-fedec9957279',
             2,
             {
-              appointmentTime: `${pastAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+              appointmentTime: pastAppointmentTimeString,
               durationInMinutes: 60,
               sessionType: 'ONE_TO_ONE',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
