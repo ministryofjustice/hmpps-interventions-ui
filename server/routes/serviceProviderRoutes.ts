@@ -81,7 +81,9 @@ export default function serviceProviderRoutes(router: Router, services: Services
 
   const changeLogController = new ChangeLogController(services.interventionsService, services.communityApiService)
 
-  get(router, '/referrals/:referralId/changelog', (req, res) => changeLogController.getChangelog(req, res))
+  get(router, '/referrals/:referralId/changelog', (req, res) =>
+    changeLogController.getChangelog(req, res, 'service-provider')
+  )
   // START delivery session appointment scheduling
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/start', (req, res) =>
     appointmentsController.startEditingActionPlanSessionAppointment(req, res)
