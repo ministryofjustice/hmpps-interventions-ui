@@ -851,12 +851,12 @@ export default class MakeAReferralController {
 
   async isSentReferral(req: Request, res: Response): Promise<boolean> {
     try {
-      await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-      return false
+      await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
+      return true
     } catch (e) {
       const interventionsServiceError = e as InterventionsServiceError
       if (interventionsServiceError.status === 404) {
-        return true
+        return false
       }
       throw e
     }

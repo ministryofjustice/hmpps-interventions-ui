@@ -642,6 +642,10 @@ describe('GET /referrals/:id/completion-deadline', () => {
   })
 
   it('renders a form page', async () => {
+    interventionsService.getSentReferral.mockRejectedValue({
+      status: 404,
+    })
+
     await request(app)
       .get('/referrals/1/completion-deadline')
       .expect(200)
@@ -682,9 +686,12 @@ describe('POST /referrals/:id/completion-deadline', () => {
 
   describe('when the user inputs a valid date', () => {
     it('updates the referral on the backend and redirects to the next question if the API call succeeds', async () => {
-      const referral = draftReferralFactory.build({ completionDeadline: '2021-09-15' })
-
-      interventionsService.patchDraftReferral.mockResolvedValue(referral)
+      const referralDetails = referralDetailsFactory.build({ completionDeadline: '2021-09-15' })
+      interventionsService.getSentReferral.mockRejectedValue({
+        status: 404,
+        message: 'Some backend error message',
+      })
+      interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails)
 
       await request(app)
         .post('/referrals/1/completion-deadline')
@@ -692,12 +699,6 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(302)
         .expect('Location', '/referrals/1/further-information')
-
-      expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
-        'token',
-        '1',
-        { completionDeadline: '2021-09-15' },
-      ])
     })
 
     it('successfully calls the backend and redirects if the sent referral is being amended ', async () => {
@@ -733,8 +734,15 @@ describe('POST /referrals/:id/completion-deadline', () => {
     })
 
     it('updates the referral on the backend and returns a 400, rendering the question page with an error message, if the API call fails with a validation error', async () => {
+      const sentReferral = sentReferralFactory.build({})
+      interventionsService.sendDraftReferral.mockResolvedValue(sentReferral)
+      interventionsService.getSentReferral.mockRejectedValue({
+        status: 404,
+        message: 'Some backend error message',
+      })
       interventionsService.patchDraftReferral.mockRejectedValue(
         createError(400, 'bad request', {
+          message: 'The date by which the service needs to be completed must be in the future',
           response: {
             body: {
               validationErrors: [{ field: 'completionDeadline', error: 'DATE_MUST_BE_IN_THE_FUTURE' }],
@@ -742,28 +750,23 @@ describe('POST /referrals/:id/completion-deadline', () => {
           },
         })
       )
-
       await request(app)
         .post('/referrals/1/completion-deadline')
         .type('form')
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('What date does the Women&#39;s service intervention need to be completed by?')
           expect(res.text).toContain('The date by which the service needs to be completed must be in the future')
+          expect(res.text).toContain('What date does the Women&#39;s service intervention need to be completed by?')
         })
-
-      expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
-        'token',
-        '1',
-        { completionDeadline: '2021-09-15' },
-      ])
     })
 
     it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
-      interventionsService.patchDraftReferral.mockRejectedValue({
+      interventionsService.getSentReferral.mockRejectedValue({
         message: 'Some backend error message',
       })
+      const referralDetails = referralDetailsFactory.build({ completionDeadline: '2021-09-15' })
+      interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails)
 
       await request(app)
         .post('/referrals/1/completion-deadline')
@@ -773,17 +776,15 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .expect(res => {
           expect(res.text).toContain('Some backend error message')
         })
-
-      expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
-        'token',
-        '1',
-        { completionDeadline: '2021-09-15' },
-      ])
     })
   })
 
   describe('when the user inputs an invalid date', () => {
     it('does not update the referral on the backend and returns a 400 with an error message', async () => {
+      const referralDetails = referralDetailsFactory.build({ completionDeadline: '2021-09-15' })
+      const sentReferral = sentReferralFactory.build({})
+      interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails)
+      interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       await request(app)
         .post('/referrals/1/completion-deadline')
         .type('form')

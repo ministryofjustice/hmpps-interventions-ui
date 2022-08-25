@@ -30,11 +30,11 @@ export default class ReferralOverviewPagePresenter {
         href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/case-notes`,
         active: this.section === ReferralOverviewPageSection.CaseNotes,
       },
-      {
-        text: 'Change log',
-        href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/changelog`,
-        active: this.section === ReferralOverviewPageSection.Changelog,
-      },
+      // {
+      //   text: 'Change log',
+      //   href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/changelog`,
+      //   active: this.section === ReferralOverviewPageSection.Changelog,
+      // },
     ],
   }
 

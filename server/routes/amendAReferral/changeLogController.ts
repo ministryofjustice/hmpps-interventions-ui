@@ -12,7 +12,11 @@ export default class ChangeLogController {
     private readonly communityApiService: CommunityApiService
   ) {}
 
-  async getChangelog(req: Request, res: Response): Promise<void> {
+  async getChangelog(
+    req: Request,
+    res: Response,
+    loggedInUserType: 'service-provider' | 'probation-practitioner'
+  ): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { referralId } = req.params
     const formError: FormValidationError | null = null
@@ -22,7 +26,7 @@ export default class ChangeLogController {
     const [serviceUser] = await Promise.all([
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
-    const presenter = new ChangelogPresenter(formError, changeLog)
+    const presenter = new ChangelogPresenter(formError, changeLog, referralId, loggedInUserType)
     const view = new ChangelogView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)

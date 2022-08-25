@@ -5,6 +5,7 @@ import config from '../config'
 import CaseNotesController from './caseNotes/caseNotesController'
 import ReportingController from './reporting/reportingController'
 import AppointmentsController from './appointments/appointmentsController'
+import ChangeLogController from './amendAReferral/changeLogController'
 
 export const serviceProviderUrlPrefix = '/service-provider'
 export default function serviceProviderRoutes(router: Router, services: Services): Router {
@@ -78,6 +79,11 @@ export default function serviceProviderRoutes(router: Router, services: Services
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
 
+  const changeLogController = new ChangeLogController(services.interventionsService, services.communityApiService)
+
+  get(router, '/referrals/:referralId/changelog', (req, res) =>
+    changeLogController.getChangelog(req, res, 'service-provider')
+  )
   // START delivery session appointment scheduling
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/start', (req, res) =>
     appointmentsController.startEditingActionPlanSessionAppointment(req, res)
