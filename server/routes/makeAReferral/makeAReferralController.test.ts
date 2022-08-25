@@ -734,7 +734,13 @@ describe('POST /referrals/:id/completion-deadline', () => {
     })
 
     it('updates the referral on the backend and returns a 400, rendering the question page with an error message, if the API call fails with a validation error', async () => {
-      interventionsService.getSentReferral.mockRejectedValue(
+      const sentReferral = sentReferralFactory.build({})
+      interventionsService.sendDraftReferral.mockResolvedValue(sentReferral)
+      interventionsService.getSentReferral.mockRejectedValue({
+        status: 404,
+        message: 'Some backend error message',
+      })
+      interventionsService.patchDraftReferral.mockRejectedValue(
         createError(400, 'bad request', {
           message: 'The date by which the service needs to be completed must be in the future',
           response: {
@@ -744,7 +750,6 @@ describe('POST /referrals/:id/completion-deadline', () => {
           },
         })
       )
-
       await request(app)
         .post('/referrals/1/completion-deadline')
         .type('form')
@@ -752,6 +757,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .expect(400)
         .expect(res => {
           expect(res.text).toContain('The date by which the service needs to be completed must be in the future')
+          expect(res.text).toContain('What date does the Women&#39;s service intervention need to be completed by?')
         })
     })
 
@@ -776,10 +782,9 @@ describe('POST /referrals/:id/completion-deadline', () => {
   describe('when the user inputs an invalid date', () => {
     it('does not update the referral on the backend and returns a 400 with an error message', async () => {
       const referralDetails = referralDetailsFactory.build({ completionDeadline: '2021-09-15' })
+      const sentReferral = sentReferralFactory.build({})
       interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails)
-      interventionsService.getSentReferral.mockRejectedValue({
-        message: 'The date by which the service needs to be completed must be a real date',
-      })
+      interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       await request(app)
         .post('/referrals/1/completion-deadline')
         .type('form')
@@ -788,7 +793,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
           'completion-deadline-month': '9',
           'completion-deadline-year': 'this year',
         })
-        .expect(500)
+        .expect(400)
         .expect(res => {
           expect(res.text).toContain('The date by which the service needs to be completed must be a real date')
         })
