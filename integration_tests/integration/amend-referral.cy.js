@@ -204,6 +204,100 @@ context('Amend a referral', () => {
     })
   })
 
+  describe('updating additional information needs', () => {
+    const sentReferral = sentReferralFactory.build()
+    const stubCallsForUpdateReferralPage = () => {
+      cy.stubUpdateSentReferralDetails(sentReferral.id, { referralId: sentReferral.id })
+      cy.stubGetSentReferral(sentReferral.id, sentReferral)
+      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+      cy.stubAmendAdditionalInformation(sentReferral.id, sentReferral)
+    }
+    const stubCallsForReferralDetailsPage = () => {
+      const { crn } = sentReferral.referral.serviceUser
+      const pp = deliusUser.build()
+
+      cy.stubGetSentReferral(sentReferral.id, sentReferral)
+      cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
+      cy.stubGetUserByUsername(pp.username, pp)
+      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
+      cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
+      cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
+      cy.stubGetRiskSummary(crn, riskSummary.build())
+      cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
+      cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+    }
+
+    describe('as a probation practitioner', () => {
+      beforeEach(() => {
+        stubCallsForReferralDetailsPage()
+        stubCallsForUpdateReferralPage()
+      })
+
+      it('takes the pp to the form when clicking the change link in the details page', () => {
+        cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
+        cy.contains('.govuk-summary-list__key', ' Identify needs ').next().next().contains('Change').click()
+        cy.contains('For example, the additional information needs to be updated')
+      })
+
+      it('shows the existing additional information details in the form', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-additional-information`)
+        cy.get('textarea[id="additional-information"]').should(
+          'have.value',
+          sentReferral.referral.additionalNeedsInformation
+        )
+      })
+
+      it('redirects to referral details on submission', () => {
+        cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-additional-information`)
+        cy.get('textarea[id="additional-information"]').clear()
+        cy.get('textarea[id="additional-information"]').type('Struggles being alone')
+        cy.contains("What's the reason for changing the additional information?").type('reason')
+        cy.contains('Save changes').click()
+        cy.url().should(
+          'be.equal',
+          `${Cypress.config('baseUrl')}/probation-practitioner/referrals/${sentReferral.id}/details?detailsUpdated=true`
+        )
+        cy.contains('Success')
+        cy.contains('Referral changes saved')
+      })
+
+      it('takes you back to referral details when back link is clicked', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-additional-information`)
+        cy.contains('Back').click()
+        cy.url().should(
+          'be.equal',
+          `${Cypress.config('baseUrl')}/probation-practitioner/referrals/${sentReferral.id}/details`
+        )
+      })
+
+      it('shows a validation error if the reason for change is not supplied', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-additional-information`)
+        cy.get('textarea[id="additional-information"]').clear()
+        cy.get('textarea[id="additional-information"]').type('Struggles being alone')
+        cy.contains("What's the reason for changing the additional information?")
+        cy.contains('Save changes').click()
+        cy.contains('There is a problem').next().contains('A reason for changing the referral must be supplied')
+      })
+
+      it('shows a validation error if additional information needs are not changed', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-additional-information`)
+        cy.contains("What's the reason for changing the additional information?").type(
+          'Alex is currently sleeping on her aunt’s sofa'
+        )
+
+        cy.contains('Save changes').click()
+
+        cy.get('.govuk-notification-banner').within(() => {
+          cy.contains('Important')
+          cy.contains('You have not made any changes to additional information.')
+        })
+      })
+    })
+  })
+
   describe('updating desired outcomes', () => {
     const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
