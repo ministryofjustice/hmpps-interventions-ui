@@ -2940,7 +2940,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     const futureAppointmentTime = new Date()
     futureAppointmentTime.setMonth(futureAppointmentTime.getMonth() + 4)
     const pastAppointmentTime = new Date()
-    pastAppointmentTime.setUTCHours(0, 0, 0, 0) // set to start of current day
+    pastAppointmentTime.setUTCHours(2, 0, 0, 0) // create appointment in the morning
     const pastAppointmentTimeString = pastAppointmentTime.toISOString().replace(/(.*)(:00\.000Z)$/, '$1:00Z')
 
     describe('with a past appointment time', () => {
