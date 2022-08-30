@@ -2943,7 +2943,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     pastAppointmentTime.setUTCHours(2, 0, 0, 0) // create appointment in the morning
     const pastAppointmentTimeString = pastAppointmentTime.toISOString().replace(/(.*)(:00\.000Z)$/, '$1:00Z')
 
-    describe('with a past appointment time', () => {
+    // TODO skip past appointment tests until Pact contract update can be scheduled
+    // see https://trello.com/c/ZKPMdxVa
+    describe.skip('with a past appointment time', () => {
       it('returns a scheduled action plan appointment with feedback', async () => {
         const actionPlanAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 2,
