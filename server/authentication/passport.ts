@@ -1,7 +1,7 @@
 import { Application } from 'express'
 import passport from 'passport'
 import OAuth2Strategy from 'passport-oauth2'
-import jwtDecode from 'jwt-decode'
+import jwtDecode, { JwtPayload } from 'jwt-decode'
 import type { Request, Response, NextFunction } from 'express'
 import config from '../config'
 import generateOauthClientBaiscAuthHeader from './clientCredentials'
@@ -20,6 +20,13 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface User extends LoggedInUser {}
   }
+}
+
+interface JwtPayloadExtended extends JwtPayload {
+  authorities: string[]
+  user_name: string
+  user_id: string
+  auth_source: string
 }
 
 export default function passportSetup(app: Application, hmppsAuthService: HmppsAuthService): void {
@@ -42,12 +49,12 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
       async (accessToken, refreshToken, res, profile, verified: (err?: Error | null, user?: LoggedInUser) => void) => {
         try {
           const {
-            exp: expiry,
+            exp: expiry = 0,
             authorities: roles = [],
             user_name: username,
             user_id: userId,
             auth_source: authSource,
-          } = jwtDecode(accessToken)
+          } = jwtDecode<JwtPayloadExtended>(accessToken)
 
           // augment the token response from with extra user details
           const user: User = { username, userId, authSource }
@@ -97,9 +104,6 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
   app.get('/sign-in', signIn)
 
   const signInCallback = (redirectUri: string) =>
-    // TODO - remove ts-ignore once keepSessionInfo has been added to types/passport
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - No overload matches this call. - keep this until @types/passport updated
     passport.authenticate('oauth2', {
       successReturnToOrRedirect: '/',
       failureRedirect: redirectUri,
