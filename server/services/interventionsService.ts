@@ -19,6 +19,8 @@ import SentReferralSummaries from '../models/sentReferralSummaries'
 import ReferralDesiredOutcomes, { ReferralDesiredOutcomesUpdate } from '../models/referralDesiredOutcomes'
 import ReferralComplexityLevel from '../models/referralComplexityLevel'
 import SupplierAssessment from '../models/supplierAssessment'
+import {NeedsAndRequirementsType} from '../models/needsAndRequirementsType'
+import AmendNeedsAndRequirements from '../models/amendNeedsAndRequirements'
 import ServiceProviderSentReferralSummary from '../models/serviceProviderSentReferralSummary'
 import {
   ActionPlanAppointment,
@@ -777,5 +779,14 @@ export default class InterventionsService {
       path: `/draft-referral/${referralId}/oasys-risk-information`,
       headers: { Accept: 'application/json' },
     })) as DraftOasysRiskInformation
+  }
+
+  async updateNeedsAndRequirments(token: string, referral:SentReferral, type:NeedsAndRequirementsType,amendNeedsAndRequirement:AmendNeedsAndRequirements): Promise<void> {
+    const restClient = this.createRestClient(token)
+     await restClient.post({
+      path: `/sent-referral/${referral.id}/amend-needs-and-requirements/${type}`,
+      headers: { Accept: 'application/json' },
+      data: { ...amendNeedsAndRequirement },
+    }) 
   }
 }

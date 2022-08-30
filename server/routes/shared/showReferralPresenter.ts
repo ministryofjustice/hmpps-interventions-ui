@@ -305,6 +305,7 @@ export default class ShowReferralPresenter {
       {
         key: 'Interpreter required',
         lines: [this.sentReferral.referral.needsInterpreter ? 'Yes' : 'No'],
+        changeLink:`/probation-practitioner/referrals/${this.sentReferral.id}/interpreter-needs`
       },
       { key: 'Interpreter language', lines: [this.sentReferral.referral.interpreterLanguage || 'N/A'] },
       {

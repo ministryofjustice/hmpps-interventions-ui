@@ -2,6 +2,7 @@ import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
 import SentReferral from '../models/sentReferral'
+import {NeedsAndRequirementsType} from '../models/needsAndRequirementsType'
 import SentReferralSummaries from '../models/sentReferralSummaries'
 import ServiceUser from '../models/serviceUser'
 import config from '../config'
@@ -18,6 +19,8 @@ import CalendarDay from '../utils/calendarDay'
 import approvedActionPlanSummaryFactory from '../../testutils/factories/approvedActionPlanSummary'
 import referralDetailsFactory from '../../testutils/factories/referralDetails'
 import { Page } from '../models/pagination'
+import NeedsAndRequirementsForm from '../routes/makeAReferral/needs-and-requirements/needsAndRequirementsForm'
+import AmendNeedsAndRequirements from '../models/amendNeedsAndRequirements'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -3741,7 +3744,28 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(result.sessionFeedback!.behaviour!.notifyProbationPractitioner).toEqual(false)
     })
   })
-
+describe('updateAmendNeedsAndRequirements',()=>{
+  it('updates needs and requirements with accessibility_needs type', async () =>{
+   const needsAndRequirement:AmendNeedsAndRequirements ={
+    
+    reasonForChange: "some reason"
+  }
+    await provider.addInteraction({
+      state: 'amend needs and requirements intepreter needed updated reason for change',
+      uponReceiving: 'the amend needs and requirements will be updated via post for intepreter needs',
+      withRequest: {
+        method: 'POST',
+        path: `/sent-referral/${sentReferral.id}/amend-needs-and-requirements/${NeedsAndRequirementsType.interpreterRequired}`,
+        body: { ...needsAndRequirement },
+        headers: { Authorization: `Bearer ${probationPractitionerToken}`,'Content-Type': 'application/json', },
+      },
+      willRespondWith: {
+        status: 202,
+      },
+    })
+    const result = await interventionsService.updateNeedsAndRequirments(probationPractitionerToken,sentReferral,NeedsAndRequirementsType.interpreterRequired,needsAndRequirement)
+  })
+})
   describe('submitSupplierAssessmentAppointmentFeedback', () => {
     const appointmentTime = new Date()
     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
@@ -3819,6 +3843,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 })
+
+
 
 describe('serializeDeliusServiceUser', () => {
   const interventionsService = new InterventionsService(config.apis.interventionsService)

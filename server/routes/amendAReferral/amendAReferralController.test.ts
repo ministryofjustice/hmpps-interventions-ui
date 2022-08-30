@@ -7,10 +7,13 @@ import CommunityApiService from '../../services/communityApiService'
 import referralDetails from '../../../testutils/factories/referralDetails'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import oauth2TokenFactory from '../../../testutils/factories/oauth2Token'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import sentReferral from '../../../testutils/factories/sentReferral'
 import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
+import { NeedsAndRequirementsType } from '../../models/needsAndRequirementsType'
+import AmendNeedsAndRequirements from '../../models/amendNeedsAndRequirements'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -46,6 +49,50 @@ describe('GET /probation-practitioner/referrals/:id/update-maximum-enforceable-d
   })
 })
 
+describe('GET /probation-practitioner/referrals/:id/interpreter-needs', () => {
+  const serviceUser= deliusServiceUser.build()
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+  })
+
+  it('allows pp to change referral language needs', () => {
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/interpreter-needs`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain(`Do you want to change whether ${serviceUser?.firstName} needs and intepreter?`)
+      })
+  })
+})
+
+describe('POST /probation-practitioner/referrals/:id/interpreter-needs', () => {
+  const serviceUser= deliusServiceUser.build()
+  let needsAndRequirements: AmendNeedsAndRequirements ={
+    reasonForChange:'scsds'
+  }
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    interventionsService.updateNeedsAndRequirments.mockImplementation((probationPractitionerToken,referral,needsAndRequirementsType,AmmendNeedsAndRequirements) => {
+      return Promise.resolve()
+    })
+  })
+
+  it('updates changes of referral language needs', () => {
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/interpreter-needs`).send({
+        'reasonForChange':'some reason',
+        'needsInterpreter':'true',
+        'interpreterLanguage':'Spanish',
+        'changesMade':'true'
+      })
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain(`Do you want to change whether ${serviceUser?.firstName} needs and intepreter?`)
+      })
+  })
+})
 describe('POST /probation-practitioner/referrals/:id/update-maximum-enforceable-days', () => {
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
@@ -181,4 +228,6 @@ describe('POST /probation-practitioner/referrals/:id/update-complexity-level', (
         })
     })
   })
+
+  
 })

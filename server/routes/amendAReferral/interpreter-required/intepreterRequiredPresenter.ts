@@ -1,0 +1,52 @@
+import { FormValidationError } from '../../../utils/formValidationError'
+import PresenterUtils from '../../../utils/presenterUtils'
+import SentReferral from '../../../models/sentReferral'
+
+export default class IntepreterRequiredPresenter {
+  private readonly utils = new PresenterUtils(this.userInputData)
+
+  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'abc') 
+
+  readonly errorSummary = PresenterUtils.errorSummary(this.error)
+
+  readonly backLinkUrl: string
+
+  constructor(
+    private readonly sentReferral: SentReferral,
+    private readonly error: FormValidationError | null = null,
+    private readonly userInputData: Record<string, string> | null = null,
+    readonly showNoChangesBanner: boolean = false
+  ) {
+    this.backLinkUrl = `/probation-practitioner/referrals/${sentReferral.id}/details`
+  }
+
+  private errorMessageForField(field: string): string | null {
+    return PresenterUtils.errorMessage(this.error, field)
+  }
+
+  readonly text = {
+    requirements: {
+      title: `Do you want to change whether ${this.sentReferral.referral.serviceUser?.firstName} needs and intepreter?`,
+      needsInterpreter: {
+        hint: 'For example, times and dates when they are at work.',
+        errorMessage: this.errorMessageForField('needs-intepreter'),
+      },
+      interpreterLanguage: {
+        label: 'What language',
+        errorMessage: this.errorMessageForField('interpreter-language'),
+      },
+    },
+    reasonForChange: {
+      title: `What is the reason for changing whether ${this.sentReferral.referral.serviceUser?.firstName} needs an intepreter?`,
+      hint: `For example, they would prefer to speak in their native language`,
+    },
+  }
+
+  readonly fields = {
+    needsInterpreter: this.utils.booleanValue(
+      this.sentReferral.referral.needsInterpreter,
+      'needs-intepreter'
+    ),
+    interpreterLanguage: this.utils.stringValue(this.sentReferral.referral.interpreterLanguage, 'interpreter-language'),
+  }
+}
