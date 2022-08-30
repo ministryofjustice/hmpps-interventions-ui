@@ -270,4 +270,44 @@ export default class AmendAReferralController {
     
     return ControllerUtils.renderWithLayout(res,view,serviceUser)
   }
+
+  async updateInterpreterNeeds(req: Request, res: Response): Promise<void> {
+    const { referralId } = req.params
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const  serviceUser = await 
+    this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    let error = null
+    let userInputData = null
+    let hasChanged
+
+    if (req.method === 'POST') {
+   
+      const formData = await new AmendNeedsAndRequirementsIntepreterForm(req).data()
+      hasChanged = formData.paramsForUpdate?.changesMade
+      if (!formData.error && !formData.paramsForUpdate?.changesMade) {
+        return res.redirect(`${req.baseUrl}${req.path}?noChanges=true`)
+      }
+     
+      if (!formData.error) {
+        await this.interventionsService.updateNeedsAndRequirments(
+         accessToken,
+          sentReferral,
+         NeedsAndRequirementsType.interpreterRequired,
+          {reasonForChange:formData.paramsForUpdate.reasonForChange,needsInterpreter: formData.paramsForUpdate.needsInterpreter,interpreterLanguage: formData.paramsForUpdate.interpreterLanguage}
+        )
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
+      }
+
+      delete req.query.noChanges
+      error = formData.error
+      userInputData = req.body
+      res.status(400)
+    }
+    
+    var presenter = new IntepreterRequiredPresenter(sentReferral, error,userInputData,!!hasChanged)
+    var view  = new IntepreterRequiredView(presenter)
+    
+    return ControllerUtils.renderWithLayout(res,view,serviceUser)
+  }
 }
