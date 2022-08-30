@@ -26,6 +26,7 @@ import AmendAdditionalInformationView from './additionalInformation/amendAdditio
 import AmendAdditionalInformationForm from './additionalInformation/amendAdditionalInformationForm'
 import AmendEmploymentResponsibilitiesPresenter from './employment-responsibilities/amendEmploymentResponsibilitiesPresenter'
 import AmendEmploymentResponsibilitiesView from './employment-responsibilities/amendEmploymentResponsibilitiesView'
+import AmendEmploymentResponsibilitiesForm from './employment-responsibilities/amendEmploymentResponsibilitiesForm'
 
 export default class AmendAReferralController {
   constructor(
@@ -289,21 +290,20 @@ export default class AmendAReferralController {
   async updateEmploymentResponsibilities(req: Request, res: Response): Promise<void> {
     const {accessToken} = res.locals.user.token
     const {referralId} = req.params
-    const error = null
-    const userInputData = null
+    let error = null
+    let userInputData = null
+    // const formError: FormValidationError | null = null
 
-    // if (req.method === 'POST') {
-    //   const formData = await new AmendMaximumEnforceableDaysForm(req).data()
-    //
-    //   if (!formData.error) {
-    //     await this.interventionsService.updateSentReferralDetails(accessToken, referralId, formData.paramsForUpdate)
-    //     return res.redirect(`/probation-practitioner/referrals/${req.params.id}/details?detailsUpdated=true`)
-    //   }
-    //
-    //   error = formData.error
-    //   userInputData = req.body
-    //   res.status(400)
-    // }
+    if (req.method === 'POST') {
+      const formData = await new AmendEmploymentResponsibilitiesForm(req).data()
+      if (!formData.error) {
+        await this.interventionsService.updateSentReferralDetails(accessToken, referralId, formData.paramsForUpdate)
+        return res.redirect(`/probation-practitioner/referrals/${req.params.id}/details?detailsUpdated=true`)
+      }
+      error = formData.error
+      userInputData = req.body
+      res.status(400)
+    }
 
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)

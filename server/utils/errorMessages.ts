@@ -94,6 +94,11 @@ export default {
   complexityLevel: {
     empty: 'Select a complexity level',
   },
+  employmentResponsibilities: {
+    whenUnavailable: {
+      empty: 'Details of unavailability must be provided',
+    },
+  },
   relevantSentence: {
     empty: 'Select the relevant sentence',
   },

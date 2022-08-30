@@ -1,6 +1,7 @@
 import ViewUtils from '../../../utils/viewUtils'
 import { InputArgs, RadiosArgs, TextareaArgs } from '../../../utils/govukFrontendTypes'
 import AmendEmploymentResponsibilitiesPresenter from './amendEmploymentResponsibilitiesPresenter'
+import AmendEmploymentResponsibilitiesForm from './amendEmploymentResponsibilitiesForm'
 
 export default class AmendEmploymentResponsibilitiesView {
   constructor(private readonly presenter: AmendEmploymentResponsibilitiesPresenter) {}
@@ -9,8 +10,8 @@ export default class AmendEmploymentResponsibilitiesView {
 
   private get textAreaArgs(): TextareaArgs {
     return {
-      name: 'aaa', // AmendMaximumEnforceableDaysForm.reasonForChangeId,
-      id: 'abc', // AmendMaximumEnforceableDaysForm.reasonForChangeId,
+      name: AmendEmploymentResponsibilitiesForm.amendEmploymentResponsibilitiesReasonForChangeId,
+      id: AmendEmploymentResponsibilitiesForm.amendEmploymentResponsibilitiesReasonForChangeId,
       label: {
         text: this.presenter.text.reasonForChange.title,
         classes: 'govuk-label--l',
