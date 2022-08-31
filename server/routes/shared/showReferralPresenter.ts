@@ -301,6 +301,10 @@ export default class ShowReferralPresenter {
       {
         key: 'Other mobility, disability or accessibility needs',
         lines: [this.sentReferral.referral.accessibilityNeeds || 'N/A'],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-accessibility-needs`
+            : undefined,
       },
       {
         key: 'Interpreter required',

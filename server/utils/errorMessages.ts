@@ -101,6 +101,9 @@ export default {
     empty: 'Select desired outcomes',
     noChanges: 'You have not changed any desired outcomes.',
   },
+  accessibilityneeds: {
+    noChanges: 'You have not changed the accessibility needs',
+  },
   needsInterpreter: {
     empty: (name: string) => `Select yes if ${name} needs an interpreter`,
   },
