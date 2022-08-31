@@ -17,6 +17,7 @@ import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
 import SentReferralSummaries from '../models/sentReferralSummaries'
 import ReferralDesiredOutcomes, { ReferralDesiredOutcomesUpdate } from '../models/referralDesiredOutcomes'
+import { AmendReferralDetailsUpdate } from '../models/referralAccessibilityNeeds'
 import ReferralComplexityLevel from '../models/referralComplexityLevel'
 import SupplierAssessment from '../models/supplierAssessment'
 import {NeedsAndRequirementsType} from '../models/needsAndRequirementsType'
@@ -209,6 +210,20 @@ export default class InterventionsService {
 
     return (await restClient.post({
       path: `/sent-referral/${referralId}/service-category/${serviceCategoryId}/amend-desired-outcomes`,
+      headers: { Accept: 'application/json' },
+      data: { ...update },
+    })) as null
+  }
+
+  async updateAccessibilityNeeds(
+    token: string,
+    referralId: string,
+    update: Partial<AmendReferralDetailsUpdate>
+  ): Promise<null> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.post({
+      path: `/sent-referral/${referralId}/amend-needs-and-requirements/accessibility-needs`,
       headers: { Accept: 'application/json' },
       data: { ...update },
     })) as null
