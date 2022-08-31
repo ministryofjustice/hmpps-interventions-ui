@@ -302,4 +302,4 @@ export default on => {
       return interventionsService.stubAmendAdditionalInformation(arg.referralId, arg.responseJson)
     },
   })
-}
+
