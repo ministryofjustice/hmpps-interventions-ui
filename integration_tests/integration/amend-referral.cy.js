@@ -105,6 +105,105 @@ context('Amend a referral', () => {
     })
   })
 
+  describe('updating Other mobility, disability or accessibility needs', () => {
+    const sentReferral = sentReferralFactory.build()
+    const stubCallsForUpdateReferralPage = () => {
+      cy.stubUpdateSentReferralDetails(sentReferral.id, { referralId: sentReferral.id })
+      cy.stubGetSentReferral(sentReferral.id, sentReferral)
+      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+      cy.stubAmendAccessibilityNeeds(sentReferral.id, sentReferral)
+    }
+    const stubCallsForReferralDetailsPage = () => {
+      const { crn } = sentReferral.referral.serviceUser
+      const pp = deliusUser.build()
+
+      cy.stubGetSentReferral(sentReferral.id, sentReferral)
+      cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
+      cy.stubGetUserByUsername(pp.username, pp)
+      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
+      cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
+      cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
+      cy.stubGetRiskSummary(crn, riskSummary.build())
+      cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
+      cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+    }
+
+    describe('as a probation practitioner', () => {
+      beforeEach(() => {
+        stubCallsForReferralDetailsPage()
+        stubCallsForUpdateReferralPage()
+      })
+
+      it('takes the pp to the form when clicking the change link in the details page', () => {
+        cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
+        cy.contains('.govuk-summary-list__key', ' Other mobility, disability or accessibility needs ')
+          .next()
+          .next()
+          .contains('Change')
+          .click()
+        cy.contains('For example, if they use a wheelchair, use a hearing aid or have a learning difficulty')
+      })
+
+      it('shows the existing accessibility details in the form', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-accessibility-needs`)
+        cy.get('textarea[id="accessibility-needs"]').should('have.value', sentReferral.referral.accessibilityNeeds)
+      })
+
+      it('redirects to referral details on submission', () => {
+        cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-accessibility-needs`)
+        cy.get('textarea[id="accessibility-needs"]').clear()
+        cy.get('textarea[id="accessibility-needs"]').type('hearing aid')
+        cy.contains("What's the reason for changing the mobility, disability or accessibility needs?").type('reason')
+        cy.contains('Save changes').click()
+        cy.url().should(
+          'be.equal',
+          `${Cypress.config('baseUrl')}/probation-practitioner/referrals/${sentReferral.id}/details?detailsUpdated=true`
+        )
+        cy.contains('Success')
+        cy.contains('Referral changes saved')
+      })
+
+      it('takes you back to referral details when back link is clicked', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-accessibility-needs`)
+        cy.contains('Back').click()
+        cy.url().should(
+          'be.equal',
+          `${Cypress.config('baseUrl')}/probation-practitioner/referrals/${sentReferral.id}/details`
+        )
+      })
+
+      it('shows a validation error if the reason for change is not supplied', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-accessibility-needs`)
+        cy.get('textarea[id="accessibility-needs"]').clear()
+        cy.get('textarea[id="accessibility-needs"]').type('hearing aid')
+        cy.contains("What's the reason for changing the mobility, disability or accessibility needs?").type('    ')
+        cy.contains('Save changes').click()
+
+        cy.contains('There is a problem').next().contains('A reason for changing the referral must be supplied')
+        cy.contains("What's the reason for changing the mobility, disability or accessibility needs?")
+          .next()
+          .contains('A reason for changing the referral must be supplied')
+      })
+
+      it('shows a validation error if accessibility needs are not changed', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/update-accessibility-needs`)
+        cy.contains("What's the reason for changing the mobility, disability or accessibility needs?").type(
+          'No Changes'
+        )
+
+        cy.contains('Save changes').click()
+
+        cy.get('.govuk-notification-banner').within(() => {
+          cy.contains('Important')
+          cy.contains('You have not made any changes to mobility, disability or accessibility needs.')
+        })
+      })
+    })
+  })
+
   describe('updating desired outcomes', () => {
     const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })

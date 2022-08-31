@@ -1,0 +1,40 @@
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Amend accessibility needs" %}
+{% set pageSubTitle = "Select accessibility needs" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukBackLink(backLinkArgs) }}
+
+      {% if notificationBannerArgs %}
+         {{ govukNotificationBanner(notificationBannerArgs) }}
+      {% endif %}
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {% if errorSummaryArgs !== null %}
+          {{ govukErrorSummary(errorSummaryArgs) }}
+        {% endif %}
+
+        {{ govukTextarea(accessibilityNeedsTextareaArgs) }}
+
+        {{ govukTextarea(reasonForChangeInputArgs) }}
+
+        <div class="govuk-button-group">
+          {{ govukButton({ text: "Save changes", preventDoubleClick: true }) }}
+
+          <a href="{{ backLinkArgs.href }}" data-cy="cancel" class="govuk-link">Cancel and go back</a>
+      </form>
+    </div>
+  </div>
+{% endblock %}

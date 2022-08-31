@@ -5,6 +5,9 @@ import AmendMaximumEnforceableDaysPresenter from './maximumEnforceableDays/amend
 import CommunityApiService from '../../services/communityApiService'
 import AmendMaximumEnforceableDaysView from './maximumEnforceableDays/amendMaximumEnforceableDaysView'
 import AmendMaximumEnforceableDaysForm from './maximumEnforceableDays/amendMaximumEnforceableDaysForm'
+import AmendAccessibilityNeedsForm from './accessibility-needs/amendAccessibilityNeedsForm'
+import AmendAccessibilityNeedsView from './accessibility-needs/amendAccessibilityNeedsView'
+import AmendAccessibilityNeedsPresenter from './accessibility-needs/amendAccessibilityNeedsPresenter'
 import AmendDesiredOutcomesView from './desired-outcomes/amendDesiredOutcomesView'
 import AmendDesiredOutcomesPresenter from './desired-outcomes/amendDesiredOutcomesPresenter'
 import AmendDesiredOutcomesForm from './desired-outcomes/amendDesiredOutcomesForm'
@@ -96,6 +99,44 @@ export default class AmendAReferralController {
       req.query.noChanges === 'true'
     )
     const view = new AmendDesiredOutcomesView(presenter)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async amendAccessibilityNeeds(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId } = req.params
+    let error = null
+    let userInputData = null
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    if (req.method === 'POST') {
+      req.body.origOutcomes = referral.referral.accessibilityNeeds
+      const formData = await new AmendAccessibilityNeedsForm(req).data()
+
+      if (!formData.error && !formData.paramsForUpdate?.changesMade) {
+        return res.redirect(`${req.baseUrl}${req.path}?noChanges=true`)
+      }
+
+      if (!formData.error) {
+        await this.interventionsService.updateAccessibilityNeeds(accessToken, referralId, formData.paramsForUpdate)
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
+      }
+
+      delete req.query.noChanges
+      error = formData.error
+      userInputData = req.body
+      res.status(400)
+    }
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new AmendAccessibilityNeedsPresenter(
+      referral,
+      serviceUser,
+      error,
+      userInputData,
+      req.query.noChanges === 'true'
+    )
+    const view = new AmendAccessibilityNeedsView(presenter)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 

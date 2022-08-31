@@ -293,5 +293,9 @@ export default on => {
         arg.responseJson
       )
     },
+
+    stubAmendAccessibilityNeeds: arg => {
+      return interventionsService.stubAmendAccessibilityNeeds(arg.referralId, arg.responseJson)
+    },
   })
 }
