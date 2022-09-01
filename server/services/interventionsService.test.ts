@@ -1834,6 +1834,78 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         )
       ).rejects.toThrow(Error)
     })
+
+    describe('amendComplexityLevelForServiceCategory', () => {
+      it('successfully update the complexity level for a selected service category on a sent referral', async () => {
+        const serviceCategoryId = '428ee70f-3001-4399-95a6-ad25eaaede16'
+        const update = {
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          reasonForChange: 'random update',
+        }
+        await provider.addInteraction({
+          state: `There is an existing sent referral with ID of ${sentReferral.id}`,
+          uponReceiving: 'a POST request to update the complexity level for a service category on a sent referral',
+          withRequest: {
+            method: 'POST',
+            path: `/sent-referral/${sentReferral.id}/service-category/${serviceCategoryId}/amend-complexity-level`,
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${probationPractitionerToken}`,
+            },
+            body: update,
+          },
+          willRespondWith: {
+            status: 204,
+          },
+        })
+
+        await expect(
+          await interventionsService.amendComplexityLevelForServiceCategory(
+            probationPractitionerToken,
+            sentReferral.id,
+            serviceCategoryId,
+            update
+          )
+        ).toEqual({})
+      })
+    })
+
+    describe('amendDesiredOutcomesForServiceCategory', () => {
+      it('returns the updated referral details', async () => {
+        const serviceCategoryId = '428ee70f-3001-4399-95a6-ad25eaaede16'
+        const update = {
+          desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+          reasonForChange: 'update the desired outcomes',
+        }
+        await provider.addInteraction({
+          state: `There is an existing sent referral with ID of ${sentReferral.id}`,
+          uponReceiving: 'a POST request to update the desired outcomes for a service category on a referral',
+          withRequest: {
+            method: 'POST',
+            path: `/sent-referral/${sentReferral.id}/service-category/${serviceCategoryId}/amend-desired-outcomes`,
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${probationPractitionerToken}`,
+            },
+            body: update,
+          },
+          willRespondWith: {
+            status: 204,
+          },
+        })
+
+        await expect(
+          await interventionsService.updateDesiredOutcomesForServiceCategory(
+            probationPractitionerToken,
+            sentReferral.id,
+            serviceCategoryId,
+            update
+          )
+        ).toEqual({})
+      })
+    })
   })
 
   describe('getServiceProviderSentReferralsSummaryForUserToken', () => {
