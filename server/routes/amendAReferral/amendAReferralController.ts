@@ -17,6 +17,9 @@ import createFormValidationErrorOrRethrow from '../../utils/interventionsFormErr
 import AmendComplexityLevelPresenter from './complexityLevel/amendComplexityLevelPresenter'
 import AmendComplexityLevelView from './complexityLevel/amendComplexityLevelView'
 import AmendComplexityLevelForm from './complexityLevel/amendComplexityLevelForm'
+import AmendAdditionalInformationForm from './additionalInformation/amendAdditionalInformationForm'
+import AmendAdditionalInformationPresenter from './additionalInformation/amendAdditionalInformationPresenter'
+import AmendAdditionalInformationView from './additionalInformation/amendAdditionalInformationView'
 
 export default class AmendAReferralController {
   constructor(
@@ -52,6 +55,45 @@ export default class AmendAReferralController {
       userInputData
     )
     const view = new AmendMaximumEnforceableDaysView(presenter)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async updateAdditionalInformation(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId } = req.params
+    let error = null
+    let userInputData = null
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
+    if (req.method === 'POST') {
+      req.body.additionalNeedsInformation = referral.referral.additionalNeedsInformation
+
+      const formData = await new AmendAdditionalInformationForm(req).data()
+
+      if (!formData.error && !formData.paramsForUpdate?.changesMade) {
+        return res.redirect(`${req.baseUrl}${req.path}?noChanges=true`)
+      }
+
+      if (!formData.error) {
+        await this.interventionsService.amendAdditionalInformation(accessToken, referralId, formData.paramsForUpdate)
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
+      }
+
+      delete req.query.noChanges
+      error = formData.error
+      userInputData = req.body
+      res.status(400)
+    }
+
+    const presenter = new AmendAdditionalInformationPresenter(
+      referral,
+      referral.referral.additionalNeedsInformation,
+      error,
+      userInputData,
+      req.query.noChanges === 'true'
+    )
+    const view = new AmendAdditionalInformationView(presenter)
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 

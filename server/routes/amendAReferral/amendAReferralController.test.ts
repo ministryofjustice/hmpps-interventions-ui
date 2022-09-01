@@ -94,6 +94,19 @@ describe('GET /probation-practitioner/referrals/:referralId/:serviceCategoryId/u
   })
 })
 
+describe('GET /referrals/:referralId/update-additional-information', () => {
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('renders the page to update additional information', () => {
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/update-additional-information`)
+      .expect(200)
+  })
+})
+
 describe('POST /probation-practitioner/referrals/:referralId/:serviceCategoryId/update-desired-outcomes', () => {
   let serviceCategory: ServiceCategory
 

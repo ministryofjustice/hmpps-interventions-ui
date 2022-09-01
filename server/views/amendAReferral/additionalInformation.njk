@@ -1,0 +1,38 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% extends "../partials/layout.njk" %}
+{% set pageTitle = "Make a referral" %}
+{% set pageSubTitle = "Change additional information" %}
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+    {{ govukBackLink(backLinkArgs) }}
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
+      {% if notificationBannerArgs %}
+        {{ govukNotificationBanner(notificationBannerArgs) }}
+      {% endif %}
+      <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        {{ govukTextarea(additionalInformationTextAreaArgs) }}
+        {{ govukTextarea(reasonForChangeInputArgs) }}
+
+        <div class="govuk-button-group">
+                  {{ govukButton({ text: "Save changes", preventDoubleClick: true }) }}
+
+                  <a href="{{ backLinkArgs.href }}" data-cy="cancel" class="govuk-link">Cancel and go back</a>
+        </div>
+
+      </form>
+    </div>
+  </div>
+{% endblock %}

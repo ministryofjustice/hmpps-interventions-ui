@@ -213,3 +213,7 @@ Cypress.Commands.add('stubAmendComplexityLevelForServiceCategory', (referralId, 
 Cypress.Commands.add('stubAmendAccessibilityNeeds', (referralId, responseJson) => {
   cy.task('stubAmendAccessibilityNeeds', { referralId, responseJson })
 })
+
+Cypress.Commands.add('stubAmendAdditionalInformation', (referralId, responseJson) => {
+  cy.task('stubAmendAdditionalInformation', { referralId, responseJson })
+})

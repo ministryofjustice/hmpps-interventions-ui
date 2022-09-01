@@ -65,6 +65,13 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     amendAReferralController.updateDesiredOutcomes(req, res)
   )
 
+  get(router, '/referrals/:referralId/update-additional-information', (req, res) =>
+    amendAReferralController.updateAdditionalInformation(req, res)
+  )
+  post(router, '/referrals/:referralId/update-additional-information', (req, res) =>
+    amendAReferralController.updateAdditionalInformation(req, res)
+  )
+
   get(router, '/referrals/:referralId/service-category/:serviceCategoryId/update-complexity-level', (req, res) =>
     amendAReferralController.updateComplexityLevel(req, res)
   )
