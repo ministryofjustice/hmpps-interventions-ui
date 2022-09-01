@@ -976,7 +976,8 @@ describe(ShowReferralPresenter, () => {
             key: 'Other mobility, disability or accessibility needs',
             lines: ['She uses a wheelchair'],
           },
-          { key: 'Interpreter required', lines: ['Yes'] },
+          
+          { changeLink: `/probation-practitioner/referrals/${referralWithAllConditionalFields.id}/interpreter-needs`, key: 'Interpreter required', lines: ['Yes'] },
           { key: 'Interpreter language', lines: ['Spanish'] },
           {
             key: 'Primary language',
@@ -1060,7 +1061,7 @@ describe(ShowReferralPresenter, () => {
             key: 'Other mobility, disability or accessibility needs',
             lines: ['N/A'],
           },
-          { key: 'Interpreter required', lines: ['No'] },
+          { changeLink: `/probation-practitioner/referrals/${referralWithNoConditionalFields.id}/interpreter-needs`, key: 'Interpreter required', lines: ['No'] },
           { key: 'Interpreter language', lines: ['N/A'] },
           {
             key: 'Primary language',

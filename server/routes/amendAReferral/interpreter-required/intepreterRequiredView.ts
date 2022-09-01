@@ -2,6 +2,7 @@ import ViewUtils from '../../../utils/viewUtils'
 import { BackLinkArgs, InputArgs, NotificationBannerArgs, RadiosArgs, TextareaArgs } from '../../../utils/govukFrontendTypes'
 import AmendEmploymentResponsibilitiesPresenter from './intepreterRequiredPresenter'
 import IntepreterRequiredPresenter from './intepreterRequiredPresenter'
+import AmendNeedsAndRequirementsIntepreterForm from './amendNeedsAndRequirementsIntepreterForm'
 
 export default class IntepreterRequiredView {
   constructor(private readonly presenter: IntepreterRequiredPresenter) {}
@@ -10,8 +11,8 @@ export default class IntepreterRequiredView {
 
   private get textAreaArgs(): TextareaArgs {
     return {
-      name: 'aaa', // AmendMaximumEnforceableDaysForm.reasonForChangeId,
-      id: 'abc', // AmendMaximumEnforceableDaysForm.reasonForChangeId,
+      name: AmendNeedsAndRequirementsIntepreterForm.reasonForChangeId,
+      id: AmendNeedsAndRequirementsIntepreterForm.reasonForChangeId,
       label: {
         text: this.presenter.text.reasonForChange.title,
         classes: 'govuk-label--l',
@@ -84,7 +85,10 @@ export default class IntepreterRequiredView {
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.requirements.interpreterLanguage.errorMessage),
     }
   }
-
+  private readonly backLinkArgs:BackLinkArgs = {
+    text: 'Back',
+    href: this.presenter.backLinkUrl,
+  }
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'amendAReferral/intepreterRequired',
@@ -92,7 +96,7 @@ export default class IntepreterRequiredView {
         presenter: this.presenter,
         reasonForChangeInputArgs: this.textAreaArgs,
         errorSummaryArgs: this.errorSummaryArgs,
-        backLinkArgs: this.presenter.backLinkUrl,
+       
         intepreterNeedsRadioArgs: this.intepreterNeedsRadio.bind(this),
         needsInterpreterArgs: this.intepreterLanguage,
         

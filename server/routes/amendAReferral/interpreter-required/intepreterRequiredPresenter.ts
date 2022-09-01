@@ -1,11 +1,12 @@
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 import SentReferral from '../../../models/sentReferral'
+import AmendNeedsAndRequirementsIntepreterForm from './amendNeedsAndRequirementsIntepreterForm'
 
 export default class IntepreterRequiredPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
 
-  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'abc') 
+  readonly errorMessage = PresenterUtils.errorMessage(this.error, AmendNeedsAndRequirementsIntepreterForm.interpreterLanguageId) 
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 

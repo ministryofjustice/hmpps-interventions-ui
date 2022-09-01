@@ -18,7 +18,7 @@ import IntepreterRequiredPresenter from './interpreter-required/intepreterRequir
 import IntepreterRequiredView from './interpreter-required/intepreterRequiredView'
 import ViewUtils from '../../utils/viewUtils'
 import { NeedsAndRequirementsType } from '../../models/needsAndRequirementsType'
-import AmendNeedsAndRequirementsIntepreterForm from './maximumEnforceableDays/amendNeedsAndRequirementsIntepreterForm'
+import AmendNeedsAndRequirementsIntepreterForm from './interpreter-required/amendNeedsAndRequirementsIntepreterForm'
 
 
 export default class AmendAReferralController {

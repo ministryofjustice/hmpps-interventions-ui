@@ -10,7 +10,10 @@ import { FormValidationError } from '../../../utils/formValidationError'
 export default class AmendNeedsAndRequirementsIntepreterForm {
 
   static readonly reasonForChangeId = 'reason-for-change'
-
+  static readonly interpreterLanguageId = 'interpreter-language'
+  
+  //static readonly reasonForChangeId = 'needs-for-change'
+  
   constructor(private readonly request: Request) {
   }
 
@@ -19,6 +22,7 @@ export default class AmendNeedsAndRequirementsIntepreterForm {
       body(AmendNeedsAndRequirementsIntepreterForm.reasonForChangeId)
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.amendReferralFields.missingReason),
+        body(AmendNeedsAndRequirementsIntepreterForm.interpreterLanguageId).notEmpty().withMessage(errorMessages.needsInterpreter.empty)
     ]
   }
 
@@ -46,9 +50,9 @@ export default class AmendNeedsAndRequirementsIntepreterForm {
         error: null,
         paramsForUpdate: {
           reasonForChange: this.request.body[AmendNeedsAndRequirementsIntepreterForm.reasonForChangeId],
-          needsInterpreter: this.request.params.needsInterpreter==='true',
-          interpreterLanguage:  this.request.params.interpreterLanguage,
-          changesMade: noChangesMade
+          needsInterpreter: this.request.body.needsInterpreter==='true',
+          interpreterLanguage:  this.request.body.interpreterLanguage,
+          changesMade:  this.request.body.changesMade =noChangesMade
         },
       }
   }
@@ -69,7 +73,7 @@ export default class AmendNeedsAndRequirementsIntepreterForm {
  
   private checkForNoChangesError(validationResult: Result<ValidationError>): boolean {
     if (validationResult.isEmpty()) {
-      
+      return false
     }
 
     return validationResult.array().some(validationError => {

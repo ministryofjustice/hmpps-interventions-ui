@@ -14,6 +14,7 @@ import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
 import { NeedsAndRequirementsType } from '../../models/needsAndRequirementsType'
 import AmendNeedsAndRequirements from '../../models/amendNeedsAndRequirements'
+import { not } from 'joi'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -67,11 +68,10 @@ describe('GET /probation-practitioner/referrals/:id/interpreter-needs', () => {
 })
 
 describe('POST /probation-practitioner/referrals/:id/interpreter-needs', () => {
+  
   const serviceUser= deliusServiceUser.build()
-  let needsAndRequirements: AmendNeedsAndRequirements ={
-    reasonForChange:'scsds'
-  }
   beforeEach(() => {
+    
     interventionsService.getSentReferral.mockResolvedValue(referral)
     communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
     interventionsService.updateNeedsAndRequirments.mockImplementation((probationPractitionerToken,referral,needsAndRequirementsType,AmmendNeedsAndRequirements) => {
@@ -79,20 +79,32 @@ describe('POST /probation-practitioner/referrals/:id/interpreter-needs', () => {
     })
   })
 
-  it('updates changes of referral language needs', () => {
+  it('updates changes of referral language needs and redirects successfully', () => {
     return request(app)
       .post(`/probation-practitioner/referrals/${referral.id}/interpreter-needs`).send({
-        'reasonForChange':'some reason',
+        'reason-for-change':'some reason',
         'needsInterpreter':'true',
         'interpreterLanguage':'Spanish',
         'changesMade':'true'
       })
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain(`Do you want to change whether ${serviceUser?.firstName} needs and intepreter?`)
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)   
+  })
+  it('updates changes of referral language needs redirects when no changes made', () => {
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/interpreter-needs`).send({
+        'reason-for-change':'some reason',
+        'needsInterpreter':'true',
+        'interpreterLanguage':'Spanish',
+        'changesMade':'false'
       })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/interpreter-needs?noChanges=true`)  
   })
 })
+
+
+
 describe('POST /probation-practitioner/referrals/:id/update-maximum-enforceable-days', () => {
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)

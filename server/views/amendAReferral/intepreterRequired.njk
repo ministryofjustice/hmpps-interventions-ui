@@ -14,7 +14,7 @@
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {{ govukBackLink(backLinkArgs) }}
+      <a href="{{ backLinkArgs }}" data-cy="cancel" class="govuk-link">back</a>
 
        {% if notificationBannerArgs %}
          {{ govukNotificationBanner(notificationBannerArgs) }}

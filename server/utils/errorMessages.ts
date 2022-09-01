@@ -103,6 +103,7 @@ export default {
   },
   needsInterpreter: {
     empty: (name: string) => `Select yes if ${name} needs an interpreter`,
+    noChanges: (link:string) =>'You have not changes to whether an interpreter is needed.',
   },
   interpreterLanguage: {
     empty: (name: string) => `Enter the language for which ${name} needs an interpreter`,
