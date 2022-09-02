@@ -21,14 +21,14 @@ export default class IntepreterRequiredView {
       hint: {
         text: this.presenter.text.reasonForChange.hint,
       },
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.reasonForChangeError),
       // value: this.presenter.fields.reasonForChange as string,
     }
   }
   get notificationBannerArgs(): NotificationBannerArgs | null {
     const html = `<hr class="govuk-section-break govuk-section-break--s">
           <p>
-          You have not made any changes to desired outcomes. If you want to leave the desired outcomes as they are, <a href= ${this.presenter.backLinkUrl}>cancel and go back</a>.
+          You have not made any changes to whether an interpreter is needed.If you want to leave it unchanged, <a href= ${this.presenter.backLinkUrl}>cancel and go back</a>.
           </p>`
     return this.presenter.showNoChangesBanner
       ? {
@@ -82,7 +82,7 @@ export default class IntepreterRequiredView {
         text: this.presenter.text.requirements.interpreterLanguage.label,
       },
       value: this.presenter.fields.interpreterLanguage,
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.requirements.interpreterLanguage.errorMessage),
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.interpreterLanguageError),
     }
   }
   private readonly backLinkArgs:BackLinkArgs = {
@@ -96,9 +96,10 @@ export default class IntepreterRequiredView {
         presenter: this.presenter,
         reasonForChangeInputArgs: this.textAreaArgs,
         errorSummaryArgs: this.errorSummaryArgs,
-       
+        backLinkArgs:this.presenter.backLinkUrl,
         intepreterNeedsRadioArgs: this.intepreterNeedsRadio.bind(this),
         needsInterpreterArgs: this.intepreterLanguage,
+        notificationBannerArgs:this.notificationBannerArgs
         
       },
     ]

@@ -1,10 +1,10 @@
 interface AmendAndNeedsRequirementsIntepreter {
-     needsInterpreter?: Boolean | null,
-     interpreterLanguage?: String| null,
+     needsInterpreter: boolean,
+     interpreterLanguage: string,
 }
 
 
 export interface AmmendNeedsRequirementsDetailsUpdate extends AmendAndNeedsRequirementsIntepreter {
   reasonForChange: string
-  changesMade: boolean | null
+  changesMade: boolean 
 }

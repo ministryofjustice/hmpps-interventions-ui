@@ -11,6 +11,7 @@ export default class AmendNeedsAndRequirementsIntepreterForm {
 
   static readonly reasonForChangeId = 'reason-for-change'
   static readonly interpreterLanguageId = 'interpreter-language'
+  static readonly needsIntepreterId = 'needs-interpreter'
   
   //static readonly reasonForChangeId = 'needs-for-change'
   
@@ -22,11 +23,16 @@ export default class AmendNeedsAndRequirementsIntepreterForm {
       body(AmendNeedsAndRequirementsIntepreterForm.reasonForChangeId)
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.amendReferralFields.missingReason),
-        body(AmendNeedsAndRequirementsIntepreterForm.interpreterLanguageId).notEmpty().withMessage(errorMessages.needsInterpreter.empty)
+        body(AmendNeedsAndRequirementsIntepreterForm.interpreterLanguageId).custom((value, {req})=>{
+          return req.body[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]!=='no' && value==!''
+        }).withMessage(errorMessages.interpreterLanguageWithoutName.empty),
+        body(AmendNeedsAndRequirementsIntepreterForm.interpreterLanguageId).custom((value, { req }) => {
+            return (value !== req.body.originalInterpreterNeeds.intepreterLanguage && req.body.originalInterpreterNeeds[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]!==req.body[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]) || (req.body[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]!=='no' && value==!'')
+        }).withMessage(errorMessages.needsInterpreterWithoutName.noChanges)
     ]
   }
 
-  async data(): Promise<FormData<AmmendNeedsRequirementsDetailsUpdate>> {
+  async data(): Promise<FormData<Partial<AmmendNeedsRequirementsDetailsUpdate>>> {
   
     const reasonResult = await FormUtils.runValidations({
       request: this.request,
@@ -37,7 +43,16 @@ export default class AmendNeedsAndRequirementsIntepreterForm {
       request: this.request,
       validations: AmendNeedsAndRequirementsIntepreterForm.validations,
     })
+    const needsInterpreter=this.request.body[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]==='yes'
     const noChangesMade = this.checkForNoChangesError(validationResult)
+    if (noChangesMade) {
+      return {
+        paramsForUpdate: {
+          changesMade: false,
+        },
+        error: null,
+      }
+    }
     const error = this.error(validationResult)
     if (error) {
       return {
@@ -45,14 +60,15 @@ export default class AmendNeedsAndRequirementsIntepreterForm {
         error,
       }
     }
+   
     
       return {
         error: null,
         paramsForUpdate: {
           reasonForChange: this.request.body[AmendNeedsAndRequirementsIntepreterForm.reasonForChangeId],
-          needsInterpreter: this.request.body.needsInterpreter==='true',
-          interpreterLanguage:  this.request.body.interpreterLanguage,
-          changesMade:  this.request.body.changesMade =noChangesMade
+          needsInterpreter: needsInterpreter,
+          interpreterLanguage:  this.request.body[AmendNeedsAndRequirementsIntepreterForm.interpreterLanguageId],
+          changesMade: true
         },
       }
   }
@@ -71,13 +87,13 @@ export default class AmendNeedsAndRequirementsIntepreterForm {
   }
 
  
-  private checkForNoChangesError(validationResult: Result<ValidationError>): boolean {
+  private checkForNoChangesError(validationResult: Result<ValidationError>): boolean | null {
     if (validationResult.isEmpty()) {
-      return false
+      return null
     }
 
     return validationResult.array().some(validationError => {
-      return validationError.msg === errorMessages.desiredOutcomes.noChanges
+      return validationError.msg === errorMessages.needsInterpreterWithoutName.noChanges
     })
   }
     

@@ -84,7 +84,7 @@ describe('POST /probation-practitioner/referrals/:id/interpreter-needs', () => {
       .post(`/probation-practitioner/referrals/${referral.id}/interpreter-needs`).send({
         'reason-for-change':'some reason',
         'needsInterpreter':'true',
-        'interpreterLanguage':'Spanish',
+        'interpreter-language':'French',
         'changesMade':'true'
       })
       .expect(302)
@@ -95,7 +95,7 @@ describe('POST /probation-practitioner/referrals/:id/interpreter-needs', () => {
       .post(`/probation-practitioner/referrals/${referral.id}/interpreter-needs`).send({
         'reason-for-change':'some reason',
         'needsInterpreter':'true',
-        'interpreterLanguage':'Spanish',
+        'interpreter-language':'Spanish',
         'changesMade':'false'
       })
       .expect(302)

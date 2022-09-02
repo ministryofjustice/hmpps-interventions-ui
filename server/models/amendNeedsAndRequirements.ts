@@ -3,7 +3,7 @@ export default interface AmendNeedsAndRequirements{
      whenUnavailable?: String | null,
      accessibilityNeeds?: String | null,
      additionalNeedsInformation?: String |null,
-     reasonForChange: String,
+     reasonForChange: string,
      needsInterpreter?: Boolean | null,
      interpreterLanguage?: String| null,
 }

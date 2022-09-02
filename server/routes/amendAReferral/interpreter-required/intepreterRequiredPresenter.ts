@@ -6,7 +6,8 @@ import AmendNeedsAndRequirementsIntepreterForm from './amendNeedsAndRequirements
 export default class IntepreterRequiredPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
 
-  readonly errorMessage = PresenterUtils.errorMessage(this.error, AmendNeedsAndRequirementsIntepreterForm.interpreterLanguageId) 
+  readonly reasonForChangeError = PresenterUtils.errorMessage(this.error, AmendNeedsAndRequirementsIntepreterForm.reasonForChangeId) 
+  readonly interpreterLanguageError = PresenterUtils.errorMessage(this.error, AmendNeedsAndRequirementsIntepreterForm.interpreterLanguageId) 
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
