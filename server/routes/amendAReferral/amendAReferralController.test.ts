@@ -7,14 +7,11 @@ import CommunityApiService from '../../services/communityApiService'
 import referralDetails from '../../../testutils/factories/referralDetails'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import oauth2TokenFactory from '../../../testutils/factories/oauth2Token'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import sentReferral from '../../../testutils/factories/sentReferral'
 import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
-import { NeedsAndRequirementsType } from '../../models/needsAndRequirementsType'
-import AmendNeedsAndRequirements from '../../models/amendNeedsAndRequirements'
-import { not } from 'joi'
+
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
