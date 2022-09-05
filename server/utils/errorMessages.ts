@@ -113,6 +113,13 @@ export default {
   interpreterLanguage: {
     empty: (name: string) => `Enter the language for which ${name} needs an interpreter`,
   },
+  interpreterLanguageWithoutName: {
+    empty: 'Enter the language for interpretation',
+  },
+  needsInterpreterWithoutName: {
+    empty: `Select yes if there is a need for an interpreter`,
+    noChanges: 'You have no changes to whether an interpreter is needed.',
+  },
   hasAdditionalResponsibilities: {
     empty: (name: string) => `Select yes if ${name} has caring or employment responsibilities`,
   },

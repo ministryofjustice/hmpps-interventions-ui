@@ -976,7 +976,10 @@ describe(ShowReferralPresenter, () => {
             key: 'Other mobility, disability or accessibility needs',
             lines: ['She uses a wheelchair'],
           },
-          { key: 'Interpreter required', lines: ['Yes'] },
+          {
+            key: 'Interpreter required',
+            lines: ['Yes'],
+          },
           { key: 'Interpreter language', lines: ['Spanish'] },
           {
             key: 'Primary language',
@@ -1053,20 +1056,27 @@ describe(ShowReferralPresenter, () => {
 
         expect(presenter.serviceUserNeeds).toEqual([
           {
+            changeLink: undefined,
             key: 'Identify needs',
             lines: ['N/A'],
           },
           {
+            changeLink: undefined,
             key: 'Other mobility, disability or accessibility needs',
             lines: ['N/A'],
           },
-          { key: 'Interpreter required', lines: ['No'] },
-          { key: 'Interpreter language', lines: ['N/A'] },
+          {
+            changeLink: undefined,
+            key: 'Interpreter required',
+            lines: ['No'],
+          },
+          { changeLink: undefined, key: 'Interpreter language', lines: ['N/A'] },
           {
             key: 'Primary language',
             lines: ['English'],
           },
           {
+            changeLink: undefined,
             key: 'Caring or employment responsibilities',
             lines: ['No'],
           },

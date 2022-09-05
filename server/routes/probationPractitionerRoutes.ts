@@ -187,6 +187,12 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   get(router, '/referrals/:id/add-case-note/confirmation', (req, res) =>
     caseNotesController.addCaseNoteConfirmation(req, res, 'probation-practitioner')
   )
+  get(router, '/referrals/:referralId/interpreter-needs', (req, res) =>
+    amendAReferralController.updateInterpreterNeeds(req, res)
+  )
+  post(router, '/referrals/:referralId/interpreter-needs', (req, res) =>
+    amendAReferralController.updateInterpreterNeeds(req, res)
+  )
 
   return router
 }

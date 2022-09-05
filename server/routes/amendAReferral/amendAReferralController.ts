@@ -17,9 +17,13 @@ import createFormValidationErrorOrRethrow from '../../utils/interventionsFormErr
 import AmendComplexityLevelPresenter from './complexityLevel/amendComplexityLevelPresenter'
 import AmendComplexityLevelView from './complexityLevel/amendComplexityLevelView'
 import AmendComplexityLevelForm from './complexityLevel/amendComplexityLevelForm'
-import AmendAdditionalInformationForm from './additionalInformation/amendAdditionalInformationForm'
+import IntepreterRequiredPresenter from './interpreter-required/intepreterRequiredPresenter'
+import IntepreterRequiredView from './interpreter-required/intepreterRequiredView'
+import { NeedsAndRequirementsType } from '../../models/needsAndRequirementsType'
+import AmendNeedsAndRequirementsIntepreterForm from './interpreter-required/amendNeedsAndRequirementsIntepreterForm'
 import AmendAdditionalInformationPresenter from './additionalInformation/amendAdditionalInformationPresenter'
 import AmendAdditionalInformationView from './additionalInformation/amendAdditionalInformationView'
+import AmendAdditionalInformationForm from './additionalInformation/amendAdditionalInformationForm'
 
 export default class AmendAReferralController {
   constructor(
@@ -223,6 +227,58 @@ export default class AmendAReferralController {
       formError
     )
     const view = new AmendComplexityLevelView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async updateInterpreterNeeds(req: Request, res: Response): Promise<void> {
+    const { referralId } = req.params
+    const { accessToken } = res.locals.user.token
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    let error = null
+    let userInputData = null
+
+    if (req.method === 'POST') {
+      req.body.originalInterpreterNeeds = {
+        intepreterLanguage: sentReferral.referral.interpreterLanguage,
+        intepreterNeeded: sentReferral.referral.needsInterpreter ? 'yes' : 'no',
+      }
+      if (req.body['needs-interpreter'] === 'no') {
+        req.body['interpreter-language'] = ''
+      }
+      const formData = await new AmendNeedsAndRequirementsIntepreterForm(req).data()
+      if (!formData.error && !formData.paramsForUpdate?.changesMade) {
+        return res.redirect(`${req.baseUrl}${req.path}?noChanges=true`)
+      }
+
+      if (!formData.error) {
+        await this.interventionsService.updateNeedsAndRequirments(
+          accessToken,
+          sentReferral,
+          NeedsAndRequirementsType.interpreterRequired,
+          {
+            reasonForChange: formData.paramsForUpdate.reasonForChange!,
+            needsInterpreter: formData.paramsForUpdate.needsInterpreter,
+            interpreterLanguage: formData.paramsForUpdate.interpreterLanguage,
+          }
+        )
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
+      }
+
+      delete req.query.noChanges
+      error = formData.error
+      userInputData = req.body
+      res.status(400)
+    }
+
+    const presenter = new IntepreterRequiredPresenter(
+      sentReferral,
+      error,
+      userInputData,
+      req.query.noChanges === 'true'
+    )
+    const view = new IntepreterRequiredView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }

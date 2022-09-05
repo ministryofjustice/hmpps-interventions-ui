@@ -33,6 +33,8 @@ import { DraftOasysRiskInformation } from '../models/draftOasysRiskInformation'
 import ReferralDetails, { ReferralDetailsUpdate } from '../models/referralDetails'
 import Changelog from '../models/changelog'
 import { ReferralAdditionalInformationUpdate } from '../models/referralAdditionalInformation'
+import AmendNeedsAndRequirements from '../models/amendNeedsAndRequirements'
+import { NeedsAndRequirementsType } from '../models/needsAndRequirementsType'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -807,5 +809,19 @@ export default class InterventionsService {
       path: `/draft-referral/${referralId}/oasys-risk-information`,
       headers: { Accept: 'application/json' },
     })) as DraftOasysRiskInformation
+  }
+
+  async updateNeedsAndRequirments(
+    token: string,
+    referral: SentReferral,
+    type: NeedsAndRequirementsType,
+    amendNeedsAndRequirement: AmendNeedsAndRequirements
+  ): Promise<void> {
+    const restClient = this.createRestClient(token)
+    await restClient.post({
+      path: `/sent-referral/${referral.id}/amend-needs-and-requirements/${type}`,
+      headers: { Accept: 'application/json' },
+      data: { ...amendNeedsAndRequirement },
+    })
   }
 }

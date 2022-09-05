@@ -313,6 +313,10 @@ export default class ShowReferralPresenter {
       {
         key: 'Interpreter required',
         lines: [this.sentReferral.referral.needsInterpreter ? 'Yes' : 'No'],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/interpreter-needs`
+            : undefined,
       },
       { key: 'Interpreter language', lines: [this.sentReferral.referral.interpreterLanguage || 'N/A'] },
       {
