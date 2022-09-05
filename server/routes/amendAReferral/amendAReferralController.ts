@@ -248,7 +248,7 @@ export default class AmendAReferralController {
       
       req.body.originalInterpreterNeeds = {
         intepreterLanguage:sentReferral.referral.interpreterLanguage, 
-        intepreterNeeded: sentReferral.referral.needsInterpreter
+        intepreterNeeded: sentReferral.referral.needsInterpreter?'yes':'no'
       }
       if(req.body['needs-interpreter']==='no'){
         req.body['interpreter-language']=''

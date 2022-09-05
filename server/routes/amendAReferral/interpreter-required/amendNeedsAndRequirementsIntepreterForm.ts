@@ -24,10 +24,11 @@ export default class AmendNeedsAndRequirementsIntepreterForm {
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.amendReferralFields.missingReason),
         body(AmendNeedsAndRequirementsIntepreterForm.interpreterLanguageId).custom((value, {req})=>{
-          return req.body[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]!=='no' && value==!''
+          return req.body[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]!=='yes' || value!==''
         }).withMessage(errorMessages.interpreterLanguageWithoutName.empty),
         body(AmendNeedsAndRequirementsIntepreterForm.interpreterLanguageId).custom((value, { req }) => {
-            return (value !== req.body.originalInterpreterNeeds.intepreterLanguage && req.body.originalInterpreterNeeds[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]!==req.body[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]) || (req.body[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]!=='no' && value==!'')
+            return (value !== req.body?.originalInterpreterNeeds?.intepreterLanguage || req.body?.originalInterpreterNeeds?.intepreterNeeded!==req.body[AmendNeedsAndRequirementsIntepreterForm.needsIntepreterId]) 
+           
         }).withMessage(errorMessages.needsInterpreterWithoutName.noChanges)
     ]
   }

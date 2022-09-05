@@ -30,18 +30,18 @@
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-
         {% set intepreterNeeded %}
             {{ govukInput(needsInterpreterArgs) }}
         {% endset -%}
+
         {{ govukRadios(intepreterNeedsRadioArgs(intepreterNeeded)) }}
-       
         {{ govukTextarea(reasonForChangeInputArgs) }}
 
-        {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }} 
-        
+         <div class="govuk-button-group">
+          {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }} 
         <a href="{{ backLinkArgs }}" data-cy="cancel" class="govuk-link">Cancel and go back</a>
-        
+       
+        </div>
       </form>
     </div>
   </div>

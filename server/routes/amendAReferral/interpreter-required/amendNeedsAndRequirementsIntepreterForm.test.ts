@@ -9,14 +9,14 @@ describe(AmendNeedsAndRequirementsIntepreterForm, () => {
         const request = TestUtils.createRequest({
           'reason-for-change': 'some reason',
           'interpreter-language': 'Spanish',
-          'needsInterpreter': 'true',
+          'needs-interpreter': 'yes',
         })
         request.params = {
           referralId: 'referral-id',
         }
         const data = await new AmendNeedsAndRequirementsIntepreterForm(request).data()
 
-        expect(data.paramsForUpdate).toMatchObject({ interpreterLanguage: 'Spanish', reasonForChange: 'some reason',needsInterpreter:true })
+        expect(data.paramsForUpdate).toMatchObject({ interpreterLanguage: 'Spanish', reasonForChange: 'some reason',needsInterpreter:true, changesMade:true })
         expect(data.error).toBeNull()
       })
     })
@@ -57,7 +57,7 @@ describe(AmendNeedsAndRequirementsIntepreterForm, () => {
       const request = TestUtils.createRequest({
         'reason-for-change': 'some reason',
         'interpreter-language': '',
-        'needsInterpreter': 'true',
+        'needs-interpreter': 'yes',
       })
       request.params = {
         referralId: 'referral-id',
@@ -72,13 +72,14 @@ describe(AmendNeedsAndRequirementsIntepreterForm, () => {
       })
     })
 
-    it('returns an error when desired outcomes are not changed', async () => {
+    it('returns an error when interprete language is not changed', async () => {
       const request = TestUtils.createRequest({
         'interpreter-language': 'Spanish',
-        'needsInterpreter': 'true',
+        'needs-interpreter': 'yes',
+        'reason-for-change': 'some reason',
         originalInterpreterNeeds: {
-        'interpreter-language': 'Spanish',
-        'needs-interpreter': 'false',}
+        'intepreterLanguage': 'Spanish',
+        'intepreterNeeded': 'yes',}
       })
       request.params = {
         referralId: 'referral-id',
@@ -86,6 +87,25 @@ describe(AmendNeedsAndRequirementsIntepreterForm, () => {
       const data = await new AmendNeedsAndRequirementsIntepreterForm(request).data()
 
       expect(data.paramsForUpdate).toMatchObject({ changesMade: false })
+      expect(data.error).toBeNull()
+    })
+
+    it('doesnt return an error when no interpreter required and no language provided', async () => {
+      const request = TestUtils.createRequest({
+        'interpreter-language': '',
+        'reason-for-change': 'some reason',
+        'needs-interpreter': 'no',
+
+        originalInterpreterNeeds: {
+        'intepreterLanguage': '',
+        'needs-interpreter': 'yes',}
+      })
+      request.params = {
+        referralId: 'referral-id',
+      }
+      const data = await new AmendNeedsAndRequirementsIntepreterForm(request).data()
+
+      expect(data.paramsForUpdate).toMatchObject({ changesMade: true })
       expect(data.error).toBeNull()
     })
   })

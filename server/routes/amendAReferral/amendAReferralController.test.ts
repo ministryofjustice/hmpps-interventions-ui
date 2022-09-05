@@ -94,9 +94,13 @@ describe('POST /probation-practitioner/referrals/:id/interpreter-needs', () => {
     return request(app)
       .post(`/probation-practitioner/referrals/${referral.id}/interpreter-needs`).send({
         'reason-for-change':'some reason',
-        'needsInterpreter':'true',
+        'needs-interpreter':'yes',
         'interpreter-language':'Spanish',
-        'changesMade':'false'
+        
+        'originalInterpreterNeeds':{
+          'needsInterpreter':'yes',
+          'intepreterLanguage':'Spanish',
+        }
       })
       .expect(302)
       .expect('Location', `/probation-practitioner/referrals/${referral.id}/interpreter-needs?noChanges=true`)  
