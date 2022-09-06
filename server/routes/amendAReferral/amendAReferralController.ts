@@ -296,9 +296,19 @@ export default class AmendAReferralController {
 
     if (req.method === 'POST') {
       const formData = await new AmendEmploymentResponsibilitiesForm(req).data()
+
+
+      console.log('-----------------')
+      console.log(formData)
+      console.log('-----------------')
+
       if (!formData.error) {
-        await this.interventionsService.updateSentReferralDetails(accessToken, referralId, formData.paramsForUpdate)
-        return res.redirect(`/probation-practitioner/referrals/${req.params.id}/details?detailsUpdated=true`)
+        await this.interventionsService.updateEmploymentResponsibilities(
+          accessToken,
+          referralId,
+          formData.paramsForUpdate
+        )
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
       }
       error = formData.error
       userInputData = req.body

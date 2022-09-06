@@ -36,6 +36,7 @@ import { ReferralAdditionalInformationUpdate } from '../models/referralAdditiona
 import AmendNeedsAndRequirements from '../models/amendNeedsAndRequirements'
 import { NeedsAndRequirementsType } from '../models/needsAndRequirementsType'
 import ChangelogDetail from '../models/changelogDetail'
+import {AmendOtherNeeds} from "../models/OtherNeeds";
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -334,6 +335,18 @@ export default class InterventionsService {
       data: { ...update },
       headers: { Accept: 'application/json' },
     })) as ReferralDetails
+  }
+
+  async updateEmploymentResponsibilities(token: string, id: string, update: Partial<AmendOtherNeeds>): Promise<null> {
+    console.log('----------------')
+    console.log(update)
+    console.log('----------------')
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/sent-referral/${id}/amend-needs-and-requirements/additional-responsibilities`,
+      data: { ...update },
+      headers: { Accept: 'application/json' },
+    })) as null
   }
 
   async getSentReferralsForUserToken(

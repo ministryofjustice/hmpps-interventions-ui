@@ -31,8 +31,9 @@ export default class AmendEmploymentResponsibilitiesForm {
 
     return {
       paramsForUpdate: {
-        hasAdditionalResponsibilities: this.request.body.hasAdditionalResponsibilities,
-        whenUnavailable: this.request.body.whenUnavailable,
+        hasAdditionalResponsibilities: this.request.body['has-additional-responsibilities'] === 'yes',
+        whenUnavailable:
+          this.request.body['has-additional-responsibilities'] === 'yes' ? this.request.body['when-unavailable'] : null,
         reasonForChange:
           this.request.body[AmendEmploymentResponsibilitiesForm.amendEmploymentResponsibilitiesReasonForChangeId],
       },
