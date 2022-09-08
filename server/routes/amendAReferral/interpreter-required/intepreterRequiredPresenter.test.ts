@@ -138,7 +138,7 @@ describe('intepreterRequiredPresenter.test', () => {
       const presenter = new IntepreterRequiredPresenter(referral)
 
       expect(presenter.text.requirements.title).toEqual(
-        `Do you want to change whether ${referral.referral.serviceUser?.firstName} needs and intepreter?`
+        `Do you want to change whether ${referral.referral.serviceUser?.firstName} needs an interpreter?`
       )
     })
 
