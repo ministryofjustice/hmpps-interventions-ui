@@ -16,27 +16,34 @@
       <p>No referral amend changed</p>
       {% endif %}
          {% for row in presenter.changeLogs %} 
-         
+         <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-               
-               <div class="card">
-                  <div class="card-header">
-                     <h3><a class="govuk-link--no-visited-state:visited govuk-label govuk-label--m changelog-link" href="">{{ row.changeLog.description }}</a></h3>
-                     <p>{{ row.changeLog.changedAt }}</p>
-                     <p><strong>Change made by {{ row.changeLog.name }}</strong></p>
+               <th scope="col" class="govuk-table__header govuk-accordion__section">
+                  <div class="govuk-template">
+                     <div class="govuk-!-margin-top-5 govuk-!-margin-bottom-7">
+                        <div class="govuk-!-margin-left-7 govuk-!-margin-top-5">
+                           <h3><a class="govuk-link--no-visited-state:visited govuk-label govuk-label--m" href="">{{ row.changeLog.description }}</a></h3>
+                           <p>{{ row.changeLog.changedAt }}</p>
+                           <p><strong>Change made by {{ row.changeLog.name }}</strong></p>
+                        </div>
+                     </div>
                   </div>
-                 <div class="card-body">
-                     {% if row.changeLog.reasonForChange.length >=40 %}
-                        <p>{{ row.changeLog.reasonForChange.substring(0, 40)}}... <a class="govuk-link--no-visited-state:visited  govuk-label--xs changelog-link" href="{{row.changeLogUrl}}">Read full details of the change</a></p>
-                        {% else %}
-                        <p>{{ row.changeLog.reasonForChange }}</p>
-                         {% endif %}
-                 </div>
-               </div>  
-                 <br> 
-                  <br> 
-                 </tr>
-         {% endfor %}     
+               </th>
+            </tr>
+         </thead>
+         <tbody class="govuk-table__body">
+            <tr class="govuk-table__row">
+               <th scope="row" class="govuk-table__header">
+                  <div class="govuk-template__body">
+                     <div class="govuk-!-margin-left-7 govuk-!-margin-top-5">
+                        <p>{{ row.changeLog.reasonForChange }}</p>   
+                     </div>
+                  </div>
+               </th>
+            </tr>
+         </tbody>
+         {% endfor %}
+         
       </table>
    </div>
 </div>
