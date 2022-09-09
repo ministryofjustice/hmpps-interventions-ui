@@ -18,25 +18,21 @@
          {% for row in presenter.changeLogs %} 
 
             <tr class="govuk-table__row">
-               
+
                <div class="card">
                   <div class="card-header">
-                     <h3><a class="govuk-link--no-visited-state:visited govuk-label govuk-label--m changelog-link" href="">{{ row.changeLog.description }}</a></h3>
+                     <h3><a class="govuk-link--no-visited-state:visited govuk-label--m changelog-link" href="{{row.changeLogUrl}}">{{ row.changeLog.description }}</a></h3>
                      <p>{{ row.changeLog.changedAt }}</p>
                      <p><strong>Change made by {{ row.changeLog.name }}</strong></p>
                   </div>
                  <div class="card-body">
-                     {% if row.changeLog.reasonForChange.length >=40 %}
-                        <p>{{ row.changeLog.reasonForChange.substring(0, 40)}}... <a class="govuk-link--no-visited-state:visited  govuk-label--xs changelog-link" href="{{row.changeLogUrl}}">Read full details of the change</a></p>
-                        {% else %}
-                        <p>{{ row.changeLog.reasonForChange }}</p>
-                         {% endif %}
+                  <p>{{ row.changeLog.reasonForChange.substring(0, 20)}}... <a class="govuk-link--no-visited-state:visited  govuk-label--xs changelog-link" href="{{row.changeLogUrl}}">Read full details of the change</a></p>
                  </div>
-               </div>  
-                 <br> 
-                 <br> 
+               </div>
+                 <br>
+                 <br>
             </tr>
-      {% endfor %}     
+      {% endfor %}
       </table>
    </div>
 </div>
