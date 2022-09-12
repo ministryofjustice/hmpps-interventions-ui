@@ -2254,7 +2254,7 @@ describe('Service provider referrals dashboard', () => {
           // chunk of work on our mocks that I don’t want to do now.
           cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
 
-          cy.get('h1').contains('Initial assessment appointment added')
+          cy.get('h1').contains('Supplier assessment appointment added')
           cy.contains('Return to progress').click()
 
           cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
@@ -2345,7 +2345,7 @@ describe('Service provider referrals dashboard', () => {
           cy.get('h1').contains('Confirm appointment details')
           cy.get('button').contains('Confirm').click()
 
-          cy.get('h1').contains('Initial assessment appointment added')
+          cy.get('h1').contains('Supplier assessment appointment added')
         })
 
         it('User reschedules a supplier assessment appointment', () => {
@@ -2411,7 +2411,7 @@ describe('Service provider referrals dashboard', () => {
           // See comment in previous test about why we do this after the update
           cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
 
-          cy.get('h1').contains('Initial assessment appointment updated')
+          cy.get('h1').contains('Supplier assessment appointment updated')
           cy.contains('Return to progress').click()
 
           cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
