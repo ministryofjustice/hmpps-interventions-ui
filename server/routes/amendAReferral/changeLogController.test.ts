@@ -121,9 +121,9 @@ describe('GET /referrals/:referralId/changelog', () => {
       .get(`/probation-practitioner/referrals/${referral.id}/changelog`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Error at complexity change')
-        expect(res.text).toContain('Error at desired outcomes')
-        expect(res.text).toContain('accessibility needs needs changing')
+        expect(res.text).toContain('Error at complexity')
+        expect(res.text).toContain('Error at desired out')
+        expect(res.text).toContain('accessibility needs')
       })
   })
 })
