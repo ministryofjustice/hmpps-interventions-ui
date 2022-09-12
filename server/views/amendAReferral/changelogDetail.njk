@@ -1,0 +1,43 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+{% extends "../partials/referralNavigationTemplate.njk" %}
+
+
+{% set pageTitle = "Change log Detail" %}
+
+{% block pageContent %}
+    {% block content %} 
+    <div class="govuk-grid-column-three-thirds">
+        {{ govukBackLink(backlinkArgs) }}
+        <main class="govuk-main-wrapper">
+            <div class="govuk-grid-row">
+                <div class="govuk-grid-column-two-thirds">
+                    <h3 class="govuk-heading-xl">{{presenter.renderTitle}}</h3>
+                    {%if(renderBasedonTopicArgs(govukTag).changesubtitle)%}
+                    <div class="govuk-!-margin-top-5"> 
+                        <p class="govuk-body">{{renderBasedonTopicArgs(govukTag).changesubtitle}}</p>
+                    </div>
+                    {%endif%}
+                    <div class="govuk-!-margin-top-5">    
+                        <p class="govuk-body"><b>From</b></p>
+                        {{renderBasedonTopicArgs(govukTag).from | safe}}
+                    </div>
+                    <div class="govuk-!-margin-top-5">
+                        <p class="govuk-body"><b>To</b></p>
+                        {{renderBasedonTopicArgs(govukTag).to | safe}}
+                    </div>
+                    <div class="govuk-!-margin-top-5">    
+                        <p><b>Reason</b></p>
+                    </div>
+                    <p class="govuk-body">{{presenter.changelogDetail.reasonForChange}}</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    {% endblock %}
+{% endblock %}

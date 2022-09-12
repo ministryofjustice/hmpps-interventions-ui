@@ -35,6 +35,7 @@ import Changelog from '../models/changelog'
 import { ReferralAdditionalInformationUpdate } from '../models/referralAdditionalInformation'
 import AmendNeedsAndRequirements from '../models/amendNeedsAndRequirements'
 import { NeedsAndRequirementsType } from '../models/needsAndRequirementsType'
+import ChangelogDetail from '../models/changelogDetail'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -289,6 +290,14 @@ export default class InterventionsService {
       path: `/sent-referral/${referralId}/change-log`,
       headers: { Accept: 'application/json' },
     })) as Changelog[]
+  }
+
+  async getChangelogDetail(token: string, changeLogId: string): Promise<ChangelogDetail> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/sent-referral/change-log/${changeLogId}`,
+      headers: { Accept: 'application/json' },
+    })) as ChangelogDetail
   }
 
   async getDraftReferralsForUserToken(token: string): Promise<DraftReferral[]> {

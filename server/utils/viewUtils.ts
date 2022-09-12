@@ -179,4 +179,8 @@ export default class ViewUtils {
   static sessionStatusTagHtml(presenter: SessionStatusPresenter, tagMacro: (args: TagArgs) => string): string {
     return tagMacro({ text: presenter.text, classes: presenter.tagClass })
   }
+
+  static changelogDetailTagHtml(value: string, colorClass: string, tagMacro: (args: TagArgs) => string): string {
+    return tagMacro({ html: value, classes: colorClass })
+  }
 }

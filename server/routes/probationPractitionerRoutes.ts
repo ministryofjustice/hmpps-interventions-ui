@@ -78,8 +78,8 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   post(router, '/referrals/:referralId/service-category/:serviceCategoryId/update-complexity-level', (req, res) =>
     amendAReferralController.updateComplexityLevel(req, res)
   )
-  get(router, '/referrals/:referralId/changelog', (req, res) =>
-    changeLogController.getChangelog(req, res, 'probation-practitioner')
+  get(router, '/referrals/:referralId/changelog/:changelogId/details', (req, res) =>
+    changeLogController.getChangelogDetails(req, res, 'probation-practitioner')
   )
   get(router, '/referrals/:referralId/update-accessibility-needs', (req, res) =>
     amendAReferralController.amendAccessibilityNeeds(req, res)

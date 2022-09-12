@@ -24,7 +24,10 @@ export default class ChangelogPresenter {
 
   get changeLogs(): ChangeLogViewSummary[] {
     return this.changelog.map(log => {
-      return { changeLogUrl: '', changeLog: log }
+      return {
+        changeLog: log,
+        changeLogUrl: `/probation-practitioner/referrals/${this.referralId}/changelog/${log.changelogId}/details`,
+      }
     })
   }
 }
