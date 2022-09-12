@@ -440,7 +440,7 @@ describe('Scheduling a supplier assessment appointment', () => {
         .get(`/service-provider/referrals/1/supplier-assessment/scheduled-confirmation`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Initial assessment appointment added')
+          expect(res.text).toContain('Supplier assessment appointment added')
         })
     })
   })
@@ -453,7 +453,7 @@ describe('Scheduling a supplier assessment appointment', () => {
         .get(`/service-provider/referrals/1/supplier-assessment/scheduled-confirmation`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Initial assessment appointment added')
+          expect(res.text).toContain('Supplier assessment appointment added')
         })
     })
   })
