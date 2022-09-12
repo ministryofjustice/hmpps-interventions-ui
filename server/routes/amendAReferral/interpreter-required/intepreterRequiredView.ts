@@ -101,7 +101,7 @@ export default class IntepreterRequiredView {
         presenter: this.presenter,
         reasonForChangeInputArgs: this.textAreaArgs,
         errorSummaryArgs: this.errorSummaryArgs,
-        backLinkArgs: this.presenter.backLinkUrl,
+        backLinkArgs: { href: this.presenter.backLinkUrl },
         intepreterNeedsRadioArgs: this.intepreterNeedsRadio.bind(this),
         needsInterpreterArgs: this.intepreterLanguage,
         notificationBannerArgs: this.notificationBannerArgs,

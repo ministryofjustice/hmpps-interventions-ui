@@ -14,7 +14,7 @@ export default class AccessibilityNeedsView {
       id: AccessibilityNeedsForm.accessibilityNeeds,
       label: {
         text: this.presenter.text.accessibilityNeeds.label,
-        classes: 'govuk-label--s',
+        classes: 'govuk-label--l',
       },
       hint: {
         text: this.presenter.text.accessibilityNeeds.hint,
@@ -29,7 +29,7 @@ export default class AccessibilityNeedsView {
       id: AccessibilityNeedsForm.amendAccessibilityNeedsReasonForChangeId,
       label: {
         text: this.presenter.reasonTitle,
-        classes: 'govuk-label--m',
+        classes: 'govuk-label--l',
         isPageHeading: false,
       },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.reasonForChangeErrorMessage),
