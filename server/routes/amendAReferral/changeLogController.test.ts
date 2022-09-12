@@ -1,0 +1,246 @@
+import request from 'supertest'
+import { Express } from 'express'
+import InterventionsService from '../../services/interventionsService'
+import apiConfig from '../../config'
+import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
+import CommunityApiService from '../../services/communityApiService'
+import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
+import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
+import sentReferral from '../../../testutils/factories/sentReferral'
+import changelogFactory from '../../../testutils/factories/changeLog'
+import changelogDetailFactory from '../../../testutils/factories/changeLogDetail'
+import SentReferral from '../../models/sentReferral'
+import ChangelogDetail from '../../models/changelogDetail'
+import Changelog from '../../models/changelog'
+
+jest.mock('../../services/interventionsService')
+jest.mock('../../services/communityApiService')
+const interventionsService = new InterventionsService(
+  apiConfig.apis.interventionsService
+) as jest.Mocked<InterventionsService>
+const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+
+let app: Express
+let referral: SentReferral
+let changelogDetail1: ChangelogDetail
+let changelogDetail2: ChangelogDetail
+let changelogDetail3: ChangelogDetail
+let changelogDetail4: ChangelogDetail
+let changelogDetail5: ChangelogDetail
+let changelogDetail6: ChangelogDetail
+let changelogDetail7: ChangelogDetail
+let changelogDetail8: ChangelogDetail
+let changelog: Changelog[]
+
+beforeEach(() => {
+  app = appWithAllRoutes({
+    overrides: { interventionsService, communityApiService },
+    userType: AppSetupUserType.probationPractitioner,
+  })
+  referral = sentReferral.build()
+  changelog = [
+    changelogFactory.build({ changelogId: '1', reasonForChange: 'Error at complexity change' }),
+    changelogFactory.build({ changelogId: '2', reasonForChange: 'Error at desired outcomes' }),
+    changelogFactory.build({ changelogId: '3', reasonForChange: 'accessibility needs needs changing' }),
+  ]
+  changelogDetail1 = changelogDetailFactory.build({
+    changelogId: '1',
+    name: 'changelog 1 name',
+    topic: 'COMPLEXITY_LEVEL',
+    oldValue: ['low complexity'],
+    newValue: ['high complexity'],
+    reasonForChange: 'Error at complexity change',
+  })
+  changelogDetail2 = changelogDetailFactory.build({
+    changelogId: '2',
+    name: 'changelog 2 name',
+    topic: 'DESIRED_OUTCOMES',
+    oldValue: ['desired outcome1'],
+    newValue: ['desired outcome2'],
+    reasonForChange: 'Error at desired outcome change',
+  })
+  changelogDetail3 = changelogDetailFactory.build({
+    changelogId: '3',
+    name: 'changelog 3 name',
+    topic: 'COMPLETION_DATETIME',
+    oldValue: ['1/10/2022'],
+    newValue: ['1/11/2022'],
+    reasonForChange: 'Error at desired outcome change',
+  })
+  changelogDetail4 = changelogDetailFactory.build({
+    changelogId: '4',
+    name: 'changelog 4 name',
+    topic: 'MAXIMUM_ENFORCEABLE_DAYS',
+    oldValue: ['10'],
+    newValue: ['20'],
+    reasonForChange: 'Error at desired outcome change',
+  })
+  changelogDetail5 = changelogDetailFactory.build({
+    changelogId: '5',
+    name: 'changelog 5 name',
+    topic: 'NEEDS_AND_REQUIREMENTS_ACCESSIBILITY_NEEDS',
+    oldValue: ['wheelchair access'],
+    newValue: ['hearing aid'],
+    reasonForChange: 'Error at desired outcome change',
+  })
+  changelogDetail6 = changelogDetailFactory.build({
+    changelogId: '6',
+    name: 'changelog 6 name',
+    topic: 'NEEDS_AND_REQUIREMENTS_ADDITIONAL_INFORMATION',
+    oldValue: ['Additional Information1'],
+    newValue: ['Additional Information2'],
+    reasonForChange: 'Error at desired outcome change',
+  })
+  changelogDetail7 = changelogDetailFactory.build({
+    changelogId: '7',
+    name: 'changelog 7 name',
+    topic: 'NEEDS_AND_REQUIREMENTS_INTERPRETER_REQUIRED',
+    oldValue: ['No'],
+    newValue: ['Yes-French'],
+    reasonForChange: 'Error at desired outcome change',
+  })
+  changelogDetail8 = changelogDetailFactory.build({
+    changelogId: '8',
+    name: 'changelog 8 name',
+    topic: 'NEEDS_AND_REQUIREMENTS_HAS_ADDITIONAL_RESPONSIBILITIES',
+    oldValue: ['No'],
+    newValue: ['Yes-cannot attend on wednesday afternoons'],
+    reasonForChange: 'Error at desired outcome change',
+  })
+})
+
+describe('GET /referrals/:referralId/changelog', () => {
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getChangelog.mockResolvedValue(changelog)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('renders the page to start a referral', () => {
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Error at complexity change')
+        expect(res.text).toContain('Error at desired outcomes')
+        expect(res.text).toContain('accessibility needs needs changing')
+      })
+  })
+})
+
+describe('GET /referrals/:referralId/changelog/:changelogId/details', () => {
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('renders the changelog detail for a given complexity level change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail1)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail1.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Complexity level was changed')
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain(changelogDetail1.oldValue[0])
+        expect(res.text).toContain(changelogDetail1.newValue[0])
+      })
+  })
+  it('renders the changelog detail for a given desired outcome level change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail2)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail2.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Desired outcomes was changed')
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain(changelogDetail2.oldValue[0])
+        expect(res.text).toContain(changelogDetail2.newValue[0])
+      })
+  })
+
+  it('renders the changelog detail for a given completion deadline change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail3)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail3.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Completion days was changed')
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain(changelogDetail3.oldValue[0])
+        expect(res.text).toContain(changelogDetail3.newValue[0])
+      })
+  })
+
+  it('renders the changelog detail for a given maximum enforceable days change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail4)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail4.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Enforceable days was changed')
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain(changelogDetail4.oldValue[0])
+        expect(res.text).toContain(changelogDetail4.newValue[0])
+      })
+  })
+
+  it('renders the changelog detail for the accessibility needs change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail5)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail5.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Mobility, disability or accessibility needs were changed')
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain(changelogDetail5.oldValue[0])
+        expect(res.text).toContain(changelogDetail5.newValue[0])
+      })
+  })
+
+  it('renders the changelog detail for the additional information change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail6)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail6.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Additional information about Alex&#39;s needs was changed')
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain(changelogDetail6.oldValue[0])
+        expect(res.text).toContain(changelogDetail6.newValue[0])
+      })
+  })
+  it('renders the changelog detail for the need interpreter required change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail7)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail7.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Need for an interpreter was changed')
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain(changelogDetail7.oldValue[0])
+        expect(res.text).toContain(changelogDetail7.newValue[0])
+      })
+  })
+
+  it('renders the changelog detail for the caring or employment responsibities change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail8)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail8.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Caring or employment responsibilites were changed')
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain(changelogDetail8.oldValue[0])
+        expect(res.text).toContain(changelogDetail8.newValue[0])
+      })
+  })
+})
