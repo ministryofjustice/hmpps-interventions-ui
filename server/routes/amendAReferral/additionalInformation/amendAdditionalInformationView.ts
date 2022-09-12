@@ -27,7 +27,7 @@ export default class AmendAdditionalInformationView {
       id: AmendAdditionalInformationForm.reasonForChangeId,
       label: {
         text: this.presenter.reasonForChangeTitle,
-        classes: 'govuk-label--m',
+        classes: 'govuk-label--l',
         isPageHeading: false,
       },
       hint: {

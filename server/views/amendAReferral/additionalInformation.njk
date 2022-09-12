@@ -20,7 +20,7 @@
       {% if notificationBannerArgs %}
         {{ govukNotificationBanner(notificationBannerArgs) }}
       {% endif %}
-      <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
+      <h3 class="govuk-heading-xl">{{ presenter.title }}</h3>
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukTextarea(additionalInformationTextAreaArgs) }}

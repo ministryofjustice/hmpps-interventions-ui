@@ -6,6 +6,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -15,7 +16,7 @@
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <a href="{{ backLinkArgs }}" data-cy="cancel" class="govuk-link">back</a>
+      {{ govukBackLink(backLinkArgs) }}
 
        {% if notificationBannerArgs %}
          {{ govukNotificationBanner(notificationBannerArgs) }}
