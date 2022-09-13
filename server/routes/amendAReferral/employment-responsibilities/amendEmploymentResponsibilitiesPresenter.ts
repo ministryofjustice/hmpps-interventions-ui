@@ -14,7 +14,8 @@ export default class AmendEmploymentResponsibilitiesPresenter {
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly error: FormValidationError | null = null,
-    private readonly userInputData: Record<string, string> | null = null
+    private readonly userInputData: Record<string, string> | null = null,
+    readonly showNoChangesBanner: boolean = false
   ) {
     this.backLinkUrl = `/probation-practitioner/referrals/${sentReferral.id}/details`
   }

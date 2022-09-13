@@ -1,5 +1,5 @@
 import ViewUtils from '../../../utils/viewUtils'
-import { InputArgs, RadiosArgs, TextareaArgs } from '../../../utils/govukFrontendTypes'
+import {InputArgs, NotificationBannerArgs, RadiosArgs, TextareaArgs} from '../../../utils/govukFrontendTypes'
 import AmendEmploymentResponsibilitiesPresenter from './amendEmploymentResponsibilitiesPresenter'
 import AmendEmploymentResponsibilitiesForm from './amendEmploymentResponsibilitiesForm'
 
@@ -60,6 +60,19 @@ export default class AmendEmploymentResponsibilitiesView {
     }
   }
 
+  get notificationBannerArgs(): NotificationBannerArgs | null {
+    const html = `<hr class="govuk-section-break govuk-section-break--s">
+          <p>
+          You have not made any changes to caring or employmnt responsibilites.If you want to leave it unchanged, <a href= ${this.presenter.backLinkUrl}>cancel and go back</a>.
+          </p>`
+    return this.presenter.showNoChangesBanner
+      ? {
+          titleText: 'Important',
+          html,
+        }
+      : null
+  }
+
   private get whenUnavailableTextareaArgs(): InputArgs {
     return {
       id: 'when-unavailable',
@@ -82,6 +95,7 @@ export default class AmendEmploymentResponsibilitiesView {
         backLinkArgs: { href: this.presenter.backLinkUrl },
         responsibilitiesRadiosArgs: this.responsibilitiesRadiosArgs.bind(this),
         whenUnavailableTextareaArgs: this.whenUnavailableTextareaArgs,
+        notificationBannerArgs: this.notificationBannerArgs,
       },
     ]
   }

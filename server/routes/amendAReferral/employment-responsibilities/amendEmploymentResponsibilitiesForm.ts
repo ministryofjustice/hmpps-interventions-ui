@@ -3,9 +3,6 @@ import { body, Result, ValidationChain, ValidationError } from 'express-validato
 import errorMessages from '../../../utils/errorMessages'
 import { FormData } from '../../../utils/forms/formData'
 import FormUtils from '../../../utils/formUtils'
-import EnforceableDaysForm from '../../makeAReferral/enforceable-days/enforceableDaysForm'
-import { ReferralDetailsUpdate } from '../../../models/referralDetails'
-import { AmendReferralDetailsUpdate } from '../../../models/referralComplexityLevel'
 import { FormValidationError } from '../../../utils/formValidationError'
 import { AmendOtherNeeds } from '../../../models/OtherNeeds'
 
@@ -19,6 +16,16 @@ export default class AmendEmploymentResponsibilitiesForm {
       request: this.request,
       validations: AmendEmploymentResponsibilitiesForm.validations,
     })
+
+    const noChangesMade = this.checkForNoChangesError(validationResult)
+    if (noChangesMade) {
+      return {
+        paramsForUpdate: {
+          changesMade: false,
+        },
+        error: null,
+      }
+    }
 
     const error = this.error(validationResult)
 
@@ -36,12 +43,14 @@ export default class AmendEmploymentResponsibilitiesForm {
           this.request.body['has-additional-responsibilities'] === 'yes' ? this.request.body['when-unavailable'] : null,
         reasonForChange:
           this.request.body[AmendEmploymentResponsibilitiesForm.amendEmploymentResponsibilitiesReasonForChangeId],
+        changesMade: true,
       },
       error: null,
     }
   }
 
   static get validations(): ValidationChain[] {
+
     return [
       body('when-unavailable')
         .if(body('has-additional-responsibilities').equals('yes'))
@@ -50,6 +59,14 @@ export default class AmendEmploymentResponsibilitiesForm {
       body(AmendEmploymentResponsibilitiesForm.amendEmploymentResponsibilitiesReasonForChangeId)
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.amendReferralFields.missingReason),
+      body('has-additional-responsibilities')
+        .custom((value, { req }) => {
+          return (
+            value !== req.body?.originalEmploymentResponsibilities.hasAdditionalResponsibilities ||
+            req.body?.originalEmploymentResponsibilities.whenUnavailable !== req.body['when-unavailable']
+          )
+        })
+        .withMessage('no changes'),
     ]
   }
 
@@ -65,5 +82,15 @@ export default class AmendEmploymentResponsibilitiesForm {
         message: validationError.msg,
       })),
     }
+  }
+
+  private checkForNoChangesError(validationResult: Result<ValidationError>): boolean | null {
+    if (validationResult.isEmpty()) {
+      return null
+    }
+
+    return validationResult.array().some(validationError => {
+      return validationError.msg === 'no changes'
+    })
   }
 }

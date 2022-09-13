@@ -292,15 +292,24 @@ export default class AmendAReferralController {
     const {referralId} = req.params
     let error = null
     let userInputData = null
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
     // const formError: FormValidationError | null = null
 
     if (req.method === 'POST') {
+      req.body.originalEmploymentResponsibilities = {
+        hasAdditionalResponsibilities: sentReferral.referral.hasAdditionalResponsibilities ? 'yes' : 'no',
+        whenUnavailable: sentReferral.referral.whenUnavailable,
+      }
+
+      if (req.body['has-additional-responsibilities'] === 'no') {
+        req.body['when-unavailable'] = null
+      }
+
       const formData = await new AmendEmploymentResponsibilitiesForm(req).data()
-
-
-      console.log('-----------------')
-      console.log(formData)
-      console.log('-----------------')
+      if (!formData.error && !formData.paramsForUpdate?.changesMade) {
+        console.log('aaaaaaaaaa')
+        return res.redirect(`${req.baseUrl}${req.path}?noChanges=true`)
+      }
 
       if (!formData.error) {
         await this.interventionsService.updateEmploymentResponsibilities(
@@ -310,6 +319,7 @@ export default class AmendAReferralController {
         )
         return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
       }
+      delete req.query.noChanges
       error = formData.error
       userInputData = req.body
       res.status(400)
@@ -317,7 +327,12 @@ export default class AmendAReferralController {
 
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, error, userInputData)
+    const presenter = new AmendEmploymentResponsibilitiesPresenter(
+      referral,
+      error,
+      userInputData,
+      req.query.noChanges === 'true'
+    )
     const view = new AmendEmploymentResponsibilitiesView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)

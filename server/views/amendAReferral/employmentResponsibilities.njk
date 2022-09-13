@@ -5,6 +5,7 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -14,6 +15,12 @@
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+    {{ govukBackLink(backLinkArgs) }}
+
+      {% if notificationBannerArgs %}
+         {{ govukNotificationBanner(notificationBannerArgs) }}
+      {% endif %}
+
       {% if errorSummaryArgs !== null %}
         {{ govukErrorSummary(errorSummaryArgs) }}
       {% endif %}
@@ -33,7 +40,10 @@
           {{ govukTextarea(reasonForChangeInputArgs) }}
         {% endif %}
 
-        {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
+        <div class="govuk-button-group">
+          {{ govukButton({ text: "Save and continue" }) }}
+          <a class="govuk-link data-cy="cancel" href="{{ backLinkArgs.href }}">Cancel and go back</a>
+        </div>
       </form>
     </div>
   </div>

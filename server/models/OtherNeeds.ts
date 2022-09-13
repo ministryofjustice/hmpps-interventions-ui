@@ -5,4 +5,5 @@ export default interface OtherNeeds {
 
 export interface AmendOtherNeeds extends OtherNeeds {
   reasonForChange: string
+  changesMade: boolean
 }
