@@ -120,6 +120,29 @@ describe(InterventionProgressPresenter, () => {
       })
     })
 
+    describe('the action plan session number', () => {
+      it('to check the action plan session number isEqual to the session number', () => {
+        const referral = sentReferralFactory.build()
+        const actionPlan = actionPlanFactory
+          .submitted()
+          .build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2', numberOfSessions: 2 })
+        const intervention = interventionFactory.build()
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          intervention,
+          actionPlan,
+          [],
+          [
+            actionPlanAppointmentFactory.build({ sessionNumber: 2 }),
+            actionPlanAppointmentFactory.build({ sessionNumber: 1 }),
+          ],
+          supplierAssessmentFactory.build(),
+          null
+        )
+        expect(actionPlan.numberOfSessions).toEqual(presenter.sessionTableRows.length)
+      })
+    })
+
     describe('when a session exists but an appointment has not yet been scheduled', () => {
       it('populates the table with formatted session information, with the "Edit session details" link displayed', () => {
         const referral = sentReferralFactory.build()
