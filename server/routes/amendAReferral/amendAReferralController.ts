@@ -293,7 +293,6 @@ export default class AmendAReferralController {
     let error = null
     let userInputData = null
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
-    // const formError: FormValidationError | null = null
 
     if (req.method === 'POST') {
       req.body.originalEmploymentResponsibilities = {
@@ -307,7 +306,6 @@ export default class AmendAReferralController {
 
       const formData = await new AmendEmploymentResponsibilitiesForm(req).data()
       if (!formData.error && !formData.paramsForUpdate?.changesMade) {
-        console.log('aaaaaaaaaa')
         return res.redirect(`${req.baseUrl}${req.path}?noChanges=true`)
       }
 
