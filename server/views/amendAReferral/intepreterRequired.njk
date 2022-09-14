@@ -26,8 +26,6 @@
         {{ govukErrorSummary(errorSummaryArgs) }}
       {% endif %}
 
-      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
-
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
@@ -40,7 +38,7 @@
 
          <div class="govuk-button-group">
           {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }} 
-        <a href="{{ backLinkArgs }}" data-cy="cancel" class="govuk-link">Cancel and go back</a>
+        <a href="{{ backLinkArgs.href }}" data-cy="cancel" class="govuk-link">Cancel and go back</a>
        
         </div>
       </form>

@@ -37,7 +37,7 @@ export default class IntepreterRequiredPresenter {
     requirements: {
       title: `Do you want to change whether ${this.sentReferral.referral.serviceUser?.firstName} needs an interpreter?`,
       needsInterpreter: {
-        hint: 'For example, times and dates when they are at work.',
+        hint: '',
         errorMessage: this.errorMessageForField('needs-intepreter'),
       },
       interpreterLanguage: {
@@ -52,7 +52,7 @@ export default class IntepreterRequiredPresenter {
   }
 
   readonly fields = {
-    needsInterpreter: this.utils.booleanValue(this.sentReferral.referral.needsInterpreter, 'needs-intepreter'),
+    needsInterpreter: this.utils.booleanValue(this.sentReferral.referral.needsInterpreter, 'needs-interpreter'),
     interpreterLanguage: this.utils.stringValue(this.sentReferral.referral.interpreterLanguage, 'interpreter-language'),
   }
 }
