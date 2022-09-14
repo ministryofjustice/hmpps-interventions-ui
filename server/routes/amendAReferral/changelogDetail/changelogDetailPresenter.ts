@@ -11,7 +11,7 @@ export default class ChangelogDetailPresenter {
     public loggedInUserType: 'service-provider' | 'probation-practitioner'
   ) {}
 
-  readonly backUrl = `/probation-practitioner/referrals/${this.sentReferral.id}/changelog`
+  readonly backUrl = `/${this.loggedInUserType}/referrals/${this.sentReferral.id}/changelog`
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
