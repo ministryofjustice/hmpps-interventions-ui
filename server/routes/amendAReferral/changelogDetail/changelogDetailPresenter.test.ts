@@ -3,6 +3,8 @@ import changelogDetail from '../../../../testutils/factories/changeLogDetail'
 import { FormValidationError } from '../../../utils/formValidationError'
 import SentReferral from '../../../models/sentReferral'
 import sentReferral from '../../../../testutils/factories/sentReferral'
+import deliusServerUserFactory from '../../../../testutils/factories/deliusServiceUser'
+import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 
 describe('ChangeLogPresenter', () => {
   const changeLog1 = changelogDetail.build({
@@ -71,44 +73,93 @@ describe('ChangeLogPresenter', () => {
   })
   const formError: FormValidationError | null = null
   const referral: SentReferral = sentReferral.build()
+  const deliusServiceUser: DeliusServiceUser = deliusServerUserFactory.build()
   describe('generated title for different change log detail', () => {
     it('check the title for complexity level', () => {
-      const presenter = new ChangelogDetailPresenter(formError, changeLog1, referral, 'probation-practitioner')
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog1,
+        referral,
+        deliusServiceUser,
+        'probation-practitioner'
+      )
       expect(presenter.renderTitle).toEqual('Complexity level was changed')
     })
 
     it('check the title for desired outcome', () => {
-      const presenter = new ChangelogDetailPresenter(formError, changeLog2, referral, 'probation-practitioner')
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog2,
+        referral,
+        deliusServiceUser,
+        'probation-practitioner'
+      )
       expect(presenter.renderTitle).toEqual('Desired outcomes was changed')
     })
     it('check the title for completion deadline', () => {
-      const presenter = new ChangelogDetailPresenter(formError, changeLog3, referral, 'probation-practitioner')
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog3,
+        referral,
+        deliusServiceUser,
+        'probation-practitioner'
+      )
       expect(presenter.renderTitle).toEqual('Completion days was changed')
     })
     it('check the title for enforceable days', () => {
-      const presenter = new ChangelogDetailPresenter(formError, changeLog4, referral, 'probation-practitioner')
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog4,
+        referral,
+        deliusServiceUser,
+        'probation-practitioner'
+      )
       expect(presenter.renderTitle).toEqual('Enforceable days was changed')
     })
 
     it('check the title for accessibility needs', () => {
-      const presenter = new ChangelogDetailPresenter(formError, changeLog5, referral, 'probation-practitioner')
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog5,
+        referral,
+        deliusServiceUser,
+        'probation-practitioner'
+      )
       expect(presenter.renderTitle).toEqual('Mobility, disability or accessibility needs were changed')
     })
 
     it('check the title for additional information', () => {
-      const presenter = new ChangelogDetailPresenter(formError, changeLog6, referral, 'probation-practitioner')
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog6,
+        referral,
+        deliusServiceUser,
+        'probation-practitioner'
+      )
       expect(presenter.renderTitle).toEqual(
         `Additional information about ${referral.referral.serviceUser.firstName}'s needs was changed`
       )
     })
 
     it('check the title for additional information', () => {
-      const presenter = new ChangelogDetailPresenter(formError, changeLog7, referral, 'probation-practitioner')
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog7,
+        referral,
+        deliusServiceUser,
+        'probation-practitioner'
+      )
       expect(presenter.renderTitle).toEqual('Need for an interpreter was changed')
     })
 
     it('check the title for caring or employement responsibilities', () => {
-      const presenter = new ChangelogDetailPresenter(formError, changeLog8, referral, 'probation-practitioner')
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog8,
+        referral,
+        deliusServiceUser,
+        'probation-practitioner'
+      )
       expect(presenter.renderTitle).toEqual('Caring or employment responsibilites were changed')
     })
   })
