@@ -2,6 +2,7 @@ import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 import SentReferral from '../../../models/sentReferral'
 import AmendNeedsAndRequirementsIntepreterForm from './amendNeedsAndRequirementsIntepreterForm'
+import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 
 export default class IntepreterRequiredPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
@@ -22,6 +23,7 @@ export default class IntepreterRequiredPresenter {
 
   constructor(
     private readonly sentReferral: SentReferral,
+    private readonly serviceUser: DeliusServiceUser,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null,
     readonly showNoChangesBanner: boolean = false
@@ -35,7 +37,7 @@ export default class IntepreterRequiredPresenter {
 
   readonly text = {
     requirements: {
-      title: `Do you want to change whether ${this.sentReferral.referral.serviceUser?.firstName} needs an interpreter?`,
+      title: `Do you want to change whether ${this.serviceUser?.firstName} needs an interpreter?`,
       needsInterpreter: {
         hint: '',
         errorMessage: this.errorMessageForField('needs-intepreter'),
@@ -46,7 +48,7 @@ export default class IntepreterRequiredPresenter {
       },
     },
     reasonForChange: {
-      title: `What is the reason for changing whether ${this.sentReferral.referral.serviceUser?.firstName} needs an interpreter?`,
+      title: `What is the reason for changing whether ${this.serviceUser.firstName} needs an interpreter?`,
       hint: `For example, they would prefer to speak in their native language`,
     },
   }
