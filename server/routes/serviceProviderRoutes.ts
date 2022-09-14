@@ -84,6 +84,10 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/referrals/:referralId/changelog', (req, res) =>
     changeLogController.getChangelog(req, res, 'service-provider')
   )
+
+  get(router, '/referrals/:referralId/changelog/:changelogId/details', (req, res) =>
+    changeLogController.getChangelogDetails(req, res, 'service-provider')
+  )
   // START delivery session appointment scheduling
   get(router, '/action-plan/:id/sessions/:sessionNumber/edit/start', (req, res) =>
     appointmentsController.startEditingActionPlanSessionAppointment(req, res)

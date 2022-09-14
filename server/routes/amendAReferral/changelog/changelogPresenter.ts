@@ -26,7 +26,7 @@ export default class ChangelogPresenter {
     return this.changelog.map(log => {
       return {
         changeLog: log,
-        changeLogUrl: `/probation-practitioner/referrals/${this.referralId}/changelog/${log.changelogId}/details`,
+        changeLogUrl: `/${this.loggedInUserType}/referrals/${this.referralId}/changelog/${log.changelogId}/details`,
       }
     })
   }
