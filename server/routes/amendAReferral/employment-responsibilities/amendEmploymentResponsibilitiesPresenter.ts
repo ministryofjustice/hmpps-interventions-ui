@@ -28,7 +28,7 @@ export default class AmendEmploymentResponsibilitiesPresenter {
     responsibilities: {
       title: `Do you want to change whether ${this.sentReferral.referral.serviceUser?.firstName} has caring or employment responsibilities?`,
       hasAdditionalResponsibilities: {
-        label: `aDo you want to change whether ${this.sentReferral.referral.serviceUser?.firstName} has caring or employment responsibilities?`,
+        label: `Do you want to change whether ${this.sentReferral.referral.serviceUser?.firstName} has caring or employment responsibilities?`,
         hint: 'For example, times and dates when they are at work.',
         errorMessage: this.errorMessageForField('has-additional-responsibilities'),
       },
@@ -38,7 +38,7 @@ export default class AmendEmploymentResponsibilitiesPresenter {
       },
     },
     reasonForChange: {
-      title: `What is the reason for changing ${this.sentReferral.referral.serviceUser?.firstName} caring or employment responsibilities?`,
+      title: `What is the reason for changing ${this.sentReferral.referral.serviceUser?.firstName}'s caring or employment responsibilities?`,
       hint: `For example, they would prefer to speak in their native language`,
     },
   }
