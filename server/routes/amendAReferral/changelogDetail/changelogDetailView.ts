@@ -38,14 +38,12 @@ export default class ChangelogDetailView {
         }
       case 'MAXIMUM_ENFORCEABLE_DAYS':
         return {
-          changesubtitle: 'you changed enforceable days:',
           from: `<p>${oldValue[0].trim()} days</p>`,
           to: `<p>${newValue[0].trim()} days</p>`,
           reason: this.presenter.changelogDetail.reasonForChange,
         }
       case 'COMPLETION_DATETIME':
         return {
-          changesubtitle: 'you changed the completion deadline:',
           from: `<p>${oldValue[0].trim()}</p>`,
           to: `<p>${newValue[0].trim()}</p>`,
           reason: this.presenter.changelogDetail.reasonForChange,
