@@ -50,7 +50,6 @@ export default class AmendEmploymentResponsibilitiesForm {
   }
 
   static get validations(): ValidationChain[] {
-
     return [
       body('when-unavailable')
         .if(body('has-additional-responsibilities').equals('yes'))
