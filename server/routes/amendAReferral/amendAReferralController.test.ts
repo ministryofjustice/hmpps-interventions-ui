@@ -58,7 +58,7 @@ describe('GET /probation-practitioner/referrals/:id/interpreter-needs', () => {
       .get(`/probation-practitioner/referrals/${referral.id}/interpreter-needs`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain(`Do you want to change whether ${serviceUser?.firstName} needs an interpreter?`)
+        expect(res.text).toContain(`Does ${serviceUser?.firstName} need an interpreter?`)
       })
   })
 })
