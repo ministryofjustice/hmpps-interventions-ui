@@ -1,5 +1,5 @@
 import ViewUtils from '../../../utils/viewUtils'
-import {InputArgs, NotificationBannerArgs, RadiosArgs, TextareaArgs} from '../../../utils/govukFrontendTypes'
+import { InputArgs, NotificationBannerArgs, RadiosArgs, TextareaArgs } from '../../../utils/govukFrontendTypes'
 import AmendEmploymentResponsibilitiesPresenter from './amendEmploymentResponsibilitiesPresenter'
 import AmendEmploymentResponsibilitiesForm from './amendEmploymentResponsibilitiesForm'
 

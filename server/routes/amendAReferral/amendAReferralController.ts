@@ -288,8 +288,8 @@ export default class AmendAReferralController {
   }
 
   async updateEmploymentResponsibilities(req: Request, res: Response): Promise<void> {
-    const {accessToken} = res.locals.user.token
-    const {referralId} = req.params
+    const { accessToken } = res.locals.user.token
+    const { referralId } = req.params
     let error = null
     let userInputData = null
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
@@ -335,5 +335,4 @@ export default class AmendAReferralController {
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
-
 }
