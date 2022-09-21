@@ -84,8 +84,6 @@ describe('AmendEmploymentResponsibilitiesPresenter', () => {
     })
   })
 
-  // This is tested in detail in the tests for ReferralDataPresenterUtils.
-  // I’m just hoping to test a little here that things are glued together correctly.
   describe('fields', () => {
     describe('when there is no data on the referral', () => {
       it('replays empty answers', () => {
@@ -95,7 +93,7 @@ describe('AmendEmploymentResponsibilitiesPresenter', () => {
         const presenter = new AmendEmploymentResponsibilitiesPresenter(referral)
 
         expect(presenter.fields).toEqual({
-          hasAdditionalResponsibilities: null,
+          hasAdditionalResponsibilities: false,
           whenUnavailable: '',
         })
       })
