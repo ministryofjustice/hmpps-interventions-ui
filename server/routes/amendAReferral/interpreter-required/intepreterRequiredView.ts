@@ -20,7 +20,7 @@ export default class IntepreterRequiredView {
       id: AmendNeedsAndRequirementsIntepreterForm.reasonForChangeId,
       label: {
         text: this.presenter.text.reasonForChange.title,
-        classes: 'govuk-label--l',
+        classes: 'govuk-label--m',
         isPageHeading: false,
       },
       hint: {
@@ -84,6 +84,7 @@ export default class IntepreterRequiredView {
       label: {
         text: this.presenter.text.requirements.interpreterLanguage.label,
       },
+      classes: 'govuk-!-width-one-half',
       value: this.presenter.fields.interpreterLanguage,
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.interpreterLanguageError),
     }

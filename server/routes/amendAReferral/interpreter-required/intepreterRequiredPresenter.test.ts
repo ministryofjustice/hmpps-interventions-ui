@@ -59,7 +59,7 @@ describe('intepreterRequiredPresenter.test', () => {
       const presenter = new IntepreterRequiredPresenter(referral, serviceUser)
 
       expect(presenter.text.requirements.title).toEqual(
-        `Do you want to change whether ${referral.referral.serviceUser?.firstName} needs an interpreter?`
+        `Does ${referral.referral.serviceUser?.firstName} need an interpreter?`
       )
     })
 
@@ -144,7 +144,7 @@ describe('intepreterRequiredPresenter.test', () => {
       const presenter = new IntepreterRequiredPresenter(referral, serviceUser)
 
       expect(presenter.text.requirements.title).toEqual(
-        `Do you want to change whether ${referral.referral.serviceUser?.firstName} needs an interpreter?`
+        `Does ${referral.referral.serviceUser?.firstName} need an interpreter?`
       )
     })
 

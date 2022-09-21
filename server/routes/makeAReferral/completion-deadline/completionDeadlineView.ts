@@ -53,7 +53,7 @@ export default class CompletionDeadlineView {
           id: 'reason-for-change',
           label: {
             text: `What is the reason for changing the completion date?`,
-            classes: 'govuk-label--l',
+            classes: 'govuk-label--m',
             isPageHeading: false,
           },
           errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.reasonForChange.errorMessage),
