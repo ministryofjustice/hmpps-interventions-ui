@@ -104,7 +104,7 @@ describe('ChangeLogPresenter', () => {
         deliusServiceUser,
         'probation-practitioner'
       )
-      expect(presenter.renderTitle).toEqual('Completion days was changed')
+      expect(presenter.renderTitle).toEqual('Completion date was changed')
     })
     it('check the title for enforceable days', () => {
       const presenter = new ChangelogDetailPresenter(
