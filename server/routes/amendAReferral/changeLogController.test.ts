@@ -167,7 +167,7 @@ describe('GET /referrals/:referralId/changelog/:changelogId/details', () => {
       .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail3.changelogId}/details`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Completion days was changed')
+        expect(res.text).toContain('Completion date was changed')
         expect(res.text).toContain('From')
         expect(res.text).toContain('To')
         expect(res.text).toContain(changelogDetail3.oldValue[0])

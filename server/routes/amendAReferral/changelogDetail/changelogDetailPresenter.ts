@@ -26,7 +26,7 @@ export default class ChangelogDetailPresenter {
       case 'MAXIMUM_ENFORCEABLE_DAYS':
         return 'Enforceable days was changed'
       case 'COMPLETION_DATETIME':
-        return 'Completion days was changed'
+        return 'Completion date was changed'
       case 'NEEDS_AND_REQUIREMENTS_ACCESSIBILITY_NEEDS':
         return 'Mobility, disability or accessibility needs were changed'
       case 'NEEDS_AND_REQUIREMENTS_ADDITIONAL_INFORMATION':

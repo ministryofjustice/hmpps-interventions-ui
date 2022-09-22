@@ -54,7 +54,7 @@ export default class AccessibilityNeedsView {
   get notificationBannerArgs(): NotificationBannerArgs | null {
     const html = `<hr class="govuk-section-break govuk-section-break--s">
           <p>
-          You have not made any changes to mobility, disability or accessibility needs. If you want to leave the desired outcomes as they are, <a href= ${this.presenter.backLinkUrl}>cancel and go back</a>.
+          You have not made any changes to mobility, disability or accessibility needs. If you want to leave the mobility, disability or accessibility needs as they are, <a href= ${this.presenter.backLinkUrl}>cancel and go back</a>.
           </p>`
     return this.presenter.showNoChangesBanner
       ? {
