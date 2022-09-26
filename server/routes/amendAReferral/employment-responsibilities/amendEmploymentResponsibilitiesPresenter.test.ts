@@ -1,12 +1,14 @@
 import AmendEmploymentResponsibilitiesPresenter from './amendEmploymentResponsibilitiesPresenter'
 import sentReferralFactory from '../../../../testutils/factories/sentReferral'
+import ServiceUserFactory from '../../../../testutils/factories/deliusServiceUser'
 
 describe('AmendEmploymentResponsibilitiesPresenter', () => {
+  const serviceUser = ServiceUserFactory.build()
   describe('errorSummary', () => {
     describe('when error is null', () => {
       it('returns null', () => {
         const referral = sentReferralFactory.build()
-        const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, null)
+        const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, serviceUser, null)
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -15,7 +17,7 @@ describe('AmendEmploymentResponsibilitiesPresenter', () => {
     describe('when error is not null', () => {
       it('returns a summary of the errors sorted into the order their fields appear on the page', () => {
         const referral = sentReferralFactory.build()
-        const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, {
+        const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, serviceUser, {
           errors: [
             {
               formFields: ['has-additional-responsibilities'],
@@ -35,7 +37,7 @@ describe('AmendEmploymentResponsibilitiesPresenter', () => {
   describe('text', () => {
     it('returns content to be displayed on the page', () => {
       const referral = sentReferralFactory.build()
-      const presenter = new AmendEmploymentResponsibilitiesPresenter(referral)
+      const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, serviceUser)
 
       expect(presenter.text).toEqual({
         responsibilities: {
@@ -60,7 +62,7 @@ describe('AmendEmploymentResponsibilitiesPresenter', () => {
     describe('when there are errors', () => {
       it('populates the error messages for the fields with errors', () => {
         const referral = sentReferralFactory.build()
-        const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, {
+        const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, serviceUser, {
           errors: [
             {
               formFields: ['has-additional-responsibilities'],
@@ -90,7 +92,7 @@ describe('AmendEmploymentResponsibilitiesPresenter', () => {
         const referral = sentReferralFactory.build()
         referral.referral.hasAdditionalResponsibilities = false
         referral.referral.whenUnavailable = null
-        const presenter = new AmendEmploymentResponsibilitiesPresenter(referral)
+        const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, serviceUser)
 
         expect(presenter.fields).toEqual({
           hasAdditionalResponsibilities: false,
@@ -111,7 +113,7 @@ describe('AmendEmploymentResponsibilitiesPresenter', () => {
           'when-unavailable': 'She works Fridays 9am - midday',
           'reason-for-change': ' a reason',
         }
-        const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, null, userInputData)
+        const presenter = new AmendEmploymentResponsibilitiesPresenter(referral, serviceUser, null, userInputData)
 
         expect(presenter.fields).toEqual({
           hasAdditionalResponsibilities: true,

@@ -327,6 +327,7 @@ export default class AmendAReferralController {
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const presenter = new AmendEmploymentResponsibilitiesPresenter(
       referral,
+      serviceUser,
       error,
       userInputData,
       req.query.noChanges === 'true'
