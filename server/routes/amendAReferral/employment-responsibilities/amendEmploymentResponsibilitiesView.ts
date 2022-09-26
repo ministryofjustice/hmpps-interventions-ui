@@ -14,7 +14,7 @@ export default class AmendEmploymentResponsibilitiesView {
       id: AmendEmploymentResponsibilitiesForm.amendEmploymentResponsibilitiesReasonForChangeId,
       label: {
         text: this.presenter.text.reasonForChange.title,
-        classes: 'govuk-label--l',
+        classes: 'govuk-label--m',
         isPageHeading: false,
       },
       hint: {
@@ -63,7 +63,7 @@ export default class AmendEmploymentResponsibilitiesView {
   get notificationBannerArgs(): NotificationBannerArgs | null {
     const html = `<hr class="govuk-section-break govuk-section-break--s">
           <p>
-          You have not made any changes to caring or employmnt responsibilites.If you want to leave it unchanged, <a href= ${this.presenter.backLinkUrl}>cancel and go back</a>.
+          You have not made any changes to caring or employment responsibilities. If you want to leave it unchanged, <a href= ${this.presenter.backLinkUrl}>cancel and go back</a>.
           </p>`
     return this.presenter.showNoChangesBanner
       ? {
