@@ -252,3 +252,72 @@ describe('POST /probation-practitioner/referrals/:id/update-complexity-level', (
     })
   })
 })
+
+describe('POST /probation-practitioner/referrals/:id/employment-responsibilities', () => {
+  const socialInclusionServiceCategory = serviceCategoryFactory.build({
+    id: 'b33c19d1-7414-4014-b543-e543e59c5b39',
+    name: 'social inclusion',
+  })
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+  })
+
+  it('redirects to the referral details page on success', () => {
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/employment-responsibilities`)
+      .send({
+        'reason-for-change': 'new value',
+        'has-additional-responsibilities': 'yes',
+        'when-unavailable': '9 to 5',
+      })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
+  })
+
+  describe('with form validation errors', () => {
+    it('renders an error message', () => {
+      return request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/employment-responsibilities`)
+        .send({ 'reason-for-change': ' ' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('A reason for changing the referral must be supplied')
+        })
+    })
+  })
+
+  it('redirects to same page with no changes banner when no changes are made', () => {
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/employment-responsibilities`)
+      .send({
+        'reason-for-change': 'new value',
+        'has-additional-responsibilities': `${referral.referral.hasAdditionalResponsibilities ? 'yes' : 'no'}`,
+        'when-unavailable': `${referral.referral.whenUnavailable}`,
+      })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/employment-responsibilities?noChanges=true`)
+  })
+})
+
+describe('GET /probation-practitioner/referrals/:id/employment-responsibilities', () => {
+  let serviceCategory: ServiceCategory
+
+  beforeEach(() => {
+    serviceCategory = serviceCategoryFactory.build()
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+  })
+
+  it('renders the page to employment responsibilities', () => {
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/employment-responsibilities`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Do you want to change whether Alex has caring or employment responsibilities?')
+      })
+  })
+})

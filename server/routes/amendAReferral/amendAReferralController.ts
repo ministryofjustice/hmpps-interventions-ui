@@ -24,6 +24,9 @@ import AmendNeedsAndRequirementsIntepreterForm from './interpreter-required/amen
 import AmendAdditionalInformationPresenter from './additionalInformation/amendAdditionalInformationPresenter'
 import AmendAdditionalInformationView from './additionalInformation/amendAdditionalInformationView'
 import AmendAdditionalInformationForm from './additionalInformation/amendAdditionalInformationForm'
+import AmendEmploymentResponsibilitiesPresenter from './employment-responsibilities/amendEmploymentResponsibilitiesPresenter'
+import AmendEmploymentResponsibilitiesView from './employment-responsibilities/amendEmploymentResponsibilitiesView'
+import AmendEmploymentResponsibilitiesForm from './employment-responsibilities/amendEmploymentResponsibilitiesForm'
 
 export default class AmendAReferralController {
   constructor(
@@ -280,6 +283,56 @@ export default class AmendAReferralController {
       req.query.noChanges === 'true'
     )
     const view = new IntepreterRequiredView(presenter)
+
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async updateEmploymentResponsibilities(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId } = req.params
+    let error = null
+    let userInputData = null
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    if (req.method === 'POST') {
+      req.body.originalEmploymentResponsibilities = {
+        hasAdditionalResponsibilities: sentReferral.referral.hasAdditionalResponsibilities ? 'yes' : 'no',
+        whenUnavailable: sentReferral.referral.whenUnavailable,
+      }
+
+      if (req.body['has-additional-responsibilities'] === 'no') {
+        req.body['when-unavailable'] = null
+      }
+
+      const formData = await new AmendEmploymentResponsibilitiesForm(req).data()
+      if (!formData.error && !formData.paramsForUpdate?.changesMade) {
+        return res.redirect(`${req.baseUrl}${req.path}?noChanges=true`)
+      }
+
+      if (!formData.error) {
+        await this.interventionsService.updateEmploymentResponsibilities(
+          accessToken,
+          referralId,
+          formData.paramsForUpdate
+        )
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
+      }
+      delete req.query.noChanges
+      error = formData.error
+      userInputData = req.body
+      res.status(400)
+    }
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const presenter = new AmendEmploymentResponsibilitiesPresenter(
+      referral,
+      serviceUser,
+      error,
+      userInputData,
+      req.query.noChanges === 'true'
+    )
+    const view = new AmendEmploymentResponsibilitiesView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }

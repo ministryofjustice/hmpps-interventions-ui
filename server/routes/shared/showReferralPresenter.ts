@@ -326,6 +326,10 @@ export default class ShowReferralPresenter {
       {
         key: 'Caring or employment responsibilities',
         lines: [this.sentReferral.referral.hasAdditionalResponsibilities ? 'Yes' : 'No'],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/employment-responsibilities`
+            : undefined,
       },
       {
         key: `Provide details of when ${this.sentReferral.referral.serviceUser.firstName} will not be able to attend sessions`,

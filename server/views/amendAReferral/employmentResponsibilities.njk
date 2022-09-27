@@ -1,0 +1,50 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Make a referral" %}
+{% set pageSubTitle = "The person's needs and requirements" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+    {{ govukBackLink(backLinkArgs) }}
+
+      {% if notificationBannerArgs %}
+         {{ govukNotificationBanner(notificationBannerArgs) }}
+      {% endif %}
+
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+
+        {% set whenUnavailableHtml %}
+            {{ govukTextarea(whenUnavailableTextareaArgs) }}
+        {% endset -%}
+        {{ govukRadios(responsibilitiesRadiosArgs(whenUnavailableHtml)) }}
+
+        {% if reasonForChangeInputArgs %}
+          {{ govukTextarea(reasonForChangeInputArgs) }}
+        {% endif %}
+
+        <div class="govuk-button-group">
+          {{ govukButton({ text: "Save and continue" }) }}
+          <a class="govuk-link data-cy="cancel" href="{{ backLinkArgs.href }}">Cancel and go back</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
