@@ -40,7 +40,7 @@ export default class AmendEmploymentResponsibilitiesPresenter {
       },
     },
     reasonForChange: {
-      title: `What is the reason for changing ${this.serviceUser.firstName}'s caring or employment responsibilities?`,
+      title: `What's the reason for changing ${this.serviceUser.firstName}'s caring or employment responsibilities?`,
       hint: `For example, they would prefer to speak in their native language`,
     },
   }
