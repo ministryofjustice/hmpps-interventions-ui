@@ -28,7 +28,7 @@ export default class AmendAdditionalInformationPresenter {
 
   readonly backLinkUrl: string
 
-  readonly title = `Change additional information about ${this.sentReferral.referral.serviceUser.firstName}'s needs (optional)`
+  readonly title = `Change additional information about ${this.sentReferral.referral.serviceUser.firstName}'s needs`
 
   readonly reasonForChangeTitle = `What's the reason for changing the additional information?`
 

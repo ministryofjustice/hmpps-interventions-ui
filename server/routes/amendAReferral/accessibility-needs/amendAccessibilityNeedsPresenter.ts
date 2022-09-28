@@ -34,7 +34,7 @@ export default class AccessibilityNeedsPresenter {
 
   readonly text = {
     accessibilityNeeds: {
-      label: `Change details about ${this.serviceUser?.firstName}'s mobility, disability or accessibility needs (optional)`,
+      label: `Change details about ${this.serviceUser?.firstName}'s mobility, disability or accessibility needs`,
       hint: 'For example, if they use a wheelchair, use a hearing aid or have a learning difficulty.',
       errorMessage: this.errorMessageForField('accessibility-needs'),
     },
