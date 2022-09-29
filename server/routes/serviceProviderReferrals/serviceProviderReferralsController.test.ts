@@ -323,7 +323,8 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     })
 
     await request(app)
-      .get('/service-provider/dashboard/all-open-cases?open-case-search-text=Alex%20River')
+      .post(`/service-provider/dashboard/all-open-cases`)
+      .send({ 'open-case-search-text': `Alex%20River` })
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('All open cases')
@@ -341,7 +342,8 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     })
 
     await request(app)
-      .get(`/service-provider/dashboard/all-open-cases?open-case-search-text=${searchText}`)
+      .post(`/service-provider/dashboard/all-open-cases`)
+      .send({ 'open-case-search-text': `${searchText}` })
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('All open cases')
@@ -366,7 +368,8 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     })
 
     await request(app)
-      .get(`/service-provider/dashboard/all-open-cases?open-case-search-text=${searchText}`)
+      .post(`/service-provider/dashboard/all-open-cases`)
+      .send({ 'open-case-search-text': `${searchText}` })
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('You have not entered any search terms')

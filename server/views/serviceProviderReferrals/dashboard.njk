@@ -20,7 +20,7 @@
 
       {% if presenter.dashboardType === 'All open cases' %}
         <div class="govuk-template">
-          <form action="{{presenter.hrefSearchText}}" method="get">
+          <form action="{{presenter.hrefSearchText}}" method="post">
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
             {{ govukInput(subjectInputArgs) }}

@@ -110,7 +110,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
-    const searchText = (req.query['open-case-search-text'] as string) ?? null
+    const searchText = (req.body['open-case-search-text'] as string) ?? null
 
     if (
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)

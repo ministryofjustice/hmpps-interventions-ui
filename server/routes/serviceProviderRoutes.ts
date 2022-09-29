@@ -31,6 +31,9 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/dashboard/all-open-cases', (req, res) =>
     serviceProviderReferralsController.showAllOpenCasesDashboard(req, res)
   )
+  post(router, '/dashboard/all-open-cases', (req, res) =>
+    serviceProviderReferralsController.showAllOpenCasesDashboard(req, res)
+  )
 
   get(router, '/dashboard/unassigned-cases', (req, res) =>
     serviceProviderReferralsController.showUnassignedCasesDashboard(req, res)
