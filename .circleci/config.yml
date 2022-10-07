@@ -1,13 +1,13 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@3.11
+  hmpps: ministryofjustice/hmpps@6
   node: circleci/node@4.1.0
 
 executors:
   integration:
     docker:
-      - image: cimg/node:16.14.2-browsers
+      - image: cimg/node:16.17-browsers
       - image: rodolpheche/wiremock:2.27.2-alpine
         command: ["--port", "9091"]
       - image: bitnami/redis:6.0
@@ -22,7 +22,7 @@ jobs:
       PACT_BROKER_USERNAME: "interventions"
     executor:
       name: hmpps/node
-      tag: 16.14.2-browsers
+      tag: 16.17-browsers
     steps:
       - checkout
       - node/install-npm:
@@ -46,7 +46,9 @@ jobs:
     environment:
       PACT_BROKER_BASE_URL: "https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk"
       PACT_BROKER_USERNAME: "interventions"
-    executor: hmpps/node
+    executor:
+      name: hmpps/node
+      tag: 16.17-browsers
     parameters:
       tag:
         type: string
