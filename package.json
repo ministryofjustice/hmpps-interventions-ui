@@ -104,7 +104,7 @@
     "agentkeepalive": "^4.2.1",
     "applicationinsights": "^2.3.5",
     "aws-sdk": "^2.1227.0",
-    "body-parser": "^1.20.0",
+    "body-parser": "^1.20.1",
     "bunyan": "^1.8.15",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
