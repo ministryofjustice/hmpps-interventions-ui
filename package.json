@@ -123,7 +123,7 @@
     "http-errors": "^2.0.0",
     "http-status-codes": "^2.2.0",
     "indefinite": "^2.4.1",
-    "joi": "^17.6.2",
+    "joi": "^17.6.3",
     "jquery": "^3.6.1",
     "jwt-decode": "^3.1.2",
     "md5": "^2.3.0",
