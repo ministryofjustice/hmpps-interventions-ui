@@ -21,7 +21,7 @@ export default class ReferralOverviewPagePresenter {
         active: this.section === ReferralOverviewPageSection.Progress,
       },
       {
-        text: 'Referral details',
+        text: this.subNavUrlPrefix === 'service-provider' ? 'Referral details' : 'View or change referral',
         href: `/${this.subNavUrlPrefix}/referrals/${this.referralId}/details`,
         active: this.section === ReferralOverviewPageSection.Details,
       },
