@@ -95,7 +95,7 @@
   },
   "dependencies": {
     "@ministryofjustice/frontend": "1.6.0",
-    "@sentry/node": "^7.15.0",
+    "@sentry/node": "^7.16.0",
     "@types/connect-flash": "0.0.37",
     "@types/express-serve-static-core": "^4.17.31",
     "@types/md5": "^2.3.2",
