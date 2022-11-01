@@ -399,7 +399,6 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
 describe('GET /probation-practitioner/end-of-service-report/:id', () => {
   it('renders a page with the contents of the end of service report', async () => {
     const serviceCategory = serviceCategoryFactory.build()
-    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
     const referral = sentReferralFactory.build({
       referral: {
         serviceCategoryIds: [serviceCategory.id],
@@ -423,7 +422,7 @@ describe('GET /probation-practitioner/end-of-service-report/:id', () => {
 
     interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    interventionsService.getIntervention.mockResolvedValue(intervention)
+    interventionsService.getServiceCategories.mockResolvedValue([serviceCategory])
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
 
     await request(app)
@@ -435,28 +434,6 @@ describe('GET /probation-practitioner/end-of-service-report/:id', () => {
         expect(res.text).toContain('Some progression comments')
         expect(res.text).toContain('Some task comments')
         expect(res.text).toContain('Some further information')
-      })
-  })
-
-  it('throws error if not all service categories were obtainable', async () => {
-    const serviceCategory = serviceCategoryFactory.build()
-    const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
-    const referral = sentReferralFactory.build({
-      referral: {
-        serviceCategoryIds: [serviceCategory.id, 'someOtherId'],
-      },
-    })
-    const endOfServiceReport = endOfServiceReportFactory.build()
-    const deliusServiceUser = deliusServiceUserFactory.build()
-    interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
-    interventionsService.getSentReferral.mockResolvedValue(referral)
-    interventionsService.getIntervention.mockResolvedValue(intervention)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
-    await request(app)
-      .get(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
-      .expect(500)
-      .expect(res => {
-        expect(res.text).toContain('Expected service categories are missing in intervention')
       })
   })
 })

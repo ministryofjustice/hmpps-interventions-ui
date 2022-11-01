@@ -43,7 +43,6 @@ import EndOfServiceReportCheckAnswersView from '../service-provider/end-of-servi
 import EndOfServiceReportConfirmationPresenter from '../service-provider/end-of-service-report/confirmation/endOfServiceReportConfirmationPresenter'
 import EndOfServiceReportConfirmationView from '../service-provider/end-of-service-report/confirmation/endOfServiceReportConfirmationView'
 import ControllerUtils from '../../utils/controllerUtils'
-import ServiceCategory from '../../models/serviceCategory'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import ActionPlanPresenter from '../shared/action-plan/actionPlanPresenter'
 import ActionPlanView from '../shared/action-plan/actionPlanView'
@@ -746,9 +745,8 @@ export default class ServiceProviderReferralsController {
 
     const desiredOutcomeId = desiredOutcomeIds[desiredOutcomeNumber - 1]
 
-    const serviceCategories = await this.findSelectedServiceCategories(
+    const serviceCategories = await this.interventionsService.getServiceCategories(
       accessToken,
-      referral.referral.interventionId,
       referral.referral.serviceCategoryIds
     )
 
@@ -831,9 +829,8 @@ export default class ServiceProviderReferralsController {
 
     const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
-    const serviceCategories = await this.findSelectedServiceCategories(
+    const serviceCategories = await this.interventionsService.getServiceCategories(
       accessToken,
-      referral.referral.interventionId,
       referral.referral.serviceCategoryIds
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
@@ -860,9 +857,8 @@ export default class ServiceProviderReferralsController {
 
     const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
-    const serviceCategories = await this.findSelectedServiceCategories(
+    const serviceCategories = await this.interventionsService.getServiceCategories(
       accessToken,
-      referral.referral.interventionId,
       referral.referral.serviceCategoryIds
     )
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
@@ -911,13 +907,10 @@ export default class ServiceProviderReferralsController {
     const { accessToken } = res.locals.user.token
     const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
-    const intervention = await this.interventionsService.getIntervention(accessToken, referral.referral.interventionId)
-    const serviceCategories = intervention.serviceCategories.filter(serviceCategory =>
-      referral.referral.serviceCategoryIds.some(serviceCategoryId => serviceCategoryId === serviceCategory.id)
+    const serviceCategories = await this.interventionsService.getServiceCategories(
+      accessToken,
+      referral.referral.serviceCategoryIds
     )
-    if (serviceCategories.length !== referral.referral.serviceCategoryIds.length) {
-      throw new Error('Expected service categories are missing in intervention')
-    }
 
     if (endOfServiceReport.submittedAt === null) {
       throw new Error(
@@ -1029,21 +1022,6 @@ export default class ServiceProviderReferralsController {
         })
     )
     res.redirect(303, `/service-provider/action-plan/${newDraftActionPlan.id}/add-activity/1`)
-  }
-
-  private async findSelectedServiceCategories(
-    accessToken: string,
-    interventionId: string,
-    selectedServiceCategoryIds: string[]
-  ): Promise<ServiceCategory[]> {
-    const intervention = await this.interventionsService.getIntervention(accessToken, interventionId)
-    const serviceCategories = intervention.serviceCategories.filter(serviceCategory =>
-      selectedServiceCategoryIds.some(serviceCategoryId => serviceCategoryId === serviceCategory.id)
-    )
-    if (serviceCategories.length !== selectedServiceCategoryIds.length) {
-      throw new Error('Expected service categories are missing in intervention')
-    }
-    return serviceCategories
   }
 
   private parseActivityNumber(number: string, actionPlan?: ActionPlan): number {
