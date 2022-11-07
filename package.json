@@ -156,7 +156,7 @@
     "@types/passport-oauth2": "^1.4.11",
     "@types/superagent": "^4.1.15",
     "@types/supertest": "^2.0.12",
-    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "concurrently": "^7.5.0",
     "cookie-session": "^2.0.0",
