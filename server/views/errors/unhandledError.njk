@@ -4,13 +4,15 @@
     {% block content %}
         <div class="govuk-grid-row">
             <div class="govuk-grid-column-two-thirds">
-                <h1 class="govuk-heading-l">Sorry, there is a problem with the service</h1>
-                
+                <h1 class="govuk-heading-l">Sorry, the service is unavailable</h1>
+
                 {% if userMessage %}
                     <p class="govuk-body">{{ userMessage }}</p>
                 {% endif %}
 
-                <p class="govuk-body">The error has been logged.</p>
+                <p class="govuk-body">Try reloading this page. You can do this using F5 (on a PC) or Cmd + R (on a Mac).</p>
+
+                <p class="govuk-body">What you were working on in the service may not have saved. Please go back to what you were doing to check, for example in draft referrals through 'Find interventions'.</p>
 
                 {% if err %}
                     <p class="govuk-body"><strong>Message:</strong> {{ err.message }}</p>
