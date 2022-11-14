@@ -2358,6 +2358,7 @@ describe('Service provider referrals dashboard', () => {
             currentAppointmentId: scheduledAppointment.id,
           })
 
+          const today = new Date()
           cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
 
           cy.visit(`/service-provider/referrals/${referral.id}/progress`)
@@ -2378,9 +2379,13 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#duration-hours').should('have.value', '1')
           cy.get('#duration-minutes').should('have.value', '15')
 
-          cy.get('#date-day').clear().type('10')
-          cy.get('#date-month').clear().type('11')
-          cy.get('#date-year').clear().type('2022')
+          cy.get('#date-day')
+            .clear()
+            .type((today.getDate() + 1).toString())
+          cy.get('#date-month')
+            .clear()
+            .type((today.getMonth() + 1).toString())
+          cy.get('#date-year').clear().type(today.getFullYear().toString())
           cy.get('#time-hour').clear().type('4')
           cy.get('#time-minute').clear().type('15')
           cy.get('#time-part-of-day').select('PM')
@@ -2403,8 +2408,11 @@ describe('Service provider referrals dashboard', () => {
             scheduledAppointment
           )
 
+          const apptDate = `${(today.getDate() + 1).toString()} ${today.toLocaleString('default', {
+            month: 'long',
+          })} ${today.getFullYear().toString()}`
           cy.get('h1').contains('Confirm appointment details')
-          cy.contains('10 November 2022')
+          cy.contains(apptDate)
           cy.contains('4:15pm to 5:00pm')
 
           cy.get('button').contains('Confirm').click()
