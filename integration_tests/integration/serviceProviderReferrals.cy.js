@@ -1,3 +1,4 @@
+import moment from 'moment'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import sentReferralForSummaries from '../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
@@ -2358,7 +2359,7 @@ describe('Service provider referrals dashboard', () => {
             currentAppointmentId: scheduledAppointment.id,
           })
 
-          const today = new Date()
+          const tomorrow = moment().add(1, 'days')
           cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
 
           cy.visit(`/service-provider/referrals/${referral.id}/progress`)
@@ -2379,13 +2380,9 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#duration-hours').should('have.value', '1')
           cy.get('#duration-minutes').should('have.value', '15')
 
-          cy.get('#date-day')
-            .clear()
-            .type((today.getDate() + 1).toString())
-          cy.get('#date-month')
-            .clear()
-            .type((today.getMonth() + 1).toString())
-          cy.get('#date-year').clear().type(today.getFullYear().toString())
+          cy.get('#date-day').clear().type(tomorrow.format('DD'))
+          cy.get('#date-month').clear().type(tomorrow.format('MM'))
+          cy.get('#date-year').clear().type(tomorrow.format('YYYY'))
           cy.get('#time-hour').clear().type('4')
           cy.get('#time-minute').clear().type('15')
           cy.get('#time-part-of-day').select('PM')
@@ -2407,12 +2404,8 @@ describe('Service provider referrals dashboard', () => {
             supplierAssessmentWithRescheduledAppointment.id,
             scheduledAppointment
           )
-
-          const apptDate = `${(today.getDate() + 1).toString()} ${today.toLocaleString('default', {
-            month: 'long',
-          })} ${today.getFullYear().toString()}`
           cy.get('h1').contains('Confirm appointment details')
-          cy.contains(apptDate)
+          cy.contains(tomorrow.format('DD MMMM YYYY'))
           cy.contains('4:15pm to 5:00pm')
 
           cy.get('button').contains('Confirm').click()
