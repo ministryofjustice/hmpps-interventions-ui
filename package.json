@@ -183,7 +183,7 @@
     "mockdate": "^3.0.5",
     "nock": "^13.2.9",
     "nodemon": "^2.0.20",
-    "prettier": "^2.7.1",
+    "prettier": "^2.8.0",
     "sass": "^1.56.1",
     "stylelint": "^14.15.0",
     "stylelint-config-sass-guidelines": "^9.0.1",
