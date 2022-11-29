@@ -912,10 +912,11 @@ describe('Service provider referrals dashboard', () => {
     describe('with valid inputs and an appointment in the future', () => {
       describe('when booking for an In-Person Meeting - Other Location', () => {
         it('should present no errors and display scheduled appointment', () => {
+          const tomorrow = moment('09:02:00', 'HH:mm:ss').add(1, 'days')
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
-          cy.get('#date-day').type('24')
-          cy.get('#date-month').type('11')
-          cy.get('#date-year').type('2022')
+          cy.get('#date-day').type(tomorrow.format('DD'))
+          cy.get('#date-month').type(tomorrow.format('MM'))
+          cy.get('#date-year').type(tomorrow.format('YYYY'))
           cy.get('#time-hour').type('9')
           cy.get('#time-minute').type('02')
           cy.get('#time-part-of-day').select('AM')
@@ -931,7 +932,7 @@ describe('Service provider referrals dashboard', () => {
 
           const scheduledAppointment = actionPlanAppointmentFactory.build({
             ...appointment,
-            appointmentTime: '2022-11-24T09:02:02Z',
+            appointmentTime: tomorrow.format(),
             durationInMinutes: 75,
             sessionType: 'GROUP',
             appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -949,7 +950,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
 
           cy.get('h1').contains('Confirm session 1 details')
-          cy.contains('24 November 2022')
+          cy.contains(tomorrow.format('DD MMMM YYYY'))
           cy.contains('9:02am to 10:17am')
           cy.contains('In-person meeting')
           cy.contains('Harmony Living Office, Room 4')
@@ -964,9 +965,9 @@ describe('Service provider referrals dashboard', () => {
 
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
 
-          cy.get('#date-day').should('have.value', '24')
-          cy.get('#date-month').should('have.value', '11')
-          cy.get('#date-year').should('have.value', '2022')
+          cy.get('#date-day').should('have.value', tomorrow.format('DD'))
+          cy.get('#date-month').should('have.value', tomorrow.format('MM'))
+          cy.get('#date-year').should('have.value', tomorrow.format('YYYY'))
           cy.get('#time-hour').should('have.value', '9')
           cy.get('#time-minute').should('have.value', '02')
           // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
@@ -983,10 +984,12 @@ describe('Service provider referrals dashboard', () => {
 
         describe('and their chosen date causes a clash of appointments', () => {
           it('the user is able to amend their chosen date and re-submit', () => {
+            const tomorrow = moment('09:02:00', 'HH:mm:ss').add(1, 'days')
+            const rescheduledDate = moment('09:02:00', 'HH:mm:ss').add(2, 'days')
             cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
-            cy.get('#date-day').type('24')
-            cy.get('#date-month').type('11')
-            cy.get('#date-year').type('2022')
+            cy.get('#date-day').type(tomorrow.format('DD'))
+            cy.get('#date-month').type(tomorrow.format('MM'))
+            cy.get('#date-year').type(tomorrow.format('YYYY'))
             cy.get('#time-hour').type('9')
             cy.get('#time-minute').type('02')
             cy.get('#time-part-of-day').select('AM')
@@ -1003,7 +1006,7 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Save and continue').click()
 
             cy.get('h1').contains('Confirm session 1 details')
-            cy.contains('24 November 2022')
+            cy.contains(tomorrow.format('DD MMMM YYYY'))
             cy.contains('9:02am to 10:17am')
             cy.contains('In-person meeting')
             cy.contains('Harmony Living Office, Room 4')
@@ -1019,9 +1022,9 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('The proposed date and time you selected clashes with another appointment.')
 
             cy.get('h1').contains('Add session 1 details')
-            cy.get('#date-day').should('have.value', '24')
-            cy.get('#date-month').should('have.value', '11')
-            cy.get('#date-year').should('have.value', '2022')
+            cy.get('#date-day').should('have.value', tomorrow.format('DD'))
+            cy.get('#date-month').should('have.value', tomorrow.format('MM'))
+            cy.get('#date-year').should('have.value', tomorrow.format('YYYY'))
             cy.get('#time-hour').should('have.value', '9')
             cy.get('#time-minute').should('have.value', '02')
             cy.get('#time-part-of-day').get('[selected]').should('have.text', 'AM')
@@ -1034,13 +1037,15 @@ describe('Service provider referrals dashboard', () => {
             cy.get('#method-other-location-address-county').should('have.value', 'Lancashire')
             cy.get('#method-other-location-address-postcode').should('have.value', 'SY4 0RE')
 
-            cy.get('#date-day').type('{selectall}{backspace}25')
+            cy.get('#date-day').clear().type(rescheduledDate.format('DD'))
+            cy.get('#date-month').clear().type(rescheduledDate.format('MM'))
+            cy.get('#date-year').clear().type(rescheduledDate.format('YYYY'))
 
             cy.contains('Save and continue').click()
 
             const scheduledAppointment = actionPlanAppointmentFactory.build({
               ...appointment,
-              appointmentTime: '2022-11-25T09:02:02Z',
+              appointmentTime: rescheduledDate.format(),
               durationInMinutes: 75,
               sessionType: 'GROUP',
               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
@@ -1065,10 +1070,11 @@ describe('Service provider referrals dashboard', () => {
 
       describe('when booking for an In-Person Meeting - NPS Location', () => {
         it('should present no errors and display scheduled appointment', () => {
+          const tomorrow = moment('09:02:00', 'HH:mm:ss').add(1, 'days')
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
-          cy.get('#date-day').type('24')
-          cy.get('#date-month').type('11')
-          cy.get('#date-year').type('2022')
+          cy.get('#date-day').type(tomorrow.format('DD'))
+          cy.get('#date-month').type(tomorrow.format('MM'))
+          cy.get('#date-year').type(tomorrow.format('YYYY'))
           cy.get('#time-hour').type('9')
           cy.get('#time-minute').type('02')
           cy.get('#time-part-of-day').select('AM')
@@ -1080,7 +1086,7 @@ describe('Service provider referrals dashboard', () => {
 
           const scheduledAppointment = actionPlanAppointmentFactory.build({
             ...appointment,
-            appointmentTime: '2022-11-24T09:02:02Z',
+            appointmentTime: tomorrow.format(),
             durationInMinutes: 75,
             sessionType: 'GROUP',
             appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
@@ -1093,7 +1099,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
 
           cy.get('h1').contains('Confirm session 1 details')
-          cy.contains('24 November 2022')
+          cy.contains(tomorrow.format('DD MMMM YYYY'))
           cy.contains('9:02am to 10:17am')
           cy.contains('In-person meeting (probation office)')
 
@@ -1104,9 +1110,9 @@ describe('Service provider referrals dashboard', () => {
 
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
 
-          cy.get('#date-day').should('have.value', '24')
-          cy.get('#date-month').should('have.value', '11')
-          cy.get('#date-year').should('have.value', '2022')
+          cy.get('#date-day').should('have.value', tomorrow.format('DD'))
+          cy.get('#date-month').should('have.value', tomorrow.format('MM'))
+          cy.get('#date-year').should('have.value', tomorrow.format('YYYY'))
           cy.get('#time-hour').should('have.value', '9')
           cy.get('#time-minute').should('have.value', '02')
           // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
@@ -2195,15 +2201,16 @@ describe('Service provider referrals dashboard', () => {
 
       describe('with appointments in the future', () => {
         it('presents a confirmation page and the booking is successful', () => {
+          const tomorrow = moment('09:02:02', 'HH:mm:ss').add(1, 'days')
           cy.visit(`/service-provider/referrals/${referral.id}/progress`)
           cy.get('#supplier-assessment-status').contains('not scheduled')
           cy.contains('Schedule initial assessment').click()
 
           cy.contains('Add appointment details')
 
-          cy.get('#date-day').type('24')
-          cy.get('#date-month').type('11')
-          cy.get('#date-year').type('2022')
+          cy.get('#date-day').type(tomorrow.format('DD'))
+          cy.get('#date-month').type(tomorrow.format('MM'))
+          cy.get('#date-year').type(tomorrow.format('YYYY'))
           cy.get('#time-hour').type('9')
           cy.get('#time-minute').type('02')
           cy.get('#time-part-of-day').select('AM')
@@ -2219,7 +2226,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
 
           const scheduledAppointment = initialAssessmentAppointmentFactory.build({
-            appointmentTime: '2022-11-24T09:02:02Z',
+            appointmentTime: tomorrow.format(),
             durationInMinutes: 75,
             appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
             appointmentDeliveryAddress: {
@@ -2238,7 +2245,7 @@ describe('Service provider referrals dashboard', () => {
           cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
 
           cy.get('h1').contains('Confirm appointment details')
-          cy.contains('24 November 2022')
+          cy.contains(tomorrow.format('DD MMMM YYYY'))
           cy.contains('9:02am to 10:17am')
           cy.contains('In-person meeting')
           cy.contains('Harmony Living Office, Room 4')
@@ -2263,7 +2270,7 @@ describe('Service provider referrals dashboard', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date and time': '9:02am on 24 Nov 2022',
+                'Date and time': `9:02am on ${tomorrow.format('DD MMM YYYY')}`,
                 Status: 'scheduled',
                 Action: 'View details or reschedule',
               },
@@ -2272,7 +2279,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('View details or reschedule').click()
           cy.get('h1').contains('View appointment details')
 
-          cy.contains('24 November 2022')
+          cy.contains(tomorrow.format('DD MMMM YYYY'))
           cy.contains('9:02am to 10:17am')
           cy.contains('In-person meeting')
           cy.contains('Harmony Living Office, Room 4')
@@ -2283,11 +2290,13 @@ describe('Service provider referrals dashboard', () => {
         })
 
         it('User schedules a supplier assessment appointment, changing their chosen time after it turns out to cause a clash of appointments', () => {
+          const tomorrow = moment('09:02:02', 'HH:mm:ss').add(1, 'days')
+          const rescheduledDate = moment('16:15:00', 'HH:mm:ss').add(2, 'days')
           cy.visit(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule/start`)
 
-          cy.get('#date-day').type('24')
-          cy.get('#date-month').type('11')
-          cy.get('#date-year').type('2022')
+          cy.get('#date-day').type(tomorrow.format('DD'))
+          cy.get('#date-month').type(tomorrow.format('MM'))
+          cy.get('#date-year').type(tomorrow.format('YYYY'))
           cy.get('#time-hour').type('9')
           cy.get('#time-minute').type('02')
           cy.get('#time-part-of-day').select('AM')
@@ -2310,9 +2319,9 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('The proposed date and time you selected clashes with another appointment.')
 
           cy.get('h1').contains('Add appointment details')
-          cy.get('#date-day').should('have.value', '24')
-          cy.get('#date-month').should('have.value', '11')
-          cy.get('#date-year').should('have.value', '2022')
+          cy.get('#date-day').should('have.value', tomorrow.format('DD'))
+          cy.get('#date-month').should('have.value', tomorrow.format('MM'))
+          cy.get('#date-year').should('have.value', tomorrow.format('YYYY'))
           cy.get('#time-hour').should('have.value', '9')
           cy.get('#time-minute').should('have.value', '02')
           cy.get('#time-part-of-day').get('[selected]').should('have.text', 'AM')
@@ -2325,12 +2334,14 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#method-other-location-address-county').should('have.value', 'Lancashire')
           cy.get('#method-other-location-address-postcode').should('have.value', 'SY4 0RE')
 
-          cy.get('#date-day').type('{selectall}{backspace}25')
+          cy.get('#date-day').clear().type(rescheduledDate.format('DD'))
+          cy.get('#date-month').clear().type(rescheduledDate.format('MM'))
+          cy.get('#date-year').clear().type(rescheduledDate.format('YYYY'))
 
           cy.contains('Save and continue').click()
 
           const scheduledAppointment = initialAssessmentAppointmentFactory.build({
-            appointmentTime: '2022-11-25T09:02:02Z',
+            appointmentTime: rescheduledDate.format(),
             durationInMinutes: 75,
             appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
             appointmentDeliveryAddress: {
@@ -2350,8 +2361,10 @@ describe('Service provider referrals dashboard', () => {
         })
 
         it('User reschedules a supplier assessment appointment', () => {
+          const tomorrow = moment('09:02:02', 'HH:mm:ss').add(1, 'days')
+          const rescheduledDate = moment('16:15:00', 'HH:mm:ss').add(1, 'days')
           const scheduledAppointment = initialAssessmentAppointmentFactory.build({
-            appointmentTime: '2022-11-24T09:02:00Z',
+            appointmentTime: tomorrow.format(),
             durationInMinutes: 75,
           })
           const supplierAssessmentWithScheduledAppointment = supplierAssessmentFactory.justCreated.build({
@@ -2359,7 +2372,6 @@ describe('Service provider referrals dashboard', () => {
             currentAppointmentId: scheduledAppointment.id,
           })
 
-          const tomorrow = moment().add(1, 'days')
           cy.stubGetSupplierAssessment(referral.id, supplierAssessmentWithScheduledAppointment)
 
           cy.visit(`/service-provider/referrals/${referral.id}/progress`)
@@ -2370,9 +2382,9 @@ describe('Service provider referrals dashboard', () => {
 
           cy.get('h1').contains('Change appointment details')
 
-          cy.get('#date-day').should('have.value', '24')
-          cy.get('#date-month').should('have.value', '11')
-          cy.get('#date-year').should('have.value', '2022')
+          cy.get('#date-day').should('have.value', tomorrow.format('DD'))
+          cy.get('#date-month').should('have.value', tomorrow.format('MM'))
+          cy.get('#date-year').should('have.value', tomorrow.format('YYYY'))
           cy.get('#time-hour').should('have.value', '9')
           cy.get('#time-minute').should('have.value', '02')
           // https://stackoverflow.com/questions/51222840/cypress-io-how-do-i-get-text-of-selected-option-in-select
@@ -2380,9 +2392,9 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#duration-hours').should('have.value', '1')
           cy.get('#duration-minutes').should('have.value', '15')
 
-          cy.get('#date-day').clear().type(tomorrow.format('DD'))
-          cy.get('#date-month').clear().type(tomorrow.format('MM'))
-          cy.get('#date-year').clear().type(tomorrow.format('YYYY'))
+          cy.get('#date-day').clear().type(rescheduledDate.format('DD'))
+          cy.get('#date-month').clear().type(rescheduledDate.format('MM'))
+          cy.get('#date-year').clear().type(rescheduledDate.format('YYYY'))
           cy.get('#time-hour').clear().type('4')
           cy.get('#time-minute').clear().type('15')
           cy.get('#time-part-of-day').select('PM')
@@ -2392,7 +2404,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
 
           const rescheduledAppointment = initialAssessmentAppointmentFactory.build({
-            appointmentTime: '2022-11-10T16:15:00Z',
+            appointmentTime: rescheduledDate.format(),
             durationInMinutes: 45,
           })
           const supplierAssessmentWithRescheduledAppointment = supplierAssessmentFactory.build({
@@ -2405,7 +2417,7 @@ describe('Service provider referrals dashboard', () => {
             scheduledAppointment
           )
           cy.get('h1').contains('Confirm appointment details')
-          cy.contains(tomorrow.format('DD MMMM YYYY'))
+          cy.contains(rescheduledDate.format('DD MMMM YYYY'))
           cy.contains('4:15pm to 5:00pm')
 
           cy.get('button').contains('Confirm').click()
