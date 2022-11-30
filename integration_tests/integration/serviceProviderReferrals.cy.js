@@ -914,8 +914,8 @@ describe('Service provider referrals dashboard', () => {
         it('should present no errors and display scheduled appointment', () => {
           const tomorrow = moment('09:02:00', 'HH:mm:ss').add(1, 'days')
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
-          cy.get('#date-day').type(tomorrow.format('DD'))
-          cy.get('#date-month').type(tomorrow.format('MM'))
+          cy.get('#date-day').type(tomorrow.format('D'))
+          cy.get('#date-month').type(tomorrow.format('M'))
           cy.get('#date-year').type(tomorrow.format('YYYY'))
           cy.get('#time-hour').type('9')
           cy.get('#time-minute').type('02')
@@ -950,7 +950,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
 
           cy.get('h1').contains('Confirm session 1 details')
-          cy.contains(tomorrow.format('DD MMMM YYYY'))
+          cy.contains(tomorrow.format('D MMMM YYYY'))
           cy.contains('9:02am to 10:17am')
           cy.contains('In-person meeting')
           cy.contains('Harmony Living Office, Room 4')
@@ -965,8 +965,8 @@ describe('Service provider referrals dashboard', () => {
 
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
 
-          cy.get('#date-day').should('have.value', tomorrow.format('DD'))
-          cy.get('#date-month').should('have.value', tomorrow.format('MM'))
+          cy.get('#date-day').should('have.value', tomorrow.format('D'))
+          cy.get('#date-month').should('have.value', tomorrow.format('M'))
           cy.get('#date-year').should('have.value', tomorrow.format('YYYY'))
           cy.get('#time-hour').should('have.value', '9')
           cy.get('#time-minute').should('have.value', '02')
@@ -987,8 +987,8 @@ describe('Service provider referrals dashboard', () => {
             const tomorrow = moment('09:02:00', 'HH:mm:ss').add(1, 'days')
             const rescheduledDate = moment('09:02:00', 'HH:mm:ss').add(2, 'days')
             cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
-            cy.get('#date-day').type(tomorrow.format('DD'))
-            cy.get('#date-month').type(tomorrow.format('MM'))
+            cy.get('#date-day').type(tomorrow.format('D'))
+            cy.get('#date-month').type(tomorrow.format('M'))
             cy.get('#date-year').type(tomorrow.format('YYYY'))
             cy.get('#time-hour').type('9')
             cy.get('#time-minute').type('02')
@@ -1006,7 +1006,7 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Save and continue').click()
 
             cy.get('h1').contains('Confirm session 1 details')
-            cy.contains(tomorrow.format('DD MMMM YYYY'))
+            cy.contains(tomorrow.format('D MMMM YYYY'))
             cy.contains('9:02am to 10:17am')
             cy.contains('In-person meeting')
             cy.contains('Harmony Living Office, Room 4')
@@ -1022,8 +1022,8 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('The proposed date and time you selected clashes with another appointment.')
 
             cy.get('h1').contains('Add session 1 details')
-            cy.get('#date-day').should('have.value', tomorrow.format('DD'))
-            cy.get('#date-month').should('have.value', tomorrow.format('MM'))
+            cy.get('#date-day').should('have.value', tomorrow.format('D'))
+            cy.get('#date-month').should('have.value', tomorrow.format('M'))
             cy.get('#date-year').should('have.value', tomorrow.format('YYYY'))
             cy.get('#time-hour').should('have.value', '9')
             cy.get('#time-minute').should('have.value', '02')
@@ -1037,8 +1037,8 @@ describe('Service provider referrals dashboard', () => {
             cy.get('#method-other-location-address-county').should('have.value', 'Lancashire')
             cy.get('#method-other-location-address-postcode').should('have.value', 'SY4 0RE')
 
-            cy.get('#date-day').clear().type(rescheduledDate.format('DD'))
-            cy.get('#date-month').clear().type(rescheduledDate.format('MM'))
+            cy.get('#date-day').clear().type(rescheduledDate.format('D'))
+            cy.get('#date-month').clear().type(rescheduledDate.format('M'))
             cy.get('#date-year').clear().type(rescheduledDate.format('YYYY'))
 
             cy.contains('Save and continue').click()
@@ -1072,8 +1072,8 @@ describe('Service provider referrals dashboard', () => {
         it('should present no errors and display scheduled appointment', () => {
           const tomorrow = moment('09:02:00', 'HH:mm:ss').add(1, 'days')
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
-          cy.get('#date-day').type(tomorrow.format('DD'))
-          cy.get('#date-month').type(tomorrow.format('MM'))
+          cy.get('#date-day').type(tomorrow.format('D'))
+          cy.get('#date-month').type(tomorrow.format('M'))
           cy.get('#date-year').type(tomorrow.format('YYYY'))
           cy.get('#time-hour').type('9')
           cy.get('#time-minute').type('02')
@@ -1099,7 +1099,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Save and continue').click()
 
           cy.get('h1').contains('Confirm session 1 details')
-          cy.contains(tomorrow.format('DD MMMM YYYY'))
+          cy.contains(tomorrow.format('D MMMM YYYY'))
           cy.contains('9:02am to 10:17am')
           cy.contains('In-person meeting (probation office)')
 
@@ -1110,8 +1110,8 @@ describe('Service provider referrals dashboard', () => {
 
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
 
-          cy.get('#date-day').should('have.value', tomorrow.format('DD'))
-          cy.get('#date-month').should('have.value', tomorrow.format('MM'))
+          cy.get('#date-day').should('have.value', tomorrow.format('D'))
+          cy.get('#date-month').should('have.value', tomorrow.format('M'))
           cy.get('#date-year').should('have.value', tomorrow.format('YYYY'))
           cy.get('#time-hour').should('have.value', '9')
           cy.get('#time-minute').should('have.value', '02')
@@ -2208,8 +2208,8 @@ describe('Service provider referrals dashboard', () => {
 
           cy.contains('Add appointment details')
 
-          cy.get('#date-day').type(tomorrow.format('DD'))
-          cy.get('#date-month').type(tomorrow.format('MM'))
+          cy.get('#date-day').type(tomorrow.format('D'))
+          cy.get('#date-month').type(tomorrow.format('M'))
           cy.get('#date-year').type(tomorrow.format('YYYY'))
           cy.get('#time-hour').type('9')
           cy.get('#time-minute').type('02')
@@ -2245,7 +2245,7 @@ describe('Service provider referrals dashboard', () => {
           cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
 
           cy.get('h1').contains('Confirm appointment details')
-          cy.contains(tomorrow.format('DD MMMM YYYY'))
+          cy.contains(tomorrow.format('D MMMM YYYY'))
           cy.contains('9:02am to 10:17am')
           cy.contains('In-person meeting')
           cy.contains('Harmony Living Office, Room 4')
@@ -2270,7 +2270,7 @@ describe('Service provider referrals dashboard', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date and time': `9:02am on ${tomorrow.format('DD MMM YYYY')}`,
+                'Date and time': `9:02am on ${tomorrow.format('D MMM YYYY')}`,
                 Status: 'scheduled',
                 Action: 'View details or reschedule',
               },
@@ -2279,7 +2279,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('View details or reschedule').click()
           cy.get('h1').contains('View appointment details')
 
-          cy.contains(tomorrow.format('DD MMMM YYYY'))
+          cy.contains(tomorrow.format('D MMMM YYYY'))
           cy.contains('9:02am to 10:17am')
           cy.contains('In-person meeting')
           cy.contains('Harmony Living Office, Room 4')
@@ -2294,8 +2294,8 @@ describe('Service provider referrals dashboard', () => {
           const rescheduledDate = moment('16:15:00', 'HH:mm:ss').add(2, 'days')
           cy.visit(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule/start`)
 
-          cy.get('#date-day').type(tomorrow.format('DD'))
-          cy.get('#date-month').type(tomorrow.format('MM'))
+          cy.get('#date-day').type(tomorrow.format('D'))
+          cy.get('#date-month').type(tomorrow.format('M'))
           cy.get('#date-year').type(tomorrow.format('YYYY'))
           cy.get('#time-hour').type('9')
           cy.get('#time-minute').type('02')
@@ -2319,8 +2319,8 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('The proposed date and time you selected clashes with another appointment.')
 
           cy.get('h1').contains('Add appointment details')
-          cy.get('#date-day').should('have.value', tomorrow.format('DD'))
-          cy.get('#date-month').should('have.value', tomorrow.format('MM'))
+          cy.get('#date-day').should('have.value', tomorrow.format('D'))
+          cy.get('#date-month').should('have.value', tomorrow.format('M'))
           cy.get('#date-year').should('have.value', tomorrow.format('YYYY'))
           cy.get('#time-hour').should('have.value', '9')
           cy.get('#time-minute').should('have.value', '02')
@@ -2334,8 +2334,8 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#method-other-location-address-county').should('have.value', 'Lancashire')
           cy.get('#method-other-location-address-postcode').should('have.value', 'SY4 0RE')
 
-          cy.get('#date-day').clear().type(rescheduledDate.format('DD'))
-          cy.get('#date-month').clear().type(rescheduledDate.format('MM'))
+          cy.get('#date-day').clear().type(rescheduledDate.format('D'))
+          cy.get('#date-month').clear().type(rescheduledDate.format('M'))
           cy.get('#date-year').clear().type(rescheduledDate.format('YYYY'))
 
           cy.contains('Save and continue').click()
@@ -2382,8 +2382,8 @@ describe('Service provider referrals dashboard', () => {
 
           cy.get('h1').contains('Change appointment details')
 
-          cy.get('#date-day').should('have.value', tomorrow.format('DD'))
-          cy.get('#date-month').should('have.value', tomorrow.format('MM'))
+          cy.get('#date-day').should('have.value', tomorrow.format('D'))
+          cy.get('#date-month').should('have.value', tomorrow.format('M'))
           cy.get('#date-year').should('have.value', tomorrow.format('YYYY'))
           cy.get('#time-hour').should('have.value', '9')
           cy.get('#time-minute').should('have.value', '02')
@@ -2392,8 +2392,8 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#duration-hours').should('have.value', '1')
           cy.get('#duration-minutes').should('have.value', '15')
 
-          cy.get('#date-day').clear().type(rescheduledDate.format('DD'))
-          cy.get('#date-month').clear().type(rescheduledDate.format('MM'))
+          cy.get('#date-day').clear().type(rescheduledDate.format('D'))
+          cy.get('#date-month').clear().type(rescheduledDate.format('M'))
           cy.get('#date-year').clear().type(rescheduledDate.format('YYYY'))
           cy.get('#time-hour').clear().type('4')
           cy.get('#time-minute').clear().type('15')
@@ -2417,7 +2417,7 @@ describe('Service provider referrals dashboard', () => {
             scheduledAppointment
           )
           cy.get('h1').contains('Confirm appointment details')
-          cy.contains(rescheduledDate.format('DD MMMM YYYY'))
+          cy.contains(rescheduledDate.format('D MMMM YYYY'))
           cy.contains('4:15pm to 5:00pm')
 
           cy.get('button').contains('Confirm').click()
