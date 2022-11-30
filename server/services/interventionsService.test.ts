@@ -23,11 +23,11 @@ jest.mock('../services/hmppsAuthService')
 
 /*
  It seems that perhaps after upgrading to Jest 27.x, it’s broken something in jest-pact
- (a Jest hook?) which is responsible for increasing the Jest timeout to 30s to give the 
- mock web server time to start up. I’m basing this on the error that’s displayed below 
+ (a Jest hook?) which is responsible for increasing the Jest timeout to 30s to give the
+ mock web server time to start up. I’m basing this on the error that’s displayed below
  when I run the tests.
 
- I’ve created IC-2024 to investigate this, but I think the temporary solution 
+ I’ve created IC-2024 to investigate this, but I think the temporary solution
  is to set the timeout ourselves.
 
   ● Pact between Interventions UI and Interventions Service › with 30000 ms timeout for Pact › getDraftReferral › returns a referral for the gi
@@ -1311,7 +1311,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  describe('getServiceCategory', () => {
+  describe('getServiceCategory/getServiceCategories', () => {
     const complexityLevels = [
       {
         id: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
@@ -1396,7 +1396,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       })
     })
 
-    it('returns a service category', async () => {
+    it('getServiceCategory returns a single service category by ID', async () => {
       const serviceCategory = await interventionsService.getServiceCategory(
         probationPractitionerToken,
         '428ee70f-3001-4399-95a6-ad25eaaede16'
@@ -1406,6 +1406,18 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(serviceCategory.name).toEqual('Accommodation')
       expect(serviceCategory.complexityLevels).toEqual(complexityLevels)
       expect(serviceCategory.desiredOutcomes).toEqual(desiredOutcomes)
+    })
+
+    it('getServiceCategories returns a list of service categories by ID', async () => {
+      const serviceCategories = await interventionsService.getServiceCategories(probationPractitionerToken, [
+        '428ee70f-3001-4399-95a6-ad25eaaede16',
+        '428ee70f-3001-4399-95a6-ad25eaaede16',
+      ])
+
+      expect(serviceCategories[0].id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(serviceCategories[0].name).toEqual('Accommodation')
+      expect(serviceCategories[1].id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(serviceCategories[1].name).toEqual('Accommodation')
     })
   })
 

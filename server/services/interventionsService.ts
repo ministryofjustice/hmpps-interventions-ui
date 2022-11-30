@@ -284,6 +284,12 @@ export default class InterventionsService {
     })) as ServiceCategory
   }
 
+  async getServiceCategories(token: string, serviceCategoryIds: string[]): Promise<ServiceCategory[]> {
+    // observation: will generate lots of small calls; however, service categories are practically static
+    // it might make sense to preload them at application startup, so that recycling the pods will evict the cache
+    return Promise.all(serviceCategoryIds.map(serviceCategoryId => this.getServiceCategory(token, serviceCategoryId)))
+  }
+
   async getChangelog(token: string, referralId: string): Promise<Changelog[]> {
     const restClient = this.createRestClient(token)
 
