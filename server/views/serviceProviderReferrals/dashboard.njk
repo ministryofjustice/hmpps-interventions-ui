@@ -19,6 +19,7 @@
       {{ mojSubNavigation(subNavArgs) }}
 
       {% if presenter.isSearchable %}
+
         <div class="govuk-template">
           <form action="{{presenter.hrefLinkForSearch}}" method="post">
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
@@ -26,7 +27,7 @@
             {{ govukInput(subjectInputArgs) }}
 
             <div class="govuk-button-group govuk-!-margin-left-9">
-              {{ govukButton({ text: "Search", name: "searchButtonAllOpenCases", attributes: { id: 'search-button-all-open-cases' }, preventDoubleClick: true}) }}
+              {{ govukButton({ text: "Search", name: "searchButtonAllCases", attributes: { id: 'clear-search-button' }, preventDoubleClick: true}) }}
               <a class="govuk-link" id="clear-search-button" data-ga-action="click" data-ga-value="1" href={{ clearHref }}>Clear</a>
             </div>
           </form>

@@ -35,10 +35,7 @@ export default class DashboardPresenter {
     readonly searchText: string | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {
-    this.pagination = new Pagination(
-      sentReferralSummaries,
-      this.searchText ? `open-case-search-text=${searchText}` : null
-    )
+    this.pagination = new Pagination(sentReferralSummaries, this.searchText ? `case-search-text=${searchText}` : null)
     const [sortField, sortOrder] = this.requestedSort.split(',')
     this.requestedSortField = sortField
     this.requestedSortOrder = ControllerUtils.sortOrderToAriaSort(sortOrder)
