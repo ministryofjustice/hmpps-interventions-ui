@@ -109,7 +109,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
-    const searchText = (req.body['open-case-search-text'] as string) ?? null
+    const searchText = (req.body['case-search-text'] as string) ?? null
 
     if (
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
@@ -134,6 +134,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
+    const searchText = (req.body['case-search-text'] as string) ?? null
     if (
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
     ) {
@@ -141,7 +142,7 @@ export default class ServiceProviderReferralsController {
       await this.renderDashboard(
         req,
         res,
-        { concluded: false, unassigned: true },
+        { concluded: false, unassigned: true, search: searchText?.trim() },
         'Unassigned cases',
         'spUnassignedCases',
         pageSize
@@ -157,11 +158,19 @@ export default class ServiceProviderReferralsController {
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
+    const searchText = (req.body['case-search-text'] as string) ?? null
     if (
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
     ) {
       const pageSize = config.dashboards.serviceProvider.completedCases
-      await this.renderDashboard(req, res, { concluded: true }, 'Completed cases', 'spCompletedCases', pageSize)
+      await this.renderDashboard(
+        req,
+        res,
+        { concluded: true, search: searchText?.trim() },
+        'Completed cases',
+        'spCompletedCases',
+        pageSize
+      )
       return
     }
 

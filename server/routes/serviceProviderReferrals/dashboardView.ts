@@ -41,15 +41,15 @@ export default class DashboardView {
       classes: 'moj-search__input govuk-!-width-two-thirds govuk-!-margin-left-9',
       label: {
         classes: 'govuk-label--m govuk-!-margin-left-9 govuk-!-margin-top-8',
-        text: 'Search open cases by referral number or person on probation',
+        text: this.presenter.displayText,
       },
       autocomplete: 'off',
       hint: {
         classes: 'moj-search__hint govuk-!-margin-left-9',
         text: 'To search by person on probation enter their first and last name, for example Matthew Smith-Jones.',
       },
-      id: 'open-case-search-text',
-      name: 'open-case-search-text',
+      id: 'case-search-text',
+      name: 'case-search-text',
       value: this.presenter.searchText ?? undefined,
     }
   }
@@ -64,7 +64,7 @@ export default class DashboardView {
         subNavArgs: this.subNavArgs,
         subjectInputArgs: this.subjectInputArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
-        clearHref: this.presenter.hrefSearchText,
+        clearHref: this.presenter.hrefLinkForSearch,
       },
     ]
   }

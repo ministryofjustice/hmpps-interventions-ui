@@ -27,10 +27,7 @@ export default class DashboardPresenter {
     readonly searchText: string | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {
-    this.pagination = new Pagination(
-      sentReferralSummaries,
-      this.searchText ? `open-case-search-text=${searchText}` : null
-    )
+    this.pagination = new Pagination(sentReferralSummaries, this.searchText ? `case-search-text=${searchText}` : null)
     const [sortField, sortOrder] = this.requestedSort.split(',')
     this.requestedSortField = sortField
     this.requestedSortOrder = ControllerUtils.sortOrderToAriaSort(sortOrder)
@@ -92,6 +89,36 @@ export default class DashboardPresenter {
         }
       })
       .filter(row => row.text !== 'Caseworker' || this.showAssignedCaseworkerColumn) as SortableTableHeaders
+  }
+
+  get hrefLinkForSearch(): string {
+    if (this.dashboardType === 'All open cases') {
+      return `/service-provider/dashboard/all-open-cases`
+    }
+    if (this.dashboardType === 'Unassigned cases') {
+      return `/service-provider/dashboard/Unassigned-cases`
+    }
+    return ''
+  }
+
+  get casesType(): string {
+    if (this.dashboardType === 'All open cases') {
+      return `open cases`
+    }
+    if (this.dashboardType === 'Unassigned cases') {
+      return `unasssigned cases`
+    }
+    return ''
+  }
+
+  get displayText(): string {
+    if (this.dashboardType === 'All open cases') {
+      return 'Search open cases by referral number or person on probation'
+    }
+    if (this.dashboardType === 'Unassigned cases') {
+      return 'Search unassigned cases by referral number or person on probation'
+    }
+    return ''
   }
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
