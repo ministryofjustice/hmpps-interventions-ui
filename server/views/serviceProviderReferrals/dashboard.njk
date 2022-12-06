@@ -18,9 +18,9 @@
 
       {{ mojSubNavigation(subNavArgs) }}
 
-      {% if presenter.dashboardType === 'All open cases' %}
+      {% if (presenter.dashboardType === 'All open cases') or (presenter.dashboardType === 'Unassigned cases')  %}
         <div class="govuk-template">
-          <form action="{{presenter.hrefSearchText}}" method="post">
+          <form action="{{presenter.hrefLinkForSearch}}" method="post">
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
             {{ govukInput(subjectInputArgs) }}
@@ -47,13 +47,13 @@
           </div>
         {% elif tableArgs.rows.length <1 and presenter.SearchText !== null %}
           <div class="govuk-width-container govuk-!-margin-left-7">
-              <h2 class="govuk-heading-m govuk-!-margin-top-7"> There are no results for "{{presenter.SearchText | escape }}" in open cases</h2>
+              <h2 class="govuk-heading-m govuk-!-margin-top-7"> There are no results for "{{presenter.SearchText | escape }}" in {{presenter.casesType}}</h2>
               <p>If you searched by:</p>
                 <div class="govuk-list--bullet govuk-!-margin-bottom-5">
                   <li class="govuk-body govuk-!-margin-bottom-0">person on probation, make sure you use their first and last name, for example James Baker</li>
                   <li class="govuk-body govuk-!-margin-bottom-0">referral number, check it's 8 characters long (2 letters, 4 numbers and then 2 letters)</li>
                 </div>
-              <p>If you still cannot find it, it may not be in open cases. Check in other case lists.</p>
+              <p>If you still cannot find it, it may not be in {{presenter.casesType}}. Check in other case lists.</p>
               <p>If the referral is missing from every case list, <a href="/report-a-problem"> raise a support ticket </a>. </p>
           </div>
         {% else %}
@@ -64,7 +64,7 @@
 
       <hr class="govuk-section-break govuk-section-break--m">
 
-      {% if presenter.dashboardType !== 'All open cases'%}
+      {% if (presenter.dashboardType === 'My cases') or (presenter.dashboardType === 'Completed cases')%}
       {% include "../partials/pagination.njk" %}
         <hr class="govuk-section-break govuk-section-break--m">
         {{ govukTable(tableArgs) }}

@@ -481,6 +481,107 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
       })
   })
 
+  it('displays a list of all unassigned cases when no search is present', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.unassigned().build({
+        serviceUser: {
+          firstName: 'Alex',
+          lastName: 'River',
+        },
+      }),
+      sentReferralSummariesFactory.unassigned().build({
+        serviceUser: {
+          firstName: 'George',
+          lastName: 'River',
+        },
+      }),
+    ]
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
+      return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
+    })
+
+    await request(app)
+      .get('/service-provider/dashboard/unassigned-cases')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('All open cases')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Accommodation Services - West Midlands')
+        expect(res.text).toContain('George River')
+      })
+  })
+
+  it('displays a list of unassigned cases with search text is not empty', async () => {
+    const referrals = [
+      sentReferralSummariesFactory.unassigned().build({
+        serviceUser: {
+          firstName: 'Alex',
+          lastName: 'River',
+        },
+      }),
+    ]
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
+      return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
+    })
+
+    await request(app)
+      .post(`/service-provider/dashboard/unassigned-cases`)
+      .send({ 'open-case-search-text': `Alex%20River` })
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('All open cases')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Accommodation Services - West Midlands')
+        expect(res.text).not.toContain('George River')
+      })
+  })
+
+  it('displays no records found when the search yields no results', async () => {
+    const searchText = 'nonsense'
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
+      return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
+    })
+
+    await request(app)
+      .post(`/service-provider/dashboard/unassigned-cases`)
+      .send({ 'open-case-search-text': `${searchText}` })
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('All open cases')
+        expect(res.text).not.toContain('Alex River')
+        expect(res.text).not.toContain('Accommodation Services - West Midlands')
+        expect(res.text).not.toContain('George River')
+        expect(res.text).toContain(`There are no results for "${searchText}" in unassigned cases`)
+        expect(res.text).toContain(
+          `person on probation, make sure you use their first and last name, for example James Baker`
+        )
+        expect(res.text).toContain(
+          `referral number, check it's 8 characters long (2 letters, 4 numbers and then 2 letters)`
+        )
+      })
+  })
+
+  it('displays no records found when the search yields no results - empty search', async () => {
+    const searchText = ''
+
+    interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
+      return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
+    })
+
+    await request(app)
+      .post(`/service-provider/dashboard/unassigned-cases`)
+      .send({ 'open-case-search-text': `${searchText}` })
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('You have not entered any search terms')
+        expect(res.text).toContain('referral number, for example KW5219ED')
+        expect(res.text).toContain('first and last name of the person on probation, for example James Baker')
+      })
+  })
+
   it('stores dashboard link in cookies', async () => {
     const referrals = [
       sentReferralSummariesFactory.assigned().build({

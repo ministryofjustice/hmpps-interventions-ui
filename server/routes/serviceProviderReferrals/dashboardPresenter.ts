@@ -94,6 +94,36 @@ export default class DashboardPresenter {
       .filter(row => row.text !== 'Caseworker' || this.showAssignedCaseworkerColumn) as SortableTableHeaders
   }
 
+  get hrefLinkForSearch(): string {
+    if (this.dashboardType === 'All open cases') {
+      return `/service-provider/dashboard/all-open-cases`
+    }
+    if (this.dashboardType === 'Unassigned cases') {
+      return `/service-provider/dashboard/Unassigned-cases`
+    }
+    return ''
+  }
+
+  get casesType(): string {
+    if (this.dashboardType === 'All open cases') {
+      return `open cases`
+    }
+    if (this.dashboardType === 'Unassigned cases') {
+      return `unassigned cases`
+    }
+    return ''
+  }
+
+  get displayText(): string {
+    if (this.dashboardType === 'All open cases') {
+      return 'Search open cases by referral number or person on probation'
+    }
+    if (this.dashboardType === 'Unassigned cases') {
+      return 'Search unassigned cases by referral number or person on probation'
+    }
+    return ''
+  }
+
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 
   readonly tableRows: SortableTableRow[] = this.sentReferralSummaries.content.map(referralSummary => {
