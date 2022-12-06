@@ -9,16 +9,8 @@ import Pagination from '../../utils/pagination/pagination'
 import ControllerUtils from '../../utils/controllerUtils'
 import SentReferralSummaries from '../../models/sentReferralSummaries'
 import PresenterUtils from '../../utils/presenterUtils'
-import DashboardDetails from '../../models/dashboardDetails'
 
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
-const dashboardDetails: Record<DashboardType, DashboardDetails> = {
-  'My cases': { tabHref: '/service-provider/dashboard', displayText: 'my cases' },
-  'All open cases': { tabHref: '/service-provider/dashboard/all-open-cases', displayText: 'open cases' },
-  'Unassigned cases': { tabHref: '/service-provider/dashboard/unassigned-cases', displayText: 'unassigned cases' },
-  'Completed cases': { tabHref: '/service-provider/dashboard/completed-cases', displayText: 'completed cases' },
-}
-
 export default class DashboardPresenter {
   public readonly pagination: Pagination
 
@@ -35,7 +27,10 @@ export default class DashboardPresenter {
     readonly searchText: string | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {
-    this.pagination = new Pagination(sentReferralSummaries, this.searchText ? `case-search-text=${searchText}` : null)
+    this.pagination = new Pagination(
+      sentReferralSummaries,
+      this.searchText ? `open-case-search-text=${searchText}` : null
+    )
     const [sortField, sortOrder] = this.requestedSort.split(',')
     this.requestedSortField = sortField
     this.requestedSortOrder = ControllerUtils.sortOrderToAriaSort(sortOrder)
@@ -81,7 +76,6 @@ export default class DashboardPresenter {
     this.dashboardType === 'All open cases' ||
     this.dashboardType === 'Unassigned cases' ||
     this.dashboardType === 'Completed cases'
-
   readonly title = this.dashboardType
 
   readonly SearchText = this.searchText
@@ -102,14 +96,6 @@ export default class DashboardPresenter {
         }
       })
       .filter(row => row.text !== 'Caseworker' || this.showAssignedCaseworkerColumn) as SortableTableHeaders
-  }
-
-  get hrefLinkForSearch(): string {
-    return dashboardDetails[this.dashboardType].tabHref
-  }
-
-  get casesType(): string {
-    return dashboardDetails[this.dashboardType].displayText
   }
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
