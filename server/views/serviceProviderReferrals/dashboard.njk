@@ -18,7 +18,7 @@
 
       {{ mojSubNavigation(subNavArgs) }}
 
-      {% if (presenter.dashboardType === 'All open cases') or (presenter.dashboardType === 'Unassigned cases')  %}
+      {% if presenter.isSearchable %}
         <div class="govuk-template">
           <form action="{{presenter.hrefLinkForSearch}}" method="post">
             <input type="hidden" name="_csrf" value="{{csrfToken}}">
@@ -64,7 +64,7 @@
 
       <hr class="govuk-section-break govuk-section-break--m">
 
-      {% if (presenter.dashboardType === 'My cases') or (presenter.dashboardType === 'Completed cases')%}
+      {% if not presenter.isSearchable %}
       {% include "../partials/pagination.njk" %}
         <hr class="govuk-section-break govuk-section-break--m">
         {{ govukTable(tableArgs) }}
