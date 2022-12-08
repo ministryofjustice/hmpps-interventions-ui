@@ -228,7 +228,13 @@ describe('Dashboards', () => {
         serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
       }),
     ]
-
+    const concludedReferrals = [
+      sentReferralSummaries.concluded().build({
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'REFERRAL_REF',
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+      }),
+    ]
     beforeEach(() => {
       cy.task('stubServiceProviderToken')
       cy.task('stubServiceProviderAuthUser')
@@ -296,7 +302,7 @@ describe('Dashboards', () => {
               },
             ])
           cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
-          cy.get('#open-case-search-text').type('Hello, World')
+          cy.get('#case-search-text').type('Hello, World')
           cy.get('#search-button-all-open-cases').click()
           cy.get('h2').contains('There are no results for "Hello, World"')
 
@@ -330,7 +336,7 @@ describe('Dashboards', () => {
           cy.get('h1').contains('My cases')
           cy.contains('All open cases').click()
           cy.get('h1').contains('All open cases')
-          cy.get('#open-case-search-text').type('Jenny Jones')
+          cy.get('#case-search-text').type('Jenny Jones')
           cy.get('#search-button-all-open-cases').click()
           cy.get('table')
             .getTable()
@@ -350,7 +356,7 @@ describe('Dashboards', () => {
           cy.get('h1').contains('My cases')
           cy.contains('All open cases').click()
           cy.get('h1').contains('All open cases')
-          cy.get('#open-case-search-text').type('REFERRAL_REF')
+          cy.get('#case-search-text').type('REFERRAL_REF')
           cy.get('#search-button-all-open-cases').click()
           cy.get('table')
             .getTable()
@@ -403,7 +409,7 @@ describe('Dashboards', () => {
               },
             ])
           cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
-          cy.get('#open-case-search-text').type('Hello, World')
+          cy.get('#case-search-text').type('Hello, World')
           cy.get('#search-button-all-open-cases').click()
           cy.get('h2').contains('There are no results for "Hello, World"')
 
@@ -435,7 +441,7 @@ describe('Dashboards', () => {
           cy.get('h1').contains('My cases')
           cy.contains('Unassigned cases').click()
           cy.get('h1').contains('Unassigned cases')
-          cy.get('#open-case-search-text').type('Jenny Jones')
+          cy.get('#case-search-text').type('Jenny Jones')
           cy.get('#search-button-all-open-cases').click()
           cy.get('table')
             .getTable()
@@ -445,6 +451,94 @@ describe('Dashboards', () => {
                 Referral: 'REFERRAL_REF',
                 Person: 'Jenny Jones',
                 'Intervention type': 'Accommodation Services - West Midlands',
+                Action: 'View',
+              },
+            ])
+        })
+      })
+
+      describe('Selecting "Completed cases"', () => {
+        it('should see "Completed cases"', () => {
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Completed cases').click()
+          cy.get('h1').contains('Completed cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
+                Action: 'View',
+              },
+            ])
+        })
+        it('should filter completed cases by PoP name - displaying no results', () => {
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(concludedReferrals).build())
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Completed cases').click()
+          cy.get('h1').contains('Completed cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
+                Action: 'View',
+              },
+            ])
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+          cy.get('#case-search-text').type('Hello, World')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('h2').contains('There are no results for "Hello, World"')
+
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(concludedReferrals).build())
+          cy.get('#clear-search-button').click()
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
+                Action: 'View',
+              },
+            ])
+        })
+        it('should filter completed cases by PoP name - displaying error, no values input', () => {
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Completed cases').click()
+          cy.get('h1').contains('Completed cases')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('h2').contains('You have not entered any search terms')
+        })
+        it('should filter completed cases by PoP name - displaying correct results', () => {
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(concludedReferrals).build())
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Completed cases').click()
+          cy.get('h1').contains('Completed cases')
+          cy.get('#case-search-text').type('Jenny Jones')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
                 Action: 'View',
               },
             ])

@@ -44,6 +44,9 @@ export default function serviceProviderRoutes(router: Router, services: Services
   get(router, '/dashboard/completed-cases', (req, res) =>
     serviceProviderReferralsController.showCompletedCasesDashboard(req, res)
   )
+  post(router, '/dashboard/completed-cases', (req, res) =>
+    serviceProviderReferralsController.showCompletedCasesDashboard(req, res)
+  )
 
   get(router, '/referrals/:id/details', (req, res) => serviceProviderReferralsController.showReferral(req, res))
   get(router, '/referrals/:id/progress', (req, res) =>
