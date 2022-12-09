@@ -221,6 +221,13 @@ describe('Dashboards', () => {
         serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
       }),
     ]
+    const unassignedReferrals = [
+      sentReferralSummaries.unassigned().build({
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'REFERRAL_REF',
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+      }),
+    ]
 
     beforeEach(() => {
       cy.task('stubServiceProviderToken')
@@ -338,6 +345,26 @@ describe('Dashboards', () => {
               },
             ])
         })
+        it('should filter open cases by Referral Number - displaying correct results', () => {
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('All open cases').click()
+          cy.get('h1').contains('All open cases')
+          cy.get('#open-case-search-text').type('REFERRAL_REF')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
+                Action: 'View',
+              },
+            ])
+        })
       })
 
       describe('Selecting "Unassigned cases"', () => {
@@ -346,6 +373,70 @@ describe('Dashboards', () => {
           cy.get('h1').contains('My cases')
           cy.contains('Unassigned cases').click()
           cy.get('h1').contains('Unassigned cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Action: 'View',
+              },
+            ])
+        })
+        it('should filter unassigned cases by PoP name - displaying no results', () => {
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(unassignedReferrals).build())
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Unassigned cases').click()
+          cy.get('h1').contains('Unassigned cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Action: 'View',
+              },
+            ])
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+          cy.get('#open-case-search-text').type('Hello, World')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('h2').contains('There are no results for "Hello, World"')
+
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(unassignedReferrals).build())
+          cy.get('#clear-search-button').click()
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Action: 'View',
+              },
+            ])
+        })
+        it('should filter unassigned cases by PoP name - displaying error, no values input', () => {
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Unassigned cases').click()
+          cy.get('h1').contains('Unassigned cases')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('h2').contains('You have not entered any search terms')
+        })
+        it('should filter unassigned cases by PoP name - displaying correct results', () => {
+          cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(unassignedReferrals).build())
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Unassigned cases').click()
+          cy.get('h1').contains('Unassigned cases')
+          cy.get('#open-case-search-text').type('Jenny Jones')
+          cy.get('#search-button-all-open-cases').click()
           cy.get('table')
             .getTable()
             .should('deep.equal', [

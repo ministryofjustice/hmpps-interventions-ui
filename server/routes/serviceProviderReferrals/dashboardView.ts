@@ -41,7 +41,7 @@ export default class DashboardView {
       classes: 'moj-search__input govuk-!-width-two-thirds govuk-!-margin-left-9',
       label: {
         classes: 'govuk-label--m govuk-!-margin-left-9 govuk-!-margin-top-8',
-        text: 'Search open cases by referral number or person on probation',
+        text: `Search ${this.presenter.casesType} by referral number or person on probation`,
       },
       autocomplete: 'off',
       hint: {
@@ -64,7 +64,7 @@ export default class DashboardView {
         subNavArgs: this.subNavArgs,
         subjectInputArgs: this.subjectInputArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
-        clearHref: this.presenter.hrefSearchText,
+        clearHref: this.presenter.hrefLinkForSearch,
       },
     ]
   }
