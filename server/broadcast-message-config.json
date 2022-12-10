@@ -1,5 +1,5 @@
 {
-  "start": "2022-10-25T00:00:00+01:00",
-  "end": "2022-10-25T20:30:00+01:00",
-  "message": "You will not be able to use this service between 8pm and 8:30pm today, 25 October. This is to update the database."
+  "start": "2022-12-10T00:00:00+00:00",
+  "end": "2022-12-10T21:00:00+00:00",
+  "message": "You will not be able to make referrals or record activity details on this service until 9pm on Saturday 10 December. This is because of nDelius essential maintenance work."
 }
