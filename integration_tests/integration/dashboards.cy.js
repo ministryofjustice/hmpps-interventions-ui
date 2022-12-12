@@ -233,6 +233,7 @@ describe('Dashboards', () => {
         sentAt: '2021-01-26T13:00:00.000000Z',
         referenceNumber: 'REFERRAL_REF',
         serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+        Caseworker: 'UserABC',
       }),
     ]
     beforeEach(() => {
@@ -435,6 +436,25 @@ describe('Dashboards', () => {
           cy.get('#search-button-all-open-cases').click()
           cy.get('h2').contains('You have not entered any search terms')
         })
+        it('should filter unassigned cases by Referral Number - displaying correct results', () => {
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Unassigned cases').click()
+          cy.get('h1').contains('Unassigned cases')
+          cy.get('#case-search-text').type('REFERRAL_REF')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Action: 'View',
+              },
+            ])
+        })
         it('should filter unassigned cases by PoP name - displaying correct results', () => {
           cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(unassignedReferrals).build())
           cy.login()
@@ -458,7 +478,7 @@ describe('Dashboards', () => {
       })
 
       describe('Selecting "Completed cases"', () => {
-        it('should see "Completed cases"', () => {
+        it('should see "Completed cases and Caseworker details"', () => {
           cy.login()
           cy.get('h1').contains('My cases')
           cy.contains('Completed cases').click()
@@ -522,6 +542,26 @@ describe('Dashboards', () => {
           cy.get('#search-button-all-open-cases').click()
           cy.get('h2').contains('You have not entered any search terms')
         })
+        it('should filter completed cases by Referral Number - displaying correct results', () => {
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Completed cases').click()
+          cy.get('h1').contains('Completed cases')
+          cy.get('#case-search-text').type('REFERRAL_REF')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Date received': '26 Jan 2021',
+                Referral: 'REFERRAL_REF',
+                Person: 'Jenny Jones',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                Caseworker: 'UserABC',
+                Action: 'View',
+              },
+            ])
+        })
         it('should filter completed cases by PoP name - displaying correct results', () => {
           cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(concludedReferrals).build())
           cy.login()
@@ -545,112 +585,91 @@ describe('Dashboards', () => {
         })
       })
 
-      describe('Selecting "Completed cases"', () => {
-        it('should see "Completed cases" and Caseworker details', () => {
-          cy.login()
-          cy.get('h1').contains('My cases')
-          cy.contains('Completed cases').click()
-          cy.get('h1').contains('Completed cases')
-          cy.get('table')
-            .getTable()
-            .should('deep.equal', [
-              {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
-                'Intervention type': 'Accommodation Services - West Midlands',
-                Caseworker: 'UserABC',
-                Action: 'View',
-              },
-            ])
-        })
-      })
-    })
-
-    describe('table sort headings', () => {
-      describe(
-        'should show which column the table is currently sorted by',
-        {
-          retries: {
-            runMode: 2,
-            openMode: 1,
+      describe('table sort headings', () => {
+        describe(
+          'should show which column the table is currently sorted by',
+          {
+            retries: {
+              runMode: 2,
+              openMode: 1,
+            },
           },
-        },
-        () => {
-          const headings = ['Date received', 'Referral', 'Person', 'Intervention type', 'Caseworker']
-          headings.forEach(heading => {
-            it(`should set headings correctly when sorting by ${heading}`, () => {
+          () => {
+            const headings = ['Date received', 'Referral', 'Person', 'Intervention type', 'Caseworker']
+            headings.forEach(heading => {
+              it(`should set headings correctly when sorting by ${heading}`, () => {
+                cy.login()
+                cy.get('h1').contains('My cases')
+
+                cy.get('[data-cy=dashboard-navigation]').contains('All open cases').click()
+                cy.get('h1').contains('All open cases')
+
+                cy.get('table').within(() => cy.contains('button', heading).click())
+                cy.get('h1').contains('All open cases')
+
+                // check the clicked heading is sorted and all others are not
+                cy.get('thead')
+                  .find('th')
+                  .each($el => {
+                    const sort = $el.text() === heading ? 'ascending' : 'none'
+                    cy.wrap($el).should('have.attr', { 'aria-sort': sort })
+                  })
+
+                // clicking again sorts in the other direction
+                cy.get('table').within(() => cy.contains('button', heading).click())
+                cy.get('h1').contains('All open cases')
+
+                cy.get('table').within(() =>
+                  cy.contains('button', heading).should('have.attr', { 'aria-sort': 'descending' })
+                )
+              })
+            })
+          }
+        )
+
+        const dashBoardTables = [
+          {
+            dashboardType: 'My cases',
+            sortField: 'Date received',
+          },
+          {
+            dashboardType: 'All open cases',
+            sortField: 'Intervention type',
+          },
+          {
+            dashboardType: 'Unassigned cases',
+            sortField: 'Person',
+          },
+          {
+            dashboardType: 'Completed cases',
+            sortField: 'Referral',
+          },
+        ]
+
+        describe('persists sort order', () => {
+          dashBoardTables.forEach(table => {
+            it(`persists the sort order when coming back to the page for dashboard "${table.dashboardType}"`, () => {
               cy.login()
               cy.get('h1').contains('My cases')
 
-              cy.get('[data-cy=dashboard-navigation]').contains('All open cases').click()
-              cy.get('h1').contains('All open cases')
+              cy.get('[data-cy=dashboard-navigation]').contains(table.dashboardType).click()
+              cy.get('h1').contains(table.dashboardType)
 
-              cy.get('table').within(() => cy.contains('button', heading).click())
-              cy.get('h1').contains('All open cases')
-
-              // check the clicked heading is sorted and all others are not
-              cy.get('thead')
-                .find('th')
-                .each($el => {
-                  const sort = $el.text() === heading ? 'ascending' : 'none'
-                  cy.wrap($el).should('have.attr', { 'aria-sort': sort })
-                })
-
-              // clicking again sorts in the other direction
-              cy.get('table').within(() => cy.contains('button', heading).click())
-              cy.get('h1').contains('All open cases')
-
+              cy.get('table').within(() => cy.contains('button', table.sortField).click())
+              cy.get('h1').contains(table.dashboardType)
               cy.get('table').within(() =>
-                cy.contains('button', heading).should('have.attr', { 'aria-sort': 'descending' })
+                cy.contains('button', table.sortField).should('have.attr', { 'aria-sort': 'ascending' })
+              )
+
+              cy.get('[data-cy=dashboard-navigation]').contains(table.dashboardType).click()
+              cy.get('h1').contains(table.dashboardType)
+
+              // Wait for header sort button to load, as it means JS has run
+              cy.get('table').within(() => cy.contains('button', table.sortField))
+              cy.get('table').within(() =>
+                cy.contains('button', table.sortField).should('have.attr', { 'aria-sort': 'ascending' })
               )
             })
-          })
-        }
-      )
-
-      const dashBoardTables = [
-        {
-          dashboardType: 'My cases',
-          sortField: 'Date received',
-        },
-        {
-          dashboardType: 'All open cases',
-          sortField: 'Intervention type',
-        },
-        {
-          dashboardType: 'Unassigned cases',
-          sortField: 'Person',
-        },
-        {
-          dashboardType: 'Completed cases',
-          sortField: 'Referral',
-        },
-      ]
-
-      describe('persists sort order', () => {
-        dashBoardTables.forEach(table => {
-          it(`persists the sort order when coming back to the page for dashboard "${table.dashboardType}"`, () => {
-            cy.login()
-            cy.get('h1').contains('My cases')
-
-            cy.get('[data-cy=dashboard-navigation]').contains(table.dashboardType).click()
-            cy.get('h1').contains(table.dashboardType)
-
-            cy.get('table').within(() => cy.contains('button', table.sortField).click())
-            cy.get('h1').contains(table.dashboardType)
-            cy.get('table').within(() =>
-              cy.contains('button', table.sortField).should('have.attr', { 'aria-sort': 'ascending' })
-            )
-
-            cy.get('[data-cy=dashboard-navigation]').contains(table.dashboardType).click()
-            cy.get('h1').contains(table.dashboardType)
-
-            // Wait for header sort button to load, as it means JS has run
-            cy.get('table').within(() => cy.contains('button', table.sortField))
-            cy.get('table').within(() =>
-              cy.contains('button', table.sortField).should('have.attr', { 'aria-sort': 'ascending' })
-            )
           })
         })
       })
