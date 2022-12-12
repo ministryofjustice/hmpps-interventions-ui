@@ -157,7 +157,7 @@
     "@types/superagent": "^4.1.15",
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
-    "@typescript-eslint/parser": "^5.45.0",
+    "@typescript-eslint/parser": "^5.46.0",
     "concurrently": "^7.6.0",
     "cookie-session": "^2.0.0",
     "cypress": "^11.2.0",
