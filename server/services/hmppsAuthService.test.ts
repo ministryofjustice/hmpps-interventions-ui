@@ -73,6 +73,20 @@ describe('hmppsAuthService', () => {
       const output = await hmppsAuthService.getUserDetailsByUsername(token.access_token, username)
       expect(output).toEqual(response)
     })
+
+    it('should return system user for "hmpps-interventions-service" username', async () => {
+      const username = 'hmpps-interventions-service'
+
+      const output = await hmppsAuthService.getUserDetailsByUsername(token.access_token, username)
+      expect(output).toEqual({
+        username: 'hmpps-interventions-service',
+        active: true,
+        name: 'System',
+        authSource: 'urn:hmpps:interventions',
+        userId: '00000000-0000-0000-0000-000000000000',
+        uuid: '00000000-0000-0000-0000-000000000000',
+      })
+    })
   })
 
   describe('getSPUserByEmailAddress', () => {

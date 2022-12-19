@@ -1,6 +1,5 @@
 import superagent, { Response } from 'superagent'
 import querystring from 'querystring'
-// import { createClient } from 'redis'
 import * as redis from 'redis'
 import logger from '../../log'
 import config from '../config'
@@ -24,6 +23,7 @@ const redisClient = redis.createClient({
 })
 
 const REDIS_PREFIX = 'systemToken:' // prefix has been removed from redis config, so manually add it to key
+const FAKE_SYSTEM_USER = 'hmpps-interventions-service' // see also https://github.com/ministryofjustice/hmpps-interventions-service/pull/1353
 
 redisClient
   .connect()
@@ -46,6 +46,17 @@ export default class HmppsAuthService {
   }
 
   async getUserDetailsByUsername(userToken: string, username: string): Promise<UserDetails> {
+    if (username === FAKE_SYSTEM_USER) {
+      return {
+        username,
+        active: true,
+        name: 'System',
+        authSource: 'urn:hmpps:interventions',
+        userId: '00000000-0000-0000-0000-000000000000',
+        uuid: '00000000-0000-0000-0000-000000000000',
+      } as UserDetails
+    }
+
     logger.info(`Getting user details: calling HMPPS Auth`)
     return (await this.restClient(userToken).get({ path: `/api/user/${username}` })) as UserDetails
   }
