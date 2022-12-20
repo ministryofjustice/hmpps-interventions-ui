@@ -215,6 +215,23 @@ describe('hmppsAuthService', () => {
       const output = await hmppsAuthService.getSPUserByUsername(token.access_token, 'AUTH_ADM')
       expect(output).toEqual(response)
     })
+
+    it('should return system user for "hmpps-interventions-service" username', async () => {
+      const username = 'hmpps-interventions-service'
+
+      const output = await hmppsAuthService.getSPUserByUsername(token.access_token, username)
+      expect(output).toEqual({
+        userId: '00000000-0000-0000-0000-000000000000',
+        username: 'hmpps-interventions-service',
+        email: 'system',
+        firstName: 'Refer and monitor',
+        lastName: 'System',
+        locked: false,
+        enabled: true,
+        verified: true,
+        lastLoggedIn: 'irrelevant',
+      })
+    })
   })
 
   describe('getUserRoles', () => {

@@ -94,6 +94,20 @@ export default class HmppsAuthService {
   }
 
   async getSPUserByUsername(token: string, username: string): Promise<AuthUserDetails> {
+    if (username === FAKE_SYSTEM_USER) {
+      return {
+        userId: '00000000-0000-0000-0000-000000000000',
+        username,
+        email: 'system',
+        firstName: 'Refer and monitor',
+        lastName: 'System',
+        locked: false,
+        enabled: true,
+        verified: true,
+        lastLoggedIn: 'irrelevant',
+      } as AuthUserDetails
+    }
+
     logger.info(`Getting user detail by username: calling HMPPS Auth`)
     return (await this.restClient(token).get({
       path: `/api/authuser/${username}`,
