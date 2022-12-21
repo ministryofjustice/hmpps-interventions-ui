@@ -48,8 +48,8 @@ export default class DashboardWithoutPaginationView {
       },
 
       autocomplete: 'off',
-      id: 'open-case-search-text',
-      name: 'open-case-search-text',
+      id: 'case-search-text',
+      name: 'case-search-text',
     }
   }
 

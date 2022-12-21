@@ -80,7 +80,10 @@ export default class DashboardPresenter {
   private readonly showAssignedCaseworkerColumn =
     this.dashboardType === 'All open cases' || this.dashboardType === 'Completed cases'
 
-  readonly isSearchable = this.dashboardType === 'All open cases' || this.dashboardType === 'Unassigned cases'
+  readonly isSearchable =
+    this.dashboardType === 'All open cases' ||
+    this.dashboardType === 'Unassigned cases' ||
+    this.dashboardType === 'Completed cases'
 
   readonly title = this.dashboardType
 
