@@ -48,8 +48,8 @@ export default class DashboardView {
         classes: 'moj-search__hint govuk-!-margin-left-9',
         text: 'To search by person on probation enter their first and last name, for example Matthew Smith-Jones.',
       },
-      id: 'open-case-search-text',
-      name: 'open-case-search-text',
+      id: 'case-search-text',
+      name: 'case-search-text',
       value: this.presenter.searchText ?? undefined,
     }
   }

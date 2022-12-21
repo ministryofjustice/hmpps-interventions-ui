@@ -13,10 +13,30 @@ import DashboardDetails from '../../models/dashboardDetails'
 
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
 const dashboardDetails: Record<DashboardType, DashboardDetails> = {
-  'My cases': { tabHref: '/service-provider/dashboard', displayText: 'my cases' },
-  'All open cases': { tabHref: '/service-provider/dashboard/all-open-cases', displayText: 'open cases' },
-  'Unassigned cases': { tabHref: '/service-provider/dashboard/unassigned-cases', displayText: 'unassigned cases' },
-  'Completed cases': { tabHref: '/service-provider/dashboard/completed-cases', displayText: 'completed cases' },
+  'My cases': {
+    tabHref: '/service-provider/dashboard',
+    displayText: 'my cases',
+    isSearchable: false,
+    showAssignedCaseworker: false,
+  },
+  'All open cases': {
+    tabHref: '/service-provider/dashboard/all-open-cases',
+    displayText: 'open cases',
+    isSearchable: true,
+    showAssignedCaseworker: true,
+  },
+  'Unassigned cases': {
+    tabHref: '/service-provider/dashboard/unassigned-cases',
+    displayText: 'unassigned cases',
+    isSearchable: true,
+    showAssignedCaseworker: false,
+  },
+  'Completed cases': {
+    tabHref: '/service-provider/dashboard/completed-cases',
+    displayText: 'completed cases',
+    isSearchable: true,
+    showAssignedCaseworker: true,
+  },
 }
 
 export default class DashboardPresenter {
@@ -77,10 +97,9 @@ export default class DashboardPresenter {
     },
   ]
 
-  private readonly showAssignedCaseworkerColumn =
-    this.dashboardType === 'All open cases' || this.dashboardType === 'Completed cases'
+  private readonly showAssignedCaseworkerColumn = dashboardDetails[this.dashboardType].showAssignedCaseworker
 
-  readonly isSearchable = this.dashboardType === 'All open cases' || this.dashboardType === 'Unassigned cases'
+  readonly isSearchable = dashboardDetails[this.dashboardType].isSearchable
 
   readonly title = this.dashboardType
 
