@@ -124,7 +124,7 @@
     "http-status-codes": "^2.2.0",
     "indefinite": "^2.4.2",
     "joi": "^17.7.0",
-    "jquery": "^3.6.2",
+    "jquery": "^3.6.3",
     "jwt-decode": "^3.1.2",
     "md5": "^2.3.0",
     "nocache": "^3.0.4",
