@@ -97,7 +97,7 @@
     "@ministryofjustice/frontend": "1.6.3",
     "@sentry/node": "^7.28.1",
     "@types/connect-flash": "0.0.37",
-    "@types/express-serve-static-core": "^4.17.31",
+    "@types/express-serve-static-core": "^4.17.32",
     "@types/md5": "^2.3.2",
     "@types/qs": "^6.9.7",
     "@types/uuid": "^9.0.0",
