@@ -148,7 +148,7 @@
     "@types/http-errors": "^2.0.1",
     "@types/indefinite": "^2.3.1",
     "@types/jest": "^27.5.0",
-    "@types/jquery": "^3.5.14",
+    "@types/jquery": "^3.5.16",
     "@types/jsonwebtoken": "^8.5.9",
     "@types/jwt-decode": "^2.2.1",
     "@types/nunjucks": "^3.2.1",
