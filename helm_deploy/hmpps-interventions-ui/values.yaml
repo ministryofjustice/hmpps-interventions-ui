@@ -56,4 +56,25 @@ generic-service:
       SecRuleEngine On
       SecRuleUpdateActionById 949110 "t:none,deny,status:423,logdata:%{SERVER_NAME}"
       SecRuleUpdateActionById 959100 "t:none,deny,status:423,logdata:%{SERVER_NAME}"
-      SecAction "id:900110,phase:1,nolog,pass,t:none,setvar:tx.inbound_anomaly_score_threshold=50,setvar:tx.outbound_anomaly_score_threshold=50"
+      # disable these false positives for POST requests; they are always authenticated
+      SecRule REQUEST_METHOD "POST" \
+        "id:10000, \
+        phase:2, \
+        t:none, \
+        ctl:ruleRemoveByTag=platform-windows, \
+        ctl:ruleRemoveByTag=language-shell, \
+        ctl:ruleRemoveByTag=language-php, \
+        ctl:ruleRemoveById=921110, \
+        ctl:ruleRemoveById=921120, \
+        ctl:ruleRemoveById=942190, \
+        ctl:ruleRemoveById=942230, \
+        ctl:ruleRemoveById=942100, \
+        ctl:ruleRemoveById=942360, \
+        ctl:ruleRemoveById=941370, \
+        ctl:ruleRemoveById=930120, \
+        ctl:ruleRemoveById=941180, \
+        ctl:ruleRemoveById=941310, \
+        ctl:ruleRemoveById=941130, \
+        ctl:ruleRemoveById=942250, \
+        nolog, \
+        pass"
