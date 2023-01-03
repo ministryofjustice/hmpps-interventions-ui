@@ -56,4 +56,20 @@ generic-service:
       SecRuleEngine On
       SecRuleUpdateActionById 949110 "t:none,deny,status:423,logdata:%{SERVER_NAME}"
       SecRuleUpdateActionById 959100 "t:none,deny,status:423,logdata:%{SERVER_NAME}"
-      SecAction "id:900110,phase:1,nolog,pass,t:none,setvar:tx.inbound_anomaly_score_threshold=50,setvar:tx.outbound_anomaly_score_threshold=50"
+      # disable false positive tags for POST requests
+      SecRuleUpdateTargetByTag platform-windows "!REQUEST_METHOD:POST"
+      SecRuleUpdateTargetByTag language-shell "!REQUEST_METHOD:POST"
+      SecRuleUpdateTargetByTag language-php "!REQUEST_METHOD:POST"
+      # disable these false positives for POST requests; they are always authenticated
+      SecRuleUpdateTargetById 921110 "!REQUEST_METHOD:POST"  # HTTP Request Smuggling Attack, occurred 170 times
+      SecRuleUpdateTargetById 921120 "!REQUEST_METHOD:POST"  # HTTP Response Splitting Attack, occurred 72 times
+      SecRuleUpdateTargetById 942190 "!REQUEST_METHOD:POST"  # Detects MSSQL code execution and information gathering attempts, occurred 51 times
+      SecRuleUpdateTargetById 942230 "!REQUEST_METHOD:POST"  # Detects conditional SQL injection attempts, occurred 48 times
+      SecRuleUpdateTargetById 942100 "!REQUEST_METHOD:POST"  # detected SQLi using libinjection., occurred 38 times
+      SecRuleUpdateTargetById 942360 "!REQUEST_METHOD:POST"  # Detects concatenated basic SQL injection and SQLLFI attempts, occurred 29 times
+      SecRuleUpdateTargetById 941370 "!REQUEST_METHOD:POST"  # JavaScript global variable found, occurred 3 times
+      SecRuleUpdateTargetById 930120 "!REQUEST_METHOD:POST"  # OS File Access Attempt, occurred 2 times
+      SecRuleUpdateTargetById 941180 "!REQUEST_METHOD:POST"  # Node-Validator Blacklist Keywords, occurred 2 times
+      SecRuleUpdateTargetById 941310 "!REQUEST_METHOD:POST"  # US-ASCII Malformed Encoding XSS Filter - Attack Detected, occurred 1 time
+      SecRuleUpdateTargetById 941130 "!REQUEST_METHOD:POST"  # XSS Filter - Category 3: Attribute Vector, occurred 1 time
+      SecRuleUpdateTargetById 942250 "!REQUEST_METHOD:POST"  # Detects MATCH AGAINST, MERGE and EXECUTE IMMEDIATE injections, occurred 1 time
