@@ -1,0 +1,13 @@
+name: branch-name-validator
+
+on: [pull_request]
+
+jobs:
+  check-jira-prefix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: deepakputhraya/action-branch-name@master
+        with:
+          regex: '^(no-ticket|dependabot|IPB-[0-9]+)/' # start branch with either 'no-ticket/' or 'dependabot' or 'IPB-NUMBER/'
+          ignore: main
