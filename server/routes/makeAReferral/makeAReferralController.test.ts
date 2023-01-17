@@ -9,6 +9,7 @@ import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
+import prisonFactory from '../../../testutils/factories/prison'
 import apiConfig from '../../config'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
@@ -19,16 +20,20 @@ import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsServic
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import draftOasysRiskInformation from '../../../testutils/factories/draftOasysRiskInformation'
 import referralDetailsFactory from '../../../testutils/factories/referralDetails'
+import { CurrentLocationType } from '../../models/draftReferral'
+import PrisonRegisterService from '../../services/prisonRegisterService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
 jest.mock('../../services/assessRisksAndNeedsService')
+jest.mock('../../services/prisonRegisterService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
+const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
 
 const serviceUser = {
   crn: 'X123456',
@@ -47,7 +52,7 @@ let app: Express
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService, assessRisksAndNeedsService },
+    overrides: { interventionsService, communityApiService, assessRisksAndNeedsService, prisonRegisterService },
     userType: AppSetupUserType.probationPractitioner,
   })
 
@@ -550,7 +555,7 @@ describe('POST /referrals/:id/needs-and-requirements', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
-  it('updates the referral on the backend and redirects to the referral form', async () => {
+  it('updates the referral on the backend and redirects to the submit current location page', async () => {
     const updatedReferral = draftReferralFactory.serviceUserSelected().build({
       serviceUser: { firstName: 'Geoffrey' },
       additionalNeedsInformation: 'Alex is currently sleeping on his aunt’s sofa',
@@ -575,7 +580,7 @@ describe('POST /referrals/:id/needs-and-requirements', () => {
         'when-unavailable': 'He works on Fridays 7am - midday',
       })
       .expect(302)
-      .expect('Location', '/referrals/1/form')
+      .expect('Location', '/referrals/1/submit-current-location')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',
@@ -624,6 +629,114 @@ describe('POST /referrals/:id/needs-and-requirements', () => {
         'interpreter-language': 'Spanish',
         'has-additional-responsibilities': 'yes',
         'when-unavailable': 'He works on Fridays 7am - midday',
+      })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Some backend error message')
+      })
+  })
+})
+
+describe('GET /referrals/:id/submit-current-location', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory
+      .serviceUserSelected()
+      .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+
+    const prisonList = prisonFactory.prisonList()
+    prisonRegisterService.getUserDetails.mockResolvedValue(prisonList)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/submit-current-location')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Submit Geoffrey Blue’s current location')
+      })
+
+    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get referral call fails', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
+
+    await request(app)
+      .get('/referrals/1/submit-current-location')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get draft referral')
+      })
+  })
+})
+
+describe('POST /referrals/:id/submit-current-location', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    const prisonList = prisonFactory.prisonList()
+    prisonRegisterService.getUserDetails.mockResolvedValue(prisonList)
+  })
+
+  it('updates the referral on the backend and redirects to the submit current location form', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: { firstName: 'Geoffrey' },
+      personCurrentLocationType: CurrentLocationType.custody,
+      personCustodyPrisonId: 'abc',
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/submit-current-location')
+      .type('form')
+      .send({
+        'current-location': 'CUSTODY',
+        'prison-select': 'abc',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        personCurrentLocationType: CurrentLocationType.custody,
+        personCustodyPrisonId: 'abc',
+      },
+    ])
+  })
+
+  describe('when the user enters invalid data', () => {
+    it('does not update the referral on the backend and returns a 400 with an error message', async () => {
+      await request(app)
+        .post('/referrals/1/submit-current-location')
+        .type('form')
+        .send({
+          'current-location': 'CUSTODY',
+          'prison-select': '',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain(`You must enter the establishment `)
+        })
+
+      expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
+    })
+  })
+
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
+    await request(app)
+      .post('/referrals/1/submit-current-location')
+      .type('form')
+      .send({
+        'current-location': 'CUSTODY',
+        'prison-select': 'abc',
       })
       .expect(500)
       .expect(res => {

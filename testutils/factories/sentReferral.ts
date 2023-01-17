@@ -1,6 +1,6 @@
 import { Factory } from 'fishery'
 import SentReferral from '../../server/models/sentReferral'
-import { ReferralFields } from '../../server/models/draftReferral'
+import { CurrentLocationType, ReferralFields } from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
 import interventionFactory from './intervention'
 
@@ -49,6 +49,8 @@ const exampleReferralFields = () => {
       disabilities: ['Autism spectrum condition', 'sciatica'],
     },
     maximumEnforceableDays: 10,
+    personCurrentLocationType: CurrentLocationType.custody,
+    personCustodyPrisonId: 'aaa',
   }
 }
 

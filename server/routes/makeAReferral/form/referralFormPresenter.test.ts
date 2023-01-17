@@ -18,7 +18,9 @@ describe('ReferralFormPresenter', () => {
             const referral = draftReferralFactory.unfilled().build({ serviceCategoryIds: [serviceCategory.id] })
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
-              referralFormSectionFactory.reviewServiceUser(ReferralFormStatus.NotStarted, 'risk-information').build(),
+              referralFormSectionFactory
+                .reviewServiceUser(ReferralFormStatus.NotStarted, referral.serviceUser.firstName, 'risk-information')
+                .build(),
               referralFormSectionFactory
                 .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
                 .build(),
@@ -34,7 +36,9 @@ describe('ReferralFormPresenter', () => {
               .build({ serviceCategoryIds: [serviceCategory.id] })
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
-              referralFormSectionFactory.reviewServiceUser(ReferralFormStatus.NotStarted, 'risk-information').build(),
+              referralFormSectionFactory
+                .reviewServiceUser(ReferralFormStatus.NotStarted, referral.serviceUser.firstName, 'risk-information')
+                .build(),
               referralFormSectionFactory
                 .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
                 .build(),
@@ -49,7 +53,9 @@ describe('ReferralFormPresenter', () => {
                 .build({ serviceCategoryIds: [serviceCategory.id] })
               const presenter = new ReferralFormPresenter(referral, nonCohortIntervention, null)
               const expected = [
-                referralFormSectionFactory.reviewServiceUser(ReferralFormStatus.NotStarted, 'risk-information').build(),
+                referralFormSectionFactory
+                  .reviewServiceUser(ReferralFormStatus.NotStarted, referral.serviceUser.firstName, 'risk-information')
+                  .build(),
                 referralFormSectionFactory
                   .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
                   .build(),
@@ -66,7 +72,12 @@ describe('ReferralFormPresenter', () => {
               const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
               const expected = [
                 referralFormSectionFactory
-                  .reviewServiceUser(ReferralFormStatus.NotStarted, 'risk-information', 'needs-and-requirements')
+                  .reviewServiceUser(
+                    ReferralFormStatus.NotStarted,
+                    referral.serviceUser.firstName,
+                    'risk-information',
+                    'needs-and-requirements'
+                  )
                   .build(),
                 referralFormSectionFactory
                   .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
@@ -83,7 +94,12 @@ describe('ReferralFormPresenter', () => {
               const presenter = new ReferralFormPresenter(referral, nonCohortIntervention, draftOasysRiskInformation)
               const expected = [
                 referralFormSectionFactory
-                  .reviewServiceUser(ReferralFormStatus.NotStarted, 'risk-information', 'needs-and-requirements')
+                  .reviewServiceUser(
+                    ReferralFormStatus.NotStarted,
+                    referral.serviceUser.firstName,
+                    'risk-information',
+                    'needs-and-requirements'
+                  )
                   .build(),
                 referralFormSectionFactory
                   .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
@@ -97,11 +113,17 @@ describe('ReferralFormPresenter', () => {
         describe('when all required values have been set', () => {
           describe('with additional risk information', () => {
             it('should contain a "Completed" label and service category details section can be started', () => {
-              const referral = draftReferralFactory.filledFormUpToNeedsAndRequirements([serviceCategory]).build()
+              const referral = draftReferralFactory.filledFormUpToCurrentLocation([serviceCategory]).build()
               const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
               const expected = [
                 referralFormSectionFactory
-                  .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                  .reviewServiceUser(
+                    ReferralFormStatus.Completed,
+                    referral.serviceUser.firstName,
+                    'risk-information',
+                    'needs-and-requirements',
+                    'submit-current-location'
+                  )
                   .build(),
                 referralFormSectionFactory
                   .interventionDetails('accommodation', ReferralFormStatus.NotStarted, 'relevant-sentence')
@@ -113,12 +135,18 @@ describe('ReferralFormPresenter', () => {
           })
           describe('with full risk information', () => {
             it('should contain a "Completed" label and service category details section can be started', () => {
-              const referral = draftReferralFactory.filledFormUpToNeedsAndRequirements([serviceCategory], true).build()
+              const referral = draftReferralFactory.filledFormUpToCurrentLocation([serviceCategory], true).build()
               const draftOasysRiskInformation = draftOasysRiskInformationFactory.build()
               const presenter = new ReferralFormPresenter(referral, nonCohortIntervention, draftOasysRiskInformation)
               const expected = [
                 referralFormSectionFactory
-                  .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                  .reviewServiceUser(
+                    ReferralFormStatus.Completed,
+                    referral.serviceUser.firstName,
+                    'risk-information',
+                    'needs-and-requirements',
+                    'submit-current-location'
+                  )
                   .build(),
                 referralFormSectionFactory
                   .interventionDetails('accommodation', ReferralFormStatus.NotStarted, 'relevant-sentence')
@@ -137,7 +165,13 @@ describe('ReferralFormPresenter', () => {
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
               referralFormSectionFactory
-                .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                .reviewServiceUser(
+                  ReferralFormStatus.Completed,
+                  referral.serviceUser.firstName,
+                  'risk-information',
+                  'needs-and-requirements',
+                  'submit-current-location'
+                )
                 .build(),
               referralFormSectionFactory
                 .interventionDetails(
@@ -161,7 +195,13 @@ describe('ReferralFormPresenter', () => {
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
               referralFormSectionFactory
-                .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                .reviewServiceUser(
+                  ReferralFormStatus.Completed,
+                  referral.serviceUser.firstName,
+                  'risk-information',
+                  'needs-and-requirements',
+                  'submit-current-location'
+                )
                 .build(),
               referralFormSectionFactory
                 .interventionDetails(
@@ -187,7 +227,13 @@ describe('ReferralFormPresenter', () => {
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
               referralFormSectionFactory
-                .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                .reviewServiceUser(
+                  ReferralFormStatus.Completed,
+                  referral.serviceUser.firstName,
+                  'risk-information',
+                  'needs-and-requirements',
+                  'submit-current-location'
+                )
                 .build(),
               referralFormSectionFactory
                 .interventionDetails(
@@ -210,7 +256,13 @@ describe('ReferralFormPresenter', () => {
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
               referralFormSectionFactory
-                .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                .reviewServiceUser(
+                  ReferralFormStatus.Completed,
+                  referral.serviceUser.firstName,
+                  'risk-information',
+                  'needs-and-requirements',
+                  'submit-current-location'
+                )
                 .build(),
               referralFormSectionFactory
                 .interventionDetails(
@@ -234,7 +286,13 @@ describe('ReferralFormPresenter', () => {
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
               referralFormSectionFactory
-                .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                .reviewServiceUser(
+                  ReferralFormStatus.Completed,
+                  referral.serviceUser.firstName,
+                  'risk-information',
+                  'needs-and-requirements',
+                  'submit-current-location'
+                )
                 .build(),
               referralFormSectionFactory
                 .interventionDetails(
@@ -259,7 +317,13 @@ describe('ReferralFormPresenter', () => {
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
               referralFormSectionFactory
-                .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+                .reviewServiceUser(
+                  ReferralFormStatus.Completed,
+                  referral.serviceUser.firstName,
+                  'risk-information',
+                  'needs-and-requirements',
+                  'submit-current-location'
+                )
                 .build(),
               referralFormSectionFactory
                 .interventionDetails(
@@ -291,7 +355,13 @@ describe('ReferralFormPresenter', () => {
           const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .interventionDetails('accommodation', ReferralFormStatus.NotStarted, 'relevant-sentence', null, null)
@@ -316,12 +386,18 @@ describe('ReferralFormPresenter', () => {
       describe('when "needs and requirements" has been set', () => {
         it('should contain a "Not Started" label', () => {
           const referral = draftReferralFactory
-            .filledFormUpToNeedsAndRequirements(serviceCategories)
+            .filledFormUpToCurrentLocation(serviceCategories)
             .build({ serviceCategoryIds: null })
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -339,12 +415,18 @@ describe('ReferralFormPresenter', () => {
       describe('when service categories is empty', () => {
         it('should contain a "Not Started" label', () => {
           const referral = draftReferralFactory
-            .filledFormUpToNeedsAndRequirements(serviceCategories)
+            .filledFormUpToCurrentLocation(serviceCategories)
             .build({ serviceCategoryIds: [] })
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -368,13 +450,19 @@ describe('ReferralFormPresenter', () => {
             serviceCategories: disorderedServiceCategories,
           })
           const referral = draftReferralFactory
-            .filledFormUpToNeedsAndRequirements(serviceCategories)
+            .filledFormUpToCurrentLocation(serviceCategories)
             .selectedServiceCategories(serviceCategories)
             .build()
           const presenter = new ReferralFormPresenter(referral, disorderedCohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -400,13 +488,19 @@ describe('ReferralFormPresenter', () => {
 
         it('should contain a "Not Started" label and "relevant-sentence" url is visible', () => {
           const referral = draftReferralFactory
-            .filledFormUpToNeedsAndRequirements(serviceCategories)
+            .filledFormUpToCurrentLocation(serviceCategories)
             .selectedServiceCategories(serviceCategories)
             .build()
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -437,7 +531,13 @@ describe('ReferralFormPresenter', () => {
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -471,7 +571,13 @@ describe('ReferralFormPresenter', () => {
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -506,7 +612,13 @@ describe('ReferralFormPresenter', () => {
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -546,7 +658,13 @@ describe('ReferralFormPresenter', () => {
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -585,7 +703,13 @@ describe('ReferralFormPresenter', () => {
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -626,7 +750,13 @@ describe('ReferralFormPresenter', () => {
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -668,7 +798,13 @@ describe('ReferralFormPresenter', () => {
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(
@@ -711,7 +847,13 @@ describe('ReferralFormPresenter', () => {
           const presenter = new ReferralFormPresenter(referral, cohortIntervention)
           const expected = [
             referralFormSectionFactory
-              .reviewServiceUser(ReferralFormStatus.Completed, 'risk-information', 'needs-and-requirements')
+              .reviewServiceUser(
+                ReferralFormStatus.Completed,
+                referral.serviceUser.firstName,
+                'risk-information',
+                'needs-and-requirements',
+                'submit-current-location'
+              )
               .build(),
             referralFormSectionFactory
               .selectedServiceCategories(

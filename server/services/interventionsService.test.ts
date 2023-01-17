@@ -1549,6 +1549,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       whenUnavailable: 'She works Mondays 9am - midday',
       serviceUser,
       maximumEnforceableDays: 10,
+      personCurrentLocationType: null,
+      personCustodyPrisonId: null,
     },
   }
 

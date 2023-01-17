@@ -1,0 +1,56 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{%- from "components/accessible-autocomplete/macro.njk" import interventionsAccessibleAutocomplete -%}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Make a referral" %}
+{% set pageSubTitle = "Submit Location" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+      <p class="govuk-body">{{ presenter.text.description }} </p>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        {% set submitLocationHtml %}
+            {{ govukSelect(prisonSelectArgs) }}
+        {% endset -%}
+        {{ govukRadios(submitLocationRadiosArgs(submitLocationHtml)) }}
+
+        {{ govukWarningText({
+          text: warningText,
+          iconFallbackText: "Warning"
+        }) }}
+
+        {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
+      </form>
+    </div>
+  </div>
+
+<script src="/assets/accessible-autocomplete.min.js"></script>
+
+<script>
+    accessibleAutocomplete.enhanceSelectElement({
+      defaultValue: '',
+      selectElement: document.querySelector('#prison-select')
+    })
+</script>
+
+{% endblock %}
+
+
+

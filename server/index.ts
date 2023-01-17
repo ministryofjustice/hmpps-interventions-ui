@@ -6,6 +6,7 @@ import InterventionsService from './services/interventionsService'
 import RestClient from './data/restClient'
 import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
 import ReferenceDataService from './services/referenceDataService'
+import PrisonRegisterService from './services/prisonRegisterService'
 
 const assessRisksAndNeedsRestClient = new RestClient('assessRisksAndNeedsClient', config.apis.assessRisksAndNeedsApi)
 const communityApiRestClient = new RestClient('communityApiClient', config.apis.communityApi)
@@ -18,13 +19,15 @@ const assessRisksAndNeedsService = new AssessRisksAndNeedsService(
   config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
 )
 const referenceDataService = new ReferenceDataService()
+const prisonRegisterService = new PrisonRegisterService()
 
 const app = createApp(
   communityApiService,
   interventionsService,
   hmppsAuthService,
   assessRisksAndNeedsService,
-  referenceDataService
+  referenceDataService,
+  prisonRegisterService
 )
 
 export default app

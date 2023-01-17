@@ -1,0 +1,17 @@
+{% from "govuk/components/error-message/macro.njk" import govukErrorMessage %}
+
+{{ govukErrorMessage({
+  text: "hi there",
+  visuallyHiddenText: "super"
+}) }}
+
+<div class="govuk-form-group govuk-form-group-error" onload="myFunction()" >
+    <h1 class="govuk-label-wrapper">
+      <label class="govuk-label govuk-label" for="event-name">
+          {{ params.label }}
+      </label>
+    </h1>
+    <div id="subject-hint" class="govuk-hint">{{ params.hint }} </div>
+    <div id="my-autocomplete-container"></div>
+</div>
+

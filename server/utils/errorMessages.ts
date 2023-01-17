@@ -118,6 +118,10 @@ export default {
   interpreterLanguage: {
     empty: (name: string) => `Enter the language for which ${name} needs an interpreter`,
   },
+  custodyLocation: {
+    emptyRadio: 'Select custody or community',
+    empty: (name: string) => `You must enter the establishment ${name} is currently in`,
+  },
   interpreterLanguageWithoutName: {
     empty: 'Enter the language for interpretation',
   },

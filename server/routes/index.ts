@@ -12,6 +12,7 @@ import FindInterventionsController from './findInterventions/findInterventionsCo
 import DraftsService from '../services/draftsService'
 import ReferenceDataService from '../services/referenceDataService'
 import UserDataService from '../services/userDataService'
+import PrisonRegisterService from '../services/prisonRegisterService'
 
 export interface Services {
   communityApiService: CommunityApiService
@@ -21,6 +22,7 @@ export interface Services {
   draftsService: DraftsService
   referenceDataService: ReferenceDataService
   userDataService: UserDataService
+  prisonRegisterService: PrisonRegisterService
 }
 
 export const get = (router: Router, path: string, handler: RequestHandler): Router =>
@@ -82,7 +84,8 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   const makeAReferralController = new MakeAReferralController(
     services.interventionsService,
     services.communityApiService,
-    services.assessRisksAndNeedsService
+    services.assessRisksAndNeedsService,
+    services.prisonRegisterService
   )
   get(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.startReferral(req, res))
   post(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.createReferral(req, res))
@@ -132,6 +135,12 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   )
   post(router, '/referrals/:id/needs-and-requirements', (req, res) =>
     makeAReferralController.updateNeedsAndRequirements(req, res)
+  )
+  get(router, '/referrals/:id/submit-current-location', (req, res) =>
+    makeAReferralController.editCurrentLocation(req, res)
+  )
+  post(router, '/referrals/:id/submit-current-location', (req, res) =>
+    makeAReferralController.submitCurrentLocation(req, res)
   )
   get(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.viewRiskInformation(req, res))
   post(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.updateRiskInformation(req, res))

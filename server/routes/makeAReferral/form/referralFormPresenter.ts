@@ -77,6 +77,10 @@ class FormSectionBuilder {
           title: 'Their needs and requirements',
           url: this.calculateTaskUrl('needs-and-requirements', this.taskValues.riskInformation),
         },
+        {
+          title: `Submit ${this.referral.serviceUser.firstName}'s current location`,
+          url: this.calculateTaskUrl('submit-current-location', this.taskValues.needsAndRequirements),
+        },
       ],
     }
   }
@@ -97,7 +101,7 @@ class FormSectionBuilder {
           title: `Select service categories for the ${utils.convertToProperCase(
             this.intervention.contractType.name
           )} referral`,
-          url: this.calculateTaskUrl('service-categories', this.taskValues.needsAndRequirements),
+          url: this.calculateTaskUrl('service-categories', this.taskValues.currentLocation),
         },
       ],
     }
@@ -119,7 +123,7 @@ class FormSectionBuilder {
           title: `Confirm the relevant sentence for the ${utils.convertToProperCase(
             this.intervention.serviceCategories[0].name
           )} referral`,
-          url: this.calculateTaskUrl('relevant-sentence', this.taskValues.needsAndRequirements),
+          url: this.calculateTaskUrl('relevant-sentence', this.taskValues.currentLocation),
         },
         {
           title: 'Select desired outcomes',
@@ -303,7 +307,12 @@ class SectionValues {
   constructor(private taskValues: TaskValues) {}
 
   get reviewServiceUserInformation(): DraftReferralValues {
-    return this.taskValues.serviceUserDetails && this.taskValues.riskInformation && this.taskValues.needsAndRequirements
+    return (
+      this.taskValues.serviceUserDetails &&
+      this.taskValues.riskInformation &&
+      this.taskValues.needsAndRequirements &&
+      this.taskValues.currentLocation
+    )
   }
 
   get cohortServiceCategories(): DraftReferralValues {
@@ -334,6 +343,10 @@ class TaskValues {
   // TODO: IC-1676. We need a field to confirm that the user has "checked" service user details.
   get serviceUserDetails(): DraftReferralValues {
     return []
+  }
+
+  get currentLocation(): DraftReferralValues {
+    return [this.referral.personCurrentLocationType]
   }
 
   // TODO: remove this.referral.additionalRiskInformation once switched over to full risk information
