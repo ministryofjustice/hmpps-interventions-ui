@@ -1,6 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base"
+  "extends": ["github>ministryofjustice/hmpps-renovate-config:base"],
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "minor npm dependencies",
+      "groupSlug": "all-npm-minor-patch"
+    }
   ]
 }
