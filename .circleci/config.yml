@@ -7,7 +7,7 @@ orbs:
 executors:
   integration:
     docker:
-      - image: cimg/node:16.17-browsers
+      - image: cimg/node:16.19-browsers
       - image: rodolpheche/wiremock:2.27.2-alpine
         command: ["--port", "9091"]
       - image: bitnami/redis:6.0
