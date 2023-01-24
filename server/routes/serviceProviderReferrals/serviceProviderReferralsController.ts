@@ -267,7 +267,7 @@ export default class ServiceProviderReferralsController {
     const assignee =
       sentReferral.assignedTo === null
         ? null
-        : await this.hmppsAuthService.getSPUserByUsername(accessToken, sentReferral.assignedTo.username)
+        : await this.hmppsAuthService.getSPUserByUsername(accessToken, sentReferral.assignedTo.username, false)
 
     let formError: FormValidationError | null = null
     const error = req.query.error as string
@@ -356,7 +356,7 @@ export default class ServiceProviderReferralsController {
     const assignee =
       sentReferral.assignedTo === null
         ? null
-        : await this.hmppsAuthService.getSPUserByUsername(accessToken, sentReferral.assignedTo.username)
+        : await this.hmppsAuthService.getSPUserByUsername(accessToken, sentReferral.assignedTo.username, false)
 
     const presenter = new InterventionProgressPresenter(
       sentReferral,
