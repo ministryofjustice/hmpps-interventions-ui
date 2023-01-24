@@ -6,7 +6,7 @@ import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../makeAReferral/service-user-details/serviceUserDetailsPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from './referralOverviewPagePresenter'
-import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import AuthUserDetails, { authUserFullName } from '../../models/hmppsAuth/authUserDetails'
 import Intervention from '../../models/intervention'
 import ServiceCategory from '../../models/serviceCategory'
 import ComplexityLevel from '../../models/complexityLevel'
@@ -72,7 +72,7 @@ export default class ShowReferralPresenter {
   }
 
   get assignedCaseworkerFullName(): string | null {
-    return this.referralAssigned ? `${this.assignee!.firstName} ${this.assignee!.lastName}` : null
+    return this.referralAssigned ? authUserFullName(this.assignee!) : null
   }
 
   get assignedCaseworkerEmail(): string | null {

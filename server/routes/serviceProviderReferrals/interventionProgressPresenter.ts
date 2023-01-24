@@ -9,7 +9,7 @@ import Intervention from '../../models/intervention'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../models/appointment'
-import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
+import AuthUserDetails, { authUserFullName } from '../../models/hmppsAuth/authUserDetails'
 import ActionPlanProgressPresenter from '../shared/action-plan/actionPlanProgressPresenter'
 import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
 
@@ -73,7 +73,7 @@ export default class InterventionProgressPresenter {
   }
 
   get assignedCaseworkerFullName(): string | null {
-    return this.referralAssigned ? `${this.assignee!.firstName} ${this.assignee!.lastName}` : null
+    return this.referralAssigned ? authUserFullName(this.assignee!) : null
   }
 
   get assignedCaseworkerEmail(): string | null {
