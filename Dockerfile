@@ -1,5 +1,5 @@
 # Build stage 1.
-FROM node:16-alpine3.17 as base
+FROM node:19-alpine3.17 as base
 
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
