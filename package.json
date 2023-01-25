@@ -174,7 +174,7 @@
     "jest": "^27.5.1",
     "jest-html-reporter": "^3.7.0",
     "jest-junit": "^15.0.0",
-    "jest-pact": "^0.9.4",
+    "jest-pact": "^0.10.2",
     "jsonwebtoken": "^9.0.0",
     "lint-staged": "^13.1.0",
     "moment": "^2.29.4",
