@@ -1,7 +1,7 @@
 import express from 'express'
 
 import * as Sentry from '@sentry/node'
-import addRequestId from 'express-request-id'
+import requestID from 'express-request-id'
 import helmet from 'helmet'
 import noCache from 'nocache'
 import csurf from 'csurf'
@@ -107,7 +107,7 @@ export default function createApp(
     next()
   })
 
-  app.use(addRequestId())
+  app.use(requestID())
 
   const redisClient = createClient({
     legacyMode: true, // connect-redis only supports legacy mode for redis v4
