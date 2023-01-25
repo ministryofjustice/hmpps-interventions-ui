@@ -9,7 +9,7 @@
       "groupSlug": "all-npm-minor-patch"
     },
     {
-      "matchPackageNames": ["node"],
+      "matchPackageNames": ["node", "cimg/node"],
       "allowedVersions": "<=16"
     },
     {
