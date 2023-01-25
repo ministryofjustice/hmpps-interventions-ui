@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>ministryofjustice/hmpps-renovate-config:base"],
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "minor npm dependencies",
+      "groupSlug": "all-npm-minor-patch"
+    },
+    {
+      "matchPackageNames": ["node"],
+      "allowedVersions": "<=16"
+    },
+    {
+      // match to production redis version in https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-interventions-prod/resources/elasticache.tf
+      "matchPackageNames": ["bitnami/redis"],
+      "allowedVersions": "<=6"
+    },
+    {
+      // match to production postgres version in https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/hmpps-interventions-prod/resources/rds-postgres14.tf
+      "matchPackageNames": ["postgres"],
+      "allowedVersions": "<=14"
+    },
+  ]
+}
