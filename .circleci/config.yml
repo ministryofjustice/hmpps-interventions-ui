@@ -8,7 +8,7 @@ executors:
   integration:
     docker:
       - image: cimg/node:16.19-browsers
-      - image: rodolpheche/wiremock:2.27.2-alpine
+      - image: rodolpheche/wiremock:2.31.0-alpine
         command: ["--port", "9091"]
       - image: bitnami/redis:6.0
         command: ["/opt/bitnami/scripts/redis/run.sh", "--port", "6380"]
