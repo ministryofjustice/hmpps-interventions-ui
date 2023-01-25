@@ -9,5 +9,5 @@ jobs:
       - uses: actions/checkout@v3
       - uses: deepakputhraya/action-branch-name@master
         with:
-          regex: '^(no-ticket|renovate|IPB-[0-9]+)/' # start branch with either 'no-ticket/' or 'IPB-NUMBER/', allowing for bots
+          regex: '^(no-ticket/|renovate[-/]|IPB-[0-9]+/)' # start branch with either 'no-ticket/' or 'IPB-NUMBER/', allowing for bots
           ignore: main
