@@ -11,7 +11,9 @@ export default class ServiceUserDetailsPresenter {
     private readonly serviceUser: ServiceUser,
     private readonly deliusServiceUserDetails: ExpandedDeliusServiceUser,
     private readonly personCurrentLocationType: CurrentLocationType | null = null,
-    private readonly personCustodyPrisonId: string | null = null
+    private readonly personCustodyPrisonId: string | null = null,
+    private readonly popReleaseDate: string | null = null,
+    private readonly popReleaseDateUnknownReason: string | null = null
   ) {}
 
   readonly title = `${this.serviceUser.firstName || 'The person on probation'}'s information`
@@ -53,11 +55,11 @@ export default class ServiceUserDetailsPresenter {
           {
             key: 'Current Establishment',
             lines: [this.personCustodyPrisonId ? this.personCustodyPrisonId : ''],
+          },
+          {
+            key: 'Expected release date',
+            lines: [this.expectedReleaseDate !== '' ? this.expectedReleaseDate : this.expectedReleaseDateUnKnownReason],
           }
-          // {
-          //   key: 'Expected release date',
-          //   lines: [this.referral?.personCurrentLocationType ? this.referral?.personCurrentLocationType : ''],
-          // }
         )
       }
     }
@@ -92,5 +94,19 @@ export default class ServiceUserDetailsPresenter {
       return ''
     }
     return DateUtils.formattedDate(this.serviceUser.dateOfBirth)
+  }
+
+  private get expectedReleaseDate() {
+    if (this.popReleaseDate === null) {
+      return ''
+    }
+    return DateUtils.formattedDate(this.popReleaseDate)
+  }
+
+  private get expectedReleaseDateUnKnownReason() {
+    if (this.popReleaseDateUnknownReason === null) {
+      return ''
+    }
+    return this.popReleaseDateUnknownReason
   }
 }

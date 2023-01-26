@@ -284,7 +284,9 @@ export default class ShowReferralPresenter {
       this.sentReferral.referral.serviceUser,
       this.deliusServiceUser,
       this.sentReferral.referral.personCurrentLocationType,
-      this.sentReferral.referral.personCustodyPrisonId
+      this.sentReferral.referral.personCustodyPrisonId,
+      this.sentReferral.referral.expectedReleaseDate,
+      this.sentReferral.referral.expectedReleaseDateMissingReason
     ).summary
   }
 

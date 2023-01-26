@@ -1,7 +1,9 @@
+import moment from 'moment'
 import { ListStyle } from '../../../utils/summaryList'
 import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
 import expandedDeliusServiceUserFactory from '../../../../testutils/factories/expandedDeliusServiceUser'
 import { CurrentLocationType } from '../../../models/draftReferral'
+import DateUtils from '../../../utils/dateUtils'
 
 describe(ServiceUserDetailsPresenter, () => {
   const serviceUser = {
@@ -68,11 +70,13 @@ describe(ServiceUserDetailsPresenter, () => {
 
   describe('summary', () => {
     it('returns an array of summary list items for each field on the Service user', () => {
+      const tomorrow = moment().add(1, 'days')
       const presenter = new ServiceUserDetailsPresenter(
         serviceUser,
         deliusServiceUser,
         CurrentLocationType.custody,
-        'aaa'
+        'aaa',
+        tomorrow.format('YYYY-MM-DD')
       )
 
       expect(presenter.summary).toEqual([
@@ -83,6 +87,7 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'Date of birth', lines: ['1 January 1980'] },
         { key: 'Location at time of referral', lines: ['CUSTODY'] },
         { key: 'Current Establishment', lines: ['aaa'] },
+        { key: 'Expected release date', lines: [DateUtils.formattedDate(tomorrow.format('YYYY-MM-DD'))] },
         {
           key: 'Address',
           lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],

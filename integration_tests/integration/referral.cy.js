@@ -1,3 +1,4 @@
+import moment from 'moment'
 import draftReferralFactory from '../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
@@ -114,6 +115,17 @@ describe('Referral form', () => {
         })
 
       const completedServiceUserDetailsDraftReferral = draftReferralFactory
+        .filledFormUpToExpectedReleaseDate([accommodationServiceCategory], false, CurrentLocationType.custody)
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: [accommodationServiceCategory.id],
+          interventionId: draftReferral.interventionId,
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+        })
+
+      const completedExpectedReleaseDatesDraftReferral = draftReferralFactory
         .filledFormUpToCurrentLocation([accommodationServiceCategory], false, CurrentLocationType.community)
         .build({
           id: draftReferral.id,
@@ -267,8 +279,21 @@ describe('Referral form', () => {
       cy.get('h1').contains('Submit Alex River’s current location')
 
       cy.withinFieldsetThatContains('Where is Alex today?', () => {
-        cy.contains('Community').click()
+        cy.contains('Custody (select even if Alex is due to be released today)').click()
       })
+      cy.get('#prison-select').type('Aylesbury (HMYOI)')
+      cy.stubGetDraftReferral(draftReferral.id, completedExpectedReleaseDatesDraftReferral)
+      cy.contains('Save and continue').click()
+
+      // Submit expected release date
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-release-date`)
+      cy.get('h1').contains('Do you know the expected release date')
+      cy.contains('Yes').click()
+      const tomorrow = moment().add(1, 'days')
+      cy.contains('Day').type(tomorrow.format('DD'))
+      cy.contains('Month').type(tomorrow.format('MM'))
+      cy.contains('Year').type(tomorrow.format('YYYY'))
+
       cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
       cy.contains('Save and continue').click()
 

@@ -30,7 +30,9 @@ export default class CheckAnswersPresenter {
         this.referral.serviceUser,
         this.deliusServiceUser,
         this.referral?.personCurrentLocationType,
-        this.referral?.personCustodyPrisonId
+        this.referral?.personCustodyPrisonId,
+        this.referral?.expectedReleaseDate,
+        this.referral?.expectedReleaseDateMissingReason
       ).summary,
     }
   }
