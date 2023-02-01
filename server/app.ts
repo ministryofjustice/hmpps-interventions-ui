@@ -118,12 +118,16 @@ export default function createApp(
     },
     password: config.redis.password,
   })
+
   redisClient
     .connect()
     .then(() => logger.info('App Redis connected'))
     .catch((error: Error) => {
       logger.error({ err: error }, 'App Redis connect error')
     })
+  redisClient.on('error', error => {
+    logger.error({ err: error }, 'App Redis connect error')
+  })
 
   app.use(
     session({
