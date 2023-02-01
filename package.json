@@ -147,7 +147,7 @@
     "@types/express-session": "^1.17.5",
     "@types/http-errors": "^2.0.1",
     "@types/indefinite": "^2.3.1",
-    "@types/jest": "^27.5.0",
+    "@types/jest": "^29.0.0",
     "@types/jquery": "^3.5.16",
     "@types/jsonwebtoken": "^9.0.1",
     "@types/jwt-decode": "^2.2.1",
@@ -171,7 +171,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "fishery": "^2.2.2",
     "husky": "^8.0.3",
-    "jest": "^27.5.1",
+    "jest": "^29.0.0",
     "jest-html-reporter": "^3.7.0",
     "jest-junit": "^15.0.0",
     "jest-pact": "^0.9.4",
@@ -188,7 +188,7 @@
     "stylelint": "^14.16.1",
     "stylelint-config-sass-guidelines": "^9.0.1",
     "supertest": "^6.3.3",
-    "ts-jest": "^27.1.4",
+    "ts-jest": "^29.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
   }
