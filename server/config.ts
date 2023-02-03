@@ -160,6 +160,9 @@ export default {
       completedCases: Number(get('SP_COMPLETED_PAGE_SIZE', '500')),
     },
   },
+  featureFlags: {
+    custodyLocation: get('FLAG_CUSTODY_LOCATION', true),
+  },
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   draftsService: {
     expiry: { seconds: Number(get('DRAFTS_EXPIRY_IN_SECONDS', `${24 * 60 * 60}`)) },
