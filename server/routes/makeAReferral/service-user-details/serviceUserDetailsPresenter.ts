@@ -4,6 +4,7 @@ import { ExpandedDeliusServiceUser } from '../../../models/delius/deliusServiceU
 import ExpandedDeliusServiceUserDecorator from '../../../decorators/expandedDeliusServiceUserDecorator'
 import DateUtils from '../../../utils/dateUtils'
 import config from '../../../config'
+import { CurrentLocationType } from '../../../models/draftReferral'
 
 export default class ServiceUserDetailsPresenter {
   constructor(
