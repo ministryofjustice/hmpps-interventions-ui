@@ -563,7 +563,11 @@ export default class MakeAReferralController {
     }
 
     if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/submit-current-location`)
+      if (config.featureFlags.custodyLocationEnabled) {
+        res.redirect(`/referrals/${req.params.id}/submit-current-location`)
+      } else {
+        res.redirect(`/referrals/${req.params.id}/form`)
+      }
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 

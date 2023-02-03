@@ -26,8 +26,12 @@ export default class CheckAnswersPresenter {
   get serviceUserDetailsSection(): { title: string; summary: SummaryListItem[] } {
     return {
       title: `${this.serviceUserName}’s personal details`,
-      summary: new ServiceUserDetailsPresenter(this.referral.serviceUser, this.deliusServiceUser, this.referral)
-        .summary,
+      summary: new ServiceUserDetailsPresenter(
+        this.referral.serviceUser,
+        this.deliusServiceUser,
+        this.referral?.personCurrentLocationType,
+        this.referral?.personCustodyPrisonId
+      ).summary,
     }
   }
 

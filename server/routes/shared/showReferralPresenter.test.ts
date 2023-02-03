@@ -12,6 +12,7 @@ import expandedDeliusServiceUserFactory from '../../../testutils/factories/expan
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
 import config from '../../config'
+import { CurrentLocationType } from '../../models/draftReferral'
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -33,6 +34,7 @@ describe(ShowReferralPresenter, () => {
       serviceCategoryId: serviceCategory.id,
       serviceCategoryIds: [serviceCategory.id],
       serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+      personCurrentLocationType: CurrentLocationType.community,
     },
   }
   const deliusUser = deliusUserFactory.build({
@@ -863,6 +865,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'First name', lines: ['Jenny'] },
         { key: 'Last name', lines: ['Jones'] },
         { key: 'Date of birth', lines: ['1 January 1980'] },
+        { key: 'Location at time of referral', lines: ['COMMUNITY'] },
         {
           key: 'Address',
           lines: ['Flat 2 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],

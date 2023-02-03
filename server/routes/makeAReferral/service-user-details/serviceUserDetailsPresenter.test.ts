@@ -1,6 +1,7 @@
 import { ListStyle } from '../../../utils/summaryList'
 import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
 import expandedDeliusServiceUserFactory from '../../../../testutils/factories/expandedDeliusServiceUser'
+import { CurrentLocationType } from '../../../models/draftReferral'
 
 describe(ServiceUserDetailsPresenter, () => {
   const serviceUser = {
@@ -67,7 +68,12 @@ describe(ServiceUserDetailsPresenter, () => {
 
   describe('summary', () => {
     it('returns an array of summary list items for each field on the Service user', () => {
-      const presenter = new ServiceUserDetailsPresenter(serviceUser, deliusServiceUser)
+      const presenter = new ServiceUserDetailsPresenter(
+        serviceUser,
+        deliusServiceUser,
+        CurrentLocationType.custody,
+        'aaa'
+      )
 
       expect(presenter.summary).toEqual([
         { key: 'CRN', lines: ['X862134'] },
@@ -75,6 +81,8 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'First name', lines: ['Alex'] },
         { key: 'Last name', lines: ['River'] },
         { key: 'Date of birth', lines: ['1 January 1980'] },
+        { key: 'Location at time of referral', lines: ['CUSTODY'] },
+        { key: 'Current Establishment', lines: ['aaa'] },
         {
           key: 'Address',
           lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
@@ -99,6 +107,7 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'First name', lines: [''] },
         { key: 'Last name', lines: [''] },
         { key: 'Date of birth', lines: [''] },
+        { key: 'Location at time of referral', lines: [''] },
         {
           key: 'Address',
           lines: ['Not found'],

@@ -161,7 +161,7 @@ export default {
     },
   },
   featureFlags: {
-    custodyLocation: get('FLAG_CUSTODY_LOCATION', true),
+    custodyLocationEnabled: get('FLAG_CUSTODY_LOCATION_ENABLED', true),
   },
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   draftsService: {

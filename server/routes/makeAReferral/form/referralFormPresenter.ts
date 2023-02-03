@@ -4,6 +4,7 @@ import DraftReferral from '../../../models/draftReferral'
 import Intervention from '../../../models/intervention'
 import utils from '../../../utils/utils'
 import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
+import config from '../../../config'
 
 export default class ReferralFormPresenter {
   private readonly taskValues: TaskValues
@@ -59,6 +60,32 @@ class FormSectionBuilder {
   }
 
   private buildReviewServiceUserInformationSection(): ReferralFormSingleListSectionPresenter {
+    if (config.featureFlags.custodyLocationEnabled) {
+      return {
+        type: 'single',
+        title: 'Review the person’s information',
+        number: '1',
+        status: this.calculateStatus(this.sectionValues.reviewServiceUserInformation),
+        tasks: [
+          {
+            title: 'Confirm their personal details',
+            url: 'service-user-details',
+          },
+          {
+            title: 'Their risk information',
+            url: this.calculateTaskUrl('risk-information', this.taskValues.serviceUserDetails),
+          },
+          {
+            title: 'Their needs and requirements',
+            url: this.calculateTaskUrl('needs-and-requirements', this.taskValues.riskInformation),
+          },
+          {
+            title: `Submit ${this.referral.serviceUser.firstName}'s current location`,
+            url: this.calculateTaskUrl('submit-current-location', this.taskValues.needsAndRequirements),
+          },
+        ],
+      }
+    }
     return {
       type: 'single',
       title: 'Review the person’s information',
@@ -76,10 +103,6 @@ class FormSectionBuilder {
         {
           title: 'Their needs and requirements',
           url: this.calculateTaskUrl('needs-and-requirements', this.taskValues.riskInformation),
-        },
-        {
-          title: `Submit ${this.referral.serviceUser.firstName}'s current location`,
-          url: this.calculateTaskUrl('submit-current-location', this.taskValues.needsAndRequirements),
         },
       ],
     }
@@ -101,7 +124,12 @@ class FormSectionBuilder {
           title: `Select service categories for the ${utils.convertToProperCase(
             this.intervention.contractType.name
           )} referral`,
-          url: this.calculateTaskUrl('service-categories', this.taskValues.currentLocation),
+          url: this.calculateTaskUrl(
+            'service-categories',
+            config.featureFlags.custodyLocationEnabled
+              ? this.taskValues.currentLocation
+              : this.taskValues.needsAndRequirements
+          ),
         },
       ],
     }
@@ -123,7 +151,12 @@ class FormSectionBuilder {
           title: `Confirm the relevant sentence for the ${utils.convertToProperCase(
             this.intervention.serviceCategories[0].name
           )} referral`,
-          url: this.calculateTaskUrl('relevant-sentence', this.taskValues.currentLocation),
+          url: this.calculateTaskUrl(
+            'relevant-sentence',
+            config.featureFlags.custodyLocationEnabled
+              ? this.taskValues.currentLocation
+              : this.taskValues.needsAndRequirements
+          ),
         },
         {
           title: 'Select desired outcomes',
@@ -307,12 +340,15 @@ class SectionValues {
   constructor(private taskValues: TaskValues) {}
 
   get reviewServiceUserInformation(): DraftReferralValues {
-    return (
-      this.taskValues.serviceUserDetails &&
-      this.taskValues.riskInformation &&
-      this.taskValues.needsAndRequirements &&
-      this.taskValues.currentLocation
-    )
+    if (config.featureFlags.custodyLocationEnabled) {
+      return (
+        this.taskValues.serviceUserDetails &&
+        this.taskValues.riskInformation &&
+        this.taskValues.needsAndRequirements &&
+        this.taskValues.currentLocation
+      )
+    }
+    return this.taskValues.serviceUserDetails && this.taskValues.riskInformation && this.taskValues.needsAndRequirements
   }
 
   get cohortServiceCategories(): DraftReferralValues {
