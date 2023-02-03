@@ -157,7 +157,7 @@ export default class ShowReferralPresenter {
     if (this.riskInformation.redactedRisk === undefined) {
       return false
     }
-    return config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
+    return true
   }
 
   private getReferralDesiredOutcomesForServiceCategory(serviceCategory: ServiceCategory): DesiredOutcome[] {

@@ -1,6 +1,5 @@
 import RoshPanelPresenter from './roshPanelPresenter'
 import riskSummary from '../../../testutils/factories/riskSummary'
-import config from '../../config'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 
 interface RiskInCommunity {
@@ -21,29 +20,14 @@ describe(RoshPanelPresenter, () => {
   })
 
   describe('riskInformationAvailable', () => {
-    it('is true if riskSummary is enabled in config and riskSummary is not null', () => {
-      try {
-        config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
-        const presenter = new RoshPanelPresenter(riskSummary.build())
-        expect(presenter.riskInformationAvailable).toEqual(true)
-      } finally {
-        config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = false
-      }
-    })
-
-    it('is false if riskSummary is disabled in config', () => {
+    it('is true if riskSummary is not null', () => {
       const presenter = new RoshPanelPresenter(riskSummary.build())
-      expect(presenter.riskInformationAvailable).toEqual(false)
+      expect(presenter.riskInformationAvailable).toEqual(true)
     })
 
     it('is false if riskSummary is null', () => {
-      try {
-        config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
-        const presenter = new RoshPanelPresenter(null)
-        expect(presenter.riskInformationAvailable).toEqual(false)
-      } finally {
-        config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = false
-      }
+      const presenter = new RoshPanelPresenter(null)
+      expect(presenter.riskInformationAvailable).toEqual(false)
     })
   })
 

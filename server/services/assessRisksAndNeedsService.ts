@@ -7,7 +7,7 @@ import RiskSummary from '../models/assessRisksAndNeeds/riskSummary'
 export type AssessRisksAndNeedsServiceError = RestClientError
 
 export default class AssessRisksAndNeedsService {
-  constructor(private readonly restClient: RestClient, private readonly riskSummaryEnabled: boolean) {}
+  constructor(private readonly restClient: RestClient) {}
 
   async getSupplementaryRiskInformation(riskId: string, token: string): Promise<SupplementaryRiskInformation> {
     logger.info({ riskId }, 'getting supplementary risk information')
@@ -18,11 +18,6 @@ export default class AssessRisksAndNeedsService {
   }
 
   async getRiskSummary(crn: string, token: string): Promise<RiskSummary | null> {
-    if (!this.riskSummaryEnabled) {
-      logger.info('not getting risk summary information; disabled')
-      return null
-    }
-
     logger.info({ crn }, 'getting risk summary information')
     try {
       return (await this.restClient.get({

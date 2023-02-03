@@ -1,5 +1,4 @@
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
-import config from '../../config'
 import DateUtils from '../../utils/dateUtils'
 import logger from '../../../log'
 
@@ -11,12 +10,10 @@ export interface RoshAnalysisTableRow {
 export default class RoshPanelPresenter {
   constructor(private readonly riskSummary: RiskSummary | null) {}
 
-  readonly riskSummaryEnabled = config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
-
   readonly riskSummaryNotFound = this.riskSummary === null
 
   get riskInformationAvailable(): boolean {
-    return this.riskSummaryEnabled && !this.riskSummaryNotFound
+    return !this.riskSummaryNotFound
   }
 
   readonly text = {
