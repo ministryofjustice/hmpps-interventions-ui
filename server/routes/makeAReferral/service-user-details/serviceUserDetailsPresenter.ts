@@ -3,11 +3,13 @@ import { ListStyle, SummaryListItem } from '../../../utils/summaryList'
 import { ExpandedDeliusServiceUser } from '../../../models/delius/deliusServiceUser'
 import ExpandedDeliusServiceUserDecorator from '../../../decorators/expandedDeliusServiceUserDecorator'
 import DateUtils from '../../../utils/dateUtils'
+import DraftReferral from '../../../models/draftReferral'
 
 export default class ServiceUserDetailsPresenter {
   constructor(
     private readonly serviceUser: ServiceUser,
-    private readonly deliusServiceUserDetails: ExpandedDeliusServiceUser
+    private readonly deliusServiceUserDetails: ExpandedDeliusServiceUser,
+    private readonly referral: DraftReferral | null = null
   ) {}
 
   readonly title = `${this.serviceUser.firstName || 'The person on probation'}'s information`
@@ -32,12 +34,30 @@ export default class ServiceUserDetailsPresenter {
     const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
     const phoneNumbers = this.findUniqueNumbers()
     const { address } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
-    const summary = [
+    const summary: SummaryListItem[] = [
       { key: 'CRN', lines: [this.serviceUser.crn] },
       { key: 'Title', lines: [this.serviceUser.title ?? ''] },
       { key: 'First name', lines: [this.serviceUser.firstName ?? ''] },
       { key: 'Last name', lines: [this.serviceUser.lastName ?? ''] },
       { key: 'Date of birth', lines: [this.dateOfBirth] },
+      {
+        key: 'Location at time of referral',
+        lines: [this.referral?.personCurrentLocationType ? this.referral?.personCurrentLocationType : ''],
+      },
+    ]
+    if (this.referral?.personCurrentLocationType === 'CUSTODY') {
+      summary.push(
+        {
+          key: 'Current Establishment',
+          lines: [this.referral?.personCustodyPrisonId ? this.referral?.personCustodyPrisonId : ''],
+        },
+        {
+          key: 'Expected release date',
+          lines: [this.referral?.personCurrentLocationType ? this.referral?.personCurrentLocationType : ''],
+        }
+      )
+    }
+    summary.push(
       {
         key: 'Address',
         lines: address || ['Not found'],
@@ -57,8 +77,9 @@ export default class ServiceUserDetailsPresenter {
         key: phoneNumbers.length > 1 ? 'Phone numbers' : 'Phone number',
         lines: phoneNumbers,
         listStyle: ListStyle.noMarkers,
-      },
-    ]
+      }
+    )
+    // ]
     return summary
   }
 
