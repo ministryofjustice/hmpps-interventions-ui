@@ -166,18 +166,15 @@ export default class MakeAReferralController {
     accessToken: string,
     referralId: string
   ): Promise<DraftOasysRiskInformation | null> {
-    if (config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
-      try {
-        return await this.interventionsService.getDraftOasysRiskInformation(accessToken, referralId)
-      } catch (e) {
-        const restClientError = e as RestClientError
-        if (restClientError.status === 404) {
-          return null
-        }
-        throw e
+    try {
+      return await this.interventionsService.getDraftOasysRiskInformation(accessToken, referralId)
+    } catch (e) {
+      const restClientError = e as RestClientError
+      if (restClientError.status === 404) {
+        return null
       }
+      throw e
     }
-    return null
   }
 
   async viewReferralForm(req: Request, res: Response): Promise<void> {
@@ -679,11 +676,7 @@ export default class MakeAReferralController {
   async viewRiskInformation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
-    if (config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
-      await this.displayOasysRiskInformationPage(res, referral, serviceUser)
-    } else {
-      await this.displayAdditionalRiskInformationPage(res, referral, serviceUser)
-    }
+    await this.displayOasysRiskInformationPage(res, referral, serviceUser)
   }
 
   // TODO: this will be removed once risk goes live
@@ -712,11 +705,6 @@ export default class MakeAReferralController {
 
   async confirmEditOasysRiskInformation(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
-    if (!config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
-      throw createError(403, `access restricted when risk feature flag disabled`, {
-        userMessage: 'You are not authorized to access this page',
-      })
-    }
     const referralId = req.params.id
     const confirmEditRiskForm = await ConfirmOasysRiskInformationForm.createForm(req)
     if (confirmEditRiskForm.isValid) {
@@ -751,11 +739,6 @@ export default class MakeAReferralController {
   }
 
   async editOasysRiskInformation(req: Request, res: Response): Promise<void> {
-    if (!config.apis.assessRisksAndNeedsApi.riskSummaryEnabled) {
-      throw createError(403, `access restricted when risk feature flag disabled`, {
-        userMessage: 'You are not authorized to access this page',
-      })
-    }
     const { accessToken } = res.locals.user.token
     const referralId = req.params.id
     let error: FormValidationError | null = null
@@ -897,9 +880,10 @@ export default class MakeAReferralController {
       this.communityApiService.getExpandedServiceUserByCRN(referral.serviceUser.crn),
       this.communityApiService.getConvictionById(referral.serviceUser.crn, referral.relevantSentenceId),
     ])
-    const editedOasysRiskInformation = config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
-      ? await this.interventionsService.getDraftOasysRiskInformation(accessToken, referral.id)
-      : null
+    const editedOasysRiskInformation = await this.interventionsService.getDraftOasysRiskInformation(
+      accessToken,
+      referral.id
+    )
     const presenter = new CheckAnswersPresenter(
       referral,
       intervention,

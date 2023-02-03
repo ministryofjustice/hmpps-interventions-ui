@@ -14,10 +14,7 @@ const communityApiRestClient = new RestClient('communityApiClient', config.apis.
 const hmppsAuthService = new HmppsAuthService()
 const communityApiService = new CommunityApiService(hmppsAuthService, communityApiRestClient)
 const interventionsService = new InterventionsService(config.apis.interventionsService)
-const assessRisksAndNeedsService = new AssessRisksAndNeedsService(
-  assessRisksAndNeedsRestClient,
-  config.apis.assessRisksAndNeedsApi.riskSummaryEnabled
-)
+const assessRisksAndNeedsService = new AssessRisksAndNeedsService(assessRisksAndNeedsRestClient)
 const referenceDataService = new ReferenceDataService()
 const prisonRegisterService = new PrisonRegisterService()
 

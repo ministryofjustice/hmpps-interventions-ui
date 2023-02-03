@@ -12,7 +12,6 @@ import expandedDeliusServiceUserFactory from '../../../testutils/factories/expan
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import prisonFactory from '../../../testutils/factories/prison'
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
-import config from '../../config'
 import { CurrentLocationType } from '../../models/draftReferral'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 
@@ -58,6 +57,7 @@ describe(ShowReferralPresenter, () => {
   prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
   describe('canShowFullSupplementaryRiskInformation', () => {
+    // TODO: describe what we expect to show instead
     it("don't show full risk information if redacted risk not available", () => {
       const referral = sentReferralFactory.build(referralParams)
 
@@ -81,7 +81,6 @@ describe(ShowReferralPresenter, () => {
 
     it('show full risk information if redacted risk is available and service provider', () => {
       const referral = sentReferralFactory.build(referralParams)
-      config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
       const presenter = new ShowReferralPresenter(
         referral,
         intervention,
@@ -100,6 +99,7 @@ describe(ShowReferralPresenter, () => {
       expect(presenter.canShowFullSupplementaryRiskInformation).toBeTruthy()
     })
   })
+
   describe('assignmentFormAction', () => {
     it('returns the relative URL for the start assignment page', () => {
       const referral = sentReferralFactory.build(referralParams)

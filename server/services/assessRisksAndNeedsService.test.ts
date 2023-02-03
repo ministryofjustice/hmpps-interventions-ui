@@ -13,7 +13,7 @@ describe(AssessRisksAndNeedsService, () => {
   describe('getSupplementaryRiskInformation', () => {
     const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
 
-    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(restClientMock, true)
+    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(restClientMock)
 
     const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
 
@@ -28,7 +28,7 @@ describe(AssessRisksAndNeedsService, () => {
   describe('getRiskSummary', () => {
     const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
 
-    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(restClientMock, true)
+    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(restClientMock)
 
     const riskSummary = riskSummaryFactory.build()
 
@@ -65,19 +65,6 @@ describe(AssessRisksAndNeedsService, () => {
       restClientMock.get.mockRejectedValue(createError(404))
       const result = await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')
       expect(result).toEqual(null)
-    })
-  })
-
-  describe('getRiskSummary when riskSummaryEnabled is false', () => {
-    const restClientMock = new MockRestClient() as jest.Mocked<RestClient>
-
-    const assessRisksAndNeedsService = new AssessRisksAndNeedsService(restClientMock, false)
-
-    it('returns null and does not call Assess Risks and Needs API', async () => {
-      const result = await assessRisksAndNeedsService.getRiskSummary('crn123', 'token')
-
-      expect(restClientMock.get).not.toHaveBeenCalled()
-      expect(result).toBeNull()
     })
   })
 })
