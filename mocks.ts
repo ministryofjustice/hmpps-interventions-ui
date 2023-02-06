@@ -13,13 +13,16 @@ import CommunityApiMocks from './mockApis/communityApi'
 import deliusConvictionFactory from './testutils/factories/deliusConviction'
 import AssessRisksAndNeedsServiceMocks from './mockApis/assessRisksAndNeedsService'
 import riskSummaryFactory from './testutils/factories/riskSummary'
+import prisonFactory from './testutils/factories/prison'
 import supplementaryRiskInformationFactory from './testutils/factories/supplementaryRiskInformation'
 import deliusServiceUser from './testutils/factories/deliusServiceUser'
+import PrisonRegisterServiceMocks from './mockApis/PrisonRegisterService'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
 const communityApiMocks = new CommunityApiMocks(wiremock, '')
 const assessRisksAndNeedsApiMocks = new AssessRisksAndNeedsServiceMocks(wiremock, '')
+const prisonRegisterServiceMocks = new PrisonRegisterServiceMocks(wiremock, '')
 
 export default async function setUpMocks(): Promise<void> {
   await wiremock.resetStubs()
@@ -181,5 +184,6 @@ export default async function setUpMocks(): Promise<void> {
         ...draftReferral,
       })
     }),
+    prisonRegisterServiceMocks.stubGetPrisons(prisonFactory.prisonList()),
   ])
 }

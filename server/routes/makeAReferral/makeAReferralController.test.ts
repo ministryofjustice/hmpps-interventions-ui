@@ -645,7 +645,7 @@ describe('GET /referrals/:id/submit-current-location', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
 
     const prisonList = prisonFactory.prisonList()
-    prisonRegisterService.getUserDetails.mockResolvedValue(prisonList)
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 
   it('renders a form page', async () => {
@@ -677,7 +677,7 @@ describe('POST /referrals/:id/submit-current-location', () => {
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     const prisonList = prisonFactory.prisonList()
-    prisonRegisterService.getUserDetails.mockResolvedValue(prisonList)
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 
   it('updates the referral on the backend and redirects to the submit current location form', async () => {

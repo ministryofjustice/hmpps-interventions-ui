@@ -580,7 +580,7 @@ export default class MakeAReferralController {
   }
 
   async editCurrentLocation(req: Request, res: Response): Promise<void> {
-    const prisons = await this.prisonRegisterService.getUserDetails()
+    const prisons = await this.prisonRegisterService.getPrisons()
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
@@ -591,7 +591,7 @@ export default class MakeAReferralController {
   }
 
   async submitCurrentLocation(req: Request, res: Response): Promise<void> {
-    const prisons = await this.prisonRegisterService.getUserDetails()
+    const prisons = await this.prisonRegisterService.getPrisons()
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const form = await CurrentLocationForm.createForm(req, referral)
 

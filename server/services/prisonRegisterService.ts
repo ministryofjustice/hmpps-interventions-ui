@@ -8,7 +8,7 @@ export default class PrisonRegisterService {
     return new RestClient('Prison Register Client', config.apis.prisonRegister, null)
   }
 
-  async getUserDetails(): Promise<Prison[]> {
+  async getPrisons(): Promise<Prison[]> {
     logger.info(`Getting prisons with prison register`)
     return (await this.restClient().get({ path: '/prisons/search?active=true' })) as Prison[]
   }
