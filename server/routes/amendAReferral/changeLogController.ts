@@ -25,10 +25,14 @@ export default class ChangeLogController {
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const changeLog = await this.interventionsService.getChangelog(accessToken, referralId)
+    const intervention = await this.interventionsService.getIntervention(
+      accessToken,
+      sentReferral.referral.interventionId
+    )
     const [serviceUser] = await Promise.all([
       this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
     ])
-    const presenter = new ChangelogPresenter(formError, changeLog, referralId, loggedInUserType)
+    const presenter = new ChangelogPresenter(formError, changeLog, referralId, intervention, loggedInUserType)
     const view = new ChangelogView(presenter)
 
     return ControllerUtils.renderWithLayout(res, view, serviceUser)

@@ -1,7 +1,9 @@
 import Changelog from '../../../models/changelog'
 import { ChangeLogViewSummary } from '../../../models/changeLogViewSummary'
+import Intervention from '../../../models/intervention'
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
+import utils from '../../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../../shared/referralOverviewPagePresenter'
 
 export default class ChangelogPresenter {
@@ -11,6 +13,7 @@ export default class ChangelogPresenter {
     private readonly error: FormValidationError | null = null,
     readonly changelog: Changelog[],
     private referralId: string,
+    private intervention: Intervention,
     public loggedInUserType: 'service-provider' | 'probation-practitioner'
   ) {
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
@@ -21,6 +24,10 @@ export default class ChangelogPresenter {
   }
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
+
+  readonly text = {
+    title: `${utils.convertToTitleCase(this.intervention.contractType.name)}: change log`,
+  }
 
   get changeLogs(): ChangeLogViewSummary[] {
     return this.changelog.map(log => {

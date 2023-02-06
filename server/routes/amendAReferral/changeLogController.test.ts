@@ -12,6 +12,7 @@ import changelogDetailFactory from '../../../testutils/factories/changeLogDetail
 import SentReferral from '../../models/sentReferral'
 import ChangelogDetail from '../../models/changelogDetail'
 import Changelog from '../../models/changelog'
+import interventionFactory from '../../../testutils/factories/intervention'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -113,6 +114,14 @@ describe('GET /referrals/:referralId/changelog', () => {
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getChangelog.mockResolvedValue(changelog)
+    interventionsService.getIntervention.mockResolvedValue(
+      interventionFactory.build({
+        contractType: {
+          code: 'accomdation',
+          name: 'Accommodation',
+        },
+      })
+    )
     communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
   })
 
@@ -124,6 +133,7 @@ describe('GET /referrals/:referralId/changelog', () => {
         expect(res.text).toContain('Error at complexity')
         expect(res.text).toContain('Error at desired out')
         expect(res.text).toContain('accessibility needs')
+        expect(res.text).toContain('Accommodation: change log')
       })
   })
 })
