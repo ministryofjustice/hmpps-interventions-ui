@@ -555,19 +555,38 @@ describe('Referral form', () => {
         },
       })
 
-      const completedServiceUserDetailsDraftReferral = draftReferralFactory
+      const completedCurrentLocationDraftReferral = draftReferralFactory
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
           id: draftReferral.id,
           serviceCategoryIds: null,
-          interventionId: intervention.id,
+          interventionId: draftReferral.interventionId,
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+        })
+
+      const completedServiceUserDetailsDraftReferral = draftReferralFactory
+        .filledFormUpToCurrentLocation(
+          [accommodationServiceCategory, socialInclusionServiceCategory],
+          false,
+          CurrentLocationType.community
+        )
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: null,
+          interventionId: draftReferral.interventionId,
           serviceProvider: {
             name: 'Harmony Living',
           },
         })
 
       const completedSelectingServiceCategories = draftReferralFactory
-        .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory])
+        .filledFormUpToCurrentLocation(
+          [accommodationServiceCategory, socialInclusionServiceCategory],
+          false,
+          CurrentLocationType.community
+        )
         .selectedServiceCategories([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
           id: draftReferral.id,
@@ -588,6 +607,7 @@ describe('Referral form', () => {
         })
 
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
+      const prisons = prisonFactory.prisonList()
 
       cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
@@ -693,6 +713,18 @@ describe('Referral form', () => {
       cy.contains('Provide details of when Alex will not be able to attend sessions').type(
         'He works Mondays 9am - midday'
       )
+
+      cy.stubGetPrisons(prisons)
+      cy.stubGetDraftReferral(draftReferral.id, completedCurrentLocationDraftReferral)
+      cy.contains('Save and continue').click()
+
+      // Submit current location Page
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
+      cy.get('h1').contains('Submit Alex River’s current location')
+
+      cy.withinFieldsetThatContains('Where is Alex today?', () => {
+        cy.contains('Community').click()
+      })
       cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
       cy.contains('Save and continue').click()
 
