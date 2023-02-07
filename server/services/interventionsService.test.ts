@@ -1519,8 +1519,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     endOfServiceReport: null,
     referenceNumber: 'HDJ2123F',
     supplementaryRiskId: 'a1f5ce02-53a3-47c4-bc71-45f1bdbf504c',
-    personCurrentLocationType: CurrentLocationType.custody,
-    personCustodyPrisonId: 'bbb',
     referral: {
       createdAt: '2021-01-11T10:32:12.382884Z',
       completionDeadline: '2021-04-01',
@@ -1553,7 +1551,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       serviceUser,
       maximumEnforceableDays: 10,
       personCurrentLocationType: CurrentLocationType.custody,
-      personCustodyPrisonId: 'bbb',
+      personCustodyPrisonId: 'aaa',
     },
   }
 

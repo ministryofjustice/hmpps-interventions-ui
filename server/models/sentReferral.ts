@@ -1,6 +1,6 @@
 import User from './hmppsAuth/user'
 import EndOfServiceReport from './endOfServiceReport'
-import { CurrentLocationType, ReferralFields } from './draftReferral'
+import { ReferralFields } from './draftReferral'
 
 export default interface SentReferral {
   id: string
@@ -17,6 +17,4 @@ export default interface SentReferral {
   endOfServiceReport: EndOfServiceReport | null
   endOfServiceReportCreationRequired: boolean
   concludedAt: string | null
-  personCurrentLocationType: CurrentLocationType
-  personCustodyPrisonId: string | null
 }
