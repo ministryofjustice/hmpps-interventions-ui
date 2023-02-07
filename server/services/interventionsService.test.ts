@@ -1551,7 +1551,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       serviceUser,
       maximumEnforceableDays: 10,
       personCurrentLocationType: CurrentLocationType.custody,
-      personCustodyPrisonId: 'aaa',
+      personCustodyPrisonId: 'bbb',
     },
   }
 
