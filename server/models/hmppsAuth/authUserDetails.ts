@@ -9,3 +9,7 @@ export default interface AuthUserDetails {
   verified: boolean
   lastLoggedIn: string
 }
+
+export function authUserFullName(user: AuthUserDetails): string {
+  return user.userId ? `${user.firstName} ${user.lastName}` : 'a deleted user'
+}

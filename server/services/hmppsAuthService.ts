@@ -93,11 +93,14 @@ export default class HmppsAuthService {
     return Promise.resolve(authUsers[0])
   }
 
-  async getSPUserByUsername(token: string, username: string): Promise<AuthUserDetails> {
-    logger.info(`Getting user detail by username: calling HMPPS Auth`)
-    return (await this.restClient(token).get({
-      path: `/api/authuser/${username}`,
-    })) as AuthUserDetails
+  async getSPUserByUsername(token: string, username: string, mustExist = true): Promise<AuthUserDetails> {
+    return (await this.restClient(token)
+      .get({ path: `/api/authuser/${username}` })
+      .catch(error => {
+        if (error.status !== 404) throw error
+        if (mustExist) throw error
+        else return { username, email: username }
+      })) as AuthUserDetails
   }
 
   async getUserRoles(token: string): Promise<string[]> {

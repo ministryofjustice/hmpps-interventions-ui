@@ -215,6 +215,50 @@ describe('hmppsAuthService', () => {
       const output = await hmppsAuthService.getSPUserByUsername(token.access_token, 'AUTH_ADM')
       expect(output).toEqual(response)
     })
+
+    it('should return stub user if not required and response is 404', async () => {
+      const response = {
+        userId: undefined,
+        username: 'MISSING',
+        email: 'MISSING',
+        firstName: undefined,
+        lastName: undefined,
+        locked: undefined,
+        enabled: undefined,
+        verified: undefined,
+        lastLoggedIn: undefined,
+      }
+
+      fakeHmppsAuthApi
+        .get('/api/authuser/MISSING')
+        .matchHeader('authorization', `Bearer ${token.access_token}`)
+        .reply(404, {})
+
+      const output = await hmppsAuthService.getSPUserByUsername(token.access_token, 'MISSING', false)
+      expect(output).toEqual(response)
+    })
+
+    it('raises an error if required and the response is 404', async () => {
+      fakeHmppsAuthApi
+        .get('/api/authuser/MISSING')
+        .matchHeader('authorization', `Bearer ${token.access_token}`)
+        .reply(404, {})
+
+      await expect(hmppsAuthService.getSPUserByUsername(token.access_token, 'MISSING', true)).rejects.toThrow(
+        'Not Found'
+      )
+    })
+
+    it('raises an error if not required but response is non-404 4xx', async () => {
+      fakeHmppsAuthApi
+        .get('/api/authuser/MISSING')
+        .matchHeader('authorization', `Bearer ${token.access_token}`)
+        .reply(400, {})
+
+      await expect(hmppsAuthService.getSPUserByUsername(token.access_token, 'MISSING', false)).rejects.toThrow(
+        'Bad Request'
+      )
+    })
   })
 
   describe('getUserRoles', () => {
