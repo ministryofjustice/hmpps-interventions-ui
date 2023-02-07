@@ -48,7 +48,6 @@ export default class CurrentLocationView {
     const items: SelectArgsItem[] = [
       {
         text: '-- Select a Prison Location --',
-        // disabled:,
       },
     ]
     items.push(...prisonItems)

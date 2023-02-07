@@ -132,7 +132,7 @@ export default {
       enabled: get('TOKEN_VERIFICATION_ENABLED', 'false') === 'true',
     },
     prisonRegister: {
-      url: get('PRISON_REGISTER_API_URL', 'https://prison-register.hmpps.service.justice.gov.uk'),
+      url: get('PRISON_REGISTER_API_URL', 'https://prison-register.hmpps.service.justice.gov.uk', requiredInProduction),
       timeout: {
         response: Number(get('PRISON_REGISTER_API_URL_TIMEOUT_RESPONSE', 5000)),
         deadline: Number(get('PRISON_REGISTER_API_URL_TIMEOUT_DEADLINE', 5000)),
