@@ -16,7 +16,7 @@ import riskSummaryFactory from './testutils/factories/riskSummary'
 import prisonFactory from './testutils/factories/prison'
 import supplementaryRiskInformationFactory from './testutils/factories/supplementaryRiskInformation'
 import deliusServiceUser from './testutils/factories/deliusServiceUser'
-import PrisonRegisterServiceMocks from './mockApis/PrisonRegisterService'
+import PrisonRegisterServiceMocks from './mockApis/prisonRegisterService'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')

@@ -4,7 +4,7 @@ import TokenVerificationMocks from '../../mockApis/tokenVerification'
 import CommunityApiMocks from '../../mockApis/communityApi'
 import InterventionsServiceMocks from '../../mockApis/interventionsService'
 import AssessRisksAndNeedsServiceMocks from '../../mockApis/assessRisksAndNeedsService'
-import PrisonRegisterServiceMocks from '../../mockApis/PrisonRegisterService'
+import PrisonRegisterServiceMocks from '../../mockApis/prisonRegisterService'
 
 const wiremock = new Wiremock('http://localhost:9091/__admin')
 const auth = new AuthServiceMocks(wiremock)
