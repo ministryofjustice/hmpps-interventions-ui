@@ -1,6 +1,7 @@
 import ChangelogPresenter from './changelogPresenter'
 import changelog from '../../../../testutils/factories/changeLog'
 import { FormValidationError } from '../../../utils/formValidationError'
+import interventionFactory from '../../../../testutils/factories/intervention'
 
 describe('ChangeLogPresenter', () => {
   const changeLog1 = changelog.build({
@@ -28,6 +29,12 @@ describe('ChangeLogPresenter', () => {
         formError,
         [changeLog1, changeLog2, changeLog3],
         '',
+        interventionFactory.build({
+          contractType: {
+            code: 'accommodation',
+            name: 'Accommodation',
+          },
+        }),
         'probation-practitioner'
       )
       expect(presenter.changeLogs[0].changeLog.reasonForChange).toEqual(changeLog1.reasonForChange)
@@ -44,6 +51,8 @@ describe('ChangeLogPresenter', () => {
       expect(presenter.changeLogs[2].changeLog.topic).toEqual(changeLog3.topic)
       expect(presenter.changeLogs[2].changeLog.name).toEqual(changeLog3.name)
       expect(presenter.changeLogs[2].changeLog.changedAt).toEqual(changeLog3.changedAt)
+
+      expect(presenter.text.title).toEqual('Accommodation: change log')
     })
   })
 })
