@@ -115,4 +115,6 @@ export default SentReferralFactory.define(({ sequence }) => ({
   endOfServiceReport: null,
   endOfServiceReportCreationRequired: false,
   concludedAt: null,
+  personCurrentLocationType: CurrentLocationType.community,
+  personCustodyPrisonId: null,
 }))
