@@ -117,7 +117,7 @@ describe('GET /referrals/:referralId/changelog', () => {
     interventionsService.getIntervention.mockResolvedValue(
       interventionFactory.build({
         contractType: {
-          code: 'accomdation',
+          code: 'accommodation',
           name: 'Accommodation',
         },
       })
@@ -132,6 +132,7 @@ describe('GET /referrals/:referralId/changelog', () => {
       .expect(res => {
         expect(res.text).toContain('Error at complexity')
         expect(res.text).toContain('Error at desired out')
+
         expect(res.text).toContain('accessibility needs')
         expect(res.text).toContain('Accommodation: change log')
       })

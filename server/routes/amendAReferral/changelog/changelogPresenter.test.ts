@@ -31,7 +31,7 @@ describe('ChangeLogPresenter', () => {
         '',
         interventionFactory.build({
           contractType: {
-            code: 'accomdation',
+            code: 'accommodation',
             name: 'Accommodation',
           },
         }),
