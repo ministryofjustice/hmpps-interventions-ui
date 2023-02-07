@@ -679,17 +679,6 @@ export default class MakeAReferralController {
     await this.displayOasysRiskInformationPage(res, referral, serviceUser)
   }
 
-  // TODO: this will be removed once risk goes live
-  private async displayAdditionalRiskInformationPage(
-    res: Response,
-    referral: DraftReferral,
-    serviceUser: DeliusServiceUser
-  ) {
-    const presenter = new RiskInformationPresenter(referral)
-    const view = new RiskInformationView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
   private async displayOasysRiskInformationPage(
     res: Response,
     referral: DraftReferral,
