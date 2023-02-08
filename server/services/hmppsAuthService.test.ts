@@ -298,7 +298,7 @@ describe('hmppsAuthService', () => {
       const output = await hmppsAuthService.getApiClientToken()
 
       expect(output).toEqual(token.access_token)
-      expect(mockRedis.v4.set).toBeCalledWith('systemToken:%ANONYMOUS%', token.access_token, { EX: 240 })
+      expect(mockRedis.v4.set).toBeCalledWith('systemToken:interventions:%ANONYMOUS%', token.access_token, { EX: 240 })
     })
   })
 

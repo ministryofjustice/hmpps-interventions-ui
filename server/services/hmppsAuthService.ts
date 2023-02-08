@@ -114,7 +114,7 @@ export default class HmppsAuthService {
   }
 
   async getApiClientToken(): Promise<string> {
-    const redisKey = `${REDIS_PREFIX}%ANONYMOUS%`
+    const redisKey = `${REDIS_PREFIX}${config.apis.hmppsAuth.apiClientId}:%ANONYMOUS%`
 
     const tokenFromRedis = await redisClient.v4.get(redisKey)
     if (tokenFromRedis) {
