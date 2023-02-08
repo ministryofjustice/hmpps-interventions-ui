@@ -272,6 +272,22 @@ describe(InterventionProgressPresenter, () => {
         `/probation-practitioner/referrals/${referral.id}/cancellation/start`
       )
     })
+    it('returns the url for the view or change referral page', () => {
+      const referral = sentReferralFactory.build()
+      const intervention = interventionFactory.build()
+      const supplierAssessment = supplierAssessmentFactory.build()
+      const presenter = new InterventionProgressPresenter(
+        referral,
+        intervention,
+        [],
+        null,
+        [],
+        supplierAssessment,
+        null
+      )
+
+      expect(presenter.amendReferralHref).toEqual(`/probation-practitioner/referrals/${referral.id}/details`)
+    })
   })
 
   describe('referralAssigned', () => {
