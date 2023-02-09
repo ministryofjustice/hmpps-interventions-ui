@@ -131,6 +131,14 @@ export default {
       agent: new AgentConfig(),
       enabled: get('TOKEN_VERIFICATION_ENABLED', 'false') === 'true',
     },
+    prisonRegister: {
+      url: get('PRISON_REGISTER_API_URL', 'https://prison-register.hmpps.service.justice.gov.uk', requiredInProduction),
+      timeout: {
+        response: Number(get('PRISON_REGISTER_API_URL_TIMEOUT_RESPONSE', 5000)),
+        deadline: Number(get('PRISON_REGISTER_API_URL_TIMEOUT_DEADLINE', 5000)),
+      },
+      agent: new AgentConfig(),
+    },
   },
   dashboards: {
     probationPractitioner: {
@@ -146,6 +154,9 @@ export default {
       unassignedCases: Number(get('SP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
       completedCases: Number(get('SP_COMPLETED_PAGE_SIZE', '500')),
     },
+  },
+  featureFlags: {
+    custodyLocationEnabled: get('FLAG_CUSTODY_LOCATION_ENABLED', true),
   },
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   draftsService: {

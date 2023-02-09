@@ -57,12 +57,17 @@ import ConfirmOasysRiskInformationForm from './risk-information/oasys/confirmOas
 import EditOasysRiskInformationForm from './risk-information/oasys/edit/editOasysRiskInformationForm'
 import { DraftOasysRiskInformation } from '../../models/draftOasysRiskInformation'
 import OasysRiskSummaryView from './risk-information/oasys/oasysRiskSummaryView'
+import CurrentLocationPresenter from './current-location/currentLocationPresenter'
+import CurrentLocationView from './current-location/currentLocationView'
+import PrisonRegisterService from '../../services/prisonRegisterService'
+import CurrentLocationForm from './current-location/currentLocationForm'
 
 export default class MakeAReferralController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
-    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService
+    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
+    private readonly prisonRegisterService: PrisonRegisterService
   ) {}
 
   async startReferral(req: Request, res: Response): Promise<void> {
@@ -558,12 +563,62 @@ export default class MakeAReferralController {
     }
 
     if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      if (config.featureFlags.custodyLocationEnabled) {
+        res.redirect(`/referrals/${req.params.id}/submit-current-location`)
+      } else {
+        res.redirect(`/referrals/${req.params.id}/form`)
+      }
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
       const presenter = new NeedsAndRequirementsPresenter(referral, error, req.body)
       const view = new NeedsAndRequirementsView(presenter)
+
+      res.status(400)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
+  }
+
+  async editCurrentLocation(req: Request, res: Response): Promise<void> {
+    const prisons = await this.prisonRegisterService.getPrisons()
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+    const presenter = new CurrentLocationPresenter(referral, prisons, null, req.body)
+    const view = new CurrentLocationView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async submitCurrentLocation(req: Request, res: Response): Promise<void> {
+    const prisons = await this.prisonRegisterService.getPrisons()
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const form = await CurrentLocationForm.createForm(req, referral)
+
+    let error: FormValidationError | null = null
+
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+      const presenter = new CurrentLocationPresenter(referral, prisons, error, req.body)
+      const view = new CurrentLocationView(presenter)
 
       res.status(400)
       ControllerUtils.renderWithLayout(res, view, serviceUser)

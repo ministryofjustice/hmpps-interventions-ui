@@ -23,6 +23,13 @@ export interface ReferralFields {
   whenUnavailable: string | null
   serviceUser: ServiceUser
   maximumEnforceableDays: number
+  personCurrentLocationType: CurrentLocationType | null
+  personCustodyPrisonId: string | null
+}
+
+export enum CurrentLocationType {
+  custody = 'CUSTODY',
+  community = 'COMMUNITY',
 }
 
 export default interface DraftReferral extends WithNullableValues<ReferralFields> {

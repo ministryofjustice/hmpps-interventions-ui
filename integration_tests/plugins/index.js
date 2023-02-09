@@ -4,6 +4,7 @@ import TokenVerificationMocks from '../../mockApis/tokenVerification'
 import CommunityApiMocks from '../../mockApis/communityApi'
 import InterventionsServiceMocks from '../../mockApis/interventionsService'
 import AssessRisksAndNeedsServiceMocks from '../../mockApis/assessRisksAndNeedsService'
+import PrisonRegisterServiceMocks from '../../mockApis/prisonRegisterService'
 
 const wiremock = new Wiremock('http://localhost:9091/__admin')
 const auth = new AuthServiceMocks(wiremock)
@@ -11,6 +12,7 @@ const tokenVerification = new TokenVerificationMocks(wiremock)
 const communityApi = new CommunityApiMocks(wiremock, '/community-api')
 const interventionsService = new InterventionsServiceMocks(wiremock, '/interventions')
 const assessRisksAndNeedsService = new AssessRisksAndNeedsServiceMocks(wiremock, '/assess-risks-and-needs')
+const prisonRegisterService = new PrisonRegisterServiceMocks(wiremock, '/prison-register-service')
 
 export default on => {
   on('task', {
@@ -41,6 +43,10 @@ export default on => {
 
     stubGetExpandedServiceUserByCRN: arg => {
       return communityApi.stubGetExpandedServiceUserByCRN(arg.crn, arg.responseJson)
+    },
+
+    stubGetPrisons: arg => {
+      return prisonRegisterService.stubGetPrisons(arg.responseJson)
     },
 
     stubGetUserByUsername: arg => {

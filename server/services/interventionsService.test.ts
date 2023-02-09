@@ -18,6 +18,7 @@ import CalendarDay from '../utils/calendarDay'
 import approvedActionPlanSummaryFactory from '../../testutils/factories/approvedActionPlanSummary'
 import referralDetailsFactory from '../../testutils/factories/referralDetails'
 import { Page } from '../models/pagination'
+import { CurrentLocationType } from '../models/draftReferral'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -1549,6 +1550,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       whenUnavailable: 'She works Mondays 9am - midday',
       serviceUser,
       maximumEnforceableDays: 10,
+      personCurrentLocationType: CurrentLocationType.custody,
+      personCustodyPrisonId: 'aaa',
     },
   }
 

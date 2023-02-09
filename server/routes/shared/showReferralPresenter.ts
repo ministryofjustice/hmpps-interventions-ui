@@ -280,7 +280,12 @@ export default class ShowReferralPresenter {
   }
 
   get serviceUserDetails(): SummaryListItem[] {
-    return new ServiceUserDetailsPresenter(this.sentReferral.referral.serviceUser, this.deliusServiceUser).summary
+    return new ServiceUserDetailsPresenter(
+      this.sentReferral.referral.serviceUser,
+      this.deliusServiceUser,
+      this.sentReferral.referral.personCurrentLocationType,
+      this.sentReferral.referral.personCustodyPrisonId
+    ).summary
   }
 
   get serviceUserRisks(): SummaryListItem[] {

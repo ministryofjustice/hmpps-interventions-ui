@@ -33,6 +33,7 @@ import ReferenceDataService from './services/referenceDataService'
 import serviceEditorRoutes, { serviceEditorUrlPrefix } from './routes/serviceEditorRoutes'
 import UserDataService from './services/userDataService'
 import logger from '../log'
+import PrisonRegisterService from './services/prisonRegisterService'
 
 const RedisStore = connectRedis(session)
 
@@ -47,7 +48,8 @@ export default function createApp(
   interventionsService: InterventionsService,
   hmppsAuthService: HmppsAuthService,
   assessRisksAndNeedsService: AssessRisksAndNeedsService,
-  referenceDataService: ReferenceDataService
+  referenceDataService: ReferenceDataService,
+  prisonRegisterService: PrisonRegisterService
 ): express.Application {
   const app = express()
 
@@ -86,6 +88,8 @@ export default function createApp(
             'code.jquery.com',
             // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
             "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
+            "'sha256-XVaQIYDX9x3FcKfwRYYxmwIQXtOQY8UgJS4/7p/130A='",
+            "'sha256-Yx3yl4k4eP+GDjGPt8O/8Lqh4sxAImQ9XEG6gp7wOwM='",
             'https://www.google-analytics.com',
             'https://ssl.google-analytics.com',
             'https://www.googletagmanager.com/',
@@ -188,6 +192,7 @@ export default function createApp(
     '/node_modules/@ministryofjustice/frontend/moj/assets',
     '/node_modules/@ministryofjustice/frontend',
     '/node_modules/jquery/dist',
+    '/node_modules/accessible-autocomplete/dist',
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
   })
@@ -247,6 +252,7 @@ export default function createApp(
     draftsService,
     referenceDataService,
     userDataService,
+    prisonRegisterService,
   }
 
   app.use('/', indexRoutes(standardRouter(), services))

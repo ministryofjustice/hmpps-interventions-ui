@@ -21,6 +21,7 @@ import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from '../
 import DraftsService from '../../services/draftsService'
 import ReferenceDataService from '../../services/referenceDataService'
 import UserDataService from '../../services/userDataService'
+import PrisonRegisterService from '../../services/prisonRegisterService'
 
 export enum AppSetupUserType {
   probationPractitioner = 'delius',
@@ -118,6 +119,7 @@ export default function appWithAllRoutes({
     draftsService: {} as DraftsService,
     referenceDataService: {} as ReferenceDataService,
     userDataService: {} as UserDataService,
+    prisonRegisterService: {} as PrisonRegisterService,
     ...overrides,
   }
 

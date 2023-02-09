@@ -7,6 +7,7 @@ import deliusOffenceFactory from '../../../../testutils/factories/deliusOffence'
 import deliusSentenceFactory from '../../../../testutils/factories/deliusSentence'
 import { ListStyle } from '../../../utils/summaryList'
 import expandedDeliusServiceUserFactory from '../../../../testutils/factories/expandedDeliusServiceUser'
+import { CurrentLocationType } from '../../../models/draftReferral'
 
 describe(CheckAnswersPresenter, () => {
   const parameterisedDraftReferralFactory = draftReferralFactory.params({
@@ -52,7 +53,9 @@ describe(CheckAnswersPresenter, () => {
   const conviction = deliusConvictionFactory.build()
 
   describe('serviceUserDetailsSection', () => {
-    const referral = parameterisedDraftReferralFactory.build()
+    const referral = parameterisedDraftReferralFactory.build({
+      personCurrentLocationType: CurrentLocationType.community,
+    })
     const presenter = new CheckAnswersPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
@@ -74,6 +77,7 @@ describe(CheckAnswersPresenter, () => {
           { key: 'First name', lines: ['Alex'] },
           { key: 'Last name', lines: ['River'] },
           { key: 'Date of birth', lines: ['1 January 1980'] },
+          { key: 'Location at time of referral', lines: ['COMMUNITY'] },
           {
             key: 'Address',
             lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],

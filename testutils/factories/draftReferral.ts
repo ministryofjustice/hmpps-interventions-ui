@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import DraftReferral from '../../server/models/draftReferral'
+import DraftReferral, { CurrentLocationType } from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
 import interventionFactory from './intervention'
 import ServiceCategory from '../../server/models/serviceCategory'
@@ -85,8 +85,19 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     })
   }
 
+  filledFormUpToCurrentLocation(
+    serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()],
+    skipAdditionalRiskInformation = false,
+    currentLocationType: CurrentLocationType = CurrentLocationType.custody
+  ) {
+    return this.filledFormUpToNeedsAndRequirements(serviceCategories, skipAdditionalRiskInformation).params({
+      personCurrentLocationType: currentLocationType,
+      personCustodyPrisonId: currentLocationType === CurrentLocationType.custody ? 'abc' : null,
+    })
+  }
+
   filledFormUpToRelevantSentence(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
-    return this.filledFormUpToNeedsAndRequirements(serviceCategories).params({
+    return this.filledFormUpToCurrentLocation(serviceCategories).params({
       relevantSentenceId: 123456789,
     })
   }
@@ -172,4 +183,6 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   additionalRiskInformation: null,
   maximumEnforceableDays: null,
   contractTypeName: interventionFactory.build().contractType.name,
+  personCurrentLocationType: null,
+  personCustodyPrisonId: null,
 }))

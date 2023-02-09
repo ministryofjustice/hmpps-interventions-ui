@@ -8,8 +8,10 @@ import utils from '../../server/utils/utils'
 class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPresenter> {
   reviewServiceUser(
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    userFirstName: string | null = null,
     riskInformationUrl: string | null = null,
-    needsAndRequirementsUrl: string | null = null
+    needsAndRequirementsUrl: string | null = null,
+    currentLocationUrl: string | null = null
   ) {
     return this.params({
       type: 'single',
@@ -20,6 +22,7 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
         { title: 'Confirm their personal details', url: 'service-user-details' },
         { title: 'Their risk information', url: riskInformationUrl },
         { title: 'Their needs and requirements', url: needsAndRequirementsUrl },
+        { title: `Submit ${userFirstName}'s current location`, url: currentLocationUrl },
       ],
     })
   }

@@ -4,11 +4,13 @@ import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import interventionFactory from '../../testutils/factories/intervention'
+import prisonFactory from '../../testutils/factories/prison'
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import pageFactory from '../../testutils/factories/page'
+import { CurrentLocationType } from '../../server/models/draftReferral'
 
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build({
@@ -100,8 +102,19 @@ describe('Referral form', () => {
         },
       })
 
-      const completedServiceUserDetailsDraftReferral = draftReferralFactory
+      const completedCurrentLocationDraftReferral = draftReferralFactory
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory])
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: [accommodationServiceCategory.id],
+          interventionId: draftReferral.interventionId,
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+        })
+
+      const completedServiceUserDetailsDraftReferral = draftReferralFactory
+        .filledFormUpToCurrentLocation([accommodationServiceCategory], false, CurrentLocationType.community)
         .build({
           id: draftReferral.id,
           serviceCategoryIds: [accommodationServiceCategory.id],
@@ -122,6 +135,8 @@ describe('Referral form', () => {
           },
           furtherInformation: 'Some information about Alex',
         })
+
+      const prisons = prisonFactory.prisonList()
 
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build({
         id: draftReferral.id,
@@ -240,9 +255,24 @@ describe('Referral form', () => {
       cy.contains('Provide details of when Alex will not be able to attend sessions').type(
         'He works Mondays 9am - midday'
       )
+
+      cy.stubGetPrisons(prisons)
+      cy.stubGetDraftReferral(draftReferral.id, completedCurrentLocationDraftReferral)
+      cy.stubGetExpandedServiceUserByCRN('X123456', expandedDeliusServiceUser)
+
+      cy.contains('Save and continue').click()
+
+      // Submit current location Page
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
+      cy.get('h1').contains('Submit Alex River’s current location')
+
+      cy.withinFieldsetThatContains('Where is Alex today?', () => {
+        cy.contains('Community').click()
+      })
       cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
       cy.contains('Save and continue').click()
 
+      // Service Category details Section
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
 
       cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
@@ -525,19 +555,38 @@ describe('Referral form', () => {
         },
       })
 
-      const completedServiceUserDetailsDraftReferral = draftReferralFactory
+      const completedCurrentLocationDraftReferral = draftReferralFactory
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
           id: draftReferral.id,
           serviceCategoryIds: null,
-          interventionId: intervention.id,
+          interventionId: draftReferral.interventionId,
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+        })
+
+      const completedServiceUserDetailsDraftReferral = draftReferralFactory
+        .filledFormUpToCurrentLocation(
+          [accommodationServiceCategory, socialInclusionServiceCategory],
+          false,
+          CurrentLocationType.community
+        )
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: null,
+          interventionId: draftReferral.interventionId,
           serviceProvider: {
             name: 'Harmony Living',
           },
         })
 
       const completedSelectingServiceCategories = draftReferralFactory
-        .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory])
+        .filledFormUpToCurrentLocation(
+          [accommodationServiceCategory, socialInclusionServiceCategory],
+          false,
+          CurrentLocationType.community
+        )
         .selectedServiceCategories([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
           id: draftReferral.id,
@@ -558,6 +607,7 @@ describe('Referral form', () => {
         })
 
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
+      const prisons = prisonFactory.prisonList()
 
       cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
@@ -663,6 +713,18 @@ describe('Referral form', () => {
       cy.contains('Provide details of when Alex will not be able to attend sessions').type(
         'He works Mondays 9am - midday'
       )
+
+      cy.stubGetPrisons(prisons)
+      cy.stubGetDraftReferral(draftReferral.id, completedCurrentLocationDraftReferral)
+      cy.contains('Save and continue').click()
+
+      // Submit current location Page
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
+      cy.get('h1').contains('Submit Alex River’s current location')
+
+      cy.withinFieldsetThatContains('Where is Alex today?', () => {
+        cy.contains('Community').click()
+      })
       cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
       cy.contains('Save and continue').click()
 
