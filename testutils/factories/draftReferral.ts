@@ -1,4 +1,5 @@
 import { Factory } from 'fishery'
+import moment from 'moment'
 import DraftReferral, { CurrentLocationType } from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
 import interventionFactory from './intervention'
@@ -96,6 +97,16 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     })
   }
 
+  filledFormUpToExpectedReleaseDate(
+    serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()],
+    skipAdditionalRiskInformation = false
+  ) {
+    const tomorrow = moment().add(1, 'days')
+    return this.filledFormUpToCurrentLocation(serviceCategories, skipAdditionalRiskInformation).params({
+      expectedReleaseDate: tomorrow.format('YYYY-MM-DD'),
+    })
+  }
+
   filledFormUpToRelevantSentence(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
     return this.filledFormUpToCurrentLocation(serviceCategories).params({
       relevantSentenceId: 123456789,
@@ -182,6 +193,9 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   whenUnavailable: null,
   additionalRiskInformation: null,
   maximumEnforceableDays: null,
+  hasExpectedReleaseDate: null,
+  expectedReleaseDate: null,
+  expectedReleaseDateMissingReason: null,
   contractTypeName: interventionFactory.build().contractType.name,
   personCurrentLocationType: null,
   personCustodyPrisonId: null,

@@ -1,0 +1,42 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Make a referral" %}
+{% set pageSubTitle = "Expected release date" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {% set expectedReleaseDateHtml %}
+        {{ govukDateInput(dateInputArgs) }}
+        {% endset -%}
+        {% set releaseDateUnknownReasonHtml %}
+        {{ govukTextarea(releaseDateUnknownReasonArgs) }}
+        {{ govukWarningText({
+          html: presenter.expectedReleaseWarningMessage,
+          iconFallbackText: "Warning"
+          })
+        }}
+        {% endset -%}
+        {{ govukRadios(expectedReleaseDateRadioArgs(expectedReleaseDateHtml,releaseDateUnknownReasonHtml)) }}
+        {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

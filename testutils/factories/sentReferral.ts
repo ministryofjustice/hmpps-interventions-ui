@@ -1,4 +1,5 @@
 import { Factory } from 'fishery'
+import moment from 'moment'
 import SentReferral from '../../server/models/sentReferral'
 import { CurrentLocationType, ReferralFields } from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
@@ -51,6 +52,9 @@ const exampleReferralFields = () => {
     maximumEnforceableDays: 10,
     personCurrentLocationType: CurrentLocationType.custody,
     personCustodyPrisonId: 'aaa',
+    expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
+    expectedReleaseDateMissingReason: null,
+    hasExpectedReleaseDate: null,
   }
 }
 

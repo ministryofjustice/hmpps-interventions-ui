@@ -1,5 +1,6 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
+import moment from 'moment'
 import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
 import SentReferral from '../models/sentReferral'
 import SentReferralSummaries from '../models/sentReferralSummaries'
@@ -1552,6 +1553,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       maximumEnforceableDays: 10,
       personCurrentLocationType: CurrentLocationType.custody,
       personCustodyPrisonId: 'aaa',
+      expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
+      expectedReleaseDateMissingReason: null,
+      hasExpectedReleaseDate: null,
     },
   }
 

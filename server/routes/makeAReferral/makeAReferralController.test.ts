@@ -1,6 +1,7 @@
 import request from 'supertest'
 import { Express } from 'express'
 import createError from 'http-errors'
+import moment from 'moment'
 import InterventionsService from '../../services/interventionsService'
 import ServiceUser from '../../models/serviceUser'
 import CommunityApiService from '../../services/communityApiService'
@@ -637,6 +638,126 @@ describe('POST /referrals/:id/needs-and-requirements', () => {
   })
 })
 
+describe('GET /referrals/:id/expected-release-date', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory
+      .serviceUserSelected()
+      .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/expected-release-date')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Do you know the expected release date')
+      })
+
+    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get referral call fails', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
+
+    await request(app)
+      .get('/referrals/1/expected-release-date')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get draft referral')
+      })
+  })
+})
+
+describe('POST /referrals/:id/expected-release-date', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+  })
+
+  it('updates the expected release date on the backend and redirects to the draft form', async () => {
+    const tomorrow = moment().add(1, 'days')
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: { firstName: 'Geoffrey' },
+      expectedReleaseDate: tomorrow.format('YYYY-MM-DD'),
+      hasExpectedReleaseDate: true,
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/expected-release-date')
+      .type('form')
+      .send({
+        'expected-release-date': 'yes',
+        'release-date-day': tomorrow.format('DD'),
+        'release-date-month': tomorrow.format('MM'),
+        'release-date-year': tomorrow.format('YYYY'),
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        expectedReleaseDate: tomorrow.format('YYYY-MM-DD'),
+        hasExpectedReleaseDate: true,
+        expectedReleaseDateMissingReason: null,
+      },
+    ])
+  })
+
+  it('updates the expected release date not known reason on the backend and redirects to the draft form', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: { firstName: 'Geoffrey' },
+      expectedReleaseDateMissingReason: 'yet to receive the information from prison',
+      hasExpectedReleaseDate: false,
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/expected-release-date')
+      .type('form')
+      .send({
+        'expected-release-date': 'no',
+        'release-date-unknown-reason': 'yet to receive the information from prison',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        expectedReleaseDate: null,
+        hasExpectedReleaseDate: false,
+        expectedReleaseDateMissingReason: 'yet to receive the information from prison',
+      },
+    ])
+  })
+  it('returns a 500 if the API call fails with a non-validation error', async () => {
+    const tomorrow = moment().add(1, 'days')
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
+    await request(app)
+      .post('/referrals/1/expected-release-date')
+      .type('form')
+      .send({
+        'expected-release-date': 'yes',
+        'release-date-day': tomorrow.format('DD'),
+        'release-date-month': tomorrow.format('MM'),
+        'release-date-year': tomorrow.format('YYYY'),
+      })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Some backend error message')
+      })
+  })
+})
+
 describe('GET /referrals/:id/submit-current-location', () => {
   beforeEach(() => {
     const referral = draftReferralFactory
@@ -680,7 +801,7 @@ describe('POST /referrals/:id/submit-current-location', () => {
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 
-  it('updates the referral on the backend and redirects to the submit current location form', async () => {
+  it('updates the referral on the backend and redirects to the expected release date page', async () => {
     const updatedReferral = draftReferralFactory.serviceUserSelected().build({
       serviceUser: { firstName: 'Geoffrey' },
       personCurrentLocationType: CurrentLocationType.custody,
@@ -697,7 +818,7 @@ describe('POST /referrals/:id/submit-current-location', () => {
         'prison-select': 'abc',
       })
       .expect(302)
-      .expect('Location', '/referrals/1/form')
+      .expect('Location', '/referrals/1/expected-release-date')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',
@@ -705,6 +826,33 @@ describe('POST /referrals/:id/submit-current-location', () => {
       {
         personCurrentLocationType: CurrentLocationType.custody,
         personCustodyPrisonId: 'abc',
+      },
+    ])
+  })
+
+  it('updates the referral on the backend and redirects to the submit current location form', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: { firstName: 'Geoffrey' },
+      personCurrentLocationType: CurrentLocationType.community,
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/submit-current-location')
+      .type('form')
+      .send({
+        'current-location': 'COMMUNITY',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        personCurrentLocationType: CurrentLocationType.community,
+        personCustodyPrisonId: null,
       },
     ])
   })

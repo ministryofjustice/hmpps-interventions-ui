@@ -17,7 +17,9 @@ export default class CalendarDayInput {
     private readonly request: Request,
     private readonly key: string,
     private readonly errorMessages: CalendarDayErrorMessages,
-    private readonly referralDate: string | null = null
+    private readonly referralDate: string | null = null,
+    private readonly checkFutureDate: boolean = false,
+    private readonly checkFutureDateErrorMessage: string | null = null
   ) {}
 
   private static keys(key: string) {
@@ -102,6 +104,26 @@ export default class CalendarDayInput {
         }) // sure, dates bigger than this are real dates, but they're not valid here - minimum date protects from submission errors
         .withMessage(this.errorMessages.invalidDate),
       ExpressValidator.body(this.keys.day).custom(() => {
+        if (this.checkFutureDate) {
+          const year = this.request.body[this.keys.year]
+          const month = this.request.body[this.keys.month]
+          const day = this.request.body[this.keys.day]
+          if (
+            this.checkIfNotEmptyAndInteger(year) &&
+            this.checkIfNotEmptyAndInteger(month) &&
+            this.checkIfNotEmptyAndInteger(day)
+          ) {
+            const enteredDate = new Date(Number(year), Number(month - 1), Number(day), 0, 0, 0)
+            const currentDate = new Date()
+            if (enteredDate <= currentDate) {
+              throw new Error(this.checkFutureDateErrorMessage!)
+            }
+          }
+          return true
+        }
+        return true
+      }),
+      ExpressValidator.body(this.keys.day).custom(() => {
         const enteredDate = new Date(
           Number(this.request.body[this.keys.year]),
           Number(this.request.body[this.keys.month] - 1),
@@ -151,5 +173,13 @@ export default class CalendarDayInput {
       Number(this.request.body[this.keys.month]),
       Number(this.request.body[this.keys.year])
     )
+  }
+
+  private checkIfNotEmptyAndInteger(field: string): boolean {
+    if (field) {
+      const fieldInteger = Number(field)
+      return Number.isInteger(fieldInteger)
+    }
+    return false
   }
 }

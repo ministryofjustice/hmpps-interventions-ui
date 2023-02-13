@@ -142,6 +142,12 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   post(router, '/referrals/:id/submit-current-location', (req, res) =>
     makeAReferralController.submitCurrentLocation(req, res)
   )
+  get(router, '/referrals/:id/expected-release-date', (req, res) =>
+    makeAReferralController.viewExpectedReleaseDate(req, res)
+  )
+  post(router, '/referrals/:id/expected-release-date', (req, res) =>
+    makeAReferralController.updateExpectedReleaseDate(req, res)
+  )
   get(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.viewRiskInformation(req, res))
   post(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.updateRiskInformation(req, res))
 

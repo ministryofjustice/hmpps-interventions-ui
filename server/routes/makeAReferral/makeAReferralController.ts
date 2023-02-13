@@ -61,6 +61,9 @@ import CurrentLocationPresenter from './current-location/currentLocationPresente
 import CurrentLocationView from './current-location/currentLocationView'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import CurrentLocationForm from './current-location/currentLocationForm'
+import ExpectedReleaseDateForm from './expected-release-date/expectedReleaseDateForm'
+import ExpectedReleaseDatePresenter from './expected-release-date/expectedReleaseDatePresenter'
+import ExpectedReleaseDateView from './expected-release-date/expectedReleaseDateView'
 
 export default class MakeAReferralController {
   constructor(
@@ -612,13 +615,60 @@ export default class MakeAReferralController {
       error = form.error
     }
 
-    if (error === null) {
+    if (error === null && form.paramsForUpdate.personCustodyPrisonId != null) {
+      res.redirect(`/referrals/${req.params.id}/expected-release-date`)
+    } else if (error === null && form.paramsForUpdate.personCustodyPrisonId == null) {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
       const presenter = new CurrentLocationPresenter(referral, prisons, error, req.body)
       const view = new CurrentLocationView(presenter)
+
+      res.status(400)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
+  }
+
+  async viewExpectedReleaseDate(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+    const presenter = new ExpectedReleaseDatePresenter(referral)
+    const view = new ExpectedReleaseDateView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async updateExpectedReleaseDate(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const form = await new ExpectedReleaseDateForm(req).data()
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+      const presenter = new ExpectedReleaseDatePresenter(referral, error, req.body)
+      const view = new ExpectedReleaseDateView(presenter)
 
       res.status(400)
       ControllerUtils.renderWithLayout(res, view, serviceUser)

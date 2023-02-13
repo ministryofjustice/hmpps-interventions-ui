@@ -67,6 +67,13 @@ export default {
     invalidDate: 'The date by which the service needs to be completed must be a real date',
     mustBeInFuture: 'The date by which the service needs to be completed must be in the future',
   },
+  releaseDate: {
+    dayEmpty: 'The expected release date must include a day',
+    monthEmpty: 'The expected release date must include a month',
+    yearEmpty: 'The expected release date must include a year',
+    invalidDate: 'The expected release date must be a real date',
+    mustBeInFuture: 'The expected release date must be in the future',
+  },
   reasonForChange: {
     cannotBeEmpty: 'Reason for change cannot be empty',
   },
@@ -128,6 +135,9 @@ export default {
   needsInterpreterWithoutName: {
     empty: `Select yes if there is a need for an interpreter`,
     noChanges: 'You have no changes to whether an interpreter is needed.',
+  },
+  releaseDateUnknownReason: {
+    empty: `You must enter why the expected release date is not known`,
   },
   hasAdditionalResponsibilities: {
     empty: (name: string) => `Select yes if ${name} has caring or employment responsibilities`,
