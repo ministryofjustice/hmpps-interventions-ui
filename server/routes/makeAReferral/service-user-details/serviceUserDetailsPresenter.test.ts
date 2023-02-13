@@ -86,7 +86,7 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'Last name', lines: ['River'] },
         { key: 'Date of birth', lines: ['1 January 1980'] },
         { key: 'Location at time of referral', lines: ['CUSTODY'] },
-        { key: 'Current Establishment', lines: ['aaa'] },
+        { key: 'Current establishment', lines: ['aaa'] },
         { key: 'Expected release date', lines: [DateUtils.formattedDate(tomorrow.format('YYYY-MM-DD'))] },
         {
           key: 'Address',

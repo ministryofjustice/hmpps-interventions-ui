@@ -53,7 +53,7 @@ export default class ServiceUserDetailsPresenter {
       if (this.personCurrentLocationType === 'CUSTODY') {
         summary.push(
           {
-            key: 'Current Establishment',
+            key: 'Current establishment',
             lines: [this.personCustodyPrisonId ? this.personCustodyPrisonId : ''],
           },
           {
