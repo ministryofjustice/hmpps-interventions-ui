@@ -30,6 +30,7 @@ import SentReferral from '../../models/sentReferral'
 import ActionPlan from '../../models/actionPlan'
 import ActionPlanUtils from '../../utils/actionPlanUtils'
 import UserDataService from '../../services/userDataService'
+import PrisonRegisterService from '../../services/prisonRegisterService'
 
 export default class ProbationPractitionerReferralsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -41,7 +42,8 @@ export default class ProbationPractitionerReferralsController {
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly draftsService: DraftsService,
     private readonly referenceDataService: ReferenceDataService,
-    private readonly userDataService: UserDataService
+    private readonly userDataService: UserDataService,
+    private readonly prisonRegisterService: PrisonRegisterService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
@@ -223,6 +225,7 @@ export default class ProbationPractitionerReferralsController {
       riskSummary,
       responsibleOfficer,
       approvedActionPlanSummaries,
+      prisons,
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
       this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
@@ -232,6 +235,7 @@ export default class ProbationPractitionerReferralsController {
       this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
       this.communityApiService.getResponsibleOfficerForServiceUser(crn),
       this.interventionsService.getApprovedActionPlanSummaries(accessToken, req.params.id),
+      this.prisonRegisterService.getPrisons(),
     ])
 
     const assignee =
@@ -249,6 +253,7 @@ export default class ProbationPractitionerReferralsController {
       conviction,
       riskInformation,
       sentBy,
+      prisons,
       assignee,
       null,
       'probation-practitioner',

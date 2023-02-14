@@ -270,9 +270,11 @@ describe('GET /referrals/:id/service-user-details', () => {
   beforeEach(() => {
     const serviceCategory = serviceCategoryFactory.build()
     const referral = draftReferralFactory.serviceUserSelected().build({ id: '1' })
+    const prisonList = prisonFactory.prisonList()
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(expandedDeliusServiceUserFactory.build())
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 
   it('renders a service user details page', async () => {
@@ -1704,11 +1706,13 @@ describe('GET /referrals/:id/check-answers', () => {
       .completionDeadlineSet()
       .build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' }, relevantSentenceId: 123 })
     const conviction = deliusConvictionFactory.build()
+    const prisonList = prisonFactory.prisonList()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(expandedDeliusServiceUserFactory.build())
     communityApiService.getConvictionById.mockResolvedValue(conviction)
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 
   it('displays a summary of the draft referral', async () => {

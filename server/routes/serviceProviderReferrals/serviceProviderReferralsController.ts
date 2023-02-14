@@ -63,6 +63,7 @@ import DashboardWithoutPaginationPresenter from '../deprecated/dashboardWithoutP
 import DashboardWithoutPaginationView from '../deprecated/dashboardWithoutPaginationView'
 import FeatureFlagService from '../../services/featureFlagService'
 import UserDataService from '../../services/userDataService'
+import PrisonRegisterService from '../../services/prisonRegisterService'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -80,7 +81,8 @@ export default class ServiceProviderReferralsController {
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly draftsService: DraftsService,
     private readonly referenceDataService: ReferenceDataService,
-    private readonly userDataService: UserDataService
+    private readonly userDataService: UserDataService,
+    private readonly prisonRegisterService: PrisonRegisterService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
@@ -253,16 +255,25 @@ export default class ServiceProviderReferralsController {
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
     const { crn } = sentReferral.referral.serviceUser
-    const [intervention, sentBy, expandedServiceUser, conviction, riskInformation, riskSummary, responsibleOfficer] =
-      await Promise.all([
-        this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
-        this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
-        this.communityApiService.getExpandedServiceUserByCRN(crn),
-        this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
-        this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
-        this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
-        this.communityApiService.getResponsibleOfficerForServiceUser(crn),
-      ])
+    const [
+      intervention,
+      sentBy,
+      expandedServiceUser,
+      conviction,
+      riskInformation,
+      riskSummary,
+      responsibleOfficer,
+      prisons,
+    ] = await Promise.all([
+      this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
+      this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
+      this.communityApiService.getExpandedServiceUserByCRN(crn),
+      this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
+      this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
+      this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
+      this.communityApiService.getResponsibleOfficerForServiceUser(crn),
+      this.prisonRegisterService.getPrisons(),
+    ])
 
     const assignee =
       sentReferral.assignedTo === null
@@ -289,6 +300,7 @@ export default class ServiceProviderReferralsController {
       conviction,
       riskInformation,
       sentBy,
+      prisons,
       assignee,
       formError,
       'service-provider',

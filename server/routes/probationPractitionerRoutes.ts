@@ -17,7 +17,8 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     services.assessRisksAndNeedsService,
     services.draftsService,
     services.referenceDataService,
-    services.userDataService
+    services.userDataService,
+    services.prisonRegisterService
   )
   const appointmentsController = new AppointmentsController(
     services.interventionsService,

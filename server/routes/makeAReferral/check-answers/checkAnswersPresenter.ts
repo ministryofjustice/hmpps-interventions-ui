@@ -13,6 +13,7 @@ import SentencePresenter from '../relevant-sentence/sentencePresenter'
 import { ExpandedDeliusServiceUser } from '../../../models/delius/deliusServiceUser'
 import DateUtils from '../../../utils/dateUtils'
 import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
+import Prison from '../../../models/prisonRegister/prison'
 
 export default class CheckAnswersPresenter {
   constructor(
@@ -20,6 +21,7 @@ export default class CheckAnswersPresenter {
     private readonly intervention: Intervention,
     private readonly conviction: DeliusConviction,
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
+    private readonly prisons: Prison[],
     private readonly editedOasysRiskInformation: DraftOasysRiskInformation | null = null
   ) {}
 
@@ -29,6 +31,7 @@ export default class CheckAnswersPresenter {
       summary: new ServiceUserDetailsPresenter(
         this.referral.serviceUser,
         this.deliusServiceUser,
+        this.prisons,
         this.referral?.personCurrentLocationType,
         this.referral?.personCustodyPrisonId,
         this.referral?.expectedReleaseDate,

@@ -10,6 +10,7 @@ import sentReferralSummariesFactory from '../../../testutils/factories/sentRefer
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
+import prisonFactory from '../../../testutils/factories/prison'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
@@ -43,11 +44,13 @@ import SentReferralSummaries from '../../models/sentReferralSummaries'
 import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
 import { ActionPlanAppointment } from '../../models/appointment'
 import approvedActionPlanSummary from '../../../testutils/factories/approvedActionPlanSummary'
+import PrisonRegisterService from '../../services/prisonRegisterService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/draftsService')
+jest.mock('../../services/prisonRegisterService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
@@ -57,6 +60,8 @@ const communityApiService = new MockCommunityApiService() as jest.Mocked<Communi
 const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
 
 const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
+
+const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
 
 const draftsService = {
   createDraft: jest.fn(),
@@ -81,9 +86,12 @@ beforeEach(() => {
       assessRisksAndNeedsService,
       draftsService,
       userDataService,
+      prisonRegisterService,
     },
     userType: AppSetupUserType.serviceProvider,
   })
+  const prisonList = prisonFactory.prisonList()
+  prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 })
 
 afterEach(() => {

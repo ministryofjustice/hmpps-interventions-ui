@@ -22,6 +22,7 @@ import RoshPanelPresenter from './roshPanelPresenter'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import DateUtils from '../../utils/dateUtils'
 import config from '../../config'
+import Prison from '../../models/prisonRegister/prison'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -34,6 +35,7 @@ export default class ShowReferralPresenter {
     private readonly conviction: DeliusConviction,
     readonly riskInformation: SupplementaryRiskInformation,
     private readonly sentBy: DeliusUser,
+    private readonly prisons: Prison[],
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
     readonly userType: 'service-provider' | 'probation-practitioner',
@@ -283,6 +285,7 @@ export default class ShowReferralPresenter {
     return new ServiceUserDetailsPresenter(
       this.sentReferral.referral.serviceUser,
       this.deliusServiceUser,
+      this.prisons,
       this.sentReferral.referral.personCurrentLocationType,
       this.sentReferral.referral.personCustodyPrisonId,
       this.sentReferral.referral.expectedReleaseDate,

@@ -150,8 +150,9 @@ export default class MakeAReferralController {
   async viewServiceUserDetails(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.communityApiService.getExpandedServiceUserByCRN(referral.serviceUser.crn)
+    const prisons = await this.prisonRegisterService.getPrisons()
 
-    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser)
+    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser, prisons)
     const view = new ServiceUserDetailsView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -883,6 +884,7 @@ export default class MakeAReferralController {
   async checkAnswers(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const referral = await this.interventionsService.getDraftReferral(accessToken, req.params.id)
+    const prisons = await this.prisonRegisterService.getPrisons()
     if (referral.serviceCategoryIds === null) {
       throw new Error('Attempting to check answers without service categories selected')
     }
@@ -903,6 +905,7 @@ export default class MakeAReferralController {
       intervention,
       conviction,
       expandedDeliusServiceUser,
+      prisons,
       editedOasysRiskInformation
     )
     const view = new CheckAnswersView(presenter)

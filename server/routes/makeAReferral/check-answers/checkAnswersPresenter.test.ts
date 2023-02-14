@@ -5,9 +5,15 @@ import interventionFactory from '../../../../testutils/factories/intervention'
 import deliusConvictionFactory from '../../../../testutils/factories/deliusConviction'
 import deliusOffenceFactory from '../../../../testutils/factories/deliusOffence'
 import deliusSentenceFactory from '../../../../testutils/factories/deliusSentence'
+import prisonFactory from '../../../../testutils/factories/prison'
 import { ListStyle } from '../../../utils/summaryList'
 import expandedDeliusServiceUserFactory from '../../../../testutils/factories/expandedDeliusServiceUser'
 import { CurrentLocationType } from '../../../models/draftReferral'
+import PrisonRegisterService from '../../../services/prisonRegisterService'
+
+jest.mock('../../../services/prisonRegisterService')
+
+const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
 
 describe(CheckAnswersPresenter, () => {
   const parameterisedDraftReferralFactory = draftReferralFactory.params({
@@ -51,6 +57,8 @@ describe(CheckAnswersPresenter, () => {
   })
   const serviceCategories = serviceCategoryFactory.buildList(3)
   const conviction = deliusConvictionFactory.build()
+  const prisonList = prisonFactory.prisonList()
+  prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
   describe('serviceUserDetailsSection', () => {
     const referral = parameterisedDraftReferralFactory.build({
@@ -60,7 +68,8 @@ describe(CheckAnswersPresenter, () => {
       referral,
       interventionFactory.build({ serviceCategories }),
       conviction,
-      deliusServiceUser
+      deliusServiceUser,
+      prisonList
     )
 
     describe('title', () => {
@@ -77,7 +86,7 @@ describe(CheckAnswersPresenter, () => {
           { key: 'First name', lines: ['Alex'] },
           { key: 'Last name', lines: ['River'] },
           { key: 'Date of birth', lines: ['1 January 1980'] },
-          { key: 'Location at time of referral', lines: ['COMMUNITY'] },
+          { key: 'Location at time of referral', lines: ['Community'] },
           {
             key: 'Address',
             lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
@@ -112,7 +121,8 @@ describe(CheckAnswersPresenter, () => {
       referral,
       interventionFactory.build({ serviceCategories }),
       conviction,
-      deliusServiceUser
+      deliusServiceUser,
+      prisonList
     )
 
     describe('title', () => {
@@ -139,7 +149,8 @@ describe(CheckAnswersPresenter, () => {
         referral,
         interventionFactory.build({ serviceCategories }),
         conviction,
-        deliusServiceUser
+        deliusServiceUser,
+        prisonList
       )
 
       it('returns the section title', () => {
@@ -157,7 +168,8 @@ describe(CheckAnswersPresenter, () => {
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
-          deliusServiceUser
+          deliusServiceUser,
+          prisonList
         )
 
         it('returns the value from the referral', () => {
@@ -178,7 +190,8 @@ describe(CheckAnswersPresenter, () => {
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
-          deliusServiceUser
+          deliusServiceUser,
+          prisonList
         )
 
         it('returns the value from the referral', () => {
@@ -200,7 +213,8 @@ describe(CheckAnswersPresenter, () => {
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
-            deliusServiceUser
+            deliusServiceUser,
+            prisonList
           )
 
           expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
@@ -220,7 +234,8 @@ describe(CheckAnswersPresenter, () => {
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
-            deliusServiceUser
+            deliusServiceUser,
+            prisonList
           )
 
           it('also includes the language', () => {
@@ -243,7 +258,8 @@ describe(CheckAnswersPresenter, () => {
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
-            deliusServiceUser
+            deliusServiceUser,
+            prisonList
           )
 
           expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
@@ -263,7 +279,8 @@ describe(CheckAnswersPresenter, () => {
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
-            deliusServiceUser
+            deliusServiceUser,
+            prisonList
           )
 
           it('includes information about when they’re unavailable', () => {
@@ -324,7 +341,7 @@ describe(CheckAnswersPresenter, () => {
     const intervention = interventionFactory.build({
       serviceCategories: [accommodationServiceCategory, eteServiceCategory, serviceCategoryFactory.build()],
     })
-    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser)
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
 
     it('contains a section for each service category in the referral', () => {
       expect(presenter.referralDetailsSections).toMatchObject([
@@ -383,7 +400,7 @@ describe(CheckAnswersPresenter, () => {
           serviceCategoryIds: [accommodationServiceCategory.id],
         })
 
-        const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser)
+        const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
 
         expect(presenter.serviceCategoriesSummary).toBeNull()
       })
@@ -401,7 +418,7 @@ describe(CheckAnswersPresenter, () => {
         })
 
         it('lists the service categories chosen in the referral', () => {
-          const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser)
+          const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
           expect(presenter.serviceCategoriesSummary).toEqual([
             {
               key: 'Selected service categories',
@@ -420,7 +437,7 @@ describe(CheckAnswersPresenter, () => {
         })
 
         it('lists the service categories chosen in the referral', () => {
-          const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser)
+          const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
           expect(presenter.serviceCategoriesSummary).toEqual([
             {
               key: 'Selected service categories',
@@ -452,7 +469,13 @@ describe(CheckAnswersPresenter, () => {
     })
 
     it('returns information about the conviction', () => {
-      const presenter = new CheckAnswersPresenter(referral, intervention, assaultConviction, deliusServiceUser)
+      const presenter = new CheckAnswersPresenter(
+        referral,
+        intervention,
+        assaultConviction,
+        deliusServiceUser,
+        prisonList
+      )
 
       expect(presenter.sentenceInformationSummary).toEqual([
         {
@@ -480,7 +503,7 @@ describe(CheckAnswersPresenter, () => {
       id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
       completionDeadline: '2021-10-24',
     })
-    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser)
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
 
     describe('title', () => {
       it('includes the contract type name', () => {
@@ -512,7 +535,8 @@ describe(CheckAnswersPresenter, () => {
         referral,
         interventionFactory.build({ serviceCategories }),
         conviction,
-        deliusServiceUser
+        deliusServiceUser,
+        prisonList
       )
 
       expect(presenter.enforceableDaysSummary).toEqual([
@@ -537,7 +561,8 @@ describe(CheckAnswersPresenter, () => {
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
-          deliusServiceUser
+          deliusServiceUser,
+          prisonList
         )
 
         expect(presenter.furtherInformationSummary).toEqual([
@@ -561,7 +586,8 @@ describe(CheckAnswersPresenter, () => {
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
-          deliusServiceUser
+          deliusServiceUser,
+          prisonList
         )
 
         expect(presenter.furtherInformationSummary).toEqual([

@@ -18,6 +18,7 @@ import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import interventionFactory from '../../../testutils/factories/intervention'
+import prisonFactory from '../../../testutils/factories/prison'
 import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
@@ -45,12 +46,15 @@ import UserDataService from '../../services/userDataService'
 import SentReferralSummaries from '../../models/sentReferralSummaries'
 import { ActionPlanAppointment } from '../../models/appointment'
 import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
+import PrisonRegisterService from '../../services/prisonRegisterService'
+import Prison from '../../models/prisonRegister/prison'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
 jest.mock('../../services/hmppsAuthService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/draftsService')
+jest.mock('../../services/prisonRegisterService')
 
 const draftAssignmentFactory = createDraftFactory<DraftAssignmentData>({ email: null })
 
@@ -65,6 +69,8 @@ const communityApiService = new MockCommunityApiService() as jest.Mocked<Communi
 const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
 
 const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
+
+const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
 
 const userDataService = {
   store: jest.fn(),
@@ -90,6 +96,7 @@ beforeEach(() => {
       draftsService,
       referenceDataService,
       userDataService,
+      prisonRegisterService,
     },
     userType: AppSetupUserType.serviceProvider,
   })
@@ -810,6 +817,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
   let deliusServiceUser: ExpandedDeliusServiceUser
   let supplementaryRiskInformation: SupplementaryRiskInformation
   let responsibleOfficer: DeliusOffenderManager
+  let prisonList: Prison[]
 
   beforeEach(() => {
     sentReferral = sentReferralFactory.build()
@@ -817,6 +825,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     deliusServiceUser = expandedDeliusServiceUserFactory.build()
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
     responsibleOfficer = deliusOffenderManagerFactory.responsibleOfficer().build()
+    prisonList = prisonFactory.prisonList()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
@@ -827,6 +836,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     communityApiService.getResponsibleOfficerForServiceUser.mockResolvedValue(responsibleOfficer)
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 
   it('displays information about the referral and service user', async () => {

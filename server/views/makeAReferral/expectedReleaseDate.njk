@@ -3,6 +3,7 @@
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/date-input/macro.njk" import govukDateInput %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
@@ -16,9 +17,16 @@
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+      {{ govukBackLink(backLinkArgs) }}
+      <br>
+      <br>
       {% if errorSummaryArgs !== null %}
         {{ govukErrorSummary(errorSummaryArgs) }}
       {% endif %}
+
+
+      <h1 class="govuk-heading-l">{{ presenter.text.title }}</h1>
+      <p class="govuk-body">{{ presenter.text.description }} </p>
 
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
@@ -35,6 +43,7 @@
         }}
         {% endset -%}
         {{ govukRadios(expectedReleaseDateRadioArgs(expectedReleaseDateHtml,releaseDateUnknownReasonHtml)) }}
+        <br>
         {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
       </form>
     </div>

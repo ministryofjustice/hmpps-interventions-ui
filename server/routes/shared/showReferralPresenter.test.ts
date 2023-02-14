@@ -10,9 +10,15 @@ import deliusConvictionFactory from '../../../testutils/factories/deliusConvicti
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
+import prisonFactory from '../../../testutils/factories/prison'
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
 import config from '../../config'
 import { CurrentLocationType } from '../../models/draftReferral'
+import PrisonRegisterService from '../../services/prisonRegisterService'
+
+jest.mock('../../services/prisonRegisterService')
+
+const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
 
 describe(ShowReferralPresenter, () => {
   const intervention = interventionFactory.build()
@@ -48,6 +54,9 @@ describe(ShowReferralPresenter, () => {
   const riskSummary = riskSummaryFactory.build()
   const responsibleOfficer = deliusOffenderManagerFactory.build()
 
+  const prisonList = prisonFactory.prisonList()
+  prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+
   describe('canShowFullSupplementaryRiskInformation', () => {
     it("don't show full risk information if redacted risk not available", () => {
       const referral = sentReferralFactory.build(referralParams)
@@ -58,6 +67,7 @@ describe(ShowReferralPresenter, () => {
         deliusConviction,
         supplementaryRiskInformationFactory.build({ redactedRisk: undefined }),
         deliusUser,
+        prisonList,
         null,
         null,
         'service-provider',
@@ -78,6 +88,7 @@ describe(ShowReferralPresenter, () => {
         deliusConviction,
         supplementaryRiskInformationFactory.build(),
         deliusUser,
+        prisonList,
         null,
         null,
         'service-provider',
@@ -99,6 +110,7 @@ describe(ShowReferralPresenter, () => {
         deliusConviction,
         supplementaryRiskInformation,
         deliusUser,
+        prisonList,
         null,
         null,
         'service-provider',
@@ -124,6 +136,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           assignee,
           null,
           'service-provider',
@@ -148,6 +161,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           assignee,
           null,
           'service-provider',
@@ -174,6 +188,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           assignee,
           null,
           'service-provider',
@@ -198,6 +213,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           assignee,
           null,
           'service-provider',
@@ -221,6 +237,7 @@ describe(ShowReferralPresenter, () => {
         deliusConviction,
         supplementaryRiskInformation,
         deliusUser,
+        prisonList,
         null,
         null,
         'service-provider',
@@ -247,6 +264,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'service-provider',
@@ -286,6 +304,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'service-provider',
@@ -325,6 +344,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'service-provider',
@@ -403,6 +423,7 @@ describe(ShowReferralPresenter, () => {
           burglaryConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'service-provider',
@@ -493,6 +514,7 @@ describe(ShowReferralPresenter, () => {
           burglaryConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'service-provider',
@@ -549,6 +571,7 @@ describe(ShowReferralPresenter, () => {
         deliusConviction,
         supplementaryRiskInformation,
         deliusUser,
+        prisonList,
         null,
         null,
         'service-provider',
@@ -587,6 +610,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'probation-practitioner',
@@ -621,6 +645,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'probation-practitioner',
@@ -655,6 +680,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'service-provider',
@@ -691,6 +717,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'probation-practitioner',
@@ -740,6 +767,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'probation-practitioner',
@@ -793,6 +821,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'service-provider',
@@ -850,6 +879,7 @@ describe(ShowReferralPresenter, () => {
         deliusConviction,
         supplementaryRiskInformation,
         deliusUser,
+        prisonList,
         null,
         null,
         'service-provider',
@@ -865,7 +895,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'First name', lines: ['Jenny'] },
         { key: 'Last name', lines: ['Jones'] },
         { key: 'Date of birth', lines: ['1 January 1980'] },
-        { key: 'Location at time of referral', lines: ['COMMUNITY'] },
+        { key: 'Location at time of referral', lines: ['Community'] },
         {
           key: 'Address',
           lines: ['Flat 2 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
@@ -894,6 +924,7 @@ describe(ShowReferralPresenter, () => {
         deliusConviction,
         lowRiskInformation,
         deliusUser,
+        prisonList,
         null,
         null,
         'service-provider',
@@ -961,6 +992,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'service-provider',
@@ -1048,6 +1080,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformation,
           deliusUser,
+          prisonList,
           null,
           null,
           'service-provider',
@@ -1103,6 +1136,7 @@ describe(ShowReferralPresenter, () => {
           deliusConviction,
           supplementaryRiskInformationFactory.build({ redactedRisk: undefined }),
           deliusUser,
+          prisonList,
           null,
           null,
           'service-provider',

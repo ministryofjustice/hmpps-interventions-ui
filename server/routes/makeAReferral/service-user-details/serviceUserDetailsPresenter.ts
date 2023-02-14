@@ -5,11 +5,14 @@ import ExpandedDeliusServiceUserDecorator from '../../../decorators/expandedDeli
 import DateUtils from '../../../utils/dateUtils'
 import config from '../../../config'
 import { CurrentLocationType } from '../../../models/draftReferral'
+import utils from '../../../utils/utils'
+import Prison from '../../../models/prisonRegister/prison'
 
 export default class ServiceUserDetailsPresenter {
   constructor(
     private readonly serviceUser: ServiceUser,
     private readonly deliusServiceUserDetails: ExpandedDeliusServiceUser,
+    private readonly prisons: Prison[],
     private readonly personCurrentLocationType: CurrentLocationType | null = null,
     private readonly personCustodyPrisonId: string | null = null,
     private readonly popReleaseDate: string | null = null,
@@ -38,6 +41,8 @@ export default class ServiceUserDetailsPresenter {
     const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
     const phoneNumbers = this.findUniqueNumbers()
     const { address } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
+    const matchedPerson = this.prisons.find(prison => prison.prisonId === this.personCustodyPrisonId)
+    const prisonName = matchedPerson ? matchedPerson.prisonName : ''
     const summary: SummaryListItem[] = [
       { key: 'CRN', lines: [this.serviceUser.crn] },
       { key: 'Title', lines: [this.serviceUser.title ?? ''] },
@@ -48,13 +53,13 @@ export default class ServiceUserDetailsPresenter {
     if (config.featureFlags.custodyLocationEnabled) {
       summary.push({
         key: 'Location at time of referral',
-        lines: [this.personCurrentLocationType ? this.personCurrentLocationType : ''],
+        lines: [this.personCurrentLocationType ? utils.convertToProperCase(this.personCurrentLocationType) : ''],
       })
       if (this.personCurrentLocationType === 'CUSTODY') {
         summary.push(
           {
             key: 'Current establishment',
-            lines: [this.personCustodyPrisonId ? this.personCustodyPrisonId : ''],
+            lines: [this.personCustodyPrisonId ? prisonName : ''],
           },
           {
             key: 'Expected release date',

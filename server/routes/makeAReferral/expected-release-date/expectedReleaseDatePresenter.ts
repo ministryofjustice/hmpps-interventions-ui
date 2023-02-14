@@ -4,11 +4,15 @@ import PresenterUtils from '../../../utils/presenterUtils'
 import CalendarDay from '../../../utils/calendarDay'
 
 export default class ExpectedReleaseDatePresenter {
+  readonly backLinkUrl: string
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
-  ) {}
+  ) {
+    this.backLinkUrl = `/referrals/${referral.id}/form`
+  }
 
   private errorMessageForField(field: string): string | null {
     return PresenterUtils.errorMessage(this.error, field)
@@ -17,6 +21,8 @@ export default class ExpectedReleaseDatePresenter {
   readonly expectedReleaseDateHint = 'For example, 31 3 1980'
 
   readonly text = {
+    title: 'Do you know the expected release date?',
+    description: 'You can find this in nDelius and NOMIS',
     releaseDate: {
       label: 'Add the expected release date',
     },
@@ -31,8 +37,6 @@ export default class ExpectedReleaseDatePresenter {
   })
 
   private readonly utils = new PresenterUtils(this.userInputData)
-
-  readonly title = 'Do you know the expected release date?'
 
   readonly expectedReleaseWarningMessage =
     'When you know the date, you will need to make direct contact with the service provider.'

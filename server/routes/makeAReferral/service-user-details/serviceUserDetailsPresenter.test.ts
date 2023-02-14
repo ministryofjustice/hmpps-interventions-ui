@@ -2,8 +2,14 @@ import moment from 'moment'
 import { ListStyle } from '../../../utils/summaryList'
 import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
 import expandedDeliusServiceUserFactory from '../../../../testutils/factories/expandedDeliusServiceUser'
+import prisonFactory from '../../../../testutils/factories/prison'
 import { CurrentLocationType } from '../../../models/draftReferral'
 import DateUtils from '../../../utils/dateUtils'
+import PrisonRegisterService from '../../../services/prisonRegisterService'
+
+jest.mock('../../../services/prisonRegisterService')
+
+const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
 
 describe(ServiceUserDetailsPresenter, () => {
   const serviceUser = {
@@ -55,25 +61,32 @@ describe(ServiceUserDetailsPresenter, () => {
   })
 
   describe('title', () => {
+    const prisonList = prisonFactory.prisonList()
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+
     it("returns a title for the page with the service user's name", () => {
-      const presenter = new ServiceUserDetailsPresenter(serviceUser, deliusServiceUser)
+      const presenter = new ServiceUserDetailsPresenter(serviceUser, deliusServiceUser, prisonList)
 
       expect(presenter.title).toEqual("Alex's information")
     })
 
     it("falls back to an empty string if the service user's name is null", () => {
-      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser)
+      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser, prisonList)
 
       expect(presenter.title).toEqual("The person on probation's information")
     })
   })
 
   describe('summary', () => {
+    const prisonList = prisonFactory.prisonList()
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+
     it('returns an array of summary list items for each field on the Service user', () => {
       const tomorrow = moment().add(1, 'days')
       const presenter = new ServiceUserDetailsPresenter(
         serviceUser,
         deliusServiceUser,
+        prisonList,
         CurrentLocationType.custody,
         'aaa',
         tomorrow.format('YYYY-MM-DD')
@@ -85,8 +98,8 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'First name', lines: ['Alex'] },
         { key: 'Last name', lines: ['River'] },
         { key: 'Date of birth', lines: ['1 January 1980'] },
-        { key: 'Location at time of referral', lines: ['CUSTODY'] },
-        { key: 'Current establishment', lines: ['aaa'] },
+        { key: 'Location at time of referral', lines: ['Custody'] },
+        { key: 'Current establishment', lines: ['London'] },
         { key: 'Expected release date', lines: [DateUtils.formattedDate(tomorrow.format('YYYY-MM-DD'))] },
         {
           key: 'Address',
@@ -104,7 +117,7 @@ describe(ServiceUserDetailsPresenter, () => {
     })
 
     it('returns an empty values in lines for nullable fields on the Service user', () => {
-      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser)
+      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser, prisonList)
 
       expect(presenter.summary).toEqual([
         { key: 'CRN', lines: ['X862134'] },
@@ -133,7 +146,11 @@ describe(ServiceUserDetailsPresenter, () => {
         const nullNumberDeliusServiceUser = expandedDeliusServiceUserFactory.build({
           contactDetails: { emailAddresses: null, phoneNumbers: [{ number: null, type: null }] },
         })
-        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullNumberDeliusServiceUser)
+        const presenter = new ServiceUserDetailsPresenter(
+          nullFieldsServiceUser,
+          nullNumberDeliusServiceUser,
+          prisonList
+        )
 
         expect(presenter.summary).toContainEqual({ key: 'Phone number', lines: [], listStyle: ListStyle.noMarkers })
       })
@@ -147,7 +164,7 @@ describe(ServiceUserDetailsPresenter, () => {
             ],
           },
         })
-        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user)
+        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user, prisonList)
 
         expect(presenter.summary).toContainEqual({
           key: 'Phone numbers',
@@ -165,7 +182,7 @@ describe(ServiceUserDetailsPresenter, () => {
             ],
           },
         })
-        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user)
+        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user, prisonList)
 
         expect(presenter.summary).toContainEqual({
           key: 'Phone number',
@@ -180,7 +197,7 @@ describe(ServiceUserDetailsPresenter, () => {
         const user = expandedDeliusServiceUserFactory.build({
           contactDetails: { emailAddresses: ['alex.river@example.com', 'a.r@example.com'] },
         })
-        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user)
+        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user, prisonList)
 
         expect(presenter.summary).toContainEqual({
           key: 'Email addresses',
