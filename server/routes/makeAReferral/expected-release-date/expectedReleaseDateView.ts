@@ -11,16 +11,6 @@ export default class ExpectedReleaseDateView {
     return {
       idPrefix: 'expected-release-date',
       name: 'expected-release-date',
-      fieldset: {
-        legend: {
-          text: this.presenter.title,
-          isPageHeading: true,
-          classes: 'govuk-fieldset__legend--l',
-        },
-      },
-      hint: {
-        text: 'You can find this in nDelius and NOMIS',
-      },
       items: [
         {
           value: 'yes',
@@ -99,6 +89,7 @@ export default class ExpectedReleaseDateView {
         errorSummaryArgs: this.errorSummaryArgs,
         expectedReleaseDateRadioArgs: this.expectedReleaseDateRadioArgs.bind(this),
         releaseDateUnknownReasonArgs: this.releaseDateUnknownReasonArgs,
+        backLinkArgs: { href: this.presenter.backLinkUrl },
         dateInputArgs: this.dateInputArgs,
       },
     ]

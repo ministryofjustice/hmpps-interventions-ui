@@ -16,7 +16,8 @@ export default function serviceProviderRoutes(router: Router, services: Services
     services.assessRisksAndNeedsService,
     services.draftsService,
     services.referenceDataService,
-    services.userDataService
+    services.userDataService,
+    services.prisonRegisterService
   )
   const appointmentsController = new AppointmentsController(
     services.interventionsService,

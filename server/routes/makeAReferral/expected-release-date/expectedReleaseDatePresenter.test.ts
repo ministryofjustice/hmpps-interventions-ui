@@ -41,6 +41,8 @@ describe('ExpectedReleaseDatePresenter', () => {
       const presenter = new ExpectedReleaseDatePresenter(referral)
 
       expect(presenter.text).toEqual({
+        title: 'Do you know the expected release date?',
+        description: 'You can find this in nDelius and NOMIS',
         releaseDate: {
           label: 'Add the expected release date',
         },

@@ -113,9 +113,10 @@ export default class CalendarDayInput {
             this.checkIfNotEmptyAndInteger(month) &&
             this.checkIfNotEmptyAndInteger(day)
           ) {
-            const enteredDate = new Date(Number(year), Number(month - 1), Number(day), 0, 0, 0)
+            const enteredDate = new Date(Number(year), Number(month - 1), Number(day))
             const currentDate = new Date()
-            if (enteredDate <= currentDate) {
+            currentDate.setHours(0, 0, 0, 0)
+            if (enteredDate < currentDate) {
               throw new Error(this.checkFutureDateErrorMessage!)
             }
           }

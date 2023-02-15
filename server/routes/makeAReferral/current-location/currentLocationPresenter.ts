@@ -4,12 +4,16 @@ import PresenterUtils from '../../../utils/presenterUtils'
 import Prison from '../../../models/prisonRegister/prison'
 
 export default class CurrentLocationPresenter {
+  readonly backLinkUrl: string
+
   constructor(
     private readonly referral: DraftReferral,
     readonly prisons: Prison[],
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
-  ) {}
+  ) {
+    this.backLinkUrl = `/referrals/${referral.id}/form`
+  }
 
   private errorMessageForField(field: string): string | null {
     return PresenterUtils.errorMessage(this.error, field)

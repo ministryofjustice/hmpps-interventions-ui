@@ -75,6 +75,7 @@ export default class CurrentLocationView {
         submitLocationRadiosArgs: this.submitLocationRadiosArgs.bind(this),
         warningText: this.presenter.text.warningText,
         prisonSelectArgs: this.prisonSelectArgs,
+        backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
   }
