@@ -497,7 +497,7 @@ describe('Probation Practitioner monitor journey', () => {
 
       cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
 
-      cy.contains('Cancel this referral').click()
+      cy.get('a').contains('Cancel this referral').click()
       cy.contains('Service user has moved out of delivery area').click()
       cy.contains('Additional comments (optional)').type('Some additional comments')
 
