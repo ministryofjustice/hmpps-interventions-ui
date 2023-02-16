@@ -46,6 +46,7 @@ describe('CurrentLocationPresenter', () => {
         .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
       const presenter = new CurrentLocationPresenter(referral, [])
 
+      expect(presenter.backLinkUrl).toBe(`/referrals/${referral.id}/needs-and-requirements`)
       expect(presenter.text).toEqual({
         title: 'Submit Geoffrey Blue’s current location',
         description:
