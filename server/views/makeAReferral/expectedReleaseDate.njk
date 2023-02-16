@@ -25,7 +25,7 @@
       {% endif %}
 
 
-      <h1 class="govuk-heading-l">{{ presenter.text.title }}</h1>
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
       <p class="govuk-body">{{ presenter.text.description }} </p>
 
       <form method="post">
@@ -43,6 +43,8 @@
         }}
         {% endset -%}
         {{ govukRadios(expectedReleaseDateRadioArgs(expectedReleaseDateHtml,releaseDateUnknownReasonHtml)) }}
+        <br>
+        <br>
         <br>
         {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
       </form>

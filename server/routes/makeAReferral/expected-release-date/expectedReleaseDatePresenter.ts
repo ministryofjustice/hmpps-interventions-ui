@@ -11,7 +11,7 @@ export default class ExpectedReleaseDatePresenter {
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
-    this.backLinkUrl = `/referrals/${referral.id}/form`
+    this.backLinkUrl = `/referrals/${referral.id}/submit-current-location`
   }
 
   private errorMessageForField(field: string): string | null {
@@ -42,7 +42,7 @@ export default class ExpectedReleaseDatePresenter {
     'When you know the date, you will need to make direct contact with the service provider.'
 
   readonly fields = {
-    hasExpectedReleaseDate: this.utils.booleanValue(this.referral.hasExpectedReleaseDate, 'expected-release-date'),
+    hasExpectedReleaseDate: this.knowsExpectedReleaseDate(),
     releaseDate: this.utils.dateValue(
       this.referral.expectedReleaseDate === null
         ? null
@@ -54,5 +54,18 @@ export default class ExpectedReleaseDatePresenter {
       this.referral.expectedReleaseDateMissingReason,
       'unknown-release-date-reason'
     ),
+  }
+
+  knowsExpectedReleaseDate(): boolean | null {
+    if (this.referral.hasExpectedReleaseDate != null) {
+      this.utils.booleanValue(this.referral.hasExpectedReleaseDate, 'expected-release-date')
+    }
+    if (this.referral.expectedReleaseDate != null) {
+      return true
+    }
+    if (this.referral.expectedReleaseDateMissingReason != null) {
+      return false
+    }
+    return null
   }
 }

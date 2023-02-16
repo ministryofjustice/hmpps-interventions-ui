@@ -87,7 +87,7 @@
 {% endif %}
 {% if presenter.canCancelReferral %}
 <h2 class="govuk-heading-m">Cancel this referral</h2>
-<p>You can cancel this referral if it’s no longer needed. Next, you’ll be asked for a reason and then an email will be sent to the service provider. You’ll still be able to view the referral in the cancelled referrals case list.</p>
+<p>You can cancel this referral if it’s no longer needed. Next, you’ll be asked for a reason. You’ll still be able to view the referral in the cancelled referrals case list.</p>
 <p>You can also <a href='{{ presenter.amendReferralHref }}'>change some parts of the referral</a>, rather than cancelling it.</p>
 <a href='{{ presenter.referralCancellationHref }}'>Cancel this referral</a>
 {% elseif presenter.referralEndRequested %}
