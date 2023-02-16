@@ -40,6 +40,7 @@ describe('ExpectedReleaseDatePresenter', () => {
         .build({ serviceUser: { firstName: 'Geoffrey' } })
       const presenter = new ExpectedReleaseDatePresenter(referral)
 
+      expect(presenter.backLinkUrl).toBe(`/referrals/${referral.id}/submit-current-location`)
       expect(presenter.text).toEqual({
         title: 'Do you know the expected release date?',
         description: 'You can find this in nDelius and NOMIS',
