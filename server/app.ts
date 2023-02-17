@@ -90,6 +90,7 @@ export default function createApp(
             "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
             "'sha256-XVaQIYDX9x3FcKfwRYYxmwIQXtOQY8UgJS4/7p/130A='",
             "'sha256-Yx3yl4k4eP+GDjGPt8O/8Lqh4sxAImQ9XEG6gp7wOwM='",
+            "'sha256-ASzzDa+3qwkncwSXl2VRrTeLBg2HiYU1xgYYrcnkHhM='",
             'https://www.google-analytics.com',
             'https://ssl.google-analytics.com',
             'https://www.googletagmanager.com/',
