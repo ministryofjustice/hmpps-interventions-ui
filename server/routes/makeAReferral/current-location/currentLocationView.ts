@@ -22,7 +22,7 @@ export default class CurrentLocationView {
         {
           value: CurrentLocationType.custody.toString(),
           text: this.presenter.text.currentLocation.custodyLabel,
-          checked: this.presenter.fields.currentLocation === CurrentLocationType.custody.toString(),
+          checked: this.presenter.referral.personCurrentLocationType === CurrentLocationType.custody.toString(),
           conditional: {
             html: yesHtml,
           },
@@ -30,7 +30,7 @@ export default class CurrentLocationView {
         {
           value: CurrentLocationType.community.toString(),
           text: this.presenter.text.currentLocation.communityLabel,
-          checked: this.presenter.fields.currentLocation === CurrentLocationType.community.toString(),
+          checked: this.presenter.referral.personCurrentLocationType === CurrentLocationType.community.toString(),
         },
       ],
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.currentLocation.errorMessage),
@@ -42,6 +42,9 @@ export default class CurrentLocationView {
       return {
         text: prison.prisonName,
         value: prison.prisonId,
+        selected: this.presenter.referral.personCustodyPrisonId
+          ? this.presenter.referral.personCustodyPrisonId === prison.prisonId
+          : false,
       }
     })
 
@@ -50,6 +53,7 @@ export default class CurrentLocationView {
         text: '-- Select a Prison Location --',
       },
     ]
+
     items.push(...prisonItems)
 
     return {
