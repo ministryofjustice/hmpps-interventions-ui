@@ -7,7 +7,7 @@ export default class ExpectedReleaseDatePresenter {
   readonly backLinkUrl: string
 
   constructor(
-    readonly referral: DraftReferral,
+    private readonly referral: DraftReferral,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
