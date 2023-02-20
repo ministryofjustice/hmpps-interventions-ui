@@ -1,0 +1,10 @@
+{
+  "request": {
+    "method": "ANY",
+    "urlPattern": "/prisoner/.*"
+  },
+  "response": {
+    "proxyBaseUrl": "http://prisoner-offender-search:8080"
+  },
+  "priority": 7
+}
