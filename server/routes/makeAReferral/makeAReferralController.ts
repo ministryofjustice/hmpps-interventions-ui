@@ -63,7 +63,7 @@ import CurrentLocationForm from './current-location/currentLocationForm'
 import ExpectedReleaseDateForm from './expected-release-date/expectedReleaseDateForm'
 import ExpectedReleaseDatePresenter from './expected-release-date/expectedReleaseDatePresenter'
 import ExpectedReleaseDateView from './expected-release-date/expectedReleaseDateView'
-import config from "../../config";
+import config from '../../config'
 
 export default class MakeAReferralController {
   constructor(

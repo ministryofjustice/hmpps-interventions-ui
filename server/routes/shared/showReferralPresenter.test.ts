@@ -12,7 +12,6 @@ import expandedDeliusServiceUserFactory from '../../../testutils/factories/expan
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import prisonFactory from '../../../testutils/factories/prison'
 import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
-import config from '../../config'
 import { CurrentLocationType } from '../../models/draftReferral'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 
