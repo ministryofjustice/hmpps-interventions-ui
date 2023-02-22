@@ -21,7 +21,6 @@ import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import RoshPanelPresenter from './roshPanelPresenter'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import DateUtils from '../../utils/dateUtils'
-import config from '../../config'
 import Prison from '../../models/prisonRegister/prison'
 
 export default class ShowReferralPresenter {
