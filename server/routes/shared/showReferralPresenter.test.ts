@@ -57,6 +57,7 @@ describe(ShowReferralPresenter, () => {
   prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
   describe('canShowFullSupplementaryRiskInformation', () => {
+    // TODO: describe what we expect to show instead
     it("don't show full risk information if redacted risk not available", () => {
       const referral = sentReferralFactory.build(referralParams)
 
