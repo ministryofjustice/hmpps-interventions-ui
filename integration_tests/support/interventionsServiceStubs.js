@@ -190,8 +190,8 @@ Cypress.Commands.add('stubGetMyInterventions', responseJson => {
   cy.task('stubGetMyInterventions', { responseJson })
 })
 
-Cypress.Commands.add('stubUpdateDraftOasysRiskInformation', responseJson => {
-  cy.task('stubUpdateDraftOasysRiskInformation', { responseJson })
+Cypress.Commands.add('stubPatchDraftOasysRiskInformation', (referralId, responseJson) => {
+  cy.task('stubPatchDraftOasysRiskInformation', { referralId, responseJson })
 })
 
 Cypress.Commands.add('stubGetDraftOasysRiskInformation', (referralId, responseJson) => {

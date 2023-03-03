@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { slowCypressDown } from 'cypress-slow-down'
 import draftReferralFactory from '../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
@@ -10,6 +11,7 @@ import prisonFactory from '../../testutils/factories/prison'
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
+import draftOasysRiskInformation from '../../testutils/factories/draftOasysRiskInformation'
 import pageFactory from '../../testutils/factories/page'
 import { CurrentLocationType } from '../../server/models/draftReferral'
 
@@ -95,6 +97,8 @@ describe('Referral form', () => {
 
   describe('for single referrals', () => {
     it('User starts a referral, fills in the form, and submits it', () => {
+      slowCypressDown(500)
+      cy.viewport(1536, 960)
       const draftReferral = draftReferralFactory.serviceUserSelected().build({
         id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
         serviceCategoryIds: [accommodationServiceCategory.id],
@@ -249,7 +253,16 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/risk-information`)
-      cy.contains('Add information for the service provider').type('A danger to the elderly')
+      cy.contains('Additional information')
+      cy.withinFieldsetThatContains('Do you want to edit this OASys risk information for the Service Provider?', () => {
+        cy.contains('Yes').click()
+      })
+      cy.contains('Save and continue').click()
+
+      cy.stubPatchDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/edit-oasys-risk-information`)
+      cy.get('#confirm-understood').click()
+
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/needs-and-requirements`)
@@ -649,6 +662,7 @@ describe('Referral form', () => {
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
+      cy.stubPatchDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
 
       cy.login()
@@ -720,9 +734,14 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/risk-information`)
-      cy.contains('Add information for the service provider').type('A danger to the elderly')
+      cy.contains('Additional information')
+      cy.withinFieldsetThatContains('Do you want to edit this OASys risk information for the Service Provider?', () => {
+        cy.contains('Yes').click()
+      })
       cy.contains('Save and continue').click()
-
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/edit-oasys-risk-information`)
+      cy.get('#confirm-understood').click()
+      cy.contains('Save and continue').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/needs-and-requirements`)
       cy.get('h1').contains('Alex’s needs and requirements')
 

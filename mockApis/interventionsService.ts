@@ -787,10 +787,10 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubUpdateDraftOasysRiskInformation = async (referralId: string, responseJson: unknown): Promise<unknown> => {
+  stubPatchDraftOasysRiskInformation = async (referralId: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
-        method: 'POST',
+        method: 'PATCH',
         urlPattern: `/draft-referral/${referralId}/oasys-risk-information`,
       },
       response: {

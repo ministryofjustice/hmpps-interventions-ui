@@ -740,6 +740,7 @@ export default class MakeAReferralController {
           referralId,
           form.editedDraftRiskInformation
         )
+
         res.redirect(`/referrals/${req.params.id}/needs-and-requirements`)
         return
       }
