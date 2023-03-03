@@ -108,7 +108,6 @@ export default function appWithAllRoutes({
   overrides?: Partial<Services>
   userType: AppSetupUserType
 }): Express {
-  config.apis.assessRisksAndNeedsApi.riskSummaryEnabled = true
   config.features.serviceProviderReporting = true
   // auth.default.authenticationMiddleware = () => (req, res, next) => next()
   const services = {

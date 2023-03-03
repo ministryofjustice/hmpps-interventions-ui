@@ -10,6 +10,7 @@ import prisonFactory from '../../testutils/factories/prison'
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
+import draftOasysRiskInformation from '../../testutils/factories/draftOasysRiskInformation'
 import pageFactory from '../../testutils/factories/page'
 import { CurrentLocationType } from '../../server/models/draftReferral'
 
@@ -95,6 +96,7 @@ describe('Referral form', () => {
 
   describe('for single referrals', () => {
     it('User starts a referral, fills in the form, and submits it', () => {
+      cy.viewport(1536, 960)
       const draftReferral = draftReferralFactory.serviceUserSelected().build({
         id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
         serviceCategoryIds: [accommodationServiceCategory.id],
@@ -249,7 +251,15 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/risk-information`)
-      cy.contains('Add information for the service provider').type('A danger to the elderly')
+      cy.contains('Additional information')
+      cy.withinFieldsetThatContains('Do you want to edit this OASys risk information for the Service Provider?', () => {
+        cy.contains('Yes').click()
+      })
+      cy.contains('Save and continue').click()
+      cy.stubPatchDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/edit-oasys-risk-information`)
+      cy.get('#confirm-understood').click()
+
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/needs-and-requirements`)
@@ -396,6 +406,7 @@ describe('Referral form', () => {
         })
         .checkYourAnswers({ checkAnswers: true })
 
+      cy.stubGetDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
       cy.get('a').contains('Check your answers').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)
 
@@ -416,12 +427,12 @@ describe('Referral form', () => {
       cy.contains('alex.river@example.com')
 
       // Alex's risk information
-      cy.contains('Additional risk information')
+      cy.contains('Additional information')
         .next()
-        .should('contain', 'A danger to the elderly')
+        .should('contain', 'No more comments.')
         .next()
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/risk-information`)
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/edit-oasys-risk-information`)
 
       // Alex's needs and requirements
       cy.contains('Additional information about Alex’s needs (optional)')
@@ -720,9 +731,15 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/risk-information`)
-      cy.contains('Add information for the service provider').type('A danger to the elderly')
+      cy.contains('Additional information')
+      cy.withinFieldsetThatContains('Do you want to edit this OASys risk information for the Service Provider?', () => {
+        cy.contains('Yes').click()
+      })
+      cy.stubPatchDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
       cy.contains('Save and continue').click()
-
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/edit-oasys-risk-information`)
+      cy.get('#confirm-understood').click()
+      cy.contains('Save and continue').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/needs-and-requirements`)
       cy.get('h1').contains('Alex’s needs and requirements')
 
@@ -900,6 +917,7 @@ describe('Referral form', () => {
         })
         .checkYourAnswers({ checkAnswers: true })
 
+      cy.stubGetDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
       cy.get('a').contains('Check your answers').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)
 

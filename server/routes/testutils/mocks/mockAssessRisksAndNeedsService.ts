@@ -3,6 +3,6 @@ import AssessRisksAndNeedsService from '../../../services/assessRisksAndNeedsSer
 
 export default class MockAssessRisksAndNeedsService extends AssessRisksAndNeedsService {
   constructor() {
-    super(new MockRestClient(), true)
+    super(new MockRestClient())
   }
 }
