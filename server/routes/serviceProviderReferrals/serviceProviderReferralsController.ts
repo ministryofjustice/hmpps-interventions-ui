@@ -151,6 +151,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
+    this.handlePaginatedSearchText(req)
     const searchText = (req.body['case-search-text'] as string) ?? null
     if (
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
@@ -175,6 +176,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
+    this.handlePaginatedSearchText(req)
     const searchText = (req.body['case-search-text'] as string) ?? null
     if (
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
