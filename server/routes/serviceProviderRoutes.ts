@@ -26,7 +26,6 @@ export default function serviceProviderRoutes(router: Router, services: Services
     services.draftsService,
     services.referenceDataService
   )
-
   get(router, '/dashboard', (req, res) => serviceProviderReferralsController.showMyCasesDashboard(req, res))
   get(router, '/dashboard/my-cases', (req, res) => serviceProviderReferralsController.showMyCasesDashboard(req, res))
   get(router, '/dashboard/all-open-cases', (req, res) =>
