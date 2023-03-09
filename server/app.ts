@@ -40,6 +40,7 @@ const RedisStore = connectRedis(session)
 declare module 'express-session' {
   export interface SessionData {
     dashboardOriginPage: string
+    searchText: string
   }
 }
 
