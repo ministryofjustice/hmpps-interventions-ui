@@ -121,6 +121,10 @@ export default class DashboardPresenter {
   }
 
   get hrefLinkForSearch(): string {
+    return `${dashboardDetails[this.dashboardType].tabHref}?paginated=true`
+  }
+
+  get hrefLinkForClear(): string {
     return dashboardDetails[this.dashboardType].tabHref
   }
 

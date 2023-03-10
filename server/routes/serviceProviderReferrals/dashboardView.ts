@@ -64,7 +64,7 @@ export default class DashboardView {
         subNavArgs: this.subNavArgs,
         subjectInputArgs: this.subjectInputArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
-        clearHref: this.presenter.hrefLinkForSearch,
+        clearHref: this.presenter.hrefLinkForClear,
       },
     ]
   }
