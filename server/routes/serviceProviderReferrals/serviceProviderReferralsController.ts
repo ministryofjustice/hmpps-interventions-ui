@@ -110,7 +110,22 @@ export default class ServiceProviderReferralsController {
     this.renderDashboardWithoutPagination(req, res, referralsSummary, 'My cases')
   }
 
+  private handlePaginatedSearchText(req: Request) {
+    if (req.query.paginated === 'true') {
+      req.body['case-search-text'] = req.session.searchText
+    }
+
+    if (req.method === 'GET' && req.query.paginated === undefined) {
+      req.session.searchText = undefined
+    }
+
+    if (req.method === 'POST') {
+      req.session.searchText = req.body['case-search-text'] as string
+    }
+  }
+
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
+    this.handlePaginatedSearchText(req)
     const searchText = (req.body['case-search-text'] as string) ?? null
 
     if (
@@ -136,6 +151,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
+    this.handlePaginatedSearchText(req)
     const searchText = (req.body['case-search-text'] as string) ?? null
     if (
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
@@ -160,6 +176,7 @@ export default class ServiceProviderReferralsController {
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
+    this.handlePaginatedSearchText(req)
     const searchText = (req.body['case-search-text'] as string) ?? null
     if (
       FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
