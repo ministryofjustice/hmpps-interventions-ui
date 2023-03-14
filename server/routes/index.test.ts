@@ -57,7 +57,7 @@ describe('check response headers are set correctly', () => {
     const { header } = await request(app).get('/')
     const contentSecurityPolicy = header['content-security-policy'].split(';')
     expect(contentSecurityPolicy).toMatchInlineSnapshot(`
-      Array [
+      [
         "default-src 'self'",
         "script-src 'self' code.jquery.com 'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU=' https://www.google-analytics.com https://ssl.google-analytics.com https://www.googletagmanager.com/ 'nonce-mocked'",
         "style-src 'self' code.jquery.com",

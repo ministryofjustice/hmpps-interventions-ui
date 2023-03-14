@@ -18,7 +18,7 @@ WORKDIR /app
 # Stage: build assets
 FROM base as build
 
-RUN apk add --no-cache make python3
+RUN apk add --no-cache g++ make python3
 
 COPY package*.json ./
 RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit
