@@ -83,8 +83,10 @@ class PersistentServerSideSortOrder {
       const redirectLocation = window.location.href.split('?')[0]
 
       // eslint-disable-next-line no-unused-expressions
-      window.location.href.includes('paginated=true')
-        ? window.location.replace(`${redirectLocation}?paginated=true&sort=${columnPersistentId},${newAriaSortOrder}`)
+      window.location.href.includes('paginatedSearch=true')
+        ? window.location.replace(
+            `${redirectLocation}?paginatedSearch=true&sort=${columnPersistentId},${newAriaSortOrder}`
+          )
         : window.location.replace(`${redirectLocation}?sort=${columnPersistentId},${newAriaSortOrder}`)
     }
   }
