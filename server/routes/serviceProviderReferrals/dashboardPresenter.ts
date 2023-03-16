@@ -55,7 +55,7 @@ export default class DashboardPresenter {
     readonly searchText: string | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {
-    this.pagination = new Pagination(sentReferralSummaries, this.searchText ? `paginated=true` : null)
+    this.pagination = new Pagination(sentReferralSummaries, this.searchText ? `paginatedSearch=true` : null)
     const [sortField, sortOrder] = this.requestedSort.split(',')
     this.requestedSortField = sortField
     this.requestedSortOrder = ControllerUtils.sortOrderToAriaSort(sortOrder)
@@ -121,6 +121,10 @@ export default class DashboardPresenter {
   }
 
   get hrefLinkForSearch(): string {
+    return `${dashboardDetails[this.dashboardType].tabHref}?paginatedSearch=true`
+  }
+
+  get hrefLinkForClear(): string {
     return dashboardDetails[this.dashboardType].tabHref
   }
 

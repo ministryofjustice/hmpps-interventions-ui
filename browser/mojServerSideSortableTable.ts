@@ -81,7 +81,13 @@ class PersistentServerSideSortOrder {
     // IE11 doesn't support `.includes`, so we're using `indexOf` here.
     if (['descending', 'ascending'].indexOf(newAriaSortOrder) > -1) {
       const redirectLocation = window.location.href.split('?')[0]
-      window.location.replace(`${redirectLocation}?sort=${columnPersistentId},${newAriaSortOrder}`)
+
+      // eslint-disable-next-line no-unused-expressions
+      window.location.href.includes('paginatedSearch=true')
+        ? window.location.replace(
+            `${redirectLocation}?paginatedSearch=true&sort=${columnPersistentId},${newAriaSortOrder}`
+          )
+        : window.location.replace(`${redirectLocation}?sort=${columnPersistentId},${newAriaSortOrder}`)
     }
   }
 }

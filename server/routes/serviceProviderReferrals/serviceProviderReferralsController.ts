@@ -111,11 +111,11 @@ export default class ServiceProviderReferralsController {
   }
 
   private handlePaginatedSearchText(req: Request) {
-    if (req.query.paginated === 'true') {
+    if (req.method === 'GET' && req.query.paginatedSearch === 'true') {
       req.body['case-search-text'] = req.session.searchText
     }
 
-    if (req.method === 'GET' && req.query.paginated === undefined) {
+    if (req.method === 'GET' && req.query.paginatedSearch === undefined) {
       req.session.searchText = undefined
     }
 
