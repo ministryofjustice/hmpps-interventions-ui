@@ -95,10 +95,10 @@ export interface GetSentReferralsFilterParams {
 }
 
 export enum SPDashboardType {
-  MyCases = 'myCases',
-  OpenCases = 'openCases',
-  UnassignedCases = 'unassignedCases',
-  CompletedCases = 'completedCases',
+  MyCases = 'MyCases',
+  OpenCases = 'OpenCases',
+  UnassignedCases = 'UnassignedCases',
+  CompletedCases = 'CompletedCases',
 }
 
 export type InterventionsServiceError = RestClientError
