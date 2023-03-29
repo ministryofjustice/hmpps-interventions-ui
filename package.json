@@ -182,7 +182,7 @@
     "mocha": "^10.2.0",
     "mocha-junit-reporter": "^2.2.0",
     "mockdate": "^3.0.5",
-    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.42",
     "nock": "^13.2.9",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.2",

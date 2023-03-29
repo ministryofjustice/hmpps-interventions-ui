@@ -1,5 +1,5 @@
 import { Factory } from 'fishery'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import DraftReferral, { CurrentLocationType } from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
 import interventionFactory from './intervention'

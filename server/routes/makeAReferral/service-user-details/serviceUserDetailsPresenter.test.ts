@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from 'moment-timezone'
 import { ListStyle } from '../../../utils/summaryList'
 import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
 import expandedDeliusServiceUserFactory from '../../../../testutils/factories/expandedDeliusServiceUser'

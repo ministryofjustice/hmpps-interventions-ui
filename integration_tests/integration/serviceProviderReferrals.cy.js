@@ -1,4 +1,4 @@
-import moment from 'moment'
+import moment from 'moment-timezone'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import sentReferralForSummaries from '../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
@@ -912,7 +912,7 @@ describe('Service provider referrals dashboard', () => {
     describe('with valid inputs and an appointment in the future', () => {
       describe('when booking for an In-Person Meeting - Other Location', () => {
         it('should present no errors and display scheduled appointment', () => {
-          const tomorrow = moment('09:02:00', 'HH:mm:ss').add(1, 'days')
+          const tomorrow = moment.tz('09:02:00', 'HH:mm:ss', 'Europe/London').add(1, 'days')
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
           cy.get('#date-day').type(tomorrow.format('D'))
           cy.get('#date-month').type(tomorrow.format('M'))
@@ -984,7 +984,7 @@ describe('Service provider referrals dashboard', () => {
 
         describe('and their chosen date causes a clash of appointments', () => {
           it('the user is able to amend their chosen date and re-submit', () => {
-            const tomorrow = moment('09:02:00', 'HH:mm:ss').add(1, 'days')
+            const tomorrow = moment.tz('09:02:00', 'HH:mm:ss', 'Europe/London').add(1, 'days')
             const rescheduledDate = moment('09:02:00', 'HH:mm:ss').add(2, 'days')
             cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
             cy.get('#date-day').type(tomorrow.format('D'))
@@ -1070,7 +1070,7 @@ describe('Service provider referrals dashboard', () => {
 
       describe('when booking for an In-Person Meeting - NPS Location', () => {
         it('should present no errors and display scheduled appointment', () => {
-          const tomorrow = moment('09:02:00', 'HH:mm:ss').add(1, 'days')
+          const tomorrow = moment.tz('09:02:00', 'HH:mm:ss', 'Europe/London').add(1, 'days')
           cy.visit(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/start`)
           cy.get('#date-day').type(tomorrow.format('D'))
           cy.get('#date-month').type(tomorrow.format('M'))
@@ -2201,7 +2201,7 @@ describe('Service provider referrals dashboard', () => {
 
       describe('with appointments in the future', () => {
         it('presents a confirmation page and the booking is successful', () => {
-          const tomorrow = moment('09:02:02', 'HH:mm:ss').add(1, 'days')
+          const tomorrow = moment.tz('09:02:00', 'HH:mm:ss', 'Europe/London').add(1, 'days')
           cy.visit(`/service-provider/referrals/${referral.id}/progress`)
           cy.get('#supplier-assessment-status').contains('not scheduled')
           cy.contains('Schedule initial assessment').click()
@@ -2290,7 +2290,7 @@ describe('Service provider referrals dashboard', () => {
         })
 
         it('User schedules a supplier assessment appointment, changing their chosen time after it turns out to cause a clash of appointments', () => {
-          const tomorrow = moment('09:02:02', 'HH:mm:ss').add(1, 'days')
+          const tomorrow = moment.tz('09:02:00', 'HH:mm:ss', 'Europe/London').add(1, 'days')
           const rescheduledDate = moment('16:15:00', 'HH:mm:ss').add(2, 'days')
           cy.visit(`/service-provider/referrals/${referral.id}/supplier-assessment/schedule/start`)
 
@@ -2361,7 +2361,7 @@ describe('Service provider referrals dashboard', () => {
         })
 
         it('User reschedules a supplier assessment appointment', () => {
-          const tomorrow = moment('09:02:02', 'HH:mm:ss').add(1, 'days')
+          const tomorrow = moment.tz('09:02:00', 'HH:mm:ss', 'Europe/London').add(1, 'days')
           const rescheduledDate = moment('16:15:00', 'HH:mm:ss').add(1, 'days')
           const scheduledAppointment = initialAssessmentAppointmentFactory.build({
             appointmentTime: tomorrow.format(),

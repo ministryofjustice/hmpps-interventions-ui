@@ -1,7 +1,7 @@
 import request from 'supertest'
 import { Express } from 'express'
 import createError from 'http-errors'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import InterventionsService from '../../services/interventionsService'
 import ServiceUser from '../../models/serviceUser'
 import CommunityApiService from '../../services/communityApiService'
