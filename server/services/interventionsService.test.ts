@@ -1,6 +1,6 @@
 import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
-import moment from 'moment'
+import moment from 'moment-timezone'
 import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
 import SentReferral from '../models/sentReferral'
 import SentReferralSummaries from '../models/sentReferralSummaries'
