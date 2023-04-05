@@ -20,6 +20,7 @@ export default class AddActionPlanActivitiesView {
         addActivityTextareaArgs: this.addActivityTextareaArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         backLinkArgs: this.backLinkArgs,
+        subtitle: `Add activity ${this.presenter.activityNumber}`,
       },
     ]
   }
