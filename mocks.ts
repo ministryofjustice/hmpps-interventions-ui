@@ -19,6 +19,7 @@ import supplementaryRiskInformationFactory from './testutils/factories/supplemen
 import deliusServiceUser from './testutils/factories/deliusServiceUser'
 import PrisonRegisterServiceMocks from './mockApis/prisonRegisterService'
 import PrisonerOffenderSearchMocks from './mockApis/prisonerOffenderSearch'
+import ReferAndMonitorAndDeliusMocks from './mockApis/referAndMonitorAndDelius'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
@@ -26,6 +27,7 @@ const communityApiMocks = new CommunityApiMocks(wiremock, '')
 const assessRisksAndNeedsApiMocks = new AssessRisksAndNeedsServiceMocks(wiremock, '')
 const prisonRegisterServiceMocks = new PrisonRegisterServiceMocks(wiremock, '')
 const prisonerOffenderSearchMocks = new PrisonerOffenderSearchMocks(wiremock, '')
+const referAndMonitorAndDeliusMocks = new ReferAndMonitorAndDeliusMocks(wiremock, '')
 
 export default async function setUpMocks(): Promise<void> {
   await wiremock.resetStubs()
@@ -189,5 +191,6 @@ export default async function setUpMocks(): Promise<void> {
     }),
     prisonRegisterServiceMocks.stubGetPrisons(prisonFactory.prisonList()),
     prisonerOffenderSearchMocks.stubGetPrisonerById(prisonerFactory.build()),
+    referAndMonitorAndDeliusMocks.stubSentReferral(),
   ])
 }
