@@ -102,8 +102,8 @@ export default {
     hmppsAuth: {
       url: get('HMPPS_AUTH_URL', 'http://hmpps-auth:8090/auth', requiredInProduction),
       timeout: {
-        response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 10000)),
-        deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 10000)),
+        response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 20000)),
+        deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 20000)),
       },
       agent: new AgentConfig(),
       apiClientId: get('API_CLIENT_ID', 'interventions', requiredInProduction),
