@@ -58,7 +58,8 @@ export default class DashboardView {
     const text =
       'Refer and monitor an intervention will not be available on Saturday 29 April 2023 between 5pm and 8pm.'
 
-    const html = `<p>${text}</p>`
+    const html = `<p>${text}</p>
+                  <p><a href= ${this.presenter.closeHref}>Close</a></p>`
     return {
       titleText: 'Planned downtime',
       html,

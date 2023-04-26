@@ -35,12 +35,13 @@ export default class DashboardView {
     ],
   }
 
-  get serviceOutageBannerArgs(): NotificationBannerArgs {
+  get serviceOutageBannerArgs(): NotificationBannerArgs | null {
     const text =
       'Refer and monitor an intervention will not be available on Saturday 29 April 2023 between 5pm and 8pm.'
 
-    const html = `<p>${text}</p>`
-    return {
+    const html = `<p>${text}</p>
+                  <p><a href= ${this.presenter.closeHref}>Close</a></p>`
+    return{
       titleText: 'Planned downtime',
       html,
       classes: 'govuk-notification-banner--info',

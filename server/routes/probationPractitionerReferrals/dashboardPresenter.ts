@@ -22,13 +22,19 @@ export default class DashboardPresenter {
     private readonly loggedInUser: LoggedInUser,
     readonly dashboardType: PPDashboardType,
     readonly tablePersistentId: string,
-    private readonly requestedSort: string
+    private readonly requestedSort: string,
+    readonly disableDowntimeBanner: boolean,
+    readonly dashboardOrigin: string,
   ) {
     this.pagination = new Pagination(sentReferrals)
 
     const [sortField, sortOrder] = this.requestedSort.split(',')
     this.requestedSortField = sortField
     this.requestedSortOrder = ControllerUtils.sortOrderToAriaSort(sortOrder)
+  }
+
+  get closeHref(): string {
+    return `${this.dashboardOrigin}?dismissDowntimeBanner=true`
   }
 
   // this maps the column headings in the table to the database field used
