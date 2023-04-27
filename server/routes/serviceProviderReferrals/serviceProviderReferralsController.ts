@@ -208,7 +208,7 @@ export default class ServiceProviderReferralsController {
     tablePersistentId: string,
     pageSize: number
   ) {
-    if(req.query['dismissDowntimeBanner']){
+    if (req.query.dismissDowntimeBanner) {
       req.session.disableDowntimeBanner = true
     }
     const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
@@ -235,7 +235,9 @@ export default class ServiceProviderReferralsController {
     )
 
     req.session.dashboardOriginPage = req.originalUrl
-    const disablePlannedDowntimeNotification = req.session.disableDowntimeBanner ? req.session.disableDowntimeBanner : false
+    const disablePlannedDowntimeNotification = req.session.disableDowntimeBanner
+      ? req.session.disableDowntimeBanner
+      : false
 
     const presenter = new DashboardPresenter(
       cases,
@@ -243,9 +245,9 @@ export default class ServiceProviderReferralsController {
       res.locals.user,
       tablePersistentId,
       sort[0],
-      getSentReferralsFilterParams.search,
       disablePlannedDowntimeNotification,
-      req.session.dashboardOriginPage
+      req.session.dashboardOriginPage,
+      getSentReferralsFilterParams.search
     )
     const view = new DashboardView(presenter)
 

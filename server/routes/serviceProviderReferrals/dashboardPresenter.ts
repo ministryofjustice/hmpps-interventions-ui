@@ -52,10 +52,10 @@ export default class DashboardPresenter {
     private readonly loggedInUser: LoggedInUser,
     readonly tablePersistentId: string,
     private readonly requestedSort: string,
-    readonly searchText: string | null = null,
     readonly disableDowntimeBanner: boolean,
     readonly dashboardOrigin: string,
-    private readonly userInputData: Record<string, string> | null = null,
+    readonly searchText: string | null = null,
+    private readonly userInputData: Record<string, string> | null = null
   ) {
     this.pagination = new Pagination(sentReferralSummaries, this.searchText ? `paginatedSearch=true` : null)
     const [sortField, sortOrder] = this.requestedSort.split(',')
