@@ -24,7 +24,7 @@ export default class DashboardPresenter {
     readonly tablePersistentId: string,
     private readonly requestedSort: string,
     readonly disableDowntimeBanner: boolean,
-    readonly dashboardOrigin: string,
+    readonly dashboardOrigin: string
   ) {
     this.pagination = new Pagination(sentReferrals)
 

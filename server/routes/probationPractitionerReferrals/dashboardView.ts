@@ -41,7 +41,7 @@ export default class DashboardView {
 
     const html = `<p>${text}</p>
                   <p><a href= ${this.presenter.closeHref}>Close</a></p>`
-    return{
+    return {
       titleText: 'Planned downtime',
       html,
       classes: 'govuk-notification-banner--info',
