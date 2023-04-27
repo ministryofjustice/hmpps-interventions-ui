@@ -41,6 +41,7 @@ declare module 'express-session' {
   export interface SessionData {
     dashboardOriginPage: string
     searchText: string
+    disableDowntimeBanner: boolean
   }
 }
 

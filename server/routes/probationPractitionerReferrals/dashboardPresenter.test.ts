@@ -43,7 +43,15 @@ describe('DashboardPresenter', () => {
   describe('tableRows', () => {
     it('returns a list of table rows with appropriate sort values', () => {
       const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
-      const presenter = new DashboardPresenter(page, loggedInUser, 'Open cases', 'ppOpenCases', 'sentAt,ASC')
+      const presenter = new DashboardPresenter(
+        page,
+        loggedInUser,
+        'Open cases',
+        'ppOpenCases',
+        'sentAt,ASC',
+        true,
+        'abc'
+      )
 
       expect(presenter.tableRows).toEqual([
         [

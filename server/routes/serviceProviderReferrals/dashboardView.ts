@@ -1,6 +1,6 @@
 import DashboardPresenter from './dashboardPresenter'
 import ViewUtils from '../../utils/viewUtils'
-import { TableArgs, InputArgs } from '../../utils/govukFrontendTypes'
+import { TableArgs, InputArgs, NotificationBannerArgs } from '../../utils/govukFrontendTypes'
 
 export default class DashboardView {
   constructor(private readonly presenter: DashboardPresenter) {}
@@ -54,6 +54,19 @@ export default class DashboardView {
     }
   }
 
+  get serviceOutageBannerArgs(): NotificationBannerArgs {
+    const text =
+      'Refer and monitor an intervention will not be available on Saturday 29 April 2023 between 5pm and 8pm.'
+
+    const html = `<p>${text}</p>
+                  <p><a href= ${this.presenter.closeHref}>Close</a></p>`
+    return {
+      titleText: 'Planned downtime',
+      html,
+      classes: 'govuk-notification-banner--info',
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'serviceProviderReferrals/dashboard',
@@ -65,6 +78,7 @@ export default class DashboardView {
         subjectInputArgs: this.subjectInputArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
         clearHref: this.presenter.hrefLinkForClear,
+        serviceOutageBannerArgs: this.serviceOutageBannerArgs,
       },
     ]
   }

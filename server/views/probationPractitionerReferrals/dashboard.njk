@@ -1,6 +1,7 @@
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -11,7 +12,13 @@
   {{ mojPrimaryNavigation(primaryNavArgs) }}
 {% endblock %}
 
+
+
 {% block pageContent %}
+
+{% if presenter.disableDowntimeBanner != true %}
+    {{ govukNotificationBanner(serviceOutageBannerArgs) }}
+{% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
