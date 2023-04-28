@@ -15,8 +15,8 @@ app.listen(config.port, async () => {
   log.info(`Server listening on port ${config.port}`)
 
   if (process.env.NODE_ENV === 'development') {
-    const { default: setUpMocks } = await import('./mocks')
-    await setUpMocks()
+    const { default: setUpMocks } = await import('./mocks.js')
+    await setUpMocks
     log.info('Mocks set up for development')
   }
 })

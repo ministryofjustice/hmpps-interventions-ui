@@ -3,7 +3,6 @@ import bodyParser from 'body-parser'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import cookieSession from 'cookie-session'
 import path from 'path'
-import helmet from 'helmet'
 import { randomBytes } from 'crypto'
 
 import indexRoutes, { Services } from '../index'
@@ -35,66 +34,69 @@ function appSetup(
   userType: AppSetupUserType
 ): Express {
   const app = express()
+  // eslint-disable-next-line no-void
+  void (async () => {
+    const { default: helmet } = await import('helmet')
 
-  app.set('view engine', 'njk')
+    app.set('view engine', 'njk')
 
-  nunjucksSetup(app, path)
+    nunjucksSetup(app, path)
 
-  const nonce = randomBytes(16).toString('base64')
-  // Secure code best practice - see:
-  // 1. https://expressjs.com/en/advanced/best-practice-security.html,
-  // 2. https://www.npmjs.com/package/helmet
+    const nonce = randomBytes(16).toString('base64')
+    // Secure code best practice - see:
+    // 1. https://expressjs.com/en/advanced/best-practice-security.html,
+    // 2. https://www.npmjs.com/package/helmet
 
-  app.use(
-    helmet({
-      contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: [
-            "'self'",
-            'code.jquery.com',
-            // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
-            "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
-            'https://www.google-analytics.com',
-            'https://ssl.google-analytics.com',
-            'https://www.googletagmanager.com/',
-            // Used to allow inline script to set Google Analytics uaId in `layout.njk`
-            `'nonce-${nonce}'`,
-          ],
-          styleSrc: ["'self'", 'code.jquery.com'],
-          fontSrc: ["'self'"],
-          imgSrc: ["'self'", 'https://www.google-analytics.com'],
-          connectSrc: ["'self'", 'https://www.google-analytics.com'],
+    app.use(
+      helmet({
+        contentSecurityPolicy: {
+          directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: [
+              "'self'",
+              'code.jquery.com',
+              // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
+              "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
+              'https://www.google-analytics.com',
+              'https://ssl.google-analytics.com',
+              'https://www.googletagmanager.com/',
+              // Used to allow inline script to set Google Analytics uaId in `layout.njk`
+              `'nonce-${nonce}'`,
+            ],
+            styleSrc: ["'self'", 'code.jquery.com'],
+            fontSrc: ["'self'"],
+            imgSrc: ["'self'", 'https://www.google-analytics.com'],
+            connectSrc: ["'self'", 'https://www.google-analytics.com'],
+          },
         },
-      },
-      crossOriginEmbedderPolicy: false,
-    })
-  )
+        crossOriginEmbedderPolicy: false,
+      })
+    )
 
-  const user = LoggedInUserFactory.build()
-  user.authSource = userType
-  if (userType === AppSetupUserType.serviceProvider) {
-    user.organizations = [{ id: 'HARMONY_LIVING', name: 'Harmony Living' }]
-  }
-
-  app.use((req, res, next) => {
-    req.user = user
-    req.isAuthenticated = () => {
-      return true
+    const user = LoggedInUserFactory.build()
+    user.authSource = userType
+    if (userType === AppSetupUserType.serviceProvider) {
+      user.organizations = [{ id: 'HARMONY_LIVING', name: 'Harmony Living' }]
     }
-    res.locals = {}
-    res.locals.user = req.user
-    next()
-  })
 
-  app.use(cookieSession({ keys: [''] }))
-  app.use(bodyParser.json())
-  app.use(bodyParser.urlencoded({ extended: true }))
-  app.use('/', indexRouter)
-  app.use(serviceProviderUrlPrefix, serviceProviderRouter)
-  app.use(probationPractitionerUrlPrefix, probationPractitionerRouter)
-  app.use(createErrorHandler(production))
+    app.use((req, res, next) => {
+      req.user = user
+      req.isAuthenticated = () => {
+        return true
+      }
+      res.locals = {}
+      res.locals.user = req.user
+      next()
+    })
 
+    app.use(cookieSession({ keys: [''] }))
+    app.use(bodyParser.json())
+    app.use(bodyParser.urlencoded({ extended: true }))
+    app.use('/', indexRouter)
+    app.use(serviceProviderUrlPrefix, serviceProviderRouter)
+    app.use(probationPractitionerUrlPrefix, probationPractitionerRouter)
+    app.use(createErrorHandler(production))
+  })()
   return app
 }
 
