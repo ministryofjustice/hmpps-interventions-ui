@@ -1697,7 +1697,7 @@ describe('POST /referrals/:id/enforceable-days', () => {
   })
 })
 
-describe('GET /referrals/:id/check-answers', () => {
+describe('GET /referrals/:id/check-all-referral-information', () => {
   beforeEach(() => {
     const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const intervention = interventionFactory.build({ serviceCategories: [serviceCategory] })
@@ -1717,10 +1717,10 @@ describe('GET /referrals/:id/check-answers', () => {
 
   it('displays a summary of the draft referral', async () => {
     await request(app)
-      .get('/referrals/1/check-answers')
+      .get('/referrals/1/check-all-referral-information')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Check your answers')
+        expect(res.text).toContain('Check all referral information')
         expect(res.text).toContain('Johnny’s personal details')
         expect(res.text).toContain('Agnostic')
       })
@@ -1731,7 +1731,7 @@ describe('GET /referrals/:id/check-answers', () => {
       interventionsService.getDraftReferral.mockRejectedValue(new Error('Backend error message'))
 
       await request(app)
-        .get('/referrals/1/check-answers')
+        .get('/referrals/1/check-all-referral-information')
         .expect(500)
         .expect(res => {
           expect(res.text).toContain('Backend error message')

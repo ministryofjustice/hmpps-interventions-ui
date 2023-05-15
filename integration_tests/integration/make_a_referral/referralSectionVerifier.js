@@ -88,8 +88,10 @@ class _ReferralSectionChecker {
     return this
   }
 
-  checkYourAnswers(activeLinks) {
-    cy.get('[data-cy=url]').contains('Check your answers').should(hrefAttrChainer(activeLinks.checkAnswers), 'href')
+  checkAllReferralInformation(activeLinks) {
+    cy.get('[data-cy=url]')
+      .contains('Check referral information')
+      .should(hrefAttrChainer(activeLinks.checkAllReferralInformation), 'href')
     return this
   }
 }
