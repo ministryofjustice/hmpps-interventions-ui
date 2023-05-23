@@ -51,7 +51,7 @@ import OasysRiskInformationView from './risk-information/oasys/view/oasysRiskInf
 import { RestClientError } from '../../data/restClient'
 import EditOasysRiskInformationView from './risk-information/oasys/edit/editOasysRiskInformationView'
 import EditOasysRiskInformationPresenter from './risk-information/oasys/edit/editOasysRiskInformationPresenter'
-import DraftReferral from '../../models/draftReferral'
+import DraftReferral, { CurrentLocationType } from '../../models/draftReferral'
 import ConfirmOasysRiskInformationForm from './risk-information/oasys/confirmOasysRiskInformationForm'
 import EditOasysRiskInformationForm from './risk-information/oasys/edit/editOasysRiskInformationForm'
 import { DraftOasysRiskInformation } from '../../models/draftOasysRiskInformation'
@@ -64,13 +64,20 @@ import ExpectedReleaseDateForm from './expected-release-date/expectedReleaseDate
 import ExpectedReleaseDatePresenter from './expected-release-date/expectedReleaseDatePresenter'
 import ExpectedReleaseDateView from './expected-release-date/expectedReleaseDateView'
 import config from '../../config'
+import ConfirmProbationPractitionerDetailsPresenter from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsPresenter'
+import ConfirmProbationPractitionerDetailsView from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsView'
+import ReferenceDataService from '../../services/referenceDataService'
+import ConfirmProbationPractitionerDetailsForm from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsForm'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 
 export default class MakeAReferralController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
+    private readonly ramDeliusApiService: RamDeliusApiService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
-    private readonly prisonRegisterService: PrisonRegisterService
+    private readonly prisonRegisterService: PrisonRegisterService,
+    private readonly referenceDataService: ReferenceDataService
   ) {}
 
   async startReferral(req: Request, res: Response): Promise<void> {
@@ -615,8 +622,12 @@ export default class MakeAReferralController {
 
     if (error === null && form.paramsForUpdate.personCustodyPrisonId != null) {
       res.redirect(`/referrals/${req.params.id}/expected-release-date`)
-    } else if (error === null && form.paramsForUpdate.personCustodyPrisonId == null) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+    } else if (
+      error === null &&
+      form.paramsForUpdate.personCustodyPrisonId == null &&
+      form.paramsForUpdate.personCurrentLocationType === CurrentLocationType.community
+    ) {
+      res.redirect(`/referrals/${req.params.id}/confirm-probation-practitioner-details`)
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
@@ -667,6 +678,75 @@ export default class MakeAReferralController {
 
       const presenter = new ExpectedReleaseDatePresenter(referral, error, req.body)
       const view = new ExpectedReleaseDateView(presenter)
+
+      res.status(400)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
+  }
+
+  async confirmProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficerForServiceUser(
+      referral.serviceUser.crn
+    )
+    const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
+    const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+    const presenter = new ConfirmProbationPractitionerDetailsPresenter(
+      referral,
+      deliusOfficeLocations,
+      deliusDeliveryUnits,
+      deliusResponsibleOfficer,
+      null,
+      req.body
+    )
+    const view = new ConfirmProbationPractitionerDetailsView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async updateProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficerForServiceUser(
+      referral.serviceUser.crn
+    )
+    const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
+    const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
+    const form = await ConfirmProbationPractitionerDetailsForm.createForm(req, referral, deliusResponsibleOfficer)
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+      const presenter = new ConfirmProbationPractitionerDetailsPresenter(
+        referral,
+        deliusOfficeLocations,
+        deliusDeliveryUnits,
+        deliusResponsibleOfficer,
+        error,
+        req.body
+      )
+      const view = new ConfirmProbationPractitionerDetailsView(presenter)
 
       res.status(400)
       ControllerUtils.renderWithLayout(res, view, serviceUser)

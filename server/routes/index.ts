@@ -13,9 +13,11 @@ import DraftsService from '../services/draftsService'
 import ReferenceDataService from '../services/referenceDataService'
 import UserDataService from '../services/userDataService'
 import PrisonRegisterService from '../services/prisonRegisterService'
+import RamDeliusApiService from '../services/ramDeliusApiService'
 
 export interface Services {
   communityApiService: CommunityApiService
+  ramDeliusApiService: RamDeliusApiService
   interventionsService: InterventionsService
   hmppsAuthService: HmppsAuthService
   assessRisksAndNeedsService: AssessRisksAndNeedsService
@@ -84,8 +86,10 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   const makeAReferralController = new MakeAReferralController(
     services.interventionsService,
     services.communityApiService,
+    services.ramDeliusApiService,
     services.assessRisksAndNeedsService,
-    services.prisonRegisterService
+    services.prisonRegisterService,
+    services.referenceDataService
   )
   get(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.startReferral(req, res))
   post(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.createReferral(req, res))
@@ -147,6 +151,12 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   )
   post(router, '/referrals/:id/expected-release-date', (req, res) =>
     makeAReferralController.updateExpectedReleaseDate(req, res)
+  )
+  get(router, '/referrals/:id/confirm-probation-practitioner-details', (req, res) =>
+    makeAReferralController.confirmProbationPractitionerDetails(req, res)
+  )
+  post(router, '/referrals/:id/confirm-probation-practitioner-details', (req, res) =>
+    makeAReferralController.updateProbationPractitionerDetails(req, res)
   )
   get(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.viewRiskInformation(req, res))
   post(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.updateRiskInformation(req, res))

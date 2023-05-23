@@ -1556,6 +1556,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
       expectedReleaseDateMissingReason: null,
       hasExpectedReleaseDate: null,
+      deliusProbationPractitionerName: 'Bob',
+      deliusProbationPractitionerEmail: 'bob@example.com',
+      deliusProbationPractitionerPdu: 'Hackney and City',
+      probationPractitionerName: 'Alice',
+      probationPractitionerEmail: 'alice@example.com',
+      probationPractitionerOffice: 'London',
+      probationPractitionerPdu: 'East Sussex',
+      correctProbationPractitionerDetails: null,
     },
   }
 
