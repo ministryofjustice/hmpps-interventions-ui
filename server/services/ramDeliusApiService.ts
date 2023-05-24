@@ -7,7 +7,7 @@ import { DeliusResponsibleOfficer } from '../models/delius/deliusResponsibleOffi
 export default class RamDeliusApiService {
   constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
 
-  async getResponsibleOfficerForServiceUser(crn: string): Promise<DeliusResponsibleOfficer | null> {
+  async getResponsibleOfficer(crn: string): Promise<DeliusResponsibleOfficer | null> {
     const token = await this.hmppsAuthService.getApiClientToken()
 
     logger.info({ crn }, 'getting offender managers for service user')

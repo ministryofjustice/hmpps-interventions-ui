@@ -686,9 +686,7 @@ export default class MakeAReferralController {
 
   async confirmProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficerForServiceUser(
-      referral.serviceUser.crn
-    )
+    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
     const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
     const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
 
@@ -709,9 +707,7 @@ export default class MakeAReferralController {
 
   async updateProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficerForServiceUser(
-      referral.serviceUser.crn
-    )
+    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
     const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
     const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
     const form = await ConfirmProbationPractitionerDetailsForm.createForm(req, referral, deliusResponsibleOfficer)

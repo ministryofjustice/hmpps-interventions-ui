@@ -11,6 +11,7 @@ import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import prisonFactory from '../../../testutils/factories/prison'
+import deliusResponsibleOfficerFactory from '../../../testutils/factories/deliusResponsibleOfficer'
 import deliusOfficeLocationFactory from '../../../testutils/factories/deliusOfficeLocation'
 import deliusProbationDeliveryUnitFactory from '../../../testutils/factories/deliusProbationDeliveryUnit'
 import apiConfig from '../../config'
@@ -26,9 +27,12 @@ import referralDetailsFactory from '../../../testutils/factories/referralDetails
 import { CurrentLocationType } from '../../models/draftReferral'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import ReferenceDataService from '../../services/referenceDataService'
+import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
+jest.mock('../../services/ramDeliusApiService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/prisonRegisterService')
 jest.mock('../../services/referenceDataService')
@@ -37,6 +41,7 @@ const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
 const referenceDataService = new ReferenceDataService() as jest.Mocked<ReferenceDataService>
@@ -61,6 +66,7 @@ beforeEach(() => {
     overrides: {
       interventionsService,
       communityApiService,
+      ramDeliusApiService,
       assessRisksAndNeedsService,
       prisonRegisterService,
       referenceDataService,
@@ -921,6 +927,9 @@ describe('GET /referrals/:id/confirm-probation-practitioner-details', () => {
 
     const pduList = deliusProbationDeliveryUnitFactory.pduList()
     referenceDataService.getProbationDeliveryUnits.mockResolvedValue(pduList)
+
+    const responsibleOfficer = deliusResponsibleOfficerFactory.build()
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
   })
 
   it('renders a form page', async () => {
@@ -959,6 +968,9 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
 
     const pduList = deliusProbationDeliveryUnitFactory.pduList()
     referenceDataService.getProbationDeliveryUnits.mockResolvedValue(pduList)
+
+    const responsibleOfficer = deliusResponsibleOfficerFactory.build()
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
   })
 
   it('updates the referral on the backend and redirects to the form page', async () => {
