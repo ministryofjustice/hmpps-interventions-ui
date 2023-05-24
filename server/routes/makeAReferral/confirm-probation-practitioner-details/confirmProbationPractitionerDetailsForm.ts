@@ -51,15 +51,20 @@ export default class ConfirmProbationPractitionerDetailsForm {
     return this.error == null
   }
 
+  private get correctProbationPractitionerDetails(): boolean {
+    return this.request.body['confirm-details'] === 'yes'
+  }
+
   get paramsForUpdate(): Partial<DraftReferral> {
     return {
-      deliusProbationPractitionerName: `${this.deliusResponsibleOfficer?.communityManager?.name.forename} ${this.deliusResponsibleOfficer?.communityManager.name?.surname}`,
-      deliusProbationPractitionerEmail: `${this.deliusResponsibleOfficer?.communityManager.email}`,
-      deliusProbationPractitionerPdu: `${this.deliusResponsibleOfficer?.communityManager.pdu.description}`,
-      probationPractitionerName: this.request.body['probation-practitioner-name'],
-      probationPractitionerEmail: this.request.body['probation-practitioner-email'],
-      probationPractitionerOffice: this.request.body['probation-practitioner-office'],
-      probationPractitionerPdu: this.request.body['probation-practitioner-pdu'],
+      ndeliusPPName: `${this.deliusResponsibleOfficer?.communityManager?.name.forename} ${this.deliusResponsibleOfficer?.communityManager.name?.surname}`,
+      ndeliusPPEmailAddress: `${this.deliusResponsibleOfficer?.communityManager.email}`,
+      ndeliusPDU: `${this.deliusResponsibleOfficer?.communityManager.pdu.description}`,
+      ppName: this.request.body['probation-practitioner-name'],
+      ppEmailAddress: this.request.body['probation-practitioner-email'],
+      ppProbationOffice: this.request.body['probation-practitioner-office'],
+      ppPdu: this.request.body['probation-practitioner-pdu'],
+      correctProbationPractitionerDetails: this.correctProbationPractitionerDetails,
     }
   }
 

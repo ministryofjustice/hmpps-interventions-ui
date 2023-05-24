@@ -76,20 +76,11 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    probationPractitionerName: this.utils.stringValue(
-      this.referral.probationPractitionerName,
-      'probation-practitioner-name'
-    ),
-    probationPractitionerEmail: this.utils.stringValue(
-      this.referral.probationPractitionerEmail,
-      'probation-practitioner-email'
-    ),
-    probationPractitionerPdu: this.utils.stringValue(
-      this.referral.probationPractitionerPdu,
-      'probation-practitioner-pdu'
-    ),
+    probationPractitionerName: this.utils.stringValue(this.referral.ppName, 'probation-practitioner-name'),
+    probationPractitionerEmail: this.utils.stringValue(this.referral.ppEmailAddress, 'probation-practitioner-email'),
+    probationPractitionerPdu: this.utils.stringValue(this.referral.ppPdu, 'probation-practitioner-pdu'),
     probationPractitionerOffice: this.utils.stringValue(
-      this.referral.probationPractitionerOffice,
+      this.referral.ppProbationOffice,
       'probation-practitioner-office'
     ),
     correctProbationPractitionerDetails: this.utils.booleanValue(

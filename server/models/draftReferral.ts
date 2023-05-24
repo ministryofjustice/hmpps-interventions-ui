@@ -28,13 +28,13 @@ export interface ReferralFields {
   hasExpectedReleaseDate: boolean | null
   expectedReleaseDate: string | null
   expectedReleaseDateMissingReason: string | null
-  deliusProbationPractitionerName: string
-  deliusProbationPractitionerEmail: string
-  deliusProbationPractitionerPdu: string
-  probationPractitionerName: string
-  probationPractitionerEmail: string
-  probationPractitionerOffice: string
-  probationPractitionerPdu: string
+  ndeliusPPName: string | null
+  ndeliusPPEmailAddress: string | null
+  ndeliusPDU: string | null
+  ppName: string | null
+  ppEmailAddress: string | null
+  ppProbationOffice: string | null
+  ppPdu: string | null
   correctProbationPractitionerDetails: boolean | null
 }
 

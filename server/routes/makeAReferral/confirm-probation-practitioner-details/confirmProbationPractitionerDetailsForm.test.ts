@@ -157,13 +157,14 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
       )
 
       expect(form.paramsForUpdate).toEqual({
-        deliusProbationPractitionerName: `${deliusResponsibleOfficer?.communityManager?.name.forename} ${deliusResponsibleOfficer?.communityManager.name?.surname}`,
-        deliusProbationPractitionerEmail: `${deliusResponsibleOfficer?.communityManager.email}`,
-        deliusProbationPractitionerPdu: `${deliusResponsibleOfficer?.communityManager.pdu.description}`,
-        probationPractitionerName: 'Bob',
-        probationPractitionerEmail: 'bob@example.com',
-        probationPractitionerOffice: 'London',
-        probationPractitionerPdu: 'London',
+        ndeliusPPName: `${deliusResponsibleOfficer?.communityManager?.name.forename} ${deliusResponsibleOfficer?.communityManager.name?.surname}`,
+        ndeliusPPEmailAddress: `${deliusResponsibleOfficer?.communityManager.email}`,
+        ndeliusPDU: `${deliusResponsibleOfficer?.communityManager.pdu.description}`,
+        ppName: 'Bob',
+        ppEmailAddress: 'bob@example.com',
+        ppProbationOffice: 'London',
+        ppPdu: 'London',
+        correctProbationPractitionerDetails: false,
       })
     })
   })

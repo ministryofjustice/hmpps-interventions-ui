@@ -964,13 +964,13 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
   it('updates the referral on the backend and redirects to the form page', async () => {
     const updatedReferral = draftReferralFactory.serviceUserSelected().build({
       serviceUser: { firstName: 'Geoffrey' },
-      deliusProbationPractitionerName: 'John',
-      deliusProbationPractitionerEmail: 'john@example.com',
-      deliusProbationPractitionerPdu: 'Sheffield',
-      probationPractitionerName: 'Bob',
-      probationPractitionerEmail: 'null',
-      probationPractitionerOffice: 'London',
-      probationPractitionerPdu: 'London',
+      ndeliusPPName: 'John',
+      ndeliusPPEmailAddress: 'john@example.com',
+      ndeliusPDU: 'Sheffield',
+      ppName: 'Bob',
+      ppEmailAddress: 'null',
+      ppProbationOffice: 'London',
+      ppPdu: 'London',
       correctProbationPractitionerDetails: false,
     })
 
@@ -993,13 +993,14 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
       'token',
       '1',
       {
-        deliusProbationPractitionerName: 'Bob Alice',
-        deliusProbationPractitionerEmail: 'bobalice@example.com',
-        deliusProbationPractitionerPdu: 'Hackney and City',
-        probationPractitionerName: 'John',
-        probationPractitionerEmail: 'john@example.com',
-        probationPractitionerOffice: undefined,
-        probationPractitionerPdu: 'East Sussex',
+        ndeliusPPName: 'Bob Alice',
+        ndeliusPPEmailAddress: 'bobalice@example.com',
+        ndeliusPDU: 'Hackney and City',
+        ppName: 'John',
+        ppEmailAddress: 'john@example.com',
+        ppProbationOffice: undefined,
+        ppPdu: 'East Sussex',
+        correctProbationPractitionerDetails: false,
       },
     ])
   })
