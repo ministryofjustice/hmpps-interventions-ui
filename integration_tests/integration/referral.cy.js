@@ -770,6 +770,13 @@ describe('Referral form', () => {
       cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
       cy.contains('Save and continue').click()
 
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+
+      cy.contains('No').click()
+      cy.get('#probation-practitioner-name').type('John')
+      cy.get('#probation-practitioner-pdu').type('Hackney and City')
+      cy.contains('Save and continue').click()
+
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
 
       cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
