@@ -6,6 +6,7 @@ import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUse
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import interventionFactory from '../../testutils/factories/intervention'
 import prisonFactory from '../../testutils/factories/prison'
+import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
@@ -644,6 +645,7 @@ describe('Referral form', () => {
 
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
       const prisons = prisonFactory.prisonList()
+      const responsibleOfficer = deliusResponsibleOfficerFactory.build()
 
       cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
@@ -757,6 +759,7 @@ describe('Referral form', () => {
       )
 
       cy.stubGetPrisons(prisons)
+      cy.stubGetRamDeliusResponsibleOfficerForServiceUser(responsibleOfficer)
       cy.stubGetDraftReferral(draftReferral.id, completedCurrentLocationDraftReferral)
       cy.contains('Save and continue').click()
 
