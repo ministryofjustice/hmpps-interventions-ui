@@ -1,3 +1,3 @@
-Cypress.Commands.add('stubGetRamDeliusResponsibleOfficerForServiceUser', responseJson => {
-  cy.task('stubGetRamDeliusResponsibleOfficerForServiceUser', { responseJson })
+Cypress.Commands.add('stubGetResponsibleOfficer', responseJson => {
+  cy.task('stubGetResponsibleOfficer', { responseJson })
 })

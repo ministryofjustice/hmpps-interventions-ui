@@ -19,7 +19,7 @@ export default class ReferAndMonitorAndDeliusMocks {
     })
   }
 
-  stubGetResponsibleOfficerForServiceUser = async (responseJson: unknown): Promise<unknown> => {
+  stubGetResponsibleOfficer = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',

@@ -759,7 +759,6 @@ describe('Referral form', () => {
       )
 
       cy.stubGetPrisons(prisons)
-      cy.stubGetRamDeliusResponsibleOfficerForServiceUser(responsibleOfficer)
       cy.stubGetDraftReferral(draftReferral.id, completedCurrentLocationDraftReferral)
       cy.contains('Save and continue').click()
 
@@ -770,6 +769,8 @@ describe('Referral form', () => {
       cy.withinFieldsetThatContains('Where is Alex today?', () => {
         cy.contains('Community').click()
       })
+
+      cy.stubGetResponsibleOfficer(responsibleOfficer)
       cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
       cy.contains('Save and continue').click()
 

@@ -51,8 +51,8 @@ export default on => {
       return prisonRegisterService.stubGetPrisons(arg.responseJson)
     },
 
-    stubGetRamDeliusResponsibleOfficerForServiceUser: arg => {
-      return ramDeliusApi.stubGetResponsibleOfficerForServiceUser(arg.responseJson)
+    stubGetResponsibleOfficer: arg => {
+      return ramDeliusApi.stubGetResponsibleOfficer(arg.responseJson)
     },
 
     stubGetUserByUsername: arg => {
