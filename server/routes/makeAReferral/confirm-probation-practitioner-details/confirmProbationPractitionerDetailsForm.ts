@@ -51,10 +51,6 @@ export default class ConfirmProbationPractitionerDetailsForm {
     return this.error == null
   }
 
-  private get correctProbationPractitionerDetails(): boolean {
-    return this.request.body['confirm-details'] === 'yes'
-  }
-
   get paramsForUpdate(): Partial<DraftReferral> {
     return {
       ndeliusPPName: `${this.deliusResponsibleOfficer?.communityManager?.name.forename} ${this.deliusResponsibleOfficer?.communityManager.name?.surname}`,
@@ -64,7 +60,6 @@ export default class ConfirmProbationPractitionerDetailsForm {
       ppEmailAddress: this.request.body['probation-practitioner-email'],
       ppProbationOffice: this.request.body['probation-practitioner-office'],
       ppPdu: this.request.body['probation-practitioner-pdu'],
-      correctProbationPractitionerDetails: this.correctProbationPractitionerDetails,
     }
   }
 

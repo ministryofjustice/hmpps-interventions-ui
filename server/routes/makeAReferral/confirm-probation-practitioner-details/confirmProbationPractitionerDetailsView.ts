@@ -19,12 +19,12 @@ export default class ConfirmProbationPractitionerDetailsView {
         {
           value: 'yes',
           text: 'Yes',
-          checked: this.presenter.referral.correctProbationPractitionerDetails === true,
+          checked: !this.presenter.fields.probationPractitionerName.length,
         },
         {
           value: 'no',
           text: 'No',
-          checked: this.presenter.referral.correctProbationPractitionerDetails === false,
+          checked: !!this.presenter.fields.probationPractitionerName.length,
           conditional: {
             html: noConfirmCorrectDetailsSelectionHTML,
           },

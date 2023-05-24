@@ -971,7 +971,6 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
       ppEmailAddress: 'null',
       ppProbationOffice: 'London',
       ppPdu: 'London',
-      correctProbationPractitionerDetails: false,
     })
 
     interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
@@ -1000,7 +999,6 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
         ppEmailAddress: 'john@example.com',
         ppProbationOffice: undefined,
         ppPdu: 'East Sussex',
-        correctProbationPractitionerDetails: false,
       },
     ])
   })

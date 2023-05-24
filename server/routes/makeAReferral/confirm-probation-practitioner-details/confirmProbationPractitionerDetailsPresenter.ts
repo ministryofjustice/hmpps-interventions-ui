@@ -83,9 +83,5 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       this.referral.ppProbationOffice,
       'probation-practitioner-office'
     ),
-    correctProbationPractitionerDetails: this.utils.booleanValue(
-      this.referral.correctProbationPractitionerDetails,
-      'confirm-details'
-    ),
   }
 }

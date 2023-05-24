@@ -35,7 +35,6 @@ export interface ReferralFields {
   ppEmailAddress: string | null
   ppProbationOffice: string | null
   ppPdu: string | null
-  correctProbationPractitionerDetails: boolean | null
 }
 
 export enum CurrentLocationType {

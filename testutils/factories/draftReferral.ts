@@ -206,5 +206,4 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   ppEmailAddress: null,
   ppProbationOffice: null,
   ppPdu: null,
-  correctProbationPractitionerDetails: null,
 }))

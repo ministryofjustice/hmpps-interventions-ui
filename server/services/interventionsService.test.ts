@@ -1563,7 +1563,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ppEmailAddress: 'alice@example.com',
       ppProbationOffice: 'London',
       ppPdu: 'East Sussex',
-      correctProbationPractitionerDetails: null,
     },
   }
 
