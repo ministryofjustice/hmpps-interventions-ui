@@ -663,6 +663,7 @@ describe('Referral form', () => {
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
+      cy.stubGetResponsibleOfficer(responsibleOfficer)
 
       cy.login()
 
@@ -770,7 +771,6 @@ describe('Referral form', () => {
         cy.contains('Community').click()
       })
 
-      cy.stubGetResponsibleOfficer(responsibleOfficer)
       cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
       cy.contains('Save and continue').click()
 
