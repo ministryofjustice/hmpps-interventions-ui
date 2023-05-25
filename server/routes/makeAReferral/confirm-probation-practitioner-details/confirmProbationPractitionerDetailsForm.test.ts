@@ -164,6 +164,7 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
         ppEmailAddress: 'bob@example.com',
         ppProbationOffice: 'London',
         ppPdu: 'London',
+        hasValidDeliusPPDetails: false,
       })
     })
   })

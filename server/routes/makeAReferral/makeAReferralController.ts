@@ -696,9 +696,7 @@ export default class MakeAReferralController {
       referral,
       deliusOfficeLocations,
       deliusDeliveryUnits,
-      deliusResponsibleOfficer,
-      null,
-      req.body
+      deliusResponsibleOfficer
     )
     const view = new ConfirmProbationPractitionerDetailsView(presenter)
 

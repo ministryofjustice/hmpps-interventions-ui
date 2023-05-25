@@ -83,5 +83,6 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       this.referral.ppProbationOffice,
       'probation-practitioner-office'
     ),
+    hasValidDeliusPPDetails: this.utils.booleanValue(this.referral.hasValidDeliusPPDetails, 'confirm-details'),
   }
 }

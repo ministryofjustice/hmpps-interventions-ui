@@ -1011,6 +1011,7 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
         ppEmailAddress: 'john@example.com',
         ppProbationOffice: undefined,
         ppPdu: 'East Sussex',
+        hasValidDeliusPPDetails: false,
       },
     ])
   })

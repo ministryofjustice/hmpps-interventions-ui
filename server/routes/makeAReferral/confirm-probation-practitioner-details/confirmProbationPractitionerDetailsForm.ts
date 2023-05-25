@@ -51,15 +51,21 @@ export default class ConfirmProbationPractitionerDetailsForm {
     return this.error == null
   }
 
+  private get hasValidDeliusPPDetails(): boolean | null {
+    if (this.request.body['confirm-details'] === null) return null
+    return this.request.body['confirm-details'] === 'yes'
+  }
+
   get paramsForUpdate(): Partial<DraftReferral> {
     return {
       ndeliusPPName: `${this.deliusResponsibleOfficer?.communityManager?.name.forename} ${this.deliusResponsibleOfficer?.communityManager.name?.surname}`,
       ndeliusPPEmailAddress: `${this.deliusResponsibleOfficer?.communityManager.email}`,
       ndeliusPDU: `${this.deliusResponsibleOfficer?.communityManager.pdu.description}`,
-      ppName: this.request.body['probation-practitioner-name'],
-      ppEmailAddress: this.request.body['probation-practitioner-email'],
+      ppName: this.hasValidDeliusPPDetails ? '' : this.request.body['probation-practitioner-name'],
+      ppEmailAddress: this.hasValidDeliusPPDetails ? '' : this.request.body['probation-practitioner-email'],
       ppProbationOffice: this.request.body['probation-practitioner-office'],
-      ppPdu: this.request.body['probation-practitioner-pdu'],
+      ppPdu: this.hasValidDeliusPPDetails ? '' : this.request.body['probation-practitioner-pdu'],
+      hasValidDeliusPPDetails: this.hasValidDeliusPPDetails,
     }
   }
 

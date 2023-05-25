@@ -206,4 +206,5 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   ppEmailAddress: null,
   ppPdu: null,
   ppProbationOffice: null,
+  hasValidDeliusPPDetails: null,
 }))
