@@ -91,6 +91,14 @@ export default {
       },
       agent: new AgentConfig(),
     },
+    ramDeliusApi: {
+      url: get('RAM_DELIUS_API_URL', 'http://localhost:9092', requiredInProduction),
+      timeout: {
+        response: Number(get('RAM_DELIUS_API_TIMEOUT_RESPONSE', 10000)),
+        deadline: Number(get('RAM_DELIUS_API_TIMEOUT_DEADLINE', 10000)),
+      },
+      agent: new AgentConfig(),
+    },
     assessRisksAndNeedsApi: {
       url: get('ASSESS_RISKS_AND_NEEDS_API_URL', 'http://localhost:9092', requiredInProduction),
       timeout: {

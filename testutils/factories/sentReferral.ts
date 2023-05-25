@@ -55,13 +55,13 @@ const exampleReferralFields = () => {
     expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
     expectedReleaseDateMissingReason: null,
     hasExpectedReleaseDate: null,
-    ndeliusPPName: null,
-    ndeliusPPEmailAddress: null,
-    ndeliusPDU: null,
-    ppName: null,
-    ppEmailAddress: null,
-    ppPdu: null,
-    ppProbationOffice: null,
+    ndeliusPPName: 'John',
+    ndeliusPPEmailAddress: 'john@example.com',
+    ndeliusPDU: 'Sheffield',
+    ppName: 'Bob',
+    ppEmailAddress: 'null',
+    ppProbationOffice: 'London',
+    ppPdu: 'London',
   }
 }
 

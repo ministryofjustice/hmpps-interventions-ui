@@ -6,6 +6,7 @@ import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUse
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import interventionFactory from '../../testutils/factories/intervention'
 import prisonFactory from '../../testutils/factories/prison'
+import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
@@ -671,6 +672,7 @@ describe('Referral form', () => {
 
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
       const prisons = prisonFactory.prisonList()
+      const responsibleOfficer = deliusResponsibleOfficerFactory.build()
 
       cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
@@ -688,6 +690,7 @@ describe('Referral form', () => {
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
+      cy.stubGetResponsibleOfficer(responsibleOfficer)
 
       cy.login()
 
@@ -793,7 +796,15 @@ describe('Referral form', () => {
       cy.withinFieldsetThatContains('Where is Alex today?', () => {
         cy.contains('Community').click()
       })
+
       cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+
+      cy.contains('No').click()
+      cy.get('#probation-practitioner-name').type('John')
+      cy.get('#probation-practitioner-pdu').type('Hackney and City')
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)

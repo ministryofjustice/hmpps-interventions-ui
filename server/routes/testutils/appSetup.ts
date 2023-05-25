@@ -22,6 +22,7 @@ import DraftsService from '../../services/draftsService'
 import ReferenceDataService from '../../services/referenceDataService'
 import UserDataService from '../../services/userDataService'
 import PrisonRegisterService from '../../services/prisonRegisterService'
+import MockRamDeliusApiService from './mocks/mockRamDeliusApiService'
 
 export enum AppSetupUserType {
   probationPractitioner = 'delius',
@@ -112,6 +113,7 @@ export default function appWithAllRoutes({
   // auth.default.authenticationMiddleware = () => (req, res, next) => next()
   const services = {
     communityApiService: new MockCommunityApiService(),
+    ramDeliusApiService: new MockRamDeliusApiService(),
     interventionsService: {} as InterventionsService,
     hmppsAuthService: new MockedHmppsAuthService(),
     assessRisksAndNeedsService: {} as AssessRisksAndNeedsService,
