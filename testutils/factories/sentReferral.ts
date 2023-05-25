@@ -62,6 +62,7 @@ const exampleReferralFields = () => {
     ppEmailAddress: 'null',
     ppProbationOffice: 'London',
     ppPdu: 'London',
+    hasValidDeliusPPDetails: false,
   }
 }
 

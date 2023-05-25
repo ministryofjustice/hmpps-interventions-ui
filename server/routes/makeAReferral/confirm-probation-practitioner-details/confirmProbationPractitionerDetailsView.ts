@@ -19,12 +19,12 @@ export default class ConfirmProbationPractitionerDetailsView {
         {
           value: 'yes',
           text: 'Yes',
-          checked: !this.presenter.fields.probationPractitionerName.length,
+          checked: this.presenter.fields.hasValidDeliusPPDetails === true,
         },
         {
           value: 'no',
           text: 'No',
-          checked: !!this.presenter.fields.probationPractitionerName.length,
+          checked: this.presenter.fields.hasValidDeliusPPDetails === false,
           conditional: {
             html: noConfirmCorrectDetailsSelectionHTML,
           },
@@ -64,6 +64,9 @@ export default class ConfirmProbationPractitionerDetailsView {
     const pduItems: SelectArgsItem[] = this.presenter.deliusDeliveryUnits.map(deliveryUnit => ({
       text: deliveryUnit.name,
       value: deliveryUnit.name.toString(),
+      selected: this.presenter.fields.probationPractitionerPdu
+        ? this.presenter.fields.probationPractitionerPdu === deliveryUnit.name
+        : false,
     }))
 
     const items: SelectArgsItem[] = [
@@ -92,6 +95,9 @@ export default class ConfirmProbationPractitionerDetailsView {
     const officeLocationItems: SelectArgsItem[] = this.presenter.deliusOfficeLocations.map(officeLocation => ({
       text: officeLocation.name,
       value: officeLocation.name.toString(),
+      selected: this.presenter.fields.probationPractitionerOffice
+        ? this.presenter.fields.probationPractitionerOffice === officeLocation.name
+        : false,
     }))
 
     const items: SelectArgsItem[] = [
