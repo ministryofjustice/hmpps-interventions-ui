@@ -419,14 +419,17 @@ describe(CheckAnswersPresenter, () => {
 
         it('lists the service categories chosen in the referral', () => {
           const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
-          expect(presenter.serviceCategoriesSummary).toEqual([
-            {
-              key: 'Selected service categories',
-              lines: ['Accommodation'],
-              listStyle: ListStyle.noMarkers,
-              changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
-            },
-          ])
+          expect(presenter.serviceCategoriesSummary).toEqual({
+            title: 'Service categories',
+            summary: [
+              {
+                key: 'Selected service categories',
+                lines: ['Accommodation'],
+                listStyle: ListStyle.noMarkers,
+                changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
+              },
+            ],
+          })
         })
       })
 
@@ -438,14 +441,17 @@ describe(CheckAnswersPresenter, () => {
 
         it('lists the service categories chosen in the referral', () => {
           const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
-          expect(presenter.serviceCategoriesSummary).toEqual([
-            {
-              key: 'Selected service categories',
-              lines: ['Accommodation', 'Education, training and employment'],
-              listStyle: ListStyle.noMarkers,
-              changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
-            },
-          ])
+          expect(presenter.serviceCategoriesSummary).toEqual({
+            title: 'Service categories',
+            summary: [
+              {
+                key: 'Selected service categories',
+                lines: ['Accommodation', 'Education, training and employment'],
+                listStyle: ListStyle.noMarkers,
+                changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
+              },
+            ],
+          })
         })
       })
     })
@@ -477,23 +483,26 @@ describe(CheckAnswersPresenter, () => {
         prisonList
       )
 
-      expect(presenter.sentenceInformationSummary).toEqual([
-        {
-          key: 'Sentence',
-          lines: ['Common and other types of assault'],
-          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
-        },
-        {
-          key: 'Subcategory',
-          lines: ['Common assault and battery'],
-          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
-        },
-        {
-          key: 'End of sentence date',
-          lines: ['15 September 2025'],
-          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
-        },
-      ])
+      expect(presenter.sentenceInformationSummary).toEqual({
+        title: 'Sentence Information',
+        summary: [
+          {
+            key: 'Sentence',
+            lines: ['Common and other types of assault'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+          },
+          {
+            key: 'Subcategory',
+            lines: ['Common assault and battery'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+          },
+          {
+            key: 'End of sentence date',
+            lines: ['15 September 2025'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+          },
+        ],
+      })
     })
   })
 
@@ -539,13 +548,16 @@ describe(CheckAnswersPresenter, () => {
         prisonList
       )
 
-      expect(presenter.enforceableDaysSummary).toEqual([
-        {
-          key: 'Maximum number of enforceable days',
-          lines: ['15'],
-          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/enforceable-days',
-        },
-      ])
+      expect(presenter.enforceableDaysSummary).toEqual({
+        title: 'Enforceable days',
+        summary: [
+          {
+            key: 'Maximum number of enforceable days',
+            lines: ['15'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/enforceable-days',
+          },
+        ],
+      })
     })
   })
 
@@ -565,13 +577,16 @@ describe(CheckAnswersPresenter, () => {
           prisonList
         )
 
-        expect(presenter.furtherInformationSummary).toEqual([
-          {
-            key: 'Further information for the provider',
-            lines: ['Some further information'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
-          },
-        ])
+        expect(presenter.furtherInformationSummary).toEqual({
+          title: 'Further information',
+          summary: [
+            {
+              key: 'Further information for the provider',
+              lines: ['Some further information'],
+              changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
+            },
+          ],
+        })
       })
     })
 
@@ -590,13 +605,16 @@ describe(CheckAnswersPresenter, () => {
           prisonList
         )
 
-        expect(presenter.furtherInformationSummary).toEqual([
-          {
-            key: 'Further information for the provider',
-            lines: ['None'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
-          },
-        ])
+        expect(presenter.furtherInformationSummary).toEqual({
+          title: 'Further information',
+          summary: [
+            {
+              key: 'Further information for the provider',
+              lines: ['None'],
+              changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
+            },
+          ],
+        })
       })
     })
   })

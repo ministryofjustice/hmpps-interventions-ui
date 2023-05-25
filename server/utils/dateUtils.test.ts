@@ -129,4 +129,13 @@ describe('DateUtils', () => {
       ).toEqual('Midnight to midday')
     })
   })
+
+  describe('age', () => {
+    it('returns the correct age of the person', () => {
+      expect(DateUtils.age('1981-07-29T05:30:00+01:00')).toEqual(41)
+    })
+    it('returns the correct age of the futuristic date', () => {
+      expect(DateUtils.age('2065-07-19T05:30:00+01:00')).toEqual(-43)
+    })
+  })
 })

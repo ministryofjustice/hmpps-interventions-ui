@@ -199,4 +199,11 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   contractTypeName: interventionFactory.build().contractType.name,
   personCurrentLocationType: null,
   personCustodyPrisonId: null,
+  ndeliusPPName: 'Victor Drake',
+  ndeliusPPEmailAddress: 'a.b@xyz.com',
+  ndeliusPDU: 'London',
+  ppName: null,
+  ppEmailAddress: null,
+  ppPdu: null,
+  ppProbationOffice: null,
 }))

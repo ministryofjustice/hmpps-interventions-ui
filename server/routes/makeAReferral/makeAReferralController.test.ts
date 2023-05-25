@@ -282,7 +282,7 @@ describe('GET /referrals/:id/service-user-details', () => {
       .get('/referrals/1/service-user-details')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain(`Alex&#39;s information`)
+        expect(res.text).toContain(`Review Alex River&#39;s information`)
       })
   })
 })

@@ -11,43 +11,30 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">Check your answers</h1>
 
-      <h2 class="govuk-heading-l">{{ presenter.serviceUserDetailsSection.title }}</h2>
-
+      {{ govukSummaryList(probationPractitionerDetailsSummaryListArgs) }}
+      
       {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
 
-      <h2 class="govuk-heading-l">{{ presenter.riskSection.title }}</h2>
-
       {{ govukSummaryList(riskInformationSummaryListArgs) }}
-
-      <h2 class="govuk-heading-l">{{ presenter.needsAndRequirementsSection.title }}</h2>
 
       {{ govukSummaryList(needsAndRequirementsSummaryListArgs) }}
 
       {% if serviceCategoriesSummaryListArgs %}
-        <h2 class="govuk-heading-l">Service categories</h2>
 
         {{ govukSummaryList(serviceCategoriesSummaryListArgs) }}
       {% endif %}
 
-      <h2 class="govuk-heading-l">Sentence information</h2>
 
       {{ govukSummaryList(sentenceInformationSummaryListArgs) }}
 
       {% for section in referralDetailsSections %}
-        <h2 class="govuk-heading-l">{{ section.title }}</h2>
 
         {{ govukSummaryList(section.summaryListArgs) }}
       {% endfor %}
 
-      <h2 class="govuk-heading-l">Enforceable days</h2>
-
       {{ govukSummaryList(enforceableDaysSummaryListArgs) }}
 
-      <h2 class="govuk-heading-l">{{ presenter.completionDeadlineSection.title }}</h2>
-
       {{ govukSummaryList(completionDeadlineSummaryListArgs) }}
-
-      <h2 class="govuk-heading-l">Further information</h2>
 
       {{ govukSummaryList(furtherInformationSummaryListArgs) }}
 

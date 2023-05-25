@@ -152,7 +152,7 @@ export default class MakeAReferralController {
     const serviceUser = await this.communityApiService.getExpandedServiceUserByCRN(referral.serviceUser.crn)
     const prisons = await this.prisonRegisterService.getPrisons()
 
-    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser, prisons)
+    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser, prisons, referral.id)
     const view = new ServiceUserDetailsView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
