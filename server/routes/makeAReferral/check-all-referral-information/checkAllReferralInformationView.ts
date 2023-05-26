@@ -1,8 +1,8 @@
-import CheckAnswersPresenter from './checkAnswersPresenter'
+import CheckAllReferralInformationPresenter from './checkAllReferralInformationPresenter'
 import ViewUtils from '../../../utils/viewUtils'
 
-export default class CheckAnswersView {
-  constructor(private readonly presenter: CheckAnswersPresenter) {}
+export default class CheckAllReferralInformationView {
+  constructor(private readonly presenter: CheckAllReferralInformationPresenter) {}
 
   private readonly probationPractitionerDetailsSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
     this.presenter.probationPractitionerDetailSection.summary,
@@ -58,7 +58,7 @@ export default class CheckAnswersView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'makeAReferral/checkAnswers',
+      'makeAReferral/checkAllReferralInformation',
       {
         presenter: this.presenter,
         probationPractitionerDetailsSummaryListArgs: this.probationPractitionerDetailsSummaryListArgs,

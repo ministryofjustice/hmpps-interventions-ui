@@ -1,4 +1,4 @@
-import CheckAnswersPresenter from './checkAnswersPresenter'
+import CheckAllReferralInformationPresenter from './checkAllReferralInformationPresenter'
 import draftReferralFactory from '../../../../testutils/factories/draftReferral'
 import serviceCategoryFactory from '../../../../testutils/factories/serviceCategory'
 import interventionFactory from '../../../../testutils/factories/intervention'
@@ -15,7 +15,7 @@ jest.mock('../../../services/prisonRegisterService')
 
 const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
 
-describe(CheckAnswersPresenter, () => {
+describe(CheckAllReferralInformationPresenter, () => {
   const parameterisedDraftReferralFactory = draftReferralFactory.params({
     serviceUser: {
       crn: 'X862134',
@@ -64,7 +64,7 @@ describe(CheckAnswersPresenter, () => {
     const referral = parameterisedDraftReferralFactory.build({
       personCurrentLocationType: CurrentLocationType.community,
     })
-    const presenter = new CheckAnswersPresenter(
+    const presenter = new CheckAllReferralInformationPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
       conviction,
@@ -117,7 +117,7 @@ describe(CheckAnswersPresenter, () => {
       id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
       additionalRiskInformation: 'Past assault of strangers',
     })
-    const presenter = new CheckAnswersPresenter(
+    const presenter = new CheckAllReferralInformationPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
       conviction,
@@ -145,7 +145,7 @@ describe(CheckAnswersPresenter, () => {
   describe('needsAndRequirementsSection', () => {
     describe('title', () => {
       const referral = parameterisedDraftReferralFactory.build()
-      const presenter = new CheckAnswersPresenter(
+      const presenter = new CheckAllReferralInformationPresenter(
         referral,
         interventionFactory.build({ serviceCategories }),
         conviction,
@@ -164,7 +164,7 @@ describe(CheckAnswersPresenter, () => {
           id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           additionalNeedsInformation: 'Some additional needs information',
         })
-        const presenter = new CheckAnswersPresenter(
+        const presenter = new CheckAllReferralInformationPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
@@ -186,7 +186,7 @@ describe(CheckAnswersPresenter, () => {
           id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           accessibilityNeeds: 'Some accessibility needs information',
         })
-        const presenter = new CheckAnswersPresenter(
+        const presenter = new CheckAllReferralInformationPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
@@ -209,7 +209,7 @@ describe(CheckAnswersPresenter, () => {
             id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             needsInterpreter: false,
           })
-          const presenter = new CheckAnswersPresenter(
+          const presenter = new CheckAllReferralInformationPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -230,7 +230,7 @@ describe(CheckAnswersPresenter, () => {
             needsInterpreter: true,
             interpreterLanguage: 'Spanish',
           })
-          const presenter = new CheckAnswersPresenter(
+          const presenter = new CheckAllReferralInformationPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -254,7 +254,7 @@ describe(CheckAnswersPresenter, () => {
             id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             hasAdditionalResponsibilities: false,
           })
-          const presenter = new CheckAnswersPresenter(
+          const presenter = new CheckAllReferralInformationPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -275,7 +275,7 @@ describe(CheckAnswersPresenter, () => {
             hasAdditionalResponsibilities: true,
             whenUnavailable: 'Alex can’t attend on Fridays',
           })
-          const presenter = new CheckAnswersPresenter(
+          const presenter = new CheckAllReferralInformationPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -341,7 +341,13 @@ describe(CheckAnswersPresenter, () => {
     const intervention = interventionFactory.build({
       serviceCategories: [accommodationServiceCategory, eteServiceCategory, serviceCategoryFactory.build()],
     })
-    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
+    const presenter = new CheckAllReferralInformationPresenter(
+      referral,
+      intervention,
+      conviction,
+      deliusServiceUser,
+      prisonList
+    )
 
     it('contains a section for each service category in the referral', () => {
       expect(presenter.referralDetailsSections).toMatchObject([
@@ -400,7 +406,13 @@ describe(CheckAnswersPresenter, () => {
           serviceCategoryIds: [accommodationServiceCategory.id],
         })
 
-        const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
+        const presenter = new CheckAllReferralInformationPresenter(
+          referral,
+          intervention,
+          conviction,
+          deliusServiceUser,
+          prisonList
+        )
 
         expect(presenter.serviceCategoriesSummary).toBeNull()
       })
@@ -418,7 +430,13 @@ describe(CheckAnswersPresenter, () => {
         })
 
         it('lists the service categories chosen in the referral', () => {
-          const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
+          const presenter = new CheckAllReferralInformationPresenter(
+            referral,
+            intervention,
+            conviction,
+            deliusServiceUser,
+            prisonList
+          )
           expect(presenter.serviceCategoriesSummary).toEqual({
             title: 'Service categories',
             summary: [
@@ -440,7 +458,13 @@ describe(CheckAnswersPresenter, () => {
         })
 
         it('lists the service categories chosen in the referral', () => {
-          const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
+          const presenter = new CheckAllReferralInformationPresenter(
+            referral,
+            intervention,
+            conviction,
+            deliusServiceUser,
+            prisonList
+          )
           expect(presenter.serviceCategoriesSummary).toEqual({
             title: 'Service categories',
             summary: [
@@ -475,7 +499,7 @@ describe(CheckAnswersPresenter, () => {
     })
 
     it('returns information about the conviction', () => {
-      const presenter = new CheckAnswersPresenter(
+      const presenter = new CheckAllReferralInformationPresenter(
         referral,
         intervention,
         assaultConviction,
@@ -512,7 +536,13 @@ describe(CheckAnswersPresenter, () => {
       id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
       completionDeadline: '2021-10-24',
     })
-    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
+    const presenter = new CheckAllReferralInformationPresenter(
+      referral,
+      intervention,
+      conviction,
+      deliusServiceUser,
+      prisonList
+    )
 
     describe('title', () => {
       it('includes the contract type name', () => {
@@ -540,7 +570,7 @@ describe(CheckAnswersPresenter, () => {
     })
 
     it('states the maximum number of enforceable days to use', () => {
-      const presenter = new CheckAnswersPresenter(
+      const presenter = new CheckAllReferralInformationPresenter(
         referral,
         interventionFactory.build({ serviceCategories }),
         conviction,
@@ -569,7 +599,7 @@ describe(CheckAnswersPresenter, () => {
       })
 
       it('contains the referral’s further information', () => {
-        const presenter = new CheckAnswersPresenter(
+        const presenter = new CheckAllReferralInformationPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
@@ -597,7 +627,7 @@ describe(CheckAnswersPresenter, () => {
       })
 
       it('states that there is no further information', () => {
-        const presenter = new CheckAnswersPresenter(
+        const presenter = new CheckAllReferralInformationPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,

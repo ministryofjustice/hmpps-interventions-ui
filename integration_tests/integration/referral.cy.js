@@ -204,7 +204,7 @@ describe('Referral form', () => {
           completedDate: false,
           furtherInformation: false,
         })
-        .checkYourAnswers({ checkAnswers: false })
+        .checkAllReferralInformation({ checkAllReferralInformation: false })
 
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
         ...deliusServiceUser,
@@ -330,7 +330,7 @@ describe('Referral form', () => {
           completedDate: false,
           furtherInformation: false,
         })
-        .checkYourAnswers({ checkAnswers: false })
+        .checkAllReferralInformation({ checkAllReferralInformation: false })
 
       cy.contains('Confirm their personal details').should('have.attr', 'href')
 
@@ -407,11 +407,11 @@ describe('Referral form', () => {
           completedDate: true,
           furtherInformation: true,
         })
-        .checkYourAnswers({ checkAnswers: true })
+        .checkAllReferralInformation({ checkAllReferralInformation: true })
 
       cy.stubGetDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
-      cy.get('a').contains('Check your answers').click()
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)
+      cy.get('a').contains('Check referral information').click()
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-all-referral-information`)
 
       cy.contains('X123456')
       cy.contains('River')
@@ -715,7 +715,7 @@ describe('Referral form', () => {
         })
         .selectServiceCategories({ selectServiceCategories: false })
         .disabledCohortInterventionReferralDetails()
-        .checkYourAnswers({ checkAnswers: false })
+        .checkAllReferralInformation({ checkAllReferralInformation: false })
 
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
         ...deliusServiceUser,
@@ -820,7 +820,7 @@ describe('Referral form', () => {
           needsAndRequirements: true,
         })
         .selectServiceCategories({ selectServiceCategories: true })
-        .checkYourAnswers({ checkAnswers: false })
+        .checkAllReferralInformation({ checkAllReferralInformation: false })
       cy.contains('Select service categories').click()
       cy.get('h1').contains('What service categories are you referring Alex to?')
       cy.contains('Accommodation').click()
@@ -849,7 +849,7 @@ describe('Referral form', () => {
           completedDate: false,
           furtherInformation: false,
         })
-        .checkYourAnswers({ checkAnswers: false })
+        .checkAllReferralInformation({ checkAllReferralInformation: false })
 
       cy.contains("Confirm the relevant sentence for the Women's services referral").click()
 
@@ -952,11 +952,11 @@ describe('Referral form', () => {
           completedDate: true,
           furtherInformation: true,
         })
-        .checkYourAnswers({ checkAnswers: true })
+        .checkAllReferralInformation({ checkAllReferralInformation: true })
 
       cy.stubGetDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
-      cy.get('a').contains('Check your answers').click()
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)
+      cy.get('a').contains('Check referral information').click()
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-all-referral-information`)
 
       cy.contains('Service categories')
       cy.contains('Selected service categories')

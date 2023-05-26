@@ -15,7 +15,7 @@ import DateUtils from '../../../utils/dateUtils'
 import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
 import Prison from '../../../models/prisonRegister/prison'
 
-export default class CheckAnswersPresenter {
+export default class CheckAllReferralInformationPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,

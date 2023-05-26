@@ -175,7 +175,9 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
 
   get(router, '/referrals/:id/enforceable-days', (req, res) => makeAReferralController.viewEnforceableDays(req, res))
   post(router, '/referrals/:id/enforceable-days', (req, res) => makeAReferralController.updateEnforceableDays(req, res))
-  get(router, '/referrals/:id/check-answers', (req, res) => makeAReferralController.checkAnswers(req, res))
+  get(router, '/referrals/:id/check-all-referral-information', (req, res) =>
+    makeAReferralController.checkAllReferralInformation(req, res)
+  )
   post(router, '/referrals/:id/send', (req, res) => makeAReferralController.sendDraftReferral(req, res))
   get(router, '/referrals/:id/confirmation', (req, res) => makeAReferralController.viewConfirmation(req, res))
 
