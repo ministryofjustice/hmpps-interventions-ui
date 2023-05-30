@@ -1864,7 +1864,10 @@ describe('GET /referrals/:id/check-all-referral-information', () => {
     const referral = draftReferralFactory
       .serviceCategorySelected(serviceCategory.id)
       .completionDeadlineSet()
-      .build({ serviceUser: { firstName: 'Johnny', religionOrBelief: 'Agnostic' }, relevantSentenceId: 123 })
+      .build({
+        serviceUser: { firstName: 'Johnny', lastName: 'Blair', religionOrBelief: 'Agnostic' },
+        relevantSentenceId: 123,
+      })
     const conviction = deliusConvictionFactory.build()
     const prisonList = prisonFactory.prisonList()
 
@@ -1881,7 +1884,7 @@ describe('GET /referrals/:id/check-all-referral-information', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Check all referral information')
-        expect(res.text).toContain('Johnny’s personal details')
+        expect(res.text).toContain('Johnny Blair’s personal details')
         expect(res.text).toContain('Agnostic')
       })
   })

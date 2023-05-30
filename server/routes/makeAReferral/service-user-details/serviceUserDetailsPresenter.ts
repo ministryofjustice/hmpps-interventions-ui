@@ -117,6 +117,41 @@ export default class ServiceUserDetailsPresenter {
     return summary
   }
 
+  get checkAnswersSummary(): SummaryListItem[] {
+    const { address } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
+    const phoneNumbers = this.findUniqueNumbers()
+    const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
+    const summary: SummaryListItem[] = [
+      { key: 'First name', lines: [this.serviceUser.firstName ?? ''] },
+      { key: 'Last name', lines: [this.serviceUser.lastName ?? ''] },
+      {
+        key: 'Date of birth',
+        lines: [this.dateOfBirthWithShortMonth ? `${this.dateOfBirthWithShortMonth} (${this.age} years old)` : ''],
+      },
+      { key: 'Gender', lines: [this.serviceUser.gender ?? ''] },
+      {
+        key: 'Address',
+        lines: address || ['Not found'],
+        listStyle: ListStyle.noMarkers,
+      },
+      {
+        key: phoneNumbers.length > 1 ? 'Phone numbers' : 'Phone number',
+        lines: phoneNumbers,
+        listStyle: ListStyle.noMarkers,
+      },
+      {
+        key: emails.length > 1 ? 'Email addresses' : 'Email address',
+        lines: emails,
+        listStyle: ListStyle.noMarkers,
+      },
+      { key: 'Ethnicity', lines: [this.serviceUser.ethnicity ?? ''] },
+      { key: 'Preferred language', lines: [this.serviceUser.preferredLanguage ?? ''] },
+      { key: 'Disabilities', lines: this.serviceUser.disabilities ?? [], listStyle: ListStyle.noMarkers },
+      { key: 'Religion or belief', lines: [this.serviceUser.religionOrBelief ?? ''] },
+    ]
+    return summary
+  }
+
   get summary(): SummaryListItem[] {
     const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
     const phoneNumbers = this.findUniqueNumbers()

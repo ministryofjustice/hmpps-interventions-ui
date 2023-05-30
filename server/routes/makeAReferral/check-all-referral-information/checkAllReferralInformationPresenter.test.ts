@@ -74,32 +74,20 @@ describe(CheckAllReferralInformationPresenter, () => {
 
     describe('title', () => {
       it('returns the section title', () => {
-        expect(presenter.serviceUserDetailsSection.title).toEqual('Alex’s personal details')
+        expect(presenter.serviceUserDetailsSection.title).toEqual('Alex River’s personal details')
       })
     })
 
     describe('summary', () => {
       it('returns the service user’s details', () => {
         expect(presenter.serviceUserDetailsSection.summary).toEqual([
-          { key: 'CRN', lines: ['X862134'] },
-          { key: 'Title', lines: ['Mr'] },
           { key: 'First name', lines: ['Alex'] },
           { key: 'Last name', lines: ['River'] },
-          { key: 'Date of birth', lines: ['1 January 1980'] },
-          { key: 'Location at time of referral', lines: ['Community'] },
+          { key: 'Date of birth', lines: ['1 Jan 1980 (43 years old)'] },
+          { key: 'Gender', lines: ['Male'] },
           {
             key: 'Address',
             lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
-            listStyle: ListStyle.noMarkers,
-          },
-          { key: 'Gender', lines: ['Male'] },
-          { key: 'Ethnicity', lines: ['British'] },
-          { key: 'Preferred language', lines: ['English'] },
-          { key: 'Religion or belief', lines: ['Agnostic'] },
-          { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
-          {
-            key: 'Email address',
-            lines: ['alex.river@example.com'],
             listStyle: ListStyle.noMarkers,
           },
           {
@@ -107,6 +95,15 @@ describe(CheckAllReferralInformationPresenter, () => {
             lines: ['0123456789'],
             listStyle: ListStyle.noMarkers,
           },
+          {
+            key: 'Email address',
+            lines: ['alex.river@example.com'],
+            listStyle: ListStyle.noMarkers,
+          },
+          { key: 'Ethnicity', lines: ['British'] },
+          { key: 'Preferred language', lines: ['English'] },
+          { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
+          { key: 'Religion or belief', lines: ['Agnostic'] },
         ])
       })
     })

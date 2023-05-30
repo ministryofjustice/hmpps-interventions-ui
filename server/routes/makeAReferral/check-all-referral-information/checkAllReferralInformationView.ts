@@ -4,10 +4,12 @@ import ViewUtils from '../../../utils/viewUtils'
 export default class CheckAllReferralInformationView {
   constructor(private readonly presenter: CheckAllReferralInformationPresenter) {}
 
-  private readonly probationPractitionerDetailsSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
-    this.presenter.probationPractitionerDetailSection.summary,
-    this.presenter.probationPractitionerDetailSection.title
-  )
+  private readonly probationPractitionerDetailsSummaryListArgs = this.presenter.probationPractitionerDetailSection
+    ? ViewUtils.summaryListArgsWithSummaryCard(
+        this.presenter.probationPractitionerDetailSection.summary,
+        this.presenter.probationPractitionerDetailSection.title
+      )
+    : null
 
   private readonly serviceUserDetailsSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
     this.presenter.serviceUserDetailsSection.summary,
@@ -71,6 +73,7 @@ export default class CheckAllReferralInformationView {
         completionDeadlineSummaryListArgs: this.completionDeadlineSummaryListArgs,
         furtherInformationSummaryListArgs: this.furtherInformationSummaryListArgs,
         riskInformationSummaryListArgs: this.riskInformationSummaryListArgs,
+        backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
   }

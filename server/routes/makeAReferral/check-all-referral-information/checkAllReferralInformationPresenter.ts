@@ -16,6 +16,8 @@ import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInforma
 import Prison from '../../../models/prisonRegister/prison'
 
 export default class CheckAllReferralInformationPresenter {
+  readonly backLinkUrl: string
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
@@ -23,11 +25,13 @@ export default class CheckAllReferralInformationPresenter {
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
     private readonly prisons: Prison[],
     private readonly editedOasysRiskInformation: DraftOasysRiskInformation | null = null
-  ) {}
+  ) {
+    this.backLinkUrl = `/referrals/${this.referral.id}/form`
+  }
 
   get serviceUserDetailsSection(): { title: string; summary: SummaryListItem[] } {
     return {
-      title: `${this.serviceUserName}’s personal details`,
+      title: `${this.serviceUserNameForServiceCategory}’s personal details`,
       summary: new ServiceUserDetailsPresenter(
         this.referral.serviceUser,
         this.deliusServiceUser,
@@ -37,11 +41,26 @@ export default class CheckAllReferralInformationPresenter {
         this.referral?.personCustodyPrisonId,
         this.referral?.expectedReleaseDate,
         this.referral?.expectedReleaseDateMissingReason
-      ).summary,
+      ).checkAnswersSummary,
     }
   }
 
-  get probationPractitionerDetailSection(): { title: string; summary: SummaryListItem[] } {
+  private checkIfProbationPractitionerDetailsExist(): boolean {
+    return (
+      this.referral.ndeliusPPName != null ||
+      this.referral.ndeliusPPEmailAddress != null ||
+      this.referral.ndeliusPDU != null ||
+      this.referral.ppName != null ||
+      this.referral.ppEmailAddress != null ||
+      this.referral.ppPdu != null ||
+      this.referral.ppProbationOffice != null
+    )
+  }
+
+  get probationPractitionerDetailSection(): { title: string; summary: SummaryListItem[] } | null {
+    if (!this.checkIfProbationPractitionerDetailsExist()) {
+      return null
+    }
     return {
       title: `Probation Practitioner Details`,
       summary: [
@@ -51,7 +70,7 @@ export default class CheckAllReferralInformationPresenter {
           changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details`,
         },
         {
-          key: 'Email',
+          key: 'Email address',
           lines: [this.referral.ppEmailAddress || this.referral.ndeliusPPEmailAddress || ''],
           changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details`,
         },
@@ -301,5 +320,13 @@ export default class CheckAllReferralInformationPresenter {
     }
   }
 
-  private readonly serviceUserName = this.referral.serviceUser?.firstName ?? ''
+  private readonly serviceUserName = this.referral.serviceUser.firstName ?? ''
+
+  private readonly serviceUserNameForServiceCategory =
+    this.referral.serviceUser.firstName && this.referral.serviceUser.lastName
+      ? [
+          utils.convertToProperCase(this.referral.serviceUser.firstName),
+          utils.convertToProperCase(this.referral.serviceUser.lastName),
+        ].join(' ')
+      : 'The person on probation'
 }
