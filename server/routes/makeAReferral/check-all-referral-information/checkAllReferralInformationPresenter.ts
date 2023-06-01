@@ -15,7 +15,9 @@ import DateUtils from '../../../utils/dateUtils'
 import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
 import Prison from '../../../models/prisonRegister/prison'
 
-export default class CheckAnswersPresenter {
+export default class CheckAllReferralInformationPresenter {
+  readonly backLinkUrl: string
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
@@ -23,20 +25,66 @@ export default class CheckAnswersPresenter {
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
     private readonly prisons: Prison[],
     private readonly editedOasysRiskInformation: DraftOasysRiskInformation | null = null
-  ) {}
+  ) {
+    this.backLinkUrl = `/referrals/${this.referral.id}/form`
+  }
 
   get serviceUserDetailsSection(): { title: string; summary: SummaryListItem[] } {
     return {
-      title: `${this.serviceUserName}’s personal details`,
+      title: `${this.serviceUserNameForServiceCategory}’s personal details`,
       summary: new ServiceUserDetailsPresenter(
         this.referral.serviceUser,
         this.deliusServiceUser,
         this.prisons,
+        this.referral.id,
         this.referral?.personCurrentLocationType,
         this.referral?.personCustodyPrisonId,
         this.referral?.expectedReleaseDate,
         this.referral?.expectedReleaseDateMissingReason
-      ).summary,
+      ).checkAnswersSummary,
+    }
+  }
+
+  private checkIfProbationPractitionerDetailsExist(): boolean {
+    return (
+      this.referral.ndeliusPPName != null ||
+      this.referral.ndeliusPPEmailAddress != null ||
+      this.referral.ndeliusPDU != null ||
+      this.referral.ppName != null ||
+      this.referral.ppEmailAddress != null ||
+      this.referral.ppPdu != null ||
+      this.referral.ppProbationOffice != null
+    )
+  }
+
+  get probationPractitionerDetailSection(): { title: string; summary: SummaryListItem[] } | null {
+    if (!this.checkIfProbationPractitionerDetailsExist()) {
+      return null
+    }
+    return {
+      title: `Probation Practitioner Details`,
+      summary: [
+        {
+          key: 'Name',
+          lines: [this.referral.ppName || this.referral.ndeliusPPName || ''],
+          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details`,
+        },
+        {
+          key: 'Email address',
+          lines: [this.referral.ppEmailAddress || this.referral.ndeliusPPEmailAddress || ''],
+          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details`,
+        },
+        {
+          key: 'PDU(probation delivery unit)',
+          lines: [this.referral.ppPdu || this.referral.ndeliusPDU || ''],
+          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details`,
+        },
+        {
+          key: 'Probation office',
+          lines: [this.referral.ppProbationOffice || ''],
+          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details`,
+        },
+      ],
     }
   }
 
@@ -180,7 +228,7 @@ export default class CheckAnswersPresenter {
     })
   }
 
-  get serviceCategoriesSummary(): SummaryListItem[] | null {
+  get serviceCategoriesSummary(): { title: string; summary: SummaryListItem[] } | null {
     if (!new InterventionDecorator(this.intervention).isCohortIntervention) {
       return null
     }
@@ -189,36 +237,42 @@ export default class CheckAnswersPresenter {
       this.intervention.serviceCategories
     )
 
-    return [
-      {
-        key: 'Selected service categories',
-        lines: serviceCategories.map(serviceCategory => utils.convertToProperCase(serviceCategory.name)),
-        listStyle: ListStyle.noMarkers,
-        changeLink: `/referrals/${this.referral.id}/service-categories`,
-      },
-    ]
+    return {
+      title: 'Service categories',
+      summary: [
+        {
+          key: 'Selected service categories',
+          lines: serviceCategories.map(serviceCategory => utils.convertToProperCase(serviceCategory.name)),
+          listStyle: ListStyle.noMarkers,
+          changeLink: `/referrals/${this.referral.id}/service-categories`,
+        },
+      ],
+    }
   }
 
-  get sentenceInformationSummary(): SummaryListItem[] {
+  get sentenceInformationSummary(): { title: string; summary: SummaryListItem[] } {
     const presenter = new SentencePresenter(this.conviction)
 
-    return [
-      {
-        key: 'Sentence',
-        lines: [presenter.category],
-        changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
-      },
-      {
-        key: 'Subcategory',
-        lines: [presenter.subcategory],
-        changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
-      },
-      {
-        key: 'End of sentence date',
-        lines: [presenter.endOfSentenceDate],
-        changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
-      },
-    ]
+    return {
+      title: 'Sentence Information',
+      summary: [
+        {
+          key: 'Sentence',
+          lines: [presenter.category],
+          changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
+        },
+        {
+          key: 'Subcategory',
+          lines: [presenter.subcategory],
+          changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
+        },
+        {
+          key: 'End of sentence date',
+          lines: [presenter.endOfSentenceDate],
+          changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
+        },
+      ],
+    }
   }
 
   get completionDeadlineSection(): { title: string; summary: SummaryListItem[] } {
@@ -240,25 +294,39 @@ export default class CheckAnswersPresenter {
     }
   }
 
-  get enforceableDaysSummary(): SummaryListItem[] {
-    return [
-      {
-        key: 'Maximum number of enforceable days',
-        lines: [this.referral.maximumEnforceableDays ? this.referral.maximumEnforceableDays.toString() : ''],
-        changeLink: `/referrals/${this.referral.id}/enforceable-days`,
-      },
-    ]
+  get enforceableDaysSummary(): { title: string; summary: SummaryListItem[] } {
+    return {
+      title: 'Enforceable days',
+      summary: [
+        {
+          key: 'Maximum number of enforceable days',
+          lines: [this.referral.maximumEnforceableDays ? this.referral.maximumEnforceableDays.toString() : ''],
+          changeLink: `/referrals/${this.referral.id}/enforceable-days`,
+        },
+      ],
+    }
   }
 
-  get furtherInformationSummary(): SummaryListItem[] {
-    return [
-      {
-        key: 'Further information for the provider',
-        lines: [this.referral.furtherInformation?.length ? this.referral.furtherInformation! : 'None'],
-        changeLink: `/referrals/${this.referral.id}/further-information`,
-      },
-    ]
+  get furtherInformationSummary(): { title: string; summary: SummaryListItem[] } {
+    return {
+      title: 'Further information',
+      summary: [
+        {
+          key: 'Further information for the provider',
+          lines: [this.referral.furtherInformation?.length ? this.referral.furtherInformation! : 'None'],
+          changeLink: `/referrals/${this.referral.id}/further-information`,
+        },
+      ],
+    }
   }
 
-  private readonly serviceUserName = this.referral.serviceUser?.firstName ?? ''
+  private readonly serviceUserName = this.referral.serviceUser.firstName ?? ''
+
+  private readonly serviceUserNameForServiceCategory =
+    this.referral.serviceUser.firstName && this.referral.serviceUser.lastName
+      ? [
+          utils.convertToProperCase(this.referral.serviceUser.firstName),
+          utils.convertToProperCase(this.referral.serviceUser.lastName),
+        ].join(' ')
+      : 'The person on probation'
 }

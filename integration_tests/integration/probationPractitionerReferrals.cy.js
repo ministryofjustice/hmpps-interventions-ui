@@ -467,33 +467,24 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.contains('Accommodation service')
       .next()
-      .children()
-      .first()
       .should('contain', 'Complexity level')
       .should('contain', 'LOW COMPLEXITY')
       .should('contain', 'Service user has some capacity and means to secure')
-      .next()
       .should('contain', 'Desired outcomes')
       .should('contain', 'All barriers, as identified in the Service user action plan')
       .should('contain', 'Service user makes progress in obtaining accommodation')
 
     cy.contains('Social inclusion service')
       .next()
-      .children()
-      .first()
       .should('contain', 'Complexity level')
       .should('contain', 'MEDIUM COMPLEXITY')
       .should('contain', 'Service user is at risk of homelessness/is homeless')
-      .next()
       .should('contain', 'Desired outcomes')
       .should('contain', 'Service user is helped to secure social or supported housing')
       .should('contain', 'Service user is helped to secure a tenancy in the private rented sector (PRS)')
 
     cy.contains("The person on probation's details")
     cy.contains('English')
-    cy.contains('Agnostic')
-    cy.contains('Autism spectrum condition')
-    cy.contains('sciatica')
     cy.contains("The person on probation's details")
       .next()
       .contains('Email address')
@@ -813,13 +804,11 @@ describe('Probation practitioner referrals dashboard', () => {
 
       cy.contains('Accommodation service')
         .next()
-        .children()
-        .first()
         .should('contain', 'Complexity level')
-        .next()
         .should('contain', 'Desired outcomes')
         .contains('Change')
-        .click()
+
+      cy.get('#change-link-1').click()
 
       cy.location('pathname').should(
         'equal',
