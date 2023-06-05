@@ -429,29 +429,41 @@ describe('Referral form', () => {
       cy.contains('alex.river@example.com')
 
       // Alex's risk information
-      cy.contains('Probation Practitioner Details')
+      cy.contains('Probation practitioner details')
         .parent()
         .next()
         .should('contain', 'Name')
         .should('contain', 'Victor Drake')
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
+        )
 
-      cy.contains('Probation Practitioner Details')
+      cy.contains('Probation practitioner details')
         .parent()
         .next()
         .should('contain', 'Email')
         .should('contain', 'a.b@xyz.com')
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
+        )
 
-      cy.contains('Probation Practitioner Details')
+      cy.contains('Probation practitioner details')
         .parent()
         .next()
-        .should('contain', 'PDU(probation delivery unit)')
+        .should('contain', 'PDU (probation delivery unit)')
         .should('contain', 'London')
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
+        )
 
       //
       // Alex's risk information

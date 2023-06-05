@@ -726,8 +726,11 @@ export default class MakeAReferralController {
     } else {
       error = form.error
     }
+    const amendPPDetails = req.query.amendPPDetails === 'true'
 
-    if (error === null) {
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null && !amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
