@@ -45,12 +45,6 @@ export default class EditOasysRiskInformationForm {
       return null
     }
 
-    return {
-      errors: this.result.array().map(validationError => ({
-        formFields: [validationError.param],
-        errorSummaryLinkedField: validationError.param,
-        message: validationError.msg,
-      })),
-    }
+    return FormUtils.getFormValidationError(this.result)
   }
 }

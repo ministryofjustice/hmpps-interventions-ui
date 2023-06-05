@@ -51,13 +51,7 @@ export default class BehaviourFeedbackForm {
       return null
     }
 
-    return {
-      errors: validationResult.array().map(validationError => ({
-        formFields: [validationError.param],
-        errorSummaryLinkedField: validationError.param,
-        message: validationError.msg,
-      })),
-    }
+    return FormUtils.getFormValidationError(validationResult)
   }
 
   private get notifyProbationPractitioner(): boolean {
