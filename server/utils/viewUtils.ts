@@ -10,7 +10,12 @@ export type SortableTableHeaders = {
   sort: 'ascending' | 'descending' | 'none'
   persistentId: string | null
 }[]
-export type SortableTableRow = { text: string; sortValue: string | null; href: string | null }[]
+export type SortableTableRow = {
+  text: string
+  sortValue: string | null
+  href: string | null
+  doubleCell: boolean | null
+}[]
 
 export default class ViewUtils {
   static escape(val: string): string {
@@ -199,10 +204,12 @@ export default class ViewUtils {
 
           if (cell.href === null) {
             result.text = cell.text
+          } else if (cell.doubleCell) {
+            result.html = `<a href="${cell.href}" class="govuk-link">${ViewUtils.escape(cell.text.split(':')[0])}</a>
+            <br><span class="govuk-body-s">${ViewUtils.escape(cell.text.split(':')[1])}</span>`
           } else {
             result.html = `<a href="${cell.href}" class="govuk-link">${ViewUtils.escape(cell.text)}</a>`
           }
-
           return result
         })
       }),
