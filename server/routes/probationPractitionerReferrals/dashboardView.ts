@@ -37,7 +37,7 @@ export default class DashboardView {
 
   get serviceOutageBannerArgs(): NotificationBannerArgs | null {
     const text =
-      'Refer and monitor an intervention will not be available between 10am on Saturday 10 June and 9am on Sunday 11 June 2023.'
+      'Refer and monitor an intervention will not be available on Wednesday 14 June 2023 from 8pm for 30 minutes.'
 
     const html = `<p class="govuk-notification-banner__heading">${text}</p>
                   <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p>`
