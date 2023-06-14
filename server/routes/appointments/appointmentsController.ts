@@ -495,6 +495,9 @@ export default class AppointmentsController {
                 behaviour: {
                   behaviourDescription: null,
                   notifyProbationPractitioner: null,
+                  sessionSummary:  null,
+                  sessionResponse: null,
+                  sessionConcerns: null,
                 },
                 submitted: false,
                 submittedBy: null,
@@ -820,6 +823,9 @@ export default class AppointmentsController {
                 behaviour: {
                   behaviourDescription: null,
                   notifyProbationPractitioner: null,
+                  sessionSummary:  null,
+                  sessionResponse: null,
+                  sessionConcerns: null,
                 },
                 submitted: false,
                 submittedBy: null,
@@ -1262,6 +1268,9 @@ export default class AppointmentsController {
           behaviour: {
             behaviourDescription: null,
             notifyProbationPractitioner: null,
+            sessionSummary:  null, //is this correct
+            sessionResponse: null,
+            sessionConcerns: null,
           },
           submitted: false,
           submittedBy: null,
@@ -1320,6 +1329,9 @@ export default class AppointmentsController {
           behaviour: {
             behaviourDescription: null,
             notifyProbationPractitioner: null,
+            sessionSummary:  null, // is this correct?
+            sessionResponse: null,
+            sessionConcerns: null,
           },
           submitted: false,
           submittedBy: null,

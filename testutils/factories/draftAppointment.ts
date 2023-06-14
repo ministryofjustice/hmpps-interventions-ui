@@ -92,6 +92,9 @@ export default DraftAppointmentFactory.define(() => ({
     behaviour: {
       behaviourDescription: null,
       notifyProbationPractitioner: null,
+      sessionSummary:  null,
+      sessionResponse: null,
+      sessionConcerns: null,
     },
     submitted: false,
     submittedBy: null,

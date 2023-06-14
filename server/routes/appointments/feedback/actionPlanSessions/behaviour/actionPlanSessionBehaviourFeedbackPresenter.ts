@@ -15,7 +15,8 @@ export default class ActionPlanSessionBehaviourFeedbackPresenter {
   ) {}
 
   readonly text = {
-    title: `Add behaviour feedback`,
+    title: `Add session feedback`,
+    subTitle: `This helps the probation practitioner to support the person on probation.`
   }
 
   readonly questionnaire = new BehaviourFeedbackQuestionnaire(this.appointment, this.serviceUser)

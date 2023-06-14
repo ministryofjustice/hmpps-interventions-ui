@@ -17,7 +17,8 @@ export default class InitialAssessmentBehaviourFeedbackPresenter {
   readonly questionnaire = new BehaviourFeedbackQuestionnaire(this.appointment, this.serviceUser)
 
   readonly text = {
-    title: `Add behaviour feedback`,
+    title: `Add session feedback`,
+    subTitle: `This helps the probation practitioner to support the person on probation.`
   }
 
   get backLinkHref(): string | null {

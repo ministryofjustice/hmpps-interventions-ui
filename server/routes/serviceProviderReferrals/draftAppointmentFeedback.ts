@@ -11,6 +11,9 @@ export interface DraftAppointmentFeedbackDetails {
   behaviour: {
     behaviourDescription: string | null
     notifyProbationPractitioner: boolean | null
+    sessionSummary:  string | null //is this correct?
+    sessionResponse: string | null
+    sessionConcerns: string | null
   }
   submitted: boolean
   submittedBy: User | null

@@ -20,12 +20,26 @@ export default class BehaviourFeedbackInputsPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    behaviourDescription: {
+    sessionSummary: {
       value: new PresenterUtils(this.userInputData).stringValue(
-        this.appointment.sessionFeedback?.behaviour?.behaviourDescription || null,
-        'behaviour-description'
+          this.appointment.sessionFeedback?.behaviour?.sessionSummary || null,
+          'session-summary'
       ),
-      errorMessage: this.errorMessageForField('behaviour-description'),
+      errorMessage: this.errorMessageForField('session-summary'),
+    },
+    sessionResponse: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+          this.appointment.sessionFeedback?.behaviour?.sessionResponse || null,
+          'session-response'
+      ),
+      errorMessage: this.errorMessageForField('session-response'),
+    },
+    sessionConcerns: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+          this.appointment.sessionFeedback?.behaviour?.sessionConcerns || null,
+          'session-Concerns'
+      ),
+      errorMessage: this.errorMessageForField('session-Concerns'),
     },
     notifyProbationPractitioner: {
       value: this.utils.booleanValue(
