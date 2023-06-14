@@ -45,4 +45,53 @@ export default class FormUtils {
       })),
     }
   }
+
+  static getFormValidationError( result: Result<ValidationError>): FormValidationError{
+    let summaryError:FormValidationError = {errors: []}
+    let errors = result.array()
+    errors.forEach(function (value) {
+      summaryError.errors.push(FormUtils.errorSummary(value))
+    })
+    return summaryError
+  }
+
+  static errorSummary(validationError: ValidationError) {
+    switch (validationError.type){
+      case 'field':
+        return{
+          formFields: [validationError.path],
+          errorSummaryLinkedField: validationError.path,
+          message: validationError.msg
+        }
+        // case 'alternative':
+        //   return validationError.nestedErrors.map(error => ({
+        //     formFields: [error.path],
+        //     errorSummaryLinkedField: error.path,
+        //     message: error.msg
+        //   })
+        //   )
+        //       return null
+        // case 'alternative_grouped':
+        //   // validationError.nestedErrors.map(error => ({
+        //   //   formFields: [error.],
+        //   //   errorSummaryLinkedField: error.path,
+        //   //   message: error.msg
+        //   // })
+        //   // return{
+        //   //   formFields: [validationError],
+        //   //   errorSummaryLinkedField: validationError.path,
+        //   //   message: validationError.msg
+        //   // }
+        //   // this is an AlternativeValidationError or GroupedAlternativeValidationError
+        //       return null
+        // case 'unknown_fields':
+        //   // this is an UnknownFieldValidationError
+        //   const fields = validationError.fields.map(field => field.path).join(', ');
+        //   return null
+
+      default:
+        // Not a known type.
+        throw new Error(`Not a known express-validator error: ${validationError}`);
+    }
+  }
 }

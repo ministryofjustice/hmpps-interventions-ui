@@ -41,12 +41,6 @@ export default class ComplexityLevelForm {
       return null
     }
 
-    return {
-      errors: validationResult.array().map(validationError => ({
-        formFields: [validationError.param],
-        errorSummaryLinkedField: validationError.param,
-        message: validationError.msg,
-      })),
-    }
+    return FormUtils.getFormValidationError(validationResult)
   }
 }

@@ -4,6 +4,7 @@ import { UpdateDraftActionPlanParams } from '../../../../services/interventionsS
 import errorMessages from '../../../../utils/errorMessages'
 import FormUtils from '../../../../utils/formUtils'
 import { FormValidationError } from '../../../../utils/formValidationError'
+import {forEach} from "iterall";
 
 export default class ActionPlanNumberOfSessionsForm {
   private constructor(private readonly request: Request, private readonly result: Result<ValidationError>) {}
@@ -42,13 +43,7 @@ export default class ActionPlanNumberOfSessionsForm {
       return null
     }
 
-    return {
-      errors: this.result.array().map(validationError => ({
-        formFields: [validationError.param],
-        errorSummaryLinkedField: validationError.param,
-        message: validationError.msg,
-      })),
-    }
+    return FormUtils.getFormValidationError(this.result)
   }
 
   get paramsForUpdate(): Partial<UpdateDraftActionPlanParams> {
