@@ -496,13 +496,15 @@ describe('viewing supplier assessment feedback', () => {
         const referral = sentReferralFactory.assigned().build()
         const appointment = initialAssessmentAppointmentFactory.build({
           appointmentTime: '2021-02-01T13:00:00Z',
-          sessionFeedback: {
-            attendance: {
+          appointmentFeedback: {
+            attendanceFeedback: {
               attended: 'yes',
               additionalAttendanceInformation: 'He was punctual',
             },
-            behaviour: {
-              behaviourDescription: 'Acceptable',
+            sessionFeedback: {
+              sessionSummary: '',
+              sessionResponse: '',
+              sessionConcerns: '',
             },
             submitted: false,
           },
@@ -903,8 +905,8 @@ describe('Adding supplier assessment feedback', () => {
         const appointment = initialAssessmentAppointmentFactory.build()
         const updatedAppointment = initialAssessmentAppointmentFactory.build({
           ...appointment,
-          sessionFeedback: {
-            attendance: {
+          appointmentFeedback: {
+            attendanceFeedback: {
               attended: 'yes',
               additionalAttendanceInformation: 'Alex made the session on time',
             },
@@ -939,8 +941,8 @@ describe('Adding supplier assessment feedback', () => {
         const appointment = initialAssessmentAppointmentFactory.build()
         const updatedAppointment = initialAssessmentAppointmentFactory.build({
           ...appointment,
-          sessionFeedback: {
-            attendance: {
+          appointmentFeedback: {
+            attendanceFeedback: {
               attended: 'no',
               additionalAttendanceInformation: "I haven't heard from Alex",
             },
@@ -1043,10 +1045,11 @@ describe('Adding supplier assessment feedback', () => {
         const appointment = initialAssessmentAppointmentFactory.build()
         const updatedAppointment = initialAssessmentAppointmentFactory.build({
           ...appointment,
-          sessionFeedback: {
-            behaviour: {
-              behaviourDescription: 'They were very respectful and polite.',
-              notifyProbationPractitioner: false,
+          appointmentFeedback: {
+            sessionFeedback: {
+              sessionSummary: '',
+              sessionResponse: '',
+              sessionConcerns: '',
             },
           },
         })
@@ -1098,13 +1101,15 @@ describe('Adding supplier assessment feedback', () => {
       const referral = sentReferralFactory.assigned().build()
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '2021-02-01T13:00:00Z',
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'yes',
             additionalAttendanceInformation: 'He was punctual',
           },
-          behaviour: {
-            behaviourDescription: 'Acceptable',
+          sessionFeedback: {
+            sessionSummary: '',
+            sessionResponse: '',
+            sessionConcerns: '',
           },
           submitted: false,
         },
@@ -1216,13 +1221,15 @@ describe('Adding supplier assessment feedback', () => {
       const referral = sentReferralFactory.assigned().build()
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '2021-02-01T13:00:00Z',
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'yes',
             additionalAttendanceInformation: 'He was punctual',
           },
-          behaviour: {
-            behaviourDescription: 'Acceptable',
+          sessionFeedback: {
+            sessionSummary: '',
+            sessionResponse: '',
+            sessionConcerns: '',
           },
           submitted: false,
         },
@@ -1271,8 +1278,8 @@ describe('Adding supplier assessment feedback', () => {
       const referral = sentReferralFactory.assigned().build()
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '2021-02-01T13:00:00Z',
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'no',
             additionalAttendanceInformation: 'They missed the bus',
           },
@@ -1431,8 +1438,8 @@ describe('Adding post delivery session feedback', () => {
       it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
         const updatedAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 1,
-          sessionFeedback: {
-            attendance: {
+          appointmentFeedback: {
+            attendanceFeedback: {
               attended: 'yes',
               additionalAttendanceInformation: 'Alex made the session on time',
             },
@@ -1464,8 +1471,8 @@ describe('Adding post delivery session feedback', () => {
       it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
         const updatedAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 1,
-          sessionFeedback: {
-            attendance: {
+          appointmentFeedback: {
+            attendanceFeedback: {
               attended: 'no',
               additionalAttendanceInformation: "I haven't heard from Alex",
             },
@@ -1500,8 +1507,8 @@ describe('Adding post delivery session feedback', () => {
         it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the behaviour page', async () => {
           const updatedAppointment = actionPlanAppointmentFactory.build({
             sessionNumber: 1,
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'yes',
                 additionalAttendanceInformation: 'Alex made the session on time',
               },
@@ -1540,8 +1547,8 @@ describe('Adding post delivery session feedback', () => {
         it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
           const updatedAppointment = actionPlanAppointmentFactory.build({
             sessionNumber: 1,
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'no',
                 additionalAttendanceInformation: "I haven't heard from Alex",
               },
@@ -1585,8 +1592,8 @@ describe('Adding post delivery session feedback', () => {
       it('renders a no longer available page', async () => {
         const updatedAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 1,
-          sessionFeedback: {
-            attendance: {
+          appointmentFeedback: {
+            attendanceFeedback: {
               attended: 'yes',
               additionalAttendanceInformation: 'Alex made the session on time',
             },
@@ -1728,10 +1735,11 @@ describe('Adding post delivery session feedback', () => {
     it('makes a request to the interventions service to record the Service user‘s behaviour and redirects to the check your answers page', async () => {
       const updatedAppointment = actionPlanAppointmentFactory.build({
         sessionNumber: 1,
-        sessionFeedback: {
-          behaviour: {
-            behaviourDescription: 'Alex was well-behaved',
-            notifyProbationPractitioner: false,
+        appointmentFeedback: {
+          sessionFeedback: {
+            sessionSummary: '',
+            sessionResponse: '',
+            sessionConcerns: '',
           },
         },
       })
@@ -1762,10 +1770,11 @@ describe('Adding post delivery session feedback', () => {
       it('makes a request to the interventions service to record the Service user‘s behaviour and redirects to the check your answers page', async () => {
         const updatedAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 1,
-          sessionFeedback: {
-            behaviour: {
-              behaviourDescription: 'Alex was well-behaved',
-              notifyProbationPractitioner: false,
+          appointmentFeedback: {
+            sessionFeedback: {
+              sessionSummary: '',
+              sessionResponse: '',
+              sessionConcerns: '',
             },
           },
         })
@@ -1802,10 +1811,11 @@ describe('Adding post delivery session feedback', () => {
       it('renders a no longer available page', async () => {
         const updatedAppointment = actionPlanAppointmentFactory.build({
           sessionNumber: 1,
-          sessionFeedback: {
-            behaviour: {
-              behaviourDescription: 'Alex was well-behaved',
-              notifyProbationPractitioner: false,
+          appointmentFeedback: {
+            sessionFeedback: {
+              sessionSummary: '',
+              sessionResponse: '',
+              sessionConcerns: '',
             },
           },
         })
@@ -2003,8 +2013,8 @@ describe('Adding post delivery session feedback', () => {
             sessionType: draftAppointment!.sessionType,
             appointmentDeliveryAddress: draftAppointment!.appointmentDeliveryAddress,
             npsOfficeCode: draftAppointment!.npsOfficeCode,
-            appointmentAttendance: { ...draftAppointment!.sessionFeedback!.attendance },
-            appointmentBehaviour: { ...draftAppointment!.sessionFeedback!.behaviour },
+            appointmentAttendance: { ...draftAppointment!.session!.attendance },
+            // appointmentBehaviour: { ...draftAppointment!.session!.behaviour },
           }
         )
       })
@@ -2171,14 +2181,15 @@ describe('Adding post delivery session feedback', () => {
             durationInMinutes: 60,
             appointmentDeliveryType: 'PHONE_CALL',
             sessionNumber: 1,
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'yes',
                 additionalAttendanceInformation: 'They were early to the session',
               },
-              behaviour: {
-                behaviourDescription: 'Alex was well-behaved',
-                notifyProbationPractitioner: false,
+              sessionFeedback: {
+                sessionSummary: '',
+                sessionResponse: '',
+                sessionConcerns: '',
               },
               submitted: true,
             },
@@ -2222,14 +2233,15 @@ describe('Adding post delivery session feedback', () => {
             durationInMinutes: 60,
             appointmentDeliveryType: 'PHONE_CALL',
             sessionNumber: 1,
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'yes',
                 additionalAttendanceInformation: 'They were early to the session',
               },
-              behaviour: {
-                behaviourDescription: 'Alex was well-behaved',
-                notifyProbationPractitioner: false,
+              sessionFeedback: {
+                sessionSummary: '',
+                sessionResponse: '',
+                sessionConcerns: '',
               },
               submitted: true,
             },
@@ -2283,14 +2295,15 @@ describe('Adding post delivery session feedback', () => {
             durationInMinutes: 60,
             appointmentDeliveryType: 'PHONE_CALL',
             sessionNumber: 1,
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'yes',
                 additionalAttendanceInformation: 'They were early to the session',
               },
-              behaviour: {
-                behaviourDescription: 'Alex was well-behaved',
-                notifyProbationPractitioner: false,
+              sessionFeedback: {
+                sessionSummary: '',
+                sessionResponse: '',
+                sessionConcerns: '',
               },
               submitted: true,
             },

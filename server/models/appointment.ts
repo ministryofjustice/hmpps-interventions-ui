@@ -1,7 +1,8 @@
 import Address from './address'
 import { AppointmentDeliveryType } from './appointmentDeliveryType'
-import SessionFeedback from './sessionFeedback'
+import SessionFeedback from './appointmentFeedback'
 import { SessionType } from './sessionType'
+import AppointmentFeedback from "./appointmentFeedback";
 
 export interface InitialAssessmentAppointment extends Appointment {
   id: string
@@ -14,7 +15,7 @@ export interface ActionPlanAppointment extends Appointment {
 
 interface Appointment extends AppointmentSchedulingDetails {
   id?: string
-  sessionFeedback: SessionFeedback
+  appointmentFeedback: AppointmentFeedback
 }
 
 export interface AppointmentSchedulingDetails {

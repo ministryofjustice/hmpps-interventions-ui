@@ -22,28 +22,28 @@ export default class BehaviourFeedbackInputsPresenter {
   readonly fields = {
     sessionSummary: {
       value: new PresenterUtils(this.userInputData).stringValue(
-          this.appointment.sessionFeedback?.behaviour?.sessionSummary || null,
+          this.appointment.appointmentFeedback?.sessionFeedback?.sessionSummary || null,
           'session-summary'
       ),
       errorMessage: this.errorMessageForField('session-summary'),
     },
     sessionResponse: {
       value: new PresenterUtils(this.userInputData).stringValue(
-          this.appointment.sessionFeedback?.behaviour?.sessionResponse || null,
+          this.appointment.appointmentFeedback?.sessionFeedback?.sessionResponse || null,
           'session-response'
       ),
       errorMessage: this.errorMessageForField('session-response'),
     },
     sessionConcerns: {
       value: new PresenterUtils(this.userInputData).stringValue(
-          this.appointment.sessionFeedback?.behaviour?.sessionConcerns || null,
+          this.appointment.appointmentFeedback?.sessionFeedback?.sessionConcerns || null,
           'session-Concerns'
       ),
-      errorMessage: this.errorMessageForField('session-Concerns'),
+      errorMessage: this.errorMessageForField('session-concerns'),
     },
     notifyProbationPractitioner: {
       value: this.utils.booleanValue(
-        this.appointment.sessionFeedback?.behaviour?.notifyProbationPractitioner ?? null,
+        this.appointment.appointmentFeedback?.sessionFeedback?.notifyProbationPractitioner ?? null,
         'notify-probation-practitioner'
       ),
       errorMessage: this.errorMessageForField('notify-probation-practitioner'),

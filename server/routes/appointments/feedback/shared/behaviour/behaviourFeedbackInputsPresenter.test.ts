@@ -45,8 +45,8 @@ describe(BehaviourFeedbackInputsPresenter, () => {
         describe('when the appointment already has behaviourDescription set', () => {
           it('uses that value as the value attribute', () => {
             const appointment = actionPlanAppointmentFactory.build({
-              sessionFeedback: {
-                behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
+              appointmentFeedback: {
+                // behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
               },
             })
             const presenter = new BehaviourFeedbackInputsPresenter(appointment)
@@ -58,8 +58,8 @@ describe(BehaviourFeedbackInputsPresenter, () => {
         describe('when the appointment has no value for behaviourDescription', () => {
           it('sets the value to an empty string', () => {
             const appointment = actionPlanAppointmentFactory.build({
-              sessionFeedback: {
-                behaviour: { behaviourDescription: undefined },
+              appointmentFeedback: {
+                // behaviour: { behaviourDescription: undefined },
               },
             })
             const presenter = new BehaviourFeedbackInputsPresenter(appointment)
@@ -72,8 +72,8 @@ describe(BehaviourFeedbackInputsPresenter, () => {
       describe('when there is user input data', () => {
         it('uses the user input data as the value attribute', () => {
           const appointment = actionPlanAppointmentFactory.build({
-            sessionFeedback: {
-              behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
+            appointmentFeedback: {
+              // behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
             },
           })
           const presenter = new BehaviourFeedbackInputsPresenter(appointment, null, {
@@ -90,8 +90,8 @@ describe(BehaviourFeedbackInputsPresenter, () => {
         describe('when the appointment already has a value selected for notifying the probation practitioner', () => {
           it('uses the pre-selected value', () => {
             const appointment = actionPlanAppointmentFactory.build({
-              sessionFeedback: {
-                behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
+              appointmentFeedback: {
+                // behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
               },
             })
 
@@ -104,8 +104,8 @@ describe(BehaviourFeedbackInputsPresenter, () => {
         describe('when the appointment has no value for notifyProbationPractitioner', () => {
           it('sets the value to null', () => {
             const appointment = actionPlanAppointmentFactory.build({
-              sessionFeedback: {
-                behaviour: { behaviourDescription: undefined },
+              appointmentFeedback: {
+                // behaviour: { behaviourDescription: undefined },
               },
             })
 
@@ -119,8 +119,8 @@ describe(BehaviourFeedbackInputsPresenter, () => {
       describe('when there is user input data', () => {
         it('uses the user input data as the value attribute', () => {
           const appointment = actionPlanAppointmentFactory.build({
-            sessionFeedback: {
-              behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
+            appointmentFeedback: {
+              // behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
             },
           })
           const presenter = new BehaviourFeedbackInputsPresenter(appointment, null, {

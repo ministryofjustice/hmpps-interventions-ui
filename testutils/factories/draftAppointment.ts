@@ -12,14 +12,16 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
     additionalAttendanceInformation = 'Alex made the session on time'
   ) {
     return this.params({
-      sessionFeedback: {
+      session: {
         attendance: {
           attended,
           additionalAttendanceInformation,
         },
-        behaviour: {
-          behaviourDescription: null,
+        sessionFeedback: {
+          sessionSummary: null,
+          sessionResponse: null,
           notifyProbationPractitioner: null,
+          sessionConcerns: null,
         },
         submitted: false,
         submittedBy: null,
@@ -34,14 +36,16 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
     notifyProbationPractitioner = false
   ) {
     return this.params({
-      sessionFeedback: {
+      session: {
         attendance: {
           attended,
           additionalAttendanceInformation,
         },
-        behaviour: {
-          behaviourDescription,
-          notifyProbationPractitioner,
+        sessionFeedback: {
+          sessionSummary: null,
+          sessionResponse: null,
+          notifyProbationPractitioner: null,
+          sessionConcerns: null,
         },
         submitted: false,
         submittedBy: null,
@@ -58,14 +62,16 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
     submittedBy: User = userDetailsFactory.build()
   ) {
     return this.params({
-      sessionFeedback: {
+      session: {
         attendance: {
           attended,
           additionalAttendanceInformation,
         },
-        behaviour: {
-          behaviourDescription,
-          notifyProbationPractitioner,
+        sessionFeedback: {
+          sessionSummary: null,
+          sessionResponse: null,
+          notifyProbationPractitioner: null,
+          sessionConcerns: null,
         },
         submitted,
         submittedBy,

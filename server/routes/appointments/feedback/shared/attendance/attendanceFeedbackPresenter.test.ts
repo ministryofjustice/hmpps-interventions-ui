@@ -114,8 +114,8 @@ describe(AttendanceFeedbackPresenter, () => {
 
       responseValues.forEach(responseValue => {
         const appointment = initialAssessmentAppointmentFactory.build({
-          sessionFeedback: {
-            attendance: { attended: responseValue },
+          appointmentFeedback: {
+            attendanceFeedback: { attended: responseValue },
           },
         })
 
@@ -151,8 +151,8 @@ describe(AttendanceFeedbackPresenter, () => {
       describe('when the appointment already has additionalAttendanceInformation set', () => {
         it('uses that value as the value attribute', () => {
           const appointment = initialAssessmentAppointmentFactory.build({
-            sessionFeedback: {
-              attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
+            appointmentFeedback: {
+              attendanceFeedback: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
             },
           })
           const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
@@ -164,8 +164,8 @@ describe(AttendanceFeedbackPresenter, () => {
       describe('when the appointment has no value for additionalAttendanceInformation', () => {
         it('uses sets the value to an empty string', () => {
           const appointment = initialAssessmentAppointmentFactory.build({
-            sessionFeedback: {
-              attendance: { attended: 'late' },
+            appointmentFeedback: {
+              attendanceFeedback: { attended: 'late' },
             },
           })
           const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
@@ -178,8 +178,8 @@ describe(AttendanceFeedbackPresenter, () => {
     describe('when there is user input data', () => {
       it('uses the user input data as the value attribute', () => {
         const appointment = initialAssessmentAppointmentFactory.build({
-          sessionFeedback: {
-            attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
+          appointmentFeedback: {
+            attendanceFeedback: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
           },
         })
         const presenter = new ExtendedAttendanceFeedbackPresenter(appointment, null, {

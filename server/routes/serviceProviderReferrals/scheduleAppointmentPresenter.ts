@@ -55,7 +55,7 @@ export default class ScheduleAppointmentPresenter {
     if (this.appointmentDecorator !== null) {
       // Remove this check once action plan appointments allow rescheduling
       if (this.appointmentDecorator.isInitialAssessmentAppointment) {
-        return this.currentAppointment!.sessionFeedback.submitted
+        return this.currentAppointment!.appointmentFeedback.submitted
       }
     }
     return false

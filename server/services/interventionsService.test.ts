@@ -3059,14 +3059,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             county: 'Lancashire',
             postCode: 'SY40RE',
           },
-          sessionFeedback: {
-            attendance: {
+          appointmentFeedback: {
+            attendanceFeedback: {
               attended: 'yes',
               additionalAttendanceInformation: 'attendance information',
             },
-            behaviour: {
+            sessionFeedback: {
               notifyProbationPractitioner: false,
-              behaviourDescription: 'they were good',
+              // behaviourDescription: 'they were good',
             },
             submittedBy: {
               authSource: 'auth',
@@ -3288,8 +3288,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           additionalAttendanceInformation: 'Alex missed the bus',
         }
       )
-      expect(appointment.sessionFeedback!.attendance!.attended).toEqual('late')
-      expect(appointment.sessionFeedback!.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+      expect(appointment.appointmentFeedback!.attendanceFeedback!.attended).toEqual('late')
+      expect(appointment.appointmentFeedback!.attendanceFeedback!.additionalAttendanceInformation).toEqual('Alex missed the bus')
     })
   })
 
@@ -3342,12 +3342,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         '81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
         1,
         {
-          behaviourDescription: 'Alex was well behaved',
+          // behaviourDescription: 'Alex was well behaved',
           notifyProbationPractitioner: false,
         }
       )
-      expect(appointment.sessionFeedback!.behaviour!.behaviourDescription).toEqual('Alex was well behaved')
-      expect(appointment.sessionFeedback!.behaviour!.notifyProbationPractitioner).toEqual(false)
+      // expect(appointment.sessionFeedback!.behaviour!.behaviourDescription).toEqual('Alex was well behaved')
+      expect(appointment.appointmentFeedback!.sessionFeedback!.notifyProbationPractitioner).toEqual(false)
     })
   })
 
@@ -3400,7 +3400,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         '0f5afe04-e323-4699-9423-fb6122580638',
         1
       )
-      expect(appointment.sessionFeedback!.submitted).toEqual(true)
+      expect(appointment.appointmentFeedback!.submitted).toEqual(true)
     })
   })
 
@@ -3735,14 +3735,16 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 60,
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'late',
             additionalAttendanceInformation: 'Alex missed the bus',
           },
-          behaviour: {
-            behaviourDescription: null,
-            notifyProbationPractitioner: null,
+          sessionFeedback: {
+            sessionSummary: '',
+            sessionResponse: '',
+            sessionConcerns: null,
+            notifyProbationPractitioner: false,
           },
           submitted: false,
           submittedBy: null,
@@ -3780,8 +3782,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           additionalAttendanceInformation: 'Alex missed the bus',
         }
       )
-      expect(result.sessionFeedback!.attendance!.attended).toEqual('late')
-      expect(result.sessionFeedback!.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+      expect(result.appointmentFeedback!.attendanceFeedback!.attended).toEqual('late')
+      expect(result.appointmentFeedback!.attendanceFeedback!.additionalAttendanceInformation).toEqual('Alex missed the bus')
     })
   })
 
@@ -3793,13 +3795,15 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 120,
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'late',
             additionalAttendanceInformation: 'Alex missed the bus',
           },
-          behaviour: {
-            behaviourDescription: 'Alex was well behaved',
+          sessionFeedback: {
+            sessionSummary: '',
+            sessionResponse: '',
+            sessionConcerns: null,
             notifyProbationPractitioner: false,
           },
           submitted: false,
@@ -3834,12 +3838,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         probationPractitionerToken,
         'caac2a85-578f-4b0b-996d-2893311eb60e',
         {
-          behaviourDescription: 'Alex was well behaved',
+          // behaviourDescription: 'Alex was well behaved',
           notifyProbationPractitioner: false,
         }
       )
-      expect(result.sessionFeedback!.behaviour!.behaviourDescription).toEqual('Alex was well behaved')
-      expect(result.sessionFeedback!.behaviour!.notifyProbationPractitioner).toEqual(false)
+      // expect(result.appointmentFeedback!.behaviour!.behaviourDescription).toEqual('Alex was well behaved')
+      expect(result.appointmentFeedback!.sessionFeedback!.notifyProbationPractitioner).toEqual(false)
     })
   })
 
@@ -3851,13 +3855,15 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 120,
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'late',
             additionalAttendanceInformation: 'Alex missed the bus',
           },
-          behaviour: {
-            behaviourDescription: 'Alex was well behaved',
+          sessionFeedback: {
+            sessionSummary: '',
+            sessionResponse: '',
+            sessionConcerns: null,
             notifyProbationPractitioner: false,
           },
           submitted: true,
@@ -3892,8 +3898,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         probationPractitionerToken,
         'cd8f46a2-78f2-457b-ab14-7d77adce73d1'
       )
-      expect(result.sessionFeedback!.submitted).toEqual(true)
-      expect(result.sessionFeedback!.submittedBy).not.toBeNull()
+      expect(result.appointmentFeedback!.submitted).toEqual(true)
+      expect(result.appointmentFeedback!.submittedBy).not.toBeNull()
     })
   })
 

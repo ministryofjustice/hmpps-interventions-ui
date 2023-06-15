@@ -1,18 +1,18 @@
 import { Request } from 'express'
 import { body, Result, ValidationChain, ValidationError } from 'express-validator'
-import AppointmentBehaviour from '../../../../../models/appointmentBehaviour'
+import AppointmentSession from '../../../../../models/sessionFeedback'
 import errorMessages from '../../../../../utils/errorMessages'
 import FormUtils from '../../../../../utils/formUtils'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import { FormData } from '../../../../../utils/forms/formData'
 
-export default class BehaviourFeedbackForm {
+export default class SessionFeedbackForm {
   constructor(private readonly request: Request) {}
 
-  async data(): Promise<FormData<Partial<AppointmentBehaviour>>> {
+  async data(): Promise<FormData<Partial<AppointmentSession>>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: BehaviourFeedbackForm.validations,
+      validations: SessionFeedbackForm.validations,
     })
 
     const error = this.error(validationResult)
@@ -26,7 +26,9 @@ export default class BehaviourFeedbackForm {
 
     return {
       paramsForUpdate: {
-        behaviourDescription: this.request.body['behaviour-description'],
+        sessionSummary: this.request.body['session-summary'],
+        sessionResponse: this.request.body['session-response'],
+        sessionConcerns: this.request.body['session-concerns'],
         notifyProbationPractitioner: this.notifyProbationPractitioner,
       },
       error: null,
@@ -35,7 +37,12 @@ export default class BehaviourFeedbackForm {
 
   static get validations(): ValidationChain[] {
     return [
-      body('behaviour-description')
+      body('session-summary')
+        .notEmpty({ ignore_whitespace: true })
+        .withMessage(errorMessages.appointmentBehaviour.descriptionEmpty)
+        .bail()
+        .trim(),
+      body('session-response')
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.appointmentBehaviour.descriptionEmpty)
         .bail()
@@ -43,6 +50,10 @@ export default class BehaviourFeedbackForm {
       body('notify-probation-practitioner')
         .isIn(['yes', 'no'])
         .withMessage(errorMessages.appointmentBehaviour.notifyProbationPractitionerNotSelected),
+      body('session-concerns')
+        .if(body('notify-probation-practitioner').equals('yes'))
+        .notEmpty({ ignore_whitespace: true })
+        .withMessage(errorMessages.appointmentBehaviour.descriptionEmpty),
     ]
   }
 

@@ -17,11 +17,11 @@ export default class FeedbackAnswersPresenter {
   }
 
   get attendedAnswers(): { question: string; answer: string } | null {
-    if (this.appointment.sessionFeedback.attendance.attended === null) {
+    if (this.appointment.appointmentFeedback.attendanceFeedback.attended === null) {
       return null
     }
     const selected = this.possibleAttendanceAnswers.find(
-      selection => selection.value === this.appointment.sessionFeedback.attendance.attended
+      selection => selection.value === this.appointment.appointmentFeedback.attendanceFeedback.attended
     )
     if (!selected) {
       return null
@@ -50,35 +50,35 @@ export default class FeedbackAnswersPresenter {
   }
 
   get additionalAttendanceAnswers(): { question: string; answer: string } | null {
-    if (this.appointment.sessionFeedback.attendance.additionalAttendanceInformation === null) {
+    if (this.appointment.appointmentFeedback.attendanceFeedback.additionalAttendanceInformation === null) {
       return null
     }
 
     return {
       question: this.attendanceFeedbackQuestionnaire.additionalAttendanceInformationQuestion,
-      answer: this.appointment.sessionFeedback.attendance.additionalAttendanceInformation || 'None',
+      answer: this.appointment.appointmentFeedback.attendanceFeedback.additionalAttendanceInformation || 'None',
     }
   }
 
-  get behaviourDescriptionAnswers(): { question: string; answer: string } | null {
-    if (this.appointment.sessionFeedback.behaviour.behaviourDescription === null) {
-      return null
-    }
-
-    return {
-      question: this.behaviourFeedbackQuestionnaire.behaviourQuestion.text,
-      answer: this.appointment.sessionFeedback.behaviour.behaviourDescription,
-    }
-  }
+  // get behaviourDescriptionAnswers(): { question: string; answer: string } | null {
+  //   if (this.appointment.appointmentFeedback.sessionFeedback.behaviourDescription === null) {
+  //     return null
+  //   }
+  //
+  //   return {
+  //     question: this.behaviourFeedbackQuestionnaire.behaviourQuestion.text,
+  //     answer: this.appointment.appointmentFeedback.sessionFeedback.behaviourDescription,
+  //   }
+  // }
 
   get notifyProbationPractitionerAnswers(): { question: string; answer: string } | null {
-    if (this.appointment.sessionFeedback.behaviour.notifyProbationPractitioner === null) {
+    if (this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner === null) {
       return null
     }
 
     return {
       question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerQuestion.text,
-      answer: this.appointment.sessionFeedback.behaviour.notifyProbationPractitioner ? 'Yes' : 'No',
+      answer: this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner ? 'Yes' : 'No',
     }
   }
 }

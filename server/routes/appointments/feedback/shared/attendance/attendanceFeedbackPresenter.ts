@@ -40,14 +40,14 @@ export default abstract class AttendanceFeedbackPresenter {
   readonly fields = {
     attended: {
       value: new PresenterUtils(this.userInputData).stringValue(
-        this.appointment.sessionFeedback?.attendance?.attended ?? null,
+        this.appointment.appointmentFeedback?.attendanceFeedback?.attended ?? null,
         'attended'
       ),
       errorMessage: PresenterUtils.errorMessage(this.error, 'attended'),
     },
     additionalAttendanceInformation: {
       value: new PresenterUtils(this.userInputData).stringValue(
-        this.appointment.sessionFeedback?.attendance?.additionalAttendanceInformation ?? null,
+        this.appointment.appointmentFeedback?.attendanceFeedback?.additionalAttendanceInformation ?? null,
         'additional-attendance-information'
       ),
     },
