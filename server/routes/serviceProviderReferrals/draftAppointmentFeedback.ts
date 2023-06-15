@@ -4,7 +4,7 @@ import User from '../../models/hmppsAuth/user'
 // The REDIS draft object may have some drafts in flight when making changes, so care must be taken to ensure that the object
 // is never modified only appended to.
 export interface DraftAppointmentFeedbackDetails {
-  attendance: {
+  attendanceFeedback: {
     attended: 'yes' | 'no' | 'late' | null
     additionalAttendanceInformation: string | null
   }

@@ -13,7 +13,7 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
   ) {
     return this.params({
       session: {
-        attendance: {
+        attendanceFeedback: {
           attended,
           additionalAttendanceInformation,
         },
@@ -37,7 +37,7 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
   ) {
     return this.params({
       session: {
-        attendance: {
+        attendanceFeedback: {
           attended,
           additionalAttendanceInformation,
         },
@@ -63,7 +63,7 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
   ) {
     return this.params({
       session: {
-        attendance: {
+        attendanceFeedback: {
           attended,
           additionalAttendanceInformation,
         },

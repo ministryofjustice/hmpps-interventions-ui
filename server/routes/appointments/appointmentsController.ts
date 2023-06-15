@@ -483,12 +483,12 @@ export default class AppointmentsController {
           const draftAppointment = draft.data as DraftAppointment
           if (draftAppointment) {
             if (draftAppointment.session) {
-              draftAppointment.session.attendance.attended = data.paramsForUpdate.attended!
-              draftAppointment.session.attendance.additionalAttendanceInformation =
+              draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended!
+              draftAppointment.session.attendanceFeedback.additionalAttendanceInformation =
                 data.paramsForUpdate.additionalAttendanceInformation!
             } else {
               draftAppointment.session = {
-                attendance: {
+                attendanceFeedback: {
                   attended: data.paramsForUpdate.attended!,
                   additionalAttendanceInformation: data.paramsForUpdate.additionalAttendanceInformation!,
                 },
@@ -510,7 +510,7 @@ export default class AppointmentsController {
 
           basePath = `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/edit/${draftBookingId}`
           redirectPath =
-            draftAppointment.session.attendance.attended === 'no' ? 'check-your-answers' : 'behaviour'
+            draftAppointment.session.attendanceFeedback.attended === 'no' ? 'check-your-answers' : 'behaviour'
         } else {
           const updatedAppointment = await this.interventionsService.recordSupplierAssessmentAppointmentAttendance(
             accessToken,
@@ -653,9 +653,7 @@ export default class AppointmentsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
-    console.log("--------------")
-    console.log(appointment)
-    console.log("--------------")
+
     const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(
       appointment,
       serviceUser,
@@ -704,7 +702,7 @@ export default class AppointmentsController {
           sessionType: draftAppointment.sessionType,
           appointmentDeliveryAddress: draftAppointment.appointmentDeliveryAddress,
           npsOfficeCode: draftAppointment.npsOfficeCode,
-          appointmentAttendance: { ...draftAppointment.session.attendance },
+          appointmentAttendance: { ...draftAppointment.session.attendanceFeedback },
           appointmentBehaviour:
             // draftAppointment.session.behaviour.behaviourDescription ||
             // draftAppointment.session.behaviour.notifyProbationPractitioner
@@ -818,12 +816,12 @@ export default class AppointmentsController {
           const draftAppointment = draft.data as DraftAppointment
           if (draftAppointment) {
             if (draftAppointment.session) {
-              draftAppointment.session.attendance.attended = data.paramsForUpdate.attended!
-              draftAppointment.session.attendance.additionalAttendanceInformation =
+              draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended!
+              draftAppointment.session.attendanceFeedback.additionalAttendanceInformation =
                 data.paramsForUpdate.additionalAttendanceInformation!
             } else {
               draftAppointment.session = {
-                attendance: {
+                attendanceFeedback: {
                   attended: data.paramsForUpdate.attended!,
                   additionalAttendanceInformation: data.paramsForUpdate.additionalAttendanceInformation!,
                 },
@@ -845,7 +843,7 @@ export default class AppointmentsController {
 
           basePath = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draftBookingId}`
           redirectPath =
-            draftAppointment.session.attendance.attended === 'no' ? 'check-your-answers' : 'behaviour'
+            draftAppointment.session.attendanceFeedback.attended === 'no' ? 'check-your-answers' : 'behaviour'
         } else {
           const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
             accessToken,
@@ -1018,7 +1016,7 @@ export default class AppointmentsController {
           sessionType: draftAppointment.sessionType,
           appointmentDeliveryAddress: draftAppointment.appointmentDeliveryAddress,
           npsOfficeCode: draftAppointment.npsOfficeCode,
-          appointmentAttendance: { ...draftAppointment.session.attendance },
+          appointmentAttendance: { ...draftAppointment.session.attendanceFeedback },
           appointmentBehaviour:
             // draftAppointment.session.behaviour.behaviourDescription ||
             // draftAppointment.session.behaviour.notifyProbationPractitioner

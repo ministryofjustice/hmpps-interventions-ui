@@ -2013,7 +2013,7 @@ describe('Adding post delivery session feedback', () => {
             sessionType: draftAppointment!.sessionType,
             appointmentDeliveryAddress: draftAppointment!.appointmentDeliveryAddress,
             npsOfficeCode: draftAppointment!.npsOfficeCode,
-            appointmentAttendance: { ...draftAppointment!.session!.attendance },
+            appointmentAttendance: { ...draftAppointment!.session!.attendanceFeedback },
             // appointmentBehaviour: { ...draftAppointment!.session!.behaviour },
           }
         )
