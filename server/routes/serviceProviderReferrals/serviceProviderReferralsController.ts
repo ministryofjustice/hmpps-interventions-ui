@@ -239,6 +239,8 @@ export default class ServiceProviderReferralsController {
       ? req.session.disableDowntimeBanner
       : false
 
+    const prisons = await Promise.resolve(this.prisonRegisterService.getPrisons())
+
     const presenter = new DashboardPresenter(
       cases,
       dashboardType,
@@ -247,6 +249,7 @@ export default class ServiceProviderReferralsController {
       sort[0],
       disablePlannedDowntimeNotification,
       req.session.dashboardOriginPage,
+      prisons,
       getSentReferralsFilterParams.search
     )
     const view = new DashboardView(presenter)
