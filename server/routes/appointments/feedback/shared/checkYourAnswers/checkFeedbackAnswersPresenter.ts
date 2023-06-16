@@ -15,6 +15,6 @@ export default abstract class CheckFeedbackAnswersPresenter {
   abstract readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
 
   readonly text = {
-    title: `Confirm feedback`,
+    title: `Confirm session feedback`,
   }
 }

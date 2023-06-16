@@ -54,7 +54,7 @@ export default class BehaviourFeedbackView {
       id: 'session-concerns',
       label: {
         text: this.presenter.questionnaire.sessionConcernsQuestion.text,
-        classes: 'govuk-label--m govuk-!-margin-bottom-4',
+        classes: 'govuk-body govuk-!-margin-bottom-4',
         isPageHeading: false,
       },
       value: this.inputsPresenter.fields.sessionConcerns.value,

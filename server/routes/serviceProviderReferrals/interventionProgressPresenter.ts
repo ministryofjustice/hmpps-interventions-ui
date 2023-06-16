@@ -52,7 +52,9 @@ export default class InterventionProgressPresenter {
     private readonly actionPlanAppointments: ActionPlanAppointment[],
     private readonly supplierAssessment: SupplierAssessment,
     private readonly assignee: AuthUserDetails | null,
-    private readonly dashboardOriginPage?: string
+    private readonly dashboardOriginPage?: string,
+    readonly showFeedbackBanner: boolean | null = null,
+    readonly notifyPP: boolean | null = null
   ) {
     const subNavUrlPrefix = 'service-provider'
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(

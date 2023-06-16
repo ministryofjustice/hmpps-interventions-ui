@@ -273,9 +273,9 @@ export default function serviceProviderRoutes(router: Router, services: Services
   post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/submit', (req, res) =>
     appointmentsController.submitSupplierAssessmentFeedback(req, res)
   )
-  get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/confirmation', (req, res) =>
-    appointmentsController.showSupplierAssessmentFeedbackConfirmation(req, res)
-  )
+  // get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/confirmation', (req, res) =>
+  //   appointmentsController.showSupplierAssessmentFeedbackConfirmation(req, res)
+  // )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
     appointmentsController.viewSupplierAssessmentFeedback(req, res, 'service-provider')
   )

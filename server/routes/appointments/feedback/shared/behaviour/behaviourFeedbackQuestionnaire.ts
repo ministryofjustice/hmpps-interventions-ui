@@ -23,7 +23,7 @@ export default class BehaviourFeedbackQuestionnaire {
     return {
       text: `How did ${this.serviceUser.firstName} ${this.serviceUser.surname} respond to the session?`,
       hint: `Add whether ${this.serviceUser.firstName} ${this.serviceUser.surname} seemed engaged, ` +
-          `including any progress or positive changes. This helps the probation practitioner to support them.`,
+          `including any progress or positive changes. This helps the probation practitioner to support ${this.serviceUser.firstName}.`,
     }
   }
 

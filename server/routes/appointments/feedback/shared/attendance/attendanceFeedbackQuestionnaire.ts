@@ -1,6 +1,7 @@
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 import AppointmentDecorator from '../../../../../decorators/appointmentDecorator'
+import DateUtils from "../../../../../utils/dateUtils";
 
 export default class AttendanceFeedbackQuestionnaire {
   private readonly appointmentDecorator: AppointmentDecorator
@@ -15,7 +16,7 @@ export default class AttendanceFeedbackQuestionnaire {
   get attendanceQuestion(): { text: string; hint: string } {
     if (this.appointmentDecorator.isInitialAssessmentAppointment) {
       return {
-        text: `Did ${this.serviceUser.firstName} attend the supplier assessment appointment?`,
+        text: `Did ${this.serviceUser.firstName} ${this.serviceUser.surname} come to the session?`,
         hint: 'Select one option',
       }
     }

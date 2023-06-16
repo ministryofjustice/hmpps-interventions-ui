@@ -17,7 +17,7 @@ export default class AttendanceFeedbackView {
         legend: {
           text: this.presenter.text.attendanceQuestion,
           isPageHeading: false,
-          classes: 'govuk-fieldset__legend--l',
+          classes: 'govuk-fieldset__legend--m',
         },
       },
       hint: {
@@ -35,19 +35,6 @@ export default class AttendanceFeedbackView {
   }
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
-
-  private get textAreaArgs(): TextareaArgs {
-    return {
-      name: 'additional-attendance-information',
-      id: 'additional-attendance-information',
-      label: {
-        text: this.presenter.text.additionalAttendanceInformationLabel,
-        classes: 'govuk-label--s govuk-!-margin-bottom-4',
-        isPageHeading: false,
-      },
-      value: this.presenter.fields.additionalAttendanceInformation.value,
-    }
-  }
 
   private get backLinkArgs(): BackLinkArgs | null {
     if (!this.presenter.backLinkHref) {
@@ -67,7 +54,6 @@ export default class AttendanceFeedbackView {
         summaryListArgs: this.summaryListArgs,
         radioButtonArgs: this.radioButtonArgs,
         errorSummaryArgs: this.errorSummaryArgs,
-        textAreaArgs: this.textAreaArgs,
         backLinkArgs: this.backLinkArgs,
       },
     ]

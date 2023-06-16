@@ -3,4 +3,5 @@ export default interface SessionFeedback {
   sessionSummary: string | null
   sessionResponse: string | null
   sessionConcerns: string | null
+  behaviourDescription?: string | null //deprecated
 }

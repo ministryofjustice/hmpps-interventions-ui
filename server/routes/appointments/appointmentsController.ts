@@ -722,23 +722,24 @@ export default class AppointmentsController {
     } else {
       await this.interventionsService.submitSupplierAssessmentAppointmentFeedback(accessToken, referralId)
     }
+    const notifyPP = appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner
 
-    res.redirect(`/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/confirmation`)
+    res.redirect(`/service-provider/referrals/${referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}`)
   }
 
-  async showSupplierAssessmentFeedbackConfirmation(req: Request, res: Response): Promise<void> {
-    const { user } = res.locals
-    const { accessToken } = user.token
-    const referralId = req.params.id
-
-    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    const presenter = new InitialAssessmentFeedbackConfirmationPresenter(referralId)
-    const view = new InitialAssessmentFeedbackConfirmationView(presenter)
-
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
+  // async showSupplierAssessmentFeedbackConfirmation(req: Request, res: Response): Promise<void> {
+  //   const { user } = res.locals
+  //   const { accessToken } = user.token
+  //   const referralId = req.params.id
+  //
+  //   const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+  //   const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+  //
+  //   const presenter = new InitialAssessmentFeedbackConfirmationPresenter(referralId)
+  //   const view = new InitialAssessmentFeedbackConfirmationView(presenter)
+  //
+  //   ControllerUtils.renderWithLayout(res, view, serviceUser)
+  // }
 
   async viewSupplierAssessmentFeedback(
     req: Request,
@@ -895,10 +896,7 @@ export default class AppointmentsController {
     let userInputData: Record<string, unknown> | null = null
 
     if (req.method === 'POST') {
-      console.log("I GOT HERE 2")
       const data = await new SessionFeedbackForm(req).data()
-      console.log("I GOT HERE 3")
-
       if (data.error) {
         res.status(400)
         formError = data.error
@@ -906,7 +904,6 @@ export default class AppointmentsController {
       } else {
         let redirectUrl
         if (!draftBookingId) {
-          console.log("I GOT HERE 5")
           await this.interventionsService.recordActionPlanAppointmentBehavior(
             accessToken,
             actionPlanId,
@@ -1340,7 +1337,7 @@ export default class AppointmentsController {
           },
           sessionFeedback: {
             notifyProbationPractitioner: null,
-            sessionSummary:  null, // is this correct?
+            sessionSummary:  null,
             sessionResponse: null,
             sessionConcerns: null,
           },

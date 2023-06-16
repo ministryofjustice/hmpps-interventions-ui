@@ -27,7 +27,7 @@ export default class FeedbackAnswersPresenter {
       return null
     }
     return {
-      question: this.attendanceFeedbackQuestionnaire.attendanceQuestion.text,
+      question: `Did ${this.serviceUser.firstName} ${this.serviceUser.surname} come to the session?`,
       answer: selected.text,
     }
   }
@@ -60,16 +60,16 @@ export default class FeedbackAnswersPresenter {
     }
   }
 
-  // get behaviourDescriptionAnswers(): { question: string; answer: string } | null {
-  //   if (this.appointment.appointmentFeedback.sessionFeedback.behaviourDescription === null) {
-  //     return null
-  //   }
-  //
-  //   return {
-  //     question: this.behaviourFeedbackQuestionnaire.behaviourQuestion.text,
-  //     answer: this.appointment.appointmentFeedback.sessionFeedback.behaviourDescription,
-  //   }
-  // }
+  get behaviourDescriptionAnswers(): { question: string; answer: string } | null {
+    if (this.appointment.appointmentFeedback.sessionFeedback.behaviourDescription === null) {
+      return null
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.behaviourQuestion.text,
+      answer: this.appointment.appointmentFeedback.sessionFeedback.behaviourDescription,
+    }
+  }
 
   get notifyProbationPractitionerAnswers(): { question: string; answer: string } | null {
     if (this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner === null) {
@@ -79,6 +79,44 @@ export default class FeedbackAnswersPresenter {
     return {
       question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerQuestion.text,
       answer: this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner ? 'Yes' : 'No',
+    }
+  }
+
+  get sessionSummaryAnswers(): { question: string; answer: string } | null {
+    if (this.appointment.appointmentFeedback.sessionFeedback.sessionSummary === null) {
+      return null
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.sessionSummaryQuestion.text,
+      answer: this.appointment.appointmentFeedback.sessionFeedback.sessionSummary || 'None',
+    }
+  }
+
+  get sessionResponseAnswers(): { question: string; answer: string } | null {
+    if (this.appointment.appointmentFeedback.sessionFeedback.sessionResponse === null) {
+      return null
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.sessionResponseQuestion.text,
+      answer: this.appointment.appointmentFeedback.sessionFeedback.sessionResponse || 'None',
+    }
+  }
+
+  get sessionConcernsAnswers(): { question: string; answer: string } | null {
+    const notifyPP = this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner ? 'Yes' : 'No'
+
+    if(notifyPP == 'Yes' && this.appointment.appointmentFeedback.sessionFeedback.sessionConcerns){
+      return {
+        question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerQuestion.text,
+        answer: `${notifyPP} - ${this.appointment.appointmentFeedback.sessionFeedback.sessionConcerns}`,
+      }
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerQuestion.text,
+      answer: `${notifyPP}`,
     }
   }
 }
