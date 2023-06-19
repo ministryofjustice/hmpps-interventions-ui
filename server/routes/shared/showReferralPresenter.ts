@@ -2,6 +2,7 @@ import SentReferral from '../../models/sentReferral'
 import DeliusUser from '../../models/delius/deliusUser'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
+import config from '../../config'
 import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../makeAReferral/service-user-details/serviceUserDetailsPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
@@ -22,11 +23,14 @@ import RoshPanelPresenter from './roshPanelPresenter'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import DateUtils from '../../utils/dateUtils'
 import Prison from '../../models/prisonRegister/prison'
+import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
   roshPanelPresenter: RoshPanelPresenter
+
+  supplementaryRiskInformationView: ArnRiskSummaryView
 
   constructor(
     private readonly sentReferral: SentReferral,
@@ -52,14 +56,52 @@ export default class ShowReferralPresenter {
       userType,
       dashboardOriginPage
     )
-
     this.roshPanelPresenter = new RoshPanelPresenter(riskSummary)
+    this.supplementaryRiskInformationView = new ArnRiskSummaryView(riskSummary, riskInformation)
   }
 
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/start`
 
+  readonly interventionDetailsHeading = 'Intervention details'
+
+  get serviceUserNames(): string {
+    return `${utils.convertToTitleCase(
+      `${this.sentReferral.referral.serviceUser.firstName} ${this.sentReferral.referral.serviceUser.lastName}`
+    )}`
+  }
+
+  get serviceUserDetailsHeading(): string {
+    return `${this.serviceUserNames}'s person details`
+  }
+
+  get interventionHeading(): string {
+    return `${this.intervention.contractType.name} service`
+  }
+
+  get probationPractitionerDetailsHeading(): string {
+    return `${this.serviceUserNames}'s probation practitioner`
+  }
+
+  get serviceUserLocationDetailsHeading(): string {
+    if (this.sentReferral.referral.personCurrentLocationType === 'COMMUNITY')
+      return `${this.serviceUserNames}'s location`
+    return `${this.serviceUserNames}'s location and expected release date`
+  }
+
+  get serviceRiskAndNeedsDetailsHeading(): string {
+    return `${this.serviceUserNames}'s risk information`
+  }
+
+  get responsibleOfficerDetailsHeading(): string {
+    return `${this.serviceUserNames}'s responsible officer details`
+  }
+
+  get riskInformationHeading(): string {
+    return `${this.serviceUserNames}'s risk Information`
+  }
+
   readonly text = {
-    title: `${utils.convertToTitleCase(this.intervention.contractType.name)}: referral details`,
+    title: `${this.serviceUserNames}: referral details`,
     errorMessage: PresenterUtils.errorMessage(this.assignEmailError, 'email'),
     noCaseworkerAssigned: 'This intervention is not yet assigned to a caseworker.',
   }
@@ -83,6 +125,7 @@ export default class ShowReferralPresenter {
   readonly probationPractitionerDetails: SummaryListItem[] = [
     { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`] },
     { key: 'Email address', lines: [this.sentBy.email ?? ''] },
+    { key: 'Probation Office', lines: [this.sentReferral.referral.ppProbationOffice ?? ''] },
   ]
 
   get responsibleOfficersDetails(): SummaryListItem[] {
@@ -293,6 +336,40 @@ export default class ShowReferralPresenter {
     ).summary
   }
 
+  get serviceUserLocationDetails(): SummaryListItem[] {
+    const { personCurrentLocationType } = this.sentReferral.referral
+
+    if (config.featureFlags.custodyLocationEnabled) {
+      if (personCurrentLocationType === 'CUSTODY') {
+        const expectedReleaseInfo: string =
+          this.sentReferral.referral.expectedReleaseDate !== ''
+            ? this.sentReferral.referral.expectedReleaseDate!
+            : this.sentReferral.referral.expectedReleaseDateMissingReason!
+        return [
+          {
+            key: 'Location at time of referral',
+            lines: [personCurrentLocationType ? utils.convertToProperCase(personCurrentLocationType) : ''],
+          },
+          {
+            key: 'Current establishment',
+            lines: [this.sentReferral.referral.personCustodyPrisonId ? 'RESOLVE PRISONNAME' /* prisonName */ : ''],
+          },
+          {
+            key: 'Expected release date',
+            lines: [expectedReleaseInfo],
+          },
+        ]
+      }
+    }
+
+    return [
+      {
+        key: 'Location at time of referral',
+        lines: [personCurrentLocationType ? utils.convertToProperCase(personCurrentLocationType) : ''],
+      },
+    ]
+  }
+
   get serviceUserRisks(): SummaryListItem[] {
     return [
       {
@@ -344,6 +421,75 @@ export default class ShowReferralPresenter {
       {
         key: `Provide details of when ${this.sentReferral.referral.serviceUser.firstName} will not be able to attend sessions`,
         lines: [this.sentReferral.referral.whenUnavailable || 'N/A'],
+      },
+    ]
+  }
+
+  riskSectionSummary(): SummaryListItem[] {
+    const supplementaryRiskInformation = this.supplementaryRiskInformationView.supplementaryRiskInformationArgs
+    if (this.riskInformation.redactedRisk) {
+      return [
+        {
+          key: 'Who is at risk',
+          lines: [supplementaryRiskInformation.summary.whoIsAtRisk.text || ''],
+        },
+        {
+          key: 'What is the nature of the risk',
+          lines: [supplementaryRiskInformation.summary.natureOfRisk.text || ''],
+        },
+        {
+          key: 'When is the risk likely to be greatest',
+          lines: [supplementaryRiskInformation.summary.riskImminence.text || ''],
+        },
+        {
+          key: 'Concerns in relation to self-harm',
+          lines: [
+            supplementaryRiskInformation.riskToSelf.selfHarm.text || '',
+            supplementaryRiskInformation.riskToSelf.selfHarm.label.text || '',
+          ],
+        },
+        {
+          key: 'Concerns in relation to suicide',
+          lines: [
+            supplementaryRiskInformation.riskToSelf.suicide.text || '',
+            supplementaryRiskInformation.riskToSelf.suicide.label
+              ? supplementaryRiskInformation.riskToSelf.suicide.label.text || ''
+              : '',
+          ],
+        },
+        {
+          key: 'Concerns in relation to coping in a hostel setting',
+          lines: [
+            supplementaryRiskInformation.riskToSelf.hostelSetting.text || '',
+            supplementaryRiskInformation.riskToSelf.hostelSetting.label
+              ? supplementaryRiskInformation.riskToSelf.hostelSetting.label.text || ''
+              : '',
+          ],
+        },
+        {
+          key: 'Concerns in relation to vulnerability',
+          lines: [
+            supplementaryRiskInformation.riskToSelf.vulnerability.text || '',
+            supplementaryRiskInformation.riskToSelf.vulnerability.label
+              ? supplementaryRiskInformation.riskToSelf.vulnerability.label.text || ''
+              : '',
+          ],
+        },
+        {
+          key: 'Additional information',
+          lines: [
+            supplementaryRiskInformation.riskToSelf.vulnerability.text || '',
+            supplementaryRiskInformation.riskToSelf.vulnerability.label
+              ? supplementaryRiskInformation.riskToSelf.vulnerability.label.text || ''
+              : '',
+          ],
+        },
+      ]
+    }
+    return [
+      {
+        key: 'Additional risk information',
+        lines: [supplementaryRiskInformation.additionalRiskInformation.text || ''],
       },
     ]
   }

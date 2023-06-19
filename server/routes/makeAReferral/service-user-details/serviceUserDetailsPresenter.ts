@@ -4,7 +4,6 @@ import { ListStyle, SummaryListItem } from '../../../utils/summaryList'
 import { ExpandedDeliusServiceUser } from '../../../models/delius/deliusServiceUser'
 import ExpandedDeliusServiceUserDecorator from '../../../decorators/expandedDeliusServiceUserDecorator'
 import DateUtils from '../../../utils/dateUtils'
-import config from '../../../config'
 import { CurrentLocationType } from '../../../models/draftReferral'
 import utils from '../../../utils/utils'
 import Prison from '../../../models/prisonRegister/prison'
@@ -76,8 +75,8 @@ export default class ServiceUserDetailsPresenter {
     const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
     const phoneNumbers = this.findUniqueNumbers()
     const { address } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
-    const matchedPerson = this.prisons.find(prison => prison.prisonId === this.personCustodyPrisonId)
-    const prisonName = matchedPerson ? matchedPerson.prisonName : ''
+    // const matchedPerson = this.prisons.find(prison => prison.prisonId === this.personCustodyPrisonId)
+    // const prisonName = matchedPerson ? matchedPerson.prisonName : ''
     const summary: SummaryListItem[] = [
       {
         key: 'Address',
@@ -95,24 +94,7 @@ export default class ServiceUserDetailsPresenter {
         listStyle: ListStyle.noMarkers,
       },
     ]
-    if (config.featureFlags.custodyLocationEnabled) {
-      if (this.personCurrentLocationType === 'CUSTODY') {
-        summary.push({
-          key: 'Location at time of referral',
-          lines: [this.personCurrentLocationType ? utils.convertToProperCase(this.personCurrentLocationType) : ''],
-        })
-        summary.push(
-          {
-            key: 'Current establishment',
-            lines: [this.personCustodyPrisonId ? prisonName : ''],
-          },
-          {
-            key: 'Expected release date',
-            lines: [this.expectedReleaseDate !== '' ? this.expectedReleaseDate : this.expectedReleaseDateUnKnownReason],
-          }
-        )
-      }
-    }
+
     // ]
     return summary
   }
@@ -156,16 +138,14 @@ export default class ServiceUserDetailsPresenter {
     const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
     const phoneNumbers = this.findUniqueNumbers()
     const { address } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
-    const matchedPerson = this.prisons.find(prison => prison.prisonId === this.personCustodyPrisonId)
-    const prisonName = matchedPerson ? matchedPerson.prisonName : ''
     const summary: SummaryListItem[] = [
       { key: 'CRN', lines: [this.serviceUser.crn] },
       { key: 'Title', lines: [this.serviceUser.title ?? ''] },
       { key: 'First name', lines: [this.serviceUser.firstName ?? ''] },
       { key: 'Last name', lines: [this.serviceUser.lastName ?? ''] },
-      { key: 'Date of birth', lines: [this.dateOfBirth] },
+      { key: 'Date of birth', lines: [this.dateOfBirth ? `${this.dateOfBirth} (${this.age} years old)` : ''] },
     ]
-    if (config.featureFlags.custodyLocationEnabled) {
+    /* if (config.featureFlags.custodyLocationEnabled) {
       summary.push({
         key: 'Location at time of referral',
         lines: [this.personCurrentLocationType ? utils.convertToProperCase(this.personCurrentLocationType) : ''],
@@ -182,7 +162,7 @@ export default class ServiceUserDetailsPresenter {
           }
         )
       }
-    }
+    } */
     summary.push(
       {
         key: 'Address',
