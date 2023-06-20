@@ -34,4 +34,20 @@ export default class ReferAndMonitorAndDeliusMocks {
       },
     })
   }
+
+  stubGetCrnUserAccess = async (responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/users/.*/access`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }
