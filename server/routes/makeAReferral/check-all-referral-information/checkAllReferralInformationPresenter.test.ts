@@ -109,6 +109,170 @@ describe(CheckAllReferralInformationPresenter, () => {
     })
   })
 
+  describe('probationPractitionerDetails section', () => {
+    describe('probationPractitionerDetails with valid user inputted data', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.community,
+        ndeliusPPName: 'Victor Drake',
+        ndeliusPPEmailAddress: 'a.b@xyz.com',
+        ndeliusPDU: 'London',
+        ppName: null,
+        ppEmailAddress: null,
+        ppPdu: null,
+        ppProbationOffice: 'London',
+        hasValidDeliusPPDetails: null,
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        conviction,
+        deliusServiceUser,
+        prisonList
+      )
+
+      describe('title', () => {
+        it('returns the probation practitioner details title', () => {
+          expect(presenter.probationPractitionerDetailSection?.title).toEqual('Probation practitioner details')
+        })
+      })
+
+      describe('summary', () => {
+        it('returns the probation practitioner details', () => {
+          expect(presenter.probationPractitionerDetailSection?.summary).toEqual([
+            {
+              key: 'Name',
+              lines: ['Victor Drake'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+            {
+              key: 'Email address',
+              lines: ['a.b@xyz.com'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+            {
+              key: 'PDU (Probation Delivery Unit)',
+              lines: ['London'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+            {
+              key: 'Probation office',
+              lines: ['London'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+          ])
+        })
+      })
+    })
+
+    describe('probationPractitionerDetails with valid delius data', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.community,
+        ndeliusPPName: 'Victor Drake',
+        ndeliusPPEmailAddress: 'a.b@xyz.com',
+        ndeliusPDU: 'London',
+        ppName: 'Victor Shelby',
+        ppEmailAddress: 'a.c@abc.com',
+        ppPdu: 'Nottingham',
+        ppProbationOffice: 'London',
+        hasValidDeliusPPDetails: null,
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        conviction,
+        deliusServiceUser,
+        prisonList
+      )
+
+      describe('title', () => {
+        it('returns the probation practitioner details title', () => {
+          expect(presenter.probationPractitionerDetailSection?.title).toEqual('Probation practitioner details')
+        })
+      })
+
+      describe('summary', () => {
+        it('returns the probation practitioner details', () => {
+          expect(presenter.probationPractitionerDetailSection?.summary).toEqual([
+            {
+              key: 'Name',
+              lines: ['Victor Shelby'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+            {
+              key: 'Email address',
+              lines: ['a.c@abc.com'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+            {
+              key: 'PDU (Probation Delivery Unit)',
+              lines: ['Nottingham'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+            {
+              key: 'Probation office',
+              lines: ['London'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+          ])
+        })
+      })
+    })
+
+    describe('probationPractitionerDetails with undefined email and probation office ', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.community,
+        ndeliusPPName: 'Victor Drake',
+        ndeliusPPEmailAddress: 'undefined',
+        ndeliusPDU: 'London',
+        ppName: null,
+        ppEmailAddress: null,
+        ppPdu: null,
+        ppProbationOffice: null,
+        hasValidDeliusPPDetails: null,
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        conviction,
+        deliusServiceUser,
+        prisonList
+      )
+
+      describe('title', () => {
+        it('returns the probation practitioner details title', () => {
+          expect(presenter.probationPractitionerDetailSection?.title).toEqual('Probation practitioner details')
+        })
+      })
+
+      describe('summary', () => {
+        it('returns the probation practitioner details', () => {
+          expect(presenter.probationPractitionerDetailSection?.summary).toEqual([
+            {
+              key: 'Name',
+              lines: ['Victor Drake'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+            {
+              key: 'Email address',
+              lines: ['Not found'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+            {
+              key: 'PDU (Probation Delivery Unit)',
+              lines: ['London'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+            {
+              key: 'Probation office',
+              lines: ['Not provided'],
+              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+            },
+          ])
+        })
+      })
+    })
+  })
+
   describe('riskSection', () => {
     const referral = parameterisedDraftReferralFactory.build({
       id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
