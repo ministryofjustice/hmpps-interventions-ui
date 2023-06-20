@@ -66,12 +66,12 @@ export default class CheckAllReferralInformationPresenter {
       summary: [
         {
           key: 'Name',
-          lines: [this.referral.ppName || this.referral.ndeliusPPName || ''],
+          lines: [this.referral.ppName || this.referral.ndeliusPPName || 'Not found'],
           changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
         },
         {
           key: 'Email address',
-          lines: [this.referral.ppEmailAddress || this.referral.ndeliusPPEmailAddress || ''],
+          lines: [this.referral.ppEmailAddress || this.referral.ndeliusPPEmailAddress || 'Not found'],
           changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
         },
         {
@@ -81,7 +81,7 @@ export default class CheckAllReferralInformationPresenter {
         },
         {
           key: 'Probation office',
-          lines: [this.referral.ppProbationOffice || ''],
+          lines: [this.referral.ppProbationOffice || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
         },
       ],
