@@ -341,6 +341,7 @@ export default class ShowReferralPresenter {
 
     if (config.featureFlags.custodyLocationEnabled) {
       if (personCurrentLocationType === 'CUSTODY') {
+        const currentPrisonName = this.getPrisonName(this.sentReferral.referral.personCustodyPrisonId)
         const expectedReleaseInfo: string =
           this.sentReferral.referral.expectedReleaseDate !== ''
             ? this.sentReferral.referral.expectedReleaseDate!
@@ -352,7 +353,7 @@ export default class ShowReferralPresenter {
           },
           {
             key: 'Current establishment',
-            lines: [this.sentReferral.referral.personCustodyPrisonId ? 'RESOLVE PRISONNAME' /* prisonName */ : ''],
+            lines: [this.sentReferral.referral.personCustodyPrisonId ? currentPrisonName : ''],
           },
           {
             key: 'Expected release date',
@@ -492,5 +493,9 @@ export default class ShowReferralPresenter {
         lines: [supplementaryRiskInformation.additionalRiskInformation.text || ''],
       },
     ]
+  }
+
+  private getPrisonName(prisonId: string | null): string {
+    return this.prisons.find(prison => prison.prisonId === prisonId)?.prisonName || ''
   }
 }
