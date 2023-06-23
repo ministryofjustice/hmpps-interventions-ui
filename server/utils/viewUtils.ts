@@ -168,7 +168,6 @@ export default class ViewUtils {
 
   static summaryListArgsForRiskInfo(
     riskInformationArgs: RiskInformationArgs,
-    isRedactedRisk: boolean,
     heading: string | null | undefined = null,
     options: { showBorders: boolean; showTitle: boolean } = { showBorders: true, showTitle: true }
   ): SummaryListArgs {

@@ -3,6 +3,7 @@ import ViewUtils from '../../utils/viewUtils'
 import { InputArgs, NotificationBannerArgs, SummaryListArgs, TagArgs } from '../../utils/govukFrontendTypes'
 import RoshPanelView from './roshPanelView'
 import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
+import utils from '../../utils/utils'
 
 interface SectionWithTagArgs {
   name: string
@@ -40,9 +41,17 @@ export default class ShowReferralView {
     )
   }
 
+  private get contactDetailsSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.contactDetailsSummary,
+      this.presenter.contactDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
   private get serviceUserDetailsSummaryListArgs() {
     return ViewUtils.summaryListArgsWithSummaryCard(
-      this.presenter.serviceUserDetails,
+      this.presenter.personalDetailSummary,
       this.presenter.serviceUserDetailsHeading,
       { showBorders: true, showTitle: true }
     )
@@ -65,15 +74,22 @@ export default class ShowReferralView {
     )
   }
 
+  private get roshInformationArgs() {
+    return this.roshPanelView.summaryListArgsWithSummaryCardForRoshInfo(this.presenter.roshInformationHeading, {
+      showBorders: true,
+      showTitle: true,
+    })
+  }
+
   private readonly serviceUserRisksSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
     this.presenter.serviceUserRisks,
-    this.presenter.serviceRiskAndNeedsDetailsHeading,
+    this.presenter.riskInformationHeading,
     { showBorders: true, showTitle: true }
   )
 
   private readonly serviceUserNeedsSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
     this.presenter.serviceUserNeeds,
-    this.presenter.serviceUserDetailsHeading,
+    this.presenter.serviceUserNeedsHeading,
     { showBorders: true, showTitle: true }
   )
 
@@ -95,7 +111,7 @@ export default class ShowReferralView {
         summaryListArgs: (tagMacro: (args: TagArgs) => string) => {
           return ViewUtils.summaryListArgsWithSummaryCard(
             this.presenter.serviceCategorySection(serviceCategory, tagMacro),
-            this.presenter.interventionDetailsHeading,
+            `${utils.convertToProperCase(serviceCategory.name)} service`,
             { showBorders: true, showTitle: true }
           )
         },
@@ -148,11 +164,11 @@ export default class ShowReferralView {
         serviceUserLocationDetailsSummaryListArgs: this.serviceUserLocationDetailsSummaryListArgs,
         serviceUserRisksSummaryListArgs: this.serviceUserRisksSummaryListArgs,
         serviceUserNeedsSummaryListArgs: this.serviceUserNeedsSummaryListArgs,
+        contactDetailsSummaryListArgs: this.contactDetailsSummaryListArgs,
         serviceCategorySections: this.serviceCategorySections,
         emailInputArgs: this.emailInputArgs,
         backLinkArgs: this.backLinkArgs,
-        roshAnalysisTableArgs: this.roshPanelView.roshAnalysisTableArgs.bind(this.roshPanelView),
-        riskLevelDetailsArgs: this.roshPanelView.riskLevelDetailsArgs,
+        roshInformationArgs: this.roshInformationArgs,
         supplementaryRiskInformation: this.supplementaryRiskInformationView.supplementaryRiskInformationArgs,
         riskInformationArgs: this.riskInformationArgs,
         insetTextArgs: this.insetTextArgs,

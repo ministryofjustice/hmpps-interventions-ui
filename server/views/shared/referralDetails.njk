@@ -46,14 +46,10 @@
 
       {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
 
+      {{ govukSummaryList(contactDetailsSummaryListArgs) }}
+
       {% if presenter.roshPanelPresenter.riskInformationAvailable %}
-
-        <p class="govuk-body">This shows their Risk of Serious Harm (ROSH) levels. Additional information from the probation practitioner may also be shown.</p>
-
-        {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
-
-        {{ govukDetails(riskLevelDetailsArgs) }}
-
+        {{govukSummaryList(roshInformationArgs)}}
       {% endif %}
 
       {% if presenter.canShowFullSupplementaryRiskInformation %}
