@@ -168,9 +168,38 @@ export default class ViewUtils {
 
   static summaryListArgsForRiskInfo(
     riskInformationArgs: RiskInformationArgs,
+    isRedactedRisk: boolean,
     heading: string | null | undefined = null,
     options: { showBorders: boolean; showTitle: boolean } = { showBorders: true, showTitle: true }
   ): SummaryListArgs {
+    if (!isRedactedRisk) {
+      return {
+        card: (() => {
+          if (options.showTitle) {
+            return {
+              title: {
+                text: heading,
+              },
+            }
+          }
+          return null
+        })(),
+        classes: options.showBorders ? undefined : 'govuk-summary-list--no-border',
+        rows: [
+          {
+            key: {
+              text: 'Additional risk information',
+            },
+            value: (() => {
+              const html = `<p class="govuk-body>${ViewUtils.nl2br(
+                ViewUtils.summaryListItemLine(riskInformationArgs.additionalRiskInformation.text || '')
+              )}</p>`
+              return { html }
+            })(),
+          },
+        ],
+      }
+    }
     return {
       card: (() => {
         if (options.showTitle) {

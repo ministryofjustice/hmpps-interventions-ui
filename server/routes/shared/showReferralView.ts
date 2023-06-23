@@ -68,6 +68,7 @@ export default class ShowReferralView {
   private get riskInformationArgs() {
     return ViewUtils.summaryListArgsForRiskInfo(
       this.presenter.supplementaryRiskInformationView.supplementaryRiskInformationArgs,
+      !!this.presenter.riskInformation.redactedRisk,
       this.presenter.riskInformationHeading,
       { showBorders: true, showTitle: true }
     )
