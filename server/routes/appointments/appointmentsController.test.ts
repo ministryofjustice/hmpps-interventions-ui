@@ -871,8 +871,8 @@ describe('Adding supplier assessment feedback', () => {
         .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Add feedback')
-          expect(res.text).toContain('Appointment details')
+          expect(res.text).toContain('Add attendance feedback')
+          expect(res.text).toContain('Session details')
           expect(res.text).toContain('1 February 2021')
           expect(res.text).toContain('1:00pm to 2:00pm')
         })
@@ -1058,7 +1058,7 @@ describe('Adding supplier assessment feedback', () => {
           currentAppointmentId: appointment.id,
         })
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-        interventionsService.recordSupplierAssessmentAppointmentBehaviour.mockResolvedValue(updatedAppointment)
+        interventionsService.recordSupplierAssessmentAppointmentSessionFeedback.mockResolvedValue(updatedAppointment)
         await request(app)
           .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
           .type('form')

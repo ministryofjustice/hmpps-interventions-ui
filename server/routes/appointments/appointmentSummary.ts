@@ -6,7 +6,6 @@ import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
 import DateUtils from '../../utils/dateUtils'
 import { AppointmentSchedulingDetails } from '../../models/appointment'
 import AuthUserDetails from '../../models/hmppsAuth/authUserDetails'
-import ViewUtils from "../../utils/viewUtils";
 
 export default class AppointmentSummary {
   constructor(
@@ -103,11 +102,15 @@ export default class AppointmentSummary {
     ].flatMap(val => (val === null ? [] : [val]))
   }
 
-  get sessionDetails(): { question: string; answer: string }{
-    const date = DateUtils.formattedDate(this.appointmentDecorator.britishDay!);
-    const time =  DateUtils.formattedTime(this.appointmentDecorator.britishTime!)
-    const caseworkerName = this.assignedCaseworker instanceof String ? this.assignedCaseworker :
-        `${(<AuthUserDetails>this.assignedCaseworker).firstName} ${(<AuthUserDetails>this.assignedCaseworker).lastName}`
+  get sessionDetails(): { question: string; answer: string } {
+    const date = DateUtils.formattedDate(this.appointmentDecorator.britishDay!)
+    const time = DateUtils.formattedTime(this.appointmentDecorator.britishTime!)
+    const caseworkerName =
+      this.assignedCaseworker instanceof String
+        ? this.assignedCaseworker
+        : `${(<AuthUserDetails>this.assignedCaseworker).firstName} ${
+            (<AuthUserDetails>this.assignedCaseworker).lastName
+          }`
 
     return {
       question: `Session Details`,

@@ -1,12 +1,12 @@
 import actionPlanAppointmentFactory from '../../../../../../testutils/factories/actionPlanAppointment'
-import BehaviourFeedbackInputsPresenter from './behaviourFeedbackInputsPresenter'
+import SessionFeedbackInputsPresenter from './sessionFeedbackInputsPresenter'
 
-describe(BehaviourFeedbackInputsPresenter, () => {
+describe(SessionFeedbackInputsPresenter, () => {
   describe('errorSummary', () => {
     describe('when error is null', () => {
       it('returns null', () => {
         const appointment = actionPlanAppointmentFactory.build()
-        const presenter = new BehaviourFeedbackInputsPresenter(appointment)
+        const presenter = new SessionFeedbackInputsPresenter(appointment)
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -16,7 +16,7 @@ describe(BehaviourFeedbackInputsPresenter, () => {
       it('returns a summary of the errors sorted into the order their fields appear on the page', () => {
         const appointment = actionPlanAppointmentFactory.build()
 
-        const presenter = new BehaviourFeedbackInputsPresenter(appointment, {
+        const presenter = new SessionFeedbackInputsPresenter(appointment, {
           errors: [
             {
               formFields: ['behaviour-description'],
@@ -49,7 +49,7 @@ describe(BehaviourFeedbackInputsPresenter, () => {
                 // behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
               },
             })
-            const presenter = new BehaviourFeedbackInputsPresenter(appointment)
+            const presenter = new SessionFeedbackInputsPresenter(appointment)
 
             // expect(presenter.fields.behaviourDescription.value).toEqual('Alex was well behaved')
           })
@@ -62,7 +62,7 @@ describe(BehaviourFeedbackInputsPresenter, () => {
                 // behaviour: { behaviourDescription: undefined },
               },
             })
-            const presenter = new BehaviourFeedbackInputsPresenter(appointment)
+            const presenter = new SessionFeedbackInputsPresenter(appointment)
 
             // expect(presenter.fields.behaviourDescription.value).toEqual('')
           })
@@ -76,7 +76,7 @@ describe(BehaviourFeedbackInputsPresenter, () => {
               // behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
             },
           })
-          const presenter = new BehaviourFeedbackInputsPresenter(appointment, null, {
+          const presenter = new SessionFeedbackInputsPresenter(appointment, null, {
             'behaviour-description': 'Alex misbehaved during the session',
           })
 
@@ -95,7 +95,7 @@ describe(BehaviourFeedbackInputsPresenter, () => {
               },
             })
 
-            const presenter = new BehaviourFeedbackInputsPresenter(appointment)
+            const presenter = new SessionFeedbackInputsPresenter(appointment)
 
             expect(presenter.fields.notifyProbationPractitioner.value).toEqual(false)
           })
@@ -109,7 +109,7 @@ describe(BehaviourFeedbackInputsPresenter, () => {
               },
             })
 
-            const presenter = new BehaviourFeedbackInputsPresenter(appointment)
+            const presenter = new SessionFeedbackInputsPresenter(appointment)
 
             expect(presenter.fields.notifyProbationPractitioner.value).toEqual(null)
           })
@@ -123,7 +123,7 @@ describe(BehaviourFeedbackInputsPresenter, () => {
               // behaviour: { behaviourDescription: 'Alex was well behaved', notifyProbationPractitioner: false },
             },
           })
-          const presenter = new BehaviourFeedbackInputsPresenter(appointment, null, {
+          const presenter = new SessionFeedbackInputsPresenter(appointment, null, {
             'behaviour-description': 'Alex misbehaved during the session',
             'notify-probation-practitioner': 'yes',
           })
@@ -136,7 +136,7 @@ describe(BehaviourFeedbackInputsPresenter, () => {
     describe('errors', () => {
       it('populates the error messages for the fields with errors', () => {
         const appointment = actionPlanAppointmentFactory.build()
-        const presenter = new BehaviourFeedbackInputsPresenter(appointment, {
+        const presenter = new SessionFeedbackInputsPresenter(appointment, {
           errors: [
             {
               formFields: ['behaviour-description'],

@@ -1,19 +1,19 @@
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 import AttendanceFeedbackQuestionnaire from '../attendance/attendanceFeedbackQuestionnaire'
-import BehaviourFeedbackQuestionnaire from '../behaviour/behaviourFeedbackQuestionnaire'
+import SessionFeedbackQuestionnaire from '../sessionFeedback/sessionFeedbackQuestionnaire'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 
 export default class FeedbackAnswersPresenter {
   private readonly attendanceFeedbackQuestionnaire: AttendanceFeedbackQuestionnaire
 
-  private readonly behaviourFeedbackQuestionnaire: BehaviourFeedbackQuestionnaire
+  private readonly behaviourFeedbackQuestionnaire: SessionFeedbackQuestionnaire
 
   constructor(
     private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
     private readonly serviceUser: DeliusServiceUser
   ) {
     this.attendanceFeedbackQuestionnaire = new AttendanceFeedbackQuestionnaire(appointment, serviceUser)
-    this.behaviourFeedbackQuestionnaire = new BehaviourFeedbackQuestionnaire(appointment, serviceUser)
+    this.behaviourFeedbackQuestionnaire = new SessionFeedbackQuestionnaire(appointment, serviceUser)
   }
 
   get attendedAnswers(): { question: string; answer: string } | null {
@@ -50,7 +50,7 @@ export default class FeedbackAnswersPresenter {
   }
 
   get additionalAttendanceAnswers(): { question: string; answer: string } | null {
-    if (this.appointment.appointmentFeedback.attendanceFeedback.additionalAttendanceInformation === null) {
+    if (!this.appointment.appointmentFeedback.attendanceFeedback.additionalAttendanceInformation) {
       return null
     }
 
@@ -60,8 +60,19 @@ export default class FeedbackAnswersPresenter {
     }
   }
 
+  get attendanceFailureInformationAnswers(): { question: string; answer: string } | null {
+    if (!this.appointment.appointmentFeedback.attendanceFeedback.attendanceFailureInformation) {
+      return null
+    }
+
+    return {
+      question: this.attendanceFeedbackQuestionnaire.attendanceFailureInformationQuestion,
+      answer: this.appointment.appointmentFeedback.attendanceFeedback.attendanceFailureInformation || 'None',
+    }
+  }
+
   get behaviourDescriptionAnswers(): { question: string; answer: string } | null {
-    if (this.appointment.appointmentFeedback.sessionFeedback.behaviourDescription === null) {
+    if (!this.appointment.appointmentFeedback.sessionFeedback.behaviourDescription) {
       return null
     }
 
@@ -107,7 +118,7 @@ export default class FeedbackAnswersPresenter {
   get sessionConcernsAnswers(): { question: string; answer: string } | null {
     const notifyPP = this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner ? 'Yes' : 'No'
 
-    if(notifyPP == 'Yes' && this.appointment.appointmentFeedback.sessionFeedback.sessionConcerns){
+    if (notifyPP === 'Yes' && this.appointment.appointmentFeedback.sessionFeedback.sessionConcerns) {
       return {
         question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerQuestion.text,
         answer: `${notifyPP} - ${this.appointment.appointmentFeedback.sessionFeedback.sessionConcerns}`,

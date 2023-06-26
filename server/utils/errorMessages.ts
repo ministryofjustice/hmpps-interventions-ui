@@ -179,8 +179,14 @@ export default {
   attendedAppointment: {
     empty: 'Select whether they attended or not',
   },
-  appointmentBehaviour: {
-    descriptionEmpty: 'Enter a description of their behaviour',
+  sessionSummary: {
+    empty: 'Enter what you did in the session',
+  },
+  sessionResponse: {
+    empty: (name: string) => `Enter how ${name} responded to the session`,
+  },
+  sessionConcerns: {
+    empty: 'Enter a description of what concerned you',
     notifyProbationPractitionerNotSelected: 'Select whether to notify the probation practitioner or not',
   },
   scheduleAppointment: {

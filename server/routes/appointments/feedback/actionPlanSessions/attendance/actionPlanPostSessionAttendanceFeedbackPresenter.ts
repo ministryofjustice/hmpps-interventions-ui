@@ -18,8 +18,8 @@ export default class ActionPlanPostSessionAttendanceFeedbackPresenter extends At
   ) {
     super(
       actionPlanAppointment,
-      `Add attendance feedback`,
-      'Session details',
+      `Record session attendance`,
+      'The date and time of the session are a permanent record of where this person was.',
       new AttendanceFeedbackQuestionnaire(actionPlanAppointment, serviceUser),
       appointmentSummary,
       error,

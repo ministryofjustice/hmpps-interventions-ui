@@ -12,10 +12,14 @@
   <p>{{ feedbackAnswersPresenter.attendedAnswers.answer | escape | nl2br }}</p>
 {% endif %}
 
-{# Old Question #}
 {% if feedbackAnswersPresenter.additionalAttendanceAnswers %}
   <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.additionalAttendanceAnswers.question }}</h3>
   <p>{{ feedbackAnswersPresenter.additionalAttendanceAnswers.answer | escape | nl2br }}</p>
+{% endif %}
+
+{% if feedbackAnswersPresenter.attendanceFailureInformationAnswers %}
+  <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.attendanceFailureInformationAnswers.question }}</h3>
+  <p>{{ feedbackAnswersPresenter.attendanceFailureInformationAnswers.answer | escape | nl2br }}</p>
 {% endif %}
 
 <br>
@@ -34,9 +38,11 @@
   <p>{{ feedbackAnswersPresenter.sessionResponseAnswers.answer }}</p>
 {% endif %}
 
-{% if feedbackAnswersPresenter.sessionConcernsAnswers %}
-  <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.sessionConcernsAnswers.question }}</h3>
-  <p>{{ feedbackAnswersPresenter.sessionConcernsAnswers.answer }}</p>
+{% if feedbackAnswersPresenter.notifyProbationPractitionerAnswers %}
+    {% if feedbackAnswersPresenter.sessionConcernsAnswers %}
+        <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.sessionConcernsAnswers.question }}</h3>
+        <p>{{ feedbackAnswersPresenter.sessionConcernsAnswers.answer }}</p>
+    {% endif %}
 {% endif %}
 
 {% if feedbackAnswersPresenter.behaviourDescriptionAnswers %}

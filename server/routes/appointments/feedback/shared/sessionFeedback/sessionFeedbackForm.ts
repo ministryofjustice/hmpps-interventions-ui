@@ -5,14 +5,16 @@ import errorMessages from '../../../../../utils/errorMessages'
 import FormUtils from '../../../../../utils/formUtils'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import { FormData } from '../../../../../utils/forms/formData'
+import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 
 export default class SessionFeedbackForm {
-  constructor(private readonly request: Request) {}
+  constructor(private readonly request: Request, private readonly serviceUser: DeliusServiceUser) {}
 
   async data(): Promise<FormData<Partial<AppointmentSession>>> {
+    const serviceUserName = `${this.serviceUser.firstName} ${this.serviceUser.surname}`
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: SessionFeedbackForm.validations,
+      validations: SessionFeedbackForm.validations(serviceUserName),
     })
 
     const error = this.error(validationResult)
@@ -35,25 +37,25 @@ export default class SessionFeedbackForm {
     }
   }
 
-  static get validations(): ValidationChain[] {
+  static validations(serviceUserName: string): ValidationChain[] {
     return [
       body('session-summary')
         .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.appointmentBehaviour.descriptionEmpty)
+        .withMessage(errorMessages.sessionSummary.empty)
         .bail()
         .trim(),
       body('session-response')
         .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.appointmentBehaviour.descriptionEmpty)
+        .withMessage(errorMessages.sessionResponse.empty(serviceUserName))
         .bail()
         .trim(),
       body('notify-probation-practitioner')
         .isIn(['yes', 'no'])
-        .withMessage(errorMessages.appointmentBehaviour.notifyProbationPractitionerNotSelected),
+        .withMessage(errorMessages.sessionConcerns.notifyProbationPractitionerNotSelected),
       body('session-concerns')
         .if(body('notify-probation-practitioner').equals('yes'))
         .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.appointmentBehaviour.descriptionEmpty),
+        .withMessage(errorMessages.sessionConcerns.empty),
     ]
   }
 

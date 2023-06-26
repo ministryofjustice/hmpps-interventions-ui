@@ -1,8 +1,10 @@
 import TestUtils from '../../../../../../testutils/testUtils'
 import SessionFeedbackForm from './sessionFeedbackForm'
+import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
 
 describe(SessionFeedbackForm, () => {
   describe('data', () => {
+    const serviceUser = deliusServiceUserFactory.build()
     describe('with valid data', () => {
       it('returns a paramsForUpdate with the behaviour description and boolean value for whether to notify the PP', async () => {
         const request = TestUtils.createRequest({
@@ -10,7 +12,7 @@ describe(SessionFeedbackForm, () => {
           'notify-probation-practitioner': 'no',
         })
 
-        const data = await new SessionFeedbackForm(request).data()
+        const data = await new SessionFeedbackForm(request, serviceUser).data()
 
         // expect(data.paramsForUpdate?.behaviourDescription).toEqual('Alex was well-behaved')
         expect(data.paramsForUpdate?.notifyProbationPractitioner).toEqual(false)
@@ -21,7 +23,7 @@ describe(SessionFeedbackForm, () => {
       it('returns errors when both required fields are not present', async () => {
         const request = TestUtils.createRequest({})
 
-        const data = await new SessionFeedbackForm(request).data()
+        const data = await new SessionFeedbackForm(request, serviceUser).data()
 
         expect(data.error?.errors).toContainEqual({
           errorSummaryLinkedField: 'behaviour-description',
@@ -41,7 +43,7 @@ describe(SessionFeedbackForm, () => {
           'notify-probation-practitioner': 'yes',
         })
 
-        const data = await new SessionFeedbackForm(request).data()
+        const data = await new SessionFeedbackForm(request, serviceUser).data()
 
         expect(data.error?.errors).toEqual([
           {
@@ -57,7 +59,7 @@ describe(SessionFeedbackForm, () => {
           'behaviour-description': 'They did well',
         })
 
-        const data = await new SessionFeedbackForm(request).data()
+        const data = await new SessionFeedbackForm(request, serviceUser).data()
 
         expect(data.error?.errors).toEqual([
           {

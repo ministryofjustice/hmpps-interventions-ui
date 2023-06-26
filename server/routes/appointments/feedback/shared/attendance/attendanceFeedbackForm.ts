@@ -28,6 +28,7 @@ export default class AttendanceFeedbackForm {
       paramsForUpdate: {
         attended: this.request.body.attended,
         additionalAttendanceInformation: this.request.body['additional-attendance-information'],
+        attendanceFailureInformation: this.request.body['attendance-failure-information'],
       },
       error: null,
     }

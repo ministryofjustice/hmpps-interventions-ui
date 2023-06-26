@@ -12,7 +12,6 @@ import CancellationReason from '../models/cancellationReason'
 import ServiceCategory from '../models/serviceCategory'
 import ActionPlan from '../models/actionPlan'
 import AppointmentAttendance from '../models/appointmentAttendance'
-import AppointmentSession from '../models/sessionFeedback'
 import DraftReferral from '../models/draftReferral'
 import SentReferral from '../models/sentReferral'
 import SentReferralSummaries from '../models/sentReferralSummaries'
@@ -37,7 +36,7 @@ import AmendNeedsAndRequirements from '../models/amendNeedsAndRequirements'
 import { NeedsAndRequirementsType } from '../models/needsAndRequirementsType'
 import ChangelogDetail from '../models/changelogDetail'
 import { AmendOtherNeeds } from '../models/OtherNeeds'
-import SessionFeedback from "../models/sessionFeedback";
+import SessionFeedback from '../models/sessionFeedback'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -111,12 +110,14 @@ export interface CreateCaseNoteParams {
 }
 
 export type CreateAppointmentSchedulingAndFeedback = AppointmentSchedulingDetails & {
-  appointmentAttendance: {
+  attendanceFeedback: {
     attended: 'yes' | 'no' | 'late' | null
-    additionalAttendanceInformation: string | null
+    attendanceFailureInformation: string | null
   }
-  appointmentBehaviour: {
-    behaviourDescription: string | null
+  sessionFeedback: {
+    sessionSummary: string | null
+    sessionResponse: string | null
+    sessionConcerns: string | null
     notifyProbationPractitioner: boolean | null
   } | null
 }
@@ -600,14 +601,14 @@ export default class InterventionsService {
     token: string,
     actionPlanId: string,
     sessionNumber: number,
-    appointmentBehaviourUpdate: Partial<AppointmentSession>
+    sessionFeedbackUpdate: Partial<SessionFeedback>
   ): Promise<ActionPlanAppointment> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
-      path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/record-behaviour`,
+      path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/record-session-feedback`,
       headers: { Accept: 'application/json' },
-      data: appointmentBehaviourUpdate,
+      data: sessionFeedbackUpdate,
     })) as ActionPlanAppointment
   }
 
@@ -747,16 +748,16 @@ export default class InterventionsService {
     })) as InitialAssessmentAppointment
   }
 
-  async recordSupplierAssessmentAppointmentBehaviour(
+  async recordSupplierAssessmentAppointmentSessionFeedback(
     token: string,
     referralId: string,
-    appointmentBehaviourUpdate: Partial<SessionFeedback>
+    sessionFeedbackUpdate: Partial<SessionFeedback>
   ): Promise<InitialAssessmentAppointment> {
     const restClient = this.createRestClient(token)
     return (await restClient.put({
       path: `/referral/${referralId}/supplier-assessment/record-session-feedback`,
       headers: { Accept: 'application/json' },
-      data: appointmentBehaviourUpdate,
+      data: sessionFeedbackUpdate,
     })) as InitialAssessmentAppointment
   }
 

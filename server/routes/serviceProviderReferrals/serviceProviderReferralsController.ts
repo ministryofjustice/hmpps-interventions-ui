@@ -344,8 +344,8 @@ export default class ServiceProviderReferralsController {
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { id } = req.params
-    const showFeedbackBanner = req.query.showFeedbackBanner
-    const notifyPP = req.query.notifyPP
+    const { showFeedbackBanner } = req.query
+    const { notifyPP } = req.query
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, id)
 
@@ -407,8 +407,8 @@ export default class ServiceProviderReferralsController {
       supplierAssessment,
       assignee,
       req.session.dashboardOriginPage,
-      (showFeedbackBanner === "true"),
-      (notifyPP === "true")
+      showFeedbackBanner === 'true',
+      notifyPP === 'true'
     )
     const view = new InterventionProgressView(presenter)
 

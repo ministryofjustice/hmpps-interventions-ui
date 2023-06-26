@@ -6,12 +6,11 @@ import User from '../../models/hmppsAuth/user'
 export interface DraftAppointmentFeedbackDetails {
   attendanceFeedback: {
     attended: 'yes' | 'no' | 'late' | null
-    additionalAttendanceInformation: string | null
+    attendanceFailureInformation: string | null
   }
   sessionFeedback: {
-    // behaviourDescription: string | null
     notifyProbationPractitioner: boolean | null
-    sessionSummary:  string | null //is this correct?
+    sessionSummary: string | null
     sessionResponse: string | null
     sessionConcerns: string | null
   }

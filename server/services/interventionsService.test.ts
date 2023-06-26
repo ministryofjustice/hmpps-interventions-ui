@@ -3137,13 +3137,15 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 postCode: 'SY40RE',
               },
               npsOfficeCode: null,
-              appointmentAttendance: {
+              attendanceFeedback: {
                 attended: 'yes',
-                additionalAttendanceInformation: 'attendance information',
+                attendanceFailureInformation: 'attendance failure information',
               },
-              appointmentBehaviour: {
+              sessionFeedback: {
                 notifyProbationPractitioner: false,
-                behaviourDescription: 'they were good',
+                sessionSummary: 'they were good',
+                sessionResponse: 'they were good',
+                sessionConcerns: 'they were good',
               },
             }
           )
@@ -3289,7 +3291,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         }
       )
       expect(appointment.appointmentFeedback!.attendanceFeedback!.attended).toEqual('late')
-      expect(appointment.appointmentFeedback!.attendanceFeedback!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+      expect(appointment.appointmentFeedback!.attendanceFeedback!.additionalAttendanceInformation).toEqual(
+        'Alex missed the bus'
+      )
     })
   })
 
@@ -3783,7 +3787,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         }
       )
       expect(result.appointmentFeedback!.attendanceFeedback!.attended).toEqual('late')
-      expect(result.appointmentFeedback!.attendanceFeedback!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+      expect(result.appointmentFeedback!.attendanceFeedback!.additionalAttendanceInformation).toEqual(
+        'Alex missed the bus'
+      )
     })
   })
 
@@ -3834,7 +3840,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.recordSupplierAssessmentAppointmentBehaviour(
+      const result = await interventionsService.recordSupplierAssessmentAppointmentSessionFeedback(
         probationPractitionerToken,
         'caac2a85-578f-4b0b-996d-2893311eb60e',
         {

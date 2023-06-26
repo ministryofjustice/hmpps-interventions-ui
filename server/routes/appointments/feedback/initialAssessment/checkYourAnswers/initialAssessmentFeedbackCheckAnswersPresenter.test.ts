@@ -27,8 +27,12 @@ describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
     describe('when the appointment was attended', () => {
       it('includes the referal id and link to the behaviour feedback page', () => {
         const attendedAppointments = [
-          initialAssessmentAppointmentFactory.build({ appointmentFeedback: { attendanceFeedback: { attended: 'yes' } } }),
-          initialAssessmentAppointmentFactory.build({ appointmentFeedback: { attendanceFeedback: { attended: 'late' } } }),
+          initialAssessmentAppointmentFactory.build({
+            appointmentFeedback: { attendanceFeedback: { attended: 'yes' } },
+          }),
+          initialAssessmentAppointmentFactory.build({
+            appointmentFeedback: { attendanceFeedback: { attended: 'late' } },
+          }),
         ]
 
         const serviceUser = deliusServiceUserFactory.build()

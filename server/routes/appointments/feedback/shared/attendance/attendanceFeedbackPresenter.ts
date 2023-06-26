@@ -10,6 +10,7 @@ interface AttendanceFeedbackFormText {
   attendanceQuestion: string
   attendanceQuestionHint: string
   additionalAttendanceInformationLabel: string
+  attendanceFailureInformationQuestion: string
 }
 
 export default abstract class AttendanceFeedbackPresenter {
@@ -30,6 +31,7 @@ export default abstract class AttendanceFeedbackPresenter {
       attendanceQuestion: attendanceFeedbackQuestionnaire.attendanceQuestion.text,
       attendanceQuestionHint: attendanceFeedbackQuestionnaire.attendanceQuestion.hint,
       additionalAttendanceInformationLabel: attendanceFeedbackQuestionnaire.additionalAttendanceInformationQuestion,
+      attendanceFailureInformationQuestion: attendanceFeedbackQuestionnaire.attendanceFailureInformationQuestion,
     }
   }
 
@@ -51,23 +53,26 @@ export default abstract class AttendanceFeedbackPresenter {
         'additional-attendance-information'
       ),
     },
+    attendanceFailureInformation: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.attendanceFeedback?.attendanceFailureInformation ?? null,
+        'attendance-failure-information'
+      ),
+    },
   }
 
-  readonly attendanceResponses = [
-    {
+  readonly attendanceResponses = {
+    yes: {
       value: 'yes',
       text: 'Yes, they were on time',
-      checked: this.fields.attended.value === 'yes',
     },
-    {
+    late: {
       value: 'late',
       text: 'They were late',
-      checked: this.fields.attended.value === 'late',
     },
-    {
+    no: {
       value: 'no',
       text: 'No',
-      checked: this.fields.attended.value === 'no',
     },
-  ]
+  }
 }

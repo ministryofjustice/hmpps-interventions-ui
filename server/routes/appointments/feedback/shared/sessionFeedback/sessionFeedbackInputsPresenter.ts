@@ -2,7 +2,7 @@ import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../..
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import PresenterUtils from '../../../../../utils/presenterUtils'
 
-export default class BehaviourFeedbackInputsPresenter {
+export default class SessionFeedbackInputsPresenter {
   constructor(
     private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
     private readonly error: FormValidationError | null = null,
@@ -22,22 +22,22 @@ export default class BehaviourFeedbackInputsPresenter {
   readonly fields = {
     sessionSummary: {
       value: new PresenterUtils(this.userInputData).stringValue(
-          this.appointment.appointmentFeedback?.sessionFeedback?.sessionSummary || null,
-          'session-summary'
+        this.appointment.appointmentFeedback?.sessionFeedback?.sessionSummary || null,
+        'session-summary'
       ),
       errorMessage: this.errorMessageForField('session-summary'),
     },
     sessionResponse: {
       value: new PresenterUtils(this.userInputData).stringValue(
-          this.appointment.appointmentFeedback?.sessionFeedback?.sessionResponse || null,
-          'session-response'
+        this.appointment.appointmentFeedback?.sessionFeedback?.sessionResponse || null,
+        'session-response'
       ),
       errorMessage: this.errorMessageForField('session-response'),
     },
     sessionConcerns: {
       value: new PresenterUtils(this.userInputData).stringValue(
-          this.appointment.appointmentFeedback?.sessionFeedback?.sessionConcerns || null,
-          'session-Concerns'
+        this.appointment.appointmentFeedback?.sessionFeedback?.sessionConcerns || null,
+        'session-Concerns'
       ),
       errorMessage: this.errorMessageForField('session-concerns'),
     },

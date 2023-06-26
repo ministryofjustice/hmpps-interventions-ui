@@ -1,10 +1,10 @@
 import { ActionPlanAppointment } from '../../../../../models/appointment'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import { FormValidationError } from '../../../../../utils/formValidationError'
-import BehaviourFeedbackInputsPresenter from '../../shared/behaviour/behaviourFeedbackInputsPresenter'
-import BehaviourFeedbackQuestionnaire from '../../shared/behaviour/behaviourFeedbackQuestionnaire'
+import SessionFeedbackInputsPresenter from '../../shared/sessionFeedback/sessionFeedbackInputsPresenter'
+import SessionFeedbackQuestionnaire from '../../shared/sessionFeedback/sessionFeedbackQuestionnaire'
 
-export default class ActionPlanSessionBehaviourFeedbackPresenter {
+export default class ActionPlanSessionFeedbackPresenter {
   constructor(
     private readonly appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
@@ -16,10 +16,10 @@ export default class ActionPlanSessionBehaviourFeedbackPresenter {
 
   readonly text = {
     title: `Add session feedback`,
-    subTitle: `This helps the probation practitioner to support the person on probation.`
+    subTitle: `This helps the probation practitioner to support the person on probation.`,
   }
 
-  readonly questionnaire = new BehaviourFeedbackQuestionnaire(this.appointment, this.serviceUser)
+  readonly questionnaire = new SessionFeedbackQuestionnaire(this.appointment, this.serviceUser)
 
   get backLinkHref(): string | null {
     if (this.actionPlanId && this.appointment.sessionNumber) {
@@ -31,5 +31,5 @@ export default class ActionPlanSessionBehaviourFeedbackPresenter {
     return null
   }
 
-  readonly inputsPresenter = new BehaviourFeedbackInputsPresenter(this.appointment, this.error, this.userInputData)
+  readonly inputsPresenter = new SessionFeedbackInputsPresenter(this.appointment, this.error, this.userInputData)
 }

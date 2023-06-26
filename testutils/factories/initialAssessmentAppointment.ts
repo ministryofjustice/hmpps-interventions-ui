@@ -92,11 +92,12 @@ export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
     attendanceFeedback: {
       attended: null,
       additionalAttendanceInformation: null,
+      attendanceFailureInformation: null,
     },
     sessionFeedback: {
       behaviourDescription: null,
       notifyProbationPractitioner: null,
-      sessionSummary:  null,
+      sessionSummary: null,
       sessionResponse: null,
       sessionConcerns: null,
     },

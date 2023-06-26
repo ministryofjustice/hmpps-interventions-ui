@@ -1,6 +1,6 @@
 import AppointmentAttendance from './appointmentAttendance'
 import User from './hmppsAuth/user'
-import SessionFeedback from "./sessionFeedback";
+import SessionFeedback from './sessionFeedback'
 
 export default interface AppointmentFeedback {
   attendanceFeedback: AppointmentAttendance

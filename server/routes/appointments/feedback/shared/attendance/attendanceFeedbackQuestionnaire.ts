@@ -1,7 +1,6 @@
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 import AppointmentDecorator from '../../../../../decorators/appointmentDecorator'
-import DateUtils from "../../../../../utils/dateUtils";
 
 export default class AttendanceFeedbackQuestionnaire {
   private readonly appointmentDecorator: AppointmentDecorator
@@ -25,6 +24,10 @@ export default class AttendanceFeedbackQuestionnaire {
 
   get additionalAttendanceInformationQuestion(): string {
     return `Add additional information about ${this.serviceUser.firstName}'s attendance:`
+  }
+
+  get attendanceFailureInformationQuestion(): string {
+    return `Add how you tried to contact ${this.serviceUser.firstName} ${this.serviceUser.surname} and anything you know about why they did not attend.`
   }
 
   private get methodSpecificAttendanceQuestion(): string {

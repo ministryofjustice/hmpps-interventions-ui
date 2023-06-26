@@ -51,9 +51,10 @@ export default class InterventionProgressView {
   }
 
   get sessionFeedbackAddedNotificationBannerArgs(): NotificationBannerArgs {
-    const text = this.presenter.notifyPP === true ?
-        'The probation practitioner has been emailed about your concerns. They’ll also be able to view the feedback in the service.' :
-        'Text to be shown in the pp does not need to be notified.'
+    const text =
+      this.presenter.notifyPP === true
+        ? 'The probation practitioner has been emailed about your concerns. They’ll also be able to view the feedback in the service.'
+        : 'The probation practitioner will be able to view the feedback in the service.'
     const html = `<h1 class="govuk-notification-banner__heading">Session feedback added</h1>
                   <p class="govuk-body-m">${text}</p>`
 
@@ -145,7 +146,7 @@ export default class InterventionProgressView {
         backLinkArgs: this.backLinkArgs,
         endOfServiceReportSummaryListArgs: this.endOfServiceReportSummaryListArgs.bind(this),
         cancelledReferralNotificationBannerArgs: this.cancelledReferralNotificationBannerArgs,
-        sessionFeedbackAddedNotificationBannerArgs: this.sessionFeedbackAddedNotificationBannerArgs
+        sessionFeedbackAddedNotificationBannerArgs: this.sessionFeedbackAddedNotificationBannerArgs,
       },
     ]
   }

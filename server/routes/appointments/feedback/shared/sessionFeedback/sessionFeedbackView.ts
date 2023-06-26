@@ -1,12 +1,12 @@
 import { BackLinkArgs, ErrorSummaryArgs, TextareaArgs } from '../../../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../../../utils/viewUtils'
-import BehaviourFeedbackInputsPresenter from './behaviourFeedbackInputsPresenter'
-import { BehaviourFeedbackPresenter } from './behaviourFeedbackPresenter'
+import SessionFeedbackInputsPresenter from './sessionFeedbackInputsPresenter'
+import { SessionFeedbackPresenter } from './sessionFeedbackPresenter'
 
-export default class BehaviourFeedbackView {
-  inputsPresenter: BehaviourFeedbackInputsPresenter
+export default class SessionFeedbackView {
+  inputsPresenter: SessionFeedbackInputsPresenter
 
-  constructor(private readonly presenter: BehaviourFeedbackPresenter) {
+  constructor(private readonly presenter: SessionFeedbackPresenter) {
     this.inputsPresenter = this.presenter.inputsPresenter
   }
 
@@ -62,24 +62,6 @@ export default class BehaviourFeedbackView {
     }
   }
 
-  // private get textAreaArgs(): TextareaArgs {
-  //   return {
-  //     name: 'behaviour-description',
-  //     id: 'behaviour-description',
-  //     label: {
-  //       text: this.presenter.questionnaire.behaviourQuestion.text,
-  //       classes: 'govuk-label--m govuk-!-margin-bottom-4',
-  //       isPageHeading: false,
-  //     },
-  //     hint: {
-  //       text: this.presenter.questionnaire.behaviourQuestion.hint,
-  //     },
-  //     value: this.inputsPresenter.fields.behaviourDescription.value,
-  //     errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.behaviourDescription.errorMessage),
-  //   }
-  // }
-
-
   private radioButtonArgs(yesHtml: string): Record<string, unknown> {
     return {
       classes: 'govuk-radios',
@@ -129,7 +111,7 @@ export default class BehaviourFeedbackView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'appointments/feedback/shared/postSessionBehaviourFeedback',
+      'appointments/feedback/shared/postSessionFeedback',
       {
         presenter: this.presenter,
         sessionSummaryTextAreaArgs: this.sessionSummaryTextAreaArgs,

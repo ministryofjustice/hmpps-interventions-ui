@@ -7,7 +7,7 @@ export default class AttendanceFeedbackView {
 
   private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.appointmentSummary.appointmentSummaryList)
 
-  private get radioButtonArgs(): Record<string, unknown> {
+  private radioButtonArgs(noHtml: string): Record<string, unknown> {
     return {
       classes: 'govuk-radios',
       idPrefix: 'attended',
@@ -24,13 +24,39 @@ export default class AttendanceFeedbackView {
         text: this.presenter.text.attendanceQuestionHint,
       },
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.attended.errorMessage),
-      items: this.presenter.attendanceResponses.map(response => {
-        return {
-          value: response.value,
-          text: response.text,
-          checked: response.checked,
-        }
-      }),
+      items: [
+        {
+          value: this.presenter.attendanceResponses.yes.value,
+          text: this.presenter.attendanceResponses.yes.text,
+          checked: this.presenter.fields.attended.value === this.presenter.attendanceResponses.yes.value,
+        },
+        {
+          value: this.presenter.attendanceResponses.late.value,
+          text: this.presenter.attendanceResponses.late.text,
+          checked: this.presenter.fields.attended.value === this.presenter.attendanceResponses.late.value,
+        },
+        {
+          value: this.presenter.attendanceResponses.no.value,
+          text: this.presenter.attendanceResponses.no.text,
+          checked: this.presenter.fields.attended.value === this.presenter.attendanceResponses.no.value,
+          conditional: {
+            html: noHtml,
+          },
+        },
+      ],
+    }
+  }
+
+  private get attendanceFailureInformationTextAreaArgs(): TextareaArgs {
+    return {
+      name: 'attendance-failure-information',
+      id: 'attendance-failure-information',
+      label: {
+        text: this.presenter.text.attendanceFailureInformationQuestion,
+        classes: 'govuk-body govuk-!-margin-bottom-4',
+        isPageHeading: false,
+      },
+      value: this.presenter.fields.attendanceFailureInformation.value,
     }
   }
 
@@ -52,9 +78,10 @@ export default class AttendanceFeedbackView {
       {
         presenter: this.presenter,
         summaryListArgs: this.summaryListArgs,
-        radioButtonArgs: this.radioButtonArgs,
+        radioButtonArgs: this.radioButtonArgs.bind(this),
         errorSummaryArgs: this.errorSummaryArgs,
         backLinkArgs: this.backLinkArgs,
+        attendanceFailureInformationTextAreaArgs: this.attendanceFailureInformationTextAreaArgs,
       },
     ]
   }

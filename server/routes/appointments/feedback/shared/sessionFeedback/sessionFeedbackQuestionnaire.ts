@@ -2,7 +2,7 @@ import AppointmentDecorator from '../../../../../decorators/appointmentDecorator
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 
-export default class BehaviourFeedbackQuestionnaire {
+export default class SessionFeedbackQuestionnaire {
   private readonly appointmentDecorator: AppointmentDecorator
 
   constructor(
@@ -13,23 +13,24 @@ export default class BehaviourFeedbackQuestionnaire {
   }
 
   get sessionSummaryQuestion(): { text: string; hint: string } {
-      return {
-        text: `What did you do in the session?`,
-        hint: 'Add details about what you did, anything that was achieved and what came out of the session.',
-      }
+    return {
+      text: `What did you do in the session?`,
+      hint: 'Add details about what you did, anything that was achieved and what came out of the session.',
+    }
   }
 
   get sessionResponseQuestion(): { text: string; hint: string } {
     return {
       text: `How did ${this.serviceUser.firstName} ${this.serviceUser.surname} respond to the session?`,
-      hint: `Add whether ${this.serviceUser.firstName} ${this.serviceUser.surname} seemed engaged, ` +
-          `including any progress or positive changes. This helps the probation practitioner to support ${this.serviceUser.firstName}.`,
+      hint:
+        `Add whether ${this.serviceUser.firstName} ${this.serviceUser.surname} seemed engaged, ` +
+        `including any progress or positive changes. This helps the probation practitioner to support ${this.serviceUser.firstName}.`,
     }
   }
 
-  get sessionConcernsQuestion(): { text: string} {
+  get sessionConcernsQuestion(): { text: string } {
     return {
-      text: `Add enough detail to help the probation practitioner to know what happened`
+      text: `Add enough detail to help the probation practitioner to know what happened`,
     }
   }
 
