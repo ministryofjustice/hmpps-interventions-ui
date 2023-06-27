@@ -293,7 +293,7 @@ export default class CheckAllReferralInformationPresenter {
         },
         {
           key: 'Date intervention to be completed by',
-          lines: [DateUtils.formattedDate(completionDeadline, { month: 'short' })],
+          lines: [DateUtils.formattedDate(`${completionDeadline}T00:00:00`, { month: 'short' })],
           changeLink: `/referrals/${this.referral.id}/completion-deadline`,
         },
         {
