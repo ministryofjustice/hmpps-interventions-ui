@@ -53,7 +53,10 @@ export default class DateUtils {
   // Docs: https://www.gov.uk/guidance/style-guide/a-to-z-of-gov-uk-style#times
   // string input: 2021-06-02T00:30:00+01:00 or 2021-06-02T00:30:00
   // example output: 1:00pm
-  static formattedTime(time: ClockTime | Date | string, options: { casing: casing } = { casing: 'lowercase' }): string {
+  static formattedTime(
+    time: CalendarDay | ClockTime | Date | string,
+    options: { casing: casing } = { casing: 'lowercase' }
+  ): string {
     let clockTime: ClockTime
     if (time instanceof ClockTime) {
       clockTime = time
