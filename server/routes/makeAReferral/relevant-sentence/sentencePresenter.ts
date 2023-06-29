@@ -23,7 +23,9 @@ export default class SentencePresenter {
     this.subcategory = mainOffence.detail.subCategoryDescription
 
     this.endOfSentenceDate = this.conviction?.sentence?.expectedSentenceEndDate
-      ? DateUtils.formattedDate(new Date(this.conviction.sentence.expectedSentenceEndDate), { month: 'short' })
+      ? DateUtils.formattedDate(new Date(`${this.conviction.sentence.expectedSentenceEndDate}T00:00:00`), {
+          month: 'short',
+        })
       : 'Not found'
   }
 }
