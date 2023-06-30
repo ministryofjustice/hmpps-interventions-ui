@@ -174,8 +174,8 @@ export default on => {
       )
     },
 
-    stubRecordActionPlanAppointmentBehavior: arg => {
-      return interventionsService.stubRecordActionPlanAppointmentBehavior(
+    stubRecordActionPlanAppointmentSessionFeedback: arg => {
+      return interventionsService.stubRecordActionPlanAppointmentSessionFeedback(
         arg.actionPlanId,
         arg.sessionNumber,
         arg.responseJson
@@ -238,8 +238,11 @@ export default on => {
       return interventionsService.stubRecordSupplierAssessmentAppointmentAttendance(arg.referralId, arg.responseJson)
     },
 
-    stubRecordSupplierAssessmentAppointmentBehaviour: arg => {
-      return interventionsService.stubRecordSupplierAssessmentAppointmentBehaviour(arg.referralId, arg.responseJson)
+    stubRecordSupplierAssessmentAppointmentSessionFeedback: arg => {
+      return interventionsService.stubRecordSupplierAssessmentAppointmentSessionFeedback(
+        arg.referralId,
+        arg.responseJson
+      )
     },
 
     stubGetSupplierAssessment: arg => {

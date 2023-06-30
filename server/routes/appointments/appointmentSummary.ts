@@ -105,16 +105,17 @@ export default class AppointmentSummary {
   get sessionDetails(): { question: string; answer: string } {
     const date = DateUtils.formattedDate(this.appointmentDecorator.britishDay!)
     const time = DateUtils.formattedTime(this.appointmentDecorator.britishTime!)
-    const caseworkerName =
-      this.assignedCaseworker instanceof String
-        ? this.assignedCaseworker
-        : `${(<AuthUserDetails>this.assignedCaseworker).firstName} ${
-            (<AuthUserDetails>this.assignedCaseworker).lastName
-          }`
+    const caseworkerName = this.assignedCaseworker ? this.caseworkerName() : ''
 
     return {
       question: `Session Details`,
       answer: `The phone call was with caseworker ${caseworkerName} at ${time} on ${date}.`,
     }
+  }
+
+  private caseworkerName(): string {
+    return typeof this.assignedCaseworker === 'string'
+      ? this.assignedCaseworker
+      : `${(<AuthUserDetails>this.assignedCaseworker).firstName} ${(<AuthUserDetails>this.assignedCaseworker).lastName}`
   }
 }

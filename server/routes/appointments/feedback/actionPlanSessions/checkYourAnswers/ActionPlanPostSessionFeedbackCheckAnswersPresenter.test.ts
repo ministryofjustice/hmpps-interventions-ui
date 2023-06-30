@@ -18,7 +18,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
       )
 
       expect(presenter.text).toMatchObject({
-        title: 'Confirm feedback',
+        title: 'Confirm session feedback',
       })
     })
   })

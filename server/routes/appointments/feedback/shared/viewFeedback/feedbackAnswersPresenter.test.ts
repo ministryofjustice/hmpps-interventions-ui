@@ -24,7 +24,7 @@ describe(FeedbackAnswersPresenter, () => {
       const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
       expect(presenter.attendedAnswers).toEqual({
-        question: 'Did Alex attend this session?',
+        question: 'Did Alex River come to the session?',
         answer: 'Yes, they were on time',
       })
     })
@@ -80,33 +80,6 @@ describe(FeedbackAnswersPresenter, () => {
       })
     })
 
-    describe('when there is no answer for AdditionalAttendanceInformation', () => {
-      it('returns an object with "None" as the answer', () => {
-        const appointment = actionPlanAppointmentFactory.build({
-          appointmentFeedback: {
-            attendanceFeedback: {
-              attended: 'late',
-              additionalAttendanceInformation: '',
-            },
-            sessionFeedback: {
-              sessionSummary: null,
-              sessionResponse: null,
-              notifyProbationPractitioner: null,
-              sessionConcerns: null,
-            },
-          },
-        })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
-
-        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
-
-        expect(presenter.additionalAttendanceAnswers).toEqual({
-          question: "Add additional information about Alex's attendance:",
-          answer: 'None',
-        })
-      })
-    })
-
     describe('when there is a null value for AdditionalAttendanceInformation', () => {
       it('returns null', () => {
         const appointment = actionPlanAppointmentFactory.build({
@@ -148,7 +121,7 @@ describe(FeedbackAnswersPresenter, () => {
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
-          question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
+          question: 'Did anything concern you about Alex River?',
           answer: 'Yes',
         })
       })
@@ -159,7 +132,6 @@ describe(FeedbackAnswersPresenter, () => {
         const appointment = actionPlanAppointmentFactory.build({
           appointmentFeedback: {
             sessionFeedback: {
-              // behaviourDescription: 'Alex had a good attitude',
               notifyProbationPractitioner: false,
             },
           },
@@ -170,7 +142,7 @@ describe(FeedbackAnswersPresenter, () => {
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
-          question: 'If you described poor behaviour, do you want to notify the probation practitioner?',
+          question: 'Did anything concern you about Alex River?',
           answer: 'No',
         })
       })

@@ -112,7 +112,7 @@ describe(InterventionProgressPresenter, () => {
       })
 
       describe('and the appointment is in the past', () => {
-        it('populates the table with formatted session information, with "Awaiting feedback" status', () => {
+        it('populates the table with formatted session information, with "Needs feedback" status', () => {
           const referral = sentReferralFactory.build()
           const intervention = interventionFactory.build()
           const supplierAssessment = supplierAssessmentFactory.build()
@@ -137,7 +137,7 @@ describe(InterventionProgressPresenter, () => {
               sessionNumber: 1,
               appointmentTime: '1:00pm on 7 Dec 1920',
               tagArgs: {
-                text: 'awaiting feedback',
+                text: 'needs feedback',
                 classes: 'govuk-tag--red',
               },
               link: null,

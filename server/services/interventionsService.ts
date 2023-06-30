@@ -597,7 +597,7 @@ export default class InterventionsService {
     })) as ActionPlanAppointment
   }
 
-  async recordActionPlanAppointmentBehavior(
+  async recordActionPlanAppointmentSessionFeedback(
     token: string,
     actionPlanId: string,
     sessionNumber: number,

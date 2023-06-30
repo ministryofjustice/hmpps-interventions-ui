@@ -14,7 +14,7 @@ export default class SessionFeedbackInputsPresenter {
   }
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error, {
-    fieldOrder: ['behaviour-description', 'notify-probation-practitioner'],
+    fieldOrder: ['session-summary', 'session-response', 'session-concerns', 'notify-probation-practitioner'],
   })
 
   private readonly utils = new PresenterUtils(this.userInputData)
@@ -37,7 +37,7 @@ export default class SessionFeedbackInputsPresenter {
     sessionConcerns: {
       value: new PresenterUtils(this.userInputData).stringValue(
         this.appointment.appointmentFeedback?.sessionFeedback?.sessionConcerns || null,
-        'session-Concerns'
+        'session-concerns'
       ),
       errorMessage: this.errorMessageForField('session-concerns'),
     },

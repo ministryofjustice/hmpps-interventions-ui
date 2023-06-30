@@ -95,7 +95,6 @@ export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
       attendanceFailureInformation: null,
     },
     sessionFeedback: {
-      behaviourDescription: null,
       notifyProbationPractitioner: null,
       sessionSummary: null,
       sessionResponse: null,

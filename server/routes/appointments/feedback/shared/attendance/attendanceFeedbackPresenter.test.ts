@@ -84,64 +84,23 @@ describe(AttendanceFeedbackPresenter, () => {
   })
 
   describe('attendanceResponses', () => {
-    describe('when attendance has not been set on the appointment', () => {
-      it('contains the attendance questions and values, and doesn’t set any value to "checked"', () => {
-        const appointment = initialAssessmentAppointmentFactory.build()
-        const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
+    it('contains the attendance questions and values', () => {
+      const appointment = initialAssessmentAppointmentFactory.build()
+      const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
 
-        expect(presenter.attendanceResponses).toEqual([
-          {
-            value: 'yes',
-            text: 'Yes, they were on time',
-            checked: false,
-          },
-          {
-            value: 'late',
-            text: 'They were late',
-            checked: false,
-          },
-          {
-            value: 'no',
-            text: 'No',
-            checked: false,
-          },
-        ])
-      })
-    })
-
-    describe('when attendance has been set on the appointment', () => {
-      const responseValues = ['yes', 'late', 'no'] as ('yes' | 'late' | 'no')[]
-
-      responseValues.forEach(responseValue => {
-        const appointment = initialAssessmentAppointmentFactory.build({
-          appointmentFeedback: {
-            attendanceFeedback: { attended: responseValue },
-          },
-        })
-
-        describe(`service provider has selected ${responseValue}`, () => {
-          it(`contains the attendance questions and values, and marks ${responseValue} as "checked"`, () => {
-            const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
-
-            expect(presenter.attendanceResponses).toEqual([
-              {
-                value: 'yes',
-                text: 'Yes, they were on time',
-                checked: responseValue === 'yes',
-              },
-              {
-                value: 'late',
-                text: 'They were late',
-                checked: responseValue === 'late',
-              },
-              {
-                value: 'no',
-                text: 'No',
-                checked: responseValue === 'no',
-              },
-            ])
-          })
-        })
+      expect(presenter.attendanceResponses).toEqual({
+        yes: {
+          value: 'yes',
+          text: 'Yes, they were on time',
+        },
+        late: {
+          value: 'late',
+          text: 'They were late',
+        },
+        no: {
+          value: 'no',
+          text: 'No',
+        },
       })
     })
   })

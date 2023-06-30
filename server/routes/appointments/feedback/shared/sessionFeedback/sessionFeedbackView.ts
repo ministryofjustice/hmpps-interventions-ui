@@ -77,9 +77,6 @@ export default class SessionFeedbackView {
           isPageHeading: false,
         },
       },
-      // hint: {
-      //   text: this.presenter.questionnaire.notifyProbationPractitionerQuestion.hint,
-      // },
       items: [
         {
           value: 'yes',

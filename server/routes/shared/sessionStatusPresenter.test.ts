@@ -16,7 +16,7 @@ describe(SessionStatusPresenter, () => {
       },
       {
         status: SessionStatus.awaitingFeedback,
-        text: 'awaiting feedback',
+        text: 'needs feedback',
         tagClass: 'govuk-tag--red',
       },
       {

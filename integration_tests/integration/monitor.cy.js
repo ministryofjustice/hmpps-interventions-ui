@@ -240,7 +240,7 @@ describe('Probation Practitioner monitor journey', () => {
           {
             'Session details': 'Session 3',
             'Date and time': '10:02am on 31 May 2021',
-            Status: 'awaiting feedback',
+            Status: 'needs feedback',
             Action: '',
           },
           {
@@ -352,7 +352,7 @@ describe('Probation Practitioner monitor journey', () => {
           expect(result[2]).to.deep.include({
             'Session details': 'Session 3',
             'Date and time': '10:02am on 31 Jul 2021',
-            Status: 'awaiting feedback',
+            Status: 'needs feedback',
             Action: '',
           })
           expect(result[3]).to.contains(/^Session 2 history/gi)
@@ -412,13 +412,13 @@ describe('Probation Practitioner monitor journey', () => {
       const appointmentsWithSubmittedFeedback = [
         actionPlanAppointmentFactory.scheduled().build({
           sessionNumber: 1,
-          sessionFeedback: {
-            attendance: {
+          appointmentFeedback: {
+            attendanceFeedback: {
               attended: 'yes',
-              additionalAttendanceInformation: 'Alex attended the session',
             },
-            behaviour: {
-              behaviourDescription: 'Alex was well-behaved',
+            sessionFeedback: {
+              sessionSummary: 'stub session summary',
+              sessionResponse: 'stub session response',
               notifyProbationPractitioner: false,
             },
             submitted: true,
@@ -443,9 +443,13 @@ describe('Probation Practitioner monitor journey', () => {
       cy.contains('View feedback form').click()
 
       cy.contains('John Smith (john.smith@email.com)')
-      cy.contains('Alex attended the session')
-      cy.contains('Yes, they were on time')
-      cy.contains('Alex was well-behaved')
+      cy.contains('Did Alex River come to the session?')
+      cy.contains('Session Feedback')
+      cy.contains('What did you do in the session?')
+      cy.contains('stub session summary')
+      cy.contains('How did Alex River respond to the session?')
+      cy.contains('stub session response')
+      cy.contains('Did anything concern you about Alex River?')
       cy.contains('No')
     })
   })

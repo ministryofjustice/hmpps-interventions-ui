@@ -888,7 +888,7 @@ export default class AppointmentsController {
       } else {
         let redirectUrl
         if (!draftBookingId) {
-          await this.interventionsService.recordActionPlanAppointmentBehavior(
+          await this.interventionsService.recordActionPlanAppointmentSessionFeedback(
             accessToken,
             actionPlanId,
             Number(sessionNumber),
