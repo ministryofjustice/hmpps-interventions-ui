@@ -2561,7 +2561,7 @@ describe('Service provider referrals dashboard', () => {
           const appointmentWithAttendanceFeedback = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
-            appointmentDeliveryType: 'PHONE_CALL',
+            appointmentDeliveryType: 'VIDEO_CALL',
             appointmentFeedback: {
               attendanceFeedback: {
                 attended: 'no',
@@ -2583,7 +2583,7 @@ describe('Service provider referrals dashboard', () => {
           )
 
           cy.contains('Session Details')
-          cy.contains('The phone call was with caseworker Case Worker at 9:02am on 24 March 2021.')
+          cy.contains('The video call was with caseworker Case Worker at 9:02am on 24 March 2021.')
           cy.contains('Did Alex River come to the session?')
           cy.contains('No')
           cy.contains('Add how you tried to contact Alex River and anything you know about why they did not attend.')

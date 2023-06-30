@@ -1115,6 +1115,7 @@ describe('Adding supplier assessment feedback', () => {
       const deliusServiceUser = deliusServiceUserFactory.build()
       const referral = sentReferralFactory.assigned().build()
       const appointment = initialAssessmentAppointmentFactory.build({
+        appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
         appointmentTime: '2021-02-01T13:00:00Z',
         appointmentFeedback: {
           attendanceFeedback: {
@@ -1151,7 +1152,7 @@ describe('Adding supplier assessment feedback', () => {
         .expect(res => {
           expect(res.text).toContain('Session Details')
           expect(res.text).toContain(
-            'The phone call was with caseworker caseworkerFirstName caseworkerLastName at 1:00pm on 1 February 2021.'
+            'The in-person meeting (probation office) was with caseworker caseworkerFirstName caseworkerLastName at 1:00pm on 1 February 2021.'
           )
           expect(res.text).toContain('Confirm session feedback')
           expect(res.text).toContain('Did Alex River come to the session?')
@@ -1623,9 +1624,7 @@ describe('Adding post delivery session feedback', () => {
 
           const actionPlan = actionPlanFactory.build()
 
-          const draftAppointment: DraftAppointment = draftAppointmentFactory
-            .withAttendanceFeedback('no', "I haven't heard from Alex")
-            .build()
+          const draftAppointment: DraftAppointment = draftAppointmentFactory.withAttendanceFeedback('no').build()
 
           const draftAppointmentResult = draftAppointmentBookingFactory.build({
             data: draftAppointment,

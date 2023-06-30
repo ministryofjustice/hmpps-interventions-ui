@@ -106,10 +106,13 @@ export default class AppointmentSummary {
     const date = DateUtils.formattedDate(this.appointmentDecorator.britishDay!)
     const time = DateUtils.formattedTime(this.appointmentDecorator.britishTime!)
     const caseworkerName = this.assignedCaseworker ? this.caseworkerName() : ''
+    const deliveryMethod = this.appointment.appointmentDeliveryType
+      ? this.deliveryMethod(this.appointment.appointmentDeliveryType).toLowerCase()
+      : ''
 
     return {
       question: `Session Details`,
-      answer: `The phone call was with caseworker ${caseworkerName} at ${time} on ${date}.`,
+      answer: `The ${deliveryMethod} was with caseworker ${caseworkerName} at ${time} on ${date}.`,
     }
   }
 
