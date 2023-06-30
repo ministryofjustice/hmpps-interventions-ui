@@ -64,8 +64,10 @@ export default class DateUtils {
       clockTime = ClockTime.britishTimeForDate(time.utcDate)
     } else if (time instanceof Date) {
       clockTime = ClockTime.britishTimeForDate(time)
-    } else {
+    } else if (time.includes('T')) {
       clockTime = ClockTime.britishTimeForDate(new Date(time))
+    } else {
+      clockTime = ClockTime.britishTimeForDate(new Date(`${time}T00:00:00`))
     }
     if (clockTime.twelveHourClockHour === 12 && clockTime.minute === 0 && clockTime.partOfDay === 'pm') {
       return options.casing === 'capitalized' ? 'Midday' : 'midday'
