@@ -84,10 +84,4 @@ export default class DateUtils {
   ): string {
     return `${this.formattedTime(startsAt, options)} to ${this.formattedTime(endsAt)}`
   }
-
-  static age(dateOfBirth: string): number {
-    const calendarDay = new Date(dateOfBirth)
-    const timeDiff = Date.now() - calendarDay.getTime()
-    return Math.floor(timeDiff / (1000 * 3600 * 24) / 365)
-  }
 }

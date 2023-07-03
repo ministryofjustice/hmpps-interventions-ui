@@ -1,4 +1,4 @@
-import CheckAllReferralInformationPresenter from './checkAllReferralInformationPresenter'
+import CheckAnswersPresenter from './checkAnswersPresenter'
 import draftReferralFactory from '../../../../testutils/factories/draftReferral'
 import serviceCategoryFactory from '../../../../testutils/factories/serviceCategory'
 import interventionFactory from '../../../../testutils/factories/intervention'
@@ -15,7 +15,7 @@ jest.mock('../../../services/prisonRegisterService')
 
 const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
 
-describe(CheckAllReferralInformationPresenter, () => {
+describe(CheckAnswersPresenter, () => {
   const parameterisedDraftReferralFactory = draftReferralFactory.params({
     serviceUser: {
       crn: 'X862134',
@@ -64,7 +64,7 @@ describe(CheckAllReferralInformationPresenter, () => {
     const referral = parameterisedDraftReferralFactory.build({
       personCurrentLocationType: CurrentLocationType.community,
     })
-    const presenter = new CheckAllReferralInformationPresenter(
+    const presenter = new CheckAnswersPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
       conviction,
@@ -74,20 +74,32 @@ describe(CheckAllReferralInformationPresenter, () => {
 
     describe('title', () => {
       it('returns the section title', () => {
-        expect(presenter.serviceUserDetailsSection.title).toEqual('Alex River’s personal details')
+        expect(presenter.serviceUserDetailsSection.title).toEqual('Alex’s personal details')
       })
     })
 
     describe('summary', () => {
       it('returns the service user’s details', () => {
         expect(presenter.serviceUserDetailsSection.summary).toEqual([
+          { key: 'CRN', lines: ['X862134'] },
+          { key: 'Title', lines: ['Mr'] },
           { key: 'First name', lines: ['Alex'] },
           { key: 'Last name', lines: ['River'] },
-          { key: 'Date of birth', lines: ['1 Jan 1980 (43 years old)'] },
-          { key: 'Gender', lines: ['Male'] },
+          { key: 'Date of birth', lines: ['1 January 1980'] },
+          { key: 'Location at time of referral', lines: ['Community'] },
           {
             key: 'Address',
             lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
+            listStyle: ListStyle.noMarkers,
+          },
+          { key: 'Gender', lines: ['Male'] },
+          { key: 'Ethnicity', lines: ['British'] },
+          { key: 'Preferred language', lines: ['English'] },
+          { key: 'Religion or belief', lines: ['Agnostic'] },
+          { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
+          {
+            key: 'Email address',
+            lines: ['alex.river@example.com'],
             listStyle: ListStyle.noMarkers,
           },
           {
@@ -95,15 +107,6 @@ describe(CheckAllReferralInformationPresenter, () => {
             lines: ['0123456789'],
             listStyle: ListStyle.noMarkers,
           },
-          {
-            key: 'Email address',
-            lines: ['alex.river@example.com'],
-            listStyle: ListStyle.noMarkers,
-          },
-          { key: 'Ethnicity', lines: ['British'] },
-          { key: 'Preferred language', lines: ['English'] },
-          { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
-          { key: 'Religion or belief', lines: ['Agnostic'] },
         ])
       })
     })
@@ -114,7 +117,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
       additionalRiskInformation: 'Past assault of strangers',
     })
-    const presenter = new CheckAllReferralInformationPresenter(
+    const presenter = new CheckAnswersPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
       conviction,
@@ -142,7 +145,7 @@ describe(CheckAllReferralInformationPresenter, () => {
   describe('needsAndRequirementsSection', () => {
     describe('title', () => {
       const referral = parameterisedDraftReferralFactory.build()
-      const presenter = new CheckAllReferralInformationPresenter(
+      const presenter = new CheckAnswersPresenter(
         referral,
         interventionFactory.build({ serviceCategories }),
         conviction,
@@ -161,7 +164,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           additionalNeedsInformation: 'Some additional needs information',
         })
-        const presenter = new CheckAllReferralInformationPresenter(
+        const presenter = new CheckAnswersPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
@@ -183,7 +186,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           accessibilityNeeds: 'Some accessibility needs information',
         })
-        const presenter = new CheckAllReferralInformationPresenter(
+        const presenter = new CheckAnswersPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
@@ -206,7 +209,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             needsInterpreter: false,
           })
-          const presenter = new CheckAllReferralInformationPresenter(
+          const presenter = new CheckAnswersPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -227,7 +230,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             needsInterpreter: true,
             interpreterLanguage: 'Spanish',
           })
-          const presenter = new CheckAllReferralInformationPresenter(
+          const presenter = new CheckAnswersPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -251,7 +254,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             hasAdditionalResponsibilities: false,
           })
-          const presenter = new CheckAllReferralInformationPresenter(
+          const presenter = new CheckAnswersPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -272,7 +275,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             hasAdditionalResponsibilities: true,
             whenUnavailable: 'Alex can’t attend on Fridays',
           })
-          const presenter = new CheckAllReferralInformationPresenter(
+          const presenter = new CheckAnswersPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -338,13 +341,7 @@ describe(CheckAllReferralInformationPresenter, () => {
     const intervention = interventionFactory.build({
       serviceCategories: [accommodationServiceCategory, eteServiceCategory, serviceCategoryFactory.build()],
     })
-    const presenter = new CheckAllReferralInformationPresenter(
-      referral,
-      intervention,
-      conviction,
-      deliusServiceUser,
-      prisonList
-    )
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
 
     it('contains a section for each service category in the referral', () => {
       expect(presenter.referralDetailsSections).toMatchObject([
@@ -403,13 +400,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           serviceCategoryIds: [accommodationServiceCategory.id],
         })
 
-        const presenter = new CheckAllReferralInformationPresenter(
-          referral,
-          intervention,
-          conviction,
-          deliusServiceUser,
-          prisonList
-        )
+        const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
 
         expect(presenter.serviceCategoriesSummary).toBeNull()
       })
@@ -427,24 +418,15 @@ describe(CheckAllReferralInformationPresenter, () => {
         })
 
         it('lists the service categories chosen in the referral', () => {
-          const presenter = new CheckAllReferralInformationPresenter(
-            referral,
-            intervention,
-            conviction,
-            deliusServiceUser,
-            prisonList
-          )
-          expect(presenter.serviceCategoriesSummary).toEqual({
-            title: 'Service categories',
-            summary: [
-              {
-                key: 'Selected service categories',
-                lines: ['Accommodation'],
-                listStyle: ListStyle.noMarkers,
-                changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
-              },
-            ],
-          })
+          const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
+          expect(presenter.serviceCategoriesSummary).toEqual([
+            {
+              key: 'Selected service categories',
+              lines: ['Accommodation'],
+              listStyle: ListStyle.noMarkers,
+              changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
+            },
+          ])
         })
       })
 
@@ -455,24 +437,15 @@ describe(CheckAllReferralInformationPresenter, () => {
         })
 
         it('lists the service categories chosen in the referral', () => {
-          const presenter = new CheckAllReferralInformationPresenter(
-            referral,
-            intervention,
-            conviction,
-            deliusServiceUser,
-            prisonList
-          )
-          expect(presenter.serviceCategoriesSummary).toEqual({
-            title: 'Service categories',
-            summary: [
-              {
-                key: 'Selected service categories',
-                lines: ['Accommodation', 'Education, training and employment'],
-                listStyle: ListStyle.noMarkers,
-                changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
-              },
-            ],
-          })
+          const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
+          expect(presenter.serviceCategoriesSummary).toEqual([
+            {
+              key: 'Selected service categories',
+              lines: ['Accommodation', 'Education, training and employment'],
+              listStyle: ListStyle.noMarkers,
+              changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
+            },
+          ])
         })
       })
     })
@@ -496,7 +469,7 @@ describe(CheckAllReferralInformationPresenter, () => {
     })
 
     it('returns information about the conviction', () => {
-      const presenter = new CheckAllReferralInformationPresenter(
+      const presenter = new CheckAnswersPresenter(
         referral,
         intervention,
         assaultConviction,
@@ -504,26 +477,23 @@ describe(CheckAllReferralInformationPresenter, () => {
         prisonList
       )
 
-      expect(presenter.sentenceInformationSummary).toEqual({
-        title: 'Sentence Information',
-        summary: [
-          {
-            key: 'Sentence',
-            lines: ['Common and other types of assault'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
-          },
-          {
-            key: 'Subcategory',
-            lines: ['Common assault and battery'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
-          },
-          {
-            key: 'End of sentence date',
-            lines: ['15 September 2025'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
-          },
-        ],
-      })
+      expect(presenter.sentenceInformationSummary).toEqual([
+        {
+          key: 'Sentence',
+          lines: ['Common and other types of assault'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+        },
+        {
+          key: 'Subcategory',
+          lines: ['Common assault and battery'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+        },
+        {
+          key: 'End of sentence date',
+          lines: ['15 September 2025'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+        },
+      ])
     })
   })
 
@@ -533,13 +503,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
       completionDeadline: '2021-10-24',
     })
-    const presenter = new CheckAllReferralInformationPresenter(
-      referral,
-      intervention,
-      conviction,
-      deliusServiceUser,
-      prisonList
-    )
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
 
     describe('title', () => {
       it('includes the contract type name', () => {
@@ -567,7 +531,7 @@ describe(CheckAllReferralInformationPresenter, () => {
     })
 
     it('states the maximum number of enforceable days to use', () => {
-      const presenter = new CheckAllReferralInformationPresenter(
+      const presenter = new CheckAnswersPresenter(
         referral,
         interventionFactory.build({ serviceCategories }),
         conviction,
@@ -575,16 +539,13 @@ describe(CheckAllReferralInformationPresenter, () => {
         prisonList
       )
 
-      expect(presenter.enforceableDaysSummary).toEqual({
-        title: 'Enforceable days',
-        summary: [
-          {
-            key: 'Maximum number of enforceable days',
-            lines: ['15'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/enforceable-days',
-          },
-        ],
-      })
+      expect(presenter.enforceableDaysSummary).toEqual([
+        {
+          key: 'Maximum number of enforceable days',
+          lines: ['15'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/enforceable-days',
+        },
+      ])
     })
   })
 
@@ -596,7 +557,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       })
 
       it('contains the referral’s further information', () => {
-        const presenter = new CheckAllReferralInformationPresenter(
+        const presenter = new CheckAnswersPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
@@ -604,16 +565,13 @@ describe(CheckAllReferralInformationPresenter, () => {
           prisonList
         )
 
-        expect(presenter.furtherInformationSummary).toEqual({
-          title: 'Further information',
-          summary: [
-            {
-              key: 'Further information for the provider',
-              lines: ['Some further information'],
-              changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
-            },
-          ],
-        })
+        expect(presenter.furtherInformationSummary).toEqual([
+          {
+            key: 'Further information for the provider',
+            lines: ['Some further information'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
+          },
+        ])
       })
     })
 
@@ -624,7 +582,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       })
 
       it('states that there is no further information', () => {
-        const presenter = new CheckAllReferralInformationPresenter(
+        const presenter = new CheckAnswersPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
@@ -632,16 +590,13 @@ describe(CheckAllReferralInformationPresenter, () => {
           prisonList
         )
 
-        expect(presenter.furtherInformationSummary).toEqual({
-          title: 'Further information',
-          summary: [
-            {
-              key: 'Further information for the provider',
-              lines: ['None'],
-              changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
-            },
-          ],
-        })
+        expect(presenter.furtherInformationSummary).toEqual([
+          {
+            key: 'Further information for the provider',
+            lines: ['None'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
+          },
+        ])
       })
     })
   })

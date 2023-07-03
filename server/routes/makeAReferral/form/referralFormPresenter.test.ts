@@ -24,7 +24,7 @@ describe('ReferralFormPresenter', () => {
               referralFormSectionFactory
                 .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
                 .build(),
-              referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
             ]
             expect(presenter.sections).toEqual(expected)
           })
@@ -42,7 +42,7 @@ describe('ReferralFormPresenter', () => {
               referralFormSectionFactory
                 .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
                 .build(),
-              referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
             ]
             expect(presenter.sections).toEqual(expected)
           })
@@ -59,7 +59,7 @@ describe('ReferralFormPresenter', () => {
                 referralFormSectionFactory
                   .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
                   .build(),
-                referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+                referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
               ]
               expect(presenter.sections).toEqual(expected)
             })
@@ -82,7 +82,7 @@ describe('ReferralFormPresenter', () => {
                 referralFormSectionFactory
                   .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
                   .build(),
-                referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+                referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
               ]
               expect(presenter.sections).toEqual(expected)
             })
@@ -104,7 +104,7 @@ describe('ReferralFormPresenter', () => {
                 referralFormSectionFactory
                   .interventionDetails('accommodation', ReferralFormStatus.CannotStartYet)
                   .build(),
-                referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+                referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
               ]
               expect(presenter.sections).toEqual(expected)
             })
@@ -128,7 +128,7 @@ describe('ReferralFormPresenter', () => {
                 referralFormSectionFactory
                   .interventionDetails('accommodation', ReferralFormStatus.NotStarted, 'relevant-sentence')
                   .build(),
-                referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+                referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
               ]
               expect(presenter.sections).toEqual(expected)
             })
@@ -151,7 +151,7 @@ describe('ReferralFormPresenter', () => {
                 referralFormSectionFactory
                   .interventionDetails('accommodation', ReferralFormStatus.NotStarted, 'relevant-sentence')
                   .build(),
-                referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+                referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
               ]
               expect(presenter.sections).toEqual(expected)
             })
@@ -181,7 +181,7 @@ describe('ReferralFormPresenter', () => {
                   `service-category/${serviceCategory.id}/desired-outcomes`
                 )
                 .build(),
-              referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
             ]
             expect(presenter.sections).toEqual(expected)
           })
@@ -212,7 +212,7 @@ describe('ReferralFormPresenter', () => {
                   `service-category/${serviceCategory.id}/complexity-level`
                 )
                 .build(),
-              referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
             ]
             expect(presenter.sections).toEqual(expected)
           })
@@ -245,7 +245,7 @@ describe('ReferralFormPresenter', () => {
                   'enforceable-days'
                 )
                 .build(),
-              referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
             ]
             expect(presenter.sections).toEqual(expected)
           })
@@ -275,7 +275,7 @@ describe('ReferralFormPresenter', () => {
                   'completion-deadline'
                 )
                 .build(),
-              referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
             ]
             expect(presenter.sections).toEqual(expected)
           })
@@ -306,7 +306,7 @@ describe('ReferralFormPresenter', () => {
                   'further-information'
                 )
                 .build(),
-              referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+              referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
             ]
             expect(presenter.sections).toEqual(expected)
           })
@@ -338,8 +338,8 @@ describe('ReferralFormPresenter', () => {
                 )
                 .build(),
               referralFormSectionFactory
-                .checkAllReferralInformation(ReferralFormStatus.NotStarted)
-                .build({ tasks: [{ title: 'Check referral information', url: 'check-all-referral-information' }] }),
+                .checkAnswers(ReferralFormStatus.NotStarted)
+                .build({ tasks: [{ title: 'Check your answers', url: 'check-answers' }] }),
             ]
             expect(presenter.sections).toEqual(expected)
           })
@@ -366,7 +366,7 @@ describe('ReferralFormPresenter', () => {
             referralFormSectionFactory
               .interventionDetails('accommodation', ReferralFormStatus.NotStarted, 'relevant-sentence', null, null)
               .build(),
-            referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet).build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet).build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -407,9 +407,7 @@ describe('ReferralFormPresenter', () => {
               )
               .build(),
             referralFormSectionFactory.disabledCohortInterventionDetails('Accommodation').build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -438,9 +436,7 @@ describe('ReferralFormPresenter', () => {
               )
               .build(),
             referralFormSectionFactory.disabledCohortInterventionDetails('Accommodation').build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -485,9 +481,7 @@ describe('ReferralFormPresenter', () => {
                 { title: 'social inclusion', complexityLevelUrl: null, desiredOutcomesUrl: null },
               ])
               .build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -525,9 +519,7 @@ describe('ReferralFormPresenter', () => {
                 { title: 'social inclusion', complexityLevelUrl: null, desiredOutcomesUrl: null },
               ])
               .build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -564,9 +556,7 @@ describe('ReferralFormPresenter', () => {
                 { title: 'social inclusion', complexityLevelUrl: null, desiredOutcomesUrl: null },
               ])
               .build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -606,9 +596,7 @@ describe('ReferralFormPresenter', () => {
                 { title: 'social inclusion', complexityLevelUrl: null, desiredOutcomesUrl: null },
               ])
               .build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -653,9 +641,7 @@ describe('ReferralFormPresenter', () => {
                 },
               ])
               .build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -701,9 +687,7 @@ describe('ReferralFormPresenter', () => {
                 },
               ])
               .build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -754,9 +738,7 @@ describe('ReferralFormPresenter', () => {
                 'enforceable-days'
               )
               .build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -804,9 +786,7 @@ describe('ReferralFormPresenter', () => {
                 'completion-deadline'
               )
               .build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -855,9 +835,7 @@ describe('ReferralFormPresenter', () => {
                 'further-information'
               )
               .build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.CannotStartYet, null, '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.CannotStartYet, null, '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })
@@ -906,9 +884,7 @@ describe('ReferralFormPresenter', () => {
                 'further-information'
               )
               .build(),
-            referralFormSectionFactory
-              .checkAllReferralInformation(ReferralFormStatus.NotStarted, 'check-all-referral-information', '4')
-              .build(),
+            referralFormSectionFactory.checkAnswers(ReferralFormStatus.NotStarted, 'check-answers', '4').build(),
           ]
           expect(presenter.sections).toEqual(expected)
         })

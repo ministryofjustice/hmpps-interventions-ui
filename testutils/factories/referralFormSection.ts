@@ -93,17 +93,17 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
     })
   }
 
-  checkAllReferralInformation(
+  checkAnswers(
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
     checkAnswersUrl: string | null = null,
     sectionNumber = '3'
   ) {
     return this.params({
       type: 'single',
-      title: 'Check all referral information and submit referral',
+      title: 'Check your answers',
       number: sectionNumber,
       status: referralFormStatus,
-      tasks: [{ title: 'Check referral information', url: checkAnswersUrl }],
+      tasks: [{ title: 'Check your answers', url: checkAnswersUrl }],
     })
   }
 }

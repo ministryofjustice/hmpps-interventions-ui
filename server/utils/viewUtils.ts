@@ -106,61 +106,6 @@ export default class ViewUtils {
     }
   }
 
-  static summaryListArgsWithSummaryCard(
-    summaryListItems: SummaryListItem[],
-    heading: string | null | undefined = null,
-    options: { showBorders: boolean; showTitle: boolean } = { showBorders: true, showTitle: true }
-  ): SummaryListArgs {
-    return {
-      card: (() => {
-        if (options.showTitle) {
-          return {
-            title: {
-              text: heading,
-            },
-          }
-        }
-        return null
-      })(),
-      classes: options.showBorders ? undefined : 'govuk-summary-list--no-border',
-      rows: summaryListItems.map((item, index) => {
-        return {
-          key: {
-            text: item.key,
-          },
-          value: (() => {
-            if (item.listStyle !== undefined) {
-              const itemClass = `govuk-list${item.listStyle === ListStyle.bulleted ? ' govuk-list--bullet' : ''}`
-              const html = `<ul class="${itemClass}">${item.lines
-                .map(line => `<li>${ViewUtils.summaryListItemLine(line)}</li>`)
-                .join('\n')}</ul>`
-              return { html }
-            }
-
-            const html = item.lines
-              .map(line => `<p class="govuk-body">${ViewUtils.nl2br(ViewUtils.summaryListItemLine(line))}</p>`)
-              .join('\n')
-            return { html }
-          })(),
-          actions: (() => {
-            if (item.changeLink) {
-              return {
-                items: [
-                  {
-                    href: item.changeLink,
-                    text: 'Change',
-                    attributes: { id: `change-link-${index}` },
-                  },
-                ],
-              }
-            }
-            return null
-          })(),
-        }
-      }),
-    }
-  }
-
   static sortableTable(
     persistentId: string,
     headers: SortableTableHeaders,
