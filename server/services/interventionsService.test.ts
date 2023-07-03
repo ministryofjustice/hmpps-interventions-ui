@@ -3782,13 +3782,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         '58963698-0f2e-4d6e-a072-0e2cf351f3b2',
         {
           attended: 'late',
-          additionalAttendanceInformation: 'Alex missed the bus',
         }
       )
       expect(result.appointmentFeedback!.attendanceFeedback!.attended).toEqual('late')
-      expect(result.appointmentFeedback!.attendanceFeedback!.additionalAttendanceInformation).toEqual(
-        'Alex missed the bus'
-      )
     })
   })
 
