@@ -75,12 +75,12 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
         },
         probationPractitionerPduSelect: {
           label: 'PDU (probation delivery input)',
-          hint: `Start typing then choose from the list.`,
+          hint: `Start typing, then choose from the list.`,
           errorMessage: null,
         },
         probationPractitionerOfficeSelect: {
           label: 'Which probation office are they in? (If known)',
-          hint: `Start typing then choose from the list.`,
+          hint: `Start typing, then choose from the list.`,
         },
       })
     })

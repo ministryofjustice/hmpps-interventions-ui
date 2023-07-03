@@ -132,7 +132,7 @@ export default {
   confirmProbationPractitionerDetails: {
     emptyRadio: 'Select yes or no',
     emptyName: `Enter name of probation practitioner`,
-    emptyPdu: `Enter the PDU`,
+    emptyPdu: `Enter PDU`,
     invalidEmail: `Enter an email address in the correct format`,
   },
   interpreterLanguageWithoutName: {

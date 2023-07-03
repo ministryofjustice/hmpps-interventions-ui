@@ -62,27 +62,27 @@ export default class CheckAllReferralInformationPresenter {
       return null
     }
     return {
-      title: `Probation practitioner details`,
+      title: `Probation Practitioner Details`,
       summary: [
         {
           key: 'Name',
           lines: [this.referral.ppName || this.referral.ndeliusPPName || ''],
-          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details`,
         },
         {
           key: 'Email address',
           lines: [this.referral.ppEmailAddress || this.referral.ndeliusPPEmailAddress || ''],
-          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details`,
         },
         {
-          key: 'PDU (probation delivery unit)',
+          key: 'PDU(probation delivery unit)',
           lines: [this.referral.ppPdu || this.referral.ndeliusPDU || ''],
-          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details`,
         },
         {
           key: 'Probation office',
           lines: [this.referral.ppProbationOffice || ''],
-          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details`,
         },
       ],
     }

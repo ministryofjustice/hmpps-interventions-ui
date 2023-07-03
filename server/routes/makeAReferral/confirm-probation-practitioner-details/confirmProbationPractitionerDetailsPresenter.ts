@@ -64,12 +64,12 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
     },
     probationPractitionerPduSelect: {
       label: 'PDU (probation delivery input)',
-      hint: `Start typing then choose from the list.`,
+      hint: `Start typing, then choose from the list.`,
       errorMessage: this.errorMessageForField('probation-practitioner-pdu'),
     },
     probationPractitionerOfficeSelect: {
       label: 'Which probation office are they in? (If known)',
-      hint: `Start typing then choose from the list.`,
+      hint: `Start typing, then choose from the list.`,
     },
   }
 
