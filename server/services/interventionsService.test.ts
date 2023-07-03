@@ -3742,13 +3742,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         appointmentFeedback: {
           attendanceFeedback: {
             attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
+            additionalAttendanceInformation: null,
           },
           sessionFeedback: {
-            sessionSummary: '',
-            sessionResponse: '',
+            sessionSummary: null,
+            sessionResponse: null,
             sessionConcerns: null,
-            notifyProbationPractitioner: false,
+            notifyProbationPractitioner: null,
           },
           submitted: false,
           submittedBy: null,
@@ -3765,7 +3765,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           path: '/referral/58963698-0f2e-4d6e-a072-0e2cf351f3b2/supplier-assessment/record-attendance',
           body: {
             attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
           },
           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
