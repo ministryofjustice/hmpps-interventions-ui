@@ -206,6 +206,10 @@ export default class DashboardPresenter {
   })
 
   private static hrefForViewing(referralSummary: SentReferralSummaries): string {
+    if (referralSummary.assignedTo?.username === null || referralSummary.assignedTo?.username === undefined) {
+      return `/service-provider/referrals/${referralSummary.id}/details`
+    }
+
     return `/service-provider/referrals/${referralSummary.id}/progress`
   }
 

@@ -101,7 +101,7 @@ describe(DashboardPresenter, () => {
             {
               text: 'Hardip Fraiser:X123456',
               sortValue: 'fraiser, hardip',
-              href: '/service-provider/referrals/2/progress',
+              href: '/service-provider/referrals/2/details',
               doubleCell: true,
             },
             { text: 'ABCABCA2', sortValue: null, href: null },
@@ -187,7 +187,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Hardip Fraiser:X123456',
                 sortValue: 'fraiser, hardip',
-                href: '/service-provider/referrals/2/progress',
+                href: '/service-provider/referrals/2/details',
                 doubleCell: true,
               },
               { text: 'N/A', sortValue: null, href: null },
@@ -235,7 +235,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Hardip Fraiser:X123456',
                 sortValue: 'fraiser, hardip',
-                href: '/service-provider/referrals/2/progress',
+                href: '/service-provider/referrals/2/details',
                 doubleCell: true,
               },
               { text: 'ABCABCA2', sortValue: null, href: null },

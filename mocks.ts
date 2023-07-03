@@ -21,7 +21,6 @@ import deliusServiceUser from './testutils/factories/deliusServiceUser'
 import PrisonRegisterServiceMocks from './mockApis/prisonRegisterService'
 import PrisonerOffenderSearchMocks from './mockApis/prisonerOffenderSearch'
 import ReferAndMonitorAndDeliusMocks from './mockApis/referAndMonitorAndDelius'
-import deliusUserAccess from './testutils/factories/deliusUserAccess'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
@@ -195,6 +194,5 @@ export default async function setUpMocks(): Promise<void> {
     prisonRegisterServiceMocks.stubGetPrisons(prisonFactory.prisonList()),
     prisonerOffenderSearchMocks.stubGetPrisonerById(prisonerFactory.build()),
     referAndMonitorAndDeliusMocks.stubSentReferral(),
-    referAndMonitorAndDeliusMocks.stubGetCrnUserAccess(deliusUserAccess.build()),
   ])
 }
