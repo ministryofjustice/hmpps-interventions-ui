@@ -5,13 +5,11 @@ import CommunityApiMocks from '../../mockApis/communityApi'
 import InterventionsServiceMocks from '../../mockApis/interventionsService'
 import AssessRisksAndNeedsServiceMocks from '../../mockApis/assessRisksAndNeedsService'
 import PrisonRegisterServiceMocks from '../../mockApis/prisonRegisterService'
-import ReferAndMonitorAndDeliusMocks from '../../mockApis/referAndMonitorAndDelius'
 
 const wiremock = new Wiremock('http://localhost:9091/__admin')
 const auth = new AuthServiceMocks(wiremock)
 const tokenVerification = new TokenVerificationMocks(wiremock)
 const communityApi = new CommunityApiMocks(wiremock, '/community-api')
-const ramDeliusApi = new ReferAndMonitorAndDeliusMocks(wiremock, '/refer-and-monitor-and-delius')
 const interventionsService = new InterventionsServiceMocks(wiremock, '/interventions')
 const assessRisksAndNeedsService = new AssessRisksAndNeedsServiceMocks(wiremock, '/assess-risks-and-needs')
 const prisonRegisterService = new PrisonRegisterServiceMocks(wiremock, '/prison-register-service')
@@ -49,10 +47,6 @@ export default on => {
 
     stubGetPrisons: arg => {
       return prisonRegisterService.stubGetPrisons(arg.responseJson)
-    },
-
-    stubGetResponsibleOfficer: arg => {
-      return ramDeliusApi.stubGetResponsibleOfficer(arg.responseJson)
     },
 
     stubGetUserByUsername: arg => {

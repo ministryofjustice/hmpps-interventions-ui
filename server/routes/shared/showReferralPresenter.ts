@@ -2,7 +2,6 @@ import SentReferral from '../../models/sentReferral'
 import DeliusUser from '../../models/delius/deliusUser'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
-import config from '../../config'
 import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../makeAReferral/service-user-details/serviceUserDetailsPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
@@ -23,14 +22,11 @@ import RoshPanelPresenter from './roshPanelPresenter'
 import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import DateUtils from '../../utils/dateUtils'
 import Prison from '../../models/prisonRegister/prison'
-import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
 
   roshPanelPresenter: RoshPanelPresenter
-
-  supplementaryRiskInformationView: ArnRiskSummaryView
 
   constructor(
     private readonly sentReferral: SentReferral,
@@ -56,60 +52,14 @@ export default class ShowReferralPresenter {
       userType,
       dashboardOriginPage
     )
+
     this.roshPanelPresenter = new RoshPanelPresenter(riskSummary)
-    this.supplementaryRiskInformationView = new ArnRiskSummaryView(riskSummary, riskInformation)
   }
 
   readonly assignmentFormAction = `/service-provider/referrals/${this.sentReferral.id}/assignment/start`
 
-  readonly interventionDetailsHeading = 'Intervention details'
-
-  get serviceUserNames(): string {
-    return `${utils.convertToTitleCase(
-      `${this.sentReferral.referral.serviceUser.firstName} ${this.sentReferral.referral.serviceUser.lastName}`
-    )}`
-  }
-
-  get serviceUserDetailsHeading(): string {
-    return `Personal details`
-  }
-
-  get serviceUserNeedsHeading(): string {
-    return `Service user needs`
-  }
-
-  get interventionHeading(): string {
-    return `${this.intervention.contractType.name} service`
-  }
-
-  get probationPractitionerDetailsHeading(): string {
-    return `${this.serviceUserNames}'s probation practitioner`
-  }
-
-  get roshInformationHeading(): string {
-    return `${this.serviceUserNames}'s risk of serious harm(RoSH) levels`
-  }
-
-  get serviceUserLocationDetailsHeading(): string {
-    if (this.sentReferral.referral.personCurrentLocationType === 'COMMUNITY')
-      return `${this.serviceUserNames}'s location`
-    return `${this.serviceUserNames}'s location and expected release date`
-  }
-
-  get responsibleOfficerDetailsHeading(): string {
-    return `${this.serviceUserNames}'s responsible officer details`
-  }
-
-  get riskInformationHeading(): string {
-    return `${this.serviceUserNames}'s risk information`
-  }
-
-  get contactDetailsHeading(): string {
-    return 'Address and contact details'
-  }
-
   readonly text = {
-    title: `${this.serviceUserNames}: referral details`,
+    title: `${utils.convertToTitleCase(this.intervention.contractType.name)}: referral details`,
     errorMessage: PresenterUtils.errorMessage(this.assignEmailError, 'email'),
     noCaseworkerAssigned: 'This intervention is not yet assigned to a caseworker.',
   }
@@ -133,17 +83,6 @@ export default class ShowReferralPresenter {
   readonly probationPractitionerDetails: SummaryListItem[] = [
     { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`] },
     { key: 'Email address', lines: [this.sentBy.email ?? ''] },
-    {
-      key:
-        this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-          ? 'Probation Office'
-          : 'PDU (Probation Delivery Unit)',
-      lines: [
-        this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-          ? this.sentReferral.referral.ppProbationOffice
-          : this.sentReferral.referral.ndeliusPDU || '',
-      ],
-    },
   ]
 
   get responsibleOfficersDetails(): SummaryListItem[] {
@@ -296,10 +235,10 @@ export default class ShowReferralPresenter {
         lines: [sentencePresenter.endOfSentenceDate],
       },
       {
-        key: 'Date intervention to be completed by',
+        key: 'Date to be completed by',
         lines: [
           this.sentReferral.referral.completionDeadline
-            ? DateUtils.formattedDate(this.sentReferral.referral.completionDeadline, { month: 'short' })
+            ? DateUtils.formattedDate(this.sentReferral.referral.completionDeadline)
             : '',
         ],
         changeLink:
@@ -341,60 +280,16 @@ export default class ShowReferralPresenter {
     ]
   }
 
-  get serviceUserDetails(): ServiceUserDetailsPresenter {
+  get serviceUserDetails(): SummaryListItem[] {
     return new ServiceUserDetailsPresenter(
       this.sentReferral.referral.serviceUser,
       this.deliusServiceUser,
       this.prisons,
-      this.sentReferral.id,
       this.sentReferral.referral.personCurrentLocationType,
       this.sentReferral.referral.personCustodyPrisonId,
       this.sentReferral.referral.expectedReleaseDate,
       this.sentReferral.referral.expectedReleaseDateMissingReason
-    )
-  }
-
-  get personalDetailSummary(): SummaryListItem[] {
-    return this.serviceUserDetails.personalDetailsSummary
-  }
-
-  get contactDetailsSummary(): SummaryListItem[] {
-    return this.serviceUserDetails.contactDetailsSummary
-  }
-
-  get serviceUserLocationDetails(): SummaryListItem[] {
-    const { personCurrentLocationType } = this.sentReferral.referral
-
-    if (config.featureFlags.custodyLocationEnabled) {
-      if (personCurrentLocationType === 'CUSTODY') {
-        const currentPrisonName = this.getPrisonName(this.sentReferral.referral.personCustodyPrisonId)
-        const expectedReleaseInfo: string =
-          this.sentReferral.referral.expectedReleaseDate !== ''
-            ? this.sentReferral.referral.expectedReleaseDate!
-            : this.sentReferral.referral.expectedReleaseDateMissingReason!
-        return [
-          {
-            key: 'Location at time of referral',
-            lines: [personCurrentLocationType ? utils.convertToProperCase(personCurrentLocationType) : ''],
-          },
-          {
-            key: 'Current establishment',
-            lines: [this.sentReferral.referral.personCustodyPrisonId ? currentPrisonName : ''],
-          },
-          {
-            key: 'Expected release date',
-            lines: [expectedReleaseInfo],
-          },
-        ]
-      }
-    }
-
-    return [
-      {
-        key: 'Location at time of referral',
-        lines: [personCurrentLocationType ? utils.convertToProperCase(personCurrentLocationType) : ''],
-      },
-    ]
+    ).summary
   }
 
   get serviceUserRisks(): SummaryListItem[] {
@@ -450,9 +345,5 @@ export default class ShowReferralPresenter {
         lines: [this.sentReferral.referral.whenUnavailable || 'N/A'],
       },
     ]
-  }
-
-  private getPrisonName(prisonId: string | null): string {
-    return this.prisons.find(prison => prison.prisonId === prisonId)?.prisonName || ''
   }
 }

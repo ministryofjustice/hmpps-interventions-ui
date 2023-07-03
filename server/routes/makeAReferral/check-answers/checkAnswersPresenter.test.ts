@@ -1,4 +1,4 @@
-import CheckAllReferralInformationPresenter from './checkAllReferralInformationPresenter'
+import CheckAnswersPresenter from './checkAnswersPresenter'
 import draftReferralFactory from '../../../../testutils/factories/draftReferral'
 import serviceCategoryFactory from '../../../../testutils/factories/serviceCategory'
 import interventionFactory from '../../../../testutils/factories/intervention'
@@ -15,7 +15,7 @@ jest.mock('../../../services/prisonRegisterService')
 
 const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
 
-describe(CheckAllReferralInformationPresenter, () => {
+describe(CheckAnswersPresenter, () => {
   const parameterisedDraftReferralFactory = draftReferralFactory.params({
     serviceUser: {
       crn: 'X862134',
@@ -64,7 +64,7 @@ describe(CheckAllReferralInformationPresenter, () => {
     const referral = parameterisedDraftReferralFactory.build({
       personCurrentLocationType: CurrentLocationType.community,
     })
-    const presenter = new CheckAllReferralInformationPresenter(
+    const presenter = new CheckAnswersPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
       conviction,
@@ -74,20 +74,32 @@ describe(CheckAllReferralInformationPresenter, () => {
 
     describe('title', () => {
       it('returns the section title', () => {
-        expect(presenter.serviceUserDetailsSection.title).toEqual('Alex River’s personal details')
+        expect(presenter.serviceUserDetailsSection.title).toEqual('Alex’s personal details')
       })
     })
 
     describe('summary', () => {
       it('returns the service user’s details', () => {
         expect(presenter.serviceUserDetailsSection.summary).toEqual([
+          { key: 'CRN', lines: ['X862134'] },
+          { key: 'Title', lines: ['Mr'] },
           { key: 'First name', lines: ['Alex'] },
-          { key: 'Last name(s)', lines: ['River'] },
-          { key: 'Date of birth', lines: ['1 Jan 1980 (43 years old)'] },
-          { key: 'Gender', lines: ['Male'] },
+          { key: 'Last name', lines: ['River'] },
+          { key: 'Date of birth', lines: ['1 January 1980'] },
+          { key: 'Location at time of referral', lines: ['Community'] },
           {
             key: 'Address',
             lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
+            listStyle: ListStyle.noMarkers,
+          },
+          { key: 'Gender', lines: ['Male'] },
+          { key: 'Ethnicity', lines: ['British'] },
+          { key: 'Preferred language', lines: ['English'] },
+          { key: 'Religion or belief', lines: ['Agnostic'] },
+          { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
+          {
+            key: 'Email address',
+            lines: ['alex.river@example.com'],
             listStyle: ListStyle.noMarkers,
           },
           {
@@ -95,180 +107,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             lines: ['0123456789'],
             listStyle: ListStyle.noMarkers,
           },
-          {
-            key: 'Email address',
-            lines: ['alex.river@example.com'],
-            listStyle: ListStyle.noMarkers,
-          },
-          { key: 'Ethnicity', lines: ['British'] },
-          { key: 'Preferred language', lines: ['English'] },
-          { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
-          { key: 'Religion or belief', lines: ['Agnostic'] },
         ])
-      })
-    })
-  })
-
-  describe('probationPractitionerDetails section', () => {
-    describe('probationPractitionerDetails with valid user inputted data', () => {
-      const referral = parameterisedDraftReferralFactory.build({
-        personCurrentLocationType: CurrentLocationType.community,
-        ndeliusPPName: 'Victor Drake',
-        ndeliusPPEmailAddress: 'a.b@xyz.com',
-        ndeliusPDU: 'London',
-        ppName: null,
-        ppEmailAddress: null,
-        ppPdu: null,
-        ppProbationOffice: 'London',
-        hasValidDeliusPPDetails: null,
-      })
-      const presenter = new CheckAllReferralInformationPresenter(
-        referral,
-        interventionFactory.build({ serviceCategories }),
-        conviction,
-        deliusServiceUser,
-        prisonList
-      )
-
-      describe('title', () => {
-        it('returns the probation practitioner details title', () => {
-          expect(presenter.probationPractitionerDetailSection?.title).toEqual('Probation practitioner details')
-        })
-      })
-
-      describe('summary', () => {
-        it('returns the probation practitioner details', () => {
-          expect(presenter.probationPractitionerDetailSection?.summary).toEqual([
-            {
-              key: 'Name',
-              lines: ['Victor Drake'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'Email address',
-              lines: ['a.b@xyz.com'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'PDU (Probation Delivery Unit)',
-              lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'Probation office',
-              lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-          ])
-        })
-      })
-    })
-
-    describe('probationPractitionerDetails with valid delius data', () => {
-      const referral = parameterisedDraftReferralFactory.build({
-        personCurrentLocationType: CurrentLocationType.community,
-        ndeliusPPName: 'Victor Drake',
-        ndeliusPPEmailAddress: 'a.b@xyz.com',
-        ndeliusPDU: 'London',
-        ppName: 'Victor Shelby',
-        ppEmailAddress: 'a.c@abc.com',
-        ppPdu: 'Nottingham',
-        ppProbationOffice: 'London',
-        hasValidDeliusPPDetails: null,
-      })
-      const presenter = new CheckAllReferralInformationPresenter(
-        referral,
-        interventionFactory.build({ serviceCategories }),
-        conviction,
-        deliusServiceUser,
-        prisonList
-      )
-
-      describe('title', () => {
-        it('returns the probation practitioner details title', () => {
-          expect(presenter.probationPractitionerDetailSection?.title).toEqual('Probation practitioner details')
-        })
-      })
-
-      describe('summary', () => {
-        it('returns the probation practitioner details', () => {
-          expect(presenter.probationPractitionerDetailSection?.summary).toEqual([
-            {
-              key: 'Name',
-              lines: ['Victor Shelby'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'Email address',
-              lines: ['a.c@abc.com'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'PDU (Probation Delivery Unit)',
-              lines: ['Nottingham'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'Probation office',
-              lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-          ])
-        })
-      })
-    })
-
-    describe('probationPractitionerDetails with undefined email and probation office ', () => {
-      const referral = parameterisedDraftReferralFactory.build({
-        personCurrentLocationType: CurrentLocationType.community,
-        ndeliusPPName: 'Victor Drake',
-        ndeliusPPEmailAddress: 'undefined',
-        ndeliusPDU: 'London',
-        ppName: null,
-        ppEmailAddress: null,
-        ppPdu: null,
-        ppProbationOffice: null,
-        hasValidDeliusPPDetails: null,
-      })
-      const presenter = new CheckAllReferralInformationPresenter(
-        referral,
-        interventionFactory.build({ serviceCategories }),
-        conviction,
-        deliusServiceUser,
-        prisonList
-      )
-
-      describe('title', () => {
-        it('returns the probation practitioner details title', () => {
-          expect(presenter.probationPractitionerDetailSection?.title).toEqual('Probation practitioner details')
-        })
-      })
-
-      describe('summary', () => {
-        it('returns the probation practitioner details', () => {
-          expect(presenter.probationPractitionerDetailSection?.summary).toEqual([
-            {
-              key: 'Name',
-              lines: ['Victor Drake'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'Email address',
-              lines: ['Not found'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'PDU (Probation Delivery Unit)',
-              lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'Probation office',
-              lines: ['Not provided'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-          ])
-        })
       })
     })
   })
@@ -278,7 +117,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
       additionalRiskInformation: 'Past assault of strangers',
     })
-    const presenter = new CheckAllReferralInformationPresenter(
+    const presenter = new CheckAnswersPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
       conviction,
@@ -306,7 +145,7 @@ describe(CheckAllReferralInformationPresenter, () => {
   describe('needsAndRequirementsSection', () => {
     describe('title', () => {
       const referral = parameterisedDraftReferralFactory.build()
-      const presenter = new CheckAllReferralInformationPresenter(
+      const presenter = new CheckAnswersPresenter(
         referral,
         interventionFactory.build({ serviceCategories }),
         conviction,
@@ -325,7 +164,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           additionalNeedsInformation: 'Some additional needs information',
         })
-        const presenter = new CheckAllReferralInformationPresenter(
+        const presenter = new CheckAnswersPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
@@ -347,7 +186,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           accessibilityNeeds: 'Some accessibility needs information',
         })
-        const presenter = new CheckAllReferralInformationPresenter(
+        const presenter = new CheckAnswersPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
           conviction,
@@ -370,7 +209,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             needsInterpreter: false,
           })
-          const presenter = new CheckAllReferralInformationPresenter(
+          const presenter = new CheckAnswersPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -391,7 +230,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             needsInterpreter: true,
             interpreterLanguage: 'Spanish',
           })
-          const presenter = new CheckAllReferralInformationPresenter(
+          const presenter = new CheckAnswersPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -415,7 +254,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
             hasAdditionalResponsibilities: false,
           })
-          const presenter = new CheckAllReferralInformationPresenter(
+          const presenter = new CheckAnswersPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -436,7 +275,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             hasAdditionalResponsibilities: true,
             whenUnavailable: 'Alex can’t attend on Fridays',
           })
-          const presenter = new CheckAllReferralInformationPresenter(
+          const presenter = new CheckAnswersPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
             conviction,
@@ -502,13 +341,7 @@ describe(CheckAllReferralInformationPresenter, () => {
     const intervention = interventionFactory.build({
       serviceCategories: [accommodationServiceCategory, eteServiceCategory, serviceCategoryFactory.build()],
     })
-    const presenter = new CheckAllReferralInformationPresenter(
-      referral,
-      intervention,
-      conviction,
-      deliusServiceUser,
-      prisonList
-    )
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
 
     it('contains a section for each service category in the referral', () => {
       expect(presenter.referralDetailsSections).toMatchObject([
@@ -567,13 +400,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           serviceCategoryIds: [accommodationServiceCategory.id],
         })
 
-        const presenter = new CheckAllReferralInformationPresenter(
-          referral,
-          intervention,
-          conviction,
-          deliusServiceUser,
-          prisonList
-        )
+        const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
 
         expect(presenter.serviceCategoriesSummary).toBeNull()
       })
@@ -591,24 +418,15 @@ describe(CheckAllReferralInformationPresenter, () => {
         })
 
         it('lists the service categories chosen in the referral', () => {
-          const presenter = new CheckAllReferralInformationPresenter(
-            referral,
-            intervention,
-            conviction,
-            deliusServiceUser,
-            prisonList
-          )
-          expect(presenter.serviceCategoriesSummary).toEqual({
-            title: 'Service categories',
-            summary: [
-              {
-                key: 'Selected service categories',
-                lines: ['Accommodation'],
-                listStyle: ListStyle.noMarkers,
-                changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
-              },
-            ],
-          })
+          const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
+          expect(presenter.serviceCategoriesSummary).toEqual([
+            {
+              key: 'Selected service categories',
+              lines: ['Accommodation'],
+              listStyle: ListStyle.noMarkers,
+              changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
+            },
+          ])
         })
       })
 
@@ -619,30 +437,23 @@ describe(CheckAllReferralInformationPresenter, () => {
         })
 
         it('lists the service categories chosen in the referral', () => {
-          const presenter = new CheckAllReferralInformationPresenter(
-            referral,
-            intervention,
-            conviction,
-            deliusServiceUser,
-            prisonList
-          )
-          expect(presenter.serviceCategoriesSummary).toEqual({
-            title: 'Service categories',
-            summary: [
-              {
-                key: 'Selected service categories',
-                lines: ['Accommodation', 'Education, training and employment'],
-                listStyle: ListStyle.noMarkers,
-                changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
-              },
-            ],
-          })
+          const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
+          expect(presenter.serviceCategoriesSummary).toEqual([
+            {
+              key: 'Selected service categories',
+              lines: ['Accommodation', 'Education, training and employment'],
+              listStyle: ListStyle.noMarkers,
+              changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
+            },
+          ])
         })
       })
     })
   })
 
   describe('sentenceInformationSummary', () => {
+    const referral = parameterisedDraftReferralFactory.build({ id: '03e9e6cd-a45f-4dfc-adad-06301349042e' })
+    const intervention = interventionFactory.build()
     const assaultConviction = deliusConvictionFactory.build({
       offences: [
         deliusOffenceFactory.build({
@@ -658,14 +469,7 @@ describe(CheckAllReferralInformationPresenter, () => {
     })
 
     it('returns information about the conviction', () => {
-      const intervention = interventionFactory.build({ contractType: { name: 'Women’s services' } })
-      const referral = parameterisedDraftReferralFactory.build({
-        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
-        completionDeadline: '2021-10-24',
-        maximumEnforceableDays: 15,
-        furtherInformation: 'Some further information',
-      })
-      const presenter = new CheckAllReferralInformationPresenter(
+      const presenter = new CheckAnswersPresenter(
         referral,
         intervention,
         assaultConviction,
@@ -673,40 +477,126 @@ describe(CheckAllReferralInformationPresenter, () => {
         prisonList
       )
 
-      expect(presenter.sentenceInformationSummary).toEqual({
-        title: 'Sentence Information',
-        summary: [
+      expect(presenter.sentenceInformationSummary).toEqual([
+        {
+          key: 'Sentence',
+          lines: ['Common and other types of assault'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+        },
+        {
+          key: 'Subcategory',
+          lines: ['Common assault and battery'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+        },
+        {
+          key: 'End of sentence date',
+          lines: ['15 September 2025'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+        },
+      ])
+    })
+  })
+
+  describe('completionDeadlineSection', () => {
+    const intervention = interventionFactory.build({ contractType: { name: 'Women’s services' } })
+    const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+      completionDeadline: '2021-10-24',
+    })
+    const presenter = new CheckAnswersPresenter(referral, intervention, conviction, deliusServiceUser, prisonList)
+
+    describe('title', () => {
+      it('includes the contract type name', () => {
+        expect(presenter.completionDeadlineSection.title).toEqual('Women’s services completion date')
+      })
+    })
+
+    describe('summary', () => {
+      it('returns information about the completion deadline', () => {
+        expect(presenter.completionDeadlineSection.summary).toEqual([
           {
-            key: 'Sentence',
-            lines: ['Common and other types of assault'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
-          },
-          {
-            key: 'Subcategory',
-            lines: ['Common assault and battery'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
-          },
-          {
-            key: 'End of sentence date',
-            lines: ['15 Sept 2025'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
-          },
-          {
-            key: 'Maximum number of enforceable days',
-            lines: ['15'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/enforceable-days',
-          },
-          {
-            key: 'Date intervention to be completed by',
-            lines: ['24 Oct 2021'],
+            key: 'Date',
+            lines: ['24 October 2021'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/completion-deadline',
           },
+        ])
+      })
+    })
+  })
+
+  describe('enforceableDaysSummary', () => {
+    const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+      maximumEnforceableDays: 15,
+    })
+
+    it('states the maximum number of enforceable days to use', () => {
+      const presenter = new CheckAnswersPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        conviction,
+        deliusServiceUser,
+        prisonList
+      )
+
+      expect(presenter.enforceableDaysSummary).toEqual([
+        {
+          key: 'Maximum number of enforceable days',
+          lines: ['15'],
+          changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/enforceable-days',
+        },
+      ])
+    })
+  })
+
+  describe('furtherInformationSummary', () => {
+    describe('when the referral’s further information is not empty', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+        furtherInformation: 'Some further information',
+      })
+
+      it('contains the referral’s further information', () => {
+        const presenter = new CheckAnswersPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          conviction,
+          deliusServiceUser,
+          prisonList
+        )
+
+        expect(presenter.furtherInformationSummary).toEqual([
           {
-            key: 'Further information for the service provider',
+            key: 'Further information for the provider',
             lines: ['Some further information'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
           },
-        ],
+        ])
+      })
+    })
+
+    describe('when the referral’s further information is empty', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+        furtherInformation: '',
+      })
+
+      it('states that there is no further information', () => {
+        const presenter = new CheckAnswersPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          conviction,
+          deliusServiceUser,
+          prisonList
+        )
+
+        expect(presenter.furtherInformationSummary).toEqual([
+          {
+            key: 'Further information for the provider',
+            lines: ['None'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
+          },
+        ])
       })
     })
   })

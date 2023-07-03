@@ -168,106 +168,13 @@ describe('ViewUtils', () => {
       })
     })
 
-    it('returns a summary list for service user details args object for passing to the govukSummaryList macro', () => {
-      expect(
-        ViewUtils.summaryListArgsWithSummaryCard(
-          [
-            { key: 'Risks', lines: ['No risk'], changeLink: '/risks' },
-            { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.noMarkers },
-            { key: 'Needs', lines: ['Accommodation', 'Social inclusion'], listStyle: ListStyle.bulleted },
-            { key: 'Gender', lines: ['Male'] },
-            { key: 'Address', lines: ['Flat 2', '27 Test Walk', 'SY16 1AQ'] },
-            {
-              key: 'AuthUserDetailsLine',
-              lines: [
-                hmppsAuthUserFactory.build({ firstName: 'firstName', lastName: 'lastName', email: 'user@email.com' }),
-              ],
-            },
-          ],
-          'Personal Details',
-          { showBorders: true, showTitle: true }
-        )
-      ).toEqual({
-        card: {
-          title: {
-            text: 'Personal Details',
-          },
-        },
-        classes: undefined,
-        rows: [
-          {
-            key: {
-              text: 'Risks',
-            },
-            value: {
-              html: '<p class="govuk-body">No risk</p>',
-            },
-            actions: {
-              items: [
-                {
-                  href: '/risks',
-                  text: 'Change',
-                  attributes: { id: `change-link-0` },
-                },
-              ],
-            },
-          },
-          {
-            key: {
-              text: 'Needs',
-            },
-            value: {
-              html: `<ul class="govuk-list"><li>Accommodation</li>\n<li>Social inclusion</li></ul>`,
-            },
-            actions: null,
-          },
-          {
-            key: {
-              text: 'Needs',
-            },
-            value: {
-              html: `<ul class="govuk-list govuk-list--bullet"><li>Accommodation</li>\n<li>Social inclusion</li></ul>`,
-            },
-            actions: null,
-          },
-          {
-            key: {
-              text: 'Gender',
-            },
-            value: {
-              html: '<p class="govuk-body">Male</p>',
-            },
-            actions: null,
-          },
-          {
-            key: {
-              text: 'Address',
-            },
-            value: {
-              html: '<p class="govuk-body">Flat 2</p>\n<p class="govuk-body">27 Test Walk</p>\n<p class="govuk-body">SY16 1AQ</p>',
-            },
-            actions: null,
-          },
-          {
-            key: {
-              text: 'AuthUserDetailsLine',
-            },
-            value: {
-              html: '<p class="govuk-body">firstName lastName (<a href="mailto: user@email.com">user@email.com</a>)</p>',
-            },
-            actions: null,
-          },
-        ],
-      })
-    })
-  })
-
-  describe('with provided options', () => {
-    describe('when show borders is set to false', () => {
-      it('should add a hide borders class', () => {
-        expect(ViewUtils.summaryListArgs([], { showBorders: false })).toEqual({
-          classes: 'govuk-summary-list--no-border',
-          rows: [],
+    describe('with provided options', () => {
+      describe('when show borders is set to false', () => {
+        it('should add a hide borders class', () => {
+          expect(ViewUtils.summaryListArgs([], { showBorders: false })).toEqual({
+            classes: 'govuk-summary-list--no-border',
+            rows: [],
+          })
         })
       })
     })

@@ -4,7 +4,6 @@ import pageFactory from '../../../testutils/factories/page'
 import { Page } from '../../models/pagination'
 import SentReferralSummariesFactory from '../../../testutils/factories/sentReferralSummaries'
 import SentReferralSummaries from '../../models/sentReferralSummaries'
-import prisonFactory from '../../../testutils/factories/prison'
 
 describe(DashboardPresenter, () => {
   const loggedInUser = loggedInUserFactory.crsServiceProviderUser().build()
@@ -18,9 +17,6 @@ describe(DashboardPresenter, () => {
         firstName: 'rob',
         lastName: 'shah-brookes',
       },
-      expectedReleaseDate: '2023-07-29',
-      location: 'aaa',
-      locationType: 'CUSTODY',
     }),
     SentReferralSummariesFactory.unassigned().build({
       id: '2',
@@ -46,22 +42,13 @@ describe(DashboardPresenter, () => {
   describe('tableHeadings', () => {
     it('persistentId is the database sort field', () => {
       const page = pageFactory.pageContent([]).build() as Page<SentReferralSummaries>
-      const prisons = prisonFactory.prisonList()
-      const presenter = new DashboardPresenter(
-        page,
-        'My cases',
-        loggedInUser,
-        'tableId',
-        'sentAt,DESC',
-        true,
-        'abc',
-        prisons
-      )
+      const presenter = new DashboardPresenter(page, 'My cases', loggedInUser, 'tableId', 'sentAt,DESC', true, 'abc')
       expect(presenter.tableHeadings.map(headers => headers.persistentId)).toEqual([
-        'serviceUserData.lastName',
-        'referenceNumber',
-        'intervention.title',
         'sentAt',
+        'referenceNumber',
+        'serviceUserData.lastName',
+        'intervention.title',
+        null,
       ])
     })
   })
@@ -71,7 +58,6 @@ describe(DashboardPresenter, () => {
     describe.each(displayCaseworkerDashboardTypes)('with %s dashboard type', dashboardType => {
       it('returns the table’s rows', () => {
         const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
-        const prisons = prisonFactory.prisonList()
 
         const presenter = new DashboardPresenter(
           page,
@@ -80,54 +66,49 @@ describe(DashboardPresenter, () => {
           'tableId',
           'sentAt,DESC',
           true,
-          'abc',
-          prisons
+          'abc'
         )
 
         expect(presenter.tableRows).toEqual([
           [
-            {
-              text: 'Rob Shah-Brookes:X123456',
-              sortValue: 'shah-brookes, rob',
-              href: '/service-provider/referrals/1/progress',
-              doubleCell: true,
-            },
+            { text: '26 Jan 2021', sortValue: '2021-01-26', href: null },
             { text: 'ABCABCA1', sortValue: null, href: null },
+            { text: 'Rob Shah-Brookes', sortValue: 'shah-brookes, rob', href: null },
             { text: 'Accommodation Services - West Midlands', sortValue: null, href: null },
             { text: 'UserABC', sortValue: 'UserABC', href: null },
-            { text: '26 Jan 2021', sortValue: '2021-01-26', href: null },
-          ],
-          [
             {
-              text: 'Hardip Fraiser:X123456',
-              sortValue: 'fraiser, hardip',
-              href: '/service-provider/referrals/2/progress',
-              doubleCell: true,
-            },
-            { text: 'ABCABCA2', sortValue: null, href: null },
-            {
-              text: "Women's Services - West Midlands",
+              text: 'View',
               sortValue: null,
-              href: null,
+              href: '/service-provider/referrals/1/progress',
             },
-            { text: '', sortValue: 'Unassigned', href: null },
-            { text: '14 Oct 2020', sortValue: '2020-10-14', href: null },
           ],
           [
+            { text: '14 Oct 2020', sortValue: '2020-10-14', href: null },
+            { text: 'ABCABCA2', sortValue: null, href: null },
+            { text: 'Hardip Fraiser', sortValue: 'fraiser, hardip', href: null },
+            { text: "Women's Services - West Midlands", sortValue: null, href: null },
+            { text: '', sortValue: 'Unassigned', href: null },
             {
-              text: 'Jenny Catherine:X123456',
-              sortValue: 'catherine, jenny',
-              href: '/service-provider/referrals/3/progress',
-              doubleCell: true,
+              text: 'View',
+              sortValue: null,
+              href: '/service-provider/referrals/2/details',
             },
+          ],
+          [
+            { text: '13 Oct 2020', sortValue: '2020-10-13', href: null },
             { text: 'ABCABCA3', sortValue: null, href: null },
+            { text: 'Jenny Catherine', sortValue: 'catherine, jenny', href: null },
             {
               text: 'Accommodation Services - West Midlands',
               sortValue: null,
               href: null,
             },
             { text: 'UserABC', sortValue: 'UserABC', href: null },
-            { text: '13 Oct 2020', sortValue: '2020-10-13', href: null },
+            {
+              text: 'View',
+              sortValue: null,
+              href: '/service-provider/referrals/3/progress',
+            },
           ],
         ])
       })
@@ -135,7 +116,6 @@ describe(DashboardPresenter, () => {
       describe('when a referral has been assigned to a caseworker', () => {
         it('includes the caseworker’s username', () => {
           const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
-          const prisons = prisonFactory.prisonList()
           const presenter = new DashboardPresenter(
             page,
             dashboardType,
@@ -143,11 +123,10 @@ describe(DashboardPresenter, () => {
             'tableId',
             'sentAt,DESC',
             true,
-            'abc',
-            prisons
+            'abc'
           )
 
-          expect(presenter.tableRows[0][3]).toMatchObject({ text: 'UserABC' })
+          expect(presenter.tableRows[0][4]).toMatchObject({ text: 'UserABC' })
         })
       })
     })
@@ -156,7 +135,6 @@ describe(DashboardPresenter, () => {
     describe.each(dontDisplayCaseworkerDashboardTypes)('with %s dashboard type', dashboardType => {
       it('does not display the case worker column', () => {
         const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
-        const prisons = prisonFactory.prisonList()
         const presenter = new DashboardPresenter(
           page,
           dashboardType,
@@ -164,105 +142,53 @@ describe(DashboardPresenter, () => {
           'tableId',
           'sentAt,DESC',
           true,
-          'abc',
-          prisons
+          'abc'
         )
 
-        if (dashboardType === 'Unassigned cases') {
-          expect(presenter.tableRows).toEqual([
-            [
-              {
-                text: 'Rob Shah-Brookes:X123456',
-                sortValue: 'shah-brookes, rob',
-                href: '/service-provider/referrals/1/progress',
-                doubleCell: true,
-              },
-              { text: '29 Jul 2023', sortValue: null, href: null },
-              { text: 'London', sortValue: null, href: null },
-              { text: 'ABCABCA1', sortValue: null, href: null },
-              { text: 'Accommodation Services - West Midlands', sortValue: null, href: null },
-              { text: '26 Jan 2021', sortValue: '2021-01-26', href: null },
-            ],
-            [
-              {
-                text: 'Hardip Fraiser:X123456',
-                sortValue: 'fraiser, hardip',
-                href: '/service-provider/referrals/2/progress',
-                doubleCell: true,
-              },
-              { text: 'N/A', sortValue: null, href: null },
-              { text: 'London', sortValue: null, href: null },
-              { text: 'ABCABCA2', sortValue: null, href: null },
-              {
-                text: "Women's Services - West Midlands",
-                sortValue: null,
-                href: null,
-              },
-              { text: '14 Oct 2020', sortValue: '2020-10-14', href: null },
-            ],
-            [
-              {
-                text: 'Jenny Catherine:X123456',
-                sortValue: 'catherine, jenny',
-                href: '/service-provider/referrals/3/progress',
-                doubleCell: true,
-              },
-              { text: 'N/A', sortValue: null, href: null },
-              { text: 'London', sortValue: null, href: null },
-              { text: 'ABCABCA3', sortValue: null, href: null },
-              {
-                text: 'Accommodation Services - West Midlands',
-                sortValue: null,
-                href: null,
-              },
-              { text: '13 Oct 2020', sortValue: '2020-10-13', href: null },
-            ],
-          ])
-        } else {
-          expect(presenter.tableRows).toEqual([
-            [
-              {
-                text: 'Rob Shah-Brookes:X123456',
-                sortValue: 'shah-brookes, rob',
-                href: '/service-provider/referrals/1/progress',
-                doubleCell: true,
-              },
-              { text: 'ABCABCA1', sortValue: null, href: null },
-              { text: 'Accommodation Services - West Midlands', sortValue: null, href: null },
-              { text: '26 Jan 2021', sortValue: '2021-01-26', href: null },
-            ],
-            [
-              {
-                text: 'Hardip Fraiser:X123456',
-                sortValue: 'fraiser, hardip',
-                href: '/service-provider/referrals/2/progress',
-                doubleCell: true,
-              },
-              { text: 'ABCABCA2', sortValue: null, href: null },
-              {
-                text: "Women's Services - West Midlands",
-                sortValue: null,
-                href: null,
-              },
-              { text: '14 Oct 2020', sortValue: '2020-10-14', href: null },
-            ],
-            [
-              {
-                text: 'Jenny Catherine:X123456',
-                sortValue: 'catherine, jenny',
-                href: '/service-provider/referrals/3/progress',
-                doubleCell: true,
-              },
-              { text: 'ABCABCA3', sortValue: null, href: null },
-              {
-                text: 'Accommodation Services - West Midlands',
-                sortValue: null,
-                href: null,
-              },
-              { text: '13 Oct 2020', sortValue: '2020-10-13', href: null },
-            ],
-          ])
-        }
+        expect(presenter.tableRows).toEqual([
+          [
+            { text: '26 Jan 2021', sortValue: '2021-01-26', href: null },
+            { text: 'ABCABCA1', sortValue: null, href: null },
+            { text: 'Rob Shah-Brookes', sortValue: 'shah-brookes, rob', href: null },
+            { text: 'Accommodation Services - West Midlands', sortValue: null, href: null },
+            { text: 'View', sortValue: null, href: `/service-provider/referrals/1/progress` },
+          ],
+          [
+            { text: '14 Oct 2020', sortValue: '2020-10-14', href: null },
+            { text: 'ABCABCA2', sortValue: null, href: null },
+            { text: 'Hardip Fraiser', sortValue: 'fraiser, hardip', href: null },
+            { text: "Women's Services - West Midlands", sortValue: null, href: null },
+            { text: 'View', sortValue: null, href: '/service-provider/referrals/2/details' },
+          ],
+          [
+            { text: '13 Oct 2020', sortValue: '2020-10-13', href: null },
+            { text: 'ABCABCA3', sortValue: null, href: null },
+            { text: 'Jenny Catherine', sortValue: 'catherine, jenny', href: null },
+            { text: 'Accommodation Services - West Midlands', sortValue: null, href: null },
+            { text: 'View', sortValue: null, href: '/service-provider/referrals/3/progress' },
+          ],
+        ])
+      })
+    })
+  })
+
+  describe('the View link', () => {
+    describe('when a referral has been assigned to a caseworker', () => {
+      it('links to the intervention progress page', () => {
+        const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+        const presenter = new DashboardPresenter(
+          page,
+          'All open cases',
+          loggedInUser,
+          'tableId',
+          'sentAt,DESC',
+          true,
+          'abc'
+        )
+
+        expect(presenter.tableRows[0][5]).toMatchObject({
+          href: `/service-provider/referrals/1/progress`,
+        })
       })
     })
   })

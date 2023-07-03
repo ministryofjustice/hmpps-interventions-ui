@@ -13,7 +13,4 @@ export default interface SentReferralSummaries {
   serviceUser: ServiceUser
   supplementaryRiskId: string
   concludedAt: string | null
-  expectedReleaseDate: string | null
-  location: string | null
-  locationType: string | null
 }

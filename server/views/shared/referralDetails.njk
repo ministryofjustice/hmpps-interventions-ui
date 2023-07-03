@@ -29,35 +29,92 @@
         <p class="govuk-body">{{ presenter.text.noCaseworkerAssigned }}</p>
       {% endif %}
 
+      <h2 class="govuk-heading-m">Intervention details</h2>
       {{ govukSummaryList(interventionDetailsSummaryListArgs) }}
 
       {%  for section in serviceCategorySections %}
+        <h2 class="govuk-heading-m">{{ section.name | capitalize }} service</h2>
         {{ govukSummaryList(section.summaryListArgs(govukTag)) }}
       {% endfor %}
-      {%  if responsibleOfficerSummaryListArgs | length %}
-          {{ govukSummaryList(responsibleOfficerSummaryListArgs) }}
-      {% else %}
-          <p class="govuk-body">No responsible officer details found in nDelius. Email notifications for this referral will be sent to the referring officer.</p>
-      {% endif %}     
 
-      {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
-
-      {{ govukSummaryList(serviceUserLocationDetailsSummaryListArgs) }}
-
+      <h2 class="govuk-heading-m">The person on probation's details</h2>
       {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
 
-      {{ govukSummaryList(contactDetailsSummaryListArgs) }}
+      <h2 class="govuk-heading-m">Their risk information</h2>
 
       {% if presenter.roshPanelPresenter.riskInformationAvailable %}
-        {{govukSummaryList(roshInformationArgs)}}
+
+        <p class="govuk-body">This shows their Risk of Serious Harm (ROSH) levels. Additional information from the probation practitioner may also be shown.</p>
+
+        {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
+
+        {{ govukDetails(riskLevelDetailsArgs) }}
+
       {% endif %}
 
       {% if presenter.canShowFullSupplementaryRiskInformation %}
-         {{ govukSummaryList(riskInformationArgs) }}
+         <h2 class="govuk-heading-m">Who is at risk</h2>
+         {% if supplementaryRiskInformation.summary.whoIsAtRisk.label %}
+             <p class="govuk-body {{ supplementaryRiskInformation.summary.whoIsAtRisk.label.class}}">{{ supplementaryRiskInformation.summary.whoIsAtRisk.label.text }}</p>
+         {% endif %}
+         <p class="govuk-body">{{ supplementaryRiskInformation.summary.whoIsAtRisk.text | escape | nl2br }}</p>
+         <hr/>
+
+         <h2 class="govuk-heading-m">What is the nature of the risk</h2>
+         {% if supplementaryRiskInformation.summary.natureOfRisk.label %}
+             <p class="govuk-body {{supplementaryRiskInformation.summary.natureOfRisk.label.class}}">{{ supplementaryRiskInformation.summary.natureOfRisk.label.text }}</p>
+         {% endif %}
+         <p class="govuk-body">{{ supplementaryRiskInformation.summary.natureOfRisk.text | escape | nl2br }}</p>
+         <hr/>
+
+         <h2 class="govuk-heading-m">When is the risk likely to be greatest</h2>
+         {% if supplementaryRiskInformation.summary.riskImminence.label %}
+             <p class="govuk-body {{supplementaryRiskInformation.summary.riskImminence.label.class}}">{{ supplementaryRiskInformation.summary.riskImminence.label.text }}</p>
+         {% endif %}
+         <p class="govuk-body">{{ supplementaryRiskInformation.summary.riskImminence.text | escape | nl2br }}</p>
+         <hr/>
+
+         <h2 class="govuk-heading-m">Concerns in relation to self-harm</h2>
+         <p class="govuk-body {{ supplementaryRiskInformation.riskToSelf.selfHarm.label.class }}"> {{ supplementaryRiskInformation.riskToSelf.selfHarm.label.text }}</p>
+         <p class="govuk-body">{{ supplementaryRiskInformation.riskToSelf.selfHarm.text | escape | nl2br }}</p>
+         <hr/>
+
+         <h2 class="govuk-heading-m">Concerns in relation to suicide</h2>
+         <p class="govuk-body {{ supplementaryRiskInformation.riskToSelf.suicide.label.class }}"> {{ supplementaryRiskInformation.riskToSelf.suicide.label.text }}</p>
+         <p class="govuk-body">{{ supplementaryRiskInformation.riskToSelf.suicide.text | escape | nl2br }}</p>
+         <hr/>
+
+         <h2 class="govuk-heading-m">Concerns in relation to coping in a hostel setting</h2>
+         <p class="govuk-body {{ supplementaryRiskInformation.riskToSelf.hostelSetting.label.class }}"> {{ supplementaryRiskInformation.riskToSelf.hostelSetting.label.text }}</p>
+         <p class="govuk-body">{{ supplementaryRiskInformation.riskToSelf.hostelSetting.text | escape | nl2br }}</p>
+         <hr/>
+
+         <h2 class="govuk-heading-m">Concerns in relation to vulnerability</h2>
+         <p class="govuk-body {{ supplementaryRiskInformation.riskToSelf.vulnerability.label.class }}"> {{ supplementaryRiskInformation.riskToSelf.vulnerability.label.text }}</p>
+         <p class="govuk-body">{{ supplementaryRiskInformation.riskToSelf.vulnerability.text | escape | nl2br }}</p>
+         <hr/>
+
+         <h2 class="govuk-heading-m">Additional information</h2>
+         {% if supplementaryRiskInformation.additionalRiskInformation.label %}
+             <p class="govuk-body {{ supplementaryRiskInformation.additionalRiskInformation.label.class }}">{{ supplementaryRiskInformation.additionalRiskInformation.label.text }}</p>
+         {% endif %}
+         <p class="govuk-body">{{ supplementaryRiskInformation.additionalRiskInformation.text | escape | nl2br }}</p>
       {% else %}
         {{ govukSummaryList(serviceUserRisksSummaryListArgs) }}
       {% endif %}
 
+
+      <h2 class="govuk-heading-m">Service user's needs</h2>
       {{ govukSummaryList(serviceUserNeedsSummaryListArgs) }}
+
+      <h2 class="govuk-heading-m">Responsible officer details</h2>
+      {%  if responsibleOfficerSummaryListArgs | length %}
+          {{ govukSummaryList(responsibleOfficerSummaryListArgs) }}
+      {% else %}
+          <p class="govuk-body">No responsible officer details found in nDelius. Email notifications for this referral will be sent to the referring officer.</p>
+      {% endif %}
+
+      <h2 class="govuk-heading-m">Referring probation practitioner details</h2>
+      {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
 
 {% endblock %}
