@@ -688,7 +688,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           },
           {
             key: 'End of sentence date',
-            lines: ['15 Sept 2025'],
+            lines: ['15 September 2025'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
           },
           {
@@ -698,7 +698,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           },
           {
             key: 'Date intervention to be completed by',
-            lines: ['24 Oct 2021'],
+            lines: ['24 October 2021'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/completion-deadline',
           },
           {
