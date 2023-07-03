@@ -63,7 +63,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       errorMessage: this.errorMessageForField('probation-practitioner-email'),
     },
     probationPractitionerPduSelect: {
-      label: 'PDU (probation delivery unit)',
+      label: 'PDU (probation delivery input)',
       hint: `Start typing then choose from the list.`,
       errorMessage: this.errorMessageForField('probation-practitioner-pdu'),
     },
