@@ -71,7 +71,7 @@ export default class CheckAllReferralInformationPresenter {
         },
         {
           key: 'Email address',
-          lines: [this.deriveEmailAddress],
+          lines: [this.referral.ppEmailAddress || this.referral.ndeliusPPEmailAddress || 'Not found'],
           changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
         },
         {
@@ -86,16 +86,6 @@ export default class CheckAllReferralInformationPresenter {
         },
       ],
     }
-  }
-
-  get deriveEmailAddress(): string {
-    if (this.referral.ppEmailAddress) {
-      return this.referral.ppEmailAddress
-    }
-    if (this.referral.ndeliusPPEmailAddress && this.referral.ndeliusPPEmailAddress.toLowerCase() !== 'undefined') {
-      return this.referral.ndeliusPPEmailAddress
-    }
-    return 'Not found'
   }
 
   get riskSection(): { title: string; summary: SummaryListItem[] } {
