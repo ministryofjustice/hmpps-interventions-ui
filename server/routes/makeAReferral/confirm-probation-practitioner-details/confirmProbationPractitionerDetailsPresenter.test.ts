@@ -74,7 +74,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           errorMessage: null,
         },
         probationPractitionerPduSelect: {
-          label: 'PDU (Probation Delivery Unit)',
+          label: 'PDU (probation delivery unit)',
           hint: `Start typing then choose from the list.`,
           errorMessage: null,
         },

@@ -58,7 +58,7 @@ export default class ServiceUserDetailsPresenter {
   get personalDetailsSummary(): SummaryListItem[] {
     const summary: SummaryListItem[] = [
       { key: 'First name', lines: [this.serviceUser.firstName ?? ''] },
-      { key: 'Last name(s)', lines: [this.serviceUser.lastName ?? ''] },
+      { key: 'Last name', lines: [this.serviceUser.lastName ?? ''] },
       {
         key: 'Date of birth',
         lines: [this.dateOfBirthWithShortMonth ? `${this.dateOfBirthWithShortMonth} (${this.age} years old)` : ''],
@@ -123,7 +123,7 @@ export default class ServiceUserDetailsPresenter {
     const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
     const summary: SummaryListItem[] = [
       { key: 'First name', lines: [this.serviceUser.firstName ?? ''] },
-      { key: 'Last name(s)', lines: [this.serviceUser.lastName ?? ''] },
+      { key: 'Last name', lines: [this.serviceUser.lastName ?? ''] },
       {
         key: 'Date of birth',
         lines: [this.dateOfBirthWithShortMonth ? `${this.dateOfBirthWithShortMonth} (${this.age} years old)` : ''],

@@ -38,7 +38,7 @@ export default class ConfirmProbationPractitionerDetailsView {
     return {
       id: 'probation-practitioner-name',
       name: 'probation-practitioner-name',
-      classes: 'govuk-input--width-20',
+      classes: 'govuk-!-width-one-third',
       label: {
         text: this.presenter.text.probationPractitionerName.label,
       },
@@ -51,7 +51,7 @@ export default class ConfirmProbationPractitionerDetailsView {
     return {
       id: 'probation-practitioner-email',
       name: 'probation-practitioner-email',
-      classes: 'govuk-input--width-20',
+      classes: 'govuk-!-width-one-third',
       label: {
         text: this.presenter.text.probationPractitionerEmail.label,
       },

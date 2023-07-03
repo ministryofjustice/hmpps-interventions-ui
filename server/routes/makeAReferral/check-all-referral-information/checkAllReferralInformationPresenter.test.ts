@@ -82,7 +82,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       it('returns the service user’s details', () => {
         expect(presenter.serviceUserDetailsSection.summary).toEqual([
           { key: 'First name', lines: ['Alex'] },
-          { key: 'Last name(s)', lines: ['River'] },
+          { key: 'Last name', lines: ['River'] },
           { key: 'Date of birth', lines: ['1 Jan 1980 (43 years old)'] },
           { key: 'Gender', lines: ['Male'] },
           {
@@ -479,6 +479,8 @@ describe(CheckAllReferralInformationPresenter, () => {
   })
 
   describe('sentenceInformationSummary', () => {
+    const referral = parameterisedDraftReferralFactory.build({ id: '03e9e6cd-a45f-4dfc-adad-06301349042e' })
+    const intervention = interventionFactory.build()
     const assaultConviction = deliusConvictionFactory.build({
       offences: [
         deliusOffenceFactory.build({
@@ -494,13 +496,6 @@ describe(CheckAllReferralInformationPresenter, () => {
     })
 
     it('returns information about the conviction', () => {
-      const intervention = interventionFactory.build({ contractType: { name: 'Women’s services' } })
-      const referral = parameterisedDraftReferralFactory.build({
-        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
-        completionDeadline: '2021-10-24',
-        maximumEnforceableDays: 15,
-        furtherInformation: 'Some further information',
-      })
       const presenter = new CheckAllReferralInformationPresenter(
         referral,
         intervention,
@@ -527,22 +522,126 @@ describe(CheckAllReferralInformationPresenter, () => {
             lines: ['15 September 2025'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
           },
+        ],
+      })
+    })
+  })
+
+  describe('completionDeadlineSection', () => {
+    const intervention = interventionFactory.build({ contractType: { name: 'Women’s services' } })
+    const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+      completionDeadline: '2021-10-24',
+    })
+    const presenter = new CheckAllReferralInformationPresenter(
+      referral,
+      intervention,
+      conviction,
+      deliusServiceUser,
+      prisonList
+    )
+
+    describe('title', () => {
+      it('includes the contract type name', () => {
+        expect(presenter.completionDeadlineSection.title).toEqual('Women’s services completion date')
+      })
+    })
+
+    describe('summary', () => {
+      it('returns information about the completion deadline', () => {
+        expect(presenter.completionDeadlineSection.summary).toEqual([
+          {
+            key: 'Date',
+            lines: ['24 October 2021'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/completion-deadline',
+          },
+        ])
+      })
+    })
+  })
+
+  describe('enforceableDaysSummary', () => {
+    const referral = parameterisedDraftReferralFactory.build({
+      id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+      maximumEnforceableDays: 15,
+    })
+
+    it('states the maximum number of enforceable days to use', () => {
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        conviction,
+        deliusServiceUser,
+        prisonList
+      )
+
+      expect(presenter.enforceableDaysSummary).toEqual({
+        title: 'Enforceable days',
+        summary: [
           {
             key: 'Maximum number of enforceable days',
             lines: ['15'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/enforceable-days',
           },
-          {
-            key: 'Date intervention to be completed by',
-            lines: ['24 October 2021'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/completion-deadline',
-          },
-          {
-            key: 'Further information for the service provider',
-            lines: ['Some further information'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
-          },
         ],
+      })
+    })
+  })
+
+  describe('furtherInformationSummary', () => {
+    describe('when the referral’s further information is not empty', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+        furtherInformation: 'Some further information',
+      })
+
+      it('contains the referral’s further information', () => {
+        const presenter = new CheckAllReferralInformationPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          conviction,
+          deliusServiceUser,
+          prisonList
+        )
+
+        expect(presenter.furtherInformationSummary).toEqual({
+          title: 'Further information',
+          summary: [
+            {
+              key: 'Further information for the provider',
+              lines: ['Some further information'],
+              changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
+            },
+          ],
+        })
+      })
+    })
+
+    describe('when the referral’s further information is empty', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
+        furtherInformation: '',
+      })
+
+      it('states that there is no further information', () => {
+        const presenter = new CheckAllReferralInformationPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          conviction,
+          deliusServiceUser,
+          prisonList
+        )
+
+        expect(presenter.furtherInformationSummary).toEqual({
+          title: 'Further information',
+          summary: [
+            {
+              key: 'Further information for the provider',
+              lines: ['None'],
+              changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
+            },
+          ],
+        })
       })
     })
   })
