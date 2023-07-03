@@ -3062,7 +3062,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           appointmentFeedback: {
             attendanceFeedback: {
               attended: 'yes',
-              additionalAttendanceInformation: 'attendance information',
             },
             sessionFeedback: {
               sessionSummary: 'stub session summary',
@@ -3799,7 +3798,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         appointmentFeedback: {
           attendanceFeedback: {
             attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
+            additionalAttendanceInformation: null,
           },
           sessionFeedback: {
             sessionSummary: 'Discussed accommodation',
@@ -3862,7 +3861,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         appointmentFeedback: {
           attendanceFeedback: {
             attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
           },
           sessionFeedback: {
             sessionSummary: '',
