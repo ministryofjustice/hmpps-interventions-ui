@@ -133,10 +133,7 @@ export default class ShowReferralPresenter {
   readonly probationPractitionerDetails: SummaryListItem[] = [
     { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`] },
     { key: 'Email address', lines: [this.sentBy.email ?? ''] },
-    {
-      key: this.sentReferral.referral.ppProbationOffice != null ? 'Probation Office' : 'PDU',
-      lines: [this.sentReferral.referral.ppProbationOffice ?? this.sentReferral.referral.ndeliusPDU ?? ''],
-    },
+    { key: 'Probation Office', lines: [this.sentReferral.referral.ppProbationOffice ?? ''] },
   ]
 
   get responsibleOfficersDetails(): SummaryListItem[] {
