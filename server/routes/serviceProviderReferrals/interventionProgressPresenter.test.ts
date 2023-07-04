@@ -9,6 +9,9 @@ import initialAssessmentAppointmentFactory from '../../../testutils/factories/in
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import { SessionStatus } from '../../utils/sessionStatus'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
+import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
+
+const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex', surname: 'River' })
 
 describe(InterventionProgressPresenter, () => {
   describe('referralEnded', () => {
@@ -22,6 +25,7 @@ describe(InterventionProgressPresenter, () => {
         [],
         [],
         supplierAssessmentFactory.build(),
+        serviceUser,
         null
       )
 
@@ -37,6 +41,7 @@ describe(InterventionProgressPresenter, () => {
         [],
         [],
         supplierAssessmentFactory.build(),
+        serviceUser,
         null
       )
 
@@ -55,6 +60,7 @@ describe(InterventionProgressPresenter, () => {
         [],
         [],
         supplierAssessmentFactory.build(),
+        serviceUser,
         null
       )
 
@@ -72,6 +78,7 @@ describe(InterventionProgressPresenter, () => {
         [],
         [],
         supplierAssessmentFactory.build(),
+        serviceUser,
         null
       )
 
@@ -92,6 +99,7 @@ describe(InterventionProgressPresenter, () => {
         [],
         [],
         supplierAssessmentFactory.build(),
+        serviceUser,
         null
       )
 
@@ -114,6 +122,7 @@ describe(InterventionProgressPresenter, () => {
             actionPlanAppointmentFactory.build({ sessionNumber: 1 }),
           ],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
         expect(presenter.sessionTableRows.map(row => row.sessionNumber)).toEqual([1, 2, 3])
@@ -137,6 +146,7 @@ describe(InterventionProgressPresenter, () => {
             actionPlanAppointmentFactory.build({ sessionNumber: 1 }),
           ],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
         expect(actionPlan.numberOfSessions).toEqual(presenter.sessionTableRows.length)
@@ -155,6 +165,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [actionPlanAppointmentFactory.newlyCreated().build()],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
         expect(presenter.sessionTableRows).toEqual([
@@ -192,6 +203,7 @@ describe(InterventionProgressPresenter, () => {
             }),
           ],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
         expect(presenter.sessionTableRows).toEqual([
@@ -233,6 +245,7 @@ describe(InterventionProgressPresenter, () => {
             }),
           ],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
         expect(presenter.sessionTableRows).toEqual([
@@ -266,6 +279,7 @@ describe(InterventionProgressPresenter, () => {
               actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2, id: '2' }),
             ],
             supplierAssessmentFactory.build(),
+            serviceUser,
             null
           )
 
@@ -310,6 +324,7 @@ describe(InterventionProgressPresenter, () => {
               actionPlanAppointmentFactory.attended('late').build({ id: '2', sessionNumber: 1 }),
             ],
             supplierAssessmentFactory.build(),
+            serviceUser,
             null
           )
 
@@ -342,6 +357,7 @@ describe(InterventionProgressPresenter, () => {
             [],
             [actionPlanAppointmentFactory.attended('no').build({ id: '1' })],
             supplierAssessmentFactory.build(),
+            serviceUser,
             null
           )
 
@@ -380,6 +396,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -401,6 +418,7 @@ describe(InterventionProgressPresenter, () => {
             [],
             [],
             supplierAssessmentFactory.build(),
+            serviceUser,
             null
           )
 
@@ -420,6 +438,7 @@ describe(InterventionProgressPresenter, () => {
             [],
             [],
             supplierAssessmentFactory.build(),
+            serviceUser,
             null
           )
 
@@ -439,6 +458,7 @@ describe(InterventionProgressPresenter, () => {
             [],
             [],
             supplierAssessmentFactory.build(),
+            serviceUser,
             null
           )
 
@@ -462,6 +482,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -483,6 +504,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           assignee
         )
 
@@ -505,6 +527,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -526,6 +549,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           assignee
         )
 
@@ -548,6 +572,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -569,6 +594,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           assignee
         )
 
@@ -589,6 +615,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -608,6 +635,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -627,6 +655,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -647,6 +676,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -667,6 +697,7 @@ describe(InterventionProgressPresenter, () => {
             [],
             [],
             supplierAssessmentFactory.build(),
+            serviceUser,
             null
           )
 
@@ -686,6 +717,7 @@ describe(InterventionProgressPresenter, () => {
             [],
             [],
             supplierAssessmentFactory.build(),
+            serviceUser,
             null
           )
 
@@ -707,6 +739,7 @@ describe(InterventionProgressPresenter, () => {
             [],
             [],
             supplierAssessmentFactory.build(),
+            serviceUser,
             null
           )
 
@@ -728,6 +761,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -747,6 +781,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -766,6 +801,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -786,6 +822,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -805,6 +842,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -824,6 +862,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -850,6 +889,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build({ appointments: [firstScheduledAppointment, secondScheduledAppointment] }),
+          serviceUser,
           null
         )
 
@@ -869,6 +909,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentWithNoAppointmentScheduled,
+          serviceUser,
           null
         )
 
@@ -888,6 +929,7 @@ describe(InterventionProgressPresenter, () => {
             [],
             [],
             supplierAssessmentFactory.build({ appointments: [] }),
+            serviceUser,
             null
           )
 
@@ -914,6 +956,7 @@ describe(InterventionProgressPresenter, () => {
               [],
               [],
               supplierAssessmentFactory.withAnAppointment(appointment).build(),
+              serviceUser,
               null
             )
 
@@ -938,6 +981,7 @@ describe(InterventionProgressPresenter, () => {
               [],
               [],
               supplierAssessmentFactory.withAnAppointment(appointment).build(),
+              serviceUser,
               null
             )
 
@@ -963,6 +1007,7 @@ describe(InterventionProgressPresenter, () => {
             [],
             [],
             supplierAssessmentFactory.withAnAppointment(appointment).build(),
+            serviceUser,
             null
           )
 
@@ -988,6 +1033,7 @@ describe(InterventionProgressPresenter, () => {
               [],
               [],
               supplierAssessmentFactory.withAnAppointment(appointment).build({ currentAppointmentId: appointment.id }),
+              serviceUser,
               null
             )
 
@@ -1016,6 +1062,7 @@ describe(InterventionProgressPresenter, () => {
               [],
               [],
               supplierAssessmentFactory.build({ appointments: [appointment] }),
+              serviceUser,
               null
             )
 
@@ -1027,6 +1074,83 @@ describe(InterventionProgressPresenter, () => {
             ])
           })
         })
+      })
+    })
+  })
+
+  describe('sessionFeedbackAddedNotificationBannerText', () => {
+    describe('when feedback has been submitted and user has attended with no concerns', () => {
+      it('shows the feedback banner confirming the probation practitioner will be able to view the feedback in the service', () => {
+        const referral = sentReferralFactory.build()
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          interventionFactory.build(),
+          null,
+          [],
+          [],
+          supplierAssessmentFactory.build(),
+          serviceUser,
+          null,
+          undefined,
+          true,
+          null,
+          false
+        )
+
+        expect(presenter.sessionFeedbackAddedNotificationBannerText).toEqual(
+          'The probation practitioner will be able to view the feedback in the service.'
+        )
+      })
+    })
+
+    describe('when feedback has been submitted and user has attended with concerns', () => {
+      it('shows the feedback banner confirming the probation practitioner has been emailed with about the concerns will be able to view the feedback in the service', () => {
+        const referral = sentReferralFactory.build()
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          interventionFactory.build(),
+          null,
+          [],
+          [],
+          supplierAssessmentFactory.build(),
+          serviceUser,
+          null,
+          undefined,
+          true,
+          true,
+          false
+        )
+
+        expect(presenter.sessionFeedbackAddedNotificationBannerText).toEqual(
+          'The probation practitioner has been emailed about your concerns. They’ll also be able to view the feedback in the service.'
+        )
+      })
+    })
+
+    describe('when feedback has been submitted and user has not attended', () => {
+      it('shows the feedback banner confirming the probation practitioner has been emailed about service users non attendance and will be able to view the feedback in the service', () => {
+        const referral = sentReferralFactory.build()
+
+        const presenter = new InterventionProgressPresenter(
+          referral,
+          interventionFactory.build(),
+          null,
+          [],
+          [],
+          supplierAssessmentFactory.build(),
+          serviceUser,
+          null,
+          undefined,
+          true,
+          null,
+          true
+        )
+
+        expect(presenter.sessionFeedbackAddedNotificationBannerText).toEqual(
+          'The probation practitioner will get an email about Alex River not attending. They’ll also be able to view the feedback in the service.'
+        )
       })
     })
   })
@@ -1043,6 +1167,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.build(),
+          serviceUser,
           null
         )
 
@@ -1064,6 +1189,7 @@ describe(InterventionProgressPresenter, () => {
             [],
             [],
             supplierAssessmentFactory.withAnAppointment(initialAssessmentAppointmentFactory.inThePast.build()).build(),
+            serviceUser,
             null
           )
 
@@ -1086,6 +1212,7 @@ describe(InterventionProgressPresenter, () => {
             supplierAssessmentFactory
               .withAnAppointment(initialAssessmentAppointmentFactory.inTheFuture.build())
               .build(),
+            serviceUser,
             null
           )
 
@@ -1107,6 +1234,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.withAttendedAppointment.build(),
+          serviceUser,
           null
         )
 
@@ -1127,6 +1255,7 @@ describe(InterventionProgressPresenter, () => {
           [],
           [],
           supplierAssessmentFactory.withNonAttendedAppointment.build(),
+          serviceUser,
           null
         )
 
@@ -1148,6 +1277,7 @@ describe(InterventionProgressPresenter, () => {
         [],
         [],
         supplierAssessmentFactory.build(),
+        serviceUser,
         null,
         undefined
       )
@@ -1165,6 +1295,7 @@ describe(InterventionProgressPresenter, () => {
         [],
         [],
         supplierAssessmentFactory.build(),
+        serviceUser,
         null,
         '/service-provider/dashboard/backlink'
       )

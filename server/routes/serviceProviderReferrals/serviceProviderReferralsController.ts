@@ -346,6 +346,7 @@ export default class ServiceProviderReferralsController {
     const { id } = req.params
     const { showFeedbackBanner } = req.query
     const { notifyPP } = req.query
+    const { dna } = req.query
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, id)
 
@@ -405,10 +406,12 @@ export default class ServiceProviderReferralsController {
       approvedActionPlanSummaries,
       actionPlanAppointments,
       supplierAssessment,
+      serviceUser,
       assignee,
       req.session.dashboardOriginPage,
       showFeedbackBanner === 'true',
-      notifyPP === 'true'
+      notifyPP === 'true',
+      dna === 'true'
     )
     const view = new InterventionProgressView(presenter)
 

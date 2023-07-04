@@ -110,7 +110,6 @@ describe(FeedbackAnswersPresenter, () => {
         const appointment = actionPlanAppointmentFactory.build({
           appointmentFeedback: {
             sessionFeedback: {
-              // behaviourDescription: 'Alex had a bad attitude',
               notifyProbationPractitioner: true,
             },
           },
@@ -153,7 +152,6 @@ describe(FeedbackAnswersPresenter, () => {
         const appointment = actionPlanAppointmentFactory.build({
           appointmentFeedback: {
             sessionFeedback: {
-              // behaviourDescription: null,
               notifyProbationPractitioner: null,
             },
           },

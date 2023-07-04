@@ -717,8 +717,11 @@ export default class AppointmentsController {
       await this.interventionsService.submitSupplierAssessmentAppointmentFeedback(accessToken, referralId)
     }
     const notifyPP = appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner
+    const didNotAttend = appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
 
-    res.redirect(`/service-provider/referrals/${referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}`)
+    res.redirect(
+      `/service-provider/referrals/${referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}&dna=${didNotAttend}`
+    )
   }
 
   async viewSupplierAssessmentFeedback(
@@ -1028,9 +1031,10 @@ export default class AppointmentsController {
       await this.interventionsService.submitActionPlanSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
     }
     const notifyPP = appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner
+    const didNotAttend = appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
 
     res.redirect(
-      `/service-provider/referrals/${actionPlan.referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}`
+      `/service-provider/referrals/${actionPlan.referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}&dna=${didNotAttend}`
     )
   }
 

@@ -12,6 +12,7 @@ import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../model
 import AuthUserDetails, { authUserFullName } from '../../models/hmppsAuth/authUserDetails'
 import ActionPlanProgressPresenter from '../shared/action-plan/actionPlanProgressPresenter'
 import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 
 interface EndedFields {
   endRequestedAt: string | null
@@ -51,10 +52,12 @@ export default class InterventionProgressPresenter {
     private readonly approvedActionPlanSummaries: ApprovedActionPlanSummary[],
     private readonly actionPlanAppointments: ActionPlanAppointment[],
     private readonly supplierAssessment: SupplierAssessment,
+    private readonly serviceUser: DeliusServiceUser,
     private readonly assignee: AuthUserDetails | null,
     private readonly dashboardOriginPage?: string,
     readonly showFeedbackBanner: boolean | null = null,
-    readonly notifyPP: boolean | null = null
+    readonly notifyPP: boolean | null = null,
+    readonly dna: boolean | null = null
   ) {
     const subNavUrlPrefix = 'service-provider'
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
@@ -355,6 +358,15 @@ export default class InterventionProgressPresenter {
       default:
         throw new Error('unexpected status')
     }
+  }
+
+  get sessionFeedbackAddedNotificationBannerText(): string {
+    if (this.dna) {
+      return `The probation practitioner will get an email about ${this.serviceUser.firstName} ${this.serviceUser.surname} not attending. They’ll also be able to view the feedback in the service.`
+    }
+    return this.notifyPP === true
+      ? 'The probation practitioner has been emailed about your concerns. They’ll also be able to view the feedback in the service.'
+      : 'The probation practitioner will be able to view the feedback in the service.'
   }
 
   private supplierAssessmentAppointmentStatusPresenter(
