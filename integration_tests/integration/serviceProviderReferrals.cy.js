@@ -1597,7 +1597,9 @@ describe('Service provider referrals dashboard', () => {
       cy.get('form').contains('Confirm').click()
 
       cy.contains('Session feedback added')
-      cy.contains('The probation practitioner will be able to view the feedback in the service.')
+      cy.contains(
+        'The probation practitioner will get an email about Alex River not attending. They’ll also be able to view the feedback in the service.'
+      )
 
       cy.get('[data-cy=session-table]')
         .getTable()
@@ -2621,7 +2623,9 @@ describe('Service provider referrals dashboard', () => {
           cy.get('form').contains('Confirm').click()
 
           cy.contains('Session feedback added')
-          cy.contains('The probation practitioner will be able to view the feedback in the service.')
+          cy.contains(
+            'The probation practitioner will get an email about Alex River not attending. They’ll also be able to view the feedback in the service.'
+          )
 
           cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferral.id}/progress`)
 

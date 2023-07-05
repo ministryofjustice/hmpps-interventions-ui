@@ -1189,45 +1189,45 @@ describe('Adding supplier assessment feedback', () => {
   })
 
   describe('POST /service-provider/referrals/:id/supplier-assessment/post-assessment-feedback/submit', () => {
-    it('submits the action plan and redirects to the progress page with the request params to show the feedback submitted banner', async () => {
-      const referral = sentReferralFactory.assigned().build()
-      const appointment = initialAssessmentAppointmentFactory.build({
-        appointmentFeedback: {
-          attendanceFeedback: {
-            attended: 'yes',
+    describe('when appointment feedback form has been filled for a user who attended with no concerns', () => {
+      it('submits the action plan feedback and redirects to the progress page with the request params to show the feedback submitted banner', async () => {
+        const referral = sentReferralFactory.assigned().build()
+        const appointment = initialAssessmentAppointmentFactory.build({
+          appointmentFeedback: {
+            attendanceFeedback: {
+              attended: 'yes',
+            },
+            sessionFeedback: {
+              sessionSummary: 'stub session summary',
+              sessionResponse: 'stub session response',
+              notifyProbationPractitioner: false,
+            },
+            submitted: false,
           },
-          sessionFeedback: {
-            sessionSummary: 'stub session summary',
-            sessionResponse: 'stub session response',
-            notifyProbationPractitioner: false,
-          },
-          submitted: false,
-        },
-      })
-      const supplierAssessment = supplierAssessmentFactory.build({
-        appointments: [appointment],
-        currentAppointmentId: appointment.id,
-      })
-      interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-      interventionsService.submitSupplierAssessmentAppointmentFeedback.mockResolvedValue(appointment)
+        })
+        const supplierAssessment = supplierAssessmentFactory.build({
+          appointments: [appointment],
+          currentAppointmentId: appointment.id,
+        })
+        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+        interventionsService.submitSupplierAssessmentAppointmentFeedback.mockResolvedValue(appointment)
 
-      await request(app)
-        .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/submit`)
-        .expect(302)
-        .expect(
-          'Location',
-          `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=false`
+        await request(app)
+          .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/submit`)
+          .expect(302)
+          .expect(
+            'Location',
+            `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=false&dna=false`
+          )
+
+        expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith(
+          'token',
+          referral.id
         )
-
-      expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith(
-        'token',
-        referral.id
-      )
+      })
     })
-    it(
-      'submits the action plan and redirects to the progress page with the request params to ' +
-        'show the feedback submitted banner and confirm an email has been sent to pp',
-      async () => {
+    describe('when appointment feedback form has been filled for a user who attended and has concerns', () => {
+      it('submits the action plan feedback and redirects to the progress page with notifyPP=true request params to display the text in the feedback banner confirming an email has been sent to pp to notify of concerns', async () => {
         const referral = sentReferralFactory.assigned().build()
         const appointment = initialAssessmentAppointmentFactory.build({
           appointmentFeedback: {
@@ -1254,15 +1254,47 @@ describe('Adding supplier assessment feedback', () => {
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=true`
+            `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=true&dna=false`
           )
 
         expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith(
           'token',
           referral.id
         )
-      }
-    )
+      })
+    })
+    describe('when attendance feedback form has been filled for a user who has not attended', () => {
+      it('submits the action plan feedback and redirects to the progress page with dna=true request params to display the text in the feedback banner confirming an email has been sent to pp to notify of non attendance', async () => {
+        const referral = sentReferralFactory.assigned().build()
+        const appointment = initialAssessmentAppointmentFactory.build({
+          appointmentFeedback: {
+            attendanceFeedback: {
+              attended: 'no',
+            },
+            submitted: false,
+          },
+        })
+        const supplierAssessment = supplierAssessmentFactory.build({
+          appointments: [appointment],
+          currentAppointmentId: appointment.id,
+        })
+        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+        interventionsService.submitSupplierAssessmentAppointmentFeedback.mockResolvedValue(appointment)
+
+        await request(app)
+          .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/submit`)
+          .expect(302)
+          .expect(
+            'Location',
+            `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=null&dna=true`
+          )
+
+        expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith(
+          'token',
+          referral.id
+        )
+      })
+    })
     it('renders an error if there is no current appointment for the supplier assessment', async () => {
       const appointment = initialAssessmentAppointmentFactory.build()
       const referral = sentReferralFactory.assigned().build()
@@ -2059,7 +2091,7 @@ describe('Adding post delivery session feedback', () => {
         .expect(302)
         .expect(
           'Location',
-          `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=false`
+          `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=false&dna=false`
         )
 
       expect(interventionsService.submitActionPlanSessionFeedback).toHaveBeenCalledWith(
@@ -2091,7 +2123,7 @@ describe('Adding post delivery session feedback', () => {
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false`
+            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=false`
           )
 
         expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith(
