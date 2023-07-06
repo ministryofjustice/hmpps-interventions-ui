@@ -137,7 +137,7 @@ export default class ShowReferralPresenter {
       key:
         this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
           ? 'Probation Office'
-          : 'PDU',
+          : 'PDU (Probation Delivery Unit)',
       lines: [
         this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
           ? this.sentReferral.referral.ppProbationOffice
