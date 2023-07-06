@@ -217,9 +217,6 @@ export default class DashboardPresenter {
     if (this.showReleaseDateAndLocationColumn && referralSummary.locationType === 'CUSTODY') {
       return this.prisons.find(prison => prison.prisonId === referralSummary.location)?.prisonName
     }
-    if (this.showReleaseDateAndLocationColumn && referralSummary.locationType === 'COMMUNITY') {
-      return referralSummary.location
-    }
-    return ''
+    return referralSummary.location
   }
 }
