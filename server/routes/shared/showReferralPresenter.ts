@@ -20,10 +20,10 @@ import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/s
 import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import RoshPanelPresenter from './roshPanelPresenter'
-import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
 import DateUtils from '../../utils/dateUtils'
 import Prison from '../../models/prisonRegister/prison'
 import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
+import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -45,7 +45,7 @@ export default class ShowReferralPresenter {
     readonly canAssignReferral: boolean,
     private readonly deliusServiceUser: ExpandedDeliusServiceUser,
     readonly riskSummary: RiskSummary | null,
-    private readonly responsibleOfficer: DeliusOffenderManager | null,
+    private readonly deliusResponsibleOfficer: DeliusResponsibleOfficer | null,
     readonly showSuccess: boolean = false,
     private readonly dashboardOriginPage?: string,
     private readonly hasApprovedActionPlan: boolean = true
@@ -122,6 +122,10 @@ export default class ShowReferralPresenter {
     return this.assignee !== null
   }
 
+  get isCustodyReferral(): boolean {
+    return this.sentReferral.referral.personCurrentLocationType === 'CUSTODY'
+  }
+
   get assignedCaseworkerFullName(): string | null {
     return this.referralAssigned ? authUserFullName(this.assignee!) : null
   }
@@ -130,9 +134,12 @@ export default class ShowReferralPresenter {
     return this.referralAssigned ? `${this.assignee!.email}` : null
   }
 
-  readonly probationPractitionerDetails: SummaryListItem[] = [
-    { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`] },
-    { key: 'Email address', lines: [this.sentBy.email ?? ''] },
+  readonly probationPractitionerDetailsForCommunity: SummaryListItem[] = [
+    {
+      key: 'Name',
+      lines: [this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName || 'Not found'],
+    },
+    { key: 'Email address', lines: [this.deriveEmailAddress] },
     {
       key:
         this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
@@ -146,32 +153,52 @@ export default class ShowReferralPresenter {
     },
   ]
 
-  get responsibleOfficersDetails(): SummaryListItem[] {
-    if (this.responsibleOfficer === null) return []
+  readonly probationPractitionerDetailsForCustody: SummaryListItem[] = [
+    { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`] },
+    { key: 'Email address', lines: [this.sentBy.email ?? ''] },
+  ]
 
-    const { staff, team } = this.responsibleOfficer
+  get deriveEmailAddress(): string {
+    if (this.sentReferral.referral.ppEmailAddress) {
+      return this.sentReferral.referral.ppEmailAddress
+    }
+    if (
+      this.sentReferral.referral.ndeliusPPEmailAddress &&
+      this.sentReferral.referral.ndeliusPPEmailAddress.toLowerCase() !== 'undefined'
+    ) {
+      return this.sentReferral.referral.ndeliusPPEmailAddress
+    }
+    return 'Not found'
+  }
+
+  get deliusResponsibleOfficersDetails(): SummaryListItem[] {
+    if (this.deliusResponsibleOfficer === null) return []
+
+    const officer = this.deliusResponsibleOfficer.communityManager
+      ? this.deliusResponsibleOfficer.communityManager
+      : this.deliusResponsibleOfficer.prisonManager
     return [
       {
         key: 'Name',
-        lines: [`${staff?.forenames || ''} ${staff?.surname || ''}`.trim() || 'Not found'],
+        lines: [`${officer?.name?.forename || ''} ${officer?.name?.surname || ''}`.trim() || 'Not found'],
       },
       {
         key: 'Phone',
-        lines: [staff?.phoneNumber || 'Not found'],
+        lines: [officer?.telephoneNumber || 'Not found'],
       },
       {
         lines: [
-          staff?.email || 'Not found - email notifications for this referral will be sent to the referring officer',
+          officer?.email || 'Not found - email notifications for this referral will be sent to the referring officer',
         ],
         key: 'Email address',
       },
       {
         key: 'Team phone',
-        lines: [team?.telephone || 'Not found'],
+        lines: [officer?.team?.telephoneNumber || 'Not found'],
       },
       {
         key: 'Team email address',
-        lines: [team?.emailAddress || 'Not found'],
+        lines: [officer?.team?.email || 'Not found'],
       },
     ]
   }

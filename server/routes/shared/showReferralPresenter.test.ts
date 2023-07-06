@@ -12,9 +12,9 @@ import supplementaryRiskInformationFactory from '../../../testutils/factories/su
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import prisonFactory from '../../../testutils/factories/prison'
-import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
 import { CurrentLocationType } from '../../models/draftReferral'
 import PrisonRegisterService from '../../services/prisonRegisterService'
+import deliusResponsibleOfficerFactory from '../../../testutils/factories/deliusResponsibleOfficer'
 
 jest.mock('../../services/prisonRegisterService')
 
@@ -41,6 +41,8 @@ describe(ShowReferralPresenter, () => {
       serviceCategoryIds: [serviceCategory.id],
       serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
       personCurrentLocationType: CurrentLocationType.community,
+      ppName: 'Bernard Beaks',
+      ppEmailAddress: 'bernard.beaks@justice.gov.uk',
     },
   }
   const deliusUser = deliusUserFactory.build({
@@ -52,7 +54,7 @@ describe(ShowReferralPresenter, () => {
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
   const riskSummary = riskSummaryFactory.build()
-  const responsibleOfficer = deliusOffenderManagerFactory.build()
+  const deliusRoOfficer = deliusResponsibleOfficerFactory.build()
 
   const prisonList = prisonFactory.prisonList()
   prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
@@ -75,7 +77,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        responsibleOfficer
+        deliusRoOfficer
       )
       expect(presenter.canShowFullSupplementaryRiskInformation).toBeFalsy()
     })
@@ -95,7 +97,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        responsibleOfficer
+        deliusRoOfficer
       )
       expect(presenter.canShowFullSupplementaryRiskInformation).toBeTruthy()
     })
@@ -118,7 +120,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        responsibleOfficer
+        deliusRoOfficer
       )
 
       expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/start`)
@@ -144,7 +146,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer
+          deliusRoOfficer
         )
 
         expect(presenter.assignedCaseworkerFullName).toEqual(null)
@@ -169,7 +171,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer
+          deliusRoOfficer
         )
 
         expect(presenter.assignedCaseworkerFullName).toEqual('Liam Johnson')
@@ -196,7 +198,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer
+          deliusRoOfficer
         )
 
         expect(presenter.assignedCaseworkerFullName).toEqual(null)
@@ -221,7 +223,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer
+          deliusRoOfficer
         )
 
         expect(presenter.assignedCaseworkerEmail).toEqual('liam.johnson@justice.gov.uk')
@@ -245,10 +247,10 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        responsibleOfficer
+        deliusRoOfficer
       )
 
-      expect(presenter.probationPractitionerDetails).toEqual([
+      expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
         { key: 'Probation Office', lines: ['London'] },
@@ -272,7 +274,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        responsibleOfficer
+        deliusRoOfficer
       )
 
       expect(presenter.serviceUserLocationDetails).toEqual([
@@ -304,7 +306,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        responsibleOfficer
+        deliusRoOfficer
       )
 
       expect(presenter.serviceUserLocationDetails).toEqual([
@@ -338,21 +340,32 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusOffenderManagerFactory.build({
-            staff: {
-              forenames: 'Peter',
-              surname: 'Practitioner',
+          deliusResponsibleOfficerFactory.build({
+            communityManager: {
+              code: 'abc',
+              name: {
+                forename: 'Peter',
+                surname: 'Practitioner',
+              },
+              username: 'bobalice',
               email: 'p.practitioner@example.com',
-              phoneNumber: '01234567890',
-            },
-            team: {
-              telephone: '01141234567',
-              emailAddress: 'team@nps.gov.uk',
+              telephoneNumber: '01234567890',
+              responsibleOfficer: true,
+              pdu: {
+                code: '97',
+                description: 'Hackney and City',
+              },
+              team: {
+                code: 'RM',
+                description: 'R and M team',
+                email: 'team@nps.gov.uk',
+                telephoneNumber: '01141234567',
+              },
             },
           })
         )
 
-        expect(presenter.responsibleOfficersDetails).toEqual([
+        expect(presenter.deliusResponsibleOfficersDetails).toEqual([
           { key: 'Name', lines: ['Peter Practitioner'] },
           { key: 'Phone', lines: ['01234567890'] },
           { key: 'Email address', lines: ['p.practitioner@example.com'] },
@@ -378,18 +391,32 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          {
-            isResponsibleOfficer: true,
-            staff: {
-              forenames: 'Peter',
-              surname: undefined,
-              email: undefined,
-              phoneNumber: undefined,
+          deliusResponsibleOfficerFactory.build({
+            communityManager: {
+              code: 'abc',
+              name: {
+                forename: 'Peter',
+                surname: undefined,
+              },
+              username: 'bobalice',
+              email: null,
+              telephoneNumber: null,
+              responsibleOfficer: true,
+              pdu: {
+                code: '97',
+                description: 'Hackney and City',
+              },
+              team: {
+                code: 'RM',
+                description: 'R and M team',
+                email: null,
+                telephoneNumber: null,
+              },
             },
-          }
+          })
         )
 
-        expect(presenter.responsibleOfficersDetails).toEqual([
+        expect(presenter.deliusResponsibleOfficersDetails).toEqual([
           { key: 'Name', lines: ['Peter'] },
           { key: 'Phone', lines: ['Not found'] },
           {
@@ -421,7 +448,7 @@ describe(ShowReferralPresenter, () => {
           null
         )
 
-        expect(presenter.responsibleOfficersDetails).toEqual([])
+        expect(presenter.deliusResponsibleOfficersDetails).toEqual([])
       })
     })
   })
@@ -497,7 +524,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer
+          deliusRoOfficer
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -588,7 +615,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer
+          deliusRoOfficer
         )
 
         expect(presenter.interventionDetails).toEqual([
@@ -645,7 +672,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        responsibleOfficer
+        deliusRoOfficer
       )
       expect(
         presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
@@ -684,7 +711,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer,
+          deliusRoOfficer,
           true,
           'dashboardOriginPage',
           false
@@ -719,7 +746,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer,
+          deliusRoOfficer,
           true,
           'dashboardOriginPage',
           true
@@ -754,7 +781,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer,
+          deliusRoOfficer,
           true,
           'dashboardOriginPage',
           false
@@ -791,18 +818,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusOffenderManagerFactory.build({
-            staff: {
-              forenames: 'Peter',
-              surname: 'Practitioner',
-              email: 'p.practitioner@example.com',
-              phoneNumber: '01234567890',
-            },
-            team: {
-              telephone: '01141234567',
-              emailAddress: 'team@nps.gov.uk',
-            },
-          }),
+          deliusRoOfficer,
           false,
           undefined,
           false
@@ -841,18 +857,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusOffenderManagerFactory.build({
-            staff: {
-              forenames: 'Peter',
-              surname: 'Practitioner',
-              email: 'p.practitioner@example.com',
-              phoneNumber: '01234567890',
-            },
-            team: {
-              telephone: '01141234567',
-              emailAddress: 'team@nps.gov.uk',
-            },
-          }),
+          deliusRoOfficer,
           false,
           undefined,
           true
@@ -895,18 +900,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusOffenderManagerFactory.build({
-            staff: {
-              forenames: 'Peter',
-              surname: 'Practitioner',
-              email: 'p.practitioner@example.com',
-              phoneNumber: '01234567890',
-            },
-            team: {
-              telephone: '01141234567',
-              emailAddress: 'team@nps.gov.uk',
-            },
-          }),
+          deliusRoOfficer,
           false,
           undefined,
           false
@@ -953,7 +947,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        responsibleOfficer
+        deliusRoOfficer
       )
 
       expect(presenter.personalDetailSummary).toEqual([
@@ -985,7 +979,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        responsibleOfficer
+        deliusRoOfficer
       )
 
       expect(presenter.contactDetailsSummary).toEqual([
@@ -1019,7 +1013,7 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        responsibleOfficer
+        deliusRoOfficer
       )
 
       expect(presenter.serviceUserRisks).toEqual([
@@ -1087,7 +1081,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer
+          deliusRoOfficer
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
@@ -1175,7 +1169,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer
+          deliusRoOfficer
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
@@ -1231,7 +1225,7 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          responsibleOfficer
+          deliusRoOfficer
         )
 
         expect(presenter.text).toMatchObject({

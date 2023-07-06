@@ -15,6 +15,8 @@ import initialAssessmentAppointmentFactory from '../../testutils/factories/initi
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 import pageFactory from '../../testutils/factories/page'
 import prisonFactory from '../../testutils/factories/prison'
+import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
+import { CurrentLocationType } from '../../server/models/draftReferral'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -310,7 +312,7 @@ describe('Probation practitioner referrals dashboard', () => {
     })
   })
 
-  it('probation practitioner views referral details', () => {
+  it('probation practitioner views referral details when in custody', () => {
     const page = pageFactory.pageContent([]).build()
     cy.stubGetSentReferralsForUserTokenPaged(page)
 
@@ -446,6 +448,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
     cy.stubGetApprovedActionPlanSummaries(referral.id, [])
+    cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
     cy.stubGetPrisons(prisons)
 
     cy.login()
@@ -502,17 +505,17 @@ describe('Probation practitioner referrals dashboard', () => {
       .last()
       .children()
       .should('contain', 'Name')
-      .should('contain', 'Peter Practitioner')
+      .should('contain', 'Bob Alice')
       .should('contain', 'Phone')
-      .should('contain', '01234567890')
+      .should('contain', '98454243243')
       .should('contain', 'Email address')
-      .should('contain', 'p.practitioner@justice.gov.uk')
+      .should('contain', 'bobalice@example.com')
       .should('contain', 'Team phone')
-      .should('contain', '07890 123456')
+      .should('contain', '044-2545453442')
       .should('contain', 'Team email address')
-      .should('contain', 'probation-team4692@justice.gov.uk')
+      .should('contain', 'r.m@digital.justice.gov.uk')
 
-    cy.contains(`Jenny Jones's probation practitioner`)
+    cy.contains(`Referring probation practitioner details`)
       .parent()
       .parent()
       .children()
@@ -522,8 +525,6 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Bernard Beaks')
       .should('contain', 'Email address')
       .should('contain', 'bernard.beaks@justice.gov.uk')
-      .should('contain', 'Probation Office')
-      .should('contain', 'London')
 
     cy.contains(`Jenny Jones's location and expected release date`)
       .parent()
@@ -536,6 +537,282 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Current establishment')
       .should('contain', 'Expected release date')
       .should('contain', moment().add(1, 'days').format('YYYY-MM-DD'))
+
+    cy.contains(`Personal details`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Jenny')
+      .should('contain', 'English')
+      .should('contain', 'Male')
+      .should('contain', 'Agnostic')
+      .should('contain', '1 Jan 1980 (43 years old)')
+
+    cy.contains(`Address and contact details`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Flat 2 Test Walk')
+      .should('contain', 'London')
+      .should('contain', 'Phone number')
+      .should('contain', '07123456789')
+      .should('contain', 'Email address')
+      .should('contain', 'jenny.jones@example.com')
+
+    cy.contains(`Jenny Jones's risk information`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Who is at risk')
+      .should('contain', 'some information for who is at risk')
+      .should('contain', 'Concerns in relation to self-harm')
+      .should('contain', 'some concerns for self harm')
+      .should('contain', 'Additional information')
+      .should('contain', 'They are low risk.')
+
+    cy.contains(`Service user needs`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Identify needs')
+      .should('contain', 'Alex is currently sleeping on her aunt’s sofa')
+      .should('contain', 'Interpreter language')
+      .should('contain', 'Spanish')
+      .should('contain', 'Primary language')
+      .should('contain', 'English')
+  })
+
+  it('probation practitioner views referral details when in community', () => {
+    const page = pageFactory.pageContent([]).build()
+    cy.stubGetSentReferralsForUserTokenPaged(page)
+
+    const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+
+    const personalWellbeingIntervention = interventionFactory.build({
+      contractType: { code: 'PWB', name: 'Personal wellbeing' },
+      serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
+    })
+
+    const conviction = deliusConvictionFactory.build({
+      offences: [
+        {
+          mainOffence: true,
+          detail: {
+            mainCategoryDescription: 'Burglary',
+            subCategoryDescription: 'Theft act, 1968',
+          },
+        },
+      ],
+      sentence: {
+        expectedSentenceEndDate: '2025-11-15',
+      },
+    })
+
+    const referral = sentReferralFactory.build({
+      sentAt: '2020-12-13T13:00:00.000000Z',
+      referenceNumber: 'ABCABCA2',
+      referral: {
+        interventionId: personalWellbeingIntervention.id,
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
+        relevantSentenceId: conviction.convictionId,
+        serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+        complexityLevels: [
+          {
+            serviceCategoryId: accommodationServiceCategory.id,
+            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          },
+          {
+            serviceCategoryId: socialInclusionServiceCategory.id,
+            complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
+          },
+        ],
+        desiredOutcomes: [
+          {
+            serviceCategoryId: accommodationServiceCategory.id,
+            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+          },
+          {
+            serviceCategoryId: socialInclusionServiceCategory.id,
+            desiredOutcomesIds: ['9b30ffad-dfcb-44ce-bdca-0ea49239a21a', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
+          },
+        ],
+        personCurrentLocationType: CurrentLocationType.community,
+        expectedReleaseDate: null,
+        expectedReleaseDateMissingReason: null,
+        hasExpectedReleaseDate: null,
+        ndeliusPPName: 'Bob Alice',
+        ndeliusPPEmailAddress: 'bobalice@example.com',
+        ndeliusPDU: 'Sheffield',
+        ppName: null,
+        ppEmailAddress: null,
+        ppProbationOffice: 'London',
+        ppPdu: 'London',
+        hasValidDeliusPPDetails: true,
+      },
+    })
+
+    cy.stubGetApprovedActionPlanSummaries(referral.id, [])
+
+    const supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+      riskSummaryComments: 'They are low risk.',
+    })
+
+    const deliusUser = deliusUserFactory.build({
+      firstName: 'Bernard',
+      surname: 'Beaks',
+      email: 'bernard.beaks@justice.gov.uk',
+    })
+
+    const deliusServiceUser = deliusServiceUserFactory.build({
+      firstName: 'Jenny',
+      surname: 'Jones',
+      dateOfBirth: '1980-01-01',
+      contactDetails: {
+        emailAddresses: ['jenny.jones@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+      },
+    })
+
+    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
+      ...deliusServiceUser,
+      contactDetails: {
+        emailAddresses: ['jenny.jones@example.com'],
+        phoneNumbers: [
+          {
+            number: '07123456789',
+            type: 'MOBILE',
+          },
+        ],
+        addresses: [
+          {
+            addressNumber: 'Flat 2',
+            buildingName: null,
+            streetName: 'Test Walk',
+            postcode: 'SW16 1AQ',
+            town: 'London',
+            district: 'City of London',
+            county: 'Greater London',
+            from: '2019-01-01',
+            to: null,
+            noFixedAbode: false,
+          },
+        ],
+      },
+    })
+
+    const responsibleOfficer = deliusOffenderManagerFactory.build({
+      staff: {
+        forenames: 'Peter',
+        surname: 'Practitioner',
+        email: 'p.practitioner@justice.gov.uk',
+        phoneNumber: '01234567890',
+      },
+      team: {
+        telephone: '07890 123456',
+        emailAddress: 'probation-team4692@justice.gov.uk',
+        startDate: '2021-01-01',
+      },
+    })
+    const prisons = prisonFactory.prisonList()
+
+    cy.stubGetSentReferral(referral.id, referral)
+    cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
+    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
+    cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+    cy.stubGetUserByUsername(deliusUser.username, deliusUser)
+    cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
+    cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
+    cy.stubGetApprovedActionPlanSummaries(referral.id, [])
+    cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
+    cy.stubGetPrisons(prisons)
+
+    cy.login()
+
+    cy.visit(`/probation-practitioner/referrals/${referral.id}/details`)
+
+    cy.contains('This intervention is not yet assigned to a caseworker')
+
+    cy.contains('07123456789')
+    cy.contains('jenny.jones@example.com')
+    cy.contains('Flat 2')
+    cy.contains('Test Walk')
+    cy.contains('London')
+    cy.contains('City of London')
+    cy.contains('Greater London')
+    cy.contains('SW16 1AQ')
+
+    cy.contains('Intervention details')
+    cy.contains('Personal wellbeing')
+    cy.contains('Burglary')
+    cy.contains('Theft act, 1968')
+    cy.contains('15 Nov 2025')
+
+    cy.contains('Accommodation service')
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Complexity level')
+      .should('contain', 'LOW COMPLEXITY')
+      .should('contain', 'Service user has some capacity and means to secure')
+      .should('contain', 'Desired outcomes')
+      .should('contain', 'All barriers, as identified in the Service user action plan')
+      .should('contain', 'Service user makes progress in obtaining accommodation')
+
+    cy.contains('Social inclusion service')
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Complexity level')
+      .should('contain', 'MEDIUM COMPLEXITY')
+      .should('contain', 'Service user is at risk of homelessness/is homeless')
+      .should('contain', 'Desired outcomes')
+      .should('contain', 'Service user is helped to secure social or supported housing')
+      .should('contain', 'Service user is helped to secure a tenancy in the private rented sector (PRS)')
+
+    cy.contains(`Jenny Jones's responsible officer details`).should('not.exist')
+
+    cy.contains(`Jenny Jones's probation practitioner`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Name')
+      .should('contain', 'Bob Alice')
+      .should('contain', 'Email address')
+      .should('contain', 'bobalice@example.com')
+      .should('contain', 'Probation Office')
+      .should('contain', 'London')
+
+    cy.contains(`Jenny Jones's location and expected release date`).should('not.exist')
+
+    cy.contains(`Jenny Jones's location`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Location at time of referral')
+      .should('contain', 'Community')
 
     cy.contains(`Personal details`)
       .parent()
@@ -725,6 +1002,7 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubUpdateDesiredOutcomesForServiceCategory(referral.id, accommodationServiceCategory.id, referral)
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
+      cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
 
       cy.login()
 
@@ -873,6 +1151,7 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubUpdateDesiredOutcomesForServiceCategory(referral.id, accommodationServiceCategory.id, referral)
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
+      cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
 
       cy.login()
 

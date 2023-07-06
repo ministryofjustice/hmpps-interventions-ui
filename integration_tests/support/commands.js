@@ -3,6 +3,7 @@ import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
+import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 
 Cypress.Commands.add('login', (redirectUrl = '/') => {
   cy.request(redirectUrl)
@@ -37,6 +38,7 @@ Cypress.Commands.add('stubViewReferralDetails', referralToView => {
   cy.stubGetResponsibleOfficerForServiceUser(referralToView.referral.serviceUser.crn, [
     deliusOffenderManagerFactory.build(),
   ])
+  cy.stubGetResponsibleOfficer(referralToView.referral.serviceUser.crn, [deliusResponsibleOfficerFactory.build()])
 })
 
 const getTable = (subject, options = {}) => {

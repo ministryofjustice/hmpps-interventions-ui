@@ -675,7 +675,6 @@ describe('Referral form', () => {
 
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
       const prisons = prisonFactory.prisonList()
-      const responsibleOfficer = deliusResponsibleOfficerFactory.build()
 
       cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
@@ -693,7 +692,7 @@ describe('Referral form', () => {
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
-      cy.stubGetResponsibleOfficer(responsibleOfficer)
+      cy.stubGetResponsibleOfficer(draftReferral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
 
       cy.login()
 

@@ -64,6 +64,7 @@ import DashboardWithoutPaginationView from '../deprecated/dashboardWithoutPagina
 import FeatureFlagService from '../../services/featureFlagService'
 import UserDataService from '../../services/userDataService'
 import PrisonRegisterService from '../../services/prisonRegisterService'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -82,7 +83,8 @@ export default class ServiceProviderReferralsController {
     private readonly draftsService: DraftsService,
     private readonly referenceDataService: ReferenceDataService,
     private readonly userDataService: UserDataService,
-    private readonly prisonRegisterService: PrisonRegisterService
+    private readonly prisonRegisterService: PrisonRegisterService,
+    private readonly ramDeliusApiService: RamDeliusApiService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
@@ -290,8 +292,8 @@ export default class ServiceProviderReferralsController {
       conviction,
       riskInformation,
       riskSummary,
-      responsibleOfficer,
       prisons,
+      deliusResponsibleOfficer,
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
       this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
@@ -299,8 +301,8 @@ export default class ServiceProviderReferralsController {
       this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
       this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
       this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
-      this.communityApiService.getResponsibleOfficerForServiceUser(crn),
       this.prisonRegisterService.getPrisons(),
+      this.ramDeliusApiService.getResponsibleOfficer(sentReferral.referral.serviceUser.crn),
     ])
 
     const assignee =
@@ -335,7 +337,7 @@ export default class ServiceProviderReferralsController {
       true,
       expandedServiceUser,
       riskSummary,
-      responsibleOfficer,
+      deliusResponsibleOfficer,
       false,
       req.session.dashboardOriginPage
     )

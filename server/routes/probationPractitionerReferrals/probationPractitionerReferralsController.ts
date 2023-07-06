@@ -31,6 +31,7 @@ import ActionPlan from '../../models/actionPlan'
 import ActionPlanUtils from '../../utils/actionPlanUtils'
 import UserDataService from '../../services/userDataService'
 import PrisonRegisterService from '../../services/prisonRegisterService'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 
 export default class ProbationPractitionerReferralsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -43,7 +44,8 @@ export default class ProbationPractitionerReferralsController {
     private readonly draftsService: DraftsService,
     private readonly referenceDataService: ReferenceDataService,
     private readonly userDataService: UserDataService,
-    private readonly prisonRegisterService: PrisonRegisterService
+    private readonly prisonRegisterService: PrisonRegisterService,
+    private readonly ramDeliusApiService: RamDeliusApiService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
@@ -238,9 +240,9 @@ export default class ProbationPractitionerReferralsController {
       conviction,
       riskInformation,
       riskSummary,
-      responsibleOfficer,
       approvedActionPlanSummaries,
       prisons,
+      deliusResponsibleOfficer,
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
       this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
@@ -248,9 +250,9 @@ export default class ProbationPractitionerReferralsController {
       this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
       this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
       this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
-      this.communityApiService.getResponsibleOfficerForServiceUser(crn),
       this.interventionsService.getApprovedActionPlanSummaries(accessToken, req.params.id),
       this.prisonRegisterService.getPrisons(),
+      this.ramDeliusApiService.getResponsibleOfficer(sentReferral.referral.serviceUser.crn),
     ])
 
     const assignee =
@@ -275,7 +277,7 @@ export default class ProbationPractitionerReferralsController {
       false,
       expandedServiceUser,
       riskSummary,
-      responsibleOfficer,
+      deliusResponsibleOfficer,
       req.query.detailsUpdated === 'true',
       req.session.dashboardOriginPage,
       !!approvedActionPlanSummaries.length

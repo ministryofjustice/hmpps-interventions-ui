@@ -6,10 +6,12 @@ export interface DeliusResponsibleOfficer {
 interface Manager {
   code: string
   name: Name
-  username: string
-  email: string
+  username?: string | null
+  email?: string | null
+  telephoneNumber?: string | null
   responsibleOfficer: boolean
   pdu: Pdu
+  team: Team
 }
 
 interface Name {
@@ -20,4 +22,11 @@ interface Name {
 interface Pdu {
   code: string
   description: string
+}
+
+interface Team {
+  code: string
+  description: string
+  email?: string | null
+  telephoneNumber?: string | null
 }
