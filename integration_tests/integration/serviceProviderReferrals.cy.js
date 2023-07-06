@@ -229,7 +229,8 @@ describe('Service provider referrals dashboard', () => {
       ])
 
     cy.contains('Jenny Jones').click()
-    cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/details`)
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/progress`)
+    cy.visit(`/service-provider/referrals/${referralToSelect.id}/details`)
     cy.get('h2').contains('Who do you want to assign this referral to?')
     cy.contains('jenny.jones@example.com')
     cy.contains('07123456789')
@@ -3116,6 +3117,12 @@ describe('Service provider referrals dashboard', () => {
     ]
 
     dashBoardTables.forEach(table => {
+      const hmppsAuthUser = hmppsAuthUserFactory.build({
+        firstName: 'John',
+        lastName: 'Smith',
+        username: 'john.smith',
+        email: 'john.smith@example.com',
+      })
       it(`returns to dashboard "${table.dashboardType}" when clicking back`, () => {
         cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
         cy.stubGetIntervention(socialInclusionIntervention.id, socialInclusionIntervention)
@@ -3123,10 +3130,15 @@ describe('Service provider referrals dashboard', () => {
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferralsSummaries).build())
         cy.stubGetUserByUsername(deliusUser.username, deliusUser)
         cy.stubGetServiceUserByCRN(referralToSelect.referral.serviceUser.crn, deliusServiceUser)
+        cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
+        cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+        cy.stubAssignSentReferral(referralToSelect.id, referralToSelect)
         cy.stubGetExpandedServiceUserByCRN(referralToSelect.referral.serviceUser.crn, expandedDeliusServiceUser)
         cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
         cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
         cy.stubGetResponsibleOfficerForServiceUser(referralToSelect.referral.serviceUser.crn, [responsibleOfficer])
+        cy.stubGetSupplierAssessment(referralToSelect.id, supplierAssessmentFactory.build())
+        cy.stubGetApprovedActionPlanSummaries(referralToSelect.id, [])
         cy.login()
 
         cy.get('a').contains(table.dashboardType).click()
@@ -3134,7 +3146,7 @@ describe('Service provider referrals dashboard', () => {
         cy.contains('Next').click()
 
         cy.contains('Jenny Jones').click()
-        cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/details`)
+        cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/progress`)
 
         cy.contains('Back').click()
         cy.location('pathname').should('equal', `/service-provider/dashboard/${table.pathname}`)
