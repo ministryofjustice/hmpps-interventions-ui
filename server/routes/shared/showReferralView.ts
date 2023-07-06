@@ -3,8 +3,9 @@ import ViewUtils from '../../utils/viewUtils'
 import { InputArgs, NotificationBannerArgs, SummaryListArgs, TagArgs } from '../../utils/govukFrontendTypes'
 import RoshPanelView from './roshPanelView'
 import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
+import utils from '../../utils/utils'
 
-interface ServiceCategorySection {
+interface SectionWithTagArgs {
   name: string
   summaryListArgs: (tagMacro: (args: TagArgs) => string) => SummaryListArgs
 }
@@ -18,21 +19,79 @@ export default class ShowReferralView {
 
   private readonly roshPanelView = new RoshPanelView(this.presenter.roshPanelPresenter, this.presenter.userType)
 
-  private readonly probationPractitionerSummaryListArgs = ViewUtils.summaryListArgs(
-    this.presenter.probationPractitionerDetails
+  private get probationPractitionerSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.probationPractitionerDetails,
+      this.presenter.probationPractitionerDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
+  private readonly responsibleOfficerSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
+    this.presenter.responsibleOfficersDetails,
+    this.presenter.responsibleOfficerDetailsHeading,
+    { showBorders: true, showTitle: true }
   )
 
-  private readonly responsibleOfficerSummaryListArgs = ViewUtils.summaryListArgs(
-    this.presenter.responsibleOfficersDetails
+  private get interventionDetailsSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.interventionDetails,
+      this.presenter.interventionDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
+  private get contactDetailsSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.contactDetailsSummary,
+      this.presenter.contactDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
+  private get serviceUserDetailsSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.personalDetailSummary,
+      this.presenter.serviceUserDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
+  private get serviceUserLocationDetailsSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.serviceUserLocationDetails,
+      this.presenter.serviceUserLocationDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
+  private get riskInformationArgs() {
+    return ViewUtils.summaryListArgsForRiskInfo(
+      this.presenter.supplementaryRiskInformationView.supplementaryRiskInformationArgs,
+      !!this.presenter.riskInformation.redactedRisk,
+      this.presenter.riskInformationHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
+  private get roshInformationArgs() {
+    return this.roshPanelView.summaryListArgsWithSummaryCardForRoshInfo(this.presenter.roshInformationHeading, {
+      showBorders: true,
+      showTitle: true,
+    })
+  }
+
+  private readonly serviceUserRisksSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
+    this.presenter.serviceUserRisks,
+    this.presenter.riskInformationHeading,
+    { showBorders: true, showTitle: true }
   )
 
-  private readonly interventionDetailsSummaryListArgs = ViewUtils.summaryListArgs(this.presenter.interventionDetails)
-
-  private readonly serviceUserDetailsSummaryListArgs = ViewUtils.summaryListArgs(this.presenter.serviceUserDetails)
-
-  private readonly serviceUserRisksSummaryListArgs = ViewUtils.summaryListArgs(this.presenter.serviceUserRisks)
-
-  private readonly serviceUserNeedsSummaryListArgs = ViewUtils.summaryListArgs(this.presenter.serviceUserNeeds)
+  private readonly serviceUserNeedsSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
+    this.presenter.serviceUserNeeds,
+    this.presenter.serviceUserNeedsHeading,
+    { showBorders: true, showTitle: true }
+  )
 
   private get emailInputArgs(): InputArgs {
     return {
@@ -45,12 +104,16 @@ export default class ShowReferralView {
     }
   }
 
-  private get serviceCategorySections(): ServiceCategorySection[] {
+  private get serviceCategorySections(): SectionWithTagArgs[] {
     return this.presenter.referralServiceCategories.map(serviceCategory => {
       return {
         name: serviceCategory.name,
         summaryListArgs: (tagMacro: (args: TagArgs) => string) => {
-          return ViewUtils.summaryListArgs(this.presenter.serviceCategorySection(serviceCategory, tagMacro))
+          return ViewUtils.summaryListArgsWithSummaryCard(
+            this.presenter.serviceCategorySection(serviceCategory, tagMacro),
+            `${utils.convertToProperCase(serviceCategory.name)} service`,
+            { showBorders: true, showTitle: true }
+          )
         },
       }
     })
@@ -98,14 +161,16 @@ export default class ShowReferralView {
         responsibleOfficerSummaryListArgs: this.responsibleOfficerSummaryListArgs,
         interventionDetailsSummaryListArgs: this.interventionDetailsSummaryListArgs,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
+        serviceUserLocationDetailsSummaryListArgs: this.serviceUserLocationDetailsSummaryListArgs,
         serviceUserRisksSummaryListArgs: this.serviceUserRisksSummaryListArgs,
         serviceUserNeedsSummaryListArgs: this.serviceUserNeedsSummaryListArgs,
+        contactDetailsSummaryListArgs: this.contactDetailsSummaryListArgs,
         serviceCategorySections: this.serviceCategorySections,
         emailInputArgs: this.emailInputArgs,
         backLinkArgs: this.backLinkArgs,
-        roshAnalysisTableArgs: this.roshPanelView.roshAnalysisTableArgs.bind(this.roshPanelView),
-        riskLevelDetailsArgs: this.roshPanelView.riskLevelDetailsArgs,
+        roshInformationArgs: this.roshInformationArgs,
         supplementaryRiskInformation: this.supplementaryRiskInformationView.supplementaryRiskInformationArgs,
+        riskInformationArgs: this.riskInformationArgs,
         insetTextArgs: this.insetTextArgs,
         notificationBannerArgs: this.notificationBannerArgs,
       },

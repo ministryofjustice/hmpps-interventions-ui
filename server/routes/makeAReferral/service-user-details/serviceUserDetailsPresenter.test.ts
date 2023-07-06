@@ -4,7 +4,6 @@ import ServiceUserDetailsPresenter from './serviceUserDetailsPresenter'
 import expandedDeliusServiceUserFactory from '../../../../testutils/factories/expandedDeliusServiceUser'
 import prisonFactory from '../../../../testutils/factories/prison'
 import { CurrentLocationType } from '../../../models/draftReferral'
-import DateUtils from '../../../utils/dateUtils'
 import PrisonRegisterService from '../../../services/prisonRegisterService'
 
 jest.mock('../../../services/prisonRegisterService')
@@ -98,10 +97,7 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'Title', lines: ['Mr'] },
         { key: 'First name', lines: ['Alex'] },
         { key: 'Last name', lines: ['River'] },
-        { key: 'Date of birth', lines: ['1 January 1980'] },
-        { key: 'Location at time of referral', lines: ['Custody'] },
-        { key: 'Current establishment', lines: ['London'] },
-        { key: 'Expected release date', lines: [DateUtils.formattedDate(tomorrow.format('YYYY-MM-DD'))] },
+        { key: 'Date of birth', lines: ['1 January 1980 (43 years old)'] },
         {
           key: 'Address',
           lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
@@ -126,7 +122,6 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'First name', lines: [''] },
         { key: 'Last name', lines: [''] },
         { key: 'Date of birth', lines: [''] },
-        { key: 'Location at time of referral', lines: [''] },
         {
           key: 'Address',
           lines: ['Not found'],
@@ -277,9 +272,6 @@ describe(ServiceUserDetailsPresenter, () => {
         },
         { key: 'Phone number', lines: ['0123456789'], listStyle: ListStyle.noMarkers },
         { key: 'Email address', lines: ['alex.river@example.com'], listStyle: ListStyle.noMarkers },
-        { key: 'Location at time of referral', lines: ['Custody'] },
-        { key: 'Current establishment', lines: ['London'] },
-        { key: 'Expected release date', lines: [DateUtils.formattedDate(tomorrow.format('YYYY-MM-DD'))] },
       ])
     })
 

@@ -23,7 +23,7 @@ export default class SentencePresenter {
     this.subcategory = mainOffence.detail.subCategoryDescription
 
     this.endOfSentenceDate = this.conviction?.sentence?.expectedSentenceEndDate
-      ? DateUtils.formattedDate(this.conviction.sentence.expectedSentenceEndDate)
+      ? DateUtils.formattedDate(this.conviction.sentence.expectedSentenceEndDate, { month: 'short' })
       : 'Not found'
   }
 }
