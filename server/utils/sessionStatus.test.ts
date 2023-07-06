@@ -5,9 +5,9 @@ import sessionStatus, { SessionStatus } from './sessionStatus'
 describe(sessionStatus.forAppointment, () => {
   describe('when the appointment was not attended', () => {
     const appointment = initialAssessmentAppointmentFactory.build({
-      sessionFeedback: {
+      appointmentFeedback: {
         submitted: true,
-        attendance: {
+        attendanceFeedback: {
           attended: 'no',
         },
       },
@@ -20,18 +20,18 @@ describe(sessionStatus.forAppointment, () => {
 
   describe('when the appointment was attended or the user was late', () => {
     const onTimeAppointment = initialAssessmentAppointmentFactory.build({
-      sessionFeedback: {
+      appointmentFeedback: {
         submitted: true,
-        attendance: {
+        attendanceFeedback: {
           attended: 'yes',
         },
       },
     })
 
     const lateAppointment = initialAssessmentAppointmentFactory.build({
-      sessionFeedback: {
+      appointmentFeedback: {
         submitted: true,
-        attendance: {
+        attendanceFeedback: {
           attended: 'yes',
         },
       },
@@ -78,9 +78,9 @@ describe(sessionStatus.forAppointment, () => {
 
   describe('when the appointment does have feedback, but it has not been submitted', () => {
     const scheduledAppointment = initialAssessmentAppointmentFactory.build({
-      sessionFeedback: {
+      appointmentFeedback: {
         submitted: false,
-        attendance: {
+        attendanceFeedback: {
           attended: 'yes',
         },
       },

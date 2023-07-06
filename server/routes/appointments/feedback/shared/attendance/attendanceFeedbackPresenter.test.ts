@@ -84,64 +84,23 @@ describe(AttendanceFeedbackPresenter, () => {
   })
 
   describe('attendanceResponses', () => {
-    describe('when attendance has not been set on the appointment', () => {
-      it('contains the attendance questions and values, and doesn’t set any value to "checked"', () => {
-        const appointment = initialAssessmentAppointmentFactory.build()
-        const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
+    it('contains the attendance questions and values', () => {
+      const appointment = initialAssessmentAppointmentFactory.build()
+      const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
 
-        expect(presenter.attendanceResponses).toEqual([
-          {
-            value: 'yes',
-            text: 'Yes, they were on time',
-            checked: false,
-          },
-          {
-            value: 'late',
-            text: 'They were late',
-            checked: false,
-          },
-          {
-            value: 'no',
-            text: 'No',
-            checked: false,
-          },
-        ])
-      })
-    })
-
-    describe('when attendance has been set on the appointment', () => {
-      const responseValues = ['yes', 'late', 'no'] as ('yes' | 'late' | 'no')[]
-
-      responseValues.forEach(responseValue => {
-        const appointment = initialAssessmentAppointmentFactory.build({
-          sessionFeedback: {
-            attendance: { attended: responseValue },
-          },
-        })
-
-        describe(`service provider has selected ${responseValue}`, () => {
-          it(`contains the attendance questions and values, and marks ${responseValue} as "checked"`, () => {
-            const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
-
-            expect(presenter.attendanceResponses).toEqual([
-              {
-                value: 'yes',
-                text: 'Yes, they were on time',
-                checked: responseValue === 'yes',
-              },
-              {
-                value: 'late',
-                text: 'They were late',
-                checked: responseValue === 'late',
-              },
-              {
-                value: 'no',
-                text: 'No',
-                checked: responseValue === 'no',
-              },
-            ])
-          })
-        })
+      expect(presenter.attendanceResponses).toEqual({
+        yes: {
+          value: 'yes',
+          text: 'Yes, they were on time',
+        },
+        late: {
+          value: 'late',
+          text: 'They were late',
+        },
+        no: {
+          value: 'no',
+          text: 'No',
+        },
       })
     })
   })
@@ -151,8 +110,8 @@ describe(AttendanceFeedbackPresenter, () => {
       describe('when the appointment already has additionalAttendanceInformation set', () => {
         it('uses that value as the value attribute', () => {
           const appointment = initialAssessmentAppointmentFactory.build({
-            sessionFeedback: {
-              attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
+            appointmentFeedback: {
+              attendanceFeedback: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
             },
           })
           const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
@@ -164,8 +123,8 @@ describe(AttendanceFeedbackPresenter, () => {
       describe('when the appointment has no value for additionalAttendanceInformation', () => {
         it('uses sets the value to an empty string', () => {
           const appointment = initialAssessmentAppointmentFactory.build({
-            sessionFeedback: {
-              attendance: { attended: 'late' },
+            appointmentFeedback: {
+              attendanceFeedback: { attended: 'late' },
             },
           })
           const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
@@ -178,8 +137,8 @@ describe(AttendanceFeedbackPresenter, () => {
     describe('when there is user input data', () => {
       it('uses the user input data as the value attribute', () => {
         const appointment = initialAssessmentAppointmentFactory.build({
-          sessionFeedback: {
-            attendance: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
+          appointmentFeedback: {
+            attendanceFeedback: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
           },
         })
         const presenter = new ExtendedAttendanceFeedbackPresenter(appointment, null, {

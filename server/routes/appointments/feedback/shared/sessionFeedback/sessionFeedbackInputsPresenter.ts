@@ -2,7 +2,7 @@ import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../..
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import PresenterUtils from '../../../../../utils/presenterUtils'
 
-export default class BehaviourFeedbackInputsPresenter {
+export default class SessionFeedbackInputsPresenter {
   constructor(
     private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
     private readonly error: FormValidationError | null = null,
@@ -14,22 +14,36 @@ export default class BehaviourFeedbackInputsPresenter {
   }
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error, {
-    fieldOrder: ['behaviour-description', 'notify-probation-practitioner'],
+    fieldOrder: ['session-summary', 'session-response', 'session-concerns', 'notify-probation-practitioner'],
   })
 
   private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    behaviourDescription: {
+    sessionSummary: {
       value: new PresenterUtils(this.userInputData).stringValue(
-        this.appointment.sessionFeedback?.behaviour?.behaviourDescription || null,
-        'behaviour-description'
+        this.appointment.appointmentFeedback?.sessionFeedback?.sessionSummary || null,
+        'session-summary'
       ),
-      errorMessage: this.errorMessageForField('behaviour-description'),
+      errorMessage: this.errorMessageForField('session-summary'),
+    },
+    sessionResponse: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.sessionResponse || null,
+        'session-response'
+      ),
+      errorMessage: this.errorMessageForField('session-response'),
+    },
+    sessionConcerns: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.sessionConcerns || null,
+        'session-concerns'
+      ),
+      errorMessage: this.errorMessageForField('session-concerns'),
     },
     notifyProbationPractitioner: {
       value: this.utils.booleanValue(
-        this.appointment.sessionFeedback?.behaviour?.notifyProbationPractitioner ?? null,
+        this.appointment.appointmentFeedback?.sessionFeedback?.notifyProbationPractitioner ?? null,
         'notify-probation-practitioner'
       ),
       errorMessage: this.errorMessageForField('notify-probation-practitioner'),

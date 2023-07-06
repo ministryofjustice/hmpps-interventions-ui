@@ -101,4 +101,24 @@ export default class AppointmentSummary {
       address.postCode,
     ].flatMap(val => (val === null ? [] : [val]))
   }
+
+  get sessionDetails(): { question: string; answer: string } {
+    const date = DateUtils.formattedDate(this.appointmentDecorator.britishDay!)
+    const time = DateUtils.formattedTime(this.appointmentDecorator.britishTime!)
+    const caseworkerName = this.assignedCaseworker ? this.caseworkerName() : ''
+    const deliveryMethod = this.appointment.appointmentDeliveryType
+      ? this.deliveryMethod(this.appointment.appointmentDeliveryType).toLowerCase()
+      : ''
+
+    return {
+      question: `Session Details`,
+      answer: `The ${deliveryMethod} was with caseworker ${caseworkerName} at ${time} on ${date}.`,
+    }
+  }
+
+  private caseworkerName(): string {
+    return typeof this.assignedCaseworker === 'string'
+      ? this.assignedCaseworker
+      : `${(<AuthUserDetails>this.assignedCaseworker).firstName} ${(<AuthUserDetails>this.assignedCaseworker).lastName}`
+  }
 }

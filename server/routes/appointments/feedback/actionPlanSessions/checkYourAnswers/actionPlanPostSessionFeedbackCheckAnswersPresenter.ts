@@ -24,11 +24,11 @@ export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends 
 
   get backLinkHref(): string {
     if (this.draftId) {
-      return this.actionPlanAppointment.sessionFeedback.attendance.attended === 'no'
+      return this.actionPlanAppointment.appointmentFeedback.attendanceFeedback.attended === 'no'
         ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/attendance`
         : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/behaviour`
     }
-    return this.actionPlanAppointment.sessionFeedback.attendance.attended === 'no'
+    return this.actionPlanAppointment.appointmentFeedback.attendanceFeedback.attended === 'no'
       ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/attendance`
       : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/behaviour`
   }

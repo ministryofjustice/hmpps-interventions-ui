@@ -17,8 +17,8 @@ export default class InitialAssessmentAttendanceFeedbackPresenter extends Attend
   ) {
     super(
       initialAssessmentAppointment,
-      'Add feedback',
-      'Appointment details',
+      'Record session attendance',
+      'The date and time of the session are a permanent record of where this person was.',
       new AttendanceFeedbackQuestionnaire(initialAssessmentAppointment, serviceUser),
       appointmentSummary,
       error,

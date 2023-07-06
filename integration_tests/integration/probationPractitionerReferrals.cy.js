@@ -218,7 +218,7 @@ describe('Probation practitioner referrals dashboard', () => {
               .contains('The appointment has been scheduled by the supplier')
               .next()
               .within(() => {
-                cy.contains('Appointment status').next().contains('awaiting feedback')
+                cy.contains('Appointment status').next().contains('needs feedback')
                 cy.contains('To do').next().contains('View appointment details').click()
                 cy.location('pathname').should(
                   'equal',

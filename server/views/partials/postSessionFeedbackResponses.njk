@@ -1,3 +1,11 @@
+{% if presenter.appointment.appointmentFeedback.sessionFeedback.sessionSummary %}
+    <h1 class="govuk-heading-m">Session Attendance</h1>
+{% endif %}
+
+{% if feedbackAnswersPresenter.attendedAnswers %}
+  <h3 class="govuk-heading-s">{{ presenter.appointmentSummary.sessionDetails.question }}</h3>
+  <p>{{ presenter.appointmentSummary.sessionDetails.answer | escape | nl2br }}</p>
+{% endif %}
 
 {% if feedbackAnswersPresenter.attendedAnswers %}
   <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.attendedAnswers.question }}</h3>
@@ -9,12 +17,36 @@
   <p>{{ feedbackAnswersPresenter.additionalAttendanceAnswers.answer | escape | nl2br }}</p>
 {% endif %}
 
+{% if feedbackAnswersPresenter.attendanceFailureInformationAnswers %}
+  <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.attendanceFailureInformationAnswers.question }}</h3>
+  <p>{{ feedbackAnswersPresenter.attendanceFailureInformationAnswers.answer | escape | nl2br }}</p>
+{% endif %}
+
+<br>
+
+{% if presenter.appointment.appointmentFeedback.sessionFeedback.sessionSummary %}
+<h1 class="govuk-heading-m">Session Feedback</h1>
+{% endif %}
+
+{% if feedbackAnswersPresenter.sessionSummaryAnswers %}
+  <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.sessionSummaryAnswers.question }}</h3>
+  <p>{{ feedbackAnswersPresenter.sessionSummaryAnswers.answer }}</p>
+{% endif %}
+
+{% if feedbackAnswersPresenter.sessionResponseAnswers %}
+  <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.sessionResponseAnswers.question }}</h3>
+  <p>{{ feedbackAnswersPresenter.sessionResponseAnswers.answer }}</p>
+{% endif %}
+
+{% if feedbackAnswersPresenter.notifyProbationPractitionerAnswers %}
+    {% if feedbackAnswersPresenter.sessionConcernsAnswers %}
+        <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.sessionConcernsAnswers.question }}</h3>
+        <p>{{ feedbackAnswersPresenter.sessionConcernsAnswers.answer }}</p>
+    {% endif %}
+{% endif %}
+
 {% if feedbackAnswersPresenter.behaviourDescriptionAnswers %}
   <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.behaviourDescriptionAnswers.question }}</h3>
   <p>{{ feedbackAnswersPresenter.behaviourDescriptionAnswers.answer | escape | nl2br }}</p>
 {% endif %}
 
-{% if feedbackAnswersPresenter.notifyProbationPractitionerAnswers %}
-  <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.notifyProbationPractitionerAnswers.question }}</h3>
-  <p>{{ feedbackAnswersPresenter.notifyProbationPractitionerAnswers.answer }}</p>
-{% endif %}

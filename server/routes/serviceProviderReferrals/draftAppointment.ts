@@ -2,7 +2,7 @@ import { DraftAppointmentFeedbackDetails } from './draftAppointmentFeedback'
 import { AppointmentSchedulingDetails } from '../../models/appointment'
 
 export type AppointmentDetails = DraftAppointmentBooking & {
-  sessionFeedback?: DraftAppointmentFeedbackDetails
+  session?: DraftAppointmentFeedbackDetails
 }
 
 export type DraftAppointment = null | AppointmentDetails

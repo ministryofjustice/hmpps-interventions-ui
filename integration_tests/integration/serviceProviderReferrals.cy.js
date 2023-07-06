@@ -1159,20 +1159,27 @@ describe('Service provider referrals dashboard', () => {
 
             // Attendance page
             cy.contains('Yes').click()
-            cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
             cy.contains('Save and continue').click()
 
-            cy.contains('Add behaviour feedback')
-
-            cy.contains("Describe Alex's behaviour in this session").type('Alex was well behaved')
+            cy.contains('What did you do in the session?').type('Discussed accommodation')
+            cy.contains('Add details about what you did, anything that was achieved and what came out of the session.')
+            cy.contains('How did Alex River respond to the session?').type('Engaged well')
+            cy.contains(
+              'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support Alex.'
+            )
             cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
 
             cy.contains('Save and continue').click()
 
-            cy.contains('Confirm feedback')
-            cy.contains('Alex attended the session')
+            cy.contains('Confirm session feedback')
+            cy.contains('Session Attendance')
+            cy.contains('Did Alex River come to the session?')
             cy.contains('Yes, they were on time')
-            cy.contains('Alex was well behaved')
+            cy.contains('What did you do in the session?')
+            cy.contains('Discussed accommodation')
+            cy.contains('How did Alex River respond to the session?')
+            cy.contains('Engaged well')
+            cy.contains('Did anything concern you about Alex River?')
             cy.contains('No')
 
             const scheduledAppointment = actionPlanAppointmentFactory.build({
@@ -1183,13 +1190,13 @@ describe('Service provider referrals dashboard', () => {
               appointmentDeliveryType: 'PHONE_CALL',
               appointmentDeliveryAddress: null,
               npsOfficeCode: null,
-              sessionFeedback: {
-                attendance: {
+              appointmentFeedback: {
+                attendanceFeedback: {
                   attended: 'yes',
-                  additionalAttendanceInformation: 'Alex attended the session',
                 },
-                behaviour: {
-                  behaviourDescription: 'Alex was well behaved',
+                sessionFeedback: {
+                  sessionSummary: 'stub session summary',
+                  sessionResponse: 'stub session response',
                   notifyProbationPractitioner: false,
                 },
                 submitted: true,
@@ -1200,13 +1207,45 @@ describe('Service provider referrals dashboard', () => {
                 },
               },
             })
+
+            const accommodationIntervention = interventionFactory.build({
+              contractType: { code: 'SOC', name: 'Social inclusion' },
+              serviceCategories: [serviceCategory],
+            })
+            const serviceProvider = hmppsAuthUserFactory.build({
+              firstName: 'Case',
+              lastName: 'Worker',
+              username: 'case.worker',
+            })
+            const referralParams = {
+              id: '2',
+              referral: { interventionId: accommodationIntervention.id, serviceCategoryIds: [serviceCategory.id] },
+            }
+
+            const assignedReferral = sentReferralFactory.assigned().build({
+              ...referralParams,
+              assignedTo: { username: serviceProvider.username },
+              actionPlanId: actionPlan.id,
+            })
+
+            cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [
+              { id: actionPlan.id, submittedAt: actionPlan.submittedAt, approvedAt: actionPlan.approvedAt },
+            ])
+            cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUser)
+            cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+            cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
+            cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
+            cy.stubGetActionPlan(actionPlan.id, actionPlan)
+            cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
+            cy.stubGetActionPlanAppointments(actionPlan.id, [scheduledAppointment])
             cy.stubGetActionPlanAppointment(actionPlan.id, 1, scheduledAppointment)
             cy.stubGetActionPlanAppointment(actionPlan.id, 2, scheduledAppointment)
             cy.stubUpdateActionPlanAppointment(actionPlan.id, 1, scheduledAppointment)
+
             cy.get('form').contains('Confirm').click()
 
-            cy.contains('Session feedback added and submitted to the probation practitioner')
-            cy.contains('You can now deliver the next session scheduled for 24 March 2021.')
+            cy.contains('Session feedback added')
+            cy.contains('The probation practitioner will be able to view the feedback in the service.')
           })
         })
       })
@@ -1269,7 +1308,7 @@ describe('Service provider referrals dashboard', () => {
   })
 
   describe('Recording post session feedback', () => {
-    it('user records the Service user as having attended, and fills out behaviour screen', () => {
+    it('user records the Service user as having attended, and fills out session feedback screen', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const accommodationIntervention = interventionFactory.build({
         contractType: { code: 'SOC', name: 'Social inclusion' },
@@ -1336,36 +1375,35 @@ describe('Service provider referrals dashboard', () => {
 
       const appointmentWithAttendanceRecorded = {
         ...appointments[0],
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'yes',
-            additionalAttendanceInformation: 'Alex attended the session',
           },
         },
       }
 
-      const appointmentWithBehaviourRecorded = {
+      const appointmentWithSessionFeedbackRecorded = {
         ...appointmentWithAttendanceRecorded,
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'yes',
-            additionalAttendanceInformation: 'Alex attended the session',
           },
-          behaviour: {
-            behaviourDescription: 'Alex was well-behaved',
+          sessionFeedback: {
+            sessionSummary: 'Discussed accommodation',
+            sessionResponse: 'Engaged well',
             notifyProbationPractitioner: false,
           },
         },
       }
       const appointmentWithSubmittedFeedback = {
-        ...appointmentWithBehaviourRecorded,
-        sessionFeedback: {
-          attendance: {
+        ...appointmentWithSessionFeedbackRecorded,
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'yes',
-            additionalAttendanceInformation: 'Alex attended the session',
           },
-          behaviour: {
-            behaviourDescription: 'Alex was well-behaved',
+          sessionFeedback: {
+            sessionSummary: 'Discussed accommodation',
+            sessionResponse: 'Engaged well',
             notifyProbationPractitioner: false,
           },
           submitted: true,
@@ -1379,39 +1417,48 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Give feedback').click()
 
       cy.contains('Yes').click()
-      cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
 
       cy.stubRecordActionPlanAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
       cy.contains('Save and continue').click()
 
-      cy.contains('Add behaviour feedback')
+      cy.contains('Add session feedback')
 
-      cy.contains("Describe Alex's behaviour in this session").type('Alex was well behaved')
+      cy.contains('What did you do in the session?').type('Discussed accommodation')
+      cy.contains('Add details about what you did, anything that was achieved and what came out of the session.')
+      cy.contains('How did Alex River respond to the session?').type('Engaged well')
+      cy.contains(
+        'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support Alex.'
+      )
+
       cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
 
-      cy.stubRecordActionPlanAppointmentBehavior(actionPlan.id, 1, appointmentWithBehaviourRecorded)
+      cy.stubRecordActionPlanAppointmentSessionFeedback(actionPlan.id, 1, appointmentWithSessionFeedbackRecorded)
 
-      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentWithBehaviourRecorded)
+      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentWithSessionFeedbackRecorded)
 
       cy.contains('Save and continue').click()
 
-      cy.contains('Confirm feedback')
-      cy.contains('Alex attended the session')
+      cy.contains('Confirm session feedback')
+      cy.contains('Session Attendance')
+      cy.contains('Did Alex River come to the session?')
       cy.contains('Yes, they were on time')
-      cy.contains('Alex was well-behaved')
+      cy.contains('What did you do in the session?')
+      cy.contains('Discussed accommodation')
+      cy.contains('How did Alex River respond to the session?')
+      cy.contains('Engaged well')
+      cy.contains('Did anything concern you about Alex River?')
       cy.contains('No')
 
       cy.stubSubmitActionPlanSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
+      const updatedAppointments = [appointmentWithSubmittedFeedback, appointments[1]]
+      cy.stubGetActionPlanAppointments(actionPlan.id, updatedAppointments)
 
       cy.get('form').contains('Confirm').click()
 
-      cy.contains('Session feedback added and submitted to the probation practitioner')
-      cy.contains('You can now deliver the next session scheduled for 31 March 2021.')
+      cy.contains('Session feedback added')
+      cy.contains('The probation practitioner will be able to view the feedback in the service.')
 
-      const updatedAppointments = [appointmentWithSubmittedFeedback, appointments[1]]
-      cy.stubGetActionPlanAppointments(actionPlan.id, updatedAppointments)
-      cy.contains('Return to service progress').click().getTable()
       cy.get('[data-cy=session-table]')
         .getTable()
         .should(result => {
@@ -1425,13 +1472,13 @@ describe('Service provider referrals dashboard', () => {
           expect(result[1]).to.deep.include({
             'Session details': 'Session 2',
             'Date and time': '10:02am on 31 Mar 2021',
-            Status: 'awaiting feedback',
+            Status: 'needs feedback',
           })
           expect(result[1]).to.contains(/^Reschedule session[\n|\t]*Give feedback$/)
         })
     })
 
-    it('user records the Service user as having not attended, and skips behaviour screen', () => {
+    it('user records the Service user as having not attended, and skips session feedback screen', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const intervention = interventionFactory.build({
         contractType: { code: 'ACC', name: 'accommodation' },
@@ -1497,13 +1544,13 @@ describe('Service provider referrals dashboard', () => {
 
       const appointmentWithAttendanceRecorded = {
         ...appointments[0],
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'no',
-            additionalAttendanceInformation: "Alex didn't attend",
           },
-          behaviour: {
-            behaviourDescription: null,
+          sessionFeedback: {
+            sessionSummary: null,
+            sessionResponse: null,
             notifyProbationPractitioner: null,
           },
         },
@@ -1511,13 +1558,13 @@ describe('Service provider referrals dashboard', () => {
 
       const appointmentWithSubmittedFeedback = {
         ...appointmentWithAttendanceRecorded,
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'no',
-            additionalAttendanceInformation: "Alex didn't attend",
           },
-          behaviour: {
-            behaviourDescription: null,
+          sessionFeedback: {
+            sessionSummary: null,
+            sessionConcerns: null,
             notifyProbationPractitioner: null,
           },
           submitted: true,
@@ -1531,7 +1578,6 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Give feedback').click()
 
       cy.get('input[name="attended"][value="no"]').click()
-      cy.contains("Add additional information about Alex's attendance").type("Alex didn't attend")
 
       cy.stubRecordActionPlanAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
@@ -1539,21 +1585,21 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Save and continue').click()
 
-      cy.contains('Confirm feedback')
+      cy.contains('Confirm session feedback')
+      cy.contains('The phone call was with caseworker Case Worker at 9:02am on 24 March 2021.')
+      cy.contains('Did Alex River come to the session?')
       cy.contains('No')
-      cy.contains("Alex didn't attend")
 
       cy.stubSubmitActionPlanSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
-
-      cy.get('form').contains('Confirm').click()
-
-      cy.contains('Session feedback added and submitted to the probation practitioner')
-      cy.contains('You can now deliver the next session scheduled for 31 March 2021.')
-
       const updatedAppointments = [appointmentWithSubmittedFeedback, appointments[1]]
       cy.stubGetActionPlanAppointments(actionPlan.id, updatedAppointments)
 
-      cy.contains('Return to service progress').click()
+      cy.get('form').contains('Confirm').click()
+
+      cy.contains('Session feedback added')
+      cy.contains(
+        'The probation practitioner will get an email about Alex River not attending. They’ll also be able to view the feedback in the service.'
+      )
 
       cy.get('[data-cy=session-table]')
         .getTable()
@@ -1568,12 +1614,12 @@ describe('Service provider referrals dashboard', () => {
           expect(result[1]).to.deep.include({
             'Session details': 'Session 2',
             'Date and time': '10:02am on 31 Mar 2021',
-            Status: 'awaiting feedback',
+            Status: 'needs feedback',
           })
           expect(result[1]).to.contain(/^Reschedule session[\n|\t]*Give feedback$/)
         })
     })
-    it('user records the Service user as having not attended, and skips behaviour screen with session history', () => {
+    it('user records the Service user as having not attended, and skips session feedback screen with session history', () => {
       const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
       const intervention = interventionFactory.build({
         contractType: { code: 'ACC', name: 'accommodation' },
@@ -1669,14 +1715,14 @@ describe('Service provider referrals dashboard', () => {
           expect(result[0]).to.deep.include({
             'Session details': 'Session 1',
             'Date and time': '9:02am on 24 Mar 2021',
-            Status: 'awaiting feedback',
+            Status: 'needs feedback',
           })
           expect(result[0]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
           expect(result[1]).to.contains(/^Session 1 history/gi)
           expect(result[2]).to.deep.include({
             'Session details': 'Session 2',
             'Date and time': '10:02am on 31 Aug 2021',
-            Status: 'awaiting feedback',
+            Status: 'needs feedback',
           })
           expect(result[2]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
           expect(result[3]).to.contains(/^Session 2 history/gi)
@@ -1723,13 +1769,13 @@ describe('Service provider referrals dashboard', () => {
     const appointmentsWithSubmittedFeedback = [
       actionPlanAppointmentFactory.scheduled().build({
         sessionNumber: 1,
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'yes',
-            additionalAttendanceInformation: 'Alex attended the session',
           },
-          behaviour: {
-            behaviourDescription: 'Alex was well-behaved',
+          sessionFeedback: {
+            sessionSummary: 'Discussed accommodation',
+            sessionResponse: 'Engaged well',
             notifyProbationPractitioner: false,
           },
           submitted: true,
@@ -1808,9 +1854,16 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('View feedback form').click()
       cy.contains('Current caseworker').next().contains('Case Worker (auth.user@someagency.justice.gov.uk)')
       cy.contains('Feedback submitted by').next().contains('Case Worker (auth.user@someagency.justice.gov.uk)')
-      cy.contains('Alex attended the session')
+      cy.contains('Session Attendance')
+      cy.contains('Session Details')
+      cy.contains('Did Alex River come to the session?')
       cy.contains('Yes, they were on time')
-      cy.contains('Alex was well-behaved')
+      cy.contains('Session Feedback')
+      cy.contains('What did you do in the session?')
+      cy.contains('Discussed accommodation')
+      cy.contains('How did Alex River respond to the session?')
+      cy.contains('Engaged well')
+      cy.contains('Did anything concern you about Alex River?')
       cy.contains('No')
     })
   })
@@ -2121,20 +2174,25 @@ describe('Service provider referrals dashboard', () => {
 
             // Attendance page
             cy.contains('Yes').click()
-            cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
             cy.contains('Save and continue').click()
 
-            cy.contains('Add behaviour feedback')
+            cy.contains('Add session feedback')
 
-            cy.contains("Describe Alex's behaviour in the assessment appointment").type('Alex was well behaved')
+            cy.contains('What did you do in the session?').type('Discussed his mental health')
+            cy.contains('How did Alex River respond to the session?').type('Engaged well')
             cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
 
             cy.contains('Save and continue').click()
 
-            cy.contains('Confirm feedback')
-            cy.contains('Alex attended the session')
+            cy.contains('Confirm session feedback')
+            cy.contains('Session Attendance')
             cy.contains('Yes, they were on time')
-            cy.contains('Alex was well behaved')
+            cy.contains('Session Feedback')
+            cy.contains('What did you do in the session?')
+            cy.contains('Discussed his mental health')
+            cy.contains('How did Alex River respond to the session?')
+            cy.contains('Engaged well')
+            cy.contains('Did anything concern you about Alex River?')
             cy.contains('No')
 
             const time = new Date()
@@ -2152,14 +2210,14 @@ describe('Service provider referrals dashboard', () => {
                 county: 'Lancashire',
                 postCode: 'SY4 0RE',
               },
-              sessionFeedback: {
-                attendance: {
+              appointmentFeedback: {
+                attendanceFeedback: {
                   attended: 'yes',
-                  additionalAttendanceInformation: 'Alex attended the session',
                 },
-                behaviour: {
-                  behaviourDescription: 'Alex was well behaved',
-                  notifyProbationPractitioner: false,
+                sessionFeedback: {
+                  sessionSummary: 'Discussed accommodation',
+                  sessionResponse: 'Engaged well',
+                  notifyProbationPractitioner: true,
                 },
                 submitted: true,
                 submittedBy: {
@@ -2172,7 +2230,8 @@ describe('Service provider referrals dashboard', () => {
 
             cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
             cy.get('form').contains('Confirm').click()
-            cy.contains('Initial assessment feedback added')
+            cy.contains('Session feedback added')
+            cy.contains('The probation practitioner will be able to view the feedback in the service.')
           })
         })
         describe('that happened before today', () => {
@@ -2487,7 +2546,7 @@ describe('Service provider referrals dashboard', () => {
             .next()
             .contains('Feedback needs to be added on the same day the assessment is delivered.')
 
-          cy.get('[data-cy=supplier-assessment-table]').contains('awaiting feedback')
+          cy.get('[data-cy=supplier-assessment-table]').contains('needs feedback')
           cy.get('[data-cy=supplier-assessment-table]').contains('Mark attendance and add feedback').click()
           cy.location('pathname').should(
             'equal',
@@ -2495,16 +2554,18 @@ describe('Service provider referrals dashboard', () => {
           )
 
           cy.get('[data-cy=supplier-assessment-attendance-radios]').contains('No').click()
-          cy.contains("Add additional information about Alex's attendance").type('Alex did not attend the session')
+          cy.contains(
+            'Add how you tried to contact Alex River and anything you know about why they did not attend.'
+          ).type('Alex did not answer his phone')
 
           const appointmentWithAttendanceFeedback = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
-            appointmentDeliveryType: 'PHONE_CALL',
-            sessionFeedback: {
-              attendance: {
+            appointmentDeliveryType: 'VIDEO_CALL',
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'no',
-                additionalAttendanceInformation: 'Alex did not attend the session',
+                attendanceFailureInformation: 'Alex did not answer his phone',
               },
             },
           })
@@ -2521,17 +2582,12 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
 
-          cy.contains('24 March 2021')
-          cy.contains('9:02am to 10:17am')
-          cy.contains('Did Alex attend the supplier assessment appointment?')
+          cy.contains('Session Details')
+          cy.contains('The video call was with caseworker Case Worker at 9:02am on 24 March 2021.')
+          cy.contains('Did Alex River come to the session?')
           cy.contains('No')
-          cy.contains("Add additional information about Alex's attendance:")
-          cy.contains('Alex did not attend the session')
-
-          cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithAttendanceFeedback)
-          cy.get('form').contains('Confirm').click()
-
-          cy.contains('Initial assessment feedback added')
+          cy.contains('Add how you tried to contact Alex River and anything you know about why they did not attend.')
+          cy.contains('Alex did not answer his phone')
 
           const hmppsAuthUser = hmppsAuthUserFactory.build({
             firstName: 'John',
@@ -2543,10 +2599,13 @@ describe('Service provider referrals dashboard', () => {
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'no',
-                additionalAttendanceInformation: 'Alex did not attend this session',
+              },
+              sessionFeedback: {
+                sessionSummary: 'Discussed accommodation',
+                sessionResponse: 'Engaged well',
               },
               submitted: true,
               submittedBy: { username: hmppsAuthUser.username, userId: hmppsAuthUser.username, authSource: 'auth' },
@@ -2557,7 +2616,15 @@ describe('Service provider referrals dashboard', () => {
             currentAppointmentId: submittedAppointment.id,
           })
           cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
-          cy.contains('Return to progress').click()
+
+          cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithAttendanceFeedback)
+          cy.get('form').contains('Confirm').click()
+
+          cy.contains('Session feedback added')
+          cy.contains(
+            'The probation practitioner will get an email about Alex River not attending. They’ll also be able to view the feedback in the service.'
+          )
+
           cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferral.id}/progress`)
 
           cy.contains('Supplier assessment appointment')
@@ -2584,10 +2651,10 @@ describe('Service provider referrals dashboard', () => {
             appointmentTime: '2022-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'no',
-                additionalAttendanceInformation: 'Alex did not attend the session',
+                attendanceFailureInformation: 'Alex did not answer his phone',
               },
               submitted: true,
               submittedBy: { username: hmppsAuthUser.username, userId: hmppsAuthUser.username, authSource: 'auth' },
@@ -2622,9 +2689,10 @@ describe('Service provider referrals dashboard', () => {
 
           cy.contains('24 March 2022')
           cy.contains('9:02am to 10:17am')
-          cy.contains('Did Alex attend the supplier assessment appointment?')
+          cy.contains('Did Alex River come to the session?')
           cy.contains('No')
-          cy.contains('Alex did not attend the session')
+          cy.contains('Add how you tried to contact Alex River and anything you know about why they did not attend.')
+          cy.contains('Alex did not answer his phone')
 
           cy.contains('Back').click()
 
@@ -2671,7 +2739,7 @@ describe('Service provider referrals dashboard', () => {
       })
 
       describe('when user records the attendance as attended', () => {
-        it('should allow user to add attendance, add behaviour, check their answers and submit the referral', () => {
+        it('should allow user to add attendance, add session feedback, check their answers and submit the referral', () => {
           const appointmentWithNoFeedback = initialAssessmentAppointmentFactory.inThePast.build({
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
@@ -2690,7 +2758,7 @@ describe('Service provider referrals dashboard', () => {
             .next()
             .contains('Feedback needs to be added on the same day the assessment is delivered.')
 
-          cy.get('[data-cy=supplier-assessment-table]').contains('awaiting feedback')
+          cy.get('[data-cy=supplier-assessment-table]').contains('needs feedback')
           cy.get('[data-cy=supplier-assessment-table]').contains('Mark attendance and add feedback').click()
 
           cy.location('pathname').should(
@@ -2698,7 +2766,6 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/attendance`
           )
           cy.contains('Yes').click()
-          cy.contains("Add additional information about Alex's attendance").type('Alex attended the session')
 
           const appointmentWithAttendanceFeedback = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
@@ -2724,66 +2791,67 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/behaviour`
           )
 
-          cy.contains("Describe Alex's behaviour in the assessment appointment").type(
+          cy.contains('What did you do in the session?').type('Discussed his mental health')
+          cy.contains('How did Alex River respond to the session?').type("Wasn't engaged")
+          cy.contains('Did anything concern you about Alex River?')
+          cy.contains('Yes').click()
+          cy.contains('Add enough detail to help the probation practitioner to know what happened').type(
             'Alex was acting very suspicious.'
           )
-          cy.contains('Yes').click()
 
-          const appointmentWithBehaviourFeedback = initialAssessmentAppointmentFactory.build({
+          const appointmentWithSessionFeedback = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'yes',
-                additionalAttendanceInformation: 'Alex attended the session',
               },
-              behaviour: {
-                behaviourDescription: 'Alex was acting very suspicious.',
+              sessionFeedback: {
+                sessionSummary: 'Discussed his mental health',
+                sessionResponse: "Wasn't engaged",
+                sessionConcerns: 'Alex was acting very suspicious.',
                 notifyProbationPractitioner: true,
               },
             },
           })
           supplierAssessment = supplierAssessmentFactory.build({
-            appointments: [appointmentWithBehaviourFeedback],
-            currentAppointmentId: appointmentWithBehaviourFeedback.id,
+            appointments: [appointmentWithSessionFeedback],
+            currentAppointmentId: appointmentWithSessionFeedback.id,
           })
 
           cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
-          cy.stubRecordSupplierAssessmentAppointmentBehaviour(sentReferral.id, appointmentWithBehaviourFeedback)
+          cy.stubRecordSupplierAssessmentAppointmentSessionFeedback(sentReferral.id, appointmentWithSessionFeedback)
 
           cy.contains('Save and continue').click()
           cy.location('pathname').should(
             'equal',
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
-          cy.contains('24 March 2021')
-          cy.contains('9:02am to 10:17am')
-          cy.contains('Did Alex attend the supplier assessment appointment?')
+          cy.contains('Session Attendance')
+          cy.contains('Session Details')
+          cy.contains('The phone call was with caseworker Case Worker at 9:02am on 24 March 2021.')
+          cy.contains('Did Alex River come to the session?')
           cy.contains('Yes, they were on time')
-          cy.contains("Add additional information about Alex's attendance:")
-          cy.contains('Alex attended the session')
-          cy.contains("Describe Alex's behaviour in the assessment appointment")
-          cy.contains('Alex was acting very suspicious.')
-          cy.contains('If you described poor behaviour, do you want to notify the probation practitioner?')
-          cy.contains('Yes')
-
-          cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithBehaviourFeedback)
-          cy.get('form').contains('Confirm').click()
-
-          cy.contains('Initial assessment feedback added')
+          cy.contains('Session Feedback')
+          cy.contains('What did you do in the session?')
+          cy.contains('Discussed his mental health')
+          cy.contains('How did Alex River respond to the session?')
+          cy.contains("Wasn't engaged")
+          cy.contains('Did anything concern you about Alex River?')
+          cy.contains('Yes - Alex was acting very suspicious.')
 
           const submittedAppointment = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'yes',
-                additionalAttendanceInformation: 'Alex attended the session',
               },
-              behaviour: {
-                behaviourDescription: 'Alex was acting very suspicious.',
+              sessionFeedback: {
+                sessionSummary: 'Discussed accommodation',
+                sessionResponse: 'Engaged well',
                 notifyProbationPractitioner: true,
               },
               submitted: true,
@@ -2794,7 +2862,12 @@ describe('Service provider referrals dashboard', () => {
             currentAppointmentId: submittedAppointment.id,
           })
           cy.stubGetSupplierAssessment(sentReferral.id, supplierAssessment)
-          cy.contains('Return to progress').click()
+
+          cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithSessionFeedback)
+          cy.get('form').contains('Confirm').click()
+
+          cy.contains('Session feedback added')
+
           cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferral.id}/progress`)
 
           cy.contains('Supplier assessment appointment')

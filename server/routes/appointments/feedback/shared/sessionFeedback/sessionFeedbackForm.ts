@@ -1,18 +1,20 @@
 import { Request } from 'express'
 import { body, Result, ValidationChain, ValidationError } from 'express-validator'
-import AppointmentBehaviour from '../../../../../models/appointmentBehaviour'
+import AppointmentSession from '../../../../../models/sessionFeedback'
 import errorMessages from '../../../../../utils/errorMessages'
 import FormUtils from '../../../../../utils/formUtils'
 import { FormValidationError } from '../../../../../utils/formValidationError'
 import { FormData } from '../../../../../utils/forms/formData'
+import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 
-export default class BehaviourFeedbackForm {
-  constructor(private readonly request: Request) {}
+export default class SessionFeedbackForm {
+  constructor(private readonly request: Request, private readonly serviceUser: DeliusServiceUser) {}
 
-  async data(): Promise<FormData<Partial<AppointmentBehaviour>>> {
+  async data(): Promise<FormData<Partial<AppointmentSession>>> {
+    const serviceUserName = `${this.serviceUser.firstName} ${this.serviceUser.surname}`
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: BehaviourFeedbackForm.validations,
+      validations: SessionFeedbackForm.validations(serviceUserName),
     })
 
     const error = this.error(validationResult)
@@ -26,23 +28,34 @@ export default class BehaviourFeedbackForm {
 
     return {
       paramsForUpdate: {
-        behaviourDescription: this.request.body['behaviour-description'],
+        sessionSummary: this.request.body['session-summary'],
+        sessionResponse: this.request.body['session-response'],
+        sessionConcerns: this.request.body['session-concerns'],
         notifyProbationPractitioner: this.notifyProbationPractitioner,
       },
       error: null,
     }
   }
 
-  static get validations(): ValidationChain[] {
+  static validations(serviceUserName: string): ValidationChain[] {
     return [
-      body('behaviour-description')
+      body('session-summary')
         .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.appointmentBehaviour.descriptionEmpty)
+        .withMessage(errorMessages.sessionSummary.empty)
+        .bail()
+        .trim(),
+      body('session-response')
+        .notEmpty({ ignore_whitespace: true })
+        .withMessage(errorMessages.sessionResponse.empty(serviceUserName))
         .bail()
         .trim(),
       body('notify-probation-practitioner')
         .isIn(['yes', 'no'])
-        .withMessage(errorMessages.appointmentBehaviour.notifyProbationPractitionerNotSelected),
+        .withMessage(errorMessages.sessionConcerns.notifyProbationPractitionerNotSelected),
+      body('session-concerns')
+        .if(body('notify-probation-practitioner').equals('yes'))
+        .notEmpty({ ignore_whitespace: true })
+        .withMessage(errorMessages.sessionConcerns.empty),
     ]
   }
 

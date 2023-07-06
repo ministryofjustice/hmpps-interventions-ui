@@ -24,11 +24,11 @@ export default class InitialAssessmentFeedbackCheckAnswersPresenter extends Chec
 
   get backLinkHref(): string {
     if (this.draftId) {
-      return this.appointment.sessionFeedback.attendance.attended === 'no'
+      return this.appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
         ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/edit/${this.draftId}/attendance`
         : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/edit/${this.draftId}/behaviour`
     }
-    return this.appointment.sessionFeedback.attendance.attended === 'no'
+    return this.appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
       ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/attendance`
       : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/behaviour`
   }

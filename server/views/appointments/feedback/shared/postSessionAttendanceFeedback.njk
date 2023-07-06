@@ -7,16 +7,20 @@
 {% extends "../../../serviceProviderReferrals/actionPlan/actionPlanFormTemplate.njk" %}
 
 {% set pageTitle = "Appointment feedback" %}
-{% set pageSubTitle = "Add attendance feedback" %}
+{% set pageSubTitle = "Record session attendance" %}
 
 {% block formSection %}
+    <h2 class="govuk-heading-m">Session details</h2>
   {{ govukSummaryList(summaryListArgs) }}
 
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-    {{ govukRadios(radioButtonArgs) }}
 
-    {{ govukTextarea(textAreaArgs) }}
+    {% set attendanceFailureInformationHtml %}
+        {{ govukTextarea(attendanceFailureInformationTextAreaArgs) }}
+    {% endset -%}
+
+    {{ govukRadios(radioButtonArgs(attendanceFailureInformationHtml)) }}
 
     {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
   </form>

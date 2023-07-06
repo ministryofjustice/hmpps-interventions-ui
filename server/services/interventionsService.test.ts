@@ -3051,14 +3051,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             county: 'Lancashire',
             postCode: 'SY40RE',
           },
-          sessionFeedback: {
-            attendance: {
+          appointmentFeedback: {
+            attendanceFeedback: {
               attended: 'yes',
-              additionalAttendanceInformation: 'attendance information',
             },
-            behaviour: {
+            sessionFeedback: {
+              sessionSummary: 'stub session summary',
+              sessionResponse: 'stub session response',
               notifyProbationPractitioner: false,
-              behaviourDescription: 'they were good',
             },
             submittedBy: {
               authSource: 'auth',
@@ -3090,13 +3090,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 postCode: 'SY40RE',
               },
               npsOfficeCode: null,
-              appointmentAttendance: {
+              attendanceFeedback: {
                 attended: 'yes',
-                additionalAttendanceInformation: 'attendance information',
               },
-              appointmentBehaviour: {
+              sessionFeedback: {
+                sessionSummary: 'stub session summary',
+                sessionResponse: 'stub session response',
                 notifyProbationPractitioner: false,
-                behaviourDescription: 'they were good',
               },
             },
             headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
@@ -3129,13 +3129,15 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
                 postCode: 'SY40RE',
               },
               npsOfficeCode: null,
-              appointmentAttendance: {
+              attendanceFeedback: {
                 attended: 'yes',
-                additionalAttendanceInformation: 'attendance information',
+                attendanceFailureInformation: '',
               },
-              appointmentBehaviour: {
+              sessionFeedback: {
                 notifyProbationPractitioner: false,
-                behaviourDescription: 'they were good',
+                sessionSummary: 'stub session summary',
+                sessionResponse: 'stub session response',
+                sessionConcerns: '',
               },
             }
           )
@@ -3233,7 +3235,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2/record-attendance',
           body: {
             attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
           },
           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
@@ -3252,13 +3253,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
               county: 'Lancashire',
               postCode: 'SY40RE',
             },
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'late',
-                additionalAttendanceInformation: 'Alex missed the bus',
               },
-              behaviour: {
-                behaviourDescription: null,
+              sessionFeedback: {
+                sessionSummary: null,
+                sessionResponse: null,
+                sessionConcerns: null,
                 notifyProbationPractitioner: null,
               },
               submitted: false,
@@ -3277,29 +3279,28 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         2,
         {
           attended: 'late',
-          additionalAttendanceInformation: 'Alex missed the bus',
         }
       )
-      expect(appointment.sessionFeedback!.attendance!.attended).toEqual('late')
-      expect(appointment.sessionFeedback!.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+      expect(appointment.appointmentFeedback!.attendanceFeedback!.attended).toEqual('late')
     })
   })
 
-  describe('recordActionPlanAppointmentBehavior', () => {
+  describe('recordActionPlanAppointmentSessoinFeedback', () => {
     const appointmentTime = new Date()
     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
-    it('returns an updated action plan appointment with the service user‘s behaviour', async () => {
+    it('returns an updated action plan appointment with the session feedback', async () => {
       await provider.addInteraction({
         state:
           'an action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d exists with 1 appointment with recorded attendance',
         uponReceiving:
-          'a POST request to set the behaviour for the appointment on action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
+          'a POST request to set the session feedback for the appointment on action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
         withRequest: {
           method: 'POST',
-          path: '/action-plan/81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d/appointment/1/record-behaviour',
+          path: '/action-plan/81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d/appointment/1/record-session-feedback',
           body: {
-            behaviourDescription: 'Alex was well behaved',
+            sessionSummary: 'Discussed accommodation',
+            sessionResponse: 'Engaged well',
             notifyProbationPractitioner: false,
           },
           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
@@ -3310,13 +3311,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             sessionNumber: 1,
             appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
             durationInMinutes: 120,
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'late',
-                additionalAttendanceInformation: 'Alex missed the bus',
               },
-              behaviour: {
-                behaviourDescription: 'Alex was well behaved',
+              sessionFeedback: {
+                sessionSummary: 'Discussed accommodation',
+                sessionResponse: 'Engaged well',
                 notifyProbationPractitioner: false,
               },
               submitted: false,
@@ -3329,17 +3330,19 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const appointment = await interventionsService.recordActionPlanAppointmentBehavior(
+      const appointment = await interventionsService.recordActionPlanAppointmentSessionFeedback(
         probationPractitionerToken,
         '81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
         1,
         {
-          behaviourDescription: 'Alex was well behaved',
+          sessionSummary: 'Discussed accommodation',
+          sessionResponse: 'Engaged well',
           notifyProbationPractitioner: false,
         }
       )
-      expect(appointment.sessionFeedback!.behaviour!.behaviourDescription).toEqual('Alex was well behaved')
-      expect(appointment.sessionFeedback!.behaviour!.notifyProbationPractitioner).toEqual(false)
+      expect(appointment.appointmentFeedback!.sessionFeedback!.sessionSummary).toEqual('Discussed accommodation')
+      expect(appointment.appointmentFeedback!.sessionFeedback!.sessionResponse).toEqual('Engaged well')
+      expect(appointment.appointmentFeedback!.sessionFeedback!.notifyProbationPractitioner).toEqual(false)
     })
   })
 
@@ -3347,10 +3350,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     const appointmentTime = new Date()
     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
-    it('submits attendance and behaviour feedback to the PP', async () => {
+    it('submits attendance and session feedback to the PP', async () => {
       await provider.addInteraction({
         state:
-          'an action plan with ID 0f5afe04-e323-4699-9423-fb6122580638 exists with 1 appointment with recorded attendance and behaviour',
+          'an action plan with ID 0f5afe04-e323-4699-9423-fb6122580638 exists with 1 appointment with recorded attendance and session feedback',
         uponReceiving:
           'a POST request to submit the feedback for appointment 1 on action plan with ID 0f5afe04-e323-4699-9423-fb6122580638',
         withRequest: {
@@ -3364,13 +3367,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             sessionNumber: 1,
             appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
             durationInMinutes: 120,
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'late',
-                additionalAttendanceInformation: 'Alex missed the bus',
               },
-              behaviour: {
-                behaviourDescription: 'Alex was well behaved',
+              sessionFeedback: {
+                sessionSummary: 'Discussed accommodation',
+                sessionResponse: 'Engaged well',
                 notifyProbationPractitioner: false,
               },
               submitted: true,
@@ -3392,7 +3395,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         '0f5afe04-e323-4699-9423-fb6122580638',
         1
       )
-      expect(appointment.sessionFeedback!.submitted).toEqual(true)
+      expect(appointment.appointmentFeedback!.submitted).toEqual(true)
     })
   })
 
@@ -3727,13 +3730,15 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 60,
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
+            additionalAttendanceInformation: null,
           },
-          behaviour: {
-            behaviourDescription: null,
+          sessionFeedback: {
+            sessionSummary: null,
+            sessionResponse: null,
+            sessionConcerns: null,
             notifyProbationPractitioner: null,
           },
           submitted: false,
@@ -3751,7 +3756,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           path: '/referral/58963698-0f2e-4d6e-a072-0e2cf351f3b2/supplier-assessment/record-attendance',
           body: {
             attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
           },
           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
@@ -3769,29 +3773,29 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         '58963698-0f2e-4d6e-a072-0e2cf351f3b2',
         {
           attended: 'late',
-          additionalAttendanceInformation: 'Alex missed the bus',
         }
       )
-      expect(result.sessionFeedback!.attendance!.attended).toEqual('late')
-      expect(result.sessionFeedback!.attendance!.additionalAttendanceInformation).toEqual('Alex missed the bus')
+      expect(result.appointmentFeedback!.attendanceFeedback!.attended).toEqual('late')
     })
   })
 
-  describe('recordSupplierAssessmentAppointmentBehaviour', () => {
+  describe('recordSupplierAssessmentAppointmentSessionFeedback', () => {
     const appointmentTime = new Date()
     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
-    it('returns an supplier with the service user‘s behaviour', async () => {
+    it('returns an supplier with the session feedback', async () => {
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 120,
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
+            additionalAttendanceInformation: null,
           },
-          behaviour: {
-            behaviourDescription: 'Alex was well behaved',
+          sessionFeedback: {
+            sessionSummary: 'Discussed accommodation',
+            sessionResponse: 'Engaged well',
+            sessionConcerns: null,
             notifyProbationPractitioner: false,
           },
           submitted: false,
@@ -3803,12 +3807,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         state:
           'There is an existing sent referral with ID caac2a85-578f-4b0b-996d-2893311eb60e and the supplier assessment attendance details have been recorded',
         uponReceiving:
-          'a PUT request to set the behaviour for the supplier assessment appointment for referral with ID caac2a85-578f-4b0b-996d-2893311eb60e',
+          'a PUT request to set the session feedback for the supplier assessment appointment for referral with ID caac2a85-578f-4b0b-996d-2893311eb60e',
         withRequest: {
           method: 'PUT',
-          path: '/referral/caac2a85-578f-4b0b-996d-2893311eb60e/supplier-assessment/record-behaviour',
+          path: '/referral/caac2a85-578f-4b0b-996d-2893311eb60e/supplier-assessment/record-session-feedback',
           body: {
-            behaviourDescription: 'Alex was well behaved',
+            sessionSummary: 'Discussed accommodation',
+            sessionResponse: 'Engaged well',
             notifyProbationPractitioner: false,
           },
           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
@@ -3822,16 +3827,18 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
       })
 
-      const result = await interventionsService.recordSupplierAssessmentAppointmentBehaviour(
+      const result = await interventionsService.recordSupplierAssessmentAppointmentSessionFeedback(
         probationPractitionerToken,
         'caac2a85-578f-4b0b-996d-2893311eb60e',
         {
-          behaviourDescription: 'Alex was well behaved',
+          sessionSummary: 'Discussed accommodation',
+          sessionResponse: 'Engaged well',
           notifyProbationPractitioner: false,
         }
       )
-      expect(result.sessionFeedback!.behaviour!.behaviourDescription).toEqual('Alex was well behaved')
-      expect(result.sessionFeedback!.behaviour!.notifyProbationPractitioner).toEqual(false)
+      expect(result.appointmentFeedback!.sessionFeedback!.sessionSummary).toEqual('Discussed accommodation')
+      expect(result.appointmentFeedback!.sessionFeedback!.sessionResponse).toEqual('Engaged well')
+      expect(result.appointmentFeedback!.sessionFeedback!.notifyProbationPractitioner).toEqual(false)
     })
   })
 
@@ -3839,17 +3846,18 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     const appointmentTime = new Date()
     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
-    it('submits attendance and behaviour feedback', async () => {
+    it('submits attendance and session feedback', async () => {
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
         durationInMinutes: 120,
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: 'late',
-            additionalAttendanceInformation: 'Alex missed the bus',
           },
-          behaviour: {
-            behaviourDescription: 'Alex was well behaved',
+          sessionFeedback: {
+            sessionSummary: '',
+            sessionResponse: '',
+            sessionConcerns: null,
             notifyProbationPractitioner: false,
           },
           submitted: true,
@@ -3863,7 +3871,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
       await provider.addInteraction({
         state:
-          'There is an existing sent referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1 and the supplier assessment attendance and behaviour details have been recorded',
+          'There is an existing sent referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1 and the supplier assessment attendance and session feedback have been recorded',
         uponReceiving:
           'a POST request to submit the feedback for the supplier assessment appointment for referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1',
         withRequest: {
@@ -3884,8 +3892,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         probationPractitionerToken,
         'cd8f46a2-78f2-457b-ab14-7d77adce73d1'
       )
-      expect(result.sessionFeedback!.submitted).toEqual(true)
-      expect(result.sessionFeedback!.submittedBy).not.toBeNull()
+      expect(result.appointmentFeedback!.submitted).toEqual(true)
+      expect(result.appointmentFeedback!.submittedBy).not.toBeNull()
     })
   })
 

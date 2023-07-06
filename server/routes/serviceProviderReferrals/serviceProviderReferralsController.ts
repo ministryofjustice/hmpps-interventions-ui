@@ -344,6 +344,10 @@ export default class ServiceProviderReferralsController {
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { id } = req.params
+    const { showFeedbackBanner } = req.query
+    const { notifyPP } = req.query
+    const { dna } = req.query
+
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, id)
 
     const serviceUserPromise = this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
@@ -402,8 +406,12 @@ export default class ServiceProviderReferralsController {
       approvedActionPlanSummaries,
       actionPlanAppointments,
       supplierAssessment,
+      serviceUser,
       assignee,
-      req.session.dashboardOriginPage
+      req.session.dashboardOriginPage,
+      showFeedbackBanner === 'true',
+      notifyPP === 'true',
+      dna === 'true'
     )
     const view = new InterventionProgressView(presenter)
 

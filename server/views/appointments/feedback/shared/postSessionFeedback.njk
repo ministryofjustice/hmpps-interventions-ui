@@ -6,14 +6,24 @@
 {% extends "../../../serviceProviderReferrals/actionPlan/actionPlanFormTemplate.njk" %}
 
 {% set pageTitle = "Appointment feedback" %}
-{% set pageSubTitle = "Add behaviour feedback" %}
+{% set pageSubTitle = "Add session feedback" %}
 
 {% block formSection %}
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-    {{ govukTextarea(textAreaArgs) }}
 
-    {{ govukRadios(radioButtonArgs) }}
+    {#
+    {{ govukTextarea(textAreaArgs) }}
+    #}
+
+    {% set hasConcernsHtml %}
+        {{ govukTextarea(sessionConcernsTextAreaArgs) }}
+    {% endset -%}
+
+    {{ govukTextarea(sessionSummaryTextAreaArgs) }}
+    {{ govukTextarea(sessionResponseTextAreaArgs) }}
+
+    {{ govukRadios(radioButtonArgs(hasConcernsHtml)) }}
 
     {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
   </form>

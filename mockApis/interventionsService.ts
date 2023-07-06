@@ -403,7 +403,7 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubRecordActionPlanAppointmentBehavior = async (
+  stubRecordActionPlanAppointmentSessionFeedback = async (
     actionPlanId: string,
     sessionNumber: string,
     responseJson: unknown
@@ -411,7 +411,7 @@ export default class InterventionsServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'POST',
-        urlPattern: `${this.mockPrefix}/action-plan/${actionPlanId}/appointment/${sessionNumber}/record-behaviour`,
+        urlPattern: `${this.mockPrefix}/action-plan/${actionPlanId}/appointment/${sessionNumber}/record-session-feedback`,
       },
       response: {
         status: 200,
@@ -622,14 +622,14 @@ export default class InterventionsServiceMocks {
     })
   }
 
-  stubRecordSupplierAssessmentAppointmentBehaviour = async (
+  stubRecordSupplierAssessmentAppointmentSessionFeedback = async (
     referralId: string,
     responseJson: unknown
   ): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
         method: 'PUT',
-        urlPattern: `${this.mockPrefix}/referral/${referralId}/supplier-assessment/record-behaviour`,
+        urlPattern: `${this.mockPrefix}/referral/${referralId}/supplier-assessment/record-session-feedback`,
       },
       response: {
         status: 200,

@@ -15,8 +15,8 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
       )
 
       expect(presenter.text).toMatchObject({
-        title: 'Add attendance feedback',
-        subTitle: 'Session details',
+        title: 'Record session attendance',
+        subTitle: 'The date and time of the session are a permanent record of where this person was.',
         attendanceQuestion: 'Did Alex attend this session?',
         attendanceQuestionHint: 'Select one option',
         additionalAttendanceInformationLabel: "Add additional information about Alex's attendance:",

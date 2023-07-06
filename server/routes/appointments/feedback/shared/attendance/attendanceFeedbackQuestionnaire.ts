@@ -15,7 +15,7 @@ export default class AttendanceFeedbackQuestionnaire {
   get attendanceQuestion(): { text: string; hint: string } {
     if (this.appointmentDecorator.isInitialAssessmentAppointment) {
       return {
-        text: `Did ${this.serviceUser.firstName} attend the supplier assessment appointment?`,
+        text: `Did ${this.serviceUser.firstName} ${this.serviceUser.surname} come to the session?`,
         hint: 'Select one option',
       }
     }
@@ -24,6 +24,10 @@ export default class AttendanceFeedbackQuestionnaire {
 
   get additionalAttendanceInformationQuestion(): string {
     return `Add additional information about ${this.serviceUser.firstName}'s attendance:`
+  }
+
+  get attendanceFailureInformationQuestion(): string {
+    return `Add how you tried to contact ${this.serviceUser.firstName} ${this.serviceUser.surname} and anything you know about why they did not attend.`
   }
 
   private get methodSpecificAttendanceQuestion(): string {

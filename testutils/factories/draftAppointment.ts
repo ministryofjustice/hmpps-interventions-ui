@@ -7,19 +7,17 @@ import userDetailsFactory from './userDetails'
 import User from '../../server/models/hmppsAuth/user'
 
 class DraftAppointmentFactory extends Factory<DraftAppointment> {
-  withAttendanceFeedback(
-    attended: Attended = 'yes',
-    additionalAttendanceInformation = 'Alex made the session on time'
-  ) {
+  withAttendanceFeedback(attended: Attended = 'yes') {
     return this.params({
-      sessionFeedback: {
-        attendance: {
+      session: {
+        attendanceFeedback: {
           attended,
-          additionalAttendanceInformation,
         },
-        behaviour: {
-          behaviourDescription: null,
+        sessionFeedback: {
+          sessionSummary: null,
+          sessionResponse: null,
           notifyProbationPractitioner: null,
+          sessionConcerns: null,
         },
         submitted: false,
         submittedBy: null,
@@ -27,21 +25,17 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
     })
   }
 
-  withBehaviourFeedback(
-    attended: Attended = 'yes',
-    additionalAttendanceInformation = 'Alex made the session on time',
-    behaviourDescription = 'Alex was well-behaved',
-    notifyProbationPractitioner = false
-  ) {
+  withBehaviourFeedback(attended: Attended = 'yes') {
     return this.params({
-      sessionFeedback: {
-        attendance: {
+      session: {
+        attendanceFeedback: {
           attended,
-          additionalAttendanceInformation,
         },
-        behaviour: {
-          behaviourDescription,
-          notifyProbationPractitioner,
+        sessionFeedback: {
+          sessionSummary: null,
+          sessionResponse: null,
+          notifyProbationPractitioner: null,
+          sessionConcerns: null,
         },
         submitted: false,
         submittedBy: null,
@@ -51,21 +45,22 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
 
   withSubmittedFeedback(
     attended: Attended = 'yes',
-    additionalAttendanceInformation = 'Alex made the session on time',
-    behaviourDescription = 'Alex was well-behaved',
+    sessionSummary = 'stub session summary',
+    sessionResponse = 'stub session summary',
     notifyProbationPractitioner = false,
     submitted = true,
     submittedBy: User = userDetailsFactory.build()
   ) {
     return this.params({
-      sessionFeedback: {
-        attendance: {
+      session: {
+        attendanceFeedback: {
           attended,
-          additionalAttendanceInformation,
         },
-        behaviour: {
-          behaviourDescription,
+        sessionFeedback: {
+          sessionSummary,
+          sessionResponse,
           notifyProbationPractitioner,
+          sessionConcerns: null,
         },
         submitted,
         submittedBy,
@@ -85,13 +80,16 @@ export default DraftAppointmentFactory.define(() => ({
   npsOfficeCode: null,
   sessionType: defaultSessionType,
   sessionFeedback: {
-    attendance: {
+    attendanceFeedback: {
       attended: null,
-      additionalAttendanceInformation: null,
+      attendanceFailureInformation: null,
     },
-    behaviour: {
+    sessionFeedback: {
       behaviourDescription: null,
       notifyProbationPractitioner: null,
+      sessionSummary: null,
+      sessionResponse: null,
+      sessionConcerns: null,
     },
     submitted: false,
     submittedBy: null,

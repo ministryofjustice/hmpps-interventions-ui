@@ -50,6 +50,17 @@ export default class InterventionProgressView {
     }
   }
 
+  get sessionFeedbackAddedNotificationBannerArgs(): NotificationBannerArgs {
+    const html = `<h1 class="govuk-notification-banner__heading">Session feedback added</h1>
+                  <p class="govuk-body-m">${this.presenter.sessionFeedbackAddedNotificationBannerText}</p>`
+
+    return {
+      titleText: 'Success',
+      html,
+      classes: 'govuk-notification-banner--success',
+    }
+  }
+
   private supplierAssessmentAppointmentsTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
     return {
       head: this.presenter.supplierAssessmentTableHeaders.map((header: string) => ({ text: header })),
@@ -131,6 +142,7 @@ export default class InterventionProgressView {
         backLinkArgs: this.backLinkArgs,
         endOfServiceReportSummaryListArgs: this.endOfServiceReportSummaryListArgs.bind(this),
         cancelledReferralNotificationBannerArgs: this.cancelledReferralNotificationBannerArgs,
+        sessionFeedbackAddedNotificationBannerArgs: this.sessionFeedbackAddedNotificationBannerArgs,
       },
     ]
   }

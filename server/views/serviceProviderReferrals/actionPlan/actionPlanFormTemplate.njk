@@ -15,11 +15,12 @@
         {{ govukBackLink(backLinkArgs) }}
       {% endif %}
 
-      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+      <h1 class="govuk-heading-l">{{ presenter.text.title }}</h1>
 
       {% if presenter.text.subTitle %}
-        <h2 class="govuk-heading-l">{{ presenter.text.subTitle }}</h2>
+        <p class="govuk-body">{{ presenter.text.subTitle }}</p>
       {% endif %}
+      <br>
 
       {% block formSection %}{% endblock %}
     </div>

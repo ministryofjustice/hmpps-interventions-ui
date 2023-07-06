@@ -34,27 +34,19 @@ import SupplierAssessmentAppointmentPresenter from '../shared/supplierAssessment
 import SupplierAssessmentAppointmentView from '../shared/supplierAssessmentAppointmentView'
 import AppointmentSummary from './appointmentSummary'
 import ActionPlanPostSessionAttendanceFeedbackPresenter from './feedback/actionPlanSessions/attendance/actionPlanPostSessionAttendanceFeedbackPresenter'
-import ActionPlanSessionBehaviourFeedbackPresenter from './feedback/actionPlanSessions/behaviour/actionPlanSessionBehaviourFeedbackPresenter'
+import ActionPlanSessionFeedbackPresenter from './feedback/actionPlanSessions/sessionFeedback/actionPlanSessionFeedbackPresenter'
 import ActionPlanPostSessionFeedbackCheckAnswersPresenter from './feedback/actionPlanSessions/checkYourAnswers/actionPlanPostSessionFeedbackCheckAnswersPresenter'
-import PostSessionFeedbackConfirmationPresenter from './feedback/actionPlanSessions/confirmation/postSessionFeedbackConfirmationPresenter'
-import PostSessionFeedbackConfirmationView from './feedback/actionPlanSessions/confirmation/postSessionFeedbackConfirmationView'
 import InitialAssessmentAttendanceFeedbackPresenter from './feedback/initialAssessment/attendance/initialAssessmentAttendanceFeedbackPresenter'
-import InitialAssessmentBehaviourFeedbackPresenter from './feedback/initialAssessment/behaviour/initialAssessmentBehaviourFeedbackPresenter'
+import InitialAssessmentSessionFeedbackPresenter from './feedback/initialAssessment/sessionFeedback/initialAssessmentSessionFeedbackPresenter'
 import InitialAssessmentFeedbackCheckAnswersPresenter from './feedback/initialAssessment/checkYourAnswers/initialAssessmentFeedbackCheckAnswersPresenter'
-import InitialAssessmentFeedbackConfirmationPresenter from './feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationPresenter'
-import InitialAssessmentFeedbackConfirmationView from './feedback/initialAssessment/confirmation/initialAssessmentFeedbackConfirmationView'
 import AttendanceFeedbackForm from './feedback/shared/attendance/attendanceFeedbackForm'
 import AttendanceFeedbackView from './feedback/shared/attendance/attendanceFeedbackView'
-import BehaviourFeedbackForm from './feedback/shared/behaviour/behaviourFeedbackForm'
-import BehaviourFeedbackView from './feedback/shared/behaviour/behaviourFeedbackView'
+import SessionFeedbackForm from './feedback/shared/sessionFeedback/sessionFeedbackForm'
+import SessionFeedbackView from './feedback/shared/sessionFeedback/sessionFeedbackView'
 import CheckFeedbackAnswersView from './feedback/shared/checkYourAnswers/checkFeedbackAnswersView'
 import logger from '../../../log'
 import SentReferral from '../../models/sentReferral'
-import {
-  AppointmentDetails,
-  DraftAppointment,
-  DraftAppointmentBooking,
-} from '../serviceProviderReferrals/draftAppointment'
+import { DraftAppointment, DraftAppointmentBooking } from '../serviceProviderReferrals/draftAppointment'
 import SupplierAssessment from '../../models/supplierAssessment'
 
 export default class AppointmentsController {
@@ -93,7 +85,8 @@ export default class AppointmentsController {
     const deliusOfficeLocations: DeliusOfficeLocation[] =
       await this.deliusOfficeLocationFilter.findOfficesByIntervention(intervention)
     const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
-    const hasExistingScheduledAppointment = currentAppointment !== null && !currentAppointment.sessionFeedback.submitted
+    const hasExistingScheduledAppointment =
+      currentAppointment !== null && !currentAppointment.appointmentFeedback.submitted
 
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
@@ -173,7 +166,8 @@ export default class AppointmentsController {
     const supplierAssessment = await this.interventionsService.getSupplierAssessment(accessToken, referralId)
 
     const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
-    const hasExistingScheduledAppointment = currentAppointment !== null && !currentAppointment.sessionFeedback.submitted
+    const hasExistingScheduledAppointment =
+      currentAppointment !== null && !currentAppointment.appointmentFeedback.submitted
 
     const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
     if (fetchResult.rendered) {
@@ -407,7 +401,7 @@ export default class AppointmentsController {
       appointmentScheduleDetails
     )
 
-    if (success === false) {
+    if (!success) {
       res.redirect(
         `/service-provider/action-plan/${actionPlanId}/sessions/${sessionNumber}/edit/${draftBookingId}/details?clash=true`
       )
@@ -482,19 +476,21 @@ export default class AppointmentsController {
           const { draft } = fetchResult
           const draftAppointment = draft.data as DraftAppointment
           if (draftAppointment) {
-            if (draftAppointment.sessionFeedback) {
-              draftAppointment.sessionFeedback.attendance.attended = data.paramsForUpdate.attended!
-              draftAppointment.sessionFeedback.attendance.additionalAttendanceInformation =
-                data.paramsForUpdate.additionalAttendanceInformation!
+            if (draftAppointment.session) {
+              draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended!
+              draftAppointment.session.attendanceFeedback.attendanceFailureInformation =
+                data.paramsForUpdate.attendanceFailureInformation!
             } else {
-              draftAppointment.sessionFeedback = {
-                attendance: {
+              draftAppointment.session = {
+                attendanceFeedback: {
                   attended: data.paramsForUpdate.attended!,
-                  additionalAttendanceInformation: data.paramsForUpdate.additionalAttendanceInformation!,
+                  attendanceFailureInformation: data.paramsForUpdate.attendanceFailureInformation!,
                 },
-                behaviour: {
-                  behaviourDescription: null,
+                sessionFeedback: {
                   notifyProbationPractitioner: null,
+                  sessionSummary: null,
+                  sessionResponse: null,
+                  sessionConcerns: null,
                 },
                 submitted: false,
                 submittedBy: null,
@@ -508,7 +504,7 @@ export default class AppointmentsController {
 
           basePath = `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/edit/${draftBookingId}`
           redirectPath =
-            draftAppointment.sessionFeedback.attendance.attended === 'no' ? 'check-your-answers' : 'behaviour'
+            draftAppointment.session.attendanceFeedback.attended === 'no' ? 'check-your-answers' : 'behaviour'
         } else {
           const updatedAppointment = await this.interventionsService.recordSupplierAssessmentAppointmentAttendance(
             accessToken,
@@ -517,7 +513,9 @@ export default class AppointmentsController {
           )
           basePath = `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback`
           redirectPath =
-            updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
+            updatedAppointment.appointmentFeedback?.attendanceFeedback?.attended === 'no'
+              ? 'check-your-answers'
+              : 'behaviour'
         }
 
         res.redirect(`${basePath}/${redirectPath}`)
@@ -541,7 +539,7 @@ export default class AppointmentsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async addSupplierAssessmentBehaviourFeedback(req: Request, res: Response): Promise<void> {
+  async addSupplierAssessmentSessionFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const referralId = req.params.id
@@ -551,6 +549,7 @@ export default class AppointmentsController {
       this.interventionsService.getSentReferral(accessToken, referralId),
       this.interventionsService.getSupplierAssessment(accessToken, referralId),
     ])
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(
       req,
       res,
@@ -560,15 +559,15 @@ export default class AppointmentsController {
 
     if (appointment === null) {
       if (draftBookingId) {
-        logger.warn(`Attempting to add initial assessment behaviour feedback without a draft appointment`)
+        logger.warn(`Attempting to add initial assessment session feedback without a draft appointment`)
         return
       }
-      throw new Error('Attempting to add initial assessment behaviour feedback without a current appointment')
+      throw new Error('Attempting to add initial assessment session feedback without a current appointment')
     }
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
     if (req.method === 'POST') {
-      const data = await new BehaviourFeedbackForm(req).data()
+      const data = await new SessionFeedbackForm(req, serviceUser).data()
       if (data.error) {
         res.status(400)
         formError = data.error
@@ -582,10 +581,14 @@ export default class AppointmentsController {
           }
           const { draft } = fetchResult
           const draftAppointment = draft.data as DraftAppointment
-          if (draftAppointment && draftAppointment.sessionFeedback) {
-            draftAppointment.sessionFeedback.behaviour.behaviourDescription = data.paramsForUpdate.behaviourDescription!
-            draftAppointment.sessionFeedback.behaviour.notifyProbationPractitioner =
+          if (draftAppointment && draftAppointment.session) {
+            draftAppointment.session.sessionFeedback.sessionSummary = data.paramsForUpdate.sessionSummary!
+            draftAppointment.session.sessionFeedback.sessionResponse = data.paramsForUpdate.sessionResponse!
+            draftAppointment.session.sessionFeedback.notifyProbationPractitioner =
               data.paramsForUpdate.notifyProbationPractitioner!
+            if (data.paramsForUpdate.notifyProbationPractitioner) {
+              draftAppointment.session.sessionFeedback.sessionConcerns = data.paramsForUpdate.sessionConcerns!
+            }
           } else {
             throw new Error('Draft appointment data is missing.')
           }
@@ -594,7 +597,7 @@ export default class AppointmentsController {
 
           redirectUrl = `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/edit/${draftBookingId}/check-your-answers`
         } else {
-          await this.interventionsService.recordSupplierAssessmentAppointmentBehaviour(
+          await this.interventionsService.recordSupplierAssessmentAppointmentSessionFeedback(
             accessToken,
             referralId,
             data.paramsForUpdate
@@ -607,8 +610,7 @@ export default class AppointmentsController {
       }
     }
 
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-    const presenter = new InitialAssessmentBehaviourFeedbackPresenter(
+    const presenter = new InitialAssessmentSessionFeedbackPresenter(
       appointment,
       serviceUser,
       referralId,
@@ -616,7 +618,7 @@ export default class AppointmentsController {
       formError,
       userInputData
     )
-    const view = new BehaviourFeedbackView(presenter)
+    const view = new SessionFeedbackView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
@@ -647,6 +649,7 @@ export default class AppointmentsController {
 
     const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
     const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
+
     const presenter = new InitialAssessmentFeedbackCheckAnswersPresenter(
       appointment,
       serviceUser,
@@ -687,7 +690,7 @@ export default class AppointmentsController {
       }
       const { draft } = fetchResult
       const draftAppointment = draft.data as DraftAppointment
-      if (draftAppointment && draftAppointment.sessionFeedback) {
+      if (draftAppointment && draftAppointment.session) {
         const data: CreateAppointmentSchedulingAndFeedback = {
           appointmentTime: draftAppointment.appointmentTime,
           durationInMinutes: draftAppointment.durationInMinutes,
@@ -695,11 +698,10 @@ export default class AppointmentsController {
           sessionType: draftAppointment.sessionType,
           appointmentDeliveryAddress: draftAppointment.appointmentDeliveryAddress,
           npsOfficeCode: draftAppointment.npsOfficeCode,
-          appointmentAttendance: { ...draftAppointment.sessionFeedback.attendance },
-          appointmentBehaviour:
-            draftAppointment.sessionFeedback.behaviour.behaviourDescription ||
-            draftAppointment.sessionFeedback.behaviour.notifyProbationPractitioner
-              ? { ...draftAppointment.sessionFeedback.behaviour }
+          attendanceFeedback: { ...draftAppointment.session.attendanceFeedback },
+          sessionFeedback:
+            draftAppointment.session.attendanceFeedback.attended === 'yes'
+              ? { ...draftAppointment.session.sessionFeedback }
               : null,
         }
         await this.interventionsService.scheduleAndSubmitSupplierAssessmentAppointmentWithFeedback(
@@ -714,22 +716,12 @@ export default class AppointmentsController {
     } else {
       await this.interventionsService.submitSupplierAssessmentAppointmentFeedback(accessToken, referralId)
     }
+    const notifyPP = appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner
+    const didNotAttend = appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
 
-    res.redirect(`/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/confirmation`)
-  }
-
-  async showSupplierAssessmentFeedbackConfirmation(req: Request, res: Response): Promise<void> {
-    const { user } = res.locals
-    const { accessToken } = user.token
-    const referralId = req.params.id
-
-    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    const presenter = new InitialAssessmentFeedbackConfirmationPresenter(referralId)
-    const view = new InitialAssessmentFeedbackConfirmationView(presenter)
-
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    res.redirect(
+      `/service-provider/referrals/${referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}&dna=${didNotAttend}`
+    )
   }
 
   async viewSupplierAssessmentFeedback(
@@ -780,7 +772,7 @@ export default class AppointmentsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async addPostSessionAttendanceFeedback(req: Request, res: Response): Promise<void> {
+  async addActionPlanSessionAppointmentAttendanceFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { actionPlanId, sessionNumber, draftBookingId } = req.params
@@ -807,19 +799,21 @@ export default class AppointmentsController {
           const { draft } = fetchResult
           const draftAppointment = draft.data as DraftAppointment
           if (draftAppointment) {
-            if (draftAppointment.sessionFeedback) {
-              draftAppointment.sessionFeedback.attendance.attended = data.paramsForUpdate.attended!
-              draftAppointment.sessionFeedback.attendance.additionalAttendanceInformation =
-                data.paramsForUpdate.additionalAttendanceInformation!
+            if (draftAppointment.session) {
+              draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended!
+              draftAppointment.session.attendanceFeedback.attendanceFailureInformation =
+                data.paramsForUpdate.attendanceFailureInformation!
             } else {
-              draftAppointment.sessionFeedback = {
-                attendance: {
+              draftAppointment.session = {
+                attendanceFeedback: {
                   attended: data.paramsForUpdate.attended!,
-                  additionalAttendanceInformation: data.paramsForUpdate.additionalAttendanceInformation!,
+                  attendanceFailureInformation: data.paramsForUpdate.attendanceFailureInformation!,
                 },
-                behaviour: {
-                  behaviourDescription: null,
+                sessionFeedback: {
                   notifyProbationPractitioner: null,
+                  sessionSummary: null,
+                  sessionResponse: null,
+                  sessionConcerns: null,
                 },
                 submitted: false,
                 submittedBy: null,
@@ -833,7 +827,7 @@ export default class AppointmentsController {
 
           basePath = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draftBookingId}`
           redirectPath =
-            draftAppointment.sessionFeedback.attendance.attended === 'no' ? 'check-your-answers' : 'behaviour'
+            draftAppointment.session.attendanceFeedback.attended === 'no' ? 'check-your-answers' : 'behaviour'
         } else {
           const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
             accessToken,
@@ -843,7 +837,9 @@ export default class AppointmentsController {
           )
           basePath = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback`
           redirectPath =
-            updatedAppointment.sessionFeedback?.attendance?.attended === 'no' ? 'check-your-answers' : 'behaviour'
+            updatedAppointment.appointmentFeedback?.attendanceFeedback?.attended === 'no'
+              ? 'check-your-answers'
+              : 'behaviour'
         }
         res.redirect(`${basePath}/${redirectPath}`)
         return
@@ -875,17 +871,19 @@ export default class AppointmentsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async addPostSessionBehaviourFeedback(req: Request, res: Response): Promise<void> {
+  async addActionPlanSessionAppointmentSessionFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { actionPlanId, sessionNumber, draftBookingId } = req.params
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
 
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
 
     if (req.method === 'POST') {
-      const data = await new BehaviourFeedbackForm(req).data()
-
+      const data = await new SessionFeedbackForm(req, serviceUser).data()
       if (data.error) {
         res.status(400)
         formError = data.error
@@ -893,7 +891,7 @@ export default class AppointmentsController {
       } else {
         let redirectUrl
         if (!draftBookingId) {
-          await this.interventionsService.recordActionPlanAppointmentBehavior(
+          await this.interventionsService.recordActionPlanAppointmentSessionFeedback(
             accessToken,
             actionPlanId,
             Number(sessionNumber),
@@ -901,17 +899,20 @@ export default class AppointmentsController {
           )
           redirectUrl = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/check-your-answers`
         } else {
-          const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
           const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
           if (fetchResult.rendered) {
             return
           }
           const { draft } = fetchResult
           const draftAppointment = draft.data as DraftAppointment
-          if (draftAppointment && draftAppointment.sessionFeedback) {
-            draftAppointment.sessionFeedback.behaviour.behaviourDescription = data.paramsForUpdate.behaviourDescription!
-            draftAppointment.sessionFeedback.behaviour.notifyProbationPractitioner =
+          if (draftAppointment && draftAppointment.session) {
+            draftAppointment.session.sessionFeedback.sessionSummary = data.paramsForUpdate.sessionSummary!
+            draftAppointment.session.sessionFeedback.sessionResponse = data.paramsForUpdate.sessionResponse!
+            draftAppointment.session.sessionFeedback.notifyProbationPractitioner =
               data.paramsForUpdate.notifyProbationPractitioner!
+            if (data.paramsForUpdate.notifyProbationPractitioner === true) {
+              draftAppointment.session.sessionFeedback.sessionConcerns = data.paramsForUpdate.sessionConcerns!
+            }
           } else {
             throw new Error('Draft appointment data is missing.')
           }
@@ -926,17 +927,12 @@ export default class AppointmentsController {
       }
     }
 
-    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
-    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
-
     const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res, referral.id)
     // return because draft service already renders page.
     if (appointment === null) {
       return
     }
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    const presenter = new ActionPlanSessionBehaviourFeedbackPresenter(
+    const presenter = new ActionPlanSessionFeedbackPresenter(
       appointment,
       serviceUser,
       actionPlanId,
@@ -944,13 +940,13 @@ export default class AppointmentsController {
       userInputData,
       draftBookingId
     )
-    const view = new BehaviourFeedbackView(presenter)
+    const view = new SessionFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async checkPostSessionFeedbackAnswers(req: Request, res: Response): Promise<void> {
+  async checkActionPlanSessionFeedbackAnswers(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { actionPlanId, draftBookingId } = req.params
@@ -977,20 +973,29 @@ export default class AppointmentsController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async submitPostSessionFeedback(req: Request, res: Response): Promise<void> {
+  async submitActionPlanSessionFeedback(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
     const { actionPlanId, sessionNumber, draftBookingId } = req.params
+    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
+
+    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res, actionPlan.referralId)
+    if (appointment === null) {
+      if (draftBookingId) {
+        logger.warn(`Attempting to submit action plan appointment feedback without a draft appointment`)
+        return
+      }
+      throw new Error('Attempting to submit action plan appointment feedback without a current appointment')
+    }
 
     if (draftBookingId) {
-      const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
       const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
       if (fetchResult.rendered) {
         return
       }
       const { draft } = fetchResult
       const draftAppointment = draft.data as DraftAppointment
-      if (draftAppointment && draftAppointment.sessionFeedback) {
+      if (draftAppointment && draftAppointment.session) {
         const data: CreateAppointmentSchedulingAndFeedback = {
           appointmentTime: draftAppointment.appointmentTime,
           durationInMinutes: draftAppointment.durationInMinutes,
@@ -998,11 +1003,10 @@ export default class AppointmentsController {
           sessionType: draftAppointment.sessionType,
           appointmentDeliveryAddress: draftAppointment.appointmentDeliveryAddress,
           npsOfficeCode: draftAppointment.npsOfficeCode,
-          appointmentAttendance: { ...draftAppointment.sessionFeedback.attendance },
-          appointmentBehaviour:
-            draftAppointment.sessionFeedback.behaviour.behaviourDescription ||
-            draftAppointment.sessionFeedback.behaviour.notifyProbationPractitioner
-              ? { ...draftAppointment.sessionFeedback.behaviour }
+          attendanceFeedback: { ...draftAppointment.session.attendanceFeedback },
+          sessionFeedback:
+            draftAppointment.session.attendanceFeedback.attended === 'yes'
+              ? { ...draftAppointment.session.sessionFeedback }
               : null,
         }
 
@@ -1026,9 +1030,11 @@ export default class AppointmentsController {
     } else {
       await this.interventionsService.submitActionPlanSessionFeedback(accessToken, actionPlanId, Number(sessionNumber))
     }
+    const notifyPP = appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner
+    const didNotAttend = appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
 
     res.redirect(
-      `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/confirmation`
+      `/service-provider/referrals/${actionPlan.referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}&dna=${didNotAttend}`
     )
   }
 
@@ -1057,7 +1063,7 @@ export default class AppointmentsController {
     accessToken: string,
     appointment: ActionPlanAppointment | InitialAssessmentAppointment
   ): Promise<AuthUserDetails | string | null> {
-    const submittedByUsername = appointment?.sessionFeedback.submittedBy?.username
+    const submittedByUsername = appointment?.appointmentFeedback.submittedBy?.username
     return submittedByUsername ? this.getCaseWorker(accessToken, submittedByUsername) : null
   }
 
@@ -1074,7 +1080,7 @@ export default class AppointmentsController {
     return new AppointmentSummary(appointment, assignedCaseworker, deliusOfficeLocation, feedbackSubmittedByCaseworker)
   }
 
-  async viewSubmittedPostSessionFeedback(
+  async viewSubmittedActionPlanSessionFeedback(
     req: Request,
     res: Response,
     userType: 'service-provider' | 'probation-practitioner'
@@ -1158,37 +1164,6 @@ export default class AppointmentsController {
     return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async showPostSessionFeedbackConfirmation(req: Request, res: Response): Promise<void> {
-    const { user } = res.locals
-    const { accessToken } = user.token
-    const { actionPlanId, sessionNumber } = req.params
-    const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
-
-    const currentAppointment = await this.interventionsService.getActionPlanAppointment(
-      accessToken,
-      actionPlanId,
-      Number(sessionNumber)
-    )
-
-    const nextAppointmentOrNull = await this.interventionsService.getSubsequentActionPlanAppointment(
-      accessToken,
-      actionPlan,
-      currentAppointment
-    )
-
-    const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
-
-    const presenter = new PostSessionFeedbackConfirmationPresenter(
-      actionPlan,
-      currentAppointment,
-      nextAppointmentOrNull
-    )
-    const view = new PostSessionFeedbackConfirmationView(presenter)
-
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
   // TODO: Remove DraftAppointmentBooking from here once this has gone live for at least a week.
   private async fetchDraftAppointmentOrRenderMessage(req: Request, res: Response, referralId?: string) {
     const backLink = {
@@ -1223,12 +1198,6 @@ export default class AppointmentsController {
     })
   }
 
-  private hasSessionFeedback(
-    details: AppointmentSchedulingDetails | AppointmentDetails | null
-  ): details is AppointmentDetails {
-    return (details as DraftAppointment)?.sessionFeedback !== undefined
-  }
-
   private extractAppointmentSchedulingDetails(
     draft: Draft<DraftAppointmentBooking | DraftAppointment>
   ): AppointmentSchedulingDetails | null {
@@ -1246,22 +1215,25 @@ export default class AppointmentsController {
     const appointmentSchedulingDetails = this.extractAppointmentSchedulingDetails(draft)
     if (appointmentSchedulingDetails) {
       const draftAppointment = draft.data as DraftAppointment
-      if (draftAppointment?.sessionFeedback) {
+      if (draftAppointment?.session) {
         return {
-          sessionFeedback: draftAppointment.sessionFeedback,
+          appointmentFeedback: draftAppointment.session,
           sessionNumber: Number(sessionNumber),
           ...appointmentSchedulingDetails,
         }
       }
       return {
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: null,
             additionalAttendanceInformation: null,
+            attendanceFailureInformation: null,
           },
-          behaviour: {
-            behaviourDescription: null,
+          sessionFeedback: {
             notifyProbationPractitioner: null,
+            sessionSummary: null,
+            sessionResponse: null,
+            sessionConcerns: null,
           },
           submitted: false,
           submittedBy: null,
@@ -1304,22 +1276,25 @@ export default class AppointmentsController {
     const appointmentSchedulingDetails = this.extractAppointmentSchedulingDetails(draft)
     if (appointmentSchedulingDetails) {
       const draftAppointment = draft.data as DraftAppointment
-      if (draftAppointment?.sessionFeedback) {
+      if (draftAppointment?.session) {
         return {
-          sessionFeedback: draftAppointment.sessionFeedback,
+          appointmentFeedback: draftAppointment.session,
           id,
           ...appointmentSchedulingDetails,
         }
       }
       return {
-        sessionFeedback: {
-          attendance: {
+        appointmentFeedback: {
+          attendanceFeedback: {
             attended: null,
             additionalAttendanceInformation: null,
+            attendanceFailureInformation: null,
           },
-          behaviour: {
-            behaviourDescription: null,
+          sessionFeedback: {
             notifyProbationPractitioner: null,
+            sessionSummary: null,
+            sessionResponse: null,
+            sessionConcerns: null,
           },
           submitted: false,
           submittedBy: null,

@@ -14,12 +14,11 @@ export default {
       return SessionStatus.notScheduled
     }
     const appointmentDecorator = new AppointmentDecorator(appointment)
-    if (appointment.sessionFeedback.submitted) {
-      const sessionFeedbackAttendance = appointment.sessionFeedback.attendance
+    if (appointment.appointmentFeedback.submitted) {
+      const sessionFeedbackAttendance = appointment.appointmentFeedback.attendanceFeedback
       if (sessionFeedbackAttendance.attended === 'no') {
         return SessionStatus.didNotAttend
       }
-
       if (sessionFeedbackAttendance.attended === 'yes' || sessionFeedbackAttendance.attended === 'late') {
         return SessionStatus.completed
       }

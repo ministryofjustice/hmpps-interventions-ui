@@ -967,8 +967,8 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       sessionType: 'ONE_TO_ONE',
       appointmentDeliveryType: 'PHONE_CALL',
       appointmentDeliveryAddress: null,
-      sessionFeedback: {
-        attendance: {
+      appointmentFeedback: {
+        attendanceFeedback: {
           attended: 'yes',
         },
       },
@@ -981,8 +981,8 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       sessionType: 'ONE_TO_ONE',
       appointmentDeliveryType: 'PHONE_CALL',
       appointmentDeliveryAddress: null,
-      sessionFeedback: {
-        attendance: {
+      appointmentFeedback: {
+        attendanceFeedback: {
           attended: 'yes',
         },
       },

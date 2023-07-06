@@ -10,7 +10,7 @@ export default class SessionStatusPresenter {
       case SessionStatus.scheduled:
         return 'scheduled'
       case SessionStatus.awaitingFeedback:
-        return 'awaiting feedback'
+        return 'needs feedback'
       case SessionStatus.completed:
         return 'completed'
       default:
