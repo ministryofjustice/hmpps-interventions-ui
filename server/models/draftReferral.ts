@@ -28,6 +28,14 @@ export interface ReferralFields {
   hasExpectedReleaseDate: boolean | null
   expectedReleaseDate: string | null
   expectedReleaseDateMissingReason: string | null
+  ndeliusPPName: string | null
+  ndeliusPPEmailAddress: string | null
+  ndeliusPDU: string | null
+  ppName: string | null
+  ppEmailAddress: string | null
+  ppPdu: string | null
+  ppProbationOffice: string | null
+  hasValidDeliusPPDetails: boolean | null
 }
 
 export enum CurrentLocationType {

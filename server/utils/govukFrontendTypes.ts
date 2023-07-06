@@ -1560,6 +1560,7 @@ export interface SkipLinkArgs {
 
 // The summary list component is described at https://design-system.service.gov.uk/components/summary-list.
 export interface SummaryListArgs {
+  card?: SummaryListTitle | null
   /*
     Array of row item objects.
   */
@@ -1574,6 +1575,10 @@ export interface SummaryListArgs {
     HTML attributes (for example data attributes) to add to the container.
   */
   attributes?: Record<string, unknown> | null
+}
+
+export interface SummaryListTitle {
+  title?: SummaryListArgsRowKey | null
 }
 
 export interface SummaryListArgsRow {

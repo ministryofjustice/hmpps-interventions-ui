@@ -23,8 +23,8 @@ import NeedsAndRequirementsForm from './needs-and-requirements/needsAndRequireme
 import RiskInformationPresenter from './risk-information/riskInformationPresenter'
 import RiskInformationView from './risk-information/riskInformationView'
 import ReferralStartView from './start/referralStartView'
-import CheckAnswersView from './check-answers/checkAnswersView'
-import CheckAnswersPresenter from './check-answers/checkAnswersPresenter'
+import CheckAllReferralInformationView from './check-all-referral-information/checkAllReferralInformationView'
+import CheckAllReferralInformationPresenter from './check-all-referral-information/checkAllReferralInformationPresenter'
 import ConfirmationView from './confirmation/confirmationView'
 import ConfirmationPresenter from './confirmation/confirmationPresenter'
 import CommunityApiService, { CommunityApiServiceError } from '../../services/communityApiService'
@@ -51,7 +51,7 @@ import OasysRiskInformationView from './risk-information/oasys/view/oasysRiskInf
 import { RestClientError } from '../../data/restClient'
 import EditOasysRiskInformationView from './risk-information/oasys/edit/editOasysRiskInformationView'
 import EditOasysRiskInformationPresenter from './risk-information/oasys/edit/editOasysRiskInformationPresenter'
-import DraftReferral from '../../models/draftReferral'
+import DraftReferral, { CurrentLocationType } from '../../models/draftReferral'
 import ConfirmOasysRiskInformationForm from './risk-information/oasys/confirmOasysRiskInformationForm'
 import EditOasysRiskInformationForm from './risk-information/oasys/edit/editOasysRiskInformationForm'
 import { DraftOasysRiskInformation } from '../../models/draftOasysRiskInformation'
@@ -64,13 +64,20 @@ import ExpectedReleaseDateForm from './expected-release-date/expectedReleaseDate
 import ExpectedReleaseDatePresenter from './expected-release-date/expectedReleaseDatePresenter'
 import ExpectedReleaseDateView from './expected-release-date/expectedReleaseDateView'
 import config from '../../config'
+import ConfirmProbationPractitionerDetailsPresenter from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsPresenter'
+import ConfirmProbationPractitionerDetailsView from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsView'
+import ReferenceDataService from '../../services/referenceDataService'
+import ConfirmProbationPractitionerDetailsForm from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsForm'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 
 export default class MakeAReferralController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly communityApiService: CommunityApiService,
+    private readonly ramDeliusApiService: RamDeliusApiService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
-    private readonly prisonRegisterService: PrisonRegisterService
+    private readonly prisonRegisterService: PrisonRegisterService,
+    private readonly referenceDataService: ReferenceDataService
   ) {}
 
   async startReferral(req: Request, res: Response): Promise<void> {
@@ -152,7 +159,7 @@ export default class MakeAReferralController {
     const serviceUser = await this.communityApiService.getExpandedServiceUserByCRN(referral.serviceUser.crn)
     const prisons = await this.prisonRegisterService.getPrisons()
 
-    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser, prisons)
+    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser, prisons, referral.id)
     const view = new ServiceUserDetailsView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -615,8 +622,12 @@ export default class MakeAReferralController {
 
     if (error === null && form.paramsForUpdate.personCustodyPrisonId != null) {
       res.redirect(`/referrals/${req.params.id}/expected-release-date`)
-    } else if (error === null && form.paramsForUpdate.personCustodyPrisonId == null) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+    } else if (
+      error === null &&
+      form.paramsForUpdate.personCustodyPrisonId == null &&
+      form.paramsForUpdate.personCurrentLocationType === CurrentLocationType.community
+    ) {
+      res.redirect(`/referrals/${req.params.id}/confirm-probation-practitioner-details`)
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
@@ -667,6 +678,69 @@ export default class MakeAReferralController {
 
       const presenter = new ExpectedReleaseDatePresenter(referral, error, req.body)
       const view = new ExpectedReleaseDateView(presenter)
+
+      res.status(400)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
+  }
+
+  async confirmProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
+    const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
+    const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
+
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+    const presenter = new ConfirmProbationPractitionerDetailsPresenter(
+      referral,
+      deliusOfficeLocations,
+      deliusDeliveryUnits,
+      deliusResponsibleOfficer
+    )
+    const view = new ConfirmProbationPractitionerDetailsView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async updateProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
+    const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
+    const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
+    const form = await ConfirmProbationPractitionerDetailsForm.createForm(req, referral, deliusResponsibleOfficer)
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+      const presenter = new ConfirmProbationPractitionerDetailsPresenter(
+        referral,
+        deliusOfficeLocations,
+        deliusDeliveryUnits,
+        deliusResponsibleOfficer,
+        error,
+        req.body
+      )
+      const view = new ConfirmProbationPractitionerDetailsView(presenter)
 
       res.status(400)
       ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -854,7 +928,7 @@ export default class MakeAReferralController {
     }
   }
 
-  async checkAnswers(req: Request, res: Response): Promise<void> {
+  async checkAllReferralInformation(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const referral = await this.interventionsService.getDraftReferral(accessToken, req.params.id)
     const prisons = await this.prisonRegisterService.getPrisons()
@@ -874,7 +948,7 @@ export default class MakeAReferralController {
       accessToken,
       referral.id
     )
-    const presenter = new CheckAnswersPresenter(
+    const presenter = new CheckAllReferralInformationPresenter(
       referral,
       intervention,
       conviction,
@@ -882,7 +956,7 @@ export default class MakeAReferralController {
       prisons,
       editedOasysRiskInformation
     )
-    const view = new CheckAnswersView(presenter)
+    const view = new CheckAllReferralInformationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, expandedDeliusServiceUser)
   }

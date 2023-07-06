@@ -8,6 +8,7 @@ generic-service:
     DEPLOYMENT_ENV: preprod
     HMPPS_AUTH_URL: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
     COMMUNITY_API_URL: https://community-api-secure.pre-prod.delius.probation.hmpps.dsd.io
+    RAM_DELIUS_API_URL: https://refer-and-monitor-and-delius-preprod.hmpps.service.justice.gov.uk
     INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service-preprod.apps.live-1.cloud-platform.service.justice.gov.uk
     ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs-preprod.hmpps.service.justice.gov.uk
     TOKEN_VERIFICATION_API_URL: https://token-verification-api-preprod.prison.service.justice.gov.uk
