@@ -107,7 +107,7 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
           {
             formFields: ['probation-practitioner-pdu'],
             errorSummaryLinkedField: 'probation-practitioner-pdu',
-            message: 'Enter the PDU',
+            message: 'Enter PDU (Probation Delivery Unit)',
           },
         ],
       })

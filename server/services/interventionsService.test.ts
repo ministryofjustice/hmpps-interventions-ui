@@ -1585,6 +1585,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     serviceUser,
     interventionTitle: 'Womens Care Home',
     supplementaryRiskId: '12345',
+    expectedReleaseDate: '2021-01-14',
+    location: 'aaa',
+    locationType: 'COMMUNITY',
   }
 
   const sentReferralSummaries2: SentReferralSummaries = {
@@ -1605,6 +1608,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     serviceUser,
     interventionTitle: 'Womens Care Home',
     supplementaryRiskId: '12345',
+    expectedReleaseDate: '2021-01-14',
+    location: 'aaa',
+    locationType: 'COMMUNITY',
   }
 
   const sentReferralSummariesPages: Page<SentReferralSummaries> = {

@@ -15,7 +15,7 @@
       <br>
       <br>
       <h1 class="govuk-heading-xl">Check all referral information</h1>
-      <p class="govuk-body-l">This will be sent to the service provider</p>
+      <p class="govuk-body-m">This will be sent to the service provider.</p>
 
       {% if probationPractitionerDetailsSummaryListArgs %}
         {{ govukSummaryList(probationPractitionerDetailsSummaryListArgs) }}
@@ -39,12 +39,6 @@
 
         {{ govukSummaryList(section.summaryListArgs) }}
       {% endfor %}
-
-      {{ govukSummaryList(enforceableDaysSummaryListArgs) }}
-
-      {{ govukSummaryList(completionDeadlineSummaryListArgs) }}
-
-      {{ govukSummaryList(furtherInformationSummaryListArgs) }}
 
       <form method="post" action="send">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">

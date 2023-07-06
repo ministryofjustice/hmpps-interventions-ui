@@ -32,7 +32,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       },
       { key: 'Email address', lines: [this.deliusResponsibleOfficer?.communityManager.email || 'Not found'] },
       {
-        key: 'PDU (probation delivery unit)',
+        key: 'PDU (Probation Delivery Unit)',
         lines: [this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found'],
       },
     ]
@@ -63,7 +63,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       errorMessage: this.errorMessageForField('probation-practitioner-email'),
     },
     probationPractitionerPduSelect: {
-      label: 'PDU (probation delivery unit)',
+      label: 'PDU (Probation Delivery Unit)',
       hint: `Start typing then choose from the list.`,
       errorMessage: this.errorMessageForField('probation-practitioner-pdu'),
     },

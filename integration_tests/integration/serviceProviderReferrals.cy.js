@@ -213,26 +213,22 @@ describe('Service provider referrals dashboard', () => {
       .getTable()
       .should('deep.equal', [
         {
-          'Date received': '26 Jan 2021',
+          'Name/CRN': 'George Michael\n            X123456',
+          'Referral number': 'ABCABCA1',
           'Intervention type': 'Social Inclusion - West Midlands',
-          Referral: 'ABCABCA1',
-          Person: 'George Michael',
           Caseworker: '',
-          Action: 'View',
+          'Date received': '26 Jan 2021',
         },
         {
-          'Date received': '13 Dec 2020',
+          'Name/CRN': 'Jenny Jones\n            X123456',
+          'Referral number': 'ABCABCA2',
           'Intervention type': 'Personal Wellbeing - West Midlands',
-          Referral: 'ABCABCA2',
-          Person: 'Jenny Jones',
           Caseworker: '',
-          Action: 'View',
+          'Date received': '13 Dec 2020',
         },
       ])
 
-    cy.contains('.govuk-table__row', 'Jenny Jones').within(() => {
-      cy.contains('View').click()
-    })
+    cy.contains('Jenny Jones').click()
     cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/details`)
     cy.get('h2').contains('Who do you want to assign this referral to?')
     cy.contains('jenny.jones@example.com')
@@ -3137,9 +3133,7 @@ describe('Service provider referrals dashboard', () => {
 
         cy.contains('Next').click()
 
-        cy.contains('.govuk-table__row', 'Jenny Jones').within(() => {
-          cy.contains('View').click()
-        })
+        cy.contains('Jenny Jones').click()
         cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/details`)
 
         cy.contains('Back').click()

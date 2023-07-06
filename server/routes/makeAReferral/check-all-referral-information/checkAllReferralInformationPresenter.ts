@@ -75,7 +75,7 @@ export default class CheckAllReferralInformationPresenter {
           changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
         },
         {
-          key: 'PDU (probation delivery unit)',
+          key: 'PDU (Probation Delivery Unit)',
           lines: [this.referral.ppPdu || this.referral.ndeliusPDU || ''],
           changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
         },
@@ -220,7 +220,7 @@ export default class CheckAllReferralInformationPresenter {
           {
             key: 'Desired outcomes',
             lines: checkedDesiredOutcomesOptions.map(option => option.text),
-            listStyle: ListStyle.bulleted,
+            listStyle: checkedDesiredOutcomesOptions.length > 1 ? ListStyle.bulleted : ListStyle.noMarkers,
             changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/desired-outcomes`,
           },
         ],
@@ -252,6 +252,11 @@ export default class CheckAllReferralInformationPresenter {
 
   get sentenceInformationSummary(): { title: string; summary: SummaryListItem[] } {
     const presenter = new SentencePresenter(this.conviction)
+    const { completionDeadline } = new DraftReferralDecorator(this.referral)
+
+    if (completionDeadline === null) {
+      throw new Error('Trying to check answers with completion deadline not set')
+    }
 
     return {
       title: 'Sentence Information',
@@ -271,48 +276,18 @@ export default class CheckAllReferralInformationPresenter {
           lines: [presenter.endOfSentenceDate],
           changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
         },
-      ],
-    }
-  }
-
-  get completionDeadlineSection(): { title: string; summary: SummaryListItem[] } {
-    const { completionDeadline } = new DraftReferralDecorator(this.referral)
-
-    if (completionDeadline === null) {
-      throw new Error('Trying to check answers with completion deadline not set')
-    }
-
-    return {
-      title: `${this.intervention.contractType.name} completion date`,
-      summary: [
-        {
-          key: 'Date',
-          lines: [DateUtils.formattedDate(completionDeadline)],
-          changeLink: `/referrals/${this.referral.id}/completion-deadline`,
-        },
-      ],
-    }
-  }
-
-  get enforceableDaysSummary(): { title: string; summary: SummaryListItem[] } {
-    return {
-      title: 'Enforceable days',
-      summary: [
         {
           key: 'Maximum number of enforceable days',
           lines: [this.referral.maximumEnforceableDays ? this.referral.maximumEnforceableDays.toString() : ''],
           changeLink: `/referrals/${this.referral.id}/enforceable-days`,
         },
-      ],
-    }
-  }
-
-  get furtherInformationSummary(): { title: string; summary: SummaryListItem[] } {
-    return {
-      title: 'Further information',
-      summary: [
         {
-          key: 'Further information for the provider',
+          key: 'Date intervention to be completed by',
+          lines: [DateUtils.formattedDate(completionDeadline)],
+          changeLink: `/referrals/${this.referral.id}/completion-deadline`,
+        },
+        {
+          key: 'Further information for the service provider',
           lines: [this.referral.furtherInformation?.length ? this.referral.furtherInformation! : 'None'],
           changeLink: `/referrals/${this.referral.id}/further-information`,
         },
