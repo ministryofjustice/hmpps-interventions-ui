@@ -27,7 +27,7 @@ export default class InterventionProgressView {
       cancellationReasonHTML = `
         <p>
             The probation practitioner ended this intervention on ${formattedEndDate} 
-            with reason: ${ViewUtils.escape(this.presenter.referralEndedFields.endRequestedReason)}.
+            because: ${ViewUtils.escape(this.presenter.referralEndedFields.endRequestedReason)}.
         </p>`
     }
     if (this.presenter.referralEndedFields.endRequestedComments) {
@@ -39,7 +39,7 @@ export default class InterventionProgressView {
     if (!this.presenter.isConcluded) {
       notConcludedWarningHTML = `
             <p>
-                Please note that an end of service report must still be submitted within 10 working days.
+                An end of service report needs to be submitted within 5 working days.
             </p>`
     }
     const html = `<div>${cancellationReasonHTML}${notConcludedWarningHTML}${cancellationCommentsHTML}</div>`

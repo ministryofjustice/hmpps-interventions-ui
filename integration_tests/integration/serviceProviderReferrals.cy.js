@@ -1766,11 +1766,9 @@ describe('Service provider referrals dashboard', () => {
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
       cy.contains('Intervention ended')
       cy.contains(
-        'The probation practitioner ended this intervention on 28 April 2021 with reason: Service user was recalled'
+        'The probation practitioner ended this intervention on 28 April 2021 because: Service user was recalled'
       )
-      cy.contains('Please note that an end of service report must still be submitted within 10 working days.').should(
-        'not.exist'
-      )
+      cy.contains('An end of service report needs to be submitted within 5 working days.').should('not.exist')
       cy.contains("Additional information: you'll be seeing alex again soon i'm sure!")
     })
 
@@ -1787,7 +1785,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetApprovedActionPlanSummaries(endedReferral.id, [])
       cy.login()
       cy.visit(`/service-provider/referrals/${endedReferral.id}/progress`)
-      cy.contains('Please note that an end of service report must still be submitted within 10 working days.')
+      cy.contains('An end of service report needs to be submitted within 5 working days.')
     })
 
     it('allows users to click through to a page to view session feedback', () => {
