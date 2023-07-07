@@ -283,7 +283,7 @@ export default class CheckAllReferralInformationPresenter {
         },
         {
           key: 'End of sentence date',
-          lines: [DateUtils.formattedDate(presenter.endOfSentenceDate, { month: 'short' })],
+          lines: [presenter.endOfSentenceDate],
           changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
         },
         {
