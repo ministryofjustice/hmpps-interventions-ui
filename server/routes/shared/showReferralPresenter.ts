@@ -148,7 +148,7 @@ export default class ShowReferralPresenter {
       lines: [
         this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
           ? this.sentReferral.referral.ppProbationOffice
-          : this.sentReferral.referral.ndeliusPDU || '',
+          : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '',
       ],
     },
   ]
