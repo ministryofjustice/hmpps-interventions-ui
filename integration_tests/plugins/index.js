@@ -52,7 +52,7 @@ export default on => {
     },
 
     stubGetResponsibleOfficer: arg => {
-      return ramDeliusApi.stubGetResponsibleOfficer(arg.responseJson)
+      return ramDeliusApi.stubGetResponsibleOfficer(arg.crn, arg.responseJson)
     },
 
     stubGetUserByUsername: arg => {

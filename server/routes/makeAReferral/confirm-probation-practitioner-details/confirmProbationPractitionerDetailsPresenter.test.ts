@@ -8,8 +8,10 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
       name: { forename: 'Bob', surname: 'Alice' },
       username: 'bobalice',
       email: 'bobalice@example.com',
+      telephoneNumber: '07595025281',
       responsibleOfficer: true,
       pdu: { code: 'L', description: 'London' },
+      team: { code: 'R and M', description: 'R and M team', telephoneNumber: '07595025281', email: 'a.b@xyz.com' },
     },
   }
 

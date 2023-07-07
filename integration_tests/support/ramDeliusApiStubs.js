@@ -1,5 +1,5 @@
-Cypress.Commands.add('stubGetResponsibleOfficer', responseJson => {
-  cy.task('stubGetResponsibleOfficer', { responseJson })
+Cypress.Commands.add('stubGetResponsibleOfficer', (crn, responseJson) => {
+  cy.task('stubGetResponsibleOfficer', { crn, responseJson })
 })
 
 Cypress.Commands.add('stubGetCrnUserAccess', responseJson => {

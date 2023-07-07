@@ -21,14 +21,18 @@ export default class ShowReferralView {
 
   private get probationPractitionerSummaryListArgs() {
     return ViewUtils.summaryListArgsWithSummaryCard(
-      this.presenter.probationPractitionerDetails,
-      this.presenter.probationPractitionerDetailsHeading,
+      this.presenter.isCustodyReferral
+        ? this.presenter.probationPractitionerDetailsForCustody
+        : this.presenter.probationPractitionerDetailsForCommunity,
+      this.presenter.isCustodyReferral
+        ? 'Referring probation practitioner details'
+        : this.presenter.probationPractitionerDetailsHeading,
       { showBorders: true, showTitle: true }
     )
   }
 
   private readonly responsibleOfficerSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
-    this.presenter.responsibleOfficersDetails,
+    this.presenter.deliusResponsibleOfficersDetails,
     this.presenter.responsibleOfficerDetailsHeading,
     { showBorders: true, showTitle: true }
   )

@@ -33,8 +33,6 @@ import DeliusUser from '../../models/delius/deliusUser'
 import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
-import { DeliusOffenderManager } from '../../models/delius/deliusOffenderManager'
-import deliusOffenderManagerFactory from '../../../testutils/factories/deliusOffenderManager'
 import { createDraftFactory } from '../../../testutils/factories/draft'
 import { DraftAssignmentData } from './serviceProviderReferralsController'
 import DraftsService from '../../services/draftsService'
@@ -48,6 +46,10 @@ import { ActionPlanAppointment } from '../../models/appointment'
 import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import Prison from '../../models/prisonRegister/prison'
+import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
+import deliusResponsibleOfficerFactory from '../../../testutils/factories/deliusResponsibleOfficer'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
+import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -55,6 +57,7 @@ jest.mock('../../services/hmppsAuthService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/draftsService')
 jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/ramDeliusApiService')
 
 const draftAssignmentFactory = createDraftFactory<DraftAssignmentData>({ email: null })
 
@@ -65,6 +68,8 @@ const interventionsService = new InterventionsService(
 const referenceDataService = new MockReferenceDataService() as jest.Mocked<ReferenceDataService>
 
 const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+
+const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 
 const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
 
@@ -97,6 +102,7 @@ beforeEach(() => {
       referenceDataService,
       userDataService,
       prisonRegisterService,
+      ramDeliusApiService,
     },
     userType: AppSetupUserType.serviceProvider,
   })
@@ -829,7 +835,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
   let deliusUser: DeliusUser
   let deliusServiceUser: ExpandedDeliusServiceUser
   let supplementaryRiskInformation: SupplementaryRiskInformation
-  let responsibleOfficer: DeliusOffenderManager
+  let responsibleOfficer: DeliusResponsibleOfficer
   let prisonList: Prison[]
 
   beforeEach(() => {
@@ -837,7 +843,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     deliusUser = deliusUserFactory.build()
     deliusServiceUser = expandedDeliusServiceUserFactory.build()
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
-    responsibleOfficer = deliusOffenderManagerFactory.responsibleOfficer().build()
+    responsibleOfficer = deliusResponsibleOfficerFactory.build()
     prisonList = prisonFactory.prisonList()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
@@ -848,7 +854,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     communityApiService.getConvictionById.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
-    communityApiService.getResponsibleOfficerForServiceUser.mockResolvedValue(responsibleOfficer)
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 
@@ -889,16 +895,22 @@ describe('GET /service-provider/referrals/:id/details', () => {
         ],
       },
     })
-    responsibleOfficer = deliusOffenderManagerFactory
-      .responsibleOfficer()
-      .build({ staff: { forenames: 'Peter', surname: 'Practitioner' } })
+    responsibleOfficer = deliusResponsibleOfficerFactory.build({
+      communityManager: {
+        name: { forename: 'Peter', surname: 'Practitioner' },
+        team: {
+          telephoneNumber: '07890 123456',
+          email: 'probation-team4692@justice.gov.uk',
+        },
+      },
+    })
 
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
-    communityApiService.getResponsibleOfficerForServiceUser.mockResolvedValue(responsibleOfficer)
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)

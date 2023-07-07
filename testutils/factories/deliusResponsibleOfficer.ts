@@ -10,10 +10,17 @@ export default Factory.define<DeliusResponsibleOfficer>(() => ({
     },
     username: 'bobalice',
     email: 'bobalice@example.com',
+    telephoneNumber: '98454243243',
     responsibleOfficer: true,
     pdu: {
       code: '97',
       description: 'Hackney and City',
+    },
+    team: {
+      code: 'RM',
+      description: 'R and M team',
+      email: 'r.m@digital.justice.gov.uk',
+      telephoneNumber: '044-2545453442',
     },
   },
 }))

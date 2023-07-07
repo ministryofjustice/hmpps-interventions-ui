@@ -7,6 +7,7 @@ import supplementaryRiskInformation from '../../testutils/factories/supplementar
 import riskSummary from '../../testutils/factories/riskSummary'
 import deliusOffenderManager from '../../testutils/factories/deliusOffenderManager'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
+import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 
 context('Amend a referral', () => {
   beforeEach(() => {
@@ -37,6 +38,7 @@ context('Amend a referral', () => {
       cy.stubGetRiskSummary(crn, riskSummary.build())
       cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+      cy.stubGetResponsibleOfficer(crn, [deliusResponsibleOfficerFactory.build()])
     }
 
     describe('as a probation practitioner', () => {
@@ -126,6 +128,7 @@ context('Amend a referral', () => {
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetRiskSummary(crn, riskSummary.build())
       cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
+      cy.stubGetResponsibleOfficer(crn, [deliusResponsibleOfficerFactory.build()])
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
     }
 
@@ -226,6 +229,7 @@ context('Amend a referral', () => {
       cy.stubGetRiskSummary(crn, riskSummary.build())
       cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+      cy.stubGetResponsibleOfficer(crn, [deliusResponsibleOfficerFactory.build()])
     }
 
     describe('as a probation practitioner', () => {
@@ -368,6 +372,7 @@ context('Amend a referral', () => {
       cy.stubGetUserByUsername(pp.username, pp)
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
+      cy.stubGetResponsibleOfficer(crn, [deliusResponsibleOfficerFactory.build()])
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
@@ -609,6 +614,7 @@ context('Amend a referral', () => {
       cy.stubGetUserByUsername(pp.username, pp)
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
+      cy.stubGetResponsibleOfficer(crn, [deliusResponsibleOfficerFactory.build()])
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)

@@ -17,6 +17,7 @@ import initialAssessmentAppointmentFactory from '../../testutils/factories/initi
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 import actionPlanActivityFactory from '../../testutils/factories/actionPlanActivity'
 import pageFactory from '../../testutils/factories/page'
+import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -204,6 +205,7 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetResponsibleOfficerForServiceUser(referralToSelect.referral.serviceUser.crn, [responsibleOfficer])
+    cy.stubGetResponsibleOfficer(referralToSelect.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
 
     cy.login()
 
@@ -274,17 +276,17 @@ describe('Service provider referrals dashboard', () => {
       .last()
       .children()
       .should('contain', 'Name')
-      .should('contain', 'Peter Practitioner')
+      .should('contain', 'Bob Alice')
       .should('contain', 'Phone')
-      .should('contain', '01234567890')
+      .should('contain', '98454243243')
       .should('contain', 'Email address')
-      .should('contain', 'p.practitioner@justice.gov.uk')
+      .should('contain', 'bobalice@example.com')
       .should('contain', 'Team phone')
-      .should('contain', '07890 123456')
+      .should('contain', '044-2545453442')
       .should('contain', 'Team email address')
-      .should('contain', 'probation-team4692@justice.gov.uk')
+      .should('contain', 'r.m@digital.justice.gov.uk')
 
-    cy.contains(`Jenny Jones's probation practitioner`)
+    cy.contains(`Referring probation practitioner details`)
       .parent()
       .parent()
       .children()
@@ -294,8 +296,6 @@ describe('Service provider referrals dashboard', () => {
       .should('contain', 'Bernard Beaks')
       .should('contain', 'Email address')
       .should('contain', 'bernard.beaks@justice.gov.uk')
-      .should('contain', 'Probation Office')
-      .should('contain', 'London')
 
     cy.contains(`Jenny Jones's location and expected release date`)
       .parent()
@@ -402,6 +402,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
+      cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
 
       cy.login()
 
@@ -499,6 +500,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
+      cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
 
       cy.login()
 

@@ -34,11 +34,9 @@
       {%  for section in serviceCategorySections %}
         {{ govukSummaryList(section.summaryListArgs(govukTag)) }}
       {% endfor %}
-      {%  if responsibleOfficerSummaryListArgs | length %}
+      {%  if (responsibleOfficerSummaryListArgs | length)  and  (presenter.isCustodyReferral) %}
           {{ govukSummaryList(responsibleOfficerSummaryListArgs) }}
-      {% else %}
-          <p class="govuk-body">No responsible officer details found in nDelius. Email notifications for this referral will be sent to the referring officer.</p>
-      {% endif %}     
+      {% endif %}
 
       {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
 
