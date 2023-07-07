@@ -64,4 +64,7 @@ export default SentReferralSummariesFactory.define(({ sequence }) => ({
   },
   interventionTitle: 'Accommodation Services - West Midlands',
   concludedAt: new Date().toISOString(),
+  expectedReleaseDate: new Date().toISOString(),
+  location: 'London',
+  locationType: 'COMMUNITY',
 }))

@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import ShowReferralPresenter from './showReferralPresenter'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import deliusUserFactory from '../../../testutils/factories/deliusUser'
@@ -250,6 +251,72 @@ describe(ShowReferralPresenter, () => {
       expect(presenter.probationPractitionerDetails).toEqual([
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        { key: 'Probation Office', lines: ['London'] },
+      ])
+    })
+  })
+
+  describe(`referral's location`, () => {
+    it('returns a summary list for a referral community location', () => {
+      const sentReferral = sentReferralFactory.build(referralParams)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonList,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        responsibleOfficer
+      )
+
+      expect(presenter.serviceUserLocationDetails).toEqual([
+        { key: 'Location at time of referral', lines: ['Community'] },
+      ])
+    })
+
+    it('returns a summary list for a referral custody location', () => {
+      const referralParamsWithCustodyDetails = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.custody,
+          expectedReleaseDate: moment().add(2, 'days').format('YYYY-MM-DD'),
+        },
+      }
+      const sentReferral = sentReferralFactory.build(referralParamsWithCustodyDetails)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonList,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        responsibleOfficer
+      )
+
+      expect(presenter.serviceUserLocationDetails).toEqual([
+        { key: 'Location at time of referral', lines: ['Custody'] },
+        {
+          key: 'Current establishment',
+          lines: ['London'],
+        },
+        {
+          key: 'Expected release date',
+          lines: [moment().add(2, 'days').format('YYYY-MM-DD')],
+        },
       ])
     })
   })
@@ -437,8 +504,8 @@ describe(ShowReferralPresenter, () => {
           { key: 'Service type', lines: ['Accommodation'] },
           { key: 'Sentence', lines: ['Burglary'] },
           { key: 'Subcategory', lines: ['Theft act, 1968'] },
-          { key: 'End of sentence date', lines: ['15 November 2025'] },
-          { key: 'Date to be completed by', lines: ['1 April 2021'] },
+          { key: 'End of sentence date', lines: ['15 Nov 2025'] },
+          { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
           {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
@@ -528,8 +595,8 @@ describe(ShowReferralPresenter, () => {
           { key: 'Service type', lines: ['Accommodation'] },
           { key: 'Sentence', lines: ['Burglary'] },
           { key: 'Subcategory', lines: ['Theft act, 1968'] },
-          { key: 'End of sentence date', lines: ['15 November 2025'] },
-          { key: 'Date to be completed by', lines: ['1 April 2021'] },
+          { key: 'End of sentence date', lines: ['15 Nov 2025'] },
+          { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
           {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
@@ -889,25 +956,46 @@ describe(ShowReferralPresenter, () => {
         responsibleOfficer
       )
 
-      expect(presenter.serviceUserDetails).toEqual([
-        { key: 'CRN', lines: ['X123456'] },
-        { key: 'Title', lines: ['Mr'] },
+      expect(presenter.personalDetailSummary).toEqual([
         { key: 'First name', lines: ['Jenny'] },
-        { key: 'Last name', lines: ['Jones'] },
-        { key: 'Date of birth', lines: ['1 January 1980'] },
-        { key: 'Location at time of referral', lines: ['Community'] },
+        { key: 'Last name(s)', lines: ['Jones'] },
+        { key: 'Date of birth', lines: ['1 Jan 1980 (43 years old)'] },
+        { key: 'Gender', lines: ['Male'] },
+        { key: 'Ethnicity', lines: ['British'] },
+        { key: 'Preferred language', lines: ['English'] },
+        { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
+        { key: 'Religion or belief', lines: ['Agnostic'] },
+      ])
+    })
+  })
+
+  describe('addressAndContactDetails', () => {
+    it('returns a summary list of the address and contact details', () => {
+      const sentReferral = sentReferralFactory.build(referralParams)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonList,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        responsibleOfficer
+      )
+
+      expect(presenter.contactDetailsSummary).toEqual([
         {
           key: 'Address',
           lines: ['Flat 2 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
           listStyle: ListStyle.noMarkers,
         },
-        { key: 'Gender', lines: ['Male'] },
-        { key: 'Ethnicity', lines: ['British'] },
-        { key: 'Preferred language', lines: ['English'] },
-        { key: 'Religion or belief', lines: ['Agnostic'] },
-        { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
-        { key: 'Email address', lines: ['alex.river@example.com'], listStyle: ListStyle.noMarkers },
         { key: 'Phone number', lines: ['0123456789'], listStyle: ListStyle.noMarkers },
+        { key: 'Email address', lines: ['alex.river@example.com'], listStyle: ListStyle.noMarkers },
       ])
     })
   })
@@ -1147,7 +1235,7 @@ describe(ShowReferralPresenter, () => {
         )
 
         expect(presenter.text).toMatchObject({
-          title: 'Accommodation: referral details',
+          title: 'Jenny Jones: referral details',
         })
       })
     })

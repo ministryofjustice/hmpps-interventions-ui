@@ -382,12 +382,14 @@ context('Amend a referral', () => {
       it('takes the pp to the amend outcomes page when clicking the change link in the details page', () => {
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
         cy.contains('Accommodation service')
-          .next()
+          .parent()
+          .parent()
           .children()
           .last()
+          .children()
           .should('contain', 'Desired outcomes')
           .contains('Change')
-          .click()
+        cy.get('#change-link-1').click()
 
         cy.location('pathname').should(
           'equal',
@@ -401,14 +403,16 @@ context('Amend a referral', () => {
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
 
         cy.contains('Accommodation service')
-          .next()
+          .parent()
+          .parent()
           .children()
-          .first()
+          .last()
+          .children()
           .should('contain', 'Complexity level')
-          .next()
           .should('contain', 'Desired outcomes')
           .contains('Change')
-          .click()
+
+        cy.get('#change-link-1').click()
 
         cy.location('pathname').should(
           'equal',
@@ -621,7 +625,10 @@ context('Amend a referral', () => {
 
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
         cy.contains('Accommodation service')
-          .next()
+          .parent()
+          .parent()
+          .children()
+          .last()
           .children()
           .should('contain', 'Complexity level')
           .contains('Change')

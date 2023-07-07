@@ -3,4 +3,5 @@ export default interface DashboardDetails {
   displayText: string
   isSearchable: boolean
   showAssignedCaseworker: boolean
+  showReleaseDateAndLocation: boolean
 }

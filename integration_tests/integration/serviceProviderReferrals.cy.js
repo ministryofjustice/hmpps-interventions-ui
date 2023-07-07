@@ -213,27 +213,24 @@ describe('Service provider referrals dashboard', () => {
       .getTable()
       .should('deep.equal', [
         {
-          'Date received': '26 Jan 2021',
+          'Name/CRN': 'George Michael\n            X123456',
+          'Referral number': 'ABCABCA1',
           'Intervention type': 'Social Inclusion - West Midlands',
-          Referral: 'ABCABCA1',
-          Person: 'George Michael',
           Caseworker: '',
-          Action: 'View',
+          'Date received': '26 Jan 2021',
         },
         {
-          'Date received': '13 Dec 2020',
+          'Name/CRN': 'Jenny Jones\n            X123456',
+          'Referral number': 'ABCABCA2',
           'Intervention type': 'Personal Wellbeing - West Midlands',
-          Referral: 'ABCABCA2',
-          Person: 'Jenny Jones',
           Caseworker: '',
-          Action: 'View',
+          'Date received': '13 Dec 2020',
         },
       ])
 
-    cy.contains('.govuk-table__row', 'Jenny Jones').within(() => {
-      cy.contains('View').click()
-    })
-    cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/details`)
+    cy.contains('Jenny Jones').click()
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/progress`)
+    cy.visit(`/service-provider/referrals/${referralToSelect.id}/details`)
     cy.get('h2').contains('Who do you want to assign this referral to?')
     cy.contains('jenny.jones@example.com')
     cy.contains('07123456789')
@@ -242,56 +239,126 @@ describe('Service provider referrals dashboard', () => {
 
     cy.contains('Burglary')
     cy.contains('Theft act, 1968')
-    cy.contains('15 November 2025')
+    cy.contains('15 Nov 2025')
 
     cy.contains('Accommodation service')
-    cy.contains('LOW COMPLEXITY')
-    cy.contains('Service user has some capacity and means to secure')
-    cy.contains('All barriers, as identified in the Service user action plan')
-    cy.contains('Service user makes progress in obtaining accommodation')
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Complexity level')
+      .should('contain', 'LOW COMPLEXITY')
+      .should('contain', 'Service user has some capacity and means to secure')
+      .should('contain', 'Desired outcomes')
+      .should('contain', 'All barriers, as identified in the Service user action plan')
+      .should('contain', 'Service user makes progress in obtaining accommodation')
 
     cy.contains('Social inclusion service')
-    cy.contains('MEDIUM COMPLEXITY')
-    cy.contains('Service user is at risk of homelessness/is homeless')
-    cy.contains('Service user is helped to secure social or supported housing')
-    cy.contains('Service user is helped to secure a tenancy in the private rented sector (PRS)')
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Complexity level')
+      .should('contain', 'MEDIUM COMPLEXITY')
+      .should('contain', 'Service user is at risk of homelessness/is homeless')
+      .should('contain', 'Desired outcomes')
+      .should('contain', 'Service user is helped to secure social or supported housing')
+      .should('contain', 'Service user is helped to secure a tenancy in the private rented sector (PRS)')
 
-    cy.contains("The person on probation's details")
-    cy.contains('English')
-    cy.contains('Agnostic')
-    cy.contains('Autism spectrum condition')
-    cy.contains('sciatica')
-    cy.contains("The person on probation's details")
-      .next()
-      .contains('Email address')
-      .next()
-      .contains('jenny.jones@example.com')
-    cy.contains("The person on probation's details").next().contains('Phone number').next().contains('07123456789')
-    cy.contains('Flat 2 Test Walk')
-    cy.contains('London')
-    cy.contains('City of London')
-    cy.contains('Greater London')
-    cy.contains('SW16 1AQ')
-    cy.contains('Their risk information')
-    cy.contains('They are low risk.')
-    cy.contains("Service user's needs")
-    cy.contains('Alex is currently sleeping on her aunt’s sofa')
-    cy.contains('She uses a wheelchair')
-    cy.contains('Spanish')
-    cy.contains('She works Mondays 9am - midday')
+    cy.contains(`Jenny Jones's responsible officer details`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Name')
+      .should('contain', 'Peter Practitioner')
+      .should('contain', 'Phone')
+      .should('contain', '01234567890')
+      .should('contain', 'Email address')
+      .should('contain', 'p.practitioner@justice.gov.uk')
+      .should('contain', 'Team phone')
+      .should('contain', '07890 123456')
+      .should('contain', 'Team email address')
+      .should('contain', 'probation-team4692@justice.gov.uk')
 
-    cy.contains('Responsible officer details').next().contains('Name').next().contains('Peter Practitioner')
-    cy.contains('Responsible officer details').next().contains('Phone').next().contains('01234567890')
-    cy.contains('Responsible officer details').next().contains('Email').next().contains('p.practitioner@justice.gov.uk')
-    cy.contains('Responsible officer details').next().contains('Team phone').next().contains('07890 123456')
-    cy.contains('Responsible officer details')
-      .next()
-      .contains('Team email address')
-      .next()
-      .contains('probation-team4692@justice.gov.uk')
+    cy.contains(`Jenny Jones's probation practitioner`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Name')
+      .should('contain', 'Bernard Beaks')
+      .should('contain', 'Email address')
+      .should('contain', 'bernard.beaks@justice.gov.uk')
+      .should('contain', 'Probation Office')
+      .should('contain', 'London')
 
-    cy.contains('Bernard Beaks')
-    cy.contains('bernard.beaks@justice.gov.uk')
+    cy.contains(`Jenny Jones's location and expected release date`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Location at time of referral')
+      .should('contain', 'Custody')
+      .should('contain', 'Current establishment')
+      .should('contain', 'Expected release date')
+      .should('contain', moment().add(1, 'days').format('YYYY-MM-DD'))
+
+    cy.contains(`Personal details`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Jenny')
+      .should('contain', 'English')
+      .should('contain', 'Male')
+      .should('contain', 'Agnostic')
+      .should('contain', '1 Jan 1980 (43 years old)')
+
+    cy.contains(`Address and contact details`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Flat 2 Test Walk')
+      .should('contain', 'London')
+      .should('contain', 'Phone number')
+      .should('contain', '07123456789')
+      .should('contain', 'Email address')
+      .should('contain', 'jenny.jones@example.com')
+
+    cy.contains(`Jenny Jones's risk information`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Who is at risk')
+      .should('contain', 'some information for who is at risk')
+      .should('contain', 'Concerns in relation to self-harm')
+      .should('contain', 'some concerns for self harm')
+      .should('contain', 'Additional information')
+      .should('contain', 'They are low risk.')
+
+    cy.contains(`Service user needs`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Identify needs')
+      .should('contain', 'Alex is currently sleeping on her aunt’s sofa')
+      .should('contain', 'Interpreter language')
+      .should('contain', 'Spanish')
+      .should('contain', 'Primary language')
+      .should('contain', 'English')
   })
 
   describe('Assigning a referral to a caseworker', () => {
@@ -3120,6 +3187,12 @@ describe('Service provider referrals dashboard', () => {
     ]
 
     dashBoardTables.forEach(table => {
+      const hmppsAuthUser = hmppsAuthUserFactory.build({
+        firstName: 'John',
+        lastName: 'Smith',
+        username: 'john.smith',
+        email: 'john.smith@example.com',
+      })
       it(`returns to dashboard "${table.dashboardType}" when clicking back`, () => {
         cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
         cy.stubGetIntervention(socialInclusionIntervention.id, socialInclusionIntervention)
@@ -3127,20 +3200,23 @@ describe('Service provider referrals dashboard', () => {
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferralsSummaries).build())
         cy.stubGetUserByUsername(deliusUser.username, deliusUser)
         cy.stubGetServiceUserByCRN(referralToSelect.referral.serviceUser.crn, deliusServiceUser)
+        cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
+        cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
+        cy.stubAssignSentReferral(referralToSelect.id, referralToSelect)
         cy.stubGetExpandedServiceUserByCRN(referralToSelect.referral.serviceUser.crn, expandedDeliusServiceUser)
         cy.stubGetConvictionById(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
         cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
         cy.stubGetResponsibleOfficerForServiceUser(referralToSelect.referral.serviceUser.crn, [responsibleOfficer])
+        cy.stubGetSupplierAssessment(referralToSelect.id, supplierAssessmentFactory.build())
+        cy.stubGetApprovedActionPlanSummaries(referralToSelect.id, [])
         cy.login()
 
         cy.get('a').contains(table.dashboardType).click()
 
         cy.contains('Next').click()
 
-        cy.contains('.govuk-table__row', 'Jenny Jones').within(() => {
-          cy.contains('View').click()
-        })
-        cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/details`)
+        cy.contains('Jenny Jones').click()
+        cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/progress`)
 
         cy.contains('Back').click()
         cy.location('pathname').should('equal', `/service-provider/dashboard/${table.pathname}`)

@@ -10,6 +10,7 @@ import ControllerUtils from '../../utils/controllerUtils'
 import SentReferralSummaries from '../../models/sentReferralSummaries'
 import PresenterUtils from '../../utils/presenterUtils'
 import DashboardDetails from '../../models/dashboardDetails'
+import Prison from '../../models/prisonRegister/prison'
 
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
 const dashboardDetails: Record<DashboardType, DashboardDetails> = {
@@ -18,24 +19,28 @@ const dashboardDetails: Record<DashboardType, DashboardDetails> = {
     displayText: 'my cases',
     isSearchable: false,
     showAssignedCaseworker: false,
+    showReleaseDateAndLocation: false,
   },
   'All open cases': {
     tabHref: '/service-provider/dashboard/all-open-cases',
     displayText: 'open cases',
     isSearchable: true,
     showAssignedCaseworker: true,
+    showReleaseDateAndLocation: false,
   },
   'Unassigned cases': {
     tabHref: '/service-provider/dashboard/unassigned-cases',
     displayText: 'unassigned cases',
     isSearchable: true,
     showAssignedCaseworker: false,
+    showReleaseDateAndLocation: true,
   },
   'Completed cases': {
     tabHref: '/service-provider/dashboard/completed-cases',
     displayText: 'completed cases',
     isSearchable: true,
     showAssignedCaseworker: true,
+    showReleaseDateAndLocation: false,
   },
 }
 
@@ -54,6 +59,7 @@ export default class DashboardPresenter {
     private readonly requestedSort: string,
     readonly disableDowntimeBanner: boolean,
     readonly dashboardOrigin: string,
+    private prisons: Prison[],
     readonly searchText: string | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {
@@ -75,16 +81,19 @@ export default class DashboardPresenter {
   // does seem like the best place to define these values.
   static readonly headingsAndSortFields = [
     {
-      columnName: 'Date received',
-      sortField: 'sentAt',
-    },
-    {
-      columnName: 'Referral',
-      sortField: 'referenceNumber',
-    },
-    {
-      columnName: 'Person',
+      columnName: 'Name/CRN',
       sortField: 'serviceUserData.lastName',
+    },
+    {
+      columnName: 'Expected release date',
+      sortField: 'referralLocation.expectedReleaseDate',
+    },
+    {
+      columnName: 'Location',
+    },
+    {
+      columnName: 'Referral number',
+      sortField: 'referenceNumber',
     },
     {
       columnName: 'Intervention type',
@@ -95,12 +104,14 @@ export default class DashboardPresenter {
       sortField: 'assignments.assignedTo.userName',
     },
     {
-      columnName: 'Action',
-      sortField: null,
+      columnName: 'Date received',
+      sortField: 'sentAt',
     },
   ]
 
   private readonly showAssignedCaseworkerColumn = dashboardDetails[this.dashboardType].showAssignedCaseworker
+
+  private readonly showReleaseDateAndLocationColumn = dashboardDetails[this.dashboardType].showReleaseDateAndLocation
 
   readonly isSearchable = dashboardDetails[this.dashboardType].isSearchable
 
@@ -123,7 +134,12 @@ export default class DashboardPresenter {
           sort: this.requestedSortField === heading.sortField ? this.requestedSortOrder : 'none',
         }
       })
-      .filter(row => row.text !== 'Caseworker' || this.showAssignedCaseworkerColumn) as SortableTableHeaders
+      .filter(
+        row =>
+          (row.text !== 'Caseworker' || this.showAssignedCaseworkerColumn) &&
+          (row.text !== 'Expected release date' || this.showReleaseDateAndLocationColumn) &&
+          (row.text !== 'Location' || this.showReleaseDateAndLocationColumn)
+      ) as SortableTableHeaders
   }
 
   get hrefLinkForSearch(): string {
@@ -142,36 +158,61 @@ export default class DashboardPresenter {
 
   readonly tableRows: SortableTableRow[] = this.sentReferralSummaries.content.map(referralSummary => {
     const sentAtDay = CalendarDay.britishDayForDate(new Date(referralSummary.sentAt))
+    const expectedReleaseDate =
+      referralSummary.locationType === 'CUSTODY' && referralSummary.expectedReleaseDate
+        ? CalendarDay.britishDayForDate(new Date(referralSummary.expectedReleaseDate))
+        : null
     const assignee = referralSummary.assignedTo?.username || 'Unassigned'
+    const locationName = this.getLocation(referralSummary)
+    const serviceUserName = utils.convertToTitleCase(
+      `${referralSummary.serviceUser.firstName ?? ''} ${referralSummary.serviceUser.lastName ?? ''}`
+    )
+    const { crn } = referralSummary.serviceUser
+    const serviceUserNameCrn = `${serviceUserName}:${crn}`
     return [
+      {
+        text: serviceUserNameCrn,
+        sortValue: `${referralSummary.serviceUser.lastName ?? ''}, ${
+          referralSummary.serviceUser.firstName ?? ''
+        }`.toLocaleLowerCase('en-GB'),
+        href: DashboardPresenter.hrefForViewing(referralSummary),
+        doubleCell: true,
+      },
+      this.showReleaseDateAndLocationColumn
+        ? {
+            text: expectedReleaseDate ? DateUtils.formattedDate(expectedReleaseDate, { month: 'short' }) : 'N/A',
+            sortValue: null,
+            href: null,
+          }
+        : null,
+      this.showReleaseDateAndLocationColumn
+        ? {
+            text: locationName || '',
+            sortValue: null,
+            href: null,
+          }
+        : null,
+      { text: referralSummary.referenceNumber, sortValue: null, href: null },
+      { text: referralSummary.interventionTitle, sortValue: null, href: null },
+      this.showAssignedCaseworkerColumn
+        ? { text: referralSummary.assignedTo?.username ?? '', sortValue: assignee, href: null }
+        : null,
       {
         text: DateUtils.formattedDate(sentAtDay, { month: 'short' }),
         sortValue: sentAtDay.iso8601,
         href: null,
       },
-      { text: referralSummary.referenceNumber, sortValue: null, href: null },
-      {
-        text: utils.convertToTitleCase(
-          `${referralSummary.serviceUser.firstName ?? ''} ${referralSummary.serviceUser.lastName ?? ''}`
-        ),
-        sortValue: `${referralSummary.serviceUser.lastName ?? ''}, ${
-          referralSummary.serviceUser.firstName ?? ''
-        }`.toLocaleLowerCase('en-GB'),
-        href: null,
-      },
-      { text: referralSummary.interventionTitle, sortValue: null, href: null },
-      this.showAssignedCaseworkerColumn
-        ? { text: referralSummary.assignedTo?.username ?? '', sortValue: assignee, href: null }
-        : null,
-      { text: 'View', sortValue: null, href: DashboardPresenter.hrefForViewing(referralSummary) },
     ].filter(row => row !== null) as SortableTableRow
   })
 
   private static hrefForViewing(referralSummary: SentReferralSummaries): string {
-    if (referralSummary.assignedTo?.username === null || referralSummary.assignedTo?.username === undefined) {
-      return `/service-provider/referrals/${referralSummary.id}/details`
-    }
-
     return `/service-provider/referrals/${referralSummary.id}/progress`
+  }
+
+  private getLocation(referralSummary: SentReferralSummaries) {
+    if (this.showReleaseDateAndLocationColumn && referralSummary.locationType === 'CUSTODY') {
+      return this.prisons.find(prison => prison.prisonId === referralSummary.location)?.prisonName
+    }
+    return referralSummary.location
   }
 }

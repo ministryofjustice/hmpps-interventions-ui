@@ -34,6 +34,7 @@ import serviceEditorRoutes, { serviceEditorUrlPrefix } from './routes/serviceEdi
 import UserDataService from './services/userDataService'
 import logger from '../log'
 import PrisonRegisterService from './services/prisonRegisterService'
+import RamDeliusApiService from './services/ramDeliusApiService'
 
 const RedisStore = connectRedis(session)
 
@@ -47,6 +48,7 @@ declare module 'express-session' {
 
 export default function createApp(
   communityApiService: CommunityApiService,
+  ramDeliusApiService: RamDeliusApiService,
   interventionsService: InterventionsService,
   hmppsAuthService: HmppsAuthService,
   assessRisksAndNeedsService: AssessRisksAndNeedsService,
@@ -92,6 +94,8 @@ export default function createApp(
             "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
             "'sha256-XVaQIYDX9x3FcKfwRYYxmwIQXtOQY8UgJS4/7p/130A='",
             "'sha256-Yx3yl4k4eP+GDjGPt8O/8Lqh4sxAImQ9XEG6gp7wOwM='",
+            "'sha256-pu37IY9Ig/H/vwy6rKyd1hbGd0HCmI3jhdUIhUV1l2A='",
+            "'sha256-v8tCeJtLZcGYwtw7d1C1rXv3Tv2Clp+NyDAzPWZvtaY='",
             'https://www.google-analytics.com',
             'https://ssl.google-analytics.com',
             'https://www.googletagmanager.com/',
@@ -248,6 +252,7 @@ export default function createApp(
 
   const services = {
     communityApiService,
+    ramDeliusApiService,
     interventionsService,
     hmppsAuthService,
     assessRisksAndNeedsService,

@@ -254,11 +254,10 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -274,12 +273,11 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -293,12 +291,11 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
           cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
@@ -312,12 +309,11 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -342,12 +338,11 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -362,12 +357,11 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -383,11 +377,12 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Expected release date': 'N/A',
+                Location: 'London',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -401,11 +396,12 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Expected release date': 'N/A',
+                Location: 'London',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
           cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
@@ -419,11 +415,12 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Expected release date': 'N/A',
+                Location: 'London',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -447,11 +444,12 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Expected release date': 'N/A',
+                Location: 'London',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -467,12 +465,11 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -486,12 +483,11 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
           cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
@@ -505,12 +501,11 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -534,12 +529,11 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -555,12 +549,11 @@ describe('Dashboards', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date received': '26 Jan 2021',
-                Referral: 'REFERRAL_REF',
-                Person: 'Jenny Jones',
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 Caseworker: 'UserABC',
-                Action: 'View',
+                'Date received': '26 Jan 2021',
               },
             ])
         })
@@ -577,7 +570,7 @@ describe('Dashboards', () => {
           },
         },
         () => {
-          const headings = ['Date received', 'Referral', 'Person', 'Intervention type', 'Caseworker']
+          const headings = ['Name/CRN', 'Referral number', 'Intervention type', 'Caseworker', 'Date received']
           headings.forEach(heading => {
             it(`should set headings correctly when sorting by ${heading}`, () => {
               cy.login()
@@ -620,11 +613,11 @@ describe('Dashboards', () => {
         },
         {
           dashboardType: 'Unassigned cases',
-          sortField: 'Person',
+          sortField: 'Name/CRN',
         },
         {
           dashboardType: 'Completed cases',
-          sortField: 'Referral',
+          sortField: 'Referral number',
         },
       ]
 

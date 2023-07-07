@@ -129,6 +129,12 @@ export default {
     emptyRadio: 'Select custody or community',
     empty: (name: string) => `You must enter the establishment ${name} is currently in`,
   },
+  confirmProbationPractitionerDetails: {
+    emptyRadio: 'Select yes or no',
+    emptyName: `Enter name of probation practitioner`,
+    emptyPdu: `Enter PDU (Probation Delivery Unit)`,
+    invalidEmail: `Enter an email address in the correct format`,
+  },
   interpreterLanguageWithoutName: {
     empty: 'Enter the language for interpretation',
   },

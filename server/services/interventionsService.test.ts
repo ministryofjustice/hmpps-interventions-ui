@@ -1556,6 +1556,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
       expectedReleaseDateMissingReason: null,
       hasExpectedReleaseDate: null,
+      ndeliusPPName: 'Bob',
+      ndeliusPPEmailAddress: 'bob@example.com',
+      ndeliusPDU: 'Hackney and City',
+      ppName: 'Alice',
+      ppEmailAddress: 'alice@example.com',
+      ppProbationOffice: 'London',
+      ppPdu: 'East Sussex',
+      hasValidDeliusPPDetails: false,
     },
   }
 
@@ -1577,6 +1585,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     serviceUser,
     interventionTitle: 'Womens Care Home',
     supplementaryRiskId: '12345',
+    expectedReleaseDate: '2021-01-14',
+    location: 'aaa',
+    locationType: 'COMMUNITY',
   }
 
   const sentReferralSummaries2: SentReferralSummaries = {
@@ -1597,6 +1608,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     serviceUser,
     interventionTitle: 'Womens Care Home',
     supplementaryRiskId: '12345',
+    expectedReleaseDate: '2021-01-14',
+    location: 'aaa',
+    locationType: 'COMMUNITY',
   }
 
   const sentReferralSummariesPages: Page<SentReferralSummaries> = {

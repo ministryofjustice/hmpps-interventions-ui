@@ -42,20 +42,26 @@ class FormSectionBuilder {
   buildSingleReferralSections(): ReferralFormSectionPresenter[] {
     const reviewServiceUserInformationSection = this.buildReviewServiceUserInformationSection()
     const referralDetailsSection = this.buildSingleReferralDetailsSection(reviewServiceUserInformationSection)
-    const checkYourAnswersSection = this.buildCheckYourAnswersSection(referralDetailsSection, false)
-    return [reviewServiceUserInformationSection, referralDetailsSection, checkYourAnswersSection]
+    const checkAllReferralInformationSection = this.buildCheckAllReferralInformationSection(
+      referralDetailsSection,
+      false
+    )
+    return [reviewServiceUserInformationSection, referralDetailsSection, checkAllReferralInformationSection]
   }
 
   buildCohortReferralSections() {
     const reviewServiceUserInformationSection = this.buildReviewServiceUserInformationSection()
     const selectServiceCategoriesSection = this.buildSelectServiceCategoriesSection(reviewServiceUserInformationSection)
     const referralDetailsSection = this.buildCohortReferralDetailsSection(selectServiceCategoriesSection)
-    const checkYourAnswersSection = this.buildCheckYourAnswersSection(referralDetailsSection, true)
+    const checkAllReferralInformationSection = this.buildCheckAllReferralInformationSection(
+      referralDetailsSection,
+      true
+    )
     return [
       reviewServiceUserInformationSection,
       selectServiceCategoriesSection,
       referralDetailsSection,
-      checkYourAnswersSection,
+      checkAllReferralInformationSection,
     ]
   }
 
@@ -289,19 +295,19 @@ class FormSectionBuilder {
     }
   }
 
-  private buildCheckYourAnswersSection(
+  private buildCheckAllReferralInformationSection(
     referralDetailsSection: ReferralFormSectionPresenter,
     isCohort: boolean
   ): ReferralFormSingleListSectionPresenter {
     return {
       type: 'single',
-      title: 'Check your answers',
+      title: 'Check all referral information and submit referral',
       number: isCohort ? '4' : '3',
-      status: this.calculateStatus(this.sectionValues.checkYourAnswers, referralDetailsSection.status),
+      status: this.calculateStatus(this.sectionValues.checkAllReferralInformation, referralDetailsSection.status),
       tasks: [
         {
-          title: 'Check your answers',
-          url: this.calculateTaskUrl('check-answers', this.taskValues.furtherInformation),
+          title: 'Check referral information',
+          url: this.calculateTaskUrl('check-all-referral-information', this.taskValues.furtherInformation),
         },
       ],
     }
@@ -366,8 +372,8 @@ class SectionValues {
     )
   }
 
-  get checkYourAnswers(): DraftReferralValues {
-    return this.taskValues.checkAnswers
+  get checkAllReferralInformation(): DraftReferralValues {
+    return this.taskValues.checkAllReferralInformation
   }
 }
 class TaskValues {
@@ -463,7 +469,7 @@ class TaskValues {
   }
 
   // null is used to ensure that section is never in a `completed` status. This is because there are no fields to confirm a user has checked the answers.
-  get checkAnswers(): DraftReferralValues {
+  get checkAllReferralInformation(): DraftReferralValues {
     return [null]
   }
 }

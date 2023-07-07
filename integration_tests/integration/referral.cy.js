@@ -6,6 +6,7 @@ import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUse
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import interventionFactory from '../../testutils/factories/intervention'
 import prisonFactory from '../../testutils/factories/prison'
+import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 // eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
@@ -203,7 +204,7 @@ describe('Referral form', () => {
           completedDate: false,
           furtherInformation: false,
         })
-        .checkYourAnswers({ checkAnswers: false })
+        .checkAllReferralInformation({ checkAllReferralInformation: false })
 
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
         ...deliusServiceUser,
@@ -230,9 +231,8 @@ describe('Referral form', () => {
       cy.contains('Confirm their personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
-      cy.get('h1').contains("Alex's information")
+      cy.get('h1').contains("Review Alex River's information")
       cy.contains('X123456')
-      cy.contains('Mr')
       cy.contains('River')
       cy.contains('1 January 1980')
       cy.contains('Flat 2 Test Walk')
@@ -245,8 +245,11 @@ describe('Referral form', () => {
       cy.contains('English')
       cy.contains('Agnostic')
       cy.contains('Autism')
-      cy.contains("Alex's information").next().contains('Email address').next().contains('alex.river@example.com')
-      cy.contains("Alex's information").next().contains('Phone number').next().contains('0123456789')
+      cy.contains('Address and contact details')
+      cy.contains('Email address')
+      cy.contains('alex.river@example.com')
+      cy.contains('Phone number')
+      cy.contains('0123456789')
 
       cy.contains('Save and continue').click()
 
@@ -327,7 +330,7 @@ describe('Referral form', () => {
           completedDate: false,
           furtherInformation: false,
         })
-        .checkYourAnswers({ checkAnswers: false })
+        .checkAllReferralInformation({ checkAllReferralInformation: false })
 
       cy.contains('Confirm their personal details').should('have.attr', 'href')
 
@@ -404,14 +407,13 @@ describe('Referral form', () => {
           completedDate: true,
           furtherInformation: true,
         })
-        .checkYourAnswers({ checkAnswers: true })
+        .checkAllReferralInformation({ checkAllReferralInformation: true })
 
       cy.stubGetDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
-      cy.get('a').contains('Check your answers').click()
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)
+      cy.get('a').contains('Check referral information').click()
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-all-referral-information`)
 
       cy.contains('X123456')
-      cy.contains('Mr')
       cy.contains('River')
       cy.contains('1 January 1980')
       cy.contains('Flat 2 Test Walk')
@@ -426,6 +428,44 @@ describe('Referral form', () => {
       cy.contains('Autism')
       cy.contains('alex.river@example.com')
 
+      // Alex's risk information
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .should('contain', 'Name')
+        .should('contain', 'Victor Drake')
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
+        )
+
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .should('contain', 'Email')
+        .should('contain', 'a.b@xyz.com')
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
+        )
+
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .should('contain', 'PDU (Probation Delivery Unit)')
+        .should('contain', 'London')
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
+        )
+
+      //
       // Alex's risk information
       cy.contains('Additional information')
         .next()
@@ -477,10 +517,29 @@ describe('Referral form', () => {
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/relevant-sentence`)
       cy.contains('End of sentence date')
         .next()
-        .should('contain', '15 November 2025')
+        .should('contain', '15 Nov 2025')
         .next()
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/relevant-sentence`)
+      cy.contains('Maximum number of enforceable days')
+        .next()
+        .should('contain', '10')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/enforceable-days`)
+      cy.contains('Date intervention to be completed by')
+        .next()
+        .contains('24 Aug 2021')
+        .parent()
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/completion-deadline`)
+      cy.contains('Further information for the service provider')
+        .next()
+        .should('contain', 'Some information about Alex')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/further-information`)
 
       // Accommodation referral details
       cy.contains('Accommodation referral details')
@@ -506,34 +565,6 @@ describe('Referral form', () => {
           'href',
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes`
         )
-
-      cy.contains('Enforceable days')
-        .next()
-        .contains('Maximum number of enforceable days')
-        .next()
-        .should('contain', '10')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/enforceable-days`)
-
-      cy.contains('Accommodation completion date')
-        .next()
-        .contains('Date')
-        .next()
-        .should('contain', '24 August 2021')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/completion-deadline`)
-
-      cy.contains('Further information')
-        .next()
-        .contains('Further information for the provider')
-        .next()
-        .should('contain', 'Some information about Alex')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/further-information`)
-
       cy.contains('Submit referral').click()
       cy.location('pathname').should('equal', `/referrals/${sentReferral.id}/confirmation`)
 
@@ -644,6 +675,7 @@ describe('Referral form', () => {
 
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
       const prisons = prisonFactory.prisonList()
+      const responsibleOfficer = deliusResponsibleOfficerFactory.build()
 
       cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
@@ -661,6 +693,7 @@ describe('Referral form', () => {
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
+      cy.stubGetResponsibleOfficer(responsibleOfficer)
 
       cy.login()
 
@@ -685,7 +718,7 @@ describe('Referral form', () => {
         })
         .selectServiceCategories({ selectServiceCategories: false })
         .disabledCohortInterventionReferralDetails()
-        .checkYourAnswers({ checkAnswers: false })
+        .checkAllReferralInformation({ checkAllReferralInformation: false })
 
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
         ...deliusServiceUser,
@@ -712,9 +745,8 @@ describe('Referral form', () => {
       cy.contains('Confirm their personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
-      cy.get('h1').contains("Alex's information")
+      cy.get('h1').contains("Review Alex River's information")
       cy.contains('X123456')
-      cy.contains('Mr')
       cy.contains('River')
       cy.contains('1 January 1980')
       cy.contains('Flat 2 Test Walk')
@@ -767,7 +799,15 @@ describe('Referral form', () => {
       cy.withinFieldsetThatContains('Where is Alex today?', () => {
         cy.contains('Community').click()
       })
+
       cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+
+      cy.contains('No').click()
+      cy.get('#probation-practitioner-name').type('John')
+      cy.get('#probation-practitioner-pdu').type('Hackney and City')
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
@@ -783,7 +823,7 @@ describe('Referral form', () => {
           needsAndRequirements: true,
         })
         .selectServiceCategories({ selectServiceCategories: true })
-        .checkYourAnswers({ checkAnswers: false })
+        .checkAllReferralInformation({ checkAllReferralInformation: false })
       cy.contains('Select service categories').click()
       cy.get('h1').contains('What service categories are you referring Alex to?')
       cy.contains('Accommodation').click()
@@ -812,7 +852,7 @@ describe('Referral form', () => {
           completedDate: false,
           furtherInformation: false,
         })
-        .checkYourAnswers({ checkAnswers: false })
+        .checkAllReferralInformation({ checkAllReferralInformation: false })
 
       cy.contains("Confirm the relevant sentence for the Women's services referral").click()
 
@@ -915,15 +955,14 @@ describe('Referral form', () => {
           completedDate: true,
           furtherInformation: true,
         })
-        .checkYourAnswers({ checkAnswers: true })
+        .checkAllReferralInformation({ checkAllReferralInformation: true })
 
       cy.stubGetDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
-      cy.get('a').contains('Check your answers').click()
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-answers`)
+      cy.get('a').contains('Check referral information').click()
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-all-referral-information`)
 
       cy.contains('Service categories')
-        .next()
-        .contains('Selected service categories')
+      cy.contains('Selected service categories')
         .next()
         .should('contain', 'Accommodation')
         .and('contain', 'Social inclusion')
@@ -932,8 +971,7 @@ describe('Referral form', () => {
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/service-categories`)
 
       cy.contains('Accommodation referral details')
-        .next()
-        .contains('Complexity level')
+      cy.contains('Complexity level')
         .next()
         .should('contain', 'Low complexity')
         .and('contain', 'Info about low complexity')
@@ -945,8 +983,7 @@ describe('Referral form', () => {
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/complexity-level`
         )
       cy.contains('Accommodation referral details')
-        .next()
-        .contains('Desired outcomes')
+      cy.contains('Desired outcomes')
         .next()
         .should('contain', 'Service user makes progress in obtaining accommodation')
         .and('contain', 'Service user is prevented from becoming homeless')
@@ -959,6 +996,7 @@ describe('Referral form', () => {
         )
 
       cy.contains('Social inclusion referral details')
+        .parent()
         .next()
         .contains('Complexity level')
         .next()
@@ -972,6 +1010,7 @@ describe('Referral form', () => {
           `/referrals/${draftReferral.id}/service-category/c036826e-f077-49a5-8b33-601dca7ad479/complexity-level`
         )
       cy.contains('Social inclusion referral details')
+        .parent()
         .next()
         .contains('Desired outcomes')
         .next()

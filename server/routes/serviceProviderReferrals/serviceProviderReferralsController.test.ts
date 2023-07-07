@@ -111,7 +111,6 @@ describe('GET /service-provider/dashboard', () => {
   it('displays a list of my cases', async () => {
     const referrals = [sentReferralSummariesFactory.build()]
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
-
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
     await request(app)
       .get('/service-provider/dashboard')
@@ -475,14 +474,18 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         },
       }),
     ]
+    const prisonList = prisonFactory.prisonList()
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
     await request(app)
       .get('/service-provider/dashboard/unassigned-cases')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('My cases')
+        expect(res.text).toContain('Unassigned cases')
+        expect(res.text).toContain('Location')
+        expect(res.text).toContain('Expected release date')
         expect(res.text).toContain('George Michael')
         expect(res.text).toContain('Accommodation Services - West Midlands')
       })
@@ -503,7 +506,8 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         },
       }),
     ]
-
+    const prisonList = prisonFactory.prisonList()
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
     })
@@ -528,7 +532,8 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         },
       }),
     ]
-
+    const prisonList = prisonFactory.prisonList()
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
     })
@@ -548,6 +553,8 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
   it('displays no records found when the search yields no results', async () => {
     const searchText = 'nonsense'
 
+    const prisonList = prisonFactory.prisonList()
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
     })
@@ -573,6 +580,8 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
 
   it('displays no records found when the search yields no results - empty search', async () => {
     const searchText = ''
+    const prisonList = prisonFactory.prisonList()
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
@@ -598,6 +607,8 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         },
       }),
     ]
+    const prisonList = prisonFactory.prisonList()
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
@@ -621,6 +632,8 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         },
       }),
     ]
+    const prisonList = prisonFactory.prisonList()
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
@@ -899,7 +912,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
         expect(res.text).toContain('07123456789')
         expect(res.text).toContain('Alex River')
         expect(res.text).toContain('Alex is low risk to others.')
-        expect(res.text).toContain('This shows their Risk of Serious Harm (ROSH) levels')
+        expect(res.text).toContain('Alex River&#39;s risk of serious harm(RoSH) levels')
         expect(res.text).toContain('Children')
         expect(res.text).toContain('High')
         expect(res.text).toContain('07890 123456')

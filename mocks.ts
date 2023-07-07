@@ -11,6 +11,7 @@ import draftReferralFactory from './testutils/factories/draftReferral'
 import serviceCategoryFactory from './testutils/factories/serviceCategory'
 import CommunityApiMocks from './mockApis/communityApi'
 import deliusConvictionFactory from './testutils/factories/deliusConviction'
+import deliusResponsibleOfficerFactory from './testutils/factories/deliusResponsibleOfficer'
 import AssessRisksAndNeedsServiceMocks from './mockApis/assessRisksAndNeedsService'
 import riskSummaryFactory from './testutils/factories/riskSummary'
 import prisonFactory from './testutils/factories/prison'
@@ -20,6 +21,7 @@ import deliusServiceUser from './testutils/factories/deliusServiceUser'
 import PrisonRegisterServiceMocks from './mockApis/prisonRegisterService'
 import PrisonerOffenderSearchMocks from './mockApis/prisonerOffenderSearch'
 import ReferAndMonitorAndDeliusMocks from './mockApis/referAndMonitorAndDelius'
+import deliusUserAccess from './testutils/factories/deliusUserAccess'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
@@ -169,6 +171,7 @@ export default async function setUpMocks(): Promise<void> {
     communityApiMocks.stubGetActiveConvictionsByCRN('CRN24', [deliusConvictionFactory.build()]),
     communityApiMocks.stubGetServiceUserByCRN('CRN24', deliusServiceUser.build({ otherIds: { crn: 'CRN24' } })),
     communityApiMocks.stubGetConvictionById('CRN24', '([0-9]+)', deliusConvictionFactory.build()),
+    referAndMonitorAndDeliusMocks.stubGetResponsibleOfficer(deliusResponsibleOfficerFactory.build()),
     interventionsMocks.stubGetActionPlanAppointment(
       '1',
       1,
@@ -192,5 +195,6 @@ export default async function setUpMocks(): Promise<void> {
     prisonRegisterServiceMocks.stubGetPrisons(prisonFactory.prisonList()),
     prisonerOffenderSearchMocks.stubGetPrisonerById(prisonerFactory.build()),
     referAndMonitorAndDeliusMocks.stubSentReferral(),
+    referAndMonitorAndDeliusMocks.stubGetCrnUserAccess(deliusUserAccess.build()),
   ])
 }
