@@ -30,7 +30,7 @@ describe(AppointmentSummary, () => {
       const summaryComponent = new AppointmentSummary(appointment, null)
 
       expect(summaryComponent.appointmentSummaryList.slice(0, 2)).toEqual([
-        { key: 'Date', lines: ['9 March 2021'] },
+        { key: 'Date', lines: ['Tuesday 9 March 2021'] },
         { key: 'Time', lines: ['Midday to 1:00pm'] },
       ])
     })

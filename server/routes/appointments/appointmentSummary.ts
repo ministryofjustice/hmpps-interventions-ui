@@ -28,7 +28,11 @@ export default class AppointmentSummary {
     if (this.appointmentDecorator.britishDay) {
       summary.push({
         key: 'Date',
-        lines: [DateUtils.dayOfWeek(this.appointmentDecorator.britishDay!) + ' ' + DateUtils.formattedDate(this.appointmentDecorator.britishDay!)],
+        lines: [
+          `${DateUtils.dayOfWeek(this.appointmentDecorator.britishDay!)} ${DateUtils.formattedDate(
+            this.appointmentDecorator.britishDay!
+          )}`,
+        ],
       })
     }
     if (this.appointmentDecorator.britishTime && this.appointmentDecorator.britishEndsAtTime) {

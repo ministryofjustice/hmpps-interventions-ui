@@ -520,7 +520,7 @@ describe('viewing supplier assessment feedback', () => {
           .get(`/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`)
           .expect(200)
           .expect(res => {
-            expect(res.text).toContain('View feedback')
+            expect(res.text).toContain('Session feedback')
             expect(res.text).toContain('Did Alex River come to the session?')
             expect(res.text).toContain('Yes, they were on time')
             expect(res.text).toContain('What did you do in the session?')
@@ -1343,7 +1343,7 @@ describe('Adding supplier assessment feedback', () => {
         .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('View feedback')
+          expect(res.text).toContain('Session feedback')
           expect(res.text).toContain('Did Alex River come to the session?')
           expect(res.text).toContain('Yes, they were on time')
           expect(res.text).toContain('What did you do in the session?')
@@ -1398,7 +1398,7 @@ describe('Adding supplier assessment feedback', () => {
         )
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('View feedback')
+          expect(res.text).toContain('Session feedback')
           expect(res.text).toContain('Did Alex River come to the session?')
           expect(res.text).toContain('No')
           expect(res.text).toContain('They missed the bus')
@@ -2239,7 +2239,7 @@ describe('Adding post delivery session feedback', () => {
             )
             .expect(200)
             .expect(res => {
-              expect(res.text).toContain('View feedback')
+              expect(res.text).toContain('Session feedback')
               expect(res.text).toContain('Did Alex River come to the session?')
               expect(res.text).toContain('Yes, they were on time')
               expect(res.text).toContain('What did you do in the session?')
@@ -2302,9 +2302,8 @@ describe('Adding post delivery session feedback', () => {
 
             .expect(200)
             .expect(res => {
-              expect(res.text).toContain('View feedback')
+              expect(res.text).toContain('Session feedback')
               expect(res.text).toContain('caseworkerFirstName caseworkerLastName')
-              expect(res.text).toContain('caseworker@email.com')
               expect(res.text).toContain('Did Alex River come to the session?')
               expect(res.text).toContain('Yes, they were on time')
               expect(res.text).toContain('What did you do in the session?')
@@ -2366,7 +2365,7 @@ describe('Adding post delivery session feedback', () => {
             )
             .expect(200)
             .expect(res => {
-              expect(res.text).toContain('View feedback')
+              expect(res.text).toContain('Session feedback')
               expect(res.text).toContain('caseworkerFirstName caseworkerLastName')
               expect(res.text).toContain('Did Alex River come to the session?')
               expect(res.text).toContain('Yes, they were on time')

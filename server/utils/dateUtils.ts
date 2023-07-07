@@ -50,8 +50,8 @@ export default class DateUtils {
     return format.format(calendarDay.utcDate)
   }
 
-  static dayOfWeek(date: CalendarDay): String{
-    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  static dayOfWeek(date: CalendarDay): string {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
     return days[date.utcDate.getDay()]
   }
 

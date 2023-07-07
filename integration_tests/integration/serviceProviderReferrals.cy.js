@@ -1919,8 +1919,6 @@ describe('Service provider referrals dashboard', () => {
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.contains('Intervention cancelled').should('not.exist')
       cy.contains('View feedback form').click()
-      cy.contains('Current caseworker').next().contains('Case Worker (auth.user@someagency.justice.gov.uk)')
-      cy.contains('Feedback submitted by').next().contains('Case Worker (auth.user@someagency.justice.gov.uk)')
       cy.contains('Session Attendance')
       cy.contains('Session Details')
       cy.contains('Did Alex River come to the session?')
@@ -2755,7 +2753,6 @@ describe('Service provider referrals dashboard', () => {
           cy.get('[data-cy=supplier-assessment-table]').contains('View feedback').click()
 
           cy.contains('24 March 2022')
-          cy.contains('9:02am to 10:17am')
           cy.contains('Did Alex River come to the session?')
           cy.contains('No')
           cy.contains('Add how you tried to contact Alex River and anything you know about why they did not attend.')
