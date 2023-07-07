@@ -1232,7 +1232,7 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Add details about what you did, anything that was achieved and what came out of the session.')
             cy.contains('How did Alex River respond to the session?').type('Engaged well')
             cy.contains(
-              'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support Alex.'
+              'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support them.'
             )
             cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
 
@@ -1495,7 +1495,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Add details about what you did, anything that was achieved and what came out of the session.')
       cy.contains('How did Alex River respond to the session?').type('Engaged well')
       cy.contains(
-        'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support Alex.'
+        'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support them.'
       )
 
       cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
@@ -2862,7 +2862,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('How did Alex River respond to the session?').type("Wasn't engaged")
           cy.contains('Did anything concern you about Alex River?')
           cy.contains('Yes').click()
-          cy.contains('Add enough detail to help the probation practitioner to know what happened').type(
+          cy.contains('Add enough detail to help the probation practitioner to know what happened.').type(
             'Alex was acting very suspicious.'
           )
 
