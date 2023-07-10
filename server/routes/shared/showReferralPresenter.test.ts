@@ -325,7 +325,7 @@ describe(ShowReferralPresenter, () => {
 
   describe('responsibleOfficerDetails', () => {
     describe('when all fields are present', () => {
-      it('returns a summary list of the responsible officer details', () => {
+      it('returns a summary list of the responsible officer details in community', () => {
         const sentReferral = sentReferralFactory.build(referralParams)
         const presenter = new ShowReferralPresenter(
           sentReferral,
@@ -371,6 +371,75 @@ describe(ShowReferralPresenter, () => {
           { key: 'Email address', lines: ['p.practitioner@example.com'] },
           { key: 'Team phone', lines: ['01141234567'] },
           { key: 'Team email address', lines: ['team@nps.gov.uk'] },
+        ])
+      })
+      it('returns a summary list of the responsible officer details in custody', () => {
+        const sentReferral = sentReferralFactory.build(referralParams)
+        const presenter = new ShowReferralPresenter(
+          sentReferral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          prisonList,
+          null,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          deliusResponsibleOfficerFactory.build({
+            communityManager: {
+              code: 'abc',
+              name: {
+                forename: 'Peter',
+                surname: 'Practitioner',
+              },
+              username: 'bobalice',
+              email: 'p.practitioner@example.com',
+              telephoneNumber: '01234567890',
+              responsibleOfficer: false,
+              pdu: {
+                code: '97',
+                description: 'Hackney and City',
+              },
+              team: {
+                code: 'RM',
+                description: 'R and M team',
+                email: 'team@nps.gov.uk',
+                telephoneNumber: '01141234567',
+              },
+            },
+            prisonManager: {
+              code: 'abc',
+              name: {
+                forename: 'Peter',
+                surname: 'Custody',
+              },
+              username: 'bobrichard',
+              email: 'p.practitioner@example.com',
+              telephoneNumber: '01234567892',
+              responsibleOfficer: true,
+              pdu: {
+                code: '97',
+                description: 'Hackney and City',
+              },
+              team: {
+                code: 'RM',
+                description: 'R and M team',
+                email: 'custody-team@nps.gov.uk',
+                telephoneNumber: '01141234568',
+              },
+            },
+          })
+        )
+
+        expect(presenter.deliusResponsibleOfficersDetails).toEqual([
+          { key: 'Name', lines: ['Peter Custody'] },
+          { key: 'Phone', lines: ['01234567892'] },
+          { key: 'Email address', lines: ['p.practitioner@example.com'] },
+          { key: 'Team phone', lines: ['01141234568'] },
+          { key: 'Team email address', lines: ['custody-team@nps.gov.uk'] },
         ])
       })
     })
