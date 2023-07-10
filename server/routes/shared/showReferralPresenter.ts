@@ -174,7 +174,7 @@ export default class ShowReferralPresenter {
   get deliusResponsibleOfficersDetails(): SummaryListItem[] {
     if (this.deliusResponsibleOfficer === null) return []
 
-    const officer = this.deliusResponsibleOfficer.communityManager
+    const officer = this.deliusResponsibleOfficer.communityManager.responsibleOfficer
       ? this.deliusResponsibleOfficer.communityManager
       : this.deliusResponsibleOfficer.prisonManager
     return [
