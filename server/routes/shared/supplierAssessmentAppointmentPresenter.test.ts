@@ -46,7 +46,7 @@ describe(SupplierAssessmentAppointmentPresenter, () => {
       )
 
       expect(presenter.summary.slice(0, 2)).toEqual([
-        { key: 'Date', lines: ['9 March 2021'] },
+        { key: 'Date', lines: ['Tuesday 9 March 2021'] },
         { key: 'Time', lines: ['11:00am to midday'] },
       ])
     })

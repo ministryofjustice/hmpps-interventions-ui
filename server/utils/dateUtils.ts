@@ -50,6 +50,11 @@ export default class DateUtils {
     return format.format(calendarDay.utcDate)
   }
 
+  static dayOfWeek(date: CalendarDay): string {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    return days[date.utcDate.getDay()]
+  }
+
   // Docs: https://www.gov.uk/guidance/style-guide/a-to-z-of-gov-uk-style#times
   // string input: 2021-06-02T00:30:00+01:00 or 2021-06-02T00:30:00
   // example output: 1:00pm

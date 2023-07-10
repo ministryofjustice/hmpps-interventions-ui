@@ -520,7 +520,7 @@ describe('viewing supplier assessment feedback', () => {
           .get(`/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`)
           .expect(200)
           .expect(res => {
-            expect(res.text).toContain('View feedback')
+            expect(res.text).toContain('Session feedback')
             expect(res.text).toContain('Did Alex River come to the session?')
             expect(res.text).toContain('Yes, they were on time')
             expect(res.text).toContain('What did you do in the session?')
@@ -1019,13 +1019,13 @@ describe('Adding supplier assessment feedback', () => {
           )
           expect(res.text).toContain('How did Alex River respond to the session?')
           expect(res.text).toContain(
-            'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support Alex.'
+            'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support them.'
           )
           expect(res.text).toContain('Did anything concern you about Alex River?')
           expect(res.text).toContain(
             'If you select yes, the probation practitioner will get an email about your concerns.'
           )
-          expect(res.text).toContain('Add enough detail to help the probation practitioner to know what happened')
+          expect(res.text).toContain('Add enough detail to help the probation practitioner to know what happened.')
         })
     })
 
@@ -1343,7 +1343,7 @@ describe('Adding supplier assessment feedback', () => {
         .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('View feedback')
+          expect(res.text).toContain('Session feedback')
           expect(res.text).toContain('Did Alex River come to the session?')
           expect(res.text).toContain('Yes, they were on time')
           expect(res.text).toContain('What did you do in the session?')
@@ -1398,7 +1398,7 @@ describe('Adding supplier assessment feedback', () => {
         )
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('View feedback')
+          expect(res.text).toContain('Session feedback')
           expect(res.text).toContain('Did Alex River come to the session?')
           expect(res.text).toContain('No')
           expect(res.text).toContain('They missed the bus')
@@ -2239,7 +2239,7 @@ describe('Adding post delivery session feedback', () => {
             )
             .expect(200)
             .expect(res => {
-              expect(res.text).toContain('View feedback')
+              expect(res.text).toContain('Session feedback')
               expect(res.text).toContain('Did Alex River come to the session?')
               expect(res.text).toContain('Yes, they were on time')
               expect(res.text).toContain('What did you do in the session?')
@@ -2302,9 +2302,8 @@ describe('Adding post delivery session feedback', () => {
 
             .expect(200)
             .expect(res => {
-              expect(res.text).toContain('View feedback')
+              expect(res.text).toContain('Session feedback')
               expect(res.text).toContain('caseworkerFirstName caseworkerLastName')
-              expect(res.text).toContain('caseworker@email.com')
               expect(res.text).toContain('Did Alex River come to the session?')
               expect(res.text).toContain('Yes, they were on time')
               expect(res.text).toContain('What did you do in the session?')
@@ -2366,7 +2365,7 @@ describe('Adding post delivery session feedback', () => {
             )
             .expect(200)
             .expect(res => {
-              expect(res.text).toContain('View feedback')
+              expect(res.text).toContain('Session feedback')
               expect(res.text).toContain('caseworkerFirstName caseworkerLastName')
               expect(res.text).toContain('Did Alex River come to the session?')
               expect(res.text).toContain('Yes, they were on time')

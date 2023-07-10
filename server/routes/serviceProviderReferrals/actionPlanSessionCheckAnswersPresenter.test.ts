@@ -13,7 +13,7 @@ describe(ActionPlanSessionCheckAnswersPresenter, () => {
       const presenter = new ActionPlanSessionCheckAnswersPresenter(appointment, '1', 2, 'draftId')
 
       expect(presenter.summary).toEqual([
-        { key: 'Date', lines: ['24 March 2021'] },
+        { key: 'Date', lines: ['Wednesday 24 March 2021'] },
         { key: 'Time', lines: ['9:02am to 10:17am'] },
         { key: 'Method', lines: ['Phone call'] },
       ])

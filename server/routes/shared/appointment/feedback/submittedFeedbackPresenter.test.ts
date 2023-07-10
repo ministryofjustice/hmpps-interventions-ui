@@ -20,7 +20,7 @@ describe(SubmittedFeedbackPresenter, () => {
         referralId
       )
       expect(presenter.text).toMatchObject({
-        title: 'View feedback',
+        title: 'Session feedback',
       })
       const initialAssessmentAppointment = initialAssessmentAppointmentFactory.build()
       presenter = new SubmittedFeedbackPresenter(
@@ -31,7 +31,7 @@ describe(SubmittedFeedbackPresenter, () => {
         referralId
       )
       expect(presenter.text).toMatchObject({
-        title: 'View feedback',
+        title: 'Session feedback',
       })
     })
   })

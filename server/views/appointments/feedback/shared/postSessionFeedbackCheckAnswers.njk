@@ -7,12 +7,7 @@
 {% set pageSubTitle = "Confirm answers" %}
 
 {% block formSection %}
-
-  {#
-    {{ govukSummaryList(summaryListArgs) }}
-  #}
   <br>
-
   {% include "../../../partials/postSessionFeedbackResponses.njk" %}
 
   <form method="post" action="{{ presenter.submitHref }}">

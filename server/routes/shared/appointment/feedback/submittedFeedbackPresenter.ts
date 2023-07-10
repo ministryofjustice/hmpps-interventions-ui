@@ -20,6 +20,6 @@ export default class SubmittedFeedbackPresenter {
   readonly backLinkHref = `/${this.userType}/referrals/${this.referralId}/progress`
 
   readonly text = {
-    title: `View feedback`,
+    title: `Session feedback`,
   }
 }

@@ -83,7 +83,7 @@ describe(ScheduleAppointmentPresenter, () => {
                 },
               ],
             },
-            { key: 'Date', lines: ['2 January 2021'] },
+            { key: 'Date', lines: ['Saturday 2 January 2021'] },
             { key: 'Time', lines: ['Midday to 1:00pm'] },
             { key: 'Method', lines: ['Video call'] },
           ])
@@ -105,7 +105,7 @@ describe(ScheduleAppointmentPresenter, () => {
             null
           )
           expect(presenter.appointmentSummary).toEqual([
-            { key: 'Date', lines: ['2 January 2021'] },
+            { key: 'Date', lines: ['Saturday 2 January 2021'] },
             { key: 'Time', lines: ['Midday to 1:00pm'] },
             { key: 'Method', lines: ['Video call'] },
           ])
