@@ -296,7 +296,7 @@ export default class ServiceProviderReferralsController {
       deliusResponsibleOfficer,
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
-      this.communityApiService.getUserByUsername(sentReferral.sentBy.username),
+      this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
       this.communityApiService.getExpandedServiceUserByCRN(crn),
       this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
       this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),

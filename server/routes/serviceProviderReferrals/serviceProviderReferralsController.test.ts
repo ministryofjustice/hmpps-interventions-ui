@@ -8,7 +8,6 @@ import apiConfig from '../../config'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import sentReferralSummariesFactory from '../../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import CommunityApiService from '../../services/communityApiService'
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
@@ -29,7 +28,7 @@ import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import approvedActionPlanSummary from '../../../testutils/factories/approvedActionPlanSummary'
 import SentReferral from '../../models/sentReferral'
-import DeliusUser from '../../models/delius/deliusUser'
+import { RamDeliusUser } from '../../models/delius/deliusUser'
 import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
@@ -50,6 +49,7 @@ import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleO
 import deliusResponsibleOfficerFactory from '../../../testutils/factories/deliusResponsibleOfficer'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
 import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
+import ramDeliusUserFactory from '../../../testutils/factories/ramDeliusUser'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/communityApiService')
@@ -832,7 +832,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
   const conviction = deliusConvictionFactory.build()
   const riskSummary: RiskSummary = riskSummaryFactory.build()
   let sentReferral: SentReferral
-  let deliusUser: DeliusUser
+  let ramDeliusUser: RamDeliusUser
   let deliusServiceUser: ExpandedDeliusServiceUser
   let supplementaryRiskInformation: SupplementaryRiskInformation
   let responsibleOfficer: DeliusResponsibleOfficer
@@ -840,7 +840,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
   beforeEach(() => {
     sentReferral = sentReferralFactory.build()
-    deliusUser = deliusUserFactory.build()
+    ramDeliusUser = ramDeliusUserFactory.build()
     deliusServiceUser = expandedDeliusServiceUserFactory.build()
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
     responsibleOfficer = deliusResponsibleOfficerFactory.build()
@@ -848,7 +848,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
-    communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
+    ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
     communityApiService.getConvictionById.mockResolvedValue(conviction)
@@ -862,11 +862,6 @@ describe('GET /service-provider/referrals/:id/details', () => {
     sentReferral = sentReferralFactory.unassigned().build()
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
       riskSummaryComments: 'Alex is low risk to others.',
-    })
-    deliusUser = deliusUserFactory.build({
-      firstName: 'Bernard',
-      surname: 'Beaks',
-      email: 'bernard.beaks@justice.gov.uk',
     })
     deliusServiceUser = expandedDeliusServiceUserFactory.build({
       firstName: 'Alex',
@@ -906,7 +901,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     })
 
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
-    communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
+    ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
     communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)

@@ -1,5 +1,5 @@
 import SentReferral from '../../models/sentReferral'
-import DeliusUser from '../../models/delius/deliusUser'
+import { RamDeliusUser } from '../../models/delius/deliusUser'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import config from '../../config'
@@ -37,7 +37,7 @@ export default class ShowReferralPresenter {
     private readonly intervention: Intervention,
     private readonly conviction: DeliusConviction,
     readonly riskInformation: SupplementaryRiskInformation,
-    private readonly sentBy: DeliusUser,
+    private readonly sentBy: RamDeliusUser,
     private readonly prisons: Prison[],
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
@@ -154,7 +154,7 @@ export default class ShowReferralPresenter {
   ]
 
   readonly probationPractitionerDetailsForCustody: SummaryListItem[] = [
-    { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`] },
+    { key: 'Name', lines: [`${this.sentBy.name.forename} ${this.sentBy.name.surname}`] },
     { key: 'Email address', lines: [this.sentBy.email ?? ''] },
   ]
 

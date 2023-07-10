@@ -2,22 +2,13 @@ import createError from 'http-errors'
 import type HmppsAuthService from './hmppsAuthService'
 import RestClient, { RestClientError } from '../data/restClient'
 import logger from '../../log'
-import DeliusUser from '../models/delius/deliusUser'
 import DeliusServiceUser, { ExpandedDeliusServiceUser } from '../models/delius/deliusServiceUser'
 import DeliusConviction from '../models/delius/deliusConviction'
-import { DeliusOffenderManager } from '../models/delius/deliusOffenderManager'
 
 export type CommunityApiServiceError = RestClientError
 
 export default class CommunityApiService {
   constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
-
-  async getUserByUsername(username: string): Promise<DeliusUser> {
-    const token = await this.hmppsAuthService.getApiClientToken()
-
-    logger.info({ username }, 'getting user details')
-    return (await this.restClient.get({ path: `/secure/users/${username}/details`, token })) as DeliusUser
-  }
 
   async getServiceUserByCRN(crn: string): Promise<DeliusServiceUser> {
     const token = await this.hmppsAuthService.getApiClientToken()
@@ -63,26 +54,5 @@ export default class CommunityApiService {
       path: `/secure/offenders/crn/${crn}/convictions/${id}`,
       token,
     })) as DeliusConviction
-  }
-
-  async getResponsibleOfficerForServiceUser(crn: string): Promise<DeliusOffenderManager | null> {
-    const token = await this.hmppsAuthService.getApiClientToken()
-
-    logger.info({ crn }, 'getting offender managers for service user')
-    try {
-      const deliusOffenderManagers = (await this.restClient.get({
-        path: `/secure/offenders/crn/${crn}/allOffenderManagers`,
-        token,
-      })) as DeliusOffenderManager[]
-
-      // we have an assumption that a SU only ever has one RO. this has been tested
-      // in production and found to be true in 100% of cases we have seen so far.
-      return deliusOffenderManagers.find(offenderManager => offenderManager.isResponsibleOfficer) || null
-    } catch (err) {
-      const restClientError = err as RestClientError
-      throw createError(restClientError.status || 500, restClientError, {
-        userMessage: 'Could retrieve Responsible Officer from nDelius.',
-      })
-    }
   }
 }
