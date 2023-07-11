@@ -56,7 +56,7 @@ export default on => {
     },
 
     stubGetUserByUsername: arg => {
-      return communityApi.stubGetUserByUsername(arg.username, arg.responseJson)
+      return ramDeliusApi.stubGetUserByUsername(arg.username, arg.responseJson)
     },
 
     stubGetActiveConvictionsByCRN: arg => {

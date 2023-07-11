@@ -10,7 +10,7 @@ export default class RamDeliusApiService {
 
   async getUserByUsername(username: string): Promise<RamDeliusUser> {
     const token = await this.hmppsAuthService.getApiClientToken()
-    return (await this.restClient.get({ path: `users/${username}/details`, token })) as RamDeliusUser
+    return (await this.restClient.get({ path: `/users/${username}/details`, token })) as RamDeliusUser
   }
 
   async getResponsibleOfficer(crn: string): Promise<DeliusResponsibleOfficer | null> {

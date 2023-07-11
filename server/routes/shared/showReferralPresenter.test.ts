@@ -1,7 +1,6 @@
 import moment from 'moment-timezone'
 import ShowReferralPresenter from './showReferralPresenter'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import deliusUserFactory from '../../../testutils/factories/deliusUser'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import { ListStyle } from '../../utils/summaryList'
 import interventionFactory from '../../../testutils/factories/intervention'
@@ -15,6 +14,7 @@ import prisonFactory from '../../../testutils/factories/prison'
 import { CurrentLocationType } from '../../models/draftReferral'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import deliusResponsibleOfficerFactory from '../../../testutils/factories/deliusResponsibleOfficer'
+import { RamDeliusUser } from '../../models/delius/deliusUser'
 
 jest.mock('../../services/prisonRegisterService')
 
@@ -45,11 +45,14 @@ describe(ShowReferralPresenter, () => {
       ppEmailAddress: 'bernard.beaks@justice.gov.uk',
     },
   }
-  const deliusUser = deliusUserFactory.build({
-    firstName: 'Bernard',
-    surname: 'Beaks',
+  const deliusUser: RamDeliusUser = {
+    username: 'BERNARD.BEAKS',
+    name: {
+      forename: 'Bernard',
+      surname: 'Beaks',
+    },
     email: 'bernard.beaks@justice.gov.uk',
-  })
+  }
   const deliusServiceUser = expandedDeliusServiceUserFactory.build()
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()

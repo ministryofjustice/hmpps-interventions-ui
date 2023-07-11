@@ -1,5 +1,5 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
-import deliusUserFactory from '../../testutils/factories/deliusUser'
+import ramDeliusUserFactory from '../../testutils/factories/ramDeliusUser'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
 import approvedActionPlanSummaryFactory from '../../testutils/factories/approvedActionPlanSummary'
@@ -151,9 +151,11 @@ describe('Probation Practitioner monitor journey', () => {
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build
-      const probationPractitioner = deliusUserFactory.build({
-        firstName: 'John',
-        surname: 'Smith',
+      const probationPractitioner = ramDeliusUserFactory.build({
+        name: {
+          forename: 'John',
+          surname: 'Smith',
+        },
         username: 'john.smith',
       })
       const actionPlan = actionPlanFactory.approved().build({
@@ -259,9 +261,11 @@ describe('Probation Practitioner monitor journey', () => {
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build
-      const probationPractitioner = deliusUserFactory.build({
-        firstName: 'John',
-        surname: 'Smith',
+      const probationPractitioner = ramDeliusUserFactory.build({
+        name: {
+          forename: 'John',
+          surname: 'Smith',
+        },
         username: 'john.smith',
       })
       const actionPlan = actionPlanFactory.approved().build({
@@ -375,9 +379,11 @@ describe('Probation Practitioner monitor journey', () => {
       }
 
       const deliusServiceUser = deliusServiceUserFactory.build()
-      const probationPractitioner = deliusUserFactory.build({
-        firstName: 'John',
-        surname: 'Smith',
+      const probationPractitioner = ramDeliusUserFactory.build({
+        name: {
+          forename: 'John',
+          surname: 'Smith',
+        },
         username: 'john.smith',
       })
       const actionPlan = actionPlanFactory.approved().build({
@@ -461,9 +467,11 @@ describe('Probation Practitioner monitor journey', () => {
         referral: { interventionId: intervention.id },
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
-      const probationPractitioner = deliusUserFactory.build({
-        firstName: 'John',
-        surname: 'Smith',
+      const probationPractitioner = ramDeliusUserFactory.build({
+        name: {
+          forename: 'John',
+          surname: 'Smith',
+        },
         username: 'john.smith',
       })
       const actionPlan = actionPlanFactory.submitted().build({

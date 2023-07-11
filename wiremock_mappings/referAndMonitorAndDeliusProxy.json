@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "ANY",
-    "urlPattern": "/probation-case/.*"
+    "urlPattern": ".*"
   },
   "response": {
     "proxyBaseUrl": "http://refer-and-monitor-and-delius:8080"

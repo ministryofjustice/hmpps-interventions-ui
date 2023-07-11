@@ -1,7 +1,7 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import deliusServiceUser from '../../testutils/factories/deliusServiceUser'
 import intervention from '../../testutils/factories/intervention'
-import deliusUser from '../../testutils/factories/deliusUser'
+import ramDeliusUserFactory from '../../testutils/factories/ramDeliusUser'
 import deliusConviction from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformation from '../../testutils/factories/supplementaryRiskInformation'
 import riskSummary from '../../testutils/factories/riskSummary'
@@ -27,7 +27,7 @@ context('Amend a referral', () => {
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
-      const pp = deliusUser.build()
+      const pp = ramDeliusUserFactory.build()
 
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
@@ -118,7 +118,7 @@ context('Amend a referral', () => {
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
-      const pp = deliusUser.build()
+      const pp = ramDeliusUserFactory.build()
 
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
@@ -218,7 +218,7 @@ context('Amend a referral', () => {
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
-      const pp = deliusUser.build()
+      const pp = ramDeliusUserFactory.build()
 
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
@@ -362,7 +362,7 @@ context('Amend a referral', () => {
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
-      const pp = deliusUser.build()
+      const pp = ramDeliusUserFactory.build()
 
       cy.stubGetIntervention(sentReferral.referral.interventionId, personalWellbeingIntervention)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
@@ -604,7 +604,7 @@ context('Amend a referral', () => {
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
-      const pp = deliusUser.build()
+      const pp = ramDeliusUserFactory.build()
 
       cy.stubGetIntervention(sentReferral.referral.interventionId, personalWellbeingIntervention)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)

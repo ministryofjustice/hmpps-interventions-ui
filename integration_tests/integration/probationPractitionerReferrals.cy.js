@@ -5,7 +5,7 @@ import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import interventionFactory from '../../testutils/factories/intervention'
-import deliusUserFactory from '../../testutils/factories/deliusUser'
+import ramDeliusUserFactory from '../../testutils/factories/ramDeliusUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
@@ -181,7 +181,7 @@ describe('Probation practitioner referrals dashboard', () => {
             serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
           },
         })
-        const deliusUser = deliusUserFactory.build()
+        const deliusUser = ramDeliusUserFactory.build()
         cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
         cy.stubGetIntervention(intervention.id, intervention)
         cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [])
@@ -376,11 +376,7 @@ describe('Probation practitioner referrals dashboard', () => {
       riskSummaryComments: 'They are low risk.',
     })
 
-    const deliusUser = deliusUserFactory.build({
-      firstName: 'Bernard',
-      surname: 'Beaks',
-      email: 'bernard.beaks@justice.gov.uk',
-    })
+    const deliusUser = ramDeliusUserFactory.build()
 
     const deliusServiceUser = deliusServiceUserFactory.build({
       firstName: 'Jenny',
@@ -666,11 +662,7 @@ describe('Probation practitioner referrals dashboard', () => {
       riskSummaryComments: 'They are low risk.',
     })
 
-    const deliusUser = deliusUserFactory.build({
-      firstName: 'Bernard',
-      surname: 'Beaks',
-      email: 'bernard.beaks@justice.gov.uk',
-    })
+    const deliusUser = ramDeliusUserFactory.build()
 
     const deliusServiceUser = deliusServiceUserFactory.build({
       firstName: 'Jenny',
@@ -929,11 +921,7 @@ describe('Probation practitioner referrals dashboard', () => {
         riskSummaryComments: 'They are low risk.',
       })
 
-      const deliusUser = deliusUserFactory.build({
-        firstName: 'Bernard',
-        surname: 'Beaks',
-        email: 'bernard.beaks@justice.gov.uk',
-      })
+      const deliusUser = ramDeliusUserFactory.build()
 
       const deliusServiceUser = deliusServiceUserFactory.build({
         firstName: 'Jenny',
@@ -1078,11 +1066,7 @@ describe('Probation practitioner referrals dashboard', () => {
         riskSummaryComments: 'They are low risk.',
       })
 
-      const deliusUser = deliusUserFactory.build({
-        firstName: 'Bernard',
-        surname: 'Beaks',
-        email: 'bernard.beaks@justice.gov.uk',
-      })
+      const deliusUser = ramDeliusUserFactory.build()
 
       const deliusServiceUser = deliusServiceUserFactory.build({
         firstName: 'Jenny',
@@ -1254,11 +1238,7 @@ describe('Probation practitioner referrals dashboard', () => {
       riskSummaryComments: 'They are low risk.',
     })
 
-    const deliusUser = deliusUserFactory.build({
-      firstName: 'Bernard',
-      surname: 'Beaks',
-      email: 'bernard.beaks@justice.gov.uk',
-    })
+    const deliusUser = ramDeliusUserFactory.build()
 
     const deliusServiceUser = deliusServiceUserFactory.build({
       firstName: 'Jenny',

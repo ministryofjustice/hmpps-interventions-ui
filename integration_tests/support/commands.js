@@ -1,4 +1,4 @@
-import deliusUserFactory from '../../testutils/factories/deliusUser'
+import ramDeliusUserFactory from '../../testutils/factories/ramDeliusUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
 import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
@@ -23,7 +23,7 @@ Cypress.Commands.add('withinFieldsetThatContains', (text, action) => {
 })
 
 Cypress.Commands.add('stubViewReferralDetails', referralToView => {
-  const deliusUser = deliusUserFactory.build()
+  const deliusUser = ramDeliusUserFactory.build()
   const conviction = deliusConvictionFactory.build({
     convictionId: referralToView.referral.relevantSentenceId,
   })

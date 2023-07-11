@@ -2,7 +2,7 @@ import moment from 'moment-timezone'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import sentReferralForSummaries from '../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
-import deliusUserFactory from '../../testutils/factories/deliusUser'
+import ramDeliusUserFactory from '../../testutils/factories/ramDeliusUser'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
@@ -119,11 +119,7 @@ describe('Service provider referrals dashboard', () => {
       }),
     ]
 
-    const deliusUser = deliusUserFactory.build({
-      firstName: 'Bernard',
-      surname: 'Beaks',
-      email: 'bernard.beaks@justice.gov.uk',
-    })
+    const deliusUser = ramDeliusUserFactory.build()
 
     const deliusServiceUser = deliusServiceUserFactory.build({
       firstName: 'Jenny',
@@ -375,7 +371,7 @@ describe('Service provider referrals dashboard', () => {
       }
 
       const referral = sentReferralFactory.build(referralParams)
-      const deliusUser = deliusUserFactory.build()
+      const deliusUser = ramDeliusUserFactory.build()
       const deliusServiceUser = deliusServiceUserFactory.build()
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
       const hmppsAuthUser = hmppsAuthUserFactory.build({
@@ -481,7 +477,7 @@ describe('Service provider referrals dashboard', () => {
         assignedTo: { username: currentAssignee.username },
       })
 
-      const deliusUser = deliusUserFactory.build()
+      const deliusUser = ramDeliusUserFactory.build()
       const deliusServiceUser = deliusServiceUserFactory.build()
       const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({ ...deliusServiceUser })
       const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
@@ -586,7 +582,7 @@ describe('Service provider referrals dashboard', () => {
       },
     }
     const deliusServiceUser = deliusServiceUserFactory.build()
-    const deliusUser = deliusUserFactory.build()
+    const deliusUser = ramDeliusUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
     const assignedReferral = sentReferralFactory
       .assigned()
@@ -722,7 +718,7 @@ describe('Service provider referrals dashboard', () => {
       },
     }
     const deliusServiceUser = deliusServiceUserFactory.build()
-    const deliusUser = deliusUserFactory.build()
+    const deliusUser = ramDeliusUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
     const assignedReferral = sentReferralFactory
       .assigned()
@@ -1388,9 +1384,11 @@ describe('Service provider referrals dashboard', () => {
         referral: { interventionId: accommodationIntervention.id, serviceCategoryIds: [serviceCategory.id] },
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
-      const probationPractitioner = deliusUserFactory.build({
-        firstName: 'John',
-        surname: 'Smith',
+      const probationPractitioner = ramDeliusUserFactory.build({
+        name: {
+          forename: 'John',
+          surname: 'Smith',
+        },
         username: 'john.smith',
       })
       const serviceProvider = hmppsAuthUserFactory.build({
@@ -1558,9 +1556,11 @@ describe('Service provider referrals dashboard', () => {
         referral: { interventionId: intervention.id, serviceCategoryIds: [serviceCategory.id] },
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
-      const probationPractitioner = deliusUserFactory.build({
-        firstName: 'John',
-        surname: 'Smith',
+      const probationPractitioner = ramDeliusUserFactory.build({
+        name: {
+          forename: 'John',
+          surname: 'Smith',
+        },
         username: 'john.smith',
       })
       const serviceProvider = hmppsAuthUserFactory.build({
@@ -1699,9 +1699,11 @@ describe('Service provider referrals dashboard', () => {
         referral: { interventionId: intervention.id, serviceCategoryIds: [serviceCategory.id] },
       }
       const deliusServiceUser = deliusServiceUserFactory.build()
-      const probationPractitioner = deliusUserFactory.build({
-        firstName: 'John',
-        surname: 'Smith',
+      const probationPractitioner = ramDeliusUserFactory.build({
+        name: {
+          forename: 'John',
+          surname: 'Smith',
+        },
         username: 'john.smith',
       })
       const serviceProvider = hmppsAuthUserFactory.build({
@@ -1826,9 +1828,11 @@ describe('Service provider referrals dashboard', () => {
       assignedTo: serviceProvider,
     }
     const deliusServiceUser = deliusServiceUserFactory.build()
-    const probationPractitioner = deliusUserFactory.build({
-      firstName: 'John',
-      surname: 'Smith',
+    const probationPractitioner = ramDeliusUserFactory.build({
+      name: {
+        forename: 'John',
+        surname: 'Smith',
+      },
       username: 'john.smith',
     })
     const actionPlan = actionPlanFactory.approved().build({
@@ -1973,7 +1977,7 @@ describe('Service provider referrals dashboard', () => {
       },
     }
     const deliusServiceUser = deliusServiceUserFactory.build()
-    const deliusUser = deliusUserFactory.build()
+    const deliusUser = ramDeliusUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith', username: 'john.smith' })
     const referral = sentReferralFactory
       .assigned()
@@ -2184,9 +2188,11 @@ describe('Service provider referrals dashboard', () => {
         lastName: 'Worker',
         username: 'case.worker',
       })
-      const probationPractitioner = deliusUserFactory.build({
-        firstName: 'John',
-        surname: 'Smith',
+      const probationPractitioner = ramDeliusUserFactory.build({
+        name: {
+          forename: 'John',
+          surname: 'Smith',
+        },
         username: 'john.smith',
       })
       const referral = sentReferralFactory.assigned().build({
@@ -2561,9 +2567,11 @@ describe('Service provider referrals dashboard', () => {
       const serviceCategory = serviceCategoryFactory.build()
       const intervention = interventionFactory.build()
       const deliusServiceUser = deliusServiceUserFactory.build()
-      const probationPractitioner = deliusUserFactory.build({
-        firstName: 'John',
-        surname: 'Smith',
+      const probationPractitioner = ramDeliusUserFactory.build({
+        name: {
+          forename: 'John',
+          surname: 'Smith',
+        },
         username: 'john.smith',
       })
       const serviceProvider = hmppsAuthUserFactory.build({
@@ -2969,7 +2977,7 @@ describe('Service provider referrals dashboard', () => {
         }),
       ]
 
-      const deliusUser = deliusUserFactory.build()
+      const deliusUser = ramDeliusUserFactory.build()
 
       cy.stubGetIntervention(intervention.id, intervention)
       sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
@@ -3090,11 +3098,7 @@ describe('Service provider referrals dashboard', () => {
       }),
     ]
 
-    const deliusUser = deliusUserFactory.build({
-      firstName: 'Bernard',
-      surname: 'Beaks',
-      email: 'bernard.beaks@justice.gov.uk',
-    })
+    const deliusUser = ramDeliusUserFactory.build()
 
     const deliusServiceUser = deliusServiceUserFactory.build({
       firstName: 'Jenny',
