@@ -110,7 +110,7 @@ export default class InterventionProgressPresenter {
 
   readonly hasSessions = this.actionPlanAppointments.length !== 0
 
-  readonly sessionTableHeaders = ['Session details', 'Date and time', 'Status', 'Action']
+  readonly sessionTableHeaders = ['Session details', 'Time and date', 'Status', 'Action']
 
   get sessionTableRows(): ProgressSessionTableRow[] {
     if (!this.hasSessions) {
@@ -252,7 +252,7 @@ export default class InterventionProgressPresenter {
     return this.endOfServiceReportStarted ? 'Continue' : 'Create'
   }
 
-  readonly supplierAssessmentTableHeaders = ['Date and time', 'Status', 'Action']
+  readonly supplierAssessmentTableHeaders = ['Time and date', 'Status', 'Action']
 
   get supplierAssessmentTableRows(): SupplierAssessmentTableRow[] {
     const decorator = new SupplierAssessmentDecorator(this.supplierAssessment)

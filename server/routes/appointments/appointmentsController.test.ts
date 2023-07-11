@@ -1150,7 +1150,7 @@ describe('Adding supplier assessment feedback', () => {
         )
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Session Details')
+          expect(res.text).toContain('Session details')
           expect(res.text).toContain(
             'The in-person meeting (probation office) was with caseworker caseworkerFirstName caseworkerLastName at 1:00pm on 1 February 2021.'
           )
