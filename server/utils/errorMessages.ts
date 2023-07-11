@@ -179,6 +179,9 @@ export default {
   attendedAppointment: {
     empty: 'Select whether they attended or not',
   },
+  attendanceFailureInformation: {
+    empty: 'A message should go here.',
+  },
   sessionSummary: {
     empty: 'Enter what you did in the session',
   },

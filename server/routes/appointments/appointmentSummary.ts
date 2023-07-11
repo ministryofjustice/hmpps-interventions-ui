@@ -115,7 +115,7 @@ export default class AppointmentSummary {
       : ''
 
     return {
-      question: `Session Details`,
+      question: `Session details`,
       answer: `The ${deliveryMethod} was with caseworker ${caseworkerName} at ${time} on ${date}.`,
     }
   }
