@@ -2,7 +2,7 @@ import moment from 'moment-timezone'
 import draftReferralFactory from '../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
-import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
+import deliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import interventionFactory from '../../testutils/factories/intervention'
 import prisonFactory from '../../testutils/factories/prison'
@@ -142,7 +142,7 @@ describe('Referral form', () => {
 
       const intervention = interventionFactory.build({ serviceCategories: [accommodationServiceCategory] })
 
-      cy.stubGetCaseDetailsByCrn('X123456', deliusServiceUserFactory.build())
+      cy.stubGetCaseDetailsByCrn(deliusServiceUser.crn, deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
@@ -151,8 +151,8 @@ describe('Referral form', () => {
       cy.stubPatchDraftReferral(draftReferral.id, draftReferral)
       cy.stubSendDraftReferral(draftReferral.id, sentReferral)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetActiveConvictionsByCRN('X123456', convictions)
-      cy.stubGetConvictionById('X123456', 123456789, convictions[0])
+      cy.stubGetActiveConvictionsByCRN(deliusServiceUser.crn, convictions)
+      cy.stubGetConvictionById(deliusServiceUser.crn, 123456789, convictions[0])
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
@@ -164,7 +164,7 @@ describe('Referral form', () => {
 
       cy.visit(`/intervention/${randomInterventionId}/refer`)
 
-      cy.contains('The person’s CRN').type(' x123456 ')
+      cy.contains('The person’s CRN').type('X123456')
 
       cy.contains('Continue').click()
 
@@ -636,7 +636,7 @@ describe('Referral form', () => {
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
       const prisons = prisonFactory.prisonList()
 
-      cy.stubGetCaseDetailsByCrn('X123456', deliusServiceUser)
+      cy.stubGetCaseDetailsByCrn(deliusServiceUser.crn, deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
@@ -646,8 +646,8 @@ describe('Referral form', () => {
       cy.stubPatchDraftReferral(draftReferral.id, draftReferral)
       cy.stubSendDraftReferral(draftReferral.id, sentReferral)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetActiveConvictionsByCRN('X123456', convictions)
-      cy.stubGetConvictionById('X123456', 123456789, convictions[0])
+      cy.stubGetActiveConvictionsByCRN(deliusServiceUser.crn, convictions)
+      cy.stubGetConvictionById(deliusServiceUser.crn, 123456789, convictions[0])
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
