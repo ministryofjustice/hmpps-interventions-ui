@@ -20,7 +20,7 @@ export default Factory.define<DeliusServiceUser>(() => ({
     forename: 'Alex',
     surname: 'River',
   },
-  dateOfBirth: new Date(Date.parse('1980-01-01')),
+  dateOfBirth: '1980-01-01',
   gender: 'Male',
   contactDetails: {
     noFixedAbode: false,

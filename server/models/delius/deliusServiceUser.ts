@@ -1,7 +1,7 @@
 export default interface DeliusServiceUser {
   crn: string
   name: Name
-  dateOfBirth: Date
+  dateOfBirth: string
   title?: string
   gender?: string
   profile?: Profile

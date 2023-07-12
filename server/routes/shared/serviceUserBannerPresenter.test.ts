@@ -33,7 +33,7 @@ describe(ServiceUserBannerPresenter, () => {
   describe('dateOfBirth', () => {
     it('returns a formatted date of birth or not found message', () => {
       const serviceUser = serviceUserFactory.build()
-      serviceUser.dateOfBirth = new Date(Date.parse('1989-02-10'))
+      serviceUser.dateOfBirth = '1989-02-10'
 
       const presenterWithDOB = new ServiceUserBannerPresenter(serviceUser)
       expect(presenterWithDOB.dateOfBirth).toEqual('10 February 1989')
