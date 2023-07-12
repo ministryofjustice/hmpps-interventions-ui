@@ -21,9 +21,9 @@ export default class SessionFeedbackQuestionnaire {
 
   get sessionResponseQuestion(): { text: string; hint: string } {
     return {
-      text: `How did ${this.serviceUser.firstName} ${this.serviceUser.surname} respond to the session?`,
+      text: `How did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} respond to the session?`,
       hint:
-        `Add whether ${this.serviceUser.firstName} ${this.serviceUser.surname} seemed engaged, ` +
+        `Add whether ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} seemed engaged, ` +
         `including any progress or positive changes. This helps the probation practitioner to support them.`,
     }
   }
@@ -37,19 +37,19 @@ export default class SessionFeedbackQuestionnaire {
   get behaviourQuestion(): { text: string; hint: string } {
     if (this.appointmentDecorator.isInitialAssessmentAppointment) {
       return {
-        text: `Describe ${this.serviceUser.firstName}'s behaviour in the assessment appointment`,
+        text: `Describe ${this.serviceUser.name.forename}'s behaviour in the assessment appointment`,
         hint: 'For example, consider how well-engaged they were and what their body language was like.',
       }
     }
     return {
-      text: `Describe ${this.serviceUser.firstName}'s behaviour in this session`,
+      text: `Describe ${this.serviceUser.name.forename}'s behaviour in this session`,
       hint: 'For example, consider how well-engaged they were and what their body language was like.',
     }
   }
 
   get notifyProbationPractitionerQuestion(): { text: string; hint: string; explanation: string } {
     return {
-      text: `Did anything concern you about ${this.serviceUser.firstName} ${this.serviceUser.surname}?`,
+      text: `Did anything concern you about ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}?`,
       explanation: 'If you select yes, the probation practitioner will get an email about your concerns.',
       hint: 'Select one option',
     }

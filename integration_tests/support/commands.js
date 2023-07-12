@@ -1,7 +1,7 @@
 import ramDeliusUserFactory from '../../testutils/factories/ramDeliusUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
-import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
+import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 
@@ -28,7 +28,7 @@ Cypress.Commands.add('stubViewReferralDetails', referralToView => {
     convictionId: referralToView.referral.relevantSentenceId,
   })
   cy.stubGetSentReferral(referralToView.id, referralToView)
-  cy.stubGetExpandedServiceUserByCRN(referralToView.referral.serviceUser.crn, expandedDeliusServiceUserFactory.build())
+  cy.stubGetCaseDetailsByCrn(referralToView.referral.serviceUser.crn, deliusServiceUserFactory.build())
   cy.stubGetConvictionById(referralToView.referral.serviceUser.crn, conviction.convictionId, conviction)
   cy.stubGetUserByUsername(deliusUser.username, deliusUser)
   cy.stubGetSupplementaryRiskInformation(

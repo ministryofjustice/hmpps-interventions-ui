@@ -22,7 +22,7 @@ export default function serviceProviderRoutes(router: Router, services: Services
   )
   const appointmentsController = new AppointmentsController(
     services.interventionsService,
-    services.communityApiService,
+    services.ramDeliusApiService,
     services.hmppsAuthService,
     services.draftsService,
     services.referenceDataService
@@ -89,7 +89,7 @@ export default function serviceProviderRoutes(router: Router, services: Services
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
 
-  const changeLogController = new ChangeLogController(services.interventionsService, services.communityApiService)
+  const changeLogController = new ChangeLogController(services.interventionsService, services.ramDeliusApiService)
 
   get(router, '/referrals/:referralId/changelog', (req, res) =>
     changeLogController.getChangelog(req, res, 'service-provider')
@@ -293,7 +293,7 @@ export default function serviceProviderRoutes(router: Router, services: Services
 
   const caseNotesController = new CaseNotesController(
     services.interventionsService,
-    services.communityApiService,
+    services.ramDeliusApiService,
     services.hmppsAuthService,
     services.draftsService
   )

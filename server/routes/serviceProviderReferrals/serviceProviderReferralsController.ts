@@ -297,7 +297,7 @@ export default class ServiceProviderReferralsController {
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
       this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
-      this.communityApiService.getExpandedServiceUserByCRN(crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(crn),
       this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
       this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
       this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
@@ -355,7 +355,7 @@ export default class ServiceProviderReferralsController {
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, id)
 
-    const serviceUserPromise = this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const serviceUserPromise = this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
     const interventionPromise = this.interventionsService.getIntervention(
       accessToken,
       sentReferral.referral.interventionId
@@ -487,7 +487,7 @@ export default class ServiceProviderReferralsController {
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
     const [intervention, serviceUser] = await Promise.all([
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.referral.interventionId),
-      this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn),
     ])
 
     const presenter = new CheckAssignmentPresenter(referral.id, draftAssignment.id, assignee, email, intervention)
@@ -535,7 +535,7 @@ export default class ServiceProviderReferralsController {
     const [assignee, intervention, serviceUser] = await Promise.all([
       this.hmppsAuthService.getSPUserByUsername(res.locals.user.token.accessToken, referral.assignedTo.username),
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.referral.interventionId),
-      this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn),
     ])
 
     const presenter = new AssignmentConfirmationPresenter(
@@ -574,7 +574,7 @@ export default class ServiceProviderReferralsController {
           this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
         )
       ),
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
     ])
 
     const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, activityNumber)
@@ -621,7 +621,7 @@ export default class ServiceProviderReferralsController {
           this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
         )
       ),
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
     ])
 
     const presenter = new AddActionPlanActivitiesPresenter(
@@ -662,7 +662,7 @@ export default class ServiceProviderReferralsController {
         actionPlan.activities.length + 1,
         form.error
       )
-      const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
       const view = new AddActionPlanActivitiesView(presenter)
 
       res.status(400)
@@ -683,7 +683,7 @@ export default class ServiceProviderReferralsController {
           this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
         )
       ),
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
     ])
 
     const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
@@ -711,7 +711,7 @@ export default class ServiceProviderReferralsController {
 
     const [interventionForPresenterTitle, serviceUser] = await Promise.all([
       this.interventionsService.getIntervention(token, referral.referral.interventionId),
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
     ])
 
     const presenter = new ActionPlanConfirmationPresenter(sentReferral, interventionForPresenterTitle.contractType.name)
@@ -745,7 +745,7 @@ export default class ServiceProviderReferralsController {
 
     const actionPlan = await this.interventionsService.getActionPlan(token, actionPlanId)
     const referral = await this.interventionsService.getSentReferral(token, actionPlan.referralId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const serviceCategory = await this.interventionsService.getServiceCategory(
       token,
       referral.referral.serviceCategoryIds[0]
@@ -853,7 +853,7 @@ export default class ServiceProviderReferralsController {
       }
     }
 
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
 
     const interventionForPresenterTitle = await this.interventionsService.getIntervention(
       accessToken,
@@ -892,7 +892,7 @@ export default class ServiceProviderReferralsController {
       accessToken,
       referral.referral.serviceCategoryIds
     )
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
 
     const interventionForPresenterTitle = await this.interventionsService.getIntervention(
       accessToken,
@@ -920,7 +920,7 @@ export default class ServiceProviderReferralsController {
       accessToken,
       referral.referral.serviceCategoryIds
     )
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const interventionForPresenterTitle = await this.interventionsService.getIntervention(
       accessToken,
       referral.referral.interventionId
@@ -947,7 +947,7 @@ export default class ServiceProviderReferralsController {
 
     const endOfServiceReport = await this.interventionsService.getEndOfServiceReport(accessToken, req.params.id)
     const referral = await this.interventionsService.getSentReferral(accessToken, endOfServiceReport.referralId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const interventionForPresenterTitle = await this.interventionsService.getIntervention(
       accessToken,
       referral.referral.interventionId
@@ -977,7 +977,7 @@ export default class ServiceProviderReferralsController {
       )
     }
 
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
 
     const presenter = new EndOfServiceReportPresenter(
       referral,
@@ -1023,7 +1023,7 @@ export default class ServiceProviderReferralsController {
           this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, it)
         )
       ),
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
       this.interventionsService.getApprovedActionPlanSummaries(accessToken, sentReferral.id),
     ])
 
@@ -1050,7 +1050,7 @@ export default class ServiceProviderReferralsController {
     }
 
     const [serviceUser, actionPlan] = await Promise.all([
-      await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
       await this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId),
     ])
 

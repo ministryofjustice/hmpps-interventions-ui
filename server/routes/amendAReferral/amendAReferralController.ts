@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import ControllerUtils from '../../utils/controllerUtils'
 import InterventionsService, { InterventionsServiceError } from '../../services/interventionsService'
 import AmendMaximumEnforceableDaysPresenter from './maximumEnforceableDays/amendMaximumEnforceableDaysPresenter'
-import CommunityApiService from '../../services/communityApiService'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 import AmendMaximumEnforceableDaysView from './maximumEnforceableDays/amendMaximumEnforceableDaysView'
 import AmendMaximumEnforceableDaysForm from './maximumEnforceableDays/amendMaximumEnforceableDaysForm'
 import AmendAccessibilityNeedsForm from './accessibility-needs/amendAccessibilityNeedsForm'
@@ -31,7 +31,7 @@ import AmendEmploymentResponsibilitiesForm from './employment-responsibilities/a
 export default class AmendAReferralController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService
+    private readonly ramDeliusApiService: RamDeliusApiService
   ) {}
 
   async updateMaximumEnforceableDays(req: Request, res: Response): Promise<void> {
@@ -54,7 +54,7 @@ export default class AmendAReferralController {
     }
 
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const presenter = new AmendMaximumEnforceableDaysPresenter(
       referral.id,
       referral.referral.maximumEnforceableDays,
@@ -71,7 +71,7 @@ export default class AmendAReferralController {
     let error = null
     let userInputData = null
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
 
     if (req.method === 'POST') {
       req.body.additionalNeedsInformation = referral.referral.additionalNeedsInformation
@@ -138,7 +138,7 @@ export default class AmendAReferralController {
       res.status(400)
     }
 
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const serviceCategory = await this.interventionsService.getServiceCategory(accessToken, serviceCategoryId)
     const presenter = new AmendDesiredOutcomesPresenter(
       referral,
@@ -177,7 +177,7 @@ export default class AmendAReferralController {
       userInputData = req.body
       res.status(400)
     }
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const presenter = new AmendAccessibilityNeedsPresenter(
       referral,
       serviceUser,
@@ -220,7 +220,7 @@ export default class AmendAReferralController {
 
     const [serviceCategory, serviceUser] = await Promise.all([
       this.interventionsService.getServiceCategory(accessToken, serviceCategoryId),
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
     ])
 
     const presenter = new AmendComplexityLevelPresenter(
@@ -238,7 +238,7 @@ export default class AmendAReferralController {
     const { referralId } = req.params
     const { accessToken } = res.locals.user.token
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
     let error = null
     let userInputData = null
 
@@ -324,7 +324,7 @@ export default class AmendAReferralController {
     }
 
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const presenter = new AmendEmploymentResponsibilitiesPresenter(
       referral,
       serviceUser,

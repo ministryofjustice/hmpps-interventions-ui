@@ -7,8 +7,8 @@ import draftCancellationDataFactory from '../../../../testutils/factories/draftC
 import { createDraftFactory } from '../../../../testutils/factories/draft'
 import InterventionsService from '../../../services/interventionsService'
 import apiConfig from '../../../config'
-import MockCommunityApiService from '../../testutils/mocks/mockCommunityApiService'
-import CommunityApiService from '../../../services/communityApiService'
+import MockRamDeliusApiService from '../../testutils/mocks/mockRamDeliusApiService'
+import RamDeliusApiService from '../../../services/ramDeliusApiService'
 import MockedHmppsAuthService from '../../../services/testutils/hmppsAuthServiceSetup'
 import HmppsAuthService from '../../../services/hmppsAuthService'
 import MockAssessRisksAndNeedsService from '../../testutils/mocks/mockAssessRisksAndNeedsService'
@@ -17,7 +17,7 @@ import DraftsService from '../../../services/draftsService'
 import appWithAllRoutes, { AppSetupUserType } from '../../testutils/appSetup'
 
 jest.mock('../../../services/interventionsService')
-jest.mock('../../../services/communityApiService')
+jest.mock('../../../services/ramDeliusApiService')
 jest.mock('../../../services/assessRisksAndNeedsService')
 jest.mock('../../../services/draftsService')
 
@@ -26,7 +26,8 @@ const draftCancellationFactory = createDraftFactory(draftCancellationDataFactory
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
-const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+
+const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 
 const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
 
@@ -45,7 +46,7 @@ beforeEach(() => {
   app = appWithAllRoutes({
     overrides: {
       interventionsService,
-      communityApiService,
+      ramDeliusApiService,
       hmppsAuthService,
       assessRisksAndNeedsService,
       draftsService,
@@ -89,7 +90,7 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
     const serviceUser = deliusServiceUserFactory.build()
 
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(serviceUser)
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getReferralCancellationReasons.mockResolvedValue([
       { code: 'MIS', description: 'Referral was made by mistake' },
@@ -180,7 +181,7 @@ describe('POST /probation-practitioner/referrals/:id/cancellation/:draftCancella
       const serviceUser = deliusServiceUserFactory.build()
 
       interventionsService.getSentReferral.mockResolvedValue(referral)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(serviceUser)
       interventionsService.getIntervention.mockResolvedValue(intervention)
       interventionsService.getReferralCancellationReasons.mockResolvedValue([
         { code: 'MIS', description: 'Referral was made by mistake' },
@@ -211,7 +212,7 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
     const serviceUser = deliusServiceUserFactory.build()
 
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(serviceUser)
     interventionsService.getIntervention.mockResolvedValue(intervention)
 
     await request(app)
@@ -248,7 +249,7 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
       const serviceUser = deliusServiceUserFactory.build()
 
       interventionsService.getSentReferral.mockResolvedValue(referral)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(serviceUser)
       interventionsService.getIntervention.mockResolvedValue(intervention)
 
       await request(app)

@@ -30,7 +30,7 @@ export default class ChangelogDetailPresenter {
       case 'NEEDS_AND_REQUIREMENTS_ACCESSIBILITY_NEEDS':
         return 'Mobility, disability or accessibility needs were changed'
       case 'NEEDS_AND_REQUIREMENTS_ADDITIONAL_INFORMATION':
-        return `Additional information about ${this.deliusServiceUser.firstName}'s needs was changed`
+        return `Additional information about ${this.deliusServiceUser.name.forename}'s needs was changed`
       case 'NEEDS_AND_REQUIREMENTS_INTERPRETER_REQUIRED':
         return 'Need for an interpreter was changed'
       case 'NEEDS_AND_REQUIREMENTS_HAS_ADDITIONAL_RESPONSIBILITIES':
@@ -55,9 +55,9 @@ export default class ChangelogDetailPresenter {
       case 'NEEDS_AND_REQUIREMENTS_ADDITIONAL_INFORMATION':
         return `Reason for changing the additional information`
       case 'NEEDS_AND_REQUIREMENTS_INTERPRETER_REQUIRED':
-        return `Reason for changing whether ${this.deliusServiceUser.firstName} needs an interpreter`
+        return `Reason for changing whether ${this.deliusServiceUser.name.forename} needs an interpreter`
       case 'NEEDS_AND_REQUIREMENTS_HAS_ADDITIONAL_RESPONSIBILITIES':
-        return `Reason for changing whether ${this.deliusServiceUser.firstName}'s caring or employment responsibilities`
+        return `Reason for changing whether ${this.deliusServiceUser.name.forename}'s caring or employment responsibilities`
       default:
         return ''
     }

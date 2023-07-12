@@ -72,7 +72,7 @@ export default async function setUpMocks(): Promise<void> {
       supplementaryRiskInformationFactory.build()
     ),
     communityApiMocks.stubGetActiveConvictionsByCRN('CRN24', [deliusConvictionFactory.build()]),
-    communityApiMocks.stubGetServiceUserByCRN('CRN24', deliusServiceUser.build({ otherIds: { crn: 'CRN24' } })),
+    referAndMonitorAndDeliusMocks.stubGetCaseDetailsByCrn('CRN24', deliusServiceUser.build({ crn: 'CRN24' })),
     communityApiMocks.stubGetConvictionById('CRN24', '([0-9]+)', deliusConvictionFactory.build()),
     referAndMonitorAndDeliusMocks.stubGetResponsibleOfficer('X320741', deliusResponsibleOfficerFactory.build()),
     interventionsMocks.stubGetActionPlanAppointment(

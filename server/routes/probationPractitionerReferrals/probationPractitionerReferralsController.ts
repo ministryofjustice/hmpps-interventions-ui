@@ -164,7 +164,7 @@ export default class ProbationPractitionerReferralsController {
     const { id } = req.params
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, id)
 
-    const serviceUserPromise = this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const serviceUserPromise = this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
     const interventionPromise = this.interventionsService.getIntervention(
       accessToken,
       sentReferral.referral.interventionId
@@ -246,7 +246,7 @@ export default class ProbationPractitionerReferralsController {
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
       this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
-      this.communityApiService.getExpandedServiceUserByCRN(crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(crn),
       this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
       this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
       this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
@@ -294,7 +294,7 @@ export default class ProbationPractitionerReferralsController {
       accessToken,
       referral.referral.serviceCategoryIds
     )
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
 
     const presenter = new EndOfServiceReportPresenter(
       referral,
@@ -366,7 +366,7 @@ export default class ProbationPractitionerReferralsController {
           this.interventionsService.getServiceCategory(res.locals.user.token.accessToken, id)
         )
       ),
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
       config.features.previouslyApprovedActionPlans
         ? this.interventionsService.getApprovedActionPlanSummaries(accessToken, sentReferral.id)
         : [],
@@ -411,7 +411,7 @@ export default class ProbationPractitionerReferralsController {
     const { accessToken } = res.locals.user.token
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
 
     ControllerUtils.renderWithLayout(
       res,

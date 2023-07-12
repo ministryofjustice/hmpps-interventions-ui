@@ -1,17 +1,17 @@
 import { Request, Response } from 'express'
 import ControllerUtils from '../../utils/controllerUtils'
 import InterventionsService from '../../services/interventionsService'
-import CommunityApiService from '../../services/communityApiService'
 import { FormValidationError } from '../../utils/formValidationError'
 import ChangelogPresenter from './changelog/changelogPresenter'
 import ChangelogView from './changelog/changelogView'
 import ChangelogDetailPresenter from './changelogDetail/changelogDetailPresenter'
 import ChangelogDetailView from './changelogDetail/changelogDetailView'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 
 export default class ChangeLogController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService
+    private readonly ramDeliusApiService: RamDeliusApiService
   ) {}
 
   async getChangelog(
@@ -30,7 +30,7 @@ export default class ChangeLogController {
       sentReferral.referral.interventionId
     )
     const [serviceUser] = await Promise.all([
-      this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
     ])
     const presenter = new ChangelogPresenter(formError, changeLog, referralId, intervention, loggedInUserType)
     const view = new ChangelogView(presenter)
@@ -49,7 +49,7 @@ export default class ChangeLogController {
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const changeLogDetail = await this.interventionsService.getChangelogDetail(accessToken, changelogId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
     const presenter = new ChangelogDetailPresenter(
       formError,
       changeLogDetail,

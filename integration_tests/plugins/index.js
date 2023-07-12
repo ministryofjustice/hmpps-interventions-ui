@@ -39,12 +39,8 @@ export default on => {
 
     stubTokenVerificationPing: tokenVerification.stubPing,
 
-    stubGetServiceUserByCRN: arg => {
-      return communityApi.stubGetServiceUserByCRN(arg.crn, arg.responseJson)
-    },
-
-    stubGetExpandedServiceUserByCRN: arg => {
-      return communityApi.stubGetExpandedServiceUserByCRN(arg.crn, arg.responseJson)
+    stubGetCaseDetailsByCrn: arg => {
+      return ramDeliusApi.stubGetCaseDetailsByCrn(arg.crn, arg.responseJson)
     },
 
     stubGetPrisons: arg => {

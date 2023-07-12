@@ -19,7 +19,7 @@ describe(FeedbackAnswersPresenter, () => {
           },
         },
       })
-      const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+      const serviceUser = deliusServiceUserFactory.build()
 
       const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
@@ -44,7 +44,7 @@ describe(FeedbackAnswersPresenter, () => {
             },
           },
         })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
 
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
         expect(presenter.attendedAnswers).toBeNull()
@@ -69,7 +69,7 @@ describe(FeedbackAnswersPresenter, () => {
             },
           },
         })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
 
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
@@ -96,7 +96,7 @@ describe(FeedbackAnswersPresenter, () => {
             },
           },
         })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
 
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
         expect(presenter.additionalAttendanceAnswers).toBeNull()
@@ -115,7 +115,7 @@ describe(FeedbackAnswersPresenter, () => {
           },
         })
 
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build({ name: { forename: 'Alex' } })
 
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
@@ -136,7 +136,7 @@ describe(FeedbackAnswersPresenter, () => {
           },
         })
 
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
 
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 
@@ -156,7 +156,7 @@ describe(FeedbackAnswersPresenter, () => {
             },
           },
         })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
 
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
 

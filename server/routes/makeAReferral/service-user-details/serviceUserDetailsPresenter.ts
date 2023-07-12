@@ -1,7 +1,7 @@
 import { UUID } from 'aws-sdk/clients/cloudtrail'
 import ServiceUser from '../../../models/serviceUser'
 import { ListStyle, SummaryListItem } from '../../../utils/summaryList'
-import { ExpandedDeliusServiceUser } from '../../../models/delius/deliusServiceUser'
+import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 import ExpandedDeliusServiceUserDecorator from '../../../decorators/expandedDeliusServiceUserDecorator'
 import DateUtils from '../../../utils/dateUtils'
 import { CurrentLocationType } from '../../../models/draftReferral'
@@ -13,7 +13,7 @@ export default class ServiceUserDetailsPresenter {
 
   constructor(
     private readonly serviceUser: ServiceUser,
-    private readonly deliusServiceUserDetails: ExpandedDeliusServiceUser,
+    private readonly deliusServiceUserDetails: DeliusServiceUser,
     private readonly prisons: Prison[],
     private readonly referralId: UUID | null = null,
     private readonly personCurrentLocationType: CurrentLocationType | null = null,
@@ -44,14 +44,10 @@ export default class ServiceUserDetailsPresenter {
   }
 
   private findUniqueNumbers(): string[] {
-    let phoneNumbers: string[] | undefined = this.deliusServiceUserDetails.contactDetails.phoneNumbers
-      ?.map(phoneNumber => phoneNumber.number)
-      ?.filter(this.notEmpty)
-    // only unique
-    phoneNumbers = phoneNumbers?.filter((item, pos) => {
-      return phoneNumbers?.indexOf(item) === pos
-    })
-    return phoneNumbers ?? []
+    return [
+      this.deliusServiceUserDetails.contactDetails.telephoneNumber,
+      this.deliusServiceUserDetails.contactDetails.mobileNumber,
+    ].filter((item): item is string => !!item)
   }
 
   get personalDetailsSummary(): SummaryListItem[] {
@@ -72,12 +68,12 @@ export default class ServiceUserDetailsPresenter {
   }
 
   get contactDetailsSummary(): SummaryListItem[] {
-    const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
     const phoneNumbers = this.findUniqueNumbers()
-    const { address } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
+    const { address, email } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
     // const matchedPerson = this.prisons.find(prison => prison.prisonId === this.personCustodyPrisonId)
     // const prisonName = matchedPerson ? matchedPerson.prisonName : ''
-    const summary: SummaryListItem[] = [
+    // ]
+    return [
       {
         key: 'Address',
         lines: address || ['Not found'],
@@ -89,20 +85,16 @@ export default class ServiceUserDetailsPresenter {
         listStyle: ListStyle.noMarkers,
       },
       {
-        key: emails.length > 1 ? 'Email addresses' : 'Email address',
-        lines: emails,
+        key: 'Email address',
+        lines: email || [],
         listStyle: ListStyle.noMarkers,
       },
     ]
-
-    // ]
-    return summary
   }
 
   get checkAnswersSummary(): SummaryListItem[] {
-    const { address } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
+    const { address, email } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
     const phoneNumbers = this.findUniqueNumbers()
-    const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
     const summary: SummaryListItem[] = [
       { key: 'First name', lines: [this.serviceUser.firstName ?? ''] },
       { key: 'Last name(s)', lines: [this.serviceUser.lastName ?? ''] },
@@ -122,8 +114,8 @@ export default class ServiceUserDetailsPresenter {
         listStyle: ListStyle.noMarkers,
       },
       {
-        key: emails.length > 1 ? 'Email addresses' : 'Email address',
-        lines: emails,
+        key: 'Email address',
+        lines: email || ['Not Found'],
         listStyle: ListStyle.noMarkers,
       },
       { key: 'Ethnicity', lines: [this.serviceUser.ethnicity ?? ''] },
@@ -135,7 +127,7 @@ export default class ServiceUserDetailsPresenter {
   }
 
   get summary(): SummaryListItem[] {
-    const emails = this.deliusServiceUserDetails.contactDetails.emailAddresses ?? []
+    const { email } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
     const phoneNumbers = this.findUniqueNumbers()
     const { address } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
     const summary: SummaryListItem[] = [
@@ -175,8 +167,8 @@ export default class ServiceUserDetailsPresenter {
       { key: 'Religion or belief', lines: [this.serviceUser.religionOrBelief ?? ''] },
       { key: 'Disabilities', lines: this.serviceUser.disabilities ?? [], listStyle: ListStyle.noMarkers },
       {
-        key: emails.length > 1 ? 'Email addresses' : 'Email address',
-        lines: emails,
+        key: 'Email address',
+        lines: email || [],
         listStyle: ListStyle.noMarkers,
       },
       {

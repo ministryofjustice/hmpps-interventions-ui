@@ -53,7 +53,13 @@ describe(ShowReferralPresenter, () => {
     },
     email: 'bernard.beaks@justice.gov.uk',
   }
-  const deliusServiceUser = expandedDeliusServiceUserFactory.build()
+  const deliusServiceUser = expandedDeliusServiceUserFactory.build({
+    contactDetails: {
+      mainAddress: {
+        buildingNumber: 'Flat 2',
+      },
+    },
+  })
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
   const riskSummary = riskSummaryFactory.build()

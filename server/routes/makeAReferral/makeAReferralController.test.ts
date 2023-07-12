@@ -103,7 +103,7 @@ describe('GET /intervention/:id/refer', () => {
 describe('POST /intervention/:id/refer', () => {
   describe('when searching for a CRN found in Delius and an intervention has been selected', () => {
     beforeEach(() => {
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
     })
 
     it('creates a referral on the interventions service and redirects to the referral form', async () => {
@@ -143,7 +143,7 @@ describe('POST /intervention/:id/refer', () => {
           .expect(303)
           .expect('Location', '/referrals/1/form')
 
-        expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledWith(serviceUserCRNTrimmed)
+        expect(ramDeliusApiService.getCaseDetailsByCrn).toHaveBeenCalledWith(serviceUserCRNTrimmed)
         expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(
           'token',
           serviceUserCRNTrimmed,
@@ -163,7 +163,7 @@ describe('POST /intervention/:id/refer', () => {
           .expect(303)
           .expect('Location', '/referrals/1/form')
 
-        expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledWith(serviceUserCRNTransformed)
+        expect(ramDeliusApiService.getCaseDetailsByCrn).toHaveBeenCalledWith(serviceUserCRNTransformed)
         expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(
           'token',
           serviceUserCRNTransformed,
@@ -201,13 +201,13 @@ describe('POST /intervention/:id/refer', () => {
           expect(res.text).toContain('CRN is needed')
         })
 
-      expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledTimes(0)
+      expect(ramDeliusApiService.getCaseDetailsByCrn).toHaveBeenCalledTimes(0)
     })
   })
 
   describe('when there is an issue with the crn', () => {
     beforeEach(() => {
-      communityApiService.getServiceUserByCRN.mockRejectedValue({ status: 404 })
+      ramDeliusApiService.getCaseDetailsByCrn.mockRejectedValue({ status: 404 })
     })
 
     it('renders a validation error', async () => {
@@ -220,7 +220,7 @@ describe('POST /intervention/:id/refer', () => {
           expect(res.text).toContain('CRN not found in nDelius')
         })
 
-      expect(communityApiService.getServiceUserByCRN).toHaveBeenCalledTimes(1)
+      expect(ramDeliusApiService.getCaseDetailsByCrn).toHaveBeenCalledTimes(1)
     })
   })
 })
@@ -288,7 +288,7 @@ describe('GET /referrals/:id/service-user-details', () => {
     const serviceCategory = serviceCategoryFactory.build()
     const referral = draftReferralFactory.serviceUserSelected().build({ id: '1' })
     const prisonList = prisonFactory.prisonList()
-    communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(expandedDeliusServiceUserFactory.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(expandedDeliusServiceUserFactory.build())
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
@@ -431,7 +431,7 @@ describe('POST /referrals/:id/risk-information', () => {
 describe('GET /referrals/:id/edit-oasys-risk-information', () => {
   beforeEach(() => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
@@ -1873,7 +1873,7 @@ describe('GET /referrals/:id/check-all-referral-information', () => {
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(expandedDeliusServiceUserFactory.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(expandedDeliusServiceUserFactory.build())
     communityApiService.getConvictionById.mockResolvedValue(conviction)
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })

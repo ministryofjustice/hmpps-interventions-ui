@@ -11,7 +11,7 @@ import { SessionStatus } from '../../utils/sessionStatus'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 
-const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex', surname: 'River' })
+const serviceUser = deliusServiceUserFactory.build({ name: { forename: 'Alex', surname: 'River' } })
 
 describe(InterventionProgressPresenter, () => {
   describe('referralEnded', () => {

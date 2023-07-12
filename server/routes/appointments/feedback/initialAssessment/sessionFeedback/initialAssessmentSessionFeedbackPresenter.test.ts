@@ -6,7 +6,7 @@ describe(InitialAssessmentSessionFeedbackPresenter, () => {
   describe('backLinkHref', () => {
     it('contains the link to the attendance page with the referral id', () => {
       const initialAssessmentAppointment = initialAssessmentAppointmentFactory.build()
-      const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+      const serviceUser = deliusServiceUserFactory.build()
       const presenter = new InitialAssessmentSessionFeedbackPresenter(
         initialAssessmentAppointment,
         serviceUser,

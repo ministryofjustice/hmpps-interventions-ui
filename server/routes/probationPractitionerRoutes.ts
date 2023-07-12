@@ -23,16 +23,16 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   )
   const appointmentsController = new AppointmentsController(
     services.interventionsService,
-    services.communityApiService,
+    services.ramDeliusApiService,
     services.hmppsAuthService,
     services.draftsService,
     services.referenceDataService
   )
   const amendAReferralController = new AmendAReferralController(
     services.interventionsService,
-    services.communityApiService
+    services.ramDeliusApiService
   )
-  const changeLogController = new ChangeLogController(services.interventionsService, services.communityApiService)
+  const changeLogController = new ChangeLogController(services.interventionsService, services.ramDeliusApiService)
 
   get(router, '/dashboard', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
   get(router, '/dashboard/open-cases', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
@@ -118,7 +118,7 @@ export default function probationPractitionerRoutes(router: Router, services: Se
 
   const referralCancellationController = new ReferralCancellationController(
     services.interventionsService,
-    services.communityApiService,
+    services.ramDeliusApiService,
     services.hmppsAuthService,
     services.assessRisksAndNeedsService,
     services.draftsService
@@ -161,7 +161,7 @@ export default function probationPractitionerRoutes(router: Router, services: Se
 
   const caseNotesController = new CaseNotesController(
     services.interventionsService,
-    services.communityApiService,
+    services.ramDeliusApiService,
     services.hmppsAuthService,
     services.draftsService
   )

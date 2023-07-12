@@ -9,3 +9,7 @@ Cypress.Commands.add('stubGetCrnUserAccess', responseJson => {
 Cypress.Commands.add('stubGetUserByUsername', (username, responseJson) => {
   cy.task('stubGetUserByUsername', { username, responseJson })
 })
+
+Cypress.Commands.add('stubGetCaseDetailsByCrn', (crn, responseJson) => {
+  cy.task('stubGetCaseDetailsByCrn', { crn, responseJson })
+})

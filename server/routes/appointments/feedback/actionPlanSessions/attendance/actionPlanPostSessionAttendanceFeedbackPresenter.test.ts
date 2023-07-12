@@ -7,7 +7,7 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
   describe('text', () => {
     it('contains a title including the name of the service category and a subtitle, and the attendance questions', () => {
       const appointment = actionPlanAppointmentFactory.build()
-      const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+      const serviceUser = deliusServiceUserFactory.build()
       const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
         appointment,
         serviceUser,
@@ -26,7 +26,7 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
     describe('when the session is a phone call', () => {
       it('contains an attendance question to indicate the meeting was a phone call', () => {
         const appointment = actionPlanAppointmentFactory.build({ appointmentDeliveryType: 'PHONE_CALL' })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
         const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
           appointment,
           serviceUser,
@@ -39,7 +39,7 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
     describe('when the session is a video call', () => {
       it('contains an attendance question to indicate the meeting was a video call', () => {
         const appointment = actionPlanAppointmentFactory.build({ appointmentDeliveryType: 'VIDEO_CALL' })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
         const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
           appointment,
           serviceUser,
@@ -52,7 +52,7 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
     describe('when the session is an other location meeting', () => {
       it('contains an attendance question to indicate the meeting was an in-person meeting', () => {
         const appointment = actionPlanAppointmentFactory.build({ appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER' })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
         const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
           appointment,
           serviceUser,
@@ -67,7 +67,7 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
         const appointment = actionPlanAppointmentFactory.build({
           appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
         })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
         const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
           appointment,
           serviceUser,

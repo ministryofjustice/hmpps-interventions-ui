@@ -159,7 +159,7 @@ describe('CaseNotesPresenter', () => {
         interventionFactory.build(),
         page,
         new Map(),
-        deliusServiceUserFactory.build({ firstName: 'FIRSTNAME', surname: 'SURNAME' }),
+        deliusServiceUserFactory.build({ name: { forename: 'FIRSTNAME', surname: 'SURNAME' } }),
         'service-provider'
       )
       expect(presenter.serviceUserName).toEqual('Firstname Surname')
@@ -175,7 +175,7 @@ describe('CaseNotesPresenter', () => {
         interventionFactory.build(),
         page,
         new Map(),
-        deliusServiceUserFactory.build({ firstName: 'FIRSTNAME', surname: 'SURNAME' }),
+        deliusServiceUserFactory.build({ name: { forename: 'FIRSTNAME', surname: 'SURNAME' } }),
         'service-provider'
       )
       expect(presenter.hrefBackLink).toEqual('/service-provider/dashboard')
@@ -189,7 +189,7 @@ describe('CaseNotesPresenter', () => {
         interventionFactory.build(),
         page,
         new Map(),
-        deliusServiceUserFactory.build({ firstName: 'FIRSTNAME', surname: 'SURNAME' }),
+        deliusServiceUserFactory.build({ name: { forename: 'FIRSTNAME', surname: 'SURNAME' } }),
         'service-provider',
         '/service-provider/dashboard/backlink'
       )

@@ -7,31 +7,14 @@ import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import interventionFactory from '../../testutils/factories/intervention'
 import prisonFactory from '../../testutils/factories/prison'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
-// eslint-disable-next-line import/no-named-as-default,import/no-named-as-default-member
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
-import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import draftOasysRiskInformation from '../../testutils/factories/draftOasysRiskInformation'
 import pageFactory from '../../testutils/factories/page'
 import { CurrentLocationType } from '../../server/models/draftReferral'
 
 describe('Referral form', () => {
-  const deliusServiceUser = deliusServiceUserFactory.build({
-    firstName: 'Alex',
-    contactDetails: {
-      emailAddresses: ['alex.river@example.com', 'a.r@example.com'],
-      phoneNumbers: [
-        {
-          number: '0123456789',
-          type: 'MOBILE',
-        },
-        {
-          number: '9876543210',
-          type: 'MOBILE',
-        },
-      ],
-    },
-  })
+  const deliusServiceUser = deliusServiceUserFactory.build()
   const convictionWithSentenceToSelect = deliusConvictionFactory.build({
     convictionId: 123456789,
     active: true,
@@ -159,7 +142,7 @@ describe('Referral form', () => {
 
       const intervention = interventionFactory.build({ serviceCategories: [accommodationServiceCategory] })
 
-      cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
+      cy.stubGetCaseDetailsByCrn('X123456', deliusServiceUserFactory.build())
       cy.stubCreateDraftReferral(draftReferral)
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
@@ -205,28 +188,6 @@ describe('Referral form', () => {
           furtherInformation: false,
         })
         .checkAllReferralInformation({ checkAllReferralInformation: false })
-
-      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-        ...deliusServiceUser,
-        contactDetails: {
-          addresses: [
-            {
-              addressNumber: 'Flat 2',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2019-01-01',
-              to: null,
-              noFixedAbode: false,
-            },
-          ],
-        },
-      })
-
-      cy.stubGetExpandedServiceUserByCRN('X123456', expandedDeliusServiceUser)
 
       cy.contains('Confirm their personal details').click()
 
@@ -283,7 +244,6 @@ describe('Referral form', () => {
 
       cy.stubGetPrisons(prisons)
       cy.stubGetDraftReferral(draftReferral.id, completedCurrentLocationDraftReferral)
-      cy.stubGetExpandedServiceUserByCRN('X123456', expandedDeliusServiceUser)
 
       cy.contains('Save and continue').click()
 
@@ -676,7 +636,7 @@ describe('Referral form', () => {
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
       const prisons = prisonFactory.prisonList()
 
-      cy.stubGetServiceUserByCRN('X123456', deliusServiceUser)
+      cy.stubGetCaseDetailsByCrn('X123456', deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
@@ -718,28 +678,6 @@ describe('Referral form', () => {
         .selectServiceCategories({ selectServiceCategories: false })
         .disabledCohortInterventionReferralDetails()
         .checkAllReferralInformation({ checkAllReferralInformation: false })
-
-      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-        ...deliusServiceUser,
-        contactDetails: {
-          addresses: [
-            {
-              addressNumber: 'Flat 2',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2019-01-01',
-              to: null,
-              noFixedAbode: false,
-            },
-          ],
-        },
-      })
-
-      cy.stubGetExpandedServiceUserByCRN('X123456', expandedDeliusServiceUser)
 
       cy.contains('Confirm their personal details').click()
 

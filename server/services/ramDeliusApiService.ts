@@ -4,6 +4,7 @@ import HmppsAuthService from './hmppsAuthService'
 import logger from '../../log'
 import { DeliusResponsibleOfficer } from '../models/delius/deliusResponsibleOfficer'
 import { RamDeliusUser } from '../models/delius/deliusUser'
+import DeliusServiceUser from '../models/delius/deliusServiceUser'
 
 export default class RamDeliusApiService {
   constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
@@ -11,6 +12,11 @@ export default class RamDeliusApiService {
   async getUserByUsername(username: string): Promise<RamDeliusUser> {
     const token = await this.hmppsAuthService.getApiClientToken()
     return (await this.restClient.get({ path: `/users/${username}/details`, token })) as RamDeliusUser
+  }
+
+  async getCaseDetailsByCrn(crn: string): Promise<DeliusServiceUser> {
+    const token = await this.hmppsAuthService.getApiClientToken()
+    return (await this.restClient.get({ path: `/probation-case/${crn}/details`, token })) as DeliusServiceUser
   }
 
   async getResponsibleOfficer(crn: string): Promise<DeliusResponsibleOfficer | null> {

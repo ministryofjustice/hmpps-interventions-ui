@@ -134,29 +134,22 @@ export default class InterventionsService {
       return {} as ServiceUser
     }
 
-    const currentDisabilities = deliusServiceUser.offenderProfile?.disabilities
-      ? deliusServiceUser.offenderProfile.disabilities
-          .filter(disability => {
-            const today = new Date().toString()
-            return disability.endDate === '' || Date.parse(disability.endDate) >= Date.parse(today)
-          })
-          .map(disability => disability.disabilityType.description)
+    const currentDisabilities = deliusServiceUser.profile?.disabilities
+      ? deliusServiceUser.profile.disabilities.map(disability => disability.type)
       : null
 
-    const iso8601DateOfBirth = deliusServiceUser.dateOfBirth
-      ? CalendarDay.parseIso8601Date(deliusServiceUser.dateOfBirth)?.iso8601 || null
-      : null
+    const iso8601DateOfBirth = deliusServiceUser.dateOfBirth.toISOString()
 
     return {
-      crn: deliusServiceUser.otherIds.crn,
+      crn: deliusServiceUser.crn,
       title: deliusServiceUser.title || null,
-      firstName: deliusServiceUser.firstName || null,
-      lastName: deliusServiceUser.surname || null,
+      firstName: deliusServiceUser.name.forename || null,
+      lastName: deliusServiceUser.name.surname || null,
       dateOfBirth: iso8601DateOfBirth || null,
       gender: deliusServiceUser.gender || null,
-      ethnicity: deliusServiceUser.offenderProfile?.ethnicity || null,
-      preferredLanguage: deliusServiceUser.offenderProfile?.offenderLanguages?.primaryLanguage || null,
-      religionOrBelief: deliusServiceUser.offenderProfile?.religion || null,
+      ethnicity: deliusServiceUser.profile?.ethnicity || null,
+      preferredLanguage: deliusServiceUser.profile?.primaryLanguage || null,
+      religionOrBelief: deliusServiceUser.profile?.religion || null,
       disabilities: currentDisabilities,
     }
   }

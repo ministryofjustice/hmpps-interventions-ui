@@ -28,19 +28,19 @@ export default class AmendEmploymentResponsibilitiesPresenter {
 
   readonly text = {
     responsibilities: {
-      title: `Do you want to change whether ${this.serviceUser.firstName} has caring or employment responsibilities?`,
+      title: `Do you want to change whether ${this.serviceUser.name.forename} has caring or employment responsibilities?`,
       hasAdditionalResponsibilities: {
-        label: `Do you want to change whether ${this.serviceUser.firstName} has caring or employment responsibilities?`,
+        label: `Do you want to change whether ${this.serviceUser.name.forename} has caring or employment responsibilities?`,
         hint: 'For example, times and dates when they are at work.',
         errorMessage: this.errorMessageForField('has-additional-responsibilities'),
       },
       whenUnavailable: {
-        label: `Provide details of when ${this.serviceUser.firstName} will not be able to attend sessions`,
+        label: `Provide details of when ${this.serviceUser.name.forename} will not be able to attend sessions`,
         errorMessage: this.errorMessageForField('when-unavailable'),
       },
     },
     reasonForChange: {
-      title: `What's the reason for changing ${this.serviceUser.firstName}'s caring or employment responsibilities?`,
+      title: `What's the reason for changing ${this.serviceUser.name.forename}'s caring or employment responsibilities?`,
       hint: `For example, they're now caring for a family member`,
     },
   }

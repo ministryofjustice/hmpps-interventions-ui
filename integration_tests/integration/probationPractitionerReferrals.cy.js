@@ -3,12 +3,11 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import sentReferralSummariesFactory from '../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
-import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
+import deliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import interventionFactory from '../../testutils/factories/intervention'
 import ramDeliusUserFactory from '../../testutils/factories/ramDeliusUser'
 import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
-import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
@@ -117,7 +116,7 @@ describe('Probation practitioner referrals dashboard', () => {
           { serviceCategoryId: serviceCategory1.id, desiredOutcomesIds: [serviceCategory1.desiredOutcomes[0].id] },
           { serviceCategoryId: serviceCategory2.id, desiredOutcomesIds: [serviceCategory2.desiredOutcomes[0].id] },
         ],
-        serviceUser: { crn: deliusServiceUser.otherIds.crn },
+        serviceUser: { crn: deliusServiceUser.crn },
       },
     })
     const endOfServiceReport = endOfServiceReportFactory.build({
@@ -144,7 +143,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetIntervention(intervention.id, intervention)
     cy.stubGetServiceCategory(serviceCategory1.id, serviceCategory1)
     cy.stubGetServiceCategory(serviceCategory2.id, serviceCategory2)
-    cy.stubGetServiceUserByCRN(deliusServiceUser.otherIds.crn, deliusServiceUser)
+    cy.stubGetCaseDetailsByCrn(deliusServiceUser.crn, deliusServiceUser)
 
     cy.visit(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
 
@@ -185,11 +184,7 @@ describe('Probation practitioner referrals dashboard', () => {
         cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
         cy.stubGetIntervention(intervention.id, intervention)
         cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [])
-        cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
-        cy.stubGetExpandedServiceUserByCRN(
-          assignedReferral.referral.serviceUser.crn,
-          expandedDeliusServiceUserFactory.build()
-        )
+        cy.stubGetCaseDetailsByCrn(assignedReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
         cy.stubGetConvictionById(assignedReferral.referral.serviceUser.crn, conviction.convictionId, conviction)
         cy.stubGetUserByUsername(deliusUser.username, deliusUser)
         cy.stubGetSupplementaryRiskInformation(
@@ -379,44 +374,14 @@ describe('Probation practitioner referrals dashboard', () => {
     const deliusUser = ramDeliusUserFactory.build()
 
     const deliusServiceUser = deliusServiceUserFactory.build({
-      firstName: 'Jenny',
-      surname: 'Jones',
-      dateOfBirth: '1980-01-01',
-      contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
+      name: {
+        firstName: 'Jenny',
+        surname: 'Jones',
       },
-    })
-
-    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-      ...deliusServiceUser,
+      dateOfBirth: new Date(Date.parse('1980-01-01')),
       contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
-        addresses: [
-          {
-            addressNumber: 'Flat 2',
-            buildingName: null,
-            streetName: 'Test Walk',
-            postcode: 'SW16 1AQ',
-            town: 'London',
-            district: 'City of London',
-            county: 'Greater London',
-            from: '2019-01-01',
-            to: null,
-            noFixedAbode: false,
-          },
-        ],
+        emailAddress: 'jenny.jones@example.com',
+        mobileNumber: '07123456789',
       },
     })
 
@@ -437,8 +402,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
-    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-    cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
+    cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
@@ -665,44 +629,14 @@ describe('Probation practitioner referrals dashboard', () => {
     const deliusUser = ramDeliusUserFactory.build()
 
     const deliusServiceUser = deliusServiceUserFactory.build({
-      firstName: 'Jenny',
-      surname: 'Jones',
-      dateOfBirth: '1980-01-01',
-      contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
+      name: {
+        firstName: 'Jenny',
+        surname: 'Jones',
       },
-    })
-
-    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-      ...deliusServiceUser,
+      dateOfBirth: new Date(Date.parse('1980-01-01')),
       contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
-        addresses: [
-          {
-            addressNumber: 'Flat 2',
-            buildingName: null,
-            streetName: 'Test Walk',
-            postcode: 'SW16 1AQ',
-            town: 'London',
-            district: 'City of London',
-            county: 'Greater London',
-            from: '2019-01-01',
-            to: null,
-            noFixedAbode: false,
-          },
-        ],
+        emailAddress: 'jenny.jones@example.com',
+        mobileNumber: '07123456789',
       },
     })
 
@@ -723,8 +657,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
-    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-    cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
+    cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
@@ -924,44 +857,14 @@ describe('Probation practitioner referrals dashboard', () => {
       const deliusUser = ramDeliusUserFactory.build()
 
       const deliusServiceUser = deliusServiceUserFactory.build({
-        firstName: 'Jenny',
-        surname: 'Jones',
-        dateOfBirth: '1980-01-01',
-        contactDetails: {
-          emailAddresses: ['jenny.jones@example.com'],
-          phoneNumbers: [
-            {
-              number: '07123456789',
-              type: 'MOBILE',
-            },
-          ],
+        name: {
+          firstName: 'Jenny',
+          surname: 'Jones',
         },
-      })
-
-      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-        ...deliusServiceUser,
+        dateOfBirth: new Date(Date.parse('1980-01-01')),
         contactDetails: {
-          emailAddresses: ['jenny.jones@example.com'],
-          phoneNumbers: [
-            {
-              number: '07123456789',
-              type: 'MOBILE',
-            },
-          ],
-          addresses: [
-            {
-              addressNumber: 'Flat 2',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2019-01-01',
-              to: null,
-              noFixedAbode: false,
-            },
-          ],
+          emailAddress: 'jenny.jones@example.com',
+          mobileNumber: '07123456789',
         },
       })
 
@@ -981,8 +884,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
-      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-      cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
+      cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
@@ -1069,44 +971,14 @@ describe('Probation practitioner referrals dashboard', () => {
       const deliusUser = ramDeliusUserFactory.build()
 
       const deliusServiceUser = deliusServiceUserFactory.build({
-        firstName: 'Jenny',
-        surname: 'Jones',
-        dateOfBirth: '1980-01-01',
-        contactDetails: {
-          emailAddresses: ['jenny.jones@example.com'],
-          phoneNumbers: [
-            {
-              number: '07123456789',
-              type: 'MOBILE',
-            },
-          ],
+        name: {
+          firstName: 'Jenny',
+          surname: 'Jones',
         },
-      })
-
-      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-        ...deliusServiceUser,
+        dateOfBirth: new Date(Date.parse('1980-01-01')),
         contactDetails: {
-          emailAddresses: ['jenny.jones@example.com'],
-          phoneNumbers: [
-            {
-              number: '07123456789',
-              type: 'MOBILE',
-            },
-          ],
-          addresses: [
-            {
-              addressNumber: 'Flat 2',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2019-01-01',
-              to: null,
-              noFixedAbode: false,
-            },
-          ],
+          emailAddress: 'jenny.jones@example.com',
+          mobileNumber: '07123456789',
         },
       })
 
@@ -1126,8 +998,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
-      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-      cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
+      cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
@@ -1241,44 +1112,14 @@ describe('Probation practitioner referrals dashboard', () => {
     const deliusUser = ramDeliusUserFactory.build()
 
     const deliusServiceUser = deliusServiceUserFactory.build({
-      firstName: 'Jenny',
-      surname: 'Jones',
-      dateOfBirth: '1980-01-01',
-      contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
+      name: {
+        firstName: 'Jenny',
+        surname: 'Jones',
       },
-    })
-
-    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-      ...deliusServiceUser,
+      dateOfBirth: new Date(Date.parse('1980-01-01')),
       contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
-        addresses: [
-          {
-            addressNumber: 'Flat 2',
-            buildingName: null,
-            streetName: 'Test Walk',
-            postcode: 'SW16 1AQ',
-            town: 'London',
-            district: 'City of London',
-            county: 'Greater London',
-            from: '2019-01-01',
-            to: null,
-            noFixedAbode: false,
-          },
-        ],
+        emailAddress: 'jenny.jones@example.com',
+        mobileNumber: '07123456789',
       },
     })
 
@@ -1356,8 +1197,7 @@ describe('Probation practitioner referrals dashboard', () => {
         cy.stubGetApprovedActionPlanSummaries(referral.id, [])
 
         cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
-        cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-        cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
+        cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
         cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
         cy.stubGetUserByUsername(deliusUser.username, deliusUser)
         cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)

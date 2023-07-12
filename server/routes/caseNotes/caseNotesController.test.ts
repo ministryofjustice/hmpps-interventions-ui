@@ -8,8 +8,8 @@ import pageFactory from '../../../testutils/factories/page'
 import { CaseNote } from '../../models/caseNote'
 import { Page } from '../../models/pagination'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
-import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
-import CommunityApiService from '../../services/communityApiService'
+import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import userDetailsFactory from '../../../testutils/factories/userDetails'
@@ -20,13 +20,13 @@ import { DraftCaseNote } from './caseNotesController'
 import interventionFactory from '../../../testutils/factories/intervention'
 
 jest.mock('../../services/interventionsService')
-jest.mock('../../services/communityApiService')
+jest.mock('../../services/ramDeliusApiService')
 jest.mock('../../services/hmppsAuthService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
-const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
 const draftCaseNoteFactory = createDraftFactory<DraftCaseNote>(null)
 const draftsService = {
@@ -50,7 +50,7 @@ describe.each([
     app = appWithAllRoutes({
       overrides: {
         interventionsService,
-        communityApiService,
+        ramDeliusApiService,
         hmppsAuthService,
         draftsService,
       },
@@ -66,7 +66,7 @@ describe.each([
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       interventionsService.getCaseNotes.mockResolvedValue(caseNotePage)
       interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUserFactory.build())
       hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetailsFactory.build())
       await request(app)
         .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
@@ -88,7 +88,7 @@ describe.each([
       hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(
         userDetailsFactory.build({ name: 'firstName lastName' })
       )
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUserFactory.build())
 
       await request(app)
         .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
@@ -110,7 +110,7 @@ describe.each([
         hmppsAuthService.getUserDetailsByUsername.mockImplementation(() => {
           return Promise.reject()
         })
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUserFactory.build())
         await request(app)
           .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
           .expect(200)
@@ -134,7 +134,7 @@ describe.each([
       hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(
         userDetailsFactory.build({ name: 'firstName surname' })
       )
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUserFactory.build())
       await request(app)
         .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
         .expect(200)

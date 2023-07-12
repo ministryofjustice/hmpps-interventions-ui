@@ -4,7 +4,6 @@ import InterventionsService, { InterventionsServiceError } from '../../services/
 import CaseNotesPresenter from './viewAll/caseNotesPresenter'
 import CaseNotesView from './viewAll/caseNotesView'
 import ControllerUtils from '../../utils/controllerUtils'
-import CommunityApiService from '../../services/communityApiService'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import AddCaseNotePresenter from './add/addCaseNotePresenter'
 import AddCaseNoteView from './add/addCaseNoteView'
@@ -19,13 +18,14 @@ import CaseNotePresenter from './view/caseNotePresenter'
 import CaseNoteView from './view/caseNoteView'
 import AddCaseNoteConfirmationPresenter from './add/confirmation/addCaseNoteConfirmationPresenter'
 import AddCaseNoteConfirmationView from './add/confirmation/addCaseNoteConfirmationView'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 
 export type DraftCaseNote = null | CaseNote
 
 export default class CaseNotesController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService,
+    private readonly ramDeliusApiService: RamDeliusApiService,
     private readonly hmppsAuthService: HmppsAuthService,
     private readonly draftsService: DraftsService
   ) {}
@@ -48,7 +48,7 @@ export default class CaseNotesController {
       this.interventionsService.getCaseNotes(accessToken, referralId, paginationQuery),
     ])
     const intervention = await this.interventionsService.getIntervention(accessToken, referral.referral.interventionId)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const uniqueUsers = new Set(caseNotesPage.content.map(caseNote => caseNote.sentBy.username))
     const userDetails: Map<string, undefined | string> = new Map(
       (

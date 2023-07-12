@@ -39,24 +39,24 @@ describe(ServiceUserDetailsPresenter, () => {
 
   const deliusServiceUser = expandedDeliusServiceUserFactory.build({
     contactDetails: {
-      addresses: [
-        {
-          addressNumber: 'Flat 10',
-          buildingName: null,
-          streetName: 'Test Walk',
-          postcode: 'SW16 1AQ',
-          town: 'London',
-          district: 'City of London',
-          county: 'Greater London',
-          from: '2021-01-01',
-          to: null,
-          noFixedAbode: false,
-        },
-      ],
+      noFixedAbode: false,
+      mainAddress: {
+        buildingNumber: 'Flat 10',
+        streetName: 'Test Walk',
+        postcode: 'SW16 1AQ',
+        town: 'London',
+        district: 'City of London',
+        county: 'Greater London',
+      },
     },
   })
   const nullFieldsDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-    contactDetails: { emailAddresses: null, phoneNumbers: null, addresses: null },
+    contactDetails: {
+      emailAddress: undefined,
+      telephoneNumber: undefined,
+      mobileNumber: undefined,
+      mainAddress: undefined,
+    },
   })
 
   describe('title', () => {
@@ -140,7 +140,7 @@ describe(ServiceUserDetailsPresenter, () => {
     describe('phone number validation', () => {
       it('returns an empty values for phone number when number is null', () => {
         const nullNumberDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-          contactDetails: { emailAddresses: null, phoneNumbers: [{ number: null, type: null }] },
+          contactDetails: { emailAddress: undefined, telephoneNumber: undefined, mobileNumber: undefined },
         })
         const presenter = new ServiceUserDetailsPresenter(
           nullFieldsServiceUser,
@@ -154,10 +154,8 @@ describe(ServiceUserDetailsPresenter, () => {
       it('returns multiple phone numbers when provided', () => {
         const user = expandedDeliusServiceUserFactory.build({
           contactDetails: {
-            phoneNumbers: [
-              { number: '123456789', type: null },
-              { number: '987654321', type: null },
-            ],
+            telephoneNumber: '123456789',
+            mobileNumber: '987654321',
           },
         })
         const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user, prisonList)
@@ -165,39 +163,6 @@ describe(ServiceUserDetailsPresenter, () => {
         expect(presenter.summary).toContainEqual({
           key: 'Phone numbers',
           lines: ['123456789', '987654321'],
-          listStyle: ListStyle.noMarkers,
-        })
-      })
-
-      it('filters non-unique phone numbers', () => {
-        const user = expandedDeliusServiceUserFactory.build({
-          contactDetails: {
-            phoneNumbers: [
-              { number: '123456789', type: null },
-              { number: '123456789', type: null },
-            ],
-          },
-        })
-        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user, prisonList)
-
-        expect(presenter.summary).toContainEqual({
-          key: 'Phone number',
-          lines: ['123456789'],
-          listStyle: ListStyle.noMarkers,
-        })
-      })
-    })
-
-    describe('email validation', () => {
-      it('returns multiple emails when provided', () => {
-        const user = expandedDeliusServiceUserFactory.build({
-          contactDetails: { emailAddresses: ['alex.river@example.com', 'a.r@example.com'] },
-        })
-        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user, prisonList)
-
-        expect(presenter.summary).toContainEqual({
-          key: 'Email addresses',
-          lines: ['alex.river@example.com', 'a.r@example.com'],
           listStyle: ListStyle.noMarkers,
         })
       })
@@ -287,76 +252,6 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'Phone number', lines: [], listStyle: ListStyle.noMarkers },
         { key: 'Email address', lines: [], listStyle: ListStyle.noMarkers },
       ])
-    })
-
-    describe('phone number validation', () => {
-      it('returns an empty values for phone number when number is null', () => {
-        const nullNumberDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-          contactDetails: { emailAddresses: null, phoneNumbers: [{ number: null, type: null }] },
-        })
-        const presenter = new ServiceUserDetailsPresenter(
-          nullFieldsServiceUser,
-          nullNumberDeliusServiceUser,
-          prisonList
-        )
-
-        expect(presenter.contactDetailsSummary).toContainEqual({
-          key: 'Phone number',
-          lines: [],
-          listStyle: ListStyle.noMarkers,
-        })
-      })
-
-      it('returns multiple phone numbers when provided', () => {
-        const user = expandedDeliusServiceUserFactory.build({
-          contactDetails: {
-            phoneNumbers: [
-              { number: '123456789', type: null },
-              { number: '987654321', type: null },
-            ],
-          },
-        })
-        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user, prisonList)
-
-        expect(presenter.contactDetailsSummary).toContainEqual({
-          key: 'Phone numbers',
-          lines: ['123456789', '987654321'],
-          listStyle: ListStyle.noMarkers,
-        })
-      })
-
-      it('filters non-unique phone numbers', () => {
-        const user = expandedDeliusServiceUserFactory.build({
-          contactDetails: {
-            phoneNumbers: [
-              { number: '123456789', type: null },
-              { number: '123456789', type: null },
-            ],
-          },
-        })
-        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user, prisonList)
-
-        expect(presenter.contactDetailsSummary).toContainEqual({
-          key: 'Phone number',
-          lines: ['123456789'],
-          listStyle: ListStyle.noMarkers,
-        })
-      })
-    })
-
-    describe('email validation', () => {
-      it('returns multiple emails when provided', () => {
-        const user = expandedDeliusServiceUserFactory.build({
-          contactDetails: { emailAddresses: ['alex.river@example.com', 'a.r@example.com'] },
-        })
-        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user, prisonList)
-
-        expect(presenter.contactDetailsSummary).toContainEqual({
-          key: 'Email addresses',
-          lines: ['alex.river@example.com', 'a.r@example.com'],
-          listStyle: ListStyle.noMarkers,
-        })
-      })
     })
   })
 })

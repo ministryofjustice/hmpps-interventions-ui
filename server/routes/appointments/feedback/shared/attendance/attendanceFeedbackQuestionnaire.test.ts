@@ -9,7 +9,7 @@ describe(AttendanceFeedbackQuestionnaire, () => {
       it('should produce a question specific to initial assessment', () => {
         const questionnaire = new AttendanceFeedbackQuestionnaire(
           initialAssessmentAppointment.build(),
-          deliusServiceUser.build({ firstName: 'Alex' })
+          deliusServiceUser.build()
         )
         expect(questionnaire.attendanceQuestion.text).toEqual('Did Alex River come to the session?')
       })
@@ -19,7 +19,7 @@ describe(AttendanceFeedbackQuestionnaire, () => {
       it('should produce a question specific to action plan session', () => {
         const questionnaire = new AttendanceFeedbackQuestionnaire(
           actionPlanAppointment.build({ appointmentDeliveryType: 'PHONE_CALL' }),
-          deliusServiceUser.build({ firstName: 'Alex' })
+          deliusServiceUser.build()
         )
         expect(questionnaire.attendanceQuestion.text).toEqual('Did Alex join this phone call?')
       })

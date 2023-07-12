@@ -14,7 +14,7 @@ describe(ReferralCancellationReasonPresenter, () => {
     it('includes a title, information and label for the additional comments question', () => {
       const serviceProvider = serviceProviderFactory.build({ name: 'Harmony Living' })
       const sentReferral = sentReferralFactory.build({ referral: { serviceProvider } })
-      const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex', surname: 'River' })
+      const serviceUser = deliusServiceUserFactory.build({ name: { forename: 'Alex', surname: 'River' } })
       const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
       const cancellationReasons: CancellationReason[] = []
 

@@ -29,7 +29,7 @@ context('Case notes', () => {
 
         cy.stubGetSentReferral(sentReferral.id, sentReferral)
         cy.stubGetIntervention(sentReferral.referral.interventionId, interventionFactory.build())
-        cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
+        cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
         cy.stubGetCaseNotes(sentReferral.id, pageFactory.build({ content: [ppCaseNote] }))
         cy.visit(`/service-provider/referrals/${sentReferral.id}/case-notes`)
 
@@ -58,7 +58,7 @@ context('Case notes', () => {
 
         cy.stubGetSentReferral(sentReferral.id, sentReferral)
         cy.stubGetIntervention(sentReferral.referral.interventionId, interventionFactory.build())
-        cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
+        cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
         cy.stubGetCaseNotes(sentReferral.id, pageFactory.build({ content: [ppCaseNote] }))
         cy.visit(`/service-provider/referrals/${sentReferral.id}/case-notes`)
 

@@ -66,4 +66,20 @@ export default class ReferAndMonitorAndDeliusMocks {
       },
     })
   }
+
+  stubGetCaseDetailsByCrn = async (crn: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/probation-case/${crn}/details`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }

@@ -32,27 +32,17 @@ describe(CheckAllReferralInformationPresenter, () => {
   })
   const deliusServiceUser = expandedDeliusServiceUserFactory.build({
     contactDetails: {
-      emailAddresses: ['alex.river@example.com'],
-      phoneNumbers: [
-        {
-          number: '0123456789',
-          type: 'MOBILE',
-        },
-      ],
-      addresses: [
-        {
-          addressNumber: 'Flat 10',
-          buildingName: null,
-          streetName: 'Test Walk',
-          postcode: 'SW16 1AQ',
-          town: 'London',
-          district: 'City of London',
-          county: 'Greater London',
-          from: '2021-01-01',
-          to: null,
-          noFixedAbode: false,
-        },
-      ],
+      emailAddress: 'alex.river@example.com',
+      mobileNumber: '0123456789',
+      noFixedAbode: false,
+      mainAddress: {
+        buildingNumber: 'Flat 10',
+        streetName: 'Test Walk',
+        postcode: 'SW16 1AQ',
+        town: 'London',
+        district: 'City of London',
+        county: 'Greater London',
+      },
     },
   })
   const serviceCategories = serviceCategoryFactory.buildList(3)

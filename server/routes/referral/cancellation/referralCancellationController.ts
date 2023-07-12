@@ -10,15 +10,15 @@ import ReferralCancellationCheckAnswersView from './checkAnswers/referralCancell
 import ReferralCancellationConfirmationPresenter from './confirmation/referralCancellationConfirmationPresenter'
 import ReferralCancellationConfirmationView from './confirmation/referralCancellationConfirmationView'
 import InterventionsService from '../../../services/interventionsService'
-import CommunityApiService from '../../../services/communityApiService'
 import HmppsAuthService from '../../../services/hmppsAuthService'
 import AssessRisksAndNeedsService from '../../../services/assessRisksAndNeedsService'
 import DraftsService from '../../../services/draftsService'
+import RamDeliusApiService from '../../../services/ramDeliusApiService'
 
 export default class ReferralCancellationController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService,
+    private readonly ramDeliusApiService: RamDeliusApiService,
     private readonly hmppsAuthService: HmppsAuthService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly draftsService: DraftsService
@@ -72,7 +72,7 @@ export default class ReferralCancellationController {
       accessToken,
       sentReferral.referral.interventionId
     )
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
     const cancellationReasons = await this.interventionsService.getReferralCancellationReasons(accessToken)
 
     const presenter = new ReferralCancellationReasonPresenter(
@@ -99,7 +99,7 @@ export default class ReferralCancellationController {
     const draftCancellation = fetchResult.draft
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
 
     const presenter = new ReferralCancellationCheckAnswersPresenter(req.params.id, draftCancellation.id)
     const view = new ReferralCancellationCheckAnswersView(presenter)
@@ -142,7 +142,7 @@ export default class ReferralCancellationController {
       accessToken,
       sentReferral.referral.interventionId
     )
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(sentReferral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
 
     const presenter = new ReferralCancellationConfirmationPresenter(
       sentReferral,

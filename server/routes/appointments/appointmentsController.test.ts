@@ -14,7 +14,7 @@ import serviceCategoryFactory from '../../../testutils/factories/serviceCategory
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 import apiConfig from '../../config'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
-import CommunityApiService from '../../services/communityApiService'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 import DraftsService from '../../services/draftsService'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import InterventionsService from '../../services/interventionsService'
@@ -22,13 +22,13 @@ import ReferenceDataService from '../../services/referenceDataService'
 import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
-import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import MockReferenceDataService from '../testutils/mocks/mockReferenceDataService'
 import { DraftAppointment, DraftAppointmentBooking } from '../serviceProviderReferrals/draftAppointment'
+import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 
 jest.mock('../../services/interventionsService')
-jest.mock('../../services/communityApiService')
 jest.mock('../../services/hmppsAuthService')
+jest.mock('../../services/ramDeliusApiService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
@@ -36,7 +36,7 @@ const interventionsService = new InterventionsService(
 
 const referenceDataService = new MockReferenceDataService() as jest.Mocked<ReferenceDataService>
 
-const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 
 const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
 
@@ -57,7 +57,7 @@ beforeEach(() => {
   app = appWithAllRoutes({
     overrides: {
       interventionsService,
-      communityApiService,
+      ramDeliusApiService,
       hmppsAuthService,
       assessRisksAndNeedsService,
       draftsService,
@@ -512,7 +512,7 @@ describe('viewing supplier assessment feedback', () => {
           appointments: [appointment],
           currentAppointmentId: appointment.id,
         })
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -537,7 +537,7 @@ describe('viewing supplier assessment feedback', () => {
         const supplierAssessment = supplierAssessmentFactory.build({
           appointments: [],
         })
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -554,7 +554,7 @@ describe('viewing supplier assessment feedback', () => {
         const supplierAssessment = supplierAssessmentFactory.build({
           appointments: [],
         })
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -866,7 +866,7 @@ describe('Adding supplier assessment feedback', () => {
         appointments: [appointment],
         currentAppointmentId: appointment.id,
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -886,7 +886,7 @@ describe('Adding supplier assessment feedback', () => {
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [],
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -978,7 +978,7 @@ describe('Adding supplier assessment feedback', () => {
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [],
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -1004,7 +1004,7 @@ describe('Adding supplier assessment feedback', () => {
         appointments: [appointment],
         currentAppointmentId: appointment.id,
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -1035,7 +1035,7 @@ describe('Adding supplier assessment feedback', () => {
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [],
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -1070,7 +1070,7 @@ describe('Adding supplier assessment feedback', () => {
           currentAppointmentId: appointment.id,
         })
         interventionsService.getSentReferral.mockResolvedValue(referral)
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
         interventionsService.recordSupplierAssessmentAppointmentSessionFeedback.mockResolvedValue(updatedAppointment)
         await request(app)
@@ -1095,7 +1095,7 @@ describe('Adding supplier assessment feedback', () => {
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [],
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -1133,7 +1133,7 @@ describe('Adding supplier assessment feedback', () => {
         appointments: [appointment],
         currentAppointmentId: appointment.id,
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
       hmppsAuthService.getSPUserByUsername.mockResolvedValue(
@@ -1171,7 +1171,7 @@ describe('Adding supplier assessment feedback', () => {
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [],
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -1335,7 +1335,7 @@ describe('Adding supplier assessment feedback', () => {
         appointments: [appointment],
         currentAppointmentId: appointment.id,
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -1358,7 +1358,7 @@ describe('Adding supplier assessment feedback', () => {
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [],
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -1388,7 +1388,7 @@ describe('Adding supplier assessment feedback', () => {
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [appointment],
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -1411,7 +1411,7 @@ describe('Adding supplier assessment feedback', () => {
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [],
       })
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
 
@@ -1437,7 +1437,7 @@ describe('Adding post delivery session feedback', () => {
         appointmentDeliveryType: 'PHONE_CALL',
       })
 
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
@@ -1475,7 +1475,7 @@ describe('Adding post delivery session feedback', () => {
         })
         draftsService.fetchDraft.mockResolvedValue(draftAppointmentResult)
 
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
@@ -1512,7 +1512,7 @@ describe('Adding post delivery session feedback', () => {
         })
         draftsService.fetchDraft.mockResolvedValue(null)
 
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
@@ -1738,7 +1738,7 @@ describe('Adding post delivery session feedback', () => {
         appointmentTime: '2021-02-01T13:00:00Z',
       })
 
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -1773,7 +1773,7 @@ describe('Adding post delivery session feedback', () => {
         })
         draftsService.fetchDraft.mockResolvedValue(draftAppointmentResult)
 
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -1807,7 +1807,7 @@ describe('Adding post delivery session feedback', () => {
         })
         draftsService.fetchDraft.mockResolvedValue(null)
 
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -1845,7 +1845,7 @@ describe('Adding post delivery session feedback', () => {
 
       const actionPlan = actionPlanFactory.build()
 
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.recordActionPlanAppointmentSessionFeedback.mockResolvedValue(updatedAppointment)
@@ -1891,7 +1891,7 @@ describe('Adding post delivery session feedback', () => {
         draftsService.fetchDraft.mockResolvedValue(draftAppointmentResult)
 
         interventionsService.recordActionPlanAppointmentSessionFeedback.mockResolvedValue(updatedAppointment)
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getActionPlan.mockResolvedValue(actionPlan)
 
@@ -1935,7 +1935,7 @@ describe('Adding post delivery session feedback', () => {
         draftsService.fetchDraft.mockResolvedValue(null)
 
         interventionsService.recordActionPlanAppointmentSessionFeedback.mockResolvedValue(updatedAppointment)
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getActionPlan.mockResolvedValue(actionPlan)
 
@@ -1972,7 +1972,7 @@ describe('Adding post delivery session feedback', () => {
         appointmentDeliveryType: 'PHONE_CALL',
       })
 
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -2009,7 +2009,7 @@ describe('Adding post delivery session feedback', () => {
         })
         draftsService.fetchDraft.mockResolvedValue(draftAppointmentResult)
 
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -2045,7 +2045,7 @@ describe('Adding post delivery session feedback', () => {
         })
         draftsService.fetchDraft.mockResolvedValue(null)
 
-        communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
         interventionsService.getSentReferral.mockResolvedValue(referral)
         interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -2228,7 +2228,7 @@ describe('Adding post delivery session feedback', () => {
             },
           })
 
-          communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+          ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
           interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
           interventionsService.getSentReferral.mockResolvedValue(referral)
           interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
@@ -2283,7 +2283,7 @@ describe('Adding post delivery session feedback', () => {
             },
           })
 
-          communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+          ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(serviceUser)
           interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
           interventionsService.getSentReferral.mockResolvedValue(referral)
           interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)
@@ -2347,7 +2347,7 @@ describe('Adding post delivery session feedback', () => {
             },
           })
 
-          communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+          ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(serviceUser)
           interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
           interventionsService.getSentReferral.mockResolvedValue(referral)
           interventionsService.getActionPlanAppointment.mockResolvedValue(appointmentWithSubmittedFeedback)

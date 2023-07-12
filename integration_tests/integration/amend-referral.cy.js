@@ -22,7 +22,7 @@ context('Amend a referral', () => {
     const stubCallsForUpdateReferralPage = () => {
       cy.stubUpdateSentReferralDetails(sentReferral.id, { referralId: sentReferral.id })
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
     }
     const stubCallsForReferralDetailsPage = () => {
@@ -32,7 +32,7 @@ context('Amend a referral', () => {
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
       cy.stubGetUserByUsername(pp.username, pp)
-      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
       cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetRiskSummary(crn, riskSummary.build())
@@ -112,7 +112,7 @@ context('Amend a referral', () => {
     const stubCallsForUpdateReferralPage = () => {
       cy.stubUpdateSentReferralDetails(sentReferral.id, { referralId: sentReferral.id })
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubAmendAccessibilityNeeds(sentReferral.id, sentReferral)
     }
@@ -123,7 +123,7 @@ context('Amend a referral', () => {
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
       cy.stubGetUserByUsername(pp.username, pp)
-      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
       cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetRiskSummary(crn, riskSummary.build())
@@ -212,7 +212,7 @@ context('Amend a referral', () => {
     const stubCallsForUpdateReferralPage = () => {
       cy.stubUpdateSentReferralDetails(sentReferral.id, { referralId: sentReferral.id })
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubAmendAdditionalInformation(sentReferral.id, sentReferral)
     }
@@ -223,7 +223,7 @@ context('Amend a referral', () => {
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
       cy.stubGetUserByUsername(pp.username, pp)
-      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
       cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetRiskSummary(crn, riskSummary.build())
@@ -358,7 +358,7 @@ context('Amend a referral', () => {
 
     const stubCallsForUpdateReferralPage = () => {
       cy.stubUpdateDesiredOutcomesForServiceCategory(sentReferral.id, accommodationServiceCategory.id, sentReferral)
-      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
@@ -366,8 +366,7 @@ context('Amend a referral', () => {
 
       cy.stubGetIntervention(sentReferral.referral.interventionId, personalWellbeingIntervention)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetServiceUserByCRN(crn, deliusServiceUser)
-      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
       cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
       cy.stubGetUserByUsername(pp.username, pp)
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
@@ -599,7 +598,7 @@ context('Amend a referral', () => {
     })
 
     const stubCallsForUpdateReferralPage = () => {
-      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
       cy.stubAmendComplexityLevelForServiceCategory(sentReferral.id, accommodationServiceCategory.id, sentReferral)
     }
     const stubCallsForReferralDetailsPage = () => {
@@ -608,8 +607,7 @@ context('Amend a referral', () => {
 
       cy.stubGetIntervention(sentReferral.referral.interventionId, personalWellbeingIntervention)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetServiceUserByCRN(crn, deliusServiceUser)
-      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
       cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
       cy.stubGetUserByUsername(pp.username, pp)
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())

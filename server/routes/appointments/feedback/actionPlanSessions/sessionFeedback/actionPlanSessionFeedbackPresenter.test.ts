@@ -7,7 +7,7 @@ describe(ActionPlanSessionFeedbackPresenter, () => {
     describe('draftId is provided', () => {
       it('contains the link to the attendance page with the action plan id and session number', () => {
         const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
         const presenter = new ActionPlanSessionFeedbackPresenter(
           appointment,
           serviceUser,
@@ -26,7 +26,7 @@ describe(ActionPlanSessionFeedbackPresenter, () => {
     describe('actionPlanId and sessionNumber is provided but draftId is not provided', () => {
       it('contains the link to the attendance page with the action plan id and session number', () => {
         const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
         const presenter = new ActionPlanSessionFeedbackPresenter(appointment, serviceUser, 'action-plan-id')
 
         expect(presenter.backLinkHref).toEqual(
@@ -38,7 +38,7 @@ describe(ActionPlanSessionFeedbackPresenter, () => {
     describe('actionPlanId is not provided', () => {
       it('contains the link to the attendance page with the action plan id and session number', () => {
         const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
-        const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+        const serviceUser = deliusServiceUserFactory.build()
         const presenter = new ActionPlanSessionFeedbackPresenter(appointment, serviceUser, null)
 
         expect(presenter.backLinkHref).toBeNull()

@@ -1,56 +1,43 @@
 import { Factory } from 'fishery'
-import { ExpandedDeliusServiceUser } from '../../server/models/delius/deliusServiceUser'
+import DeliusServiceUser from '../../server/models/delius/deliusServiceUser'
 
-export default Factory.define<ExpandedDeliusServiceUser>(() => ({
-  otherIds: {
-    crn: 'X123456',
-  },
-  offenderProfile: {
+export default Factory.define<DeliusServiceUser>(() => ({
+  crn: 'X123456',
+  profile: {
     ethnicity: 'British',
     religion: 'Agnostic',
     disabilities: [
       {
-        disabilityType: {
-          description: 'Autism',
-        },
-        endDate: '',
+        type: 'Autism',
         notes: 'Some notes',
-        startDate: '2019-01-22',
+        start: new Date(),
       },
     ],
-    offenderLanguages: {
-      primaryLanguage: 'English',
-    },
+    primaryLanguage: 'English',
   },
   title: 'Mr',
-  firstName: 'Alex',
-  surname: 'River',
-  dateOfBirth: '1980-01-01',
+  name: {
+    forename: 'Alex',
+    surname: 'River',
+  },
+  dateOfBirth: new Date(Date.parse('1980-01-01')),
   gender: 'Male',
   contactDetails: {
-    addresses: [
-      {
-        addressNumber: 'Flat 2',
-        buildingName: null,
-        streetName: 'Test Walk',
-        postcode: 'SW16 1AQ',
-        town: 'London',
-        district: 'City of London',
-        county: 'Greater London',
-        from: '2019-01-01',
-        to: null,
-        noFixedAbode: false,
-        status: {
-          code: 'M',
-        },
+    noFixedAbode: false,
+    emailAddress: 'alex.river@example.com',
+    mobileNumber: '0123456789',
+    mainAddress: {
+      buildingNumber: 'Flat 2',
+      streetName: 'Test Walk',
+      postcode: 'SW16 1AQ',
+      town: 'London',
+      district: 'City of London',
+      county: 'Greater London',
+      from: new Date(),
+      noFixedAbode: false,
+      status: {
+        code: 'M',
       },
-    ],
-    emailAddresses: ['alex.river@example.com'],
-    phoneNumbers: [
-      {
-        number: '0123456789',
-        type: 'MOBILE',
-      },
-    ],
+    },
   },
 }))

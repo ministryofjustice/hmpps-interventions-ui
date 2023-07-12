@@ -27,7 +27,7 @@ export default class FeedbackAnswersPresenter {
       return null
     }
     return {
-      question: `Did ${this.serviceUser.firstName} ${this.serviceUser.surname} come to the session?`,
+      question: `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} come to the session?`,
       answer: selected.text,
     }
   }

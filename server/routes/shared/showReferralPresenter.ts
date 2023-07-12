@@ -17,13 +17,13 @@ import logger from '../../../log'
 import DeliusConviction from '../../models/delius/deliusConviction'
 import SentencePresenter from '../makeAReferral/relevant-sentence/sentencePresenter'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
-import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import RoshPanelPresenter from './roshPanelPresenter'
 import DateUtils from '../../utils/dateUtils'
 import Prison from '../../models/prisonRegister/prison'
 import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
 import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -43,7 +43,7 @@ export default class ShowReferralPresenter {
     private readonly assignEmailError: FormValidationError | null,
     readonly userType: 'service-provider' | 'probation-practitioner',
     readonly canAssignReferral: boolean,
-    private readonly deliusServiceUser: ExpandedDeliusServiceUser,
+    private readonly deliusServiceUser: DeliusServiceUser,
     readonly riskSummary: RiskSummary | null,
     private readonly deliusResponsibleOfficer: DeliusResponsibleOfficer | null,
     readonly showSuccess: boolean = false,

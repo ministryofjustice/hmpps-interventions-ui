@@ -8,7 +8,7 @@ describe(ActionPlanNumberOfSessionsPresenter, () => {
     it('returns text to be displayed', () => {
       const presenter = new ActionPlanNumberOfSessionsPresenter(
         actionPlanFactory.build({ numberOfSessions: 10 }),
-        serviceUserFactory.build({ firstName: 'Alex', surname: 'River' }),
+        serviceUserFactory.build({ name: { forename: 'Alex', surname: 'River' } }),
         serviceCategoryFactory.build({ name: 'accommodation' }),
         null,
         null,

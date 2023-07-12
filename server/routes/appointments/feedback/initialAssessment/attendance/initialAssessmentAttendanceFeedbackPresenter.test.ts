@@ -7,7 +7,7 @@ describe(InitialAssessmentAttendanceFeedbackPresenter, () => {
   describe('text', () => {
     it('contains a title including the name of the service category and a subtitle, and the attendance questions', () => {
       const appointment = initialAssessmentAppointmentFactory.build()
-      const serviceUser = deliusServiceUserFactory.build({ firstName: 'Alex' })
+      const serviceUser = deliusServiceUserFactory.build()
       const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
         appointment,
         serviceUser,
