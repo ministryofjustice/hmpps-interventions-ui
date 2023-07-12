@@ -48,6 +48,8 @@ import logger from '../../../log'
 import SentReferral from '../../models/sentReferral'
 import { DraftAppointment, DraftAppointmentBooking } from '../serviceProviderReferrals/draftAppointment'
 import SupplierAssessment from '../../models/supplierAssessment'
+import AppointmentAttendance from '../../models/appointmentAttendance'
+import { FormData } from '../../utils/forms/formData'
 
 export default class AppointmentsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -476,26 +478,7 @@ export default class AppointmentsController {
           const { draft } = fetchResult
           const draftAppointment = draft.data as DraftAppointment
           if (draftAppointment) {
-            if (draftAppointment.session) {
-              draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended!
-              draftAppointment.session.attendanceFeedback.attendanceFailureInformation =
-                data.paramsForUpdate.attendanceFailureInformation!
-            } else {
-              draftAppointment.session = {
-                attendanceFeedback: {
-                  attended: data.paramsForUpdate.attended!,
-                  attendanceFailureInformation: data.paramsForUpdate.attendanceFailureInformation!,
-                },
-                sessionFeedback: {
-                  notifyProbationPractitioner: null,
-                  sessionSummary: null,
-                  sessionResponse: null,
-                  sessionConcerns: null,
-                },
-                submitted: false,
-                submittedBy: null,
-              }
-            }
+            this.createOrUpdateDraftAttendance(draftAppointment, data)
           } else {
             throw new Error('Draft appointment data is missing.')
           }
@@ -504,7 +487,7 @@ export default class AppointmentsController {
 
           basePath = `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/edit/${draftBookingId}`
           redirectPath =
-            draftAppointment.session.attendanceFeedback.attended === 'no' ? 'check-your-answers' : 'behaviour'
+            draftAppointment.session!.attendanceFeedback.attended === 'no' ? 'check-your-answers' : 'behaviour'
         } else {
           const updatedAppointment = await this.interventionsService.recordSupplierAssessmentAppointmentAttendance(
             accessToken,
@@ -799,26 +782,7 @@ export default class AppointmentsController {
           const { draft } = fetchResult
           const draftAppointment = draft.data as DraftAppointment
           if (draftAppointment) {
-            if (draftAppointment.session) {
-              draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended!
-              draftAppointment.session.attendanceFeedback.attendanceFailureInformation =
-                data.paramsForUpdate.attendanceFailureInformation!
-            } else {
-              draftAppointment.session = {
-                attendanceFeedback: {
-                  attended: data.paramsForUpdate.attended!,
-                  attendanceFailureInformation: data.paramsForUpdate.attendanceFailureInformation!,
-                },
-                sessionFeedback: {
-                  notifyProbationPractitioner: null,
-                  sessionSummary: null,
-                  sessionResponse: null,
-                  sessionConcerns: null,
-                },
-                submitted: false,
-                submittedBy: null,
-              }
-            }
+            this.createOrUpdateDraftAttendance(draftAppointment, data)
           } else {
             throw new Error('Draft appointment data is missing.')
           }
@@ -827,7 +791,7 @@ export default class AppointmentsController {
 
           basePath = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draftBookingId}`
           redirectPath =
-            draftAppointment.session.attendanceFeedback.attended === 'no' ? 'check-your-answers' : 'behaviour'
+            draftAppointment.session!.attendanceFeedback.attended === 'no' ? 'check-your-answers' : 'behaviour'
         } else {
           const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
             accessToken,
@@ -1333,4 +1297,44 @@ export default class AppointmentsController {
     }
     return new Date(appointmentSchedulingDetails.appointmentTime) < new Date()
   }
+
+  /* eslint-disable no-param-reassign */
+  private createOrUpdateDraftAttendance(
+    draftAppointment: DraftAppointment,
+    data: FormData<Partial<AppointmentAttendance>>
+  ): void {
+    if (draftAppointment && data.paramsForUpdate) {
+      if (draftAppointment.session) {
+        if (data.paramsForUpdate.attended! === 'no') {
+          draftAppointment.session.sessionFeedback = {
+            notifyProbationPractitioner: null,
+            sessionSummary: null,
+            sessionResponse: null,
+            sessionConcerns: null,
+          }
+          draftAppointment.session.attendanceFeedback.attendanceFailureInformation =
+            data.paramsForUpdate.attendanceFailureInformation!
+        } else {
+          draftAppointment.session.attendanceFeedback.attendanceFailureInformation = null
+        }
+        draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended!
+      } else {
+        draftAppointment.session = {
+          attendanceFeedback: {
+            attended: data.paramsForUpdate.attended!,
+            attendanceFailureInformation: data.paramsForUpdate.attendanceFailureInformation!,
+          },
+          sessionFeedback: {
+            notifyProbationPractitioner: null,
+            sessionSummary: null,
+            sessionResponse: null,
+            sessionConcerns: null,
+          },
+          submitted: false,
+          submittedBy: null,
+        }
+      }
+    }
+  }
+  /* eslint-enable no-param-reassign */
 }
