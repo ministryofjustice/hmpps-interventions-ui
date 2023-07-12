@@ -911,7 +911,6 @@ describe('Adding supplier assessment feedback', () => {
           appointmentFeedback: {
             attendanceFeedback: {
               attended: 'yes',
-              additionalAttendanceInformation: 'Alex made the session on time',
             },
           },
         })
@@ -928,7 +927,6 @@ describe('Adding supplier assessment feedback', () => {
           .type('form')
           .send({
             attended: 'yes',
-            'additional-attendance-information': 'Alex made the session on time',
           })
           .expect(302)
           .expect(
@@ -947,7 +945,7 @@ describe('Adding supplier assessment feedback', () => {
           appointmentFeedback: {
             attendanceFeedback: {
               attended: 'no',
-              additionalAttendanceInformation: "I haven't heard from Alex",
+              attendanceFailureInformation: 'failed to attend',
             },
           },
         })
@@ -962,7 +960,7 @@ describe('Adding supplier assessment feedback', () => {
           .type('form')
           .send({
             attended: 'no',
-            'additional-attendance-information': "I haven't heard from Alex",
+            'attendance-failure-information': 'failed to attend',
           })
           .expect(302)
           .expect(
@@ -1540,7 +1538,6 @@ describe('Adding post delivery session feedback', () => {
           appointmentFeedback: {
             attendanceFeedback: {
               attended: 'yes',
-              additionalAttendanceInformation: 'Alex made the session on time',
             },
           },
         })
@@ -1556,7 +1553,6 @@ describe('Adding post delivery session feedback', () => {
           .type('form')
           .send({
             attended: 'yes',
-            'additional-attendance-information': 'Alex made the session on time',
           })
           .expect(302)
           .expect(
@@ -1573,7 +1569,6 @@ describe('Adding post delivery session feedback', () => {
           appointmentFeedback: {
             attendanceFeedback: {
               attended: 'no',
-              additionalAttendanceInformation: "I haven't heard from Alex",
             },
           },
         })
@@ -1589,7 +1584,7 @@ describe('Adding post delivery session feedback', () => {
           .type('form')
           .send({
             attended: 'no',
-            'additional-attendance-information': "I haven't heard from Alex",
+            'attendance-failure-information': 'failed to attend',
           })
           .expect(302)
           .expect(
@@ -1609,7 +1604,6 @@ describe('Adding post delivery session feedback', () => {
             appointmentFeedback: {
               attendanceFeedback: {
                 attended: 'yes',
-                additionalAttendanceInformation: 'Alex made the session on time',
               },
             },
           })
@@ -1632,7 +1626,6 @@ describe('Adding post delivery session feedback', () => {
             .type('form')
             .send({
               attended: 'yes',
-              'additional-attendance-information': 'Alex made the session on time',
             })
             .expect(302)
             .expect(
@@ -1649,7 +1642,6 @@ describe('Adding post delivery session feedback', () => {
             appointmentFeedback: {
               attendanceFeedback: {
                 attended: 'no',
-                additionalAttendanceInformation: "I haven't heard from Alex",
               },
             },
           })
@@ -1674,7 +1666,7 @@ describe('Adding post delivery session feedback', () => {
             .type('form')
             .send({
               attended: 'no',
-              'additional-attendance-information': "I haven't heard from Alex",
+              'attendance-failure-information': 'failed to attend',
             })
             .expect(302)
             .expect(
@@ -1692,7 +1684,6 @@ describe('Adding post delivery session feedback', () => {
           appointmentFeedback: {
             attendanceFeedback: {
               attended: 'yes',
-              additionalAttendanceInformation: 'Alex made the session on time',
             },
           },
         })
