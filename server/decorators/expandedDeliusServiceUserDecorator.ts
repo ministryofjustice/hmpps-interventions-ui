@@ -4,17 +4,18 @@ export default class ExpandedDeliusServiceUserDecorator {
   constructor(private readonly deliusServiceUser: DeliusServiceUser) {}
 
   get address(): string[] | null {
-    const { mainAddress } = this.deliusServiceUser.contactDetails
-    if (mainAddress) {
-      return this.deliusAddressToArray(mainAddress)
+    if (this.deliusServiceUser.contactDetails?.mainAddress) {
+      return this.deliusAddressToArray(this.deliusServiceUser.contactDetails!.mainAddress)
     }
     return null
   }
 
   get email(): string[] | null {
-    const { emailAddress } = this.deliusServiceUser.contactDetails
-    if (emailAddress && emailAddress.length > 0) {
-      return [emailAddress]
+    if (
+      this.deliusServiceUser.contactDetails?.emailAddress &&
+      this.deliusServiceUser.contactDetails!.emailAddress.length > 0
+    ) {
+      return [this.deliusServiceUser.contactDetails!.emailAddress]
     }
     return null
   }

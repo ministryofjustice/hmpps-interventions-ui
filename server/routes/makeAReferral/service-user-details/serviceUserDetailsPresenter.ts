@@ -45,9 +45,9 @@ export default class ServiceUserDetailsPresenter {
 
   private findUniqueNumbers(): string[] {
     return [
-      this.deliusServiceUserDetails.contactDetails.telephoneNumber,
-      this.deliusServiceUserDetails.contactDetails.mobileNumber,
-    ].filter((item): item is string => !!item)
+      this.deliusServiceUserDetails.contactDetails?.telephoneNumber,
+      this.deliusServiceUserDetails.contactDetails?.mobileNumber,
+    ].filter(this.notEmpty)
   }
 
   get personalDetailsSummary(): SummaryListItem[] {
