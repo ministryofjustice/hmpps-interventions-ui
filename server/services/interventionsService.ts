@@ -138,7 +138,7 @@ export default class InterventionsService {
       ? deliusServiceUser.profile.disabilities.map(disability => disability.type)
       : null
 
-    const iso8601DateOfBirth = deliusServiceUser.dateOfBirth.toISOString()
+    const iso8601DateOfBirth = new Date(deliusServiceUser.dateOfBirth).toLocaleDateString()
 
     return {
       crn: deliusServiceUser.crn,
