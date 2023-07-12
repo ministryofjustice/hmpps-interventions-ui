@@ -193,12 +193,12 @@ export default class InterventionProgressPresenter {
       case SessionStatus.awaitingFeedback:
         links = [
           {
-            text: 'Reschedule session',
-            href: editHref,
-          },
-          {
             text: 'Give feedback',
             href: giveFeedbackHref,
+          },
+          {
+            text: 'Reschedule session',
+            href: editHref,
           },
         ]
         break

@@ -214,12 +214,12 @@ describe(InterventionProgressPresenter, () => {
             statusPresenter: new SessionStatusPresenter(SessionStatus.awaitingFeedback),
             links: [
               {
-                href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit/start',
-                text: 'Reschedule session',
-              },
-              {
                 href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/appointment/1/post-session-feedback/attendance',
                 text: 'Give feedback',
+              },
+              {
+                href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit/start',
+                text: 'Reschedule session',
               },
             ],
           },
