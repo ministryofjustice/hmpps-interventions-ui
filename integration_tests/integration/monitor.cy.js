@@ -227,25 +227,25 @@ describe('Probation Practitioner monitor journey', () => {
         .should('deep.equal', [
           {
             'Session details': 'Session 1',
-            'Date and time': '9:02am on 24 Mar 2021',
+            'Time and date': '9:02am on 24 Mar 2021',
             Status: 'completed',
             Action: 'View feedback form',
           },
           {
             'Session details': 'Session 2',
-            'Date and time': '10:02am on 30 Apr 2021',
+            'Time and date': '10:02am on 30 Apr 2021',
             Status: 'did not attend',
             Action: 'View feedback form',
           },
           {
             'Session details': 'Session 3',
-            'Date and time': '10:02am on 31 May 2021',
+            'Time and date': '10:02am on 31 May 2021',
             Status: 'needs feedback',
             Action: '',
           },
           {
             'Session details': 'Session 4',
-            'Date and time': '',
+            'Time and date': '',
             Status: 'not scheduled',
             Action: '',
           },
@@ -344,21 +344,21 @@ describe('Probation Practitioner monitor journey', () => {
         .should(result => {
           expect(result[0]).to.deep.include({
             'Session details': 'Session 1',
-            'Date and time': '10:02am on 24 Aug 2021',
+            'Time and date': '10:02am on 24 Aug 2021',
             Status: 'completed',
             Action: 'View feedback form',
           })
           expect(result[1]).to.contains(/^Session 1 history/gi)
           expect(result[2]).to.deep.include({
             'Session details': 'Session 3',
-            'Date and time': '10:02am on 31 Jul 2021',
+            'Time and date': '10:02am on 31 Jul 2021',
             Status: 'needs feedback',
             Action: '',
           })
           expect(result[3]).to.contains(/^Session 2 history/gi)
           expect(result[4]).to.deep.include({
             'Session details': 'Session 4',
-            'Date and time': '',
+            'Time and date': '',
             Status: 'not scheduled',
             Action: '',
           })
