@@ -27,7 +27,6 @@ import CheckAllReferralInformationView from './check-all-referral-information/ch
 import CheckAllReferralInformationPresenter from './check-all-referral-information/checkAllReferralInformationPresenter'
 import ConfirmationView from './confirmation/confirmationView'
 import ConfirmationPresenter from './confirmation/confirmationPresenter'
-import CommunityApiService, { CommunityApiServiceError } from '../../services/communityApiService'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import errorMessages from '../../utils/errorMessages'
 import logger from '../../../log'
@@ -73,7 +72,6 @@ import RamDeliusApiService from '../../services/ramDeliusApiService'
 export default class MakeAReferralController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService,
     private readonly ramDeliusApiService: RamDeliusApiService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly prisonRegisterService: PrisonRegisterService,
@@ -104,9 +102,9 @@ export default class MakeAReferralController {
       try {
         serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(crn)
       } catch (e) {
-        const communityApiServiceError = e as CommunityApiServiceError
+        const rce = e as RestClientError
 
-        if (communityApiServiceError.status === 404) {
+        if (rce.status === 404) {
           error = {
             errors: [
               {
@@ -117,7 +115,7 @@ export default class MakeAReferralController {
             ],
           }
         } else {
-          logger.error({ err: communityApiServiceError }, 'crn lookup failed')
+          logger.error({ err: rce }, 'crn lookup failed')
           error = {
             errors: [
               {
@@ -210,11 +208,13 @@ export default class MakeAReferralController {
   async viewRelevantSentence(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
-    const [intervention, serviceUser, convictions] = await Promise.all([
+    const [intervention, caseConvictions] = await Promise.all([
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
-      this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn),
-      this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn),
+      this.ramDeliusApiService.getConvictionsByCrn(referral.serviceUser.crn),
     ])
+
+    const serviceUser = caseConvictions.caseDetail
+    const { convictions } = caseConvictions
 
     if (convictions.length < 1) {
       throw createError(500, `No active convictions found for ${referral.serviceUser.crn}`, {
@@ -260,11 +260,13 @@ export default class MakeAReferralController {
     if (!error) {
       res.redirect(`/referrals/${req.params.id}/service-category/${referral.serviceCategoryIds[0]}/desired-outcomes`)
     } else {
-      const [intervention, serviceUser, convictions] = await Promise.all([
+      const [intervention, caseConvictions] = await Promise.all([
         this.interventionsService.getIntervention(res.locals.user.token.accessToken, referral.interventionId),
-        this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn),
-        this.communityApiService.getActiveConvictionsByCRN(referral.serviceUser.crn),
+        this.ramDeliusApiService.getConvictionsByCrn(referral.serviceUser.crn),
       ])
+
+      const serviceUser = caseConvictions.caseDetail
+      const { convictions } = caseConvictions
 
       if (convictions.length < 1) {
         throw createError(500, `No active convictions found for ${referral.serviceUser.crn}`, {
@@ -942,10 +944,9 @@ export default class MakeAReferralController {
       throw new Error('Attempting to check answers without relevant sentence selected')
     }
 
-    const [intervention, expandedDeliusServiceUser, conviction] = await Promise.all([
+    const [intervention, caseConviction] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, referral.interventionId),
-      this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn),
-      this.communityApiService.getConvictionById(referral.serviceUser.crn, referral.relevantSentenceId),
+      this.ramDeliusApiService.getConvictionByCrnAndId(referral.serviceUser.crn, referral.relevantSentenceId),
     ])
     const editedOasysRiskInformation = await this.interventionsService.getDraftOasysRiskInformation(
       accessToken,
@@ -954,14 +955,14 @@ export default class MakeAReferralController {
     const presenter = new CheckAllReferralInformationPresenter(
       referral,
       intervention,
-      conviction,
-      expandedDeliusServiceUser,
+      caseConviction.conviction,
+      caseConviction.caseDetail,
       prisons,
       editedOasysRiskInformation
     )
     const view = new CheckAllReferralInformationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, expandedDeliusServiceUser)
+    ControllerUtils.renderWithLayout(res, view, caseConviction.caseDetail)
   }
 
   async sendDraftReferral(req: Request, res: Response): Promise<void> {

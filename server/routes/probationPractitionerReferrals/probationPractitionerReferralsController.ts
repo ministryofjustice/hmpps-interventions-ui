@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
-import CommunityApiService from '../../services/communityApiService'
 import InterventionsService, { GetSentReferralsFilterParams } from '../../services/interventionsService'
 import { ActionPlanAppointment } from '../../models/appointment'
 import InterventionProgressPresenter from './interventionProgressPresenter'
@@ -38,7 +37,6 @@ export default class ProbationPractitionerReferralsController {
 
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService,
     private readonly hmppsAuthService: HmppsAuthService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly draftsService: DraftsService,
@@ -236,8 +234,7 @@ export default class ProbationPractitionerReferralsController {
     const [
       intervention,
       sentBy,
-      expandedServiceUser,
-      conviction,
+      caseConviction,
       riskInformation,
       riskSummary,
       approvedActionPlanSummaries,
@@ -246,8 +243,7 @@ export default class ProbationPractitionerReferralsController {
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
       this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
-      this.ramDeliusApiService.getCaseDetailsByCrn(crn),
-      this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
+      this.ramDeliusApiService.getConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId),
       this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
       this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
       this.interventionsService.getApprovedActionPlanSummaries(accessToken, req.params.id),
@@ -267,7 +263,7 @@ export default class ProbationPractitionerReferralsController {
     const presenter = new ShowReferralPresenter(
       sentReferral,
       intervention,
-      conviction,
+      caseConviction.conviction,
       riskInformation,
       sentBy,
       prisons,
@@ -275,7 +271,7 @@ export default class ProbationPractitionerReferralsController {
       null,
       'probation-practitioner',
       false,
-      expandedServiceUser,
+      caseConviction.caseDetail,
       riskSummary,
       deliusResponsibleOfficer,
       req.query.detailsUpdated === 'true',
@@ -283,7 +279,7 @@ export default class ProbationPractitionerReferralsController {
       !!approvedActionPlanSummaries.length
     )
     const view = new ShowReferralView(presenter)
-    ControllerUtils.renderWithLayout(res, view, expandedServiceUser)
+    ControllerUtils.renderWithLayout(res, view, caseConviction.caseDetail)
   }
 
   async viewEndOfServiceReport(req: Request, res: Response): Promise<void> {

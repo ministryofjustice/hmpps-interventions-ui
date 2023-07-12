@@ -1,4 +1,4 @@
-import DeliusConviction from '../../../models/delius/deliusConviction'
+import { DeliusConviction } from '../../../models/delius/deliusConviction'
 import DraftReferral from '../../../models/draftReferral'
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
@@ -31,8 +31,8 @@ export default class RelevantSentencePresenter {
     return this.convictions.map(conviction => {
       return {
         presenter: new SentencePresenter(conviction),
-        value: conviction.convictionId,
-        checked: this.selectedRelevantSentenceId === conviction.convictionId,
+        value: conviction.id,
+        checked: this.selectedRelevantSentenceId === conviction.id,
       }
     })
   }

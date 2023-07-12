@@ -3,7 +3,6 @@ import draftReferralFactory from '../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
-import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import interventionFactory from '../../testutils/factories/intervention'
 import prisonFactory from '../../testutils/factories/prison'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
@@ -12,39 +11,29 @@ import riskSummaryFactory from '../../testutils/factories/riskSummary'
 import draftOasysRiskInformation from '../../testutils/factories/draftOasysRiskInformation'
 import pageFactory from '../../testutils/factories/page'
 import { CurrentLocationType } from '../../server/models/draftReferral'
+import caseConvictionsFactory from '../../testutils/factories/caseConvictions'
+import caseConvictionFactory from '../../testutils/factories/caseConviction'
 
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build()
-  const convictionWithSentenceToSelect = deliusConvictionFactory.build({
-    convictionId: 123456789,
-    active: true,
-    offences: [
-      {
-        mainOffence: true,
-        detail: {
-          mainCategoryDescription: 'Burglary',
-          subCategoryDescription: 'Theft act, 1968',
-        },
+  const caseConvictions = caseConvictionsFactory.build({
+    caseDetail: deliusServiceUser,
+    conviction: {
+      id: 123456789,
+      mainOffence: {
+        category: 'Burglary',
+        subCategory: 'Theft act, 1968',
       },
-      {
-        mainOffence: false,
-        detail: {
-          mainCategoryDescription: 'Common and other types of assault',
-          subCategoryDescription: 'Common assault and battery',
-        },
-      },
-    ],
-    sentence: {
-      sentenceId: 2500284169,
-      description: 'Absolute/Conditional Discharge',
-      expectedSentenceEndDate: '2025-11-15',
-      sentenceType: {
-        code: 'SC',
-        description: 'CJA - Indeterminate Public Prot.',
+      sentence: {
+        description: 'Absolute/Conditional Discharge',
+        expectedEndDate: '2025-11-15',
       },
     },
   })
-  const convictions = [convictionWithSentenceToSelect, deliusConvictionFactory.build()]
+  const caseConviction = caseConvictionFactory.build({
+    conviction: caseConvictions.convictions[0],
+  })
+
   const accommodationServiceCategory = serviceCategoryFactory.build({
     id: '428ee70f-3001-4399-95a6-ad25eaaede16',
     name: 'accommodation',
@@ -142,7 +131,6 @@ describe('Referral form', () => {
 
       const intervention = interventionFactory.build({ serviceCategories: [accommodationServiceCategory] })
 
-      cy.stubGetCaseDetailsByCrn(deliusServiceUser.crn, deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
@@ -151,8 +139,8 @@ describe('Referral form', () => {
       cy.stubPatchDraftReferral(draftReferral.id, draftReferral)
       cy.stubSendDraftReferral(draftReferral.id, sentReferral)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetActiveConvictionsByCRN(deliusServiceUser.crn, convictions)
-      cy.stubGetConvictionById(deliusServiceUser.crn, 123456789, convictions[0])
+      cy.stubGetConvictionsByCrn(caseConvictions.caseDetail.crn, caseConvictions)
+      cy.stubGetConvictionByCrnAndId(caseConviction.caseDetail.crn, caseConviction.conviction.id, caseConviction)
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
@@ -636,7 +624,6 @@ describe('Referral form', () => {
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
       const prisons = prisonFactory.prisonList()
 
-      cy.stubGetCaseDetailsByCrn(deliusServiceUser.crn, deliusServiceUser)
       cy.stubCreateDraftReferral(draftReferral)
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
@@ -646,8 +633,8 @@ describe('Referral form', () => {
       cy.stubPatchDraftReferral(draftReferral.id, draftReferral)
       cy.stubSendDraftReferral(draftReferral.id, sentReferral)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetActiveConvictionsByCRN(deliusServiceUser.crn, convictions)
-      cy.stubGetConvictionById(deliusServiceUser.crn, 123456789, convictions[0])
+      cy.stubGetConvictionsByCrn(caseConvictions.caseDetail.crn, caseConvictions)
+      cy.stubGetConvictionByCrnAndId(caseConviction.caseDetail.crn, caseConviction.conviction.id, caseConviction)
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)

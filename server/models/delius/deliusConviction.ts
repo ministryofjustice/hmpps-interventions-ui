@@ -1,25 +1,28 @@
-export default interface DeliusConviction {
-  active: boolean
-  convictionDate: string
-  convictionId: number
+import DeliusServiceUser from './deliusServiceUser'
+
+export interface CaseConvictions {
+  caseDetail: DeliusServiceUser
+  convictions: DeliusConviction[]
+}
+
+export interface CaseConviction {
+  caseDetail: DeliusServiceUser
+  conviction: DeliusConviction
+}
+
+export interface DeliusConviction {
+  date: string
+  id: number
   sentence: Sentence
-  offences: Offence[]
+  mainOffence: Offence
 }
 
 export interface Sentence {
   description: string
-  sentenceId: number
-  expectedSentenceEndDate: string
-  sentenceType: {
-    code: string
-    description: string
-  }
+  expectedEndDate: string
 }
 
 export interface Offence {
-  detail: {
-    mainCategoryDescription: string
-    subCategoryDescription: string
-  }
-  mainOffence: boolean
+  category: string
+  subCategory: string
 }

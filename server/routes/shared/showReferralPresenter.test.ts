@@ -6,9 +6,8 @@ import { ListStyle } from '../../utils/summaryList'
 import interventionFactory from '../../../testutils/factories/intervention'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
 import { TagArgs } from '../../utils/govukFrontendTypes'
-import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
+import caseConvictionFactory from '../../../testutils/factories/caseConviction'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
-import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import prisonFactory from '../../../testutils/factories/prison'
 import { CurrentLocationType } from '../../models/draftReferral'
@@ -33,7 +32,9 @@ describe(ShowReferralPresenter, () => {
     serviceCategories: cohortServiceCategories,
   })
 
-  const deliusConviction = deliusConvictionFactory.build()
+  const caseConviction = caseConvictionFactory.build()
+  const deliusConviction = caseConviction.conviction
+  const deliusServiceUser = caseConviction.caseDetail
 
   const referralParams = {
     referral: {
@@ -53,13 +54,6 @@ describe(ShowReferralPresenter, () => {
     },
     email: 'bernard.beaks@justice.gov.uk',
   }
-  const deliusServiceUser = expandedDeliusServiceUserFactory.build({
-    contactDetails: {
-      mainAddress: {
-        buildingNumber: 'Flat 2',
-      },
-    },
-  })
 
   const supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
   const riskSummary = riskSummaryFactory.build()
@@ -573,18 +567,15 @@ describe(ShowReferralPresenter, () => {
         },
       })
 
-      const burglaryConviction = deliusConvictionFactory.build({
-        offences: [
-          {
-            mainOffence: true,
-            detail: {
-              mainCategoryDescription: 'Burglary',
-              subCategoryDescription: 'Theft act, 1968',
-            },
+      const burglaryConviction = caseConvictionFactory.build({
+        conviction: {
+          mainOffence: {
+            category: 'Burglary',
+            subCategory: 'Theft act, 1968',
           },
-        ],
-        sentence: {
-          expectedSentenceEndDate: '2025-11-15',
+          sentence: {
+            expectedEndDate: '2025-11-15',
+          },
         },
       })
 
@@ -592,7 +583,7 @@ describe(ShowReferralPresenter, () => {
         const presenter = new ShowReferralPresenter(
           referralWithAllOptionalFields,
           intervention,
-          burglaryConviction,
+          burglaryConviction.conviction,
           supplementaryRiskInformation,
           deliusUser,
           prisonList,
@@ -600,7 +591,7 @@ describe(ShowReferralPresenter, () => {
           null,
           'service-provider',
           true,
-          deliusServiceUser,
+          burglaryConviction.caseDetail,
           riskSummary,
           deliusRoOfficer
         )
@@ -664,18 +655,15 @@ describe(ShowReferralPresenter, () => {
         },
       })
 
-      const burglaryConviction = deliusConvictionFactory.build({
-        offences: [
-          {
-            mainOffence: true,
-            detail: {
-              mainCategoryDescription: 'Burglary',
-              subCategoryDescription: 'Theft act, 1968',
-            },
+      const burglaryConviction = caseConvictionFactory.build({
+        conviction: {
+          mainOffence: {
+            category: 'Burglary',
+            subCategory: 'Theft act, 1968',
           },
-        ],
-        sentence: {
-          expectedSentenceEndDate: '2025-11-15',
+          sentence: {
+            expectedEndDate: '2025-11-15',
+          },
         },
       })
 
@@ -683,7 +671,7 @@ describe(ShowReferralPresenter, () => {
         const presenter = new ShowReferralPresenter(
           referralWithNoOptionalFields,
           intervention,
-          burglaryConviction,
+          burglaryConviction.conviction,
           supplementaryRiskInformation,
           deliusUser,
           prisonList,
@@ -691,7 +679,7 @@ describe(ShowReferralPresenter, () => {
           null,
           'service-provider',
           true,
-          deliusServiceUser,
+          burglaryConviction.caseDetail,
           riskSummary,
           deliusRoOfficer
         )

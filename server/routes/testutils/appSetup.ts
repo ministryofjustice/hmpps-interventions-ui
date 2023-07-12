@@ -11,7 +11,6 @@ import serviceProviderRoutes, { serviceProviderUrlPrefix } from '../serviceProvi
 import nunjucksSetup from '../../utils/nunjucksSetup'
 import createErrorHandler from '../../errorHandler'
 import standardRouter from '../standardRouter'
-import MockCommunityApiService from './mocks/mockCommunityApiService'
 import InterventionsService from '../../services/interventionsService'
 import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import LoggedInUserFactory from '../../../testutils/factories/loggedInUser'
@@ -112,7 +111,6 @@ export default function appWithAllRoutes({
   config.features.serviceProviderReporting = true
   // auth.default.authenticationMiddleware = () => (req, res, next) => next()
   const services = {
-    communityApiService: new MockCommunityApiService(),
     ramDeliusApiService: new MockRamDeliusApiService(),
     interventionsService: {} as InterventionsService,
     hmppsAuthService: new MockedHmppsAuthService(),

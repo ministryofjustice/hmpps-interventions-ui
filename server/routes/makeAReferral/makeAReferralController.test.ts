@@ -4,7 +4,6 @@ import createError from 'http-errors'
 import moment from 'moment-timezone'
 import InterventionsService from '../../services/interventionsService'
 import ServiceUser from '../../models/serviceUser'
-import CommunityApiService from '../../services/communityApiService'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
@@ -16,9 +15,9 @@ import deliusOfficeLocationFactory from '../../../testutils/factories/deliusOffi
 import deliusProbationDeliveryUnitFactory from '../../../testutils/factories/deliusProbationDeliveryUnit'
 import apiConfig from '../../config'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
-import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
+import caseConvictionFactory from '../../../testutils/factories/caseConviction'
+import caseConvictionsFactory from '../../../testutils/factories/caseConvictions'
 import interventionFactory from '../../../testutils/factories/intervention'
-import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
@@ -31,7 +30,6 @@ import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
 
 jest.mock('../../services/interventionsService')
-jest.mock('../../services/communityApiService')
 jest.mock('../../services/ramDeliusApiService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/prisonRegisterService')
@@ -40,7 +38,6 @@ jest.mock('../../services/referenceDataService')
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
-const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
@@ -65,7 +62,6 @@ beforeEach(() => {
   app = appWithAllRoutes({
     overrides: {
       interventionsService,
-      communityApiService,
       ramDeliusApiService,
       assessRisksAndNeedsService,
       prisonRegisterService,
@@ -1460,7 +1456,7 @@ describe('GET /referrals/:id/relevant-sentence', () => {
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     interventionsService.getIntervention.mockResolvedValue(intervention)
-    communityApiService.getActiveConvictionsByCRN.mockResolvedValue(deliusConvictionFactory.buildList(2))
+    ramDeliusApiService.getConvictionsByCrn.mockResolvedValue(caseConvictionsFactory.build())
   })
 
   it('renders a form page and fetches a conviction from the Community API', async () => {
@@ -1471,7 +1467,7 @@ describe('GET /referrals/:id/relevant-sentence', () => {
         expect(res.text).toContain('Select the relevant sentence for the Accommodation referral')
       })
 
-    expect(communityApiService.getActiveConvictionsByCRN).toHaveBeenCalledWith(serviceUserCRN)
+    expect(ramDeliusApiService.getConvictionsByCrn).toHaveBeenCalledWith(serviceUserCRN)
   })
 
   it('renders an error when the request for the intervention fails', async () => {
@@ -1486,7 +1482,10 @@ describe('GET /referrals/:id/relevant-sentence', () => {
   })
 
   it('renders an error when no convictions are found for that service user', async () => {
-    communityApiService.getActiveConvictionsByCRN.mockResolvedValue([])
+    ramDeliusApiService.getConvictionsByCrn.mockResolvedValue({
+      caseDetail: deliusServiceUser.build(),
+      convictions: [],
+    })
 
     await request(app)
       .get('/referrals/1/relevant-sentence')
@@ -1868,13 +1867,13 @@ describe('GET /referrals/:id/check-all-referral-information', () => {
         serviceUser: { firstName: 'Johnny', lastName: 'Blair', religionOrBelief: 'Agnostic' },
         relevantSentenceId: 123,
       })
-    const conviction = deliusConvictionFactory.build()
+    const conviction = caseConvictionFactory.build()
     const prisonList = prisonFactory.prisonList()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(expandedDeliusServiceUserFactory.build())
-    communityApiService.getConvictionById.mockResolvedValue(conviction)
+    ramDeliusApiService.getConvictionByCrnAndId.mockResolvedValue(conviction)
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 

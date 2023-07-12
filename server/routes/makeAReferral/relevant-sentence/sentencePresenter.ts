@@ -1,4 +1,4 @@
-import DeliusConviction from '../../../models/delius/deliusConviction'
+import { DeliusConviction } from '../../../models/delius/deliusConviction'
 import DateUtils from '../../../utils/dateUtils'
 
 export default class SentencePresenter {
@@ -9,21 +9,17 @@ export default class SentencePresenter {
   readonly endOfSentenceDate: string
 
   constructor(private readonly conviction: DeliusConviction) {
-    if (!conviction.offences) {
-      throw new Error(`No offences found for conviction id: ${conviction.convictionId}`)
-    }
-
-    const mainOffence = conviction.offences.find(offence => offence.mainOffence)
+    const { mainOffence } = conviction
 
     if (!mainOffence) {
       throw new Error('No main offence found')
     }
 
-    this.category = mainOffence.detail.mainCategoryDescription
-    this.subcategory = mainOffence.detail.subCategoryDescription
+    this.category = mainOffence.category
+    this.subcategory = mainOffence.subCategory
 
-    this.endOfSentenceDate = this.conviction?.sentence?.expectedSentenceEndDate
-      ? DateUtils.formattedDate(new Date(this.conviction.sentence.expectedSentenceEndDate), { month: 'short' })
+    this.endOfSentenceDate = conviction?.sentence?.expectedEndDate
+      ? DateUtils.formattedDate(new Date(conviction.sentence.expectedEndDate), { month: 'short' })
       : 'Not found'
   }
 }

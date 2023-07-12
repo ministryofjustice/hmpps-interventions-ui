@@ -14,7 +14,6 @@ import ComplexityLevel from '../../models/complexityLevel'
 import { TagArgs } from '../../utils/govukFrontendTypes'
 import DesiredOutcome from '../../models/desiredOutcome'
 import logger from '../../../log'
-import DeliusConviction from '../../models/delius/deliusConviction'
 import SentencePresenter from '../makeAReferral/relevant-sentence/sentencePresenter'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
@@ -24,6 +23,7 @@ import Prison from '../../models/prisonRegister/prison'
 import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
 import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
+import { DeliusConviction } from '../../models/delius/deliusConviction'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter

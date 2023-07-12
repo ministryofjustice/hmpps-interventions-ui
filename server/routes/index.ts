@@ -1,7 +1,7 @@
 import type { RequestHandler, Router } from 'express'
 
+import e from 'express'
 import asyncMiddleware from '../middleware/asyncMiddleware'
-import CommunityApiService from '../services/communityApiService'
 import InterventionsService from '../services/interventionsService'
 import HmppsAuthService from '../services/hmppsAuthService'
 import StaticContentController from './staticContent/staticContentController'
@@ -14,9 +14,9 @@ import ReferenceDataService from '../services/referenceDataService'
 import UserDataService from '../services/userDataService'
 import PrisonRegisterService from '../services/prisonRegisterService'
 import RamDeliusApiService from '../services/ramDeliusApiService'
+import MockRamDeliusApiService from './testutils/mocks/mockRamDeliusApiService'
 
 export interface Services {
-  communityApiService: CommunityApiService
   ramDeliusApiService: RamDeliusApiService
   interventionsService: InterventionsService
   hmppsAuthService: HmppsAuthService
@@ -33,7 +33,19 @@ export const get = (router: Router, path: string, handler: RequestHandler): Rout
 export const post = (router: Router, path: string, handler: RequestHandler): Router =>
   router.post(path, asyncMiddleware(handler))
 
-export default function routes(router: Router, services: Services): Router {
+export default function routes(
+  router: e.Router,
+  services: {
+    interventionsService: InterventionsService
+    ramDeliusApiService: MockRamDeliusApiService | RamDeliusApiService
+    referenceDataService: ReferenceDataService
+    draftsService: DraftsService
+    prisonRegisterService: PrisonRegisterService
+    assessRisksAndNeedsService: AssessRisksAndNeedsService
+    userDataService: UserDataService
+    hmppsAuthService: HmppsAuthService
+  }
+): e.Router {
   const staticContentController = new StaticContentController()
   const commonController = new CommonController()
 
@@ -85,7 +97,6 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
 
   const makeAReferralController = new MakeAReferralController(
     services.interventionsService,
-    services.communityApiService,
     services.ramDeliusApiService,
     services.assessRisksAndNeedsService,
     services.prisonRegisterService,

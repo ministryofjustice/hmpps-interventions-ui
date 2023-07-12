@@ -6,7 +6,6 @@ import apiConfig from '../../config'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 
 jest.mock('../../services/interventionsService')
-jest.mock('../../services/communityApiService')
 jest.mock('../../services/hmppsAuthService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/draftsService')

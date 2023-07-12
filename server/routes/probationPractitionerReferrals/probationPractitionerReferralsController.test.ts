@@ -13,13 +13,11 @@ import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import prisonFactory from '../../../testutils/factories/prison'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
-import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
-import CommunityApiService from '../../services/communityApiService'
 import interventionFactory from '../../../testutils/factories/intervention'
 import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
 import HmppsAuthService from '../../services/hmppsAuthService'
-import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
+import caseConvictionFactory from '../../../testutils/factories/caseConviction'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
@@ -49,7 +47,6 @@ import ramDeliusUserFactory from '../../../testutils/factories/ramDeliusUser'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 
 jest.mock('../../services/interventionsService')
-jest.mock('../../services/communityApiService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/draftsService')
 jest.mock('../../services/prisonRegisterService')
@@ -58,7 +55,6 @@ jest.mock('../../services/ramDeliusApiService')
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
-const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 
 const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 
@@ -86,7 +82,6 @@ beforeEach(() => {
   app = appWithAllRoutes({
     overrides: {
       interventionsService,
-      communityApiService,
       hmppsAuthService,
       assessRisksAndNeedsService,
       draftsService,
@@ -455,7 +450,7 @@ describe('GET /probation-practitioner/end-of-service-report/:id', () => {
 describe('GET /probation-practitioner/referrals/:id/details', () => {
   const intervention = interventionFactory.build()
   const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
-  const conviction = deliusConvictionFactory.build()
+  const conviction = caseConvictionFactory.build()
   const riskSummary: RiskSummary = riskSummaryFactory.build()
   let sentReferral: SentReferral
   let ramDeliusUser: RamDeliusUser
@@ -475,7 +470,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
     ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(expandedDeliusServiceUser)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
-    communityApiService.getConvictionById.mockResolvedValue(conviction)
+    ramDeliusApiService.getConvictionByCrnAndId.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)

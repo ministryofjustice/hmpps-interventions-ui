@@ -1,17 +1,37 @@
 import { Router } from 'express'
-import { Services, get, post } from './index'
+import { get, post } from './index'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import config from '../config'
 import CaseNotesController from './caseNotes/caseNotesController'
 import ReportingController from './reporting/reportingController'
 import AppointmentsController from './appointments/appointmentsController'
 import ChangeLogController from './amendAReferral/changeLogController'
+import InterventionsService from '../services/interventionsService'
+import MockRamDeliusApiService from './testutils/mocks/mockRamDeliusApiService'
+import RamDeliusApiService from '../services/ramDeliusApiService'
+import ReferenceDataService from '../services/referenceDataService'
+import DraftsService from '../services/draftsService'
+import PrisonRegisterService from '../services/prisonRegisterService'
+import AssessRisksAndNeedsService from '../services/assessRisksAndNeedsService'
+import UserDataService from '../services/userDataService'
+import HmppsAuthService from '../services/hmppsAuthService'
 
 export const serviceProviderUrlPrefix = '/service-provider'
-export default function serviceProviderRoutes(router: Router, services: Services): Router {
+export default function serviceProviderRoutes(
+  router: Router,
+  services: {
+    interventionsService: InterventionsService
+    ramDeliusApiService: MockRamDeliusApiService | RamDeliusApiService
+    referenceDataService: ReferenceDataService
+    draftsService: DraftsService
+    prisonRegisterService: PrisonRegisterService
+    assessRisksAndNeedsService: AssessRisksAndNeedsService
+    userDataService: UserDataService
+    hmppsAuthService: HmppsAuthService
+  }
+): Router {
   const serviceProviderReferralsController = new ServiceProviderReferralsController(
     services.interventionsService,
-    services.communityApiService,
     services.hmppsAuthService,
     services.assessRisksAndNeedsService,
     services.draftsService,

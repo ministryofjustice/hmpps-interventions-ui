@@ -1,9 +1,7 @@
 import ramDeliusUserFactory from '../../testutils/factories/ramDeliusUser'
-import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
-import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
-import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
+import caseConvictionFactory from '../../testutils/factories/caseConviction'
 
 Cypress.Commands.add('login', (redirectUrl = '/') => {
   cy.request(redirectUrl)
@@ -24,20 +22,18 @@ Cypress.Commands.add('withinFieldsetThatContains', (text, action) => {
 
 Cypress.Commands.add('stubViewReferralDetails', referralToView => {
   const deliusUser = ramDeliusUserFactory.build()
-  const conviction = deliusConvictionFactory.build({
-    convictionId: referralToView.referral.relevantSentenceId,
+  const conviction = caseConvictionFactory.build({
+    conviction: {
+      id: referralToView.referral.relevantSentenceId,
+    },
   })
   cy.stubGetSentReferral(referralToView.id, referralToView)
-  cy.stubGetCaseDetailsByCrn(referralToView.referral.serviceUser.crn, deliusServiceUserFactory.build())
-  cy.stubGetConvictionById(referralToView.referral.serviceUser.crn, conviction.convictionId, conviction)
+  cy.stubGetConvictionByCrnAndId(referralToView.referral.serviceUser.crn, conviction.convictionId, conviction)
   cy.stubGetUserByUsername(deliusUser.username, deliusUser)
   cy.stubGetSupplementaryRiskInformation(
     referralToView.supplementaryRiskId,
     supplementaryRiskInformationFactory.build()
   )
-  cy.stubGetResponsibleOfficerForServiceUser(referralToView.referral.serviceUser.crn, [
-    deliusOffenderManagerFactory.build(),
-  ])
   cy.stubGetResponsibleOfficer(referralToView.referral.serviceUser.crn, [deliusResponsibleOfficerFactory.build()])
 })
 

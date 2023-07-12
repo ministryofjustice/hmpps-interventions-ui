@@ -5,6 +5,7 @@ import logger from '../../log'
 import { DeliusResponsibleOfficer } from '../models/delius/deliusResponsibleOfficer'
 import { RamDeliusUser } from '../models/delius/deliusUser'
 import DeliusServiceUser from '../models/delius/deliusServiceUser'
+import { CaseConviction, CaseConvictions } from '../models/delius/deliusConviction'
 
 export default class RamDeliusApiService {
   constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
@@ -36,5 +37,15 @@ export default class RamDeliusApiService {
         userMessage: 'Could not retrieve Responsible Officer from nDelius.',
       })
     }
+  }
+
+  async getConvictionsByCrn(crn: string): Promise<CaseConvictions> {
+    const token = await this.hmppsAuthService.getApiClientToken()
+    return (await this.restClient.get({ path: `/probation-case/${crn}/convictions`, token })) as CaseConvictions
+  }
+
+  async getConvictionByCrnAndId(crn: string, id: number): Promise<CaseConviction> {
+    const token = await this.hmppsAuthService.getApiClientToken()
+    return (await this.restClient.get({ path: `/probation-case/${crn}/convictions/${id}`, token })) as CaseConviction
   }
 }

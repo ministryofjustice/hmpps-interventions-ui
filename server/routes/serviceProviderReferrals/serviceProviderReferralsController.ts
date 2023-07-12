@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
 import querystring from 'querystring'
-import CommunityApiService from '../../services/communityApiService'
 import InterventionsService, {
   GetSentReferralsFilterParams,
   InterventionsServiceError,
@@ -77,7 +76,6 @@ export default class ServiceProviderReferralsController {
 
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly communityApiService: CommunityApiService,
     private readonly hmppsAuthService: HmppsAuthService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly draftsService: DraftsService,
@@ -285,25 +283,16 @@ export default class ServiceProviderReferralsController {
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
     const { crn } = sentReferral.referral.serviceUser
-    const [
-      intervention,
-      sentBy,
-      expandedServiceUser,
-      conviction,
-      riskInformation,
-      riskSummary,
-      prisons,
-      deliusResponsibleOfficer,
-    ] = await Promise.all([
-      this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
-      this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
-      this.ramDeliusApiService.getCaseDetailsByCrn(crn),
-      this.communityApiService.getConvictionById(crn, sentReferral.referral.relevantSentenceId),
-      this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
-      this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
-      this.prisonRegisterService.getPrisons(),
-      this.ramDeliusApiService.getResponsibleOfficer(sentReferral.referral.serviceUser.crn),
-    ])
+    const [intervention, sentBy, caseConviction, riskInformation, riskSummary, prisons, deliusResponsibleOfficer] =
+      await Promise.all([
+        this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
+        this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
+        this.ramDeliusApiService.getConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId),
+        this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
+        this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
+        this.prisonRegisterService.getPrisons(),
+        this.ramDeliusApiService.getResponsibleOfficer(sentReferral.referral.serviceUser.crn),
+      ])
 
     const assignee =
       sentReferral.assignedTo === null
@@ -327,7 +316,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new ShowReferralPresenter(
       sentReferral,
       intervention,
-      conviction,
+      caseConviction.conviction,
       riskInformation,
       sentBy,
       prisons,
@@ -335,7 +324,7 @@ export default class ServiceProviderReferralsController {
       formError,
       'service-provider',
       true,
-      expandedServiceUser,
+      caseConviction.caseDetail,
       riskSummary,
       deliusResponsibleOfficer,
       false,
@@ -343,7 +332,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new ShowReferralView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, expandedServiceUser)
+    ControllerUtils.renderWithLayout(res, view, caseConviction.caseDetail)
   }
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {

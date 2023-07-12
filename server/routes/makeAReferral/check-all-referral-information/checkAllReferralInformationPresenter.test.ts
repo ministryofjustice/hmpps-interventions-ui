@@ -2,12 +2,9 @@ import CheckAllReferralInformationPresenter from './checkAllReferralInformationP
 import draftReferralFactory from '../../../../testutils/factories/draftReferral'
 import serviceCategoryFactory from '../../../../testutils/factories/serviceCategory'
 import interventionFactory from '../../../../testutils/factories/intervention'
-import deliusConvictionFactory from '../../../../testutils/factories/deliusConviction'
-import deliusOffenceFactory from '../../../../testutils/factories/deliusOffence'
-import deliusSentenceFactory from '../../../../testutils/factories/deliusSentence'
+import caseConvictionFactory from '../../../../testutils/factories/caseConviction'
 import prisonFactory from '../../../../testutils/factories/prison'
 import { ListStyle } from '../../../utils/summaryList'
-import expandedDeliusServiceUserFactory from '../../../../testutils/factories/expandedDeliusServiceUser'
 import { CurrentLocationType } from '../../../models/draftReferral'
 import PrisonRegisterService from '../../../services/prisonRegisterService'
 
@@ -30,23 +27,11 @@ describe(CheckAllReferralInformationPresenter, () => {
       disabilities: ['Autism spectrum condition', 'sciatica'],
     },
   })
-  const deliusServiceUser = expandedDeliusServiceUserFactory.build({
-    contactDetails: {
-      emailAddress: 'alex.river@example.com',
-      mobileNumber: '0123456789',
-      noFixedAbode: false,
-      mainAddress: {
-        buildingNumber: 'Flat 10',
-        streetName: 'Test Walk',
-        postcode: 'SW16 1AQ',
-        town: 'London',
-        district: 'City of London',
-        county: 'Greater London',
-      },
-    },
-  })
+
   const serviceCategories = serviceCategoryFactory.buildList(3)
-  const conviction = deliusConvictionFactory.build()
+  const caseConviction = caseConvictionFactory.build()
+  const { conviction } = caseConviction
+  const deliusServiceUser = caseConviction.caseDetail
   const prisonList = prisonFactory.prisonList()
   prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
@@ -77,7 +62,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           { key: 'Gender', lines: ['Male'] },
           {
             key: 'Address',
-            lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
+            lines: ['Flat 2 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
             listStyle: ListStyle.noMarkers,
           },
           {
@@ -633,18 +618,17 @@ describe(CheckAllReferralInformationPresenter, () => {
   })
 
   describe('sentenceInformationSummary', () => {
-    const assaultConviction = deliusConvictionFactory.build({
-      offences: [
-        deliusOffenceFactory.build({
-          mainOffence: true,
-          detail: {
-            mainCategoryDescription: 'Common and other types of assault',
-          },
-        }),
-      ],
-      sentence: deliusSentenceFactory.build({
-        expectedSentenceEndDate: '2025-09-15',
-      }),
+    const assaultConviction = caseConvictionFactory.build({
+      conviction: {
+        mainOffence: {
+          category: 'Common and other types of assault',
+          subCategory: 'Common assault and battery',
+        },
+        sentence: {
+          description: 'Absolute/Conditional Discharge',
+          expectedEndDate: '2025-09-15',
+        },
+      },
     })
 
     it('returns information about the conviction', () => {
@@ -658,8 +642,8 @@ describe(CheckAllReferralInformationPresenter, () => {
       const presenter = new CheckAllReferralInformationPresenter(
         referral,
         intervention,
-        assaultConviction,
-        deliusServiceUser,
+        assaultConviction.conviction,
+        assaultConviction.caseDetail,
         prisonList
       )
 
