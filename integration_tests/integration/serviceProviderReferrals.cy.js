@@ -1241,7 +1241,7 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Save and continue').click()
 
             cy.contains('Confirm session feedback')
-            cy.contains('Session Attendance')
+            cy.contains('Session attendance')
             cy.contains('Did Alex River come to the session?')
             cy.contains('Yes, they were on time')
             cy.contains('What did you do in the session?')
@@ -1509,7 +1509,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Save and continue').click()
 
       cy.contains('Confirm session feedback')
-      cy.contains('Session Attendance')
+      cy.contains('Session attendance')
       cy.contains('Did Alex River come to the session?')
       cy.contains('Yes, they were on time')
       cy.contains('What did you do in the session?')
@@ -1534,13 +1534,13 @@ describe('Service provider referrals dashboard', () => {
           expect(result).to.have.length(2)
           expect(result[0]).to.deep.equal({
             'Session details': 'Session 1',
-            'Date and time': '9:02am on 24 Mar 2021',
+            'Time and date': '9:02am on 24 Mar 2021',
             Status: 'completed',
             Action: 'View feedback form',
           })
           expect(result[1]).to.deep.include({
             'Session details': 'Session 2',
-            'Date and time': '10:02am on 31 Mar 2021',
+            'Time and date': '10:02am on 31 Mar 2021',
             Status: 'needs feedback',
           })
           expect(result[1]).to.contains(/^Reschedule session[\n|\t]*Give feedback$/)
@@ -1648,6 +1648,10 @@ describe('Service provider referrals dashboard', () => {
 
       cy.get('input[name="attended"][value="no"]').click()
 
+      cy.contains('Add how you tried to contact Alex River and anything you know about why they did not attend.').type(
+        'They attended'
+      )
+
       cy.stubRecordActionPlanAppointmentAttendance(actionPlan.id, 1, appointmentWithAttendanceRecorded)
 
       cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentWithAttendanceRecorded)
@@ -1676,13 +1680,13 @@ describe('Service provider referrals dashboard', () => {
           expect(result).to.have.length(2)
           expect(result[0]).to.deep.contains({
             'Session details': 'Session 1',
-            'Date and time': '9:02am on 24 Mar 2021',
+            'Time and date': '9:02am on 24 Mar 2021',
             Status: 'did not attend',
           })
           expect(result[0].Action).to.contains('View feedback form')
           expect(result[1]).to.deep.include({
             'Session details': 'Session 2',
-            'Date and time': '10:02am on 31 Mar 2021',
+            'Time and date': '10:02am on 31 Mar 2021',
             Status: 'needs feedback',
           })
           expect(result[1]).to.contain(/^Reschedule session[\n|\t]*Give feedback$/)
@@ -1783,14 +1787,14 @@ describe('Service provider referrals dashboard', () => {
           expect(result).to.have.length(5)
           expect(result[0]).to.deep.include({
             'Session details': 'Session 1',
-            'Date and time': '9:02am on 24 Mar 2021',
+            'Time and date': '9:02am on 24 Mar 2021',
             Status: 'needs feedback',
           })
           expect(result[0]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
           expect(result[1]).to.contains(/^Session 1 history/gi)
           expect(result[2]).to.deep.include({
             'Session details': 'Session 2',
-            'Date and time': '10:02am on 31 Aug 2021',
+            'Time and date': '10:02am on 31 Aug 2021',
             Status: 'needs feedback',
           })
           expect(result[2]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
@@ -1921,11 +1925,11 @@ describe('Service provider referrals dashboard', () => {
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
       cy.contains('Intervention cancelled').should('not.exist')
       cy.contains('View feedback form').click()
-      cy.contains('Session Attendance')
-      cy.contains('Session Details')
+      cy.contains('Session attendance')
+      cy.contains('Session details')
       cy.contains('Did Alex River come to the session?')
       cy.contains('Yes, they were on time')
-      cy.contains('Session Feedback')
+      cy.contains('Session feedback')
       cy.contains('What did you do in the session?')
       cy.contains('Discussed accommodation')
       cy.contains('How did Alex River respond to the session?')
@@ -2252,9 +2256,9 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Save and continue').click()
 
             cy.contains('Confirm session feedback')
-            cy.contains('Session Attendance')
+            cy.contains('Session attendance')
             cy.contains('Yes, they were on time')
-            cy.contains('Session Feedback')
+            cy.contains('Session feedback')
             cy.contains('What did you do in the session?')
             cy.contains('Discussed his mental health')
             cy.contains('How did Alex River respond to the session?')
@@ -2394,7 +2398,7 @@ describe('Service provider referrals dashboard', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date and time': `9:02am on ${tomorrow.format('D MMM YYYY')}`,
+                'Time and date': `9:02am on ${tomorrow.format('D MMM YYYY')}`,
                 Status: 'scheduled',
                 Action: 'View details or reschedule',
               },
@@ -2649,7 +2653,7 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
 
-          cy.contains('Session Details')
+          cy.contains('Session details')
           cy.contains('The video call was with caseworker Case Worker at 9:02am on 24 March 2021.')
           cy.contains('Did Alex River come to the session?')
           cy.contains('No')
@@ -2746,7 +2750,7 @@ describe('Service provider referrals dashboard', () => {
             .getTable()
             .should('deep.equal', [
               {
-                'Date and time': '9:02am on 24 Mar 2022',
+                'Time and date': '9:02am on 24 Mar 2022',
                 Status: 'did not attend',
                 Action: 'RescheduleView feedback',
               },
@@ -2894,12 +2898,12 @@ describe('Service provider referrals dashboard', () => {
             'equal',
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
-          cy.contains('Session Attendance')
-          cy.contains('Session Details')
+          cy.contains('Session attendance')
+          cy.contains('Session details')
           cy.contains('The phone call was with caseworker Case Worker at 9:02am on 24 March 2021.')
           cy.contains('Did Alex River come to the session?')
           cy.contains('Yes, they were on time')
-          cy.contains('Session Feedback')
+          cy.contains('Session feedback')
           cy.contains('What did you do in the session?')
           cy.contains('Discussed his mental health')
           cy.contains('How did Alex River respond to the session?')

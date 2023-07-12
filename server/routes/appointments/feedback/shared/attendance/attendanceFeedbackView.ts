@@ -57,6 +57,7 @@ export default class AttendanceFeedbackView {
         isPageHeading: false,
       },
       value: this.presenter.fields.attendanceFailureInformation.value,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.attendanceFailureInformation.errorMessage),
     }
   }
 

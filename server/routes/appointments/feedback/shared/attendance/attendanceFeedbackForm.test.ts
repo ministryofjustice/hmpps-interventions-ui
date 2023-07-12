@@ -3,20 +3,31 @@ import AttendanceFeedbackForm from './attendanceFeedbackForm'
 
 describe(AttendanceFeedbackForm, () => {
   describe('data', () => {
-    describe('with valid data', () => {
-      const validAttendedValues = ['yes', 'late', 'no']
+    describe('with valid data and attendance', () => {
+      const validAttendedValues = ['yes', 'late']
 
       validAttendedValues.forEach(validAttendedValue => {
         it('returns a paramsForUpdate with the attended property and optional further information', async () => {
           const request = TestUtils.createRequest({
             attended: validAttendedValue,
-            'additional-attendance-information': 'Alex missed the bus',
           })
           const data = await new AttendanceFeedbackForm(request).data()
 
           expect(data.paramsForUpdate?.attended).toEqual(validAttendedValue)
-          expect(data.paramsForUpdate?.additionalAttendanceInformation).toEqual('Alex missed the bus')
         })
+      })
+    })
+
+    describe('with valid data and no attendance', () => {
+      it('returns a paramsForUpdate with the attended property and attendance failur information', async () => {
+        const request = TestUtils.createRequest({
+          attended: 'no',
+          'attendance-failure-information': 'did not attend',
+        })
+        const data = await new AttendanceFeedbackForm(request).data()
+
+        expect(data.paramsForUpdate?.attended).toEqual('no')
+        expect(data.paramsForUpdate?.attendanceFailureInformation).toEqual('did not attend')
       })
     })
 

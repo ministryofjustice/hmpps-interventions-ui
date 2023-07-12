@@ -69,9 +69,9 @@ export default class SessionFeedbackView {
       name: 'notify-probation-practitioner',
       fieldset: {
         legend: {
-          html: `<h2 class=govuk-fieldset__legend--m>${ViewUtils.escape(
+          html: `<label class=govuk-fieldset__legend--m> ${ViewUtils.escape(
             this.presenter.questionnaire.notifyProbationPractitionerQuestion.text
-          )}</h2><p class="govuk-inset-text">${ViewUtils.escape(
+          )}</label><p class="govuk-inset-text">${ViewUtils.escape(
             this.presenter.questionnaire.notifyProbationPractitionerQuestion.explanation
           )}</p>`,
           isPageHeading: false,

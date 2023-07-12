@@ -106,34 +106,6 @@ describe(AttendanceFeedbackPresenter, () => {
   })
 
   describe('fields.additionalAttendanceInformationValue', () => {
-    describe('when there is no user input data', () => {
-      describe('when the appointment already has additionalAttendanceInformation set', () => {
-        it('uses that value as the value attribute', () => {
-          const appointment = initialAssessmentAppointmentFactory.build({
-            appointmentFeedback: {
-              attendanceFeedback: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
-            },
-          })
-          const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
-
-          expect(presenter.fields.additionalAttendanceInformation.value).toEqual('Alex missed the bus')
-        })
-      })
-
-      describe('when the appointment has no value for additionalAttendanceInformation', () => {
-        it('uses sets the value to an empty string', () => {
-          const appointment = initialAssessmentAppointmentFactory.build({
-            appointmentFeedback: {
-              attendanceFeedback: { attended: 'late' },
-            },
-          })
-          const presenter = new ExtendedAttendanceFeedbackPresenter(appointment)
-
-          expect(presenter.fields.additionalAttendanceInformation.value).toEqual('')
-        })
-      })
-    })
-
     describe('when there is user input data', () => {
       it('uses the user input data as the value attribute', () => {
         const appointment = initialAssessmentAppointmentFactory.build({
@@ -147,7 +119,6 @@ describe(AttendanceFeedbackPresenter, () => {
         })
 
         expect(presenter.fields.attended.value).toEqual('no')
-        expect(presenter.fields.additionalAttendanceInformation.value).toEqual("Alex's car broke down en route")
       })
     })
   })

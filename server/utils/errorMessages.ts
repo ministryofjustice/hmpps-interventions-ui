@@ -179,6 +179,9 @@ export default {
   attendedAppointment: {
     empty: 'Select whether they attended or not',
   },
+  attendanceFailureInformation: {
+    empty: 'Enter how you tried to contact them and anything you know about why they did not attend',
+  },
   sessionSummary: {
     empty: 'Enter what you did in the session',
   },

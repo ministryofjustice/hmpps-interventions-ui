@@ -70,7 +70,7 @@ describe(AppointmentSummary, () => {
         const formattedTime = DateUtils.formattedTime(time)
 
         expect(summaryComponent.sessionDetails).toEqual({
-          question: `Session Details`,
+          question: `Session details`,
           answer: `The ${expectedDisplayValue.toLowerCase()} was with caseworker firstName lastName at ${formattedTime} on ${formattedDay}.`,
         })
       })
