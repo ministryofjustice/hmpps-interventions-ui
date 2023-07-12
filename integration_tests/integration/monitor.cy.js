@@ -443,7 +443,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.contains('View feedback form').click()
 
       cy.contains('Did Alex River come to the session?')
-      cy.contains('Session Feedback')
+      cy.contains('Session feedback')
       cy.contains('What did you do in the session?')
       cy.contains('stub session summary')
       cy.contains('How did Alex River respond to the session?')
