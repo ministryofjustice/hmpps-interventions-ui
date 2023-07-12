@@ -17,17 +17,19 @@ import caseConvictionFactory from '../../testutils/factories/caseConviction'
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build()
   const caseConvictions = caseConvictionsFactory.build({
-    conviction: {
-      id: 123456789,
-      mainOffence: {
-        category: 'Burglary',
-        subCategory: 'Theft act, 1968',
+    convictions: [
+      {
+        id: 123456789,
+        mainOffence: {
+          category: 'Burglary',
+          subCategory: 'Theft act, 1968',
+        },
+        sentence: {
+          description: 'Absolute/Conditional Discharge',
+          expectedEndDate: '2025-11-15',
+        },
       },
-      sentence: {
-        description: 'Absolute/Conditional Discharge',
-        expectedEndDate: '2025-11-15',
-      },
-    },
+    ],
   })
   const caseConviction = caseConvictionFactory.build({
     conviction: caseConvictions.convictions[0],
@@ -138,7 +140,7 @@ describe('Referral form', () => {
       cy.stubPatchDraftReferral(draftReferral.id, draftReferral)
       cy.stubSendDraftReferral(draftReferral.id, sentReferral)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetCaseDetailsByCrn(deliusServiceUser.crn)
+      cy.stubGetCaseDetailsByCrn(deliusServiceUser.crn, deliusServiceUser)
       cy.stubGetConvictionsByCrn(caseConvictions.caseDetail.crn, caseConvictions)
       cy.stubGetConvictionByCrnAndId(caseConviction.caseDetail.crn, caseConviction.conviction.id, caseConviction)
       cy.stubGetIntervention(draftReferral.interventionId, intervention)
@@ -181,7 +183,7 @@ describe('Referral form', () => {
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
       cy.get('h1').contains("Review Alex River's information")
-      // cy.contains('X123456')
+      cy.contains('X123456')
       cy.contains('River')
       cy.contains('1 January 1980')
       cy.contains('Flat 2 Test Walk')
@@ -633,7 +635,7 @@ describe('Referral form', () => {
       cy.stubPatchDraftReferral(draftReferral.id, draftReferral)
       cy.stubSendDraftReferral(draftReferral.id, sentReferral)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetCaseDetailsByCrn(deliusServiceUser.crn)
+      cy.stubGetCaseDetailsByCrn(deliusServiceUser.crn, deliusServiceUser)
       cy.stubGetConvictionsByCrn(caseConvictions.caseDetail.crn, caseConvictions)
       cy.stubGetConvictionByCrnAndId(caseConviction.caseDetail.crn, caseConviction.conviction.id, caseConviction)
       cy.stubGetIntervention(draftReferral.interventionId, intervention)

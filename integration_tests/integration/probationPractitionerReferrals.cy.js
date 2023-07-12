@@ -346,7 +346,7 @@ describe('Probation practitioner referrals dashboard', () => {
       referral: {
         interventionId: personalWellbeingIntervention.id,
         serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-        relevantSentenceId: conviction.convictionId,
+        relevantSentenceId: conviction.conviction.id,
         serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
         complexityLevels: [
           {
@@ -386,7 +386,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
-    cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+    cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetApprovedActionPlanSummaries(referral.id, [])
@@ -572,7 +572,7 @@ describe('Probation practitioner referrals dashboard', () => {
       referral: {
         interventionId: personalWellbeingIntervention.id,
         serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-        relevantSentenceId: conviction.convictionId,
+        relevantSentenceId: conviction.conviction.id,
         serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
         complexityLevels: [
           {
@@ -624,7 +624,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
-    cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+    cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetApprovedActionPlanSummaries(referral.id, [])
@@ -775,7 +775,7 @@ describe('Probation practitioner referrals dashboard', () => {
             firstName: 'Jenny',
             surname: 'Jones',
           },
-          dateOfBirth: new Date(Date.parse('1980-01-01')),
+          dateOfBirth: '1980-01-01',
           contactDetails: {
             emailAddress: 'jenny.jones@example.com',
             mobileNumber: '07123456789',
@@ -789,7 +789,7 @@ describe('Probation practitioner referrals dashboard', () => {
         referral: {
           interventionId: personalWellbeingIntervention.id,
           serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-          relevantSentenceId: conviction.convictionId,
+          relevantSentenceId: conviction.conviction.id,
           serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
           complexityLevels: [
             {
@@ -835,7 +835,7 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
       cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
-      cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+      cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubUpdateDesiredOutcomesForServiceCategory(referral.id, accommodationServiceCategory.id, referral)
@@ -873,7 +873,7 @@ describe('Probation practitioner referrals dashboard', () => {
             firstName: 'Jenny',
             surname: 'Jones',
           },
-          dateOfBirth: new Date(Date.parse('1980-01-01')),
+          dateOfBirth: '1980-01-01',
           contactDetails: {
             emailAddress: 'jenny.jones@example.com',
             mobileNumber: '07123456789',
@@ -887,7 +887,7 @@ describe('Probation practitioner referrals dashboard', () => {
         referral: {
           interventionId: personalWellbeingIntervention.id,
           serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-          relevantSentenceId: conviction.convictionId,
+          relevantSentenceId: conviction.conviction.id,
           serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
           complexityLevels: [
             {
@@ -933,7 +933,7 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
       cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
-      cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+      cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubUpdateDesiredOutcomesForServiceCategory(referral.id, accommodationServiceCategory.id, referral)
@@ -998,7 +998,7 @@ describe('Probation practitioner referrals dashboard', () => {
           firstName: 'Jenny',
           surname: 'Jones',
         },
-        dateOfBirth: new Date(Date.parse('1980-01-01')),
+        dateOfBirth: '1980-01-01',
         contactDetails: {
           emailAddress: 'jenny.jones@example.com',
           mobileNumber: '07123456789',
@@ -1012,7 +1012,7 @@ describe('Probation practitioner referrals dashboard', () => {
       referral: {
         interventionId: personalWellbeingIntervention.id,
         serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-        relevantSentenceId: conviction.convictionId,
+        relevantSentenceId: conviction.conviction.id,
         serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
         complexityLevels: [
           {
@@ -1116,7 +1116,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
         cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
         cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
-        cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+        cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
         cy.stubGetUserByUsername(deliusUser.username, deliusUser)
         cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
 

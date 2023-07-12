@@ -48,7 +48,6 @@ describe('Service provider referrals dashboard', () => {
           forename: 'Jenny',
           surname: 'Jones',
         },
-        dateOfBirth: new Date(Date.parse('1980-01-01')),
         contactDetails: {
           emailAddress: 'jenny.jones@example.com',
           mobileNumber: '07123456789',
@@ -89,7 +88,7 @@ describe('Service provider referrals dashboard', () => {
         referenceNumber: 'ABCABCA2',
         referral: {
           interventionId: personalWellbeingIntervention.id,
-          relevantSentenceId: conviction.convictionId,
+          relevantSentenceId: conviction.conviction.id,
           serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
           serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
           complexityLevels: [
@@ -148,7 +147,7 @@ describe('Service provider referrals dashboard', () => {
     sentReferrals.forEach(referral => cy.stubGetSentReferral(referral.id, referral))
     cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferralsSummaries).build())
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
-    cy.stubGetConvictionByCrnAndId(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
+    cy.stubGetConvictionByCrnAndId(referralToSelect.referral.serviceUser.crn, conviction.conviction.id, conviction)
     cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetResponsibleOfficer(referralToSelect.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
 
@@ -315,7 +314,7 @@ describe('Service provider referrals dashboard', () => {
         referral: {
           interventionId: intervention.id,
           serviceCategoryIds: [intervention.serviceCategories[0].id],
-          relevantSentenceId: conviction.convictionId,
+          relevantSentenceId: conviction.conviction.id,
         },
       }
 
@@ -339,7 +338,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
       cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
       cy.stubAssignSentReferral(referral.id, referral)
-      cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+      cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
@@ -403,7 +402,7 @@ describe('Service provider referrals dashboard', () => {
         referral: {
           interventionId: intervention.id,
           serviceCategoryIds: [intervention.serviceCategories[0].id],
-          relevantSentenceId: conviction.convictionId,
+          relevantSentenceId: conviction.conviction.id,
         },
       }
 
@@ -435,7 +434,7 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetAuthUserByEmailAddress([currentAssignee])
       cy.stubGetAuthUserByUsername(currentAssignee.username, currentAssignee)
       cy.stubAssignSentReferral(referral.id, referral)
-      cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+      cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
 
@@ -2980,7 +2979,7 @@ describe('Service provider referrals dashboard', () => {
         referenceNumber: 'ABCABCA2',
         referral: {
           interventionId: personalWellbeingIntervention.id,
-          relevantSentenceId: conviction.convictionId,
+          relevantSentenceId: conviction.conviction.id,
           serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
           serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
           complexityLevels: [
@@ -3033,7 +3032,6 @@ describe('Service provider referrals dashboard', () => {
         forename: 'Jenny',
         surname: 'Jones',
       },
-      dateOfBirth: new Date(Date.parse('1980-01-01')),
       contactDetails: {
         emailAddress: 'jenny.jones@example.com',
         mobileNumber: '07123456789',
@@ -3097,7 +3095,7 @@ describe('Service provider referrals dashboard', () => {
         cy.stubGetAuthUserByEmailAddress([hmppsAuthUser])
         cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
         cy.stubAssignSentReferral(referralToSelect.id, referralToSelect)
-        cy.stubGetConvictionByCrnAndId(referralToSelect.referral.serviceUser.crn, conviction.convictionId, conviction)
+        cy.stubGetConvictionByCrnAndId(referralToSelect.referral.serviceUser.crn, conviction.conviction.id, conviction)
         cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
         cy.stubGetResponsibleOfficer(referralToSelect.referral.serviceUser.crn, [responsibleOfficer])
         cy.stubGetSupplierAssessment(referralToSelect.id, supplierAssessmentFactory.build())
