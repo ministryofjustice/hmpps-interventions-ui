@@ -1,6 +1,5 @@
 import type { RequestHandler, Router } from 'express'
 
-import e from 'express'
 import asyncMiddleware from '../middleware/asyncMiddleware'
 import InterventionsService from '../services/interventionsService'
 import HmppsAuthService from '../services/hmppsAuthService'
@@ -34,7 +33,7 @@ export const post = (router: Router, path: string, handler: RequestHandler): Rou
   router.post(path, asyncMiddleware(handler))
 
 export default function routes(
-  router: e.Router,
+  router: Router,
   services: {
     interventionsService: InterventionsService
     ramDeliusApiService: MockRamDeliusApiService | RamDeliusApiService
@@ -45,7 +44,7 @@ export default function routes(
     userDataService: UserDataService
     hmppsAuthService: HmppsAuthService
   }
-): e.Router {
+): Router {
   const staticContentController = new StaticContentController()
   const commonController = new CommonController()
 
