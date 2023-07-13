@@ -185,11 +185,11 @@ describe(ExpectedReleaseDateForm, () => {
       })
     })
 
-    describe('release unknow reason text validation does not kicks off when expected date is known', () => {
+    describe('release unknown reason text validation does not kicks off when expected date is known', () => {
       it('returns a paramsForUpdate with the expected release date', async () => {
         const request = TestUtils.createRequest({
           'expected-release-date': 'yes',
-          'release-date-year': '2023',
+          'release-date-year': '2025',
           'release-date-month': '7',
           'release-date-day': '12',
           'release-date-unknown-reason': '',
