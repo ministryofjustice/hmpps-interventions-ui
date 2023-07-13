@@ -47,17 +47,12 @@ export default abstract class AttendanceFeedbackPresenter {
       ),
       errorMessage: PresenterUtils.errorMessage(this.error, 'attended'),
     },
-    additionalAttendanceInformation: {
-      value: new PresenterUtils(this.userInputData).stringValue(
-        this.appointment.appointmentFeedback?.attendanceFeedback?.additionalAttendanceInformation ?? null,
-        'additional-attendance-information'
-      ),
-    },
     attendanceFailureInformation: {
       value: new PresenterUtils(this.userInputData).stringValue(
         this.appointment.appointmentFeedback?.attendanceFeedback?.attendanceFailureInformation ?? null,
         'attendance-failure-information'
       ),
+      errorMessage: PresenterUtils.errorMessage(this.error, 'attendance-failure-information'),
     },
   }
 
