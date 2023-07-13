@@ -2,7 +2,6 @@ import SentReferral from '../../models/sentReferral'
 import DeliusUser from '../../models/delius/deliusUser'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
-import config from '../../config'
 import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../makeAReferral/service-user-details/serviceUserDetailsPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
@@ -409,31 +408,27 @@ export default class ShowReferralPresenter {
 
   get serviceUserLocationDetails(): SummaryListItem[] {
     const { personCurrentLocationType } = this.sentReferral.referral
-
-    if (config.featureFlags.custodyLocationEnabled) {
-      if (personCurrentLocationType === 'CUSTODY') {
-        const currentPrisonName = this.getPrisonName(this.sentReferral.referral.personCustodyPrisonId)
-        const expectedReleaseInfo: string =
-          this.sentReferral.referral.expectedReleaseDate !== ''
-            ? this.sentReferral.referral.expectedReleaseDate!
-            : this.sentReferral.referral.expectedReleaseDateMissingReason!
-        return [
-          {
-            key: 'Location at time of referral',
-            lines: [personCurrentLocationType ? utils.convertToProperCase(personCurrentLocationType) : ''],
-          },
-          {
-            key: 'Current establishment',
-            lines: [this.sentReferral.referral.personCustodyPrisonId ? currentPrisonName : ''],
-          },
-          {
-            key: 'Expected release date',
-            lines: [expectedReleaseInfo],
-          },
-        ]
-      }
+    if (personCurrentLocationType === 'CUSTODY') {
+      const currentPrisonName = this.getPrisonName(this.sentReferral.referral.personCustodyPrisonId)
+      const expectedReleaseInfo: string =
+        this.sentReferral.referral.expectedReleaseDate !== ''
+          ? this.sentReferral.referral.expectedReleaseDate!
+          : this.sentReferral.referral.expectedReleaseDateMissingReason!
+      return [
+        {
+          key: 'Location at time of referral',
+          lines: [personCurrentLocationType ? utils.convertToProperCase(personCurrentLocationType) : ''],
+        },
+        {
+          key: 'Current establishment',
+          lines: [this.sentReferral.referral.personCustodyPrisonId ? currentPrisonName : ''],
+        },
+        {
+          key: 'Expected release date',
+          lines: [expectedReleaseInfo],
+        },
+      ]
     }
-
     return [
       {
         key: 'Location at time of referral',
