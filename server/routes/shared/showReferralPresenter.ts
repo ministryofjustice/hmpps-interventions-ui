@@ -134,24 +134,42 @@ export default class ShowReferralPresenter {
     return this.referralAssigned ? `${this.assignee!.email}` : null
   }
 
-  readonly probationPractitionerDetailsForCommunity: SummaryListItem[] = [
-    {
-      key: 'Name',
-      lines: [this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName || 'Not found'],
-    },
-    { key: 'Email address', lines: [this.deriveEmailAddress] },
-    {
-      key:
-        this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-          ? 'Probation Office'
-          : 'PDU (Probation Delivery Unit)',
-      lines: [
-        this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-          ? this.sentReferral.referral.ppProbationOffice
-          : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '',
-      ],
-    },
-  ]
+  get probationPractitionerDetailsForCommunity(): SummaryListItem[] {
+    if (this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName) {
+      return [
+        {
+          key: 'Name',
+          lines: [this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName || 'Not found'],
+        },
+        { key: 'Email address', lines: [this.deriveEmailAddress] },
+        {
+          key:
+            this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
+              ? 'Probation Office'
+              : 'PDU (Probation Delivery Unit)',
+          lines: [
+            this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
+              ? this.sentReferral.referral.ppProbationOffice
+              : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '',
+          ],
+        },
+      ]
+    }
+    const officer = this.deliusResponsibleOfficer?.communityManager.responsibleOfficer
+      ? this.deliusResponsibleOfficer?.communityManager
+      : this.deliusResponsibleOfficer?.prisonManager
+    return [
+      {
+        key: 'Name',
+        lines: [`${officer?.name?.forename || ''} ${officer?.name?.surname || ''}`.trim() || 'Not found'],
+      },
+      { key: 'Email address', lines: [officer?.email || 'Not found'] },
+      {
+        key: 'PDU (Probation Delivery Unit)',
+        lines: [`${officer?.pdu.code || ''} ${officer?.pdu.description || ''}`.trim() || 'Not found'],
+      },
+    ]
+  }
 
   readonly probationPractitionerDetailsForCustody: SummaryListItem[] = [
     { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`] },

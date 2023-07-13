@@ -256,6 +256,45 @@ describe(ShowReferralPresenter, () => {
         { key: 'Probation Office', lines: ['London'] },
       ])
     })
+    it('returns a summary list of probation practitioner details from ram delius api', () => {
+      const updatedReferralParams = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.community,
+          ppName: null,
+          ppEmailAddress: null,
+          ndeliusPPName: null,
+          ndeliusPPEmailAddress: null,
+          ndeliusPDU: null,
+          ppProbationOffice: null,
+          ppPdu: null,
+        },
+      }
+      const sentReferral = sentReferralFactory.build(updatedReferralParams)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonList,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer
+      )
+
+      expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
+        { key: 'Name', lines: ['Bob Alice'] },
+        { key: 'Email address', lines: ['bobalice@example.com'] },
+        { key: 'PDU (Probation Delivery Unit)', lines: ['97 Hackney and City'] },
+      ])
+    })
   })
 
   describe(`referral's location`, () => {
