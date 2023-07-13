@@ -30,18 +30,18 @@
 
 {% if feedbackAnswersPresenter.sessionSummaryAnswers %}
   <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.sessionSummaryAnswers.question }}</h3>
-  <p>{{ feedbackAnswersPresenter.sessionSummaryAnswers.answer }}</p>
+  <p>{{ feedbackAnswersPresenter.sessionSummaryAnswers.answer | escape | nl2br }}</p>
 {% endif %}
 
 {% if feedbackAnswersPresenter.sessionResponseAnswers %}
   <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.sessionResponseAnswers.question }}</h3>
-  <p>{{ feedbackAnswersPresenter.sessionResponseAnswers.answer }}</p>
+  <p>{{ feedbackAnswersPresenter.sessionResponseAnswers.answer | escape | nl2br }}</p>
 {% endif %}
 
 {% if feedbackAnswersPresenter.notifyProbationPractitionerAnswers %}
     {% if feedbackAnswersPresenter.sessionConcernsAnswers %}
         <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.sessionConcernsAnswers.question }}</h3>
-        <p>{{ feedbackAnswersPresenter.sessionConcernsAnswers.answer }}</p>
+        <p>{{ feedbackAnswersPresenter.sessionConcernsAnswers.answer | escape | nl2br }}</p>
     {% endif %}
 {% endif %}
 
