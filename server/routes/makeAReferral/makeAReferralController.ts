@@ -7,6 +7,8 @@ import ReferralFormPresenter from './form/referralFormPresenter'
 import ReferralStartPresenter from './start/referralStartPresenter'
 import CompletionDeadlinePresenter from './completion-deadline/completionDeadlinePresenter'
 import ReferralFormView from './form/referralFormView'
+import ReferralTypePresenter from './referral-type-form/referralTypePresenter'
+import ReferralTypeFormView from './referral-type-form/referralTypeFormView'
 import CompletionDeadlineView from './completion-deadline/completionDeadlineView'
 import CompletionDeadlineForm from './completion-deadline/completionDeadlineForm'
 import ComplexityLevelView from './service-category/complexity-level/complexityLevelView'
@@ -29,6 +31,7 @@ import ConfirmationView from './confirmation/confirmationView'
 import ConfirmationPresenter from './confirmation/confirmationPresenter'
 import CommunityApiService, { CommunityApiServiceError } from '../../services/communityApiService'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
+import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
 import errorMessages from '../../utils/errorMessages'
 import logger from '../../../log'
 import ServiceUserDetailsPresenter from './service-user-details/serviceUserDetailsPresenter'
@@ -189,9 +192,10 @@ export default class MakeAReferralController {
     const referralId = req.params.id
     const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
 
-    const [intervention, serviceUser] = await Promise.all([
+    const [intervention, serviceUser, deliusResponsibleOfficer] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, referral.interventionId),
       this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn),
     ])
     if (
       intervention.serviceCategories.length === 1 &&
@@ -201,10 +205,17 @@ export default class MakeAReferralController {
     }
 
     const draftOasysRiskInformation = await this.getDraftOasysRiskInformation(accessToken, referralId)
-    const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
-    const view = new ReferralFormView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    if (this.userHasComAllocated(deliusResponsibleOfficer)) {
+      const presenter = new ReferralTypePresenter(referral, null, req.body)
+      const view = new ReferralTypeFormView(presenter)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      // res.redirect(303, `/referrals/${referral.id}/submitReferralType`)
+    } else {
+      const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
+      const view = new ReferralFormView(presenter)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
   }
 
   async viewRelevantSentence(req: Request, res: Response): Promise<void> {
@@ -596,6 +607,40 @@ export default class MakeAReferralController {
     const view = new CurrentLocationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async submitReferralType(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const form = await CurrentLocationForm.createForm(req, referral)
+
+    let error: FormValidationError | null = null
+
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/next-page`)
+    } else {
+      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+
+      const presenter = new ReferralTypePresenter(referral, error, req.body)
+      const view = new ReferralTypeFormView(presenter)
+
+      res.status(400)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
   }
 
   async submitCurrentLocation(req: Request, res: Response): Promise<void> {
@@ -1019,5 +1064,15 @@ export default class MakeAReferralController {
       }
       throw e
     }
+  }
+
+  userHasComAllocated(deliusResponsibleOfficer: DeliusResponsibleOfficer | null): boolean {
+    if (
+      deliusResponsibleOfficer !== null &&
+      (deliusResponsibleOfficer?.communityManager || deliusResponsibleOfficer?.prisonManager)
+    ) {
+      return true
+    }
+    return false
   }
 }

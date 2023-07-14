@@ -57,7 +57,7 @@
   }) }}
 
   {% block primaryNav %}{% endblock %}
-  {% if serviceUserBannerPresenter %}
+  {% if serviceUserBannerPresenter and not suppressServiceUserBanner %}
     {% include "./serviceUserBanner.njk" %}
   {% endif %}
 {% endblock %}
