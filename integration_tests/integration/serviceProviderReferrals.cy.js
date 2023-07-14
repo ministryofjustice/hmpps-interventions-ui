@@ -2882,6 +2882,7 @@ describe('Service provider referrals dashboard', () => {
                 sessionResponse: "Wasn't engaged",
                 sessionConcerns: 'Alex was acting very suspicious.',
                 notifyProbationPractitioner: true,
+                submittedBy: hmppsAuthUserFactory.build(),
               },
             },
           })
