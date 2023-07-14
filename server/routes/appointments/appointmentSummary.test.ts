@@ -61,6 +61,12 @@ describe(AppointmentSummary, () => {
             firstName: 'firstName',
             lastName: 'lastName',
             email: 'email',
+          }),
+          null,
+          hmppsAuthUserFactory.build({
+            firstName: 'firstName',
+            lastName: 'lastName',
+            email: 'email',
           })
         )
 

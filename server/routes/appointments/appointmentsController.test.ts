@@ -1125,6 +1125,7 @@ describe('Adding supplier assessment feedback', () => {
             notifyProbationPractitioner: false,
           },
           submitted: false,
+          submittedBy: hmppsAuthUserFactory.build(),
         },
       })
       const supplierAssessment = supplierAssessmentFactory.build({
@@ -2271,6 +2272,7 @@ describe('Adding post delivery session feedback', () => {
                 notifyProbationPractitioner: false,
               },
               submitted: true,
+              submittedBy: hmppsAuthUserFactory.build(),
             },
           })
 
@@ -2335,6 +2337,7 @@ describe('Adding post delivery session feedback', () => {
                 notifyProbationPractitioner: false,
               },
               submitted: true,
+              submittedBy: hmppsAuthUserFactory.build(),
             },
           })
 

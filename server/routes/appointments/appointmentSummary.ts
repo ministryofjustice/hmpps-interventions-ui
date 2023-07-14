@@ -109,7 +109,7 @@ export default class AppointmentSummary {
   get sessionDetails(): { question: string; answer: string } {
     const date = DateUtils.formattedDate(this.appointmentDecorator.britishDay!)
     const time = DateUtils.formattedTime(this.appointmentDecorator.britishTime!)
-    const caseworkerName = this.assignedCaseworker ? this.caseworkerName() : ''
+    const caseworkerName = this.feedbackSubmittedBy ? this.caseworkerName() : ''
     const deliveryMethod = this.appointment.appointmentDeliveryType
       ? this.deliveryMethod(this.appointment.appointmentDeliveryType).toLowerCase()
       : ''
@@ -121,8 +121,10 @@ export default class AppointmentSummary {
   }
 
   private caseworkerName(): string {
-    return typeof this.assignedCaseworker === 'string'
-      ? this.assignedCaseworker
-      : `${(<AuthUserDetails>this.assignedCaseworker).firstName} ${(<AuthUserDetails>this.assignedCaseworker).lastName}`
+    return typeof this.feedbackSubmittedBy === 'string'
+      ? this.feedbackSubmittedBy
+      : `${(<AuthUserDetails>this.feedbackSubmittedBy).firstName} ${
+          (<AuthUserDetails>this.feedbackSubmittedBy).lastName
+        }`
   }
 }
