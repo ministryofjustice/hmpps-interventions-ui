@@ -2,10 +2,12 @@
     <h1 class="govuk-heading-m">Session attendance</h1>
 {% endif %}
 
+{#
 {% if feedbackAnswersPresenter.attendedAnswers %}
   <h3 class="govuk-heading-s">{{ presenter.appointmentSummary.sessionDetails.question }}</h3>
   <p>{{ presenter.appointmentSummary.sessionDetails.answer | escape | nl2br }}</p>
 {% endif %}
+#}
 
 {% if feedbackAnswersPresenter.attendedAnswers %}
   <h3 class="govuk-heading-s">{{ feedbackAnswersPresenter.attendedAnswers.question }}</h3>

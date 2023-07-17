@@ -6,5 +6,7 @@
 {% set pageSubTitle = "View" %}
 
 {% block formSection %}
+  {{ govukSummaryList(summaryListArgs) }}
+  <br>
   {% include "../partials/postSessionFeedbackResponses.njk" %}
 {% endblock %}
