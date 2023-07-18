@@ -91,6 +91,22 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   get(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.startReferral(req, res))
   post(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.createReferral(req, res))
   get(router, '/referrals/:id/form', (req, res) => makeAReferralController.viewReferralForm(req, res))
+  get(router, '/referrals/:id/referral-type-form', (req, res) => makeAReferralController.viewReferralTypeForm(req, res))
+  post(router, '/referrals/:id/referral-type-form', (req, res) =>
+    makeAReferralController.submitReferralTypeForm(req, res)
+  )
+  get(router, '/referrals/:id/prison-release-form', (req, res) =>
+    makeAReferralController.viewPrisonReleaseForm(req, res)
+  )
+  post(router, '/referrals/:id/prison-release-form', (req, res) =>
+    makeAReferralController.submitPrisonReleaseForm(req, res)
+  )
+  get(router, '/referrals/:id/confirm-main-point-of-contact', (req, res) =>
+    makeAReferralController.confirmMainPointOfContactDetails(req, res)
+  )
+  post(router, '/referrals/:id/confirm-main-point-of-contact', (req, res) =>
+    makeAReferralController.updateMainPointOfContactDetails(req, res)
+  )
   get(router, '/referrals/:id/service-user-details', (req, res) =>
     makeAReferralController.viewServiceUserDetails(req, res)
   )

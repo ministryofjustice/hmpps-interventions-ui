@@ -11,6 +11,7 @@ describe('RiskInformationPresenter', () => {
       const presenter = new RiskInformationPresenter(referral)
 
       expect(presenter.text).toEqual({
+        label: 'Geoffrey River (CRN: X123456)',
         title: 'Geoffrey’s risk information',
       })
       expect(presenter.additionalRiskInformation).toEqual({

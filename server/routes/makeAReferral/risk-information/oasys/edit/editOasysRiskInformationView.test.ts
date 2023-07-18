@@ -21,7 +21,12 @@ describe('EditOasysRiskInformationView', () => {
         },
       })
       it('should show OAsys version for each textbox field when draft does not exist', () => {
-        const editOasysRiskInformationPresenter = new EditOasysRiskInformationPresenter(riskSummary, null)
+        const editOasysRiskInformationPresenter = new EditOasysRiskInformationPresenter(
+          riskSummary,
+          null,
+          null,
+          'label'
+        )
         const fields = new EditOasysRiskInformationView(editOasysRiskInformationPresenter).renderArgs[1]
         expect((fields.whoIsAtRiskTextareaArgs as TextareaArgs).value).toEqual('OAsysWhoIsAtRisk')
         expect((fields.natureOfRiskTextareaArgs as TextareaArgs).value).toEqual('OAsysNatureOfRisk')
@@ -45,7 +50,9 @@ describe('EditOasysRiskInformationView', () => {
         }
         const editOasysRiskInformationPresenter = new EditOasysRiskInformationPresenter(
           riskSummary,
-          draftOasysRiskInformation
+          draftOasysRiskInformation,
+          null,
+          'label'
         )
         const fields = new EditOasysRiskInformationView(editOasysRiskInformationPresenter).renderArgs[1]
         expect((fields.whoIsAtRiskTextareaArgs as TextareaArgs).value).toEqual('draftWhoIsAtRisk')

@@ -1,0 +1,59 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Make a referral" %}
+{% set pageSubTitle = "Confirm main point of contact details" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukBackLink(backLinkArgs) }}
+      <br>
+      <br>
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
+
+      <p class="govuk-body">{{ presenter.text.label }} </p>
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+      <p class="govuk-body">{{ presenter.text.description }} </p>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        {{ govukInput(probationPractitionerNameInputArgs) }}
+        {{ govukInput(probationPractitionerRoleOrJobTitleInputArgs) }}
+        {{ govukInput(probationPractitionerEmailInputArgs) }}
+        {% set establishmentSelectionHTML %}
+        {{ govukSelect(probationPractitionerPduSelectArgs) }}
+          <script src="/assets/accessible-autocomplete.min.js"></script>
+          <script>
+              accessibleAutocomplete.enhanceSelectElement({
+                defaultValue: '',
+                selectElement: document.querySelector('#probation-practitioner-pdu')
+              })
+          </script>
+        {% endset -%}
+        {% set probationOfficeSelectionHTML %}
+        {{ govukSelect(probationPractitionerOfficeSelectArgs) }}
+          <script>
+            accessibleAutocomplete.enhanceSelectElement({
+              defaultValue: '',
+              selectElement: document.querySelector('#probation-practitioner-office')
+            })
+          </script>
+        {% endset -%}
+        {{ govukRadios(confirmCorrectDetailsRadiosArgs(establishmentSelectionHTML, probationOfficeSelectionHTML)) }}
+        <br>
+        {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
+      </form>
+    </div>
+  </div>
+
+{% endblock %}

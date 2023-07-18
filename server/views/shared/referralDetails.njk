@@ -34,18 +34,25 @@
       {%  for section in serviceCategorySections %}
         {{ govukSummaryList(section.summaryListArgs(govukTag)) }}
       {% endfor %}
-      {%  if (responsibleOfficerSummaryListArgs | length)  and  (presenter.isCustodyReferral) %}
+      {%  if (responsibleOfficerSummaryListArgs | length)  and  (presenter.isCustodyWithNoResponsibleOfficerDetails) %}
           {{ govukSummaryList(responsibleOfficerSummaryListArgs) }}
       {% endif %}
-      {%  if not presenter.isCustodyReferral %}
+      {%  if (not presenter.isCustodyWithNoResponsibleOfficerDetails) and (not presenter.checkIfUnAllocatedCOM ) %}
         {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
-      {% endif %}  
+      {% endif %} 
+
+       {%  if presenter.checkIfUnAllocatedCOM %}
+        {{ govukSummaryList(mainPointOfContactSummaryListArgs) }}
+      {% endif %} 
+
 
       {%  if (presenter.isRoAndSenderNotTheSamePerson) and (presenter.isServiceProvider) %}
         {{ govukSummaryList(backupContactSummaryListArgs) }}
       {% endif %}
 
-      {{ govukSummaryList(serviceUserLocationDetailsSummaryListArgs) }}
+      {% if (presenter.checkIfReferralTypeIsSet) %}
+        {{ govukSummaryList(serviceUserLocationDetailsSummaryListArgs) }}
+      {% endif %}  
 
       {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
 

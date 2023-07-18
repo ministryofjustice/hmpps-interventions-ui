@@ -59,7 +59,7 @@ describe(ShowReferralPresenter, () => {
   const riskSummary = riskSummaryFactory.build()
   const deliusRoOfficer = deliusResponsibleOfficerFactory.build()
 
-  const prisonList = prisonFactory.prisonList()
+  const prisonList = prisonFactory.build()
   prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
   describe('canShowFullSupplementaryRiskInformation', () => {
@@ -367,6 +367,83 @@ describe(ShowReferralPresenter, () => {
     })
   })
 
+  describe('Main point of contact details for unallocated COM', () => {
+    it('returns a summary list of main point of contact details with establishment details', () => {
+      const referralParamsForSummary = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.custody,
+          ppName: 'Bernard Beaks',
+          ppEmailAddress: 'bernard.beaks@justice.gov.uk',
+          roleOrJobTitle: 'PP',
+          ppPdu: 'London',
+        },
+      }
+      const sentReferral = sentReferralFactory.build(referralParamsForSummary)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonList,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer
+      )
+
+      expect(presenter.mainPointOfContactDetailsSummary).toEqual([
+        { key: 'Name', lines: ['Bernard Beaks'] },
+        { key: 'Role/job title', lines: ['PP'] },
+        { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        { key: 'Establishment', lines: ['London'] },
+      ])
+    })
+    it('returns a summary list of main point of contact details with probation office details', () => {
+      const referralParamsForSummary = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.custody,
+          ppName: 'Bernard Beaks',
+          ppEmailAddress: 'bernard.beaks@justice.gov.uk',
+          roleOrJobTitle: 'PP',
+          ppProbationOffice: 'Leeds',
+          ppPdu: '',
+        },
+      }
+      const sentReferral = sentReferralFactory.build(referralParamsForSummary)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonList,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer
+      )
+
+      expect(presenter.mainPointOfContactDetailsSummary).toEqual([
+        { key: 'Name', lines: ['Bernard Beaks'] },
+        { key: 'Role/job title', lines: ['PP'] },
+        { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        { key: 'Probation office', lines: ['Leeds'] },
+      ])
+    })
+  })
   describe(`referral's location`, () => {
     it('returns a summary list for a referral community location', () => {
       const sentReferral = sentReferralFactory.build(referralParams)
@@ -391,6 +468,38 @@ describe(ShowReferralPresenter, () => {
       ])
     })
 
+    it('returns a summary list when an unallocated COM does not know the release date', () => {
+      const referralParamsForSummary = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.custody,
+          ppName: 'Bernard Beaks',
+          ppEmailAddress: 'bernard.beaks@justice.gov.uk',
+          roleOrJobTitle: 'PP',
+        },
+      }
+      const sentReferral = sentReferralFactory.build(referralParamsForSummary)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonList,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer
+      )
+
+      expect(presenter.serviceUserLocationDetails).toEqual([{ key: 'Location at time of referral', lines: ['London'] }])
+    })
+
     it('returns a summary list for a referral custody location', () => {
       const referralParamsWithCustodyDetails = {
         referral: {
@@ -399,6 +508,7 @@ describe(ShowReferralPresenter, () => {
           serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
           personCurrentLocationType: CurrentLocationType.custody,
           expectedReleaseDate: moment().add(2, 'days').format('YYYY-MM-DD'),
+          isReferralReleasingIn12Weeks: null,
         },
       }
       const sentReferral = sentReferralFactory.build(referralParamsWithCustodyDetails)
@@ -419,11 +529,43 @@ describe(ShowReferralPresenter, () => {
       )
 
       expect(presenter.serviceUserLocationDetails).toEqual([
-        { key: 'Location at time of referral', lines: ['Custody'] },
+        { key: 'Location at time of referral', lines: ['London'] },
         {
-          key: 'Current establishment',
-          lines: ['London'],
+          key: 'Expected release date',
+          lines: [moment().add(2, 'days').format('YYYY-MM-DD')],
         },
+      ])
+    })
+    it('returns a summary list for a unallocated COM who knows the release date', () => {
+      const referralParamsWithCustodyDetails = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.custody,
+          expectedReleaseDate: moment().add(2, 'days').format('YYYY-MM-DD'),
+          isReferralReleasingIn12Weeks: true,
+        },
+      }
+      const sentReferral = sentReferralFactory.build(referralParamsWithCustodyDetails)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonList,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer
+      )
+
+      expect(presenter.serviceUserLocationDetails).toEqual([
+        { key: 'Location at time of referral', lines: ['London'] },
         {
           key: 'Expected release date',
           lines: [moment().add(2, 'days').format('YYYY-MM-DD')],
@@ -470,6 +612,7 @@ describe(ShowReferralPresenter, () => {
                 email: 'team@nps.gov.uk',
                 telephoneNumber: '01141234567',
               },
+              unallocated: false,
             },
           })
         )
@@ -518,6 +661,7 @@ describe(ShowReferralPresenter, () => {
                 email: 'team@nps.gov.uk',
                 telephoneNumber: '01141234567',
               },
+              unallocated: true,
             },
             prisonManager: {
               code: 'abc',
@@ -539,6 +683,7 @@ describe(ShowReferralPresenter, () => {
                 email: 'custody-team@nps.gov.uk',
                 telephoneNumber: '01141234568',
               },
+              unallocated: false,
             },
           })
         )
@@ -590,6 +735,7 @@ describe(ShowReferralPresenter, () => {
                 email: null,
                 telephoneNumber: null,
               },
+              unallocated: false,
             },
           })
         )
@@ -673,6 +819,7 @@ describe(ShowReferralPresenter, () => {
                 email: 'team@nps.gov.uk',
                 telephoneNumber: '01141234567',
               },
+              unallocated: false,
             },
           })
         )
@@ -725,6 +872,7 @@ describe(ShowReferralPresenter, () => {
                 email: 'team@nps.gov.uk',
                 telephoneNumber: '01141234567',
               },
+              unallocated: false,
             },
           })
         )

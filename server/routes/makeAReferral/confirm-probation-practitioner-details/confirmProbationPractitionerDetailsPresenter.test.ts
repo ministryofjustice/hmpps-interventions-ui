@@ -12,6 +12,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
       responsibleOfficer: true,
       pdu: { code: 'L', description: 'London' },
       team: { code: 'R and M', description: 'R and M team', telephoneNumber: '07595025281', email: 'a.b@xyz.com' },
+      unallocated: false,
     },
   }
 
@@ -59,7 +60,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
         .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
       const presenter = new ConfirmProbationPractitionerDetailsPresenter(referral, [], [], deliusResponsibleOfficer)
 
-      expect(presenter.backLinkUrl).toBe(`/referrals/${referral.id}/submit-current-location`)
+      expect(presenter.backLinkUrl).toBe(`/referrals/${referral.id}/form`)
       expect(presenter.text).toEqual({
         title: 'Confirm probation practitioner details',
         description: 'These contact details will be sent to the service provider for the referral. Are they correct?',
@@ -71,6 +72,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           label: 'Name',
           errorMessage: null,
         },
+        label: 'Geoffrey Blue (CRN: X123456)',
         probationPractitionerEmail: {
           label: 'Email address (if known)',
           errorMessage: null,

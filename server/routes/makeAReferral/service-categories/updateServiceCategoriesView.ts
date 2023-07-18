@@ -36,6 +36,7 @@ export default class UpdateServiceCategoriesView {
         presenter: this.presenter,
         checkboxArgs: this.checkboxArgs,
         errorSummaryArgs: this.errorSummaryArgs,
+        suppressServiceUserBanner: true,
       },
     ]
   }

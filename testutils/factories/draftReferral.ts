@@ -55,7 +55,7 @@ class DraftReferralFactory extends Factory<DraftReferral> {
 
   selectedServiceCategories(serviceCategories: ServiceCategory[]) {
     const resolvedServiceCategoryIds = serviceCategories.map(serviceCategory => serviceCategory.id)
-    return this.serviceUserSelected().params({
+    return this.filledFormUpToExpectedReleaseDate().params({
       serviceCategoryIds: resolvedServiceCategoryIds,
     })
   }
@@ -86,29 +86,71 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     })
   }
 
-  filledFormUpToCurrentLocation(
-    serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()],
-    skipAdditionalRiskInformation = false,
-    currentLocationType: CurrentLocationType = CurrentLocationType.custody
-  ) {
-    return this.filledFormUpToNeedsAndRequirements(serviceCategories, skipAdditionalRiskInformation).params({
+  filledFormUpToCurrentLocation(currentLocationType: CurrentLocationType = CurrentLocationType.custody) {
+    return this.filledFormUptoPPDetails().params({
       personCurrentLocationType: currentLocationType,
       personCustodyPrisonId: currentLocationType === CurrentLocationType.custody ? 'abc' : null,
     })
   }
 
-  filledFormUpToExpectedReleaseDate(
-    serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()],
-    skipAdditionalRiskInformation = false
+  filledFormUpToCurrentLocationForUnallocatedCOM(
+    isReferralReleasingIn12Weeks = true,
+    currentLocationType: CurrentLocationType = CurrentLocationType.custody
   ) {
+    return this.filledMainPointOfContactDetails(isReferralReleasingIn12Weeks).params({
+      personCurrentLocationType: currentLocationType,
+      personCustodyPrisonId: currentLocationType === CurrentLocationType.custody ? 'abc' : null,
+    })
+  }
+
+  filledPersonalCurrentLocationType(personCurrentLocationType = CurrentLocationType.custody) {
+    return this.serviceUserSelected().params({
+      personCurrentLocationType,
+    })
+  }
+
+  filledWhetherReferralReleaseWithIn12Weeks(isReferralReleasingIn12Weeks = true) {
+    return this.serviceUserSelected().params({
+      isReferralReleasingIn12Weeks,
+    })
+  }
+
+  filledMainPointOfContactDetails(
+    isReferralReleasingIn12Weeks = true,
+    ppName = 'Bob Alice',
+    ppEmailAddress = 'bobalice@example.com',
+    ppPdu = '97 Hackney and City',
+    roleOrJobTitle = 'Probation practitioner'
+  ) {
+    return this.filledWhetherReferralReleaseWithIn12Weeks(isReferralReleasingIn12Weeks).params({
+      ppName,
+      ppEmailAddress,
+      ppPdu,
+      roleOrJobTitle,
+    })
+  }
+
+  filledFormUptoPPDetails(
+    ndeliusPPName = 'Bob Alice',
+    ndeliusPPEmailAddress = 'bobalice@example.com',
+    ndeliusPDU = '97 Hackney and City'
+  ) {
+    return this.filledPersonalCurrentLocationType().params({
+      ndeliusPPName,
+      ndeliusPPEmailAddress,
+      ndeliusPDU,
+    })
+  }
+
+  filledFormUpToExpectedReleaseDate() {
     const tomorrow = moment().add(1, 'days')
-    return this.filledFormUpToCurrentLocation(serviceCategories, skipAdditionalRiskInformation).params({
+    return this.filledFormUpToCurrentLocation().params({
       expectedReleaseDate: tomorrow.format('YYYY-MM-DD'),
     })
   }
 
   filledFormUpToRelevantSentence(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
-    return this.filledFormUpToCurrentLocation(serviceCategories).params({
+    return this.filledFormUpToNeedsAndRequirements(serviceCategories).params({
       relevantSentenceId: 123456789,
     })
   }
@@ -150,9 +192,12 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     })
   }
 
-  filledFormUpToFurtherInformation(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
+  filledFormUpToFurtherInformation(
+    serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()],
+    furtherInformation = ''
+  ) {
     return this.filledFormUpToCompletionDate(serviceCategories).params({
-      furtherInformation: '',
+      furtherInformation,
     })
   }
 }
@@ -199,12 +244,15 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   contractTypeName: interventionFactory.build().contractType.name,
   personCurrentLocationType: null,
   personCustodyPrisonId: null,
-  ndeliusPPName: 'Victor Drake',
-  ndeliusPPEmailAddress: 'a.b@xyz.com',
-  ndeliusPDU: 'London',
+  ndeliusPPName: null,
+  ndeliusPPEmailAddress: null,
+  ndeliusPDU: null,
   ppName: null,
   ppEmailAddress: null,
   ppPdu: null,
   ppProbationOffice: null,
   hasValidDeliusPPDetails: null,
+  isReferralReleasingIn12Weeks: null,
+  roleOrJobTitle: null,
+  hasMainPointOfContactDetails: null,
 }))

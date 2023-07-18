@@ -11,6 +11,7 @@ export default class RiskInformationPresenter {
 
   readonly text = {
     title: `${this.referral.serviceUser?.firstName}’s risk information`,
+    label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
   }
 
   get introText(): string {

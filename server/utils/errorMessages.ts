@@ -129,11 +129,23 @@ export default {
     emptyRadio: 'Select custody or community',
     empty: (name: string) => `You must enter the establishment ${name} is currently in`,
   },
+  prisonRelease: {
+    emptyRadio: 'Select yes or no',
+  },
   confirmProbationPractitionerDetails: {
     emptyRadio: 'Select yes or no',
     emptyName: `Enter name of probation practitioner`,
     emptyPdu: `Enter PDU (Probation Delivery Unit)`,
     invalidEmail: `Enter an email address in the correct format`,
+  },
+  confirmMainPointOfContactDetails: {
+    emptyRadio: 'Select establishment or probation office',
+    emptyName: `Enter name of main point of contact`,
+    emptyPdu: `Enter the prison name`,
+    emptyRoleOrJobTitle: `Enter role/job title`,
+    emptyProbationOffice: `Enter the probation office`,
+    emptyEmail: `Enter email address`,
+    invalidEmail: `Enter email address in the correct format`,
   },
   interpreterLanguageWithoutName: {
     empty: 'Enter the language for interpretation',

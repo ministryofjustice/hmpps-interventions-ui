@@ -17,7 +17,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
-    this.backLinkUrl = `/referrals/${referral.id}/submit-current-location`
+    this.backLinkUrl = `/referrals/${referral.id}/form`
   }
 
   get summary(): SummaryListItem[] {
@@ -49,6 +49,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
 
   readonly text = {
     title: 'Confirm probation practitioner details',
+    label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
     description: 'These contact details will be sent to the service provider for the referral. Are they correct?',
     confirmCorrectDetailsFormDescription: 'Enter the correct contact details to be sent to the service provider.',
     confirmDetails: {

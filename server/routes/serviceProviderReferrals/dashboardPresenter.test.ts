@@ -46,7 +46,7 @@ describe(DashboardPresenter, () => {
   describe('tableHeadings', () => {
     it('persistentId is the database sort field', () => {
       const page = pageFactory.pageContent([]).build() as Page<SentReferralSummaries>
-      const prisons = prisonFactory.prisonList()
+      const prisons = prisonFactory.build()
       const presenter = new DashboardPresenter(
         page,
         'My cases',
@@ -71,7 +71,7 @@ describe(DashboardPresenter, () => {
     describe.each(displayCaseworkerDashboardTypes)('with %s dashboard type', dashboardType => {
       it('returns the table’s rows', () => {
         const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
-        const prisons = prisonFactory.prisonList()
+        const prisons = prisonFactory.build()
 
         const presenter = new DashboardPresenter(
           page,
@@ -135,7 +135,7 @@ describe(DashboardPresenter, () => {
       describe('when a referral has been assigned to a caseworker', () => {
         it('includes the caseworker’s username', () => {
           const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
-          const prisons = prisonFactory.prisonList()
+          const prisons = prisonFactory.build()
           const presenter = new DashboardPresenter(
             page,
             dashboardType,
@@ -155,8 +155,67 @@ describe(DashboardPresenter, () => {
     const dontDisplayCaseworkerDashboardTypes: DashboardType[] = ['My cases', 'Unassigned cases']
     describe.each(dontDisplayCaseworkerDashboardTypes)('with %s dashboard type', dashboardType => {
       it('does not display the case worker column', () => {
-        const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
-        const prisons = prisonFactory.prisonList()
+        const referralsWithUnAllocatedCOM = [
+          SentReferralSummariesFactory.assigned().build({
+            id: '1',
+            sentAt: '2021-01-26T13:00:00.000000Z',
+            referenceNumber: 'ABCABCA1',
+            serviceUser: {
+              firstName: 'rob',
+              lastName: 'shah-brookes',
+            },
+            expectedReleaseDate: '2023-07-29',
+            location: 'aaa',
+            locationType: 'CUSTODY',
+          }),
+          SentReferralSummariesFactory.unassigned().build({
+            id: '2',
+            sentAt: '2020-10-14T13:00:00.000000Z',
+            referenceNumber: 'ABCABCA2',
+            serviceUser: {
+              firstName: 'HARDIP',
+              lastName: 'fraiser',
+            },
+            interventionTitle: "Women's Services - West Midlands",
+          }),
+          SentReferralSummariesFactory.assigned().build({
+            id: '3',
+            sentAt: '2020-10-13T13:00:00.000000Z',
+            referenceNumber: 'ABCABCA3',
+            serviceUser: {
+              firstName: 'Jenny',
+              lastName: 'Catherine',
+            },
+          }),
+          SentReferralSummariesFactory.assigned().build({
+            id: '4',
+            sentAt: '2020-10-13T13:00:00.000000Z',
+            referenceNumber: 'ABCABCA4',
+            serviceUser: {
+              firstName: 'Bernard',
+              lastName: 'Beaks',
+            },
+            expectedReleaseDate: null,
+            location: 'aaa',
+            locationType: 'CUSTODY',
+            isReferralReleasingIn12Weeks: false,
+          }),
+          SentReferralSummariesFactory.assigned().build({
+            id: '5',
+            sentAt: '2020-10-13T13:00:00.000000Z',
+            referenceNumber: 'ABCABCA5',
+            serviceUser: {
+              firstName: 'Alice',
+              lastName: 'Grace',
+            },
+            expectedReleaseDate: null,
+            location: 'aaa',
+            locationType: 'CUSTODY',
+            isReferralReleasingIn12Weeks: null,
+          }),
+        ]
+        const page = pageFactory.pageContent(referralsWithUnAllocatedCOM).build() as Page<SentReferralSummaries>
+        const prisons = prisonFactory.build()
         const presenter = new DashboardPresenter(
           page,
           dashboardType,
@@ -190,7 +249,7 @@ describe(DashboardPresenter, () => {
                 href: '/service-provider/referrals/2/progress',
                 doubleCell: true,
               },
-              { text: 'N/A', sortValue: null, href: null },
+              { text: '---', sortValue: null, href: null },
               { text: 'London', sortValue: null, href: null },
               { text: 'ABCABCA2', sortValue: null, href: null },
               {
@@ -207,9 +266,43 @@ describe(DashboardPresenter, () => {
                 href: '/service-provider/referrals/3/progress',
                 doubleCell: true,
               },
-              { text: 'N/A', sortValue: null, href: null },
+              { text: '---', sortValue: null, href: null },
               { text: 'London', sortValue: null, href: null },
               { text: 'ABCABCA3', sortValue: null, href: null },
+              {
+                text: 'Accommodation Services - West Midlands',
+                sortValue: null,
+                href: null,
+              },
+              { text: '13 Oct 2020', sortValue: '2020-10-13', href: null },
+            ],
+            [
+              {
+                text: 'Bernard Beaks:X123456',
+                sortValue: 'beaks, bernard',
+                href: '/service-provider/referrals/4/progress',
+                doubleCell: true,
+              },
+              { text: 'Over 12 weeks', sortValue: null, href: null },
+              { text: 'London', sortValue: null, href: null },
+              { text: 'ABCABCA4', sortValue: null, href: null },
+              {
+                text: 'Accommodation Services - West Midlands',
+                sortValue: null,
+                href: null,
+              },
+              { text: '13 Oct 2020', sortValue: '2020-10-13', href: null },
+            ],
+            [
+              {
+                text: 'Alice Grace:X123456',
+                sortValue: 'grace, alice',
+                href: '/service-provider/referrals/5/progress',
+                doubleCell: true,
+              },
+              { text: 'Not found', sortValue: null, href: null },
+              { text: 'London', sortValue: null, href: null },
+              { text: 'ABCABCA5', sortValue: null, href: null },
               {
                 text: 'Accommodation Services - West Midlands',
                 sortValue: null,
@@ -254,6 +347,36 @@ describe(DashboardPresenter, () => {
                 doubleCell: true,
               },
               { text: 'ABCABCA3', sortValue: null, href: null },
+              {
+                text: 'Accommodation Services - West Midlands',
+                sortValue: null,
+                href: null,
+              },
+              { text: '13 Oct 2020', sortValue: '2020-10-13', href: null },
+            ],
+            [
+              {
+                text: 'Bernard Beaks:X123456',
+                sortValue: 'beaks, bernard',
+                href: '/service-provider/referrals/4/progress',
+                doubleCell: true,
+              },
+              { text: 'ABCABCA4', sortValue: null, href: null },
+              {
+                text: 'Accommodation Services - West Midlands',
+                sortValue: null,
+                href: null,
+              },
+              { text: '13 Oct 2020', sortValue: '2020-10-13', href: null },
+            ],
+            [
+              {
+                text: 'Alice Grace:X123456',
+                sortValue: 'grace, alice',
+                href: '/service-provider/referrals/5/progress',
+                doubleCell: true,
+              },
+              { text: 'ABCABCA5', sortValue: null, href: null },
               {
                 text: 'Accommodation Services - West Midlands',
                 sortValue: null,

@@ -28,6 +28,7 @@ export default class ServiceUserDetailsView {
         contactDetailsSummaryListArgs: this.contactDetailsSummaryListArgs,
         personalDetailsSummaryListArgs: this.personalDetailsSummaryListArgs,
         backLinkArgs: { href: this.presenter.backLinkUrl },
+        suppressServiceUserBanner: true,
       },
     ]
   }

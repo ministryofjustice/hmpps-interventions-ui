@@ -17,9 +17,21 @@
       <h1 class="govuk-heading-xl">Check all referral information</h1>
       <p class="govuk-body-m">This will be sent to the service provider.</p>
 
-      {% if probationPractitionerDetailsSummaryListArgs %}
+      {% if probationPractitionerDetailsSummaryListArgs and (not presenter.checkIfUnAllocatedCOM) %}
         {{ govukSummaryList(probationPractitionerDetailsSummaryListArgs) }}
       {% endif %}
+
+      {% if mainPointOfContactDetailsSummaryListArgs and (presenter.checkIfUnAllocatedCOM) %}
+        {{ govukSummaryList(mainPointOfContactDetailsSummaryListArgs) }}
+      {% endif %}
+
+      {% if expectedReleaseDateDetailsSummaryListArgs and (presenter.checkIfExpectedReleaseDateIsAvailable) %}
+        {{ govukSummaryList(expectedReleaseDateDetailsSummaryListArgs) }}
+      {% endif %}
+
+      {% if locationDetailsSummaryListArgs and (not presenter.checkIfExpectedReleaseDateIsAvailable) %}
+        {{ govukSummaryList(locationDetailsSummaryListArgs) }}
+      {% endif %}      
       
       {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
 

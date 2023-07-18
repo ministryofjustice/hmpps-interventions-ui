@@ -24,15 +24,12 @@
         {{ govukErrorSummary(errorSummaryArgs) }}
       {% endif %}
 
+      <p class="govuk-body">{{ presenter.text.label }} </p>
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
-      <p class="govuk-body">{{ presenter.text.description }} </p>
 
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        {% set submitLocationHtml %}
-            {{ govukSelect(prisonSelectArgs) }}
-        {% endset -%}
-        {{ govukRadios(submitLocationRadiosArgs(submitLocationHtml)) }}
+        {{ govukSelect(prisonSelectArgs) }}
 
         {{ govukWarningText({
           text: warningText,

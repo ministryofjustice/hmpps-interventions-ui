@@ -7,6 +7,8 @@ import ReferralFormPresenter from './form/referralFormPresenter'
 import ReferralStartPresenter from './start/referralStartPresenter'
 import CompletionDeadlinePresenter from './completion-deadline/completionDeadlinePresenter'
 import ReferralFormView from './form/referralFormView'
+import ReferralTypePresenter from './referral-type-form/referralTypePresenter'
+import ReferralTypeFormView from './referral-type-form/referralTypeFormView'
 import CompletionDeadlineView from './completion-deadline/completionDeadlineView'
 import CompletionDeadlineForm from './completion-deadline/completionDeadlineForm'
 import ComplexityLevelView from './service-category/complexity-level/complexityLevelView'
@@ -28,6 +30,7 @@ import CheckAllReferralInformationPresenter from './check-all-referral-informati
 import ConfirmationView from './confirmation/confirmationView'
 import ConfirmationPresenter from './confirmation/confirmationPresenter'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
+import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
 import errorMessages from '../../utils/errorMessages'
 import logger from '../../../log'
 import ServiceUserDetailsPresenter from './service-user-details/serviceUserDetailsPresenter'
@@ -50,7 +53,7 @@ import OasysRiskInformationView from './risk-information/oasys/view/oasysRiskInf
 import { RestClientError } from '../../data/restClient'
 import EditOasysRiskInformationView from './risk-information/oasys/edit/editOasysRiskInformationView'
 import EditOasysRiskInformationPresenter from './risk-information/oasys/edit/editOasysRiskInformationPresenter'
-import DraftReferral, { CurrentLocationType } from '../../models/draftReferral'
+import DraftReferral from '../../models/draftReferral'
 import ConfirmOasysRiskInformationForm from './risk-information/oasys/confirmOasysRiskInformationForm'
 import EditOasysRiskInformationForm from './risk-information/oasys/edit/editOasysRiskInformationForm'
 import { DraftOasysRiskInformation } from '../../models/draftOasysRiskInformation'
@@ -59,15 +62,22 @@ import CurrentLocationPresenter from './current-location/currentLocationPresente
 import CurrentLocationView from './current-location/currentLocationView'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import CurrentLocationForm from './current-location/currentLocationForm'
+import ReferralTypeForm from './referral-type-form/referralTypeForm'
 import ExpectedReleaseDateForm from './expected-release-date/expectedReleaseDateForm'
 import ExpectedReleaseDatePresenter from './expected-release-date/expectedReleaseDatePresenter'
 import ExpectedReleaseDateView from './expected-release-date/expectedReleaseDateView'
-import config from '../../config'
 import ConfirmProbationPractitionerDetailsPresenter from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsPresenter'
 import ConfirmProbationPractitionerDetailsView from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsView'
 import ReferenceDataService from '../../services/referenceDataService'
 import ConfirmProbationPractitionerDetailsForm from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsForm'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
+import ServiceUser from '../../models/serviceUser'
+import PrisonReleasePresenter from './prison-release-form/prisonReleasePresenter'
+import PrisonReleaseForm from './prison-release-form/prisonReleaseForm'
+import PrisonReleaseFormView from './prison-release-form/prisonReleaseFormView'
+import ConfirmMainPointOfContactDetailsPresenter from './confirm-main-point-of-contact-details/confirmMainPointOfContactDetailsPresenter'
+import ConfirmMainPointOfContactDetailsView from './confirm-main-point-of-contact-details/confirmMainPointOfContactDetailsView'
+import ConfirmMainPointOfContactDetailsForm from './confirm-main-point-of-contact-details/confirmMainPointOfContactDetailsForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -97,6 +107,7 @@ export default class MakeAReferralController {
     // We trim and change to uppercase to make user experience more pleasant. All CRNs are uppercase in delius.
     const crn = req.body['service-user-crn']?.trim()?.toUpperCase()
     const { interventionId } = req.params
+    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(crn)
 
     if (form.isValid) {
       try {
@@ -142,7 +153,11 @@ export default class MakeAReferralController {
         serviceUser: this.interventionsService.serializeDeliusServiceUser(serviceUser),
       })
 
-      res.redirect(303, `/referrals/${referral.id}/form`)
+      if (this.userHasComAllocated(deliusResponsibleOfficer)) {
+        res.redirect(301, `/referrals/${referral.id}/referral-type-form`)
+      } else {
+        res.redirect(301, `/referrals/${referral.id}/prison-release-form`)
+      }
     } else {
       const presenter = new ReferralStartPresenter(interventionId, error)
       const view = new ReferralStartView(presenter)
@@ -202,6 +217,28 @@ export default class MakeAReferralController {
     const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
     const view = new ReferralFormView(presenter)
 
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewReferralTypeForm(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
+
+    const [serviceUser] = await Promise.all([this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)])
+    const presenter = new ReferralTypePresenter(referral, null, req.body)
+    const view = new ReferralTypeFormView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewPrisonReleaseForm(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
+
+    const serviceUser = await Promise.resolve(this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn))
+    const presenter = new PrisonReleasePresenter(referral, null, req.body)
+    const view = new PrisonReleaseFormView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
@@ -332,22 +369,28 @@ export default class MakeAReferralController {
 
   async viewCompletionDeadline(req: Request, res: Response): Promise<void> {
     const isSentReferral = await this.isSentReferral(req, res)
-    const { interventionId, serviceUserCrn, completionDeadline } = await this.getCompletionDeadlinePresenterParams(
+    const { interventionId, serviceUser, completionDeadline } = await this.getCompletionDeadlinePresenterParams(
       isSentReferral,
       req,
       res
     )
 
-    const [intervention, serviceUser] = await Promise.all([
+    const [intervention, serviceUserDetails] = await Promise.all([
       this.interventionsService.getIntervention(res.locals.user.token.accessToken, interventionId),
-      this.ramDeliusApiService.getCaseDetailsByCrn(serviceUserCrn),
+      this.ramDeliusApiService.getCaseDetailsByCrn(serviceUser.crn),
     ])
 
-    const presenter = new CompletionDeadlinePresenter(completionDeadline, intervention, isSentReferral, req.params.id)
+    const presenter = new CompletionDeadlinePresenter(
+      completionDeadline,
+      intervention,
+      isSentReferral,
+      req.params.id,
+      serviceUser
+    )
 
     const view = new CompletionDeadlineView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    ControllerUtils.renderWithLayout(res, view, serviceUserDetails)
   }
 
   async updateCompletionDeadline(req: Request, res: Response): Promise<void> {
@@ -389,15 +432,15 @@ export default class MakeAReferralController {
     if (error === null) {
       res.redirect(`/referrals/${req.params.id}/further-information`)
     } else {
-      const { interventionId, serviceUserCrn, completionDeadline } = await this.getCompletionDeadlinePresenterParams(
+      const { interventionId, serviceUser, completionDeadline } = await this.getCompletionDeadlinePresenterParams(
         isSentReferral,
         req,
         res
       )
 
-      const [intervention, serviceUser] = await Promise.all([
+      const [intervention, serviceUserDetails] = await Promise.all([
         this.interventionsService.getIntervention(res.locals.user.token.accessToken, interventionId),
-        this.ramDeliusApiService.getCaseDetailsByCrn(serviceUserCrn),
+        this.ramDeliusApiService.getCaseDetailsByCrn(serviceUser.crn),
       ])
 
       const presenter = new CompletionDeadlinePresenter(
@@ -405,13 +448,14 @@ export default class MakeAReferralController {
         intervention,
         isSentReferral,
         req.params.id,
+        serviceUser,
         error,
         req.body
       )
       const view = new CompletionDeadlineView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      ControllerUtils.renderWithLayout(res, view, serviceUserDetails)
     }
   }
 
@@ -419,20 +463,20 @@ export default class MakeAReferralController {
     isSentReferral: boolean,
     req: Request,
     res: Response
-  ): Promise<{ interventionId: string; serviceUserCrn: string; completionDeadline: string | null }> {
+  ): Promise<{ interventionId: string; serviceUser: ServiceUser; completionDeadline: string | null }> {
     let referral
     if (isSentReferral) {
       referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, req.params.id)
       return {
         interventionId: referral.referral.interventionId,
-        serviceUserCrn: referral.referral.serviceUser.crn,
+        serviceUser: referral.referral.serviceUser,
         completionDeadline: referral.referral.completionDeadline,
       }
     }
     referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     return {
       interventionId: referral.interventionId,
-      serviceUserCrn: referral.serviceUser.crn,
+      serviceUser: referral.serviceUser,
       completionDeadline: referral.completionDeadline,
     }
   }
@@ -573,11 +617,7 @@ export default class MakeAReferralController {
     }
 
     if (error === null) {
-      if (config.featureFlags.custodyLocationEnabled) {
-        res.redirect(`/referrals/${req.params.id}/submit-current-location`)
-      } else {
-        res.redirect(`/referrals/${req.params.id}/form`)
-      }
+      res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
@@ -598,6 +638,74 @@ export default class MakeAReferralController {
     const view = new CurrentLocationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async submitReferralTypeForm(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const form = await ReferralTypeForm.createForm(req, referral)
+
+    let error: FormValidationError | null = null
+
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new ReferralTypePresenter(referral, error, req.body)
+      const view = new ReferralTypeFormView(presenter)
+
+      res.status(400)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
+  }
+
+  async submitPrisonReleaseForm(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const form = await PrisonReleaseForm.createForm(req, referral)
+
+    let error: FormValidationError | null = null
+
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new PrisonReleasePresenter(referral, error, req.body)
+      const view = new PrisonReleaseFormView(presenter)
+
+      res.status(400)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
   }
 
   async submitCurrentLocation(req: Request, res: Response): Promise<void> {
@@ -622,14 +730,23 @@ export default class MakeAReferralController {
       error = form.error
     }
 
-    if (error === null && form.paramsForUpdate.personCustodyPrisonId != null) {
-      res.redirect(`/referrals/${req.params.id}/expected-release-date`)
-    } else if (
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    }
+
+    if (
       error === null &&
-      form.paramsForUpdate.personCustodyPrisonId == null &&
-      form.paramsForUpdate.personCurrentLocationType === CurrentLocationType.community
+      form.paramsForUpdate.personCustodyPrisonId != null &&
+      referral.isReferralReleasingIn12Weeks != null &&
+      !referral.isReferralReleasingIn12Weeks
     ) {
-      res.redirect(`/referrals/${req.params.id}/confirm-probation-practitioner-details`)
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else if (error === null && form.paramsForUpdate.personCustodyPrisonId != null) {
+      res.redirect(`/referrals/${req.params.id}/expected-release-date`)
+    } else if (error === null && form.paramsForUpdate.personCustodyPrisonId == null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
@@ -672,8 +789,11 @@ export default class MakeAReferralController {
     } else {
       error = form.error
     }
+    const amendPPDetails = req.query.amendPPDetails === 'true'
 
-    if (error === null) {
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null) {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
@@ -752,6 +872,72 @@ export default class MakeAReferralController {
     }
   }
 
+  async confirmMainPointOfContactDetails(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
+    const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
+    const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new ConfirmMainPointOfContactDetailsPresenter(
+      referral,
+      deliusOfficeLocations,
+      deliusDeliveryUnits,
+      deliusResponsibleOfficer
+    )
+    const view = new ConfirmMainPointOfContactDetailsView(presenter)
+
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async updateMainPointOfContactDetails(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
+    const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
+    const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
+    const form = await ConfirmMainPointOfContactDetailsForm.createForm(req, referral, deliusResponsibleOfficer)
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null && !amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new ConfirmMainPointOfContactDetailsPresenter(
+        referral,
+        deliusOfficeLocations,
+        deliusDeliveryUnits,
+        deliusResponsibleOfficer,
+        error,
+        req.body
+      )
+      const view = new ConfirmMainPointOfContactDetailsView(presenter)
+
+      res.status(400)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
+  }
+
   async viewRiskInformation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
@@ -765,8 +951,9 @@ export default class MakeAReferralController {
     error: FormValidationError | null = null
   ) {
     const { accessToken } = res.locals.user.token
+    const label = `${referral.serviceUser?.firstName} ${referral.serviceUser?.lastName} (CRN: ${referral.serviceUser?.crn})`
     const riskSummary = await this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken)
-    const presenter = new OasysRiskInformationPresenter(referral.id, riskSummary, error)
+    const presenter = new OasysRiskInformationPresenter(referral.id, riskSummary, error, label)
     const view = new OasysRiskInformationView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
@@ -845,8 +1032,9 @@ export default class MakeAReferralController {
       this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn),
       this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken),
     ])
+    const label = `${referral.serviceUser?.firstName} ${referral.serviceUser?.lastName} (CRN: ${referral.serviceUser?.crn})`
 
-    const presenter = new EditOasysRiskInformationPresenter(riskSummary, draftOasysRiskInformation, error)
+    const presenter = new EditOasysRiskInformationPresenter(riskSummary, draftOasysRiskInformation, error, label)
     const view = new EditOasysRiskInformationView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -893,7 +1081,12 @@ export default class MakeAReferralController {
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-    const presenter = new EnforceableDaysPresenter(referral.maximumEnforceableDays)
+    const presenter = new EnforceableDaysPresenter(
+      referral.serviceUser.crn,
+      referral.maximumEnforceableDays,
+      referral.serviceUser.firstName,
+      referral.serviceUser.lastName
+    )
     const view = new EnforceableDaysView(presenter)
 
     ControllerUtils.renderWithLayout(res, view, serviceUser)
@@ -925,7 +1118,14 @@ export default class MakeAReferralController {
       res.redirect(`/referrals/${req.params.id}/completion-deadline`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
-      const presenter = new EnforceableDaysPresenter(referral.maximumEnforceableDays, error, req.body)
+      const presenter = new EnforceableDaysPresenter(
+        referral.serviceUser.crn,
+        referral.maximumEnforceableDays,
+        referral.serviceUser.firstName,
+        referral.serviceUser.lastName,
+        error,
+        req.body
+      )
       const view = new EnforceableDaysView(presenter)
 
       res.status(400)
@@ -1020,5 +1220,16 @@ export default class MakeAReferralController {
       }
       throw e
     }
+  }
+
+  userHasComAllocated(deliusResponsibleOfficer: DeliusResponsibleOfficer | null): boolean {
+    if (
+      deliusResponsibleOfficer !== null &&
+      !deliusResponsibleOfficer?.communityManager.unallocated &&
+      !deliusResponsibleOfficer?.prisonManager?.unallocated
+    ) {
+      return true
+    }
+    return false
   }
 }

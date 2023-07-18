@@ -11,6 +11,27 @@ export default class CheckAllReferralInformationView {
       )
     : null
 
+  private readonly mainPointOfContactDetailsSummaryListArgs = this.presenter.mainPointOfContactDetailsSection
+    ? ViewUtils.summaryListArgsWithSummaryCard(
+        this.presenter.mainPointOfContactDetailsSection.summary,
+        this.presenter.mainPointOfContactDetailsSection.title
+      )
+    : null
+
+  private readonly expectedReleaseDateDetailsSummaryListArgs = this.presenter.expectedReleaseDateSection
+    ? ViewUtils.summaryListArgsWithSummaryCard(
+        this.presenter.expectedReleaseDateSection.summary,
+        this.presenter.expectedReleaseDateSection.title
+      )
+    : null
+
+  private readonly locationDetailsSummaryListArgs = this.presenter.locationSection
+    ? ViewUtils.summaryListArgsWithSummaryCard(
+        this.presenter.locationSection.summary,
+        this.presenter.locationSection.title
+      )
+    : null
+
   private readonly serviceUserDetailsSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
     this.presenter.serviceUserDetailsSection.summary,
     this.presenter.serviceUserDetailsSection.title
@@ -49,6 +70,9 @@ export default class CheckAllReferralInformationView {
       {
         presenter: this.presenter,
         probationPractitionerDetailsSummaryListArgs: this.probationPractitionerDetailsSummaryListArgs,
+        mainPointOfContactDetailsSummaryListArgs: this.mainPointOfContactDetailsSummaryListArgs,
+        expectedReleaseDateDetailsSummaryListArgs: this.expectedReleaseDateDetailsSummaryListArgs,
+        locationDetailsSummaryListArgs: this.locationDetailsSummaryListArgs,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         needsAndRequirementsSummaryListArgs: this.needsAndRequirementsSummaryListArgs,
         referralDetailsSections: this.referralDetailsSections,

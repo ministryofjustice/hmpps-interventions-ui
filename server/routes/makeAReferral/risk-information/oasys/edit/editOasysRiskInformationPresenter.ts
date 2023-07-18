@@ -9,12 +9,16 @@ import { DraftOasysRiskInformation } from '../../../../../models/draftOasysRiskI
 export default class EditOasysRiskInformationPresenter {
   riskPresenter: RoshPanelPresenter
 
+  displayLabel
+
   constructor(
     readonly riskSummary: RiskSummary | null,
     readonly draftOasysRiskInformation: DraftOasysRiskInformation | null,
-    private readonly error: FormValidationError | null = null
+    private readonly error: FormValidationError | null = null,
+    readonly label: string
   ) {
     this.riskPresenter = new RoshPanelPresenter(riskSummary)
+    this.displayLabel = label
   }
 
   readonly errors = {

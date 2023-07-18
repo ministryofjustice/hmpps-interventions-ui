@@ -60,7 +60,7 @@ describe(ServiceUserDetailsPresenter, () => {
   })
 
   describe('title', () => {
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
     it("returns a title for the page with the service user's name", () => {
@@ -77,7 +77,7 @@ describe(ServiceUserDetailsPresenter, () => {
   })
 
   describe('summary', () => {
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
     it('returns an array of summary list items for each field on the Service user', () => {
@@ -170,7 +170,7 @@ describe(ServiceUserDetailsPresenter, () => {
   })
 
   describe('personalDetailsSummary', () => {
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
     it('returns an array of personalDetails summary list items for each field on the Service user', () => {
@@ -214,7 +214,7 @@ describe(ServiceUserDetailsPresenter, () => {
   })
 
   describe('contactDetailsSummary', () => {
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
     it('returns an array of summary list items for each field on the Service user', () => {

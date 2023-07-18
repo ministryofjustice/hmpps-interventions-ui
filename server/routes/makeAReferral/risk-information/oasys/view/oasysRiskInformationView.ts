@@ -91,10 +91,12 @@ export default class OasysRiskInformationView {
         riskInformation: this.riskSummaryView.oasysRiskInformationArgs,
         latestAssessment: this.presenter.latestAssessment,
         roshPanelPresenter: this.presenter.riskPresenter,
+        displayLabel: this.presenter.displayLabel,
         roshAnalysisTableArgs: this.roshPanelView.roshAnalysisTableArgs.bind(this.roshPanelView),
         editRiskConfirmationRadioButtonArgs: this.editRiskConfirmationRadioButtonArgs.bind(this),
         confirmUnderstoodWarningCheckboxArgs: this.confirmUnderstoodWarningCheckboxArgs,
         sensitiveInformationDetailsArgs: this.sensitiveInformationDetailsArgs,
+        suppressServiceUserBanner: true,
       },
     ]
   }

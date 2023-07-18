@@ -45,6 +45,7 @@ import RamDeliusApiService from '../../services/ramDeliusApiService'
 import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 import ramDeliusUserFactory from '../../../testutils/factories/ramDeliusUser'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
+import { CurrentLocationType } from '../../models/draftReferral'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/assessRisksAndNeedsService')
@@ -91,7 +92,7 @@ beforeEach(() => {
     },
     userType: AppSetupUserType.serviceProvider,
   })
-  const prisonList = prisonFactory.prisonList()
+  const prisonList = prisonFactory.build()
   prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 })
 
@@ -477,6 +478,50 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
   })
 
   it('displays information about the referral and service user', async () => {
+    sentReferral = sentReferralFactory.unassigned().build({
+      referral: {
+        personCurrentLocationType: CurrentLocationType.community,
+      },
+    })
+    supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+      riskSummaryComments: 'Alex is low risk to others.',
+    })
+    expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build()
+    responsibleOfficer = deliusResponsibleOfficerFactory.build({
+      communityManager: {
+        name: { forename: 'Peter', surname: 'Practitioner' },
+        team: {
+          telephoneNumber: '07890 123456',
+          email: 'probation-team4692@justice.gov.uk',
+        },
+      },
+    })
+
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(expandedDeliusServiceUser)
+    assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+    interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
+
+    await request(app)
+      .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('This intervention is not yet assigned to a caseworker')
+        expect(res.text).toContain('Bob Alice')
+        expect(res.text).toContain('b.a@xyz.com')
+        expect(res.text).toContain('alex.river@example.com')
+        expect(res.text).toContain('0123456789')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Alex is low risk to others.')
+        expect(res.text).toContain('Alex River&#39;s risk of serious harm(RoSH) levels')
+        expect(res.text).toContain('Children')
+        expect(res.text).toContain('High')
+      })
+  })
+
+  it('displays information about the referral and service user for a custody referral', async () => {
     sentReferral = sentReferralFactory.unassigned().build()
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
       riskSummaryComments: 'Alex is low risk to others.',
@@ -504,9 +549,8 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('This intervention is not yet assigned to a caseworker')
-        expect(res.text).toContain('Peter Practitioner')
-        expect(res.text).toContain('bobalice@example.com')
-        expect(res.text).toContain('probation-team4692@justice.gov.uk')
+        expect(res.text).toContain('Bob Alice')
+        expect(res.text).toContain('b.a@xyz.com')
         expect(res.text).toContain('alex.river@example.com')
         expect(res.text).toContain('0123456789')
         expect(res.text).toContain('Alex River')
@@ -514,7 +558,6 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
         expect(res.text).toContain('Alex River&#39;s risk of serious harm(RoSH) levels')
         expect(res.text).toContain('Children')
         expect(res.text).toContain('High')
-        expect(res.text).toContain('probation-team4692@justice.gov.uk')
       })
   })
 

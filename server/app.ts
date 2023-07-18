@@ -89,6 +89,7 @@ export default function createApp(
             "'self'",
             'code.jquery.com',
             // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
+            "'sha256-kO+eZShFZU3Fq3BsxyiRjZlNO7gpZPH3odgOhHWCLxo='",
             "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
             "'sha256-XVaQIYDX9x3FcKfwRYYxmwIQXtOQY8UgJS4/7p/130A='",
             "'sha256-Yx3yl4k4eP+GDjGPt8O/8Lqh4sxAImQ9XEG6gp7wOwM='",

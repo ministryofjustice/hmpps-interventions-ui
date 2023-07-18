@@ -1,7 +1,9 @@
 import { Factory } from 'fishery'
 import { DeliusResponsibleOfficer } from '../../server/models/delius/deliusResponsibleOfficer'
 
-export default Factory.define<DeliusResponsibleOfficer>(() => ({
+class DeliusResponsibleOfficerFactory extends Factory<DeliusResponsibleOfficer> {}
+
+export default DeliusResponsibleOfficerFactory.define<DeliusResponsibleOfficer>(() => ({
   communityManager: {
     code: 'abc',
     name: {
@@ -22,5 +24,6 @@ export default Factory.define<DeliusResponsibleOfficer>(() => ({
       email: 'r.m@digital.justice.gov.uk',
       telephoneNumber: '044-2545453442',
     },
+    unallocated: false,
   },
 }))

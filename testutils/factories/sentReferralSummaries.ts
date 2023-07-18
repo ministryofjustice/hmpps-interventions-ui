@@ -67,4 +67,5 @@ export default SentReferralSummariesFactory.define(({ sequence }) => ({
   expectedReleaseDate: new Date().toISOString(),
   location: 'London',
   locationType: 'COMMUNITY',
+  isReferralReleasingIn12Weeks: false,
 }))

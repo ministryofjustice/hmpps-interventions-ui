@@ -130,15 +130,22 @@ describe('DateUtils', () => {
     })
   })
   describe('age', () => {
-    it('returns the correct age of the person', () => {
-      const dob = new Date()
-      dob.setFullYear(dob.getFullYear() - 41)
-      expect(DateUtils.age(dob.toISOString())).toEqual(41)
+    const fixedDate = new Date('2023-07-29T00:00:00.000Z')
+
+    beforeEach(() => {
+      jest.spyOn(Date.prototype, 'toISOString').mockReturnValue(fixedDate.toISOString())
     })
-    it('returns the correct age of the futuristic date', () => {
-      const dob = new Date()
-      dob.setFullYear(dob.getFullYear() + 42)
-      expect(DateUtils.age(dob.toISOString())).toEqual(-43)
+
+    afterEach(() => {
+      jest.restoreAllMocks()
+    })
+
+    test.each([
+      ['1981-07-29', 42],
+      ['2005-12-31', 17],
+      ['2045-10-10', -22],
+    ])('calculates age correctly for birthdate %s', (birthdate, expectedAge) => {
+      expect(DateUtils.age(birthdate)).toEqual(expectedAge)
     })
   })
 })

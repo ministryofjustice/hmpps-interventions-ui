@@ -10,7 +10,6 @@ import ReportingForm from './performanceReport/reportingForm'
 import PerformanceReportConfirmationView from './performanceReport/confirmation/performanceReportConfirmationView'
 import config from '../../config'
 import InterventionsService from '../../services/interventionsService'
-import log from '../../../log'
 
 export default class ReportingController {
   s3Client: S3Client
@@ -67,8 +66,6 @@ export default class ReportingController {
     })
 
     const downloadUrl = await getSignedUrl(this.s3Client, command, { expiresIn: 60 * 15 })
-
-    log.info(`The download Url for the performance dashboard is  ${downloadUrl}`)
 
     ControllerUtils.renderWithLayout(
       res,
