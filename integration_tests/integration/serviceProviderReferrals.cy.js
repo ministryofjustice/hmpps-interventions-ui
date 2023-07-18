@@ -1659,7 +1659,6 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Save and continue').click()
 
       cy.contains('Confirm session feedback')
-      cy.contains('The phone call was with caseworker Case Worker at 9:02am on 24 March 2021.')
       cy.contains('Did Alex River come to the session?')
       cy.contains('No')
 
@@ -1926,7 +1925,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Intervention cancelled').should('not.exist')
       cy.contains('View feedback form').click()
       cy.contains('Session attendance')
-      cy.contains('Session details')
+      cy.contains('Session feedback')
       cy.contains('Did Alex River come to the session?')
       cy.contains('Yes, they were on time')
       cy.contains('Session feedback')
@@ -2653,8 +2652,7 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
 
-          cy.contains('Session details')
-          cy.contains('The video call was with caseworker Case Worker at 9:02am on 24 March 2021.')
+          cy.contains('Confirm session feedback')
           cy.contains('Did Alex River come to the session?')
           cy.contains('No')
           cy.contains('Add how you tried to contact Alex River and anything you know about why they did not attend.')
@@ -2899,8 +2897,7 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
           cy.contains('Session attendance')
-          cy.contains('Session details')
-          cy.contains('The phone call was with caseworker Case Worker at 9:02am on 24 March 2021.')
+          cy.contains('Session feedback')
           cy.contains('Did Alex River come to the session?')
           cy.contains('Yes, they were on time')
           cy.contains('Session feedback')
