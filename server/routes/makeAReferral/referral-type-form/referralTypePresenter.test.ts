@@ -48,12 +48,6 @@ describe('ReferralTypePresenter', () => {
           custodyLabel: 'In Prison (pre-release)',
           communityLabel: 'Community',
         },
-        submitLocationInput: {
-          label: 'Which establishment is Geoffrey in?',
-          hint: 'Start typing, then choose from the list.',
-          errorMessage: null,
-        },
-        warningText: `If Geoffrey's location changes, you will need to make direct contact with the service provider.`,
       })
     })
 

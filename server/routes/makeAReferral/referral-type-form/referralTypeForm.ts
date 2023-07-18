@@ -1,8 +1,5 @@
 import { Request } from 'express'
 import { body, Result, ValidationChain, ValidationError } from 'express-validator'
-import DraftReferral from '../../../models/draftReferral'
-import Intervention from '../../../models/intervention'
-import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
 import errorMessages from '../../../utils/errorMessages'
 import FormUtils from '../../../utils/formUtils'
 import { FormValidationError } from '../../../utils/formValidationError'
@@ -11,23 +8,14 @@ export default class ReferralTypeForm {
   private constructor(
     private readonly request: Request,
     private readonly result: Result<ValidationError>,
-    private readonly referral: DraftReferral,
-    private readonly intervention: Intervention,
-    private readonly draftOasysRiskInformation: DraftOasysRiskInformation | null = null
+    private readonly referral: DraftReferral
   ) {}
 
-  static async createForm(
-    request: Request,
-    referral: DraftReferral,
-    intervention: Intervention,
-    draftOasysRiskInformation: DraftOasysRiskInformation
-  ): Promise<ReferralTypeForm> {
+  static async createForm(request: Request, referral: DraftReferral): Promise<ReferralTypeForm> {
     return new ReferralTypeForm(
       request,
       await FormUtils.runValidations({ request, validations: this.validations() }),
-      referral,
-      intervention,
-      draftOasysRiskInformation
+      referral
     )
   }
 

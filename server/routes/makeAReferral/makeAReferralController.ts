@@ -63,6 +63,7 @@ import CurrentLocationPresenter from './current-location/currentLocationPresente
 import CurrentLocationView from './current-location/currentLocationView'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import CurrentLocationForm from './current-location/currentLocationForm'
+import ReferralTypeForm from './referral-type-form/referralTypeForm'
 import ExpectedReleaseDateForm from './expected-release-date/expectedReleaseDateForm'
 import ExpectedReleaseDatePresenter from './expected-release-date/expectedReleaseDatePresenter'
 import ExpectedReleaseDateView from './expected-release-date/expectedReleaseDateView'
@@ -207,15 +208,23 @@ export default class MakeAReferralController {
     const draftOasysRiskInformation = await this.getDraftOasysRiskInformation(accessToken, referralId)
 
     if (this.userHasComAllocated(deliusResponsibleOfficer)) {
-      const presenter = new ReferralTypePresenter(referral, null, req.body)
-      const view = new ReferralTypeFormView(presenter)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
-      // res.redirect(303, `/referrals/${referral.id}/submitReferralType`)
+      res.redirect(301, `/referrals/${referral.id}/referral-type-form`)
     } else {
       const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
       const view = new ReferralFormView(presenter)
       ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
+  }
+
+  async viewReferralTypeForm(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
+
+    const [serviceUser] = await Promise.all([this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)])
+    const presenter = new ReferralTypePresenter(referral, null, req.body)
+    const view = new ReferralTypeFormView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async viewRelevantSentence(req: Request, res: Response): Promise<void> {
@@ -609,9 +618,9 @@ export default class MakeAReferralController {
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
-  async submitReferralType(req: Request, res: Response): Promise<void> {
+  async submitReferralTypeForm(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const form = await CurrentLocationForm.createForm(req, referral)
+    const form = await ReferralTypeForm.createForm(req, referral)
 
     let error: FormValidationError | null = null
 

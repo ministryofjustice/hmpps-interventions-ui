@@ -1,7 +1,5 @@
 import { Request } from 'express'
 import draftReferralFactory from '../../../../testutils/factories/draftReferral'
-import draftOasysRiskInformationFactory from '../../../../testutils/factories/draftOasysRiskInformation'
-import interventionFactory from '../../../../testutils/factories/intervention'
 import ReferralTypeForm from './referralTypeForm'
 
 describe('ReferralTypeForm', () => {
@@ -9,10 +7,6 @@ describe('ReferralTypeForm', () => {
     .serviceCategorySelected()
     .serviceUserSelected()
     .build({ serviceUser: { firstName: 'Alex' } })
-
-  const draftOasysRiskInformation = draftOasysRiskInformationFactory.build()
-
-  const intervention = interventionFactory.build()
 
   describe('errors', () => {
     it('returns no error with all fields populated for custody prerelease', async () => {
@@ -22,9 +16,7 @@ describe('ReferralTypeForm', () => {
             'current-location': 'CUSTODY',
           },
         } as Request,
-        referral,
-        intervention,
-        draftOasysRiskInformation
+        referral
       )
 
       expect(form.error).toBeNull()
@@ -37,9 +29,7 @@ describe('ReferralTypeForm', () => {
             'current-location': '',
           },
         } as Request,
-        referral,
-        intervention,
-        draftOasysRiskInformation
+        referral
       )
 
       expect(form.error).toEqual({
@@ -62,9 +52,7 @@ describe('ReferralTypeForm', () => {
             'current-location': 'CUSTODY',
           },
         } as Request,
-        referral,
-        intervention,
-        draftOasysRiskInformation
+        referral
       )
 
       expect(form.paramsForUpdate).toEqual({
@@ -79,9 +67,7 @@ describe('ReferralTypeForm', () => {
             'current-location': 'COMMUNITY',
           },
         } as Request,
-        referral,
-        intervention,
-        draftOasysRiskInformation
+        referral
       )
 
       expect(form.paramsForUpdate).toEqual({
