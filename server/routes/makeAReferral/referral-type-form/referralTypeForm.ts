@@ -40,6 +40,10 @@ export default class ReferralTypeForm {
     return this.request.body['current-location'] === 'CUSTODY'
   }
 
+  get currentLocation(): string {
+    return this.request.body['current-location']
+  }
+
   get error(): FormValidationError | null {
     if (this.result.isEmpty()) {
       return null

@@ -624,23 +624,14 @@ export default class MakeAReferralController {
 
     let error: FormValidationError | null = null
 
-    if (form.isValid) {
-      try {
-        await this.interventionsService.patchDraftReferral(
-          res.locals.user.token.accessToken,
-          req.params.id,
-          form.paramsForUpdate
-        )
-      } catch (e) {
-        const interventionsServiceError = e as InterventionsServiceError
-        error = createFormValidationErrorOrRethrow(interventionsServiceError)
-      }
-    } else {
+    if (!form.isValid) {
       error = form.error
     }
 
     if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/next-page`)
+      const referralType = form.currentLocation()?.toLowerCase()
+
+      res.redirect(`/referrals/${req.params.id}/referral-type/${referralType}/next-page`)
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
