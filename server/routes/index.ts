@@ -13,7 +13,6 @@ import ReferenceDataService from '../services/referenceDataService'
 import UserDataService from '../services/userDataService'
 import PrisonRegisterService from '../services/prisonRegisterService'
 import RamDeliusApiService from '../services/ramDeliusApiService'
-import MockRamDeliusApiService from './testutils/mocks/mockRamDeliusApiService'
 
 export interface Services {
   ramDeliusApiService: RamDeliusApiService
@@ -32,19 +31,7 @@ export const get = (router: Router, path: string, handler: RequestHandler): Rout
 export const post = (router: Router, path: string, handler: RequestHandler): Router =>
   router.post(path, asyncMiddleware(handler))
 
-export default function routes(
-  router: Router,
-  services: {
-    interventionsService: InterventionsService
-    ramDeliusApiService: MockRamDeliusApiService | RamDeliusApiService
-    referenceDataService: ReferenceDataService
-    draftsService: DraftsService
-    prisonRegisterService: PrisonRegisterService
-    assessRisksAndNeedsService: AssessRisksAndNeedsService
-    userDataService: UserDataService
-    hmppsAuthService: HmppsAuthService
-  }
-): Router {
+export default function routes(router: Router, services: Services): Router {
   const staticContentController = new StaticContentController()
   const commonController = new CommonController()
 

@@ -1,36 +1,15 @@
 import { Router } from 'express'
-import { get, post } from './index'
+import { get, post, Services } from './index'
 import ProbationPractitionerReferralsController from './probationPractitionerReferrals/probationPractitionerReferralsController'
 import CaseNotesController from './caseNotes/caseNotesController'
 import ReferralCancellationController from './referral/cancellation/referralCancellationController'
 import AppointmentsController from './appointments/appointmentsController'
 import AmendAReferralController from './amendAReferral/amendAReferralController'
 import ChangeLogController from './amendAReferral/changeLogController'
-import InterventionsService from '../services/interventionsService'
-import MockRamDeliusApiService from './testutils/mocks/mockRamDeliusApiService'
-import RamDeliusApiService from '../services/ramDeliusApiService'
-import ReferenceDataService from '../services/referenceDataService'
-import DraftsService from '../services/draftsService'
-import PrisonRegisterService from '../services/prisonRegisterService'
-import AssessRisksAndNeedsService from '../services/assessRisksAndNeedsService'
-import UserDataService from '../services/userDataService'
-import HmppsAuthService from '../services/hmppsAuthService'
 
 export const probationPractitionerUrlPrefix = '/probation-practitioner'
 
-export default function probationPractitionerRoutes(
-  router: Router,
-  services: {
-    interventionsService: InterventionsService
-    ramDeliusApiService: MockRamDeliusApiService | RamDeliusApiService
-    referenceDataService: ReferenceDataService
-    draftsService: DraftsService
-    prisonRegisterService: PrisonRegisterService
-    assessRisksAndNeedsService: AssessRisksAndNeedsService
-    userDataService: UserDataService
-    hmppsAuthService: HmppsAuthService
-  }
-): Router {
+export default function probationPractitionerRoutes(router: Router, services: Services): Router {
   const probationPractitionerReferralsController = new ProbationPractitionerReferralsController(
     services.interventionsService,
     services.hmppsAuthService,
