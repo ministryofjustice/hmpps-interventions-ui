@@ -232,7 +232,7 @@ describe(ShowReferralPresenter, () => {
   })
 
   describe('probationPractitionerDetails', () => {
-    it('returns a summary list of probation practitioner details', () => {
+    it('returns a summary list of probation practitioner details for service provider', () => {
       const sentReferral = sentReferralFactory.build(referralParams)
       const presenter = new ShowReferralPresenter(
         sentReferral,
@@ -253,10 +253,36 @@ describe(ShowReferralPresenter, () => {
       expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        { key: 'Phone number', lines: ['98454243243'] },
+        { key: 'Probation Office', lines: ['London'] },
+        { key: 'Team phone number', lines: ['044-2545453442'] },
+      ])
+    })
+    it('returns a summary list of probation practitioner details for probation practitioner', () => {
+      const sentReferral = sentReferralFactory.build(referralParams)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonList,
+        null,
+        null,
+        'probation-practitioner',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer
+      )
+
+      expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
+        { key: 'Name', lines: ['Bernard Beaks'] },
+        { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
         { key: 'Probation Office', lines: ['London'] },
       ])
     })
-    it('returns a summary list of probation practitioner details from ram delius api', () => {
+    it('returns a summary list of probation practitioner details from ndelius for service provider', () => {
       const updatedReferralParams = {
         referral: {
           serviceCategoryId: serviceCategory.id,
@@ -283,6 +309,47 @@ describe(ShowReferralPresenter, () => {
         null,
         null,
         'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer
+      )
+
+      expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
+        { key: 'Name', lines: ['Bob Alice'] },
+        { key: 'Email address', lines: ['bobalice@example.com'] },
+        { key: 'Phone number', lines: ['98454243243'] },
+        { key: 'PDU (Probation Delivery Unit)', lines: ['97 Hackney and City'] },
+        { key: 'Team phone number', lines: ['044-2545453442'] },
+      ])
+    })
+    it('returns a summary list of probation practitioner details from ndelius for probation practitioner', () => {
+      const updatedReferralParams = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.community,
+          ppName: null,
+          ppEmailAddress: null,
+          ndeliusPPName: null,
+          ndeliusPPEmailAddress: null,
+          ndeliusPDU: null,
+          ppProbationOffice: null,
+          ppPdu: null,
+        },
+      }
+      const sentReferral = sentReferralFactory.build(updatedReferralParams)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonList,
+        null,
+        null,
+        'probation-practitioner',
         true,
         deliusServiceUser,
         riskSummary,
