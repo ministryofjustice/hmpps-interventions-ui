@@ -208,7 +208,7 @@ export default class MakeAReferralController {
     const draftOasysRiskInformation = await this.getDraftOasysRiskInformation(accessToken, referralId)
 
     if (this.userHasComAllocated(deliusResponsibleOfficer)) {
-      res.redirect(301, `/referrals/${referral.id}/referral-type-form`)
+      res.redirect(303, `/referrals/${referral.id}/referral-type-form`)
     } else {
       const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
       const view = new ReferralFormView(presenter)
@@ -624,14 +624,23 @@ export default class MakeAReferralController {
 
     let error: FormValidationError | null = null
 
-    if (!form.isValid) {
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
       error = form.error
     }
 
     if (error === null) {
-      const referralType = form.currentLocation()?.toLowerCase()
-
-      res.redirect(`/referrals/${req.params.id}/referral-type/${referralType}/next-page`)
+      res.redirect(303, `/referrals/${req.params.id}/next-page`)
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
