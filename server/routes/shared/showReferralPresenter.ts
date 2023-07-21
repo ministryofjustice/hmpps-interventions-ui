@@ -134,9 +134,7 @@ export default class ShowReferralPresenter {
   }
 
   get probationPractitionerDetailsForCommunity(): SummaryListItem[] {
-    const officer = this.deliusResponsibleOfficer?.communityManager.responsibleOfficer
-      ? this.deliusResponsibleOfficer?.communityManager
-      : this.deliusResponsibleOfficer?.prisonManager
+    const officer = this.deliusResponsibleOfficer?.communityManager
     const probationPractitionerDetails: SummaryListItem[] = []
     if (this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName) {
       probationPractitionerDetails.push(
@@ -221,9 +219,7 @@ export default class ShowReferralPresenter {
 
     const responsibleOfficerDetails: SummaryListItem[] = []
 
-    const officer = this.deliusResponsibleOfficer.communityManager.responsibleOfficer
-      ? this.deliusResponsibleOfficer.communityManager
-      : this.deliusResponsibleOfficer.prisonManager
+    const officer = this.deliusResponsibleOfficer.communityManager
     responsibleOfficerDetails.push({
       key: 'Name',
       lines: [`${officer?.name?.forename || ''} ${officer?.name?.surname || ''}`.trim() || 'Not found'],
