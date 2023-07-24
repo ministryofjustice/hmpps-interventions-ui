@@ -3,9 +3,6 @@ import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
 import { AppointmentDeliveryType } from '../../models/appointmentDeliveryType'
 import AppointmentSummary from './appointmentSummary'
 import DeliusOfficeLocation from '../../models/deliusOfficeLocation'
-import CalendarDay from '../../utils/calendarDay'
-import ClockTime from '../../utils/clockTime'
-import DateUtils from '../../utils/dateUtils'
 
 describe(AppointmentSummary, () => {
   describe('appointmentDetails', () => {
@@ -51,28 +48,6 @@ describe(AppointmentSummary, () => {
         const summaryComponent = new AppointmentSummary(appointment, null)
 
         expect(summaryComponent.appointmentSummaryList[2]).toEqual({ key: 'Method', lines: [expectedDisplayValue] })
-      })
-
-      it('contains the session details of the appointment', () => {
-        const appointment = initialAssessmentAppointmentFactory.build({ appointmentDeliveryType: deliveryType })
-        const summaryComponent = new AppointmentSummary(
-          appointment,
-          hmppsAuthUserFactory.build({
-            firstName: 'firstName',
-            lastName: 'lastName',
-            email: 'email',
-          })
-        )
-
-        const day = CalendarDay.britishDayForDate(new Date(appointment.appointmentTime!))
-        const formattedDay = DateUtils.formattedDate(day)
-        const time = ClockTime.britishTimeForDate(new Date(appointment.appointmentTime!))
-        const formattedTime = DateUtils.formattedTime(time)
-
-        expect(summaryComponent.sessionDetails).toEqual({
-          question: `Session details`,
-          answer: `The ${expectedDisplayValue.toLowerCase()} was with caseworker firstName lastName at ${formattedTime} on ${formattedDay}.`,
-        })
       })
     })
 

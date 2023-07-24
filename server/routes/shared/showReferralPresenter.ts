@@ -2,7 +2,6 @@ import SentReferral from '../../models/sentReferral'
 import { RamDeliusUser } from '../../models/delius/deliusUser'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
-import config from '../../config'
 import PresenterUtils from '../../utils/presenterUtils'
 import ServiceUserDetailsPresenter from '../makeAReferral/service-user-details/serviceUserDetailsPresenter'
 import { FormValidationError } from '../../utils/formValidationError'
@@ -135,40 +134,66 @@ export default class ShowReferralPresenter {
   }
 
   get probationPractitionerDetailsForCommunity(): SummaryListItem[] {
+    const officer = this.deliusResponsibleOfficer?.communityManager
+    const probationPractitionerDetails: SummaryListItem[] = []
     if (this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName) {
-      return [
+      probationPractitionerDetails.push(
         {
           key: 'Name',
           lines: [this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName || 'Not found'],
         },
-        { key: 'Email address', lines: [this.deriveEmailAddress] },
-        {
-          key:
-            this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-              ? 'Probation Office'
-              : 'PDU (Probation Delivery Unit)',
-          lines: [
-            this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-              ? this.sentReferral.referral.ppProbationOffice
-              : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '',
-          ],
-        },
-      ]
+        { key: 'Email address', lines: [this.deriveEmailAddress] }
+      )
+      if (this.userType === 'service-provider') {
+        probationPractitionerDetails.push({
+          key: 'Phone number',
+          lines: [officer?.telephoneNumber || 'Not found'],
+        })
+      }
+      probationPractitionerDetails.push({
+        key:
+          this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
+            ? 'Probation Office'
+            : 'PDU (Probation Delivery Unit)',
+        lines: [
+          this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
+            ? this.sentReferral.referral.ppProbationOffice
+            : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '',
+        ],
+      })
+      if (this.userType === 'service-provider') {
+        probationPractitionerDetails.push({
+          key: 'Team phone number',
+          lines: [officer?.team?.telephoneNumber || 'Not found'],
+        })
+      }
+
+      return probationPractitionerDetails
     }
-    const officer = this.deliusResponsibleOfficer?.communityManager.responsibleOfficer
-      ? this.deliusResponsibleOfficer?.communityManager
-      : this.deliusResponsibleOfficer?.prisonManager
-    return [
+    probationPractitionerDetails.push(
       {
         key: 'Name',
         lines: [`${officer?.name?.forename || ''} ${officer?.name?.surname || ''}`.trim() || 'Not found'],
       },
-      { key: 'Email address', lines: [officer?.email || 'Not found'] },
-      {
-        key: 'PDU (Probation Delivery Unit)',
-        lines: [`${officer?.pdu.code || ''} ${officer?.pdu.description || ''}`.trim() || 'Not found'],
-      },
-    ]
+      { key: 'Email address', lines: [officer?.email || 'Not found'] }
+    )
+    if (this.userType === 'service-provider') {
+      probationPractitionerDetails.push({
+        key: 'Phone number',
+        lines: [officer?.telephoneNumber || 'Not found'],
+      })
+    }
+    probationPractitionerDetails.push({
+      key: 'PDU (Probation Delivery Unit)',
+      lines: [`${officer?.pdu.code || ''} ${officer?.pdu.description || ''}`.trim() || 'Not found'],
+    })
+    if (this.userType === 'service-provider') {
+      probationPractitionerDetails.push({
+        key: 'Team phone number',
+        lines: [officer?.team?.telephoneNumber || 'Not found'],
+      })
+    }
+    return probationPractitionerDetails
   }
 
   readonly probationPractitionerDetailsForCustody: SummaryListItem[] = [
@@ -192,33 +217,36 @@ export default class ShowReferralPresenter {
   get deliusResponsibleOfficersDetails(): SummaryListItem[] {
     if (this.deliusResponsibleOfficer === null) return []
 
-    const officer = this.deliusResponsibleOfficer.communityManager.responsibleOfficer
-      ? this.deliusResponsibleOfficer.communityManager
-      : this.deliusResponsibleOfficer.prisonManager
-    return [
-      {
-        key: 'Name',
-        lines: [`${officer?.name?.forename || ''} ${officer?.name?.surname || ''}`.trim() || 'Not found'],
-      },
-      {
+    const responsibleOfficerDetails: SummaryListItem[] = []
+
+    const officer = this.deliusResponsibleOfficer.communityManager
+    responsibleOfficerDetails.push({
+      key: 'Name',
+      lines: [`${officer?.name?.forename || ''} ${officer?.name?.surname || ''}`.trim() || 'Not found'],
+    })
+    if (this.userType === 'service-provider') {
+      responsibleOfficerDetails.push({
         key: 'Phone',
         lines: [officer?.telephoneNumber || 'Not found'],
-      },
-      {
-        lines: [
-          officer?.email || 'Not found - email notifications for this referral will be sent to the referring officer',
-        ],
-        key: 'Email address',
-      },
-      {
+      })
+    }
+    responsibleOfficerDetails.push({
+      lines: [
+        officer?.email || 'Not found - email notifications for this referral will be sent to the referring officer',
+      ],
+      key: 'Email address',
+    })
+    if (this.userType === 'service-provider') {
+      responsibleOfficerDetails.push({
         key: 'Team phone',
         lines: [officer?.team?.telephoneNumber || 'Not found'],
-      },
-      {
-        key: 'Team email address',
-        lines: [officer?.team?.email || 'Not found'],
-      },
-    ]
+      })
+    }
+    responsibleOfficerDetails.push({
+      key: 'Team email address',
+      lines: [officer?.team?.email || 'Not found'],
+    })
+    return responsibleOfficerDetails
   }
 
   get referralServiceCategories(): ServiceCategory[] {
@@ -409,31 +437,27 @@ export default class ShowReferralPresenter {
 
   get serviceUserLocationDetails(): SummaryListItem[] {
     const { personCurrentLocationType } = this.sentReferral.referral
-
-    if (config.featureFlags.custodyLocationEnabled) {
-      if (personCurrentLocationType === 'CUSTODY') {
-        const currentPrisonName = this.getPrisonName(this.sentReferral.referral.personCustodyPrisonId)
-        const expectedReleaseInfo: string =
-          this.sentReferral.referral.expectedReleaseDate !== ''
-            ? this.sentReferral.referral.expectedReleaseDate!
-            : this.sentReferral.referral.expectedReleaseDateMissingReason!
-        return [
-          {
-            key: 'Location at time of referral',
-            lines: [personCurrentLocationType ? utils.convertToProperCase(personCurrentLocationType) : ''],
-          },
-          {
-            key: 'Current establishment',
-            lines: [this.sentReferral.referral.personCustodyPrisonId ? currentPrisonName : ''],
-          },
-          {
-            key: 'Expected release date',
-            lines: [expectedReleaseInfo],
-          },
-        ]
-      }
+    if (personCurrentLocationType === 'CUSTODY') {
+      const currentPrisonName = this.getPrisonName(this.sentReferral.referral.personCustodyPrisonId)
+      const expectedReleaseInfo: string =
+        this.sentReferral.referral.expectedReleaseDate !== ''
+          ? this.sentReferral.referral.expectedReleaseDate!
+          : this.sentReferral.referral.expectedReleaseDateMissingReason!
+      return [
+        {
+          key: 'Location at time of referral',
+          lines: [personCurrentLocationType ? utils.convertToProperCase(personCurrentLocationType) : ''],
+        },
+        {
+          key: 'Current establishment',
+          lines: [this.sentReferral.referral.personCustodyPrisonId ? currentPrisonName : ''],
+        },
+        {
+          key: 'Expected release date',
+          lines: [expectedReleaseInfo],
+        },
+      ]
     }
-
     return [
       {
         key: 'Location at time of referral',

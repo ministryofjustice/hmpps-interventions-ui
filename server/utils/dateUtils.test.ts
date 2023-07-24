@@ -129,7 +129,6 @@ describe('DateUtils', () => {
       ).toEqual('Midnight to midday')
     })
   })
-
   describe('age', () => {
     it('returns the correct age of the person', () => {
       const dob = new Date()

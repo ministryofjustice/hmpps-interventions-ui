@@ -448,12 +448,8 @@ describe('Probation practitioner referrals dashboard', () => {
       .children()
       .should('contain', 'Name')
       .should('contain', 'Bob Alice')
-      .should('contain', 'Phone')
-      .should('contain', '98454243243')
       .should('contain', 'Email address')
       .should('contain', 'bobalice@example.com')
-      .should('contain', 'Team phone')
-      .should('contain', '044-2545453442')
       .should('contain', 'Team email address')
       .should('contain', 'r.m@digital.justice.gov.uk')
 
