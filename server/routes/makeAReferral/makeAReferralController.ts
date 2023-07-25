@@ -148,7 +148,7 @@ export default class MakeAReferralController {
         serviceUser: this.interventionsService.serializeDeliusServiceUser(serviceUser),
       })
 
-      res.redirect(303, `/referrals/${referral.id}/form`)
+      res.redirect(303, `/referrals/${referral.id}/form?from=create-referral`)
     } else {
       const presenter = new ReferralStartPresenter(interventionId, error)
       const view = new ReferralStartView(presenter)
@@ -162,7 +162,6 @@ export default class MakeAReferralController {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.communityApiService.getExpandedServiceUserByCRN(referral.serviceUser.crn)
     const prisons = await this.prisonRegisterService.getPrisons()
-
     const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser, prisons, referral.id)
     const view = new ServiceUserDetailsView(presenter)
 
@@ -191,11 +190,12 @@ export default class MakeAReferralController {
   async viewReferralForm(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const referralId = req.params.id
+    const fromCreateReferral = req.query.from === 'create-referral'
     const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
 
-    const [intervention, serviceUser, deliusResponsibleOfficer] = await Promise.all([
+    const [intervention, deliusResponsibleOfficer] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, referral.interventionId),
-      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+      // this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
       this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn),
     ])
     if (
@@ -204,15 +204,15 @@ export default class MakeAReferralController {
     ) {
       throw new Error('No service category selected')
     }
+    // const draftOasysRiskInformation = await this.getDraftOasysRiskInformation(accessToken, referralId)
 
-    const draftOasysRiskInformation = await this.getDraftOasysRiskInformation(accessToken, referralId)
-
-    if (this.userHasComAllocated(deliusResponsibleOfficer)) {
+    if (fromCreateReferral && this.userHasComAllocated(deliusResponsibleOfficer)) {
       res.redirect(303, `/referrals/${referral.id}/referral-type-form`)
     } else {
-      const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
-      const view = new ReferralFormView(presenter)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      res.redirect(303, `/referrals/${referral.id}/form?from=no-com`)
+      // const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
+      // const view = new ReferralFormView(presenter)
+      // ControllerUtils.renderWithLayout(res, view, serviceUser)
     }
   }
 
@@ -621,6 +621,7 @@ export default class MakeAReferralController {
   async submitReferralTypeForm(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const form = await ReferralTypeForm.createForm(req, referral)
+    const { accessToken } = res.locals.user.token
 
     let error: FormValidationError | null = null
 
@@ -639,11 +640,24 @@ export default class MakeAReferralController {
       error = form.error
     }
 
-    if (error === null) {
-      res.redirect(303, `/referrals/${req.params.id}/next-page`)
-    } else {
-      const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
+    const [intervention, serviceUser] = await Promise.all([
+      this.interventionsService.getIntervention(accessToken, referral.interventionId),
+      this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn),
+    ])
+    if (
+      intervention.serviceCategories.length === 1 &&
+      (referral.serviceCategoryIds === null || referral.serviceCategoryIds.length === 0)
+    ) {
+      throw new Error('No service category selected')
+    }
 
+    const draftOasysRiskInformation = await this.getDraftOasysRiskInformation(accessToken, referral.id)
+
+    if (error === null) {
+      const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
+      const view = new ReferralFormView(presenter)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    } else {
       const presenter = new ReferralTypePresenter(referral, error, req.body)
       const view = new ReferralTypeFormView(presenter)
 
@@ -726,7 +740,7 @@ export default class MakeAReferralController {
     }
 
     if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      res.redirect(`/referrals/${req.params.id}/form?from=expected-release-date`)
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 
@@ -785,7 +799,7 @@ export default class MakeAReferralController {
     if (error === null && amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
     } else if (error === null && !amendPPDetails) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      res.redirect(303, `/referrals/${req.params.id}/form?from=update-probation-practitioner`)
     } else {
       const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.serviceUser.crn)
 

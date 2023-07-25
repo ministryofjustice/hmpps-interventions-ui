@@ -174,6 +174,7 @@ describe('Referral form', () => {
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
+      cy.stubGetResponsibleOfficer(draftReferral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
 
       cy.login()
 
@@ -185,8 +186,13 @@ describe('Referral form', () => {
 
       cy.contains('Continue').click()
 
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/referral-type-form`)
 
+      cy.get('[type="radio"]').check('CUSTODY')
+
+      cy.contains('Save and continue').click()
+
+      // make a referral
       cy.get('[data-cy=status]').eq(0).contains('NOT STARTED', { matchCase: false })
       cy.get('[data-cy=status]').eq(1).contains('CANNOT START YET', { matchCase: false })
       cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
@@ -704,7 +710,13 @@ describe('Referral form', () => {
 
       cy.contains('Continue').click()
 
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/referral-type-form`)
+
+      cy.get('[type="radio"]').check('CUSTODY')
+
+      cy.contains('Save and continue').click()
+
+      // make a referral
       cy.get('[data-cy=status]').eq(0).contains('NOT STARTED', { matchCase: false })
       cy.get('[data-cy=status]').eq(1).contains('CANNOT START YET', { matchCase: false })
       cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
