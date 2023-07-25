@@ -12,7 +12,12 @@
         {{ govukButton({ text: "Add case note" }) }}
     </form>
 
-    <p class="govuk-body">See all case notes about {{ serviceUserName }}</p>
+    {% if presenter.tableRows.length == 0 %}
+        <h2 class="govuk-heading-m">There are no case notes about {{ serviceUserName }} for this intervention.</h2>
+    {% else %}
+        <p class="govuk-body">All case notes</p>
+    {% endif %}
+
     {{ govukTable(tableArgs(mojBadge)) }}
     {% include "../partials/pagination.njk" %}
 {% endblock %}
