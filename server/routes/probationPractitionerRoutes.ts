@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { Services, get, post } from './index'
+import { get, post, Services } from './index'
 import ProbationPractitionerReferralsController from './probationPractitionerReferrals/probationPractitionerReferralsController'
 import CaseNotesController from './caseNotes/caseNotesController'
 import ReferralCancellationController from './referral/cancellation/referralCancellationController'
@@ -12,7 +12,6 @@ export const probationPractitionerUrlPrefix = '/probation-practitioner'
 export default function probationPractitionerRoutes(router: Router, services: Services): Router {
   const probationPractitionerReferralsController = new ProbationPractitionerReferralsController(
     services.interventionsService,
-    services.communityApiService,
     services.hmppsAuthService,
     services.assessRisksAndNeedsService,
     services.draftsService,
@@ -23,16 +22,16 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   )
   const appointmentsController = new AppointmentsController(
     services.interventionsService,
-    services.communityApiService,
+    services.ramDeliusApiService,
     services.hmppsAuthService,
     services.draftsService,
     services.referenceDataService
   )
   const amendAReferralController = new AmendAReferralController(
     services.interventionsService,
-    services.communityApiService
+    services.ramDeliusApiService
   )
-  const changeLogController = new ChangeLogController(services.interventionsService, services.communityApiService)
+  const changeLogController = new ChangeLogController(services.interventionsService, services.ramDeliusApiService)
 
   get(router, '/dashboard', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
   get(router, '/dashboard/open-cases', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
@@ -118,7 +117,7 @@ export default function probationPractitionerRoutes(router: Router, services: Se
 
   const referralCancellationController = new ReferralCancellationController(
     services.interventionsService,
-    services.communityApiService,
+    services.ramDeliusApiService,
     services.hmppsAuthService,
     services.assessRisksAndNeedsService,
     services.draftsService
@@ -161,7 +160,7 @@ export default function probationPractitionerRoutes(router: Router, services: Se
 
   const caseNotesController = new CaseNotesController(
     services.interventionsService,
-    services.communityApiService,
+    services.ramDeliusApiService,
     services.hmppsAuthService,
     services.draftsService
   )

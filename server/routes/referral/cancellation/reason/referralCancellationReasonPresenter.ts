@@ -20,9 +20,11 @@ export default class ReferralCancellationReasonPresenter {
 
   readonly text = {
     title: 'Referral cancellation',
-    information: `You are about to cancel ${this.serviceUser.firstName} ${this.serviceUser.surname}'s referral for ${a(
-      this.intervention.contractType.name
-    )} intervention with ${this.sentReferral.referral.serviceProvider.name}.`,
+    information: `You are about to cancel ${this.serviceUser.name.forename} ${
+      this.serviceUser.name.surname
+    }'s referral for ${a(this.intervention.contractType.name)} intervention with ${
+      this.sentReferral.referral.serviceProvider.name
+    }.`,
     additionalCommentsLabel: 'Additional comments (optional):',
   }
 

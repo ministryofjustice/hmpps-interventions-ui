@@ -1,7 +1,6 @@
 import type { RequestHandler, Router } from 'express'
 
 import asyncMiddleware from '../middleware/asyncMiddleware'
-import CommunityApiService from '../services/communityApiService'
 import InterventionsService from '../services/interventionsService'
 import HmppsAuthService from '../services/hmppsAuthService'
 import StaticContentController from './staticContent/staticContentController'
@@ -16,7 +15,6 @@ import PrisonRegisterService from '../services/prisonRegisterService'
 import RamDeliusApiService from '../services/ramDeliusApiService'
 
 export interface Services {
-  communityApiService: CommunityApiService
   ramDeliusApiService: RamDeliusApiService
   interventionsService: InterventionsService
   hmppsAuthService: HmppsAuthService
@@ -85,7 +83,6 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
 
   const makeAReferralController = new MakeAReferralController(
     services.interventionsService,
-    services.communityApiService,
     services.ramDeliusApiService,
     services.assessRisksAndNeedsService,
     services.prisonRegisterService,

@@ -11,3 +11,14 @@ export default interface DeliusUser {
   enabled: boolean
   roles: Array<DeliusRole>
 }
+
+export interface RamDeliusUser {
+  username: string
+  name: Name
+  email?: string
+}
+
+export interface Name {
+  forename: string
+  surname: string
+}

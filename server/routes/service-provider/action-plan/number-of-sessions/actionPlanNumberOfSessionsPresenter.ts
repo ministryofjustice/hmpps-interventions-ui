@@ -22,7 +22,7 @@ export default class ActionPlanNumberOfSessionsPresenter {
     numberOfSessions: {
       errorMessage: PresenterUtils.errorMessage(this.error, 'number-of-sessions'),
     },
-    serviceUserFirstName: this.serviceUser.firstName,
+    serviceUserFirstName: this.serviceUser.name.forename,
     serviceCategoryName: utils.convertToProperCase(this.interventionTitle),
   }
 

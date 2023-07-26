@@ -1,5 +1,5 @@
 import SentReferral from '../../models/sentReferral'
-import DeliusUser from '../../models/delius/deliusUser'
+import { RamDeliusUser } from '../../models/delius/deliusUser'
 import { SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
 import PresenterUtils from '../../utils/presenterUtils'
@@ -13,16 +13,16 @@ import ComplexityLevel from '../../models/complexityLevel'
 import { TagArgs } from '../../utils/govukFrontendTypes'
 import DesiredOutcome from '../../models/desiredOutcome'
 import logger from '../../../log'
-import DeliusConviction from '../../models/delius/deliusConviction'
 import SentencePresenter from '../makeAReferral/relevant-sentence/sentencePresenter'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
-import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import RoshPanelPresenter from './roshPanelPresenter'
 import DateUtils from '../../utils/dateUtils'
 import Prison from '../../models/prisonRegister/prison'
 import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
 import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
+import DeliusServiceUser from '../../models/delius/deliusServiceUser'
+import { DeliusConviction } from '../../models/delius/deliusConviction'
 
 export default class ShowReferralPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
@@ -36,13 +36,13 @@ export default class ShowReferralPresenter {
     private readonly intervention: Intervention,
     private readonly conviction: DeliusConviction,
     readonly riskInformation: SupplementaryRiskInformation,
-    private readonly sentBy: DeliusUser,
+    private readonly sentBy: RamDeliusUser,
     private readonly prisons: Prison[],
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
     readonly userType: 'service-provider' | 'probation-practitioner',
     readonly canAssignReferral: boolean,
-    private readonly deliusServiceUser: ExpandedDeliusServiceUser,
+    private readonly deliusServiceUser: DeliusServiceUser,
     readonly riskSummary: RiskSummary | null,
     private readonly deliusResponsibleOfficer: DeliusResponsibleOfficer | null,
     readonly showSuccess: boolean = false,
@@ -197,7 +197,7 @@ export default class ShowReferralPresenter {
   }
 
   readonly probationPractitionerDetailsForCustody: SummaryListItem[] = [
-    { key: 'Name', lines: [`${this.sentBy.firstName} ${this.sentBy.surname}`] },
+    { key: 'Name', lines: [`${this.sentBy.name.forename} ${this.sentBy.name.surname}`] },
     { key: 'Email address', lines: [this.sentBy.email ?? ''] },
   ]
 

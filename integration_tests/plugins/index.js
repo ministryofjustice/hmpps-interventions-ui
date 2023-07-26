@@ -1,7 +1,6 @@
 import Wiremock from '../../mockApis/wiremock'
 import AuthServiceMocks from '../../mockApis/auth'
 import TokenVerificationMocks from '../../mockApis/tokenVerification'
-import CommunityApiMocks from '../../mockApis/communityApi'
 import InterventionsServiceMocks from '../../mockApis/interventionsService'
 import AssessRisksAndNeedsServiceMocks from '../../mockApis/assessRisksAndNeedsService'
 import PrisonRegisterServiceMocks from '../../mockApis/prisonRegisterService'
@@ -10,7 +9,6 @@ import ReferAndMonitorAndDeliusMocks from '../../mockApis/referAndMonitorAndDeli
 const wiremock = new Wiremock('http://localhost:9091/__admin')
 const auth = new AuthServiceMocks(wiremock)
 const tokenVerification = new TokenVerificationMocks(wiremock)
-const communityApi = new CommunityApiMocks(wiremock, '/community-api')
 const ramDeliusApi = new ReferAndMonitorAndDeliusMocks(wiremock, '/refer-and-monitor-and-delius')
 const interventionsService = new InterventionsServiceMocks(wiremock, '/interventions')
 const assessRisksAndNeedsService = new AssessRisksAndNeedsServiceMocks(wiremock, '/assess-risks-and-needs')
@@ -39,12 +37,16 @@ export default on => {
 
     stubTokenVerificationPing: tokenVerification.stubPing,
 
-    stubGetServiceUserByCRN: arg => {
-      return communityApi.stubGetServiceUserByCRN(arg.crn, arg.responseJson)
+    stubGetCaseDetailsByCrn: arg => {
+      return ramDeliusApi.stubGetCaseDetailsByCrn(arg.crn, arg.responseJson)
     },
 
-    stubGetExpandedServiceUserByCRN: arg => {
-      return communityApi.stubGetExpandedServiceUserByCRN(arg.crn, arg.responseJson)
+    stubGetConvictionsByCrn: arg => {
+      return ramDeliusApi.stubGetConvictionsByCrn(arg.crn, arg.responseJson)
+    },
+
+    stubGetConvictionByCrnAndId: arg => {
+      return ramDeliusApi.stubGetConvictionByCrnAndId(arg.crn, arg.id, arg.responseJson)
     },
 
     stubGetPrisons: arg => {
@@ -56,19 +58,7 @@ export default on => {
     },
 
     stubGetUserByUsername: arg => {
-      return communityApi.stubGetUserByUsername(arg.username, arg.responseJson)
-    },
-
-    stubGetActiveConvictionsByCRN: arg => {
-      return communityApi.stubGetActiveConvictionsByCRN(arg.crn, arg.responseJson)
-    },
-
-    stubGetConvictionById: arg => {
-      return communityApi.stubGetConvictionById(arg.crn, arg.id, arg.responseJson)
-    },
-
-    stubGetResponsibleOfficerForServiceUser: arg => {
-      return communityApi.stubGetResponsibleOfficerForServiceUser(arg.crn, arg.responseJson)
+      return ramDeliusApi.stubGetUserByUsername(arg.username, arg.responseJson)
     },
 
     stubGetDraftReferral: arg => {

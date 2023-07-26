@@ -1,13 +1,12 @@
 import sentReferralFactory from '../../testutils/factories/sentReferral'
 import deliusServiceUser from '../../testutils/factories/deliusServiceUser'
 import intervention from '../../testutils/factories/intervention'
-import deliusUser from '../../testutils/factories/deliusUser'
-import deliusConviction from '../../testutils/factories/deliusConviction'
+import ramDeliusUserFactory from '../../testutils/factories/ramDeliusUser'
 import supplementaryRiskInformation from '../../testutils/factories/supplementaryRiskInformation'
 import riskSummary from '../../testutils/factories/riskSummary'
-import deliusOffenderManager from '../../testutils/factories/deliusOffenderManager'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
+import caseConvictionFactory from '../../testutils/factories/caseConviction'
 
 context('Amend a referral', () => {
   beforeEach(() => {
@@ -22,21 +21,20 @@ context('Amend a referral', () => {
     const stubCallsForUpdateReferralPage = () => {
       cy.stubUpdateSentReferralDetails(sentReferral.id, { referralId: sentReferral.id })
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
-      const pp = deliusUser.build()
+      const pp = ramDeliusUserFactory.build()
 
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
       cy.stubGetUserByUsername(pp.username, pp)
-      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
-      cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
+      cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetRiskSummary(crn, riskSummary.build())
-      cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
     }
@@ -112,22 +110,21 @@ context('Amend a referral', () => {
     const stubCallsForUpdateReferralPage = () => {
       cy.stubUpdateSentReferralDetails(sentReferral.id, { referralId: sentReferral.id })
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubAmendAccessibilityNeeds(sentReferral.id, sentReferral)
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
-      const pp = deliusUser.build()
+      const pp = ramDeliusUserFactory.build()
 
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
       cy.stubGetUserByUsername(pp.username, pp)
-      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
-      cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
+      cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetRiskSummary(crn, riskSummary.build())
-      cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
     }
@@ -212,22 +209,21 @@ context('Amend a referral', () => {
     const stubCallsForUpdateReferralPage = () => {
       cy.stubUpdateSentReferralDetails(sentReferral.id, { referralId: sentReferral.id })
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubAmendAdditionalInformation(sentReferral.id, sentReferral)
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
-      const pp = deliusUser.build()
+      const pp = ramDeliusUserFactory.build()
 
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
       cy.stubGetUserByUsername(pp.username, pp)
-      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
-      cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
+      cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetRiskSummary(crn, riskSummary.build())
-      cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
     }
@@ -310,20 +306,7 @@ context('Amend a referral', () => {
       serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
     })
 
-    const conviction = deliusConviction.build({
-      offences: [
-        {
-          mainOffence: true,
-          detail: {
-            mainCategoryDescription: 'Burglary',
-            subCategoryDescription: 'Theft act, 1968',
-          },
-        },
-      ],
-      sentence: {
-        expectedSentenceEndDate: '2025-11-15',
-      },
-    })
+    const conviction = caseConvictionFactory.build()
 
     const sentReferral = sentReferralFactory.build({
       sentAt: '2020-12-13T13:00:00.000000Z',
@@ -358,20 +341,18 @@ context('Amend a referral', () => {
 
     const stubCallsForUpdateReferralPage = () => {
       cy.stubUpdateDesiredOutcomesForServiceCategory(sentReferral.id, accommodationServiceCategory.id, sentReferral)
-      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
-      const pp = deliusUser.build()
+      const pp = ramDeliusUserFactory.build()
 
       cy.stubGetIntervention(sentReferral.referral.interventionId, personalWellbeingIntervention)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetServiceUserByCRN(crn, deliusServiceUser)
-      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
-      cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
+      cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())
       cy.stubGetUserByUsername(pp.username, pp)
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
-      cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
@@ -552,20 +533,7 @@ context('Amend a referral', () => {
       serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
     })
 
-    const conviction = deliusConviction.build({
-      offences: [
-        {
-          mainOffence: true,
-          detail: {
-            mainCategoryDescription: 'Burglary',
-            subCategoryDescription: 'Theft act, 1968',
-          },
-        },
-      ],
-      sentence: {
-        expectedSentenceEndDate: '2025-11-15',
-      },
-    })
+    const conviction = caseConvictionFactory.build()
 
     const sentReferral = sentReferralFactory.build({
       sentAt: '2020-12-13T13:00:00.000000Z',
@@ -599,21 +567,19 @@ context('Amend a referral', () => {
     })
 
     const stubCallsForUpdateReferralPage = () => {
-      cy.stubGetServiceUserByCRN(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
       cy.stubAmendComplexityLevelForServiceCategory(sentReferral.id, accommodationServiceCategory.id, sentReferral)
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
-      const pp = deliusUser.build()
+      const pp = ramDeliusUserFactory.build()
 
       cy.stubGetIntervention(sentReferral.referral.interventionId, personalWellbeingIntervention)
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
-      cy.stubGetServiceUserByCRN(crn, deliusServiceUser)
-      cy.stubGetExpandedServiceUserByCRN(crn, deliusServiceUser.build())
-      cy.stubGetConvictionById(crn, sentReferral.referral.relevantSentenceId, deliusConviction.build())
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
+      cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())
       cy.stubGetUserByUsername(pp.username, pp)
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
-      cy.stubGetResponsibleOfficerForServiceUser(crn, [deliusOffenderManager.build()])
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)

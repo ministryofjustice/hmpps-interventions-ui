@@ -8,9 +8,9 @@ import utils from '../../../utils/utils'
 import DraftReferralDecorator from '../../../decorators/draftReferralDecorator'
 import Intervention from '../../../models/intervention'
 import InterventionDecorator from '../../../decorators/interventionDecorator'
-import DeliusConviction from '../../../models/delius/deliusConviction'
+import { DeliusConviction } from '../../../models/delius/deliusConviction'
 import SentencePresenter from '../relevant-sentence/sentencePresenter'
-import { ExpandedDeliusServiceUser } from '../../../models/delius/deliusServiceUser'
+import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 import DateUtils from '../../../utils/dateUtils'
 import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
 import Prison from '../../../models/prisonRegister/prison'
@@ -22,7 +22,7 @@ export default class CheckAllReferralInformationPresenter {
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
     private readonly conviction: DeliusConviction,
-    private readonly deliusServiceUser: ExpandedDeliusServiceUser,
+    private readonly deliusServiceUser: DeliusServiceUser,
     private readonly prisons: Prison[],
     private readonly editedOasysRiskInformation: DraftOasysRiskInformation | null = null
   ) {

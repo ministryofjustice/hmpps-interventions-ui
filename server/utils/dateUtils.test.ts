@@ -129,4 +129,16 @@ describe('DateUtils', () => {
       ).toEqual('Midnight to midday')
     })
   })
+  describe('age', () => {
+    it('returns the correct age of the person', () => {
+      const dob = new Date()
+      dob.setFullYear(dob.getFullYear() - 41)
+      expect(DateUtils.age(dob.toISOString())).toEqual(41)
+    })
+    it('returns the correct age of the futuristic date', () => {
+      const dob = new Date()
+      dob.setFullYear(dob.getFullYear() + 42)
+      expect(DateUtils.age(dob.toISOString())).toEqual(-43)
+    })
+  })
 })

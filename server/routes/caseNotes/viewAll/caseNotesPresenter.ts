@@ -50,7 +50,9 @@ export default class CaseNotesPresenter {
 
   readonly hrefCaseNoteStart = `/${this.loggedInUserType}/referrals/${this.referralId}/add-case-note/start`
 
-  readonly serviceUserName = utils.convertToTitleCase(`${this.serviceUser.firstName} ${this.serviceUser.surname}`)
+  readonly serviceUserName = utils.convertToTitleCase(
+    `${this.serviceUser.name.forename} ${this.serviceUser.name.surname}`
+  )
 
   readonly tableHeadings: string[] = ['Details', 'Case notes']
 

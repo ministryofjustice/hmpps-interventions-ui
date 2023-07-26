@@ -20,7 +20,6 @@ import nunjucksSetup from './utils/nunjucksSetup'
 import config from './config'
 import createErrorHandler from './errorHandler'
 import standardRouter from './routes/standardRouter'
-import CommunityApiService from './services/communityApiService'
 import InterventionsService from './services/interventionsService'
 import HmppsAuthService from './services/hmppsAuthService'
 import passportSetup from './authentication/passport'
@@ -47,7 +46,6 @@ declare module 'express-session' {
 }
 
 export default function createApp(
-  communityApiService: CommunityApiService,
   ramDeliusApiService: RamDeliusApiService,
   interventionsService: InterventionsService,
   hmppsAuthService: HmppsAuthService,
@@ -251,7 +249,6 @@ export default function createApp(
   const userDataService = new UserDataService(redisClient)
 
   const services = {
-    communityApiService,
     ramDeliusApiService,
     interventionsService,
     hmppsAuthService,

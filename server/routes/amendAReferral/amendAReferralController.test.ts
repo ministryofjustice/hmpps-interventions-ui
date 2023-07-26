@@ -2,8 +2,7 @@ import request from 'supertest'
 import { Express } from 'express'
 import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
-import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
-import CommunityApiService from '../../services/communityApiService'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 import referralDetails from '../../../testutils/factories/referralDetails'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
@@ -11,20 +10,21 @@ import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import sentReferral from '../../../testutils/factories/sentReferral'
 import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
+import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 
 jest.mock('../../services/interventionsService')
-jest.mock('../../services/communityApiService')
+jest.mock('../../services/ramDeliusApiService')
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
-const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 
 let app: Express
 let referral: SentReferral
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService },
+    overrides: { interventionsService, ramDeliusApiService },
     userType: AppSetupUserType.probationPractitioner,
   })
   referral = sentReferral.build()
@@ -33,7 +33,7 @@ beforeEach(() => {
 describe('GET /probation-practitioner/referrals/:id/update-maximum-enforceable-days', () => {
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
   })
 
   it('renders the page to start a referral', () => {
@@ -50,7 +50,7 @@ describe('GET /probation-practitioner/referrals/:id/interpreter-needs', () => {
   const serviceUser = deliusServiceUser.build()
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(serviceUser)
   })
 
   it('allows pp to change referral language needs', () => {
@@ -58,7 +58,7 @@ describe('GET /probation-practitioner/referrals/:id/interpreter-needs', () => {
       .get(`/probation-practitioner/referrals/${referral.id}/interpreter-needs`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain(`Does ${serviceUser?.firstName} need an interpreter?`)
+        expect(res.text).toContain(`Does ${serviceUser?.name?.forename} need an interpreter?`)
       })
   })
 })
@@ -67,7 +67,7 @@ describe('POST /probation-practitioner/referrals/:id/interpreter-needs', () => {
   const serviceUser = deliusServiceUser.build()
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(serviceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(serviceUser)
     interventionsService.updateNeedsAndRequirments.mockImplementation(() => {
       return Promise.resolve()
     })
@@ -107,7 +107,7 @@ describe('POST /probation-practitioner/referrals/:id/update-maximum-enforceable-
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
   })
 
   it('redirects to the referral details page on success', () => {
@@ -137,7 +137,7 @@ describe('GET /probation-practitioner/referrals/:referralId/:serviceCategoryId/u
   beforeEach(() => {
     serviceCategory = serviceCategoryFactory.build()
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 
@@ -154,7 +154,7 @@ describe('GET /probation-practitioner/referrals/:referralId/:serviceCategoryId/u
 describe('GET /referrals/:referralId/update-additional-information', () => {
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
   })
 
   it('renders the page to update additional information', () => {
@@ -170,7 +170,7 @@ describe('POST /probation-practitioner/referrals/:referralId/:serviceCategoryId/
   beforeEach(() => {
     serviceCategory = serviceCategoryFactory.build()
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.updateDesiredOutcomesForServiceCategory.mockResolvedValue(null)
   })
@@ -224,7 +224,7 @@ describe('POST /probation-practitioner/referrals/:id/update-complexity-level', (
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
     interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
   })
 
@@ -261,7 +261,7 @@ describe('POST /probation-practitioner/referrals/:id/employment-responsibilities
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
     interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
   })
 
@@ -308,7 +308,7 @@ describe('GET /probation-practitioner/referrals/:id/employment-responsibilities'
   beforeEach(() => {
     serviceCategory = serviceCategoryFactory.build()
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
   })
 

@@ -11,7 +11,7 @@ export default class SessionFeedbackForm {
   constructor(private readonly request: Request, private readonly serviceUser: DeliusServiceUser) {}
 
   async data(): Promise<FormData<Partial<AppointmentSession>>> {
-    const serviceUserName = `${this.serviceUser.firstName} ${this.serviceUser.surname}`
+    const serviceUserName = `${this.serviceUser.name.forename} ${this.serviceUser.name.surname}`
     const validationResult = await FormUtils.runValidations({
       request: this.request,
       validations: SessionFeedbackForm.validations(serviceUserName),

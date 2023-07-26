@@ -37,7 +37,7 @@ export default class IntepreterRequiredPresenter {
 
   readonly text = {
     requirements: {
-      title: `Does ${this.serviceUser?.firstName} need an interpreter?`,
+      title: `Does ${this.serviceUser.name.forename} need an interpreter?`,
       needsInterpreter: {
         hint: '',
         errorMessage: this.errorMessageForField('needs-intepreter'),
@@ -48,7 +48,7 @@ export default class IntepreterRequiredPresenter {
       },
     },
     reasonForChange: {
-      title: `What is the reason for changing whether ${this.serviceUser.firstName} needs an interpreter?`,
+      title: `What is the reason for changing whether ${this.serviceUser.name.forename} needs an interpreter?`,
       hint: `For example, they would prefer to speak in their native language.`,
     },
   }

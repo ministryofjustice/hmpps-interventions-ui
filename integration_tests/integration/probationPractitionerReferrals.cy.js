@@ -3,13 +3,10 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import sentReferralSummariesFactory from '../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
-import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
+import deliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import interventionFactory from '../../testutils/factories/intervention'
-import deliusUserFactory from '../../testutils/factories/deliusUser'
-import deliusConvictionFactory from '../../testutils/factories/deliusConviction'
+import ramDeliusUserFactory from '../../testutils/factories/ramDeliusUser'
 import supplementaryRiskInformationFactory from '../../testutils/factories/supplementaryRiskInformation'
-import expandedDeliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
-import deliusOffenderManagerFactory from '../../testutils/factories/deliusOffenderManager'
 import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
@@ -17,6 +14,7 @@ import pageFactory from '../../testutils/factories/page'
 import prisonFactory from '../../testutils/factories/prison'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 import { CurrentLocationType } from '../../server/models/draftReferral'
+import caseConvictionFactory from '../../testutils/factories/caseConviction'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -117,7 +115,7 @@ describe('Probation practitioner referrals dashboard', () => {
           { serviceCategoryId: serviceCategory1.id, desiredOutcomesIds: [serviceCategory1.desiredOutcomes[0].id] },
           { serviceCategoryId: serviceCategory2.id, desiredOutcomesIds: [serviceCategory2.desiredOutcomes[0].id] },
         ],
-        serviceUser: { crn: deliusServiceUser.otherIds.crn },
+        serviceUser: { crn: deliusServiceUser.crn },
       },
     })
     const endOfServiceReport = endOfServiceReportFactory.build({
@@ -144,7 +142,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetIntervention(intervention.id, intervention)
     cy.stubGetServiceCategory(serviceCategory1.id, serviceCategory1)
     cy.stubGetServiceCategory(serviceCategory2.id, serviceCategory2)
-    cy.stubGetServiceUserByCRN(deliusServiceUser.otherIds.crn, deliusServiceUser)
+    cy.stubGetCaseDetailsByCrn(deliusServiceUser.crn, deliusServiceUser)
 
     cy.visit(`/probation-practitioner/end-of-service-report/${endOfServiceReport.id}`)
 
@@ -167,7 +165,7 @@ describe('Probation practitioner referrals dashboard', () => {
       beforeEach(() => {
         cy.stubGetSentReferralsForUserTokenPaged(page)
         const intervention = interventionFactory.build()
-        const conviction = deliusConvictionFactory.build()
+        const conviction = caseConvictionFactory.build()
         const hmppsAuthUser = hmppsAuthUserFactory.build({
           firstName: 'John',
           lastName: 'Smith',
@@ -181,16 +179,12 @@ describe('Probation practitioner referrals dashboard', () => {
             serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
           },
         })
-        const deliusUser = deliusUserFactory.build()
+        const deliusUser = ramDeliusUserFactory.build()
         cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
         cy.stubGetIntervention(intervention.id, intervention)
         cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [])
-        cy.stubGetServiceUserByCRN(assignedReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
-        cy.stubGetExpandedServiceUserByCRN(
-          assignedReferral.referral.serviceUser.crn,
-          expandedDeliusServiceUserFactory.build()
-        )
-        cy.stubGetConvictionById(assignedReferral.referral.serviceUser.crn, conviction.convictionId, conviction)
+        cy.stubGetCaseDetailsByCrn(assignedReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
+        cy.stubGetConvictionByCrnAndId(assignedReferral.referral.serviceUser.crn, conviction.conviction.id, conviction)
         cy.stubGetUserByUsername(deliusUser.username, deliusUser)
         cy.stubGetSupplementaryRiskInformation(
           assignedReferral.supplementaryRiskId,
@@ -324,18 +318,25 @@ describe('Probation practitioner referrals dashboard', () => {
       serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
     })
 
-    const conviction = deliusConvictionFactory.build({
-      offences: [
-        {
-          mainOffence: true,
-          detail: {
-            mainCategoryDescription: 'Burglary',
-            subCategoryDescription: 'Theft act, 1968',
-          },
+    const conviction = caseConvictionFactory.build({
+      caseDetail: {
+        name: {
+          firstName: 'Jenny',
+          surname: 'Jones',
         },
-      ],
-      sentence: {
-        expectedSentenceEndDate: '2025-11-15',
+        contactDetails: {
+          emailAddress: 'jenny.jones@example.com',
+          mobileNumber: '07123456789',
+        },
+      },
+      conviction: {
+        mainOffence: {
+          category: 'Burglary',
+          subCategory: 'Theft act, 1968',
+        },
+        sentence: {
+          expectedEndDate: '2025-11-15',
+        },
       },
     })
 
@@ -345,7 +346,7 @@ describe('Probation practitioner referrals dashboard', () => {
       referral: {
         interventionId: personalWellbeingIntervention.id,
         serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-        relevantSentenceId: conviction.convictionId,
+        relevantSentenceId: conviction.conviction.id,
         serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
         complexityLevels: [
           {
@@ -376,77 +377,18 @@ describe('Probation practitioner referrals dashboard', () => {
       riskSummaryComments: 'They are low risk.',
     })
 
-    const deliusUser = deliusUserFactory.build({
-      firstName: 'Bernard',
-      surname: 'Beaks',
-      email: 'bernard.beaks@justice.gov.uk',
-    })
+    const deliusUser = ramDeliusUserFactory.build()
 
-    const deliusServiceUser = deliusServiceUserFactory.build({
-      firstName: 'Jenny',
-      surname: 'Jones',
-      dateOfBirth: '1980-01-01',
-      contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
-      },
-    })
+    const deliusServiceUser = conviction.caseDetail
 
-    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-      ...deliusServiceUser,
-      contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
-        addresses: [
-          {
-            addressNumber: 'Flat 2',
-            buildingName: null,
-            streetName: 'Test Walk',
-            postcode: 'SW16 1AQ',
-            town: 'London',
-            district: 'City of London',
-            county: 'Greater London',
-            from: '2019-01-01',
-            to: null,
-            noFixedAbode: false,
-          },
-        ],
-      },
-    })
-
-    const responsibleOfficer = deliusOffenderManagerFactory.build({
-      staff: {
-        forenames: 'Peter',
-        surname: 'Practitioner',
-        email: 'p.practitioner@justice.gov.uk',
-        phoneNumber: '01234567890',
-      },
-      team: {
-        telephone: '07890 123456',
-        emailAddress: 'probation-team4692@justice.gov.uk',
-        startDate: '2021-01-01',
-      },
-    })
     const prisons = prisonFactory.prisonList()
 
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
-    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-    cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
-    cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+    cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
-    cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
     cy.stubGetApprovedActionPlanSummaries(referral.id, [])
     cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
     cy.stubGetPrisons(prisons)
@@ -598,18 +540,25 @@ describe('Probation practitioner referrals dashboard', () => {
       serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
     })
 
-    const conviction = deliusConvictionFactory.build({
-      offences: [
-        {
-          mainOffence: true,
-          detail: {
-            mainCategoryDescription: 'Burglary',
-            subCategoryDescription: 'Theft act, 1968',
-          },
+    const conviction = caseConvictionFactory.build({
+      caseDetail: {
+        name: {
+          firstName: 'Jenny',
+          surname: 'Jones',
         },
-      ],
-      sentence: {
-        expectedSentenceEndDate: '2025-11-15',
+        contactDetails: {
+          emailAddress: 'jenny.jones@example.com',
+          mobileNumber: '07123456789',
+        },
+      },
+      conviction: {
+        mainOffence: {
+          category: 'Burglary',
+          subCategory: 'Theft act, 1968',
+        },
+        sentence: {
+          expectedEndDate: '2025-11-15',
+        },
       },
     })
 
@@ -619,7 +568,7 @@ describe('Probation practitioner referrals dashboard', () => {
       referral: {
         interventionId: personalWellbeingIntervention.id,
         serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-        relevantSentenceId: conviction.convictionId,
+        relevantSentenceId: conviction.conviction.id,
         serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
         complexityLevels: [
           {
@@ -662,77 +611,18 @@ describe('Probation practitioner referrals dashboard', () => {
       riskSummaryComments: 'They are low risk.',
     })
 
-    const deliusUser = deliusUserFactory.build({
-      firstName: 'Bernard',
-      surname: 'Beaks',
-      email: 'bernard.beaks@justice.gov.uk',
-    })
+    const deliusUser = ramDeliusUserFactory.build()
 
-    const deliusServiceUser = deliusServiceUserFactory.build({
-      firstName: 'Jenny',
-      surname: 'Jones',
-      dateOfBirth: '1980-01-01',
-      contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
-      },
-    })
+    const deliusServiceUser = conviction.caseDetail
 
-    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-      ...deliusServiceUser,
-      contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
-        addresses: [
-          {
-            addressNumber: 'Flat 2',
-            buildingName: null,
-            streetName: 'Test Walk',
-            postcode: 'SW16 1AQ',
-            town: 'London',
-            district: 'City of London',
-            county: 'Greater London',
-            from: '2019-01-01',
-            to: null,
-            noFixedAbode: false,
-          },
-        ],
-      },
-    })
-
-    const responsibleOfficer = deliusOffenderManagerFactory.build({
-      staff: {
-        forenames: 'Peter',
-        surname: 'Practitioner',
-        email: 'p.practitioner@justice.gov.uk',
-        phoneNumber: '01234567890',
-      },
-      team: {
-        telephone: '07890 123456',
-        emailAddress: 'probation-team4692@justice.gov.uk',
-        startDate: '2021-01-01',
-      },
-    })
     const prisons = prisonFactory.prisonList()
 
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
-    cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-    cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
-    cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+    cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
+    cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
-    cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
     cy.stubGetApprovedActionPlanSummaries(referral.id, [])
     cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
     cy.stubGetPrisons(prisons)
@@ -875,18 +765,17 @@ describe('Probation practitioner referrals dashboard', () => {
         serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
       })
 
-      const conviction = deliusConvictionFactory.build({
-        offences: [
-          {
-            mainOffence: true,
-            detail: {
-              mainCategoryDescription: 'Burglary',
-              subCategoryDescription: 'Theft act, 1968',
-            },
+      const conviction = caseConvictionFactory.build({
+        caseDetail: {
+          name: {
+            firstName: 'Jenny',
+            surname: 'Jones',
           },
-        ],
-        sentence: {
-          expectedSentenceEndDate: '2025-11-15',
+          dateOfBirth: '1980-01-01',
+          contactDetails: {
+            emailAddress: 'jenny.jones@example.com',
+            mobileNumber: '07123456789',
+          },
         },
       })
 
@@ -896,7 +785,7 @@ describe('Probation practitioner referrals dashboard', () => {
         referral: {
           interventionId: personalWellbeingIntervention.id,
           serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-          relevantSentenceId: conviction.convictionId,
+          relevantSentenceId: conviction.conviction.id,
           serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
           complexityLevels: [
             {
@@ -925,76 +814,26 @@ describe('Probation practitioner referrals dashboard', () => {
         riskSummaryComments: 'They are low risk.',
       })
 
-      const deliusUser = deliusUserFactory.build({
-        firstName: 'Bernard',
-        surname: 'Beaks',
-        email: 'bernard.beaks@justice.gov.uk',
-      })
+      const deliusUser = ramDeliusUserFactory.build()
 
       const deliusServiceUser = deliusServiceUserFactory.build({
-        firstName: 'Jenny',
-        surname: 'Jones',
-        dateOfBirth: '1980-01-01',
+        name: {
+          firstName: 'Jenny',
+          surname: 'Jones',
+        },
+        dateOfBirth: new Date(Date.parse('1980-01-01')),
         contactDetails: {
-          emailAddresses: ['jenny.jones@example.com'],
-          phoneNumbers: [
-            {
-              number: '07123456789',
-              type: 'MOBILE',
-            },
-          ],
-        },
-      })
-
-      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-        ...deliusServiceUser,
-        contactDetails: {
-          emailAddresses: ['jenny.jones@example.com'],
-          phoneNumbers: [
-            {
-              number: '07123456789',
-              type: 'MOBILE',
-            },
-          ],
-          addresses: [
-            {
-              addressNumber: 'Flat 2',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2019-01-01',
-              to: null,
-              noFixedAbode: false,
-            },
-          ],
-        },
-      })
-
-      const responsibleOfficer = deliusOffenderManagerFactory.build({
-        staff: {
-          forenames: 'Peter',
-          surname: 'Practitioner',
-          email: 'p.practitioner@justice.gov.uk',
-          phoneNumber: '01234567890',
-        },
-        team: {
-          telephone: '07890 123456',
-          emailAddress: 'probation-team4692@justice.gov.uk',
-          startDate: '2021-01-01',
+          emailAddress: 'jenny.jones@example.com',
+          mobileNumber: '07123456789',
         },
       })
 
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
-      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-      cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
-      cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+      cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
-      cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
       cy.stubUpdateDesiredOutcomesForServiceCategory(referral.id, accommodationServiceCategory.id, referral)
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
@@ -1024,18 +863,17 @@ describe('Probation practitioner referrals dashboard', () => {
         serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
       })
 
-      const conviction = deliusConvictionFactory.build({
-        offences: [
-          {
-            mainOffence: true,
-            detail: {
-              mainCategoryDescription: 'Burglary',
-              subCategoryDescription: 'Theft act, 1968',
-            },
+      const conviction = caseConvictionFactory.build({
+        caseDetail: {
+          name: {
+            firstName: 'Jenny',
+            surname: 'Jones',
           },
-        ],
-        sentence: {
-          expectedSentenceEndDate: '2025-11-15',
+          dateOfBirth: '1980-01-01',
+          contactDetails: {
+            emailAddress: 'jenny.jones@example.com',
+            mobileNumber: '07123456789',
+          },
         },
       })
 
@@ -1045,7 +883,7 @@ describe('Probation practitioner referrals dashboard', () => {
         referral: {
           interventionId: personalWellbeingIntervention.id,
           serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-          relevantSentenceId: conviction.convictionId,
+          relevantSentenceId: conviction.conviction.id,
           serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
           complexityLevels: [
             {
@@ -1074,76 +912,26 @@ describe('Probation practitioner referrals dashboard', () => {
         riskSummaryComments: 'They are low risk.',
       })
 
-      const deliusUser = deliusUserFactory.build({
-        firstName: 'Bernard',
-        surname: 'Beaks',
-        email: 'bernard.beaks@justice.gov.uk',
-      })
+      const deliusUser = ramDeliusUserFactory.build()
 
       const deliusServiceUser = deliusServiceUserFactory.build({
-        firstName: 'Jenny',
-        surname: 'Jones',
-        dateOfBirth: '1980-01-01',
+        name: {
+          firstName: 'Jenny',
+          surname: 'Jones',
+        },
+        dateOfBirth: new Date(Date.parse('1980-01-01')),
         contactDetails: {
-          emailAddresses: ['jenny.jones@example.com'],
-          phoneNumbers: [
-            {
-              number: '07123456789',
-              type: 'MOBILE',
-            },
-          ],
-        },
-      })
-
-      const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-        ...deliusServiceUser,
-        contactDetails: {
-          emailAddresses: ['jenny.jones@example.com'],
-          phoneNumbers: [
-            {
-              number: '07123456789',
-              type: 'MOBILE',
-            },
-          ],
-          addresses: [
-            {
-              addressNumber: 'Flat 2',
-              buildingName: null,
-              streetName: 'Test Walk',
-              postcode: 'SW16 1AQ',
-              town: 'London',
-              district: 'City of London',
-              county: 'Greater London',
-              from: '2019-01-01',
-              to: null,
-              noFixedAbode: false,
-            },
-          ],
-        },
-      })
-
-      const responsibleOfficer = deliusOffenderManagerFactory.build({
-        staff: {
-          forenames: 'Peter',
-          surname: 'Practitioner',
-          email: 'p.practitioner@justice.gov.uk',
-          phoneNumber: '01234567890',
-        },
-        team: {
-          telephone: '07890 123456',
-          emailAddress: 'probation-team4692@justice.gov.uk',
-          startDate: '2021-01-01',
+          emailAddress: 'jenny.jones@example.com',
+          mobileNumber: '07123456789',
         },
       })
 
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
-      cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-      cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
-      cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+      cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
+      cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
-      cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
       cy.stubUpdateDesiredOutcomesForServiceCategory(referral.id, accommodationServiceCategory.id, referral)
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
@@ -1200,18 +988,17 @@ describe('Probation practitioner referrals dashboard', () => {
       serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
     })
 
-    const conviction = deliusConvictionFactory.build({
-      offences: [
-        {
-          mainOffence: true,
-          detail: {
-            mainCategoryDescription: 'Burglary',
-            subCategoryDescription: 'Theft act, 1968',
-          },
+    const conviction = caseConvictionFactory.build({
+      caseDetail: {
+        name: {
+          firstName: 'Jenny',
+          surname: 'Jones',
         },
-      ],
-      sentence: {
-        expectedSentenceEndDate: '2025-11-15',
+        dateOfBirth: '1980-01-01',
+        contactDetails: {
+          emailAddress: 'jenny.jones@example.com',
+          mobileNumber: '07123456789',
+        },
       },
     })
 
@@ -1221,7 +1008,7 @@ describe('Probation practitioner referrals dashboard', () => {
       referral: {
         interventionId: personalWellbeingIntervention.id,
         serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
-        relevantSentenceId: conviction.convictionId,
+        relevantSentenceId: conviction.conviction.id,
         serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
         complexityLevels: [
           {
@@ -1250,65 +1037,17 @@ describe('Probation practitioner referrals dashboard', () => {
       riskSummaryComments: 'They are low risk.',
     })
 
-    const deliusUser = deliusUserFactory.build({
-      firstName: 'Bernard',
-      surname: 'Beaks',
-      email: 'bernard.beaks@justice.gov.uk',
-    })
+    const deliusUser = ramDeliusUserFactory.build()
 
     const deliusServiceUser = deliusServiceUserFactory.build({
-      firstName: 'Jenny',
-      surname: 'Jones',
-      dateOfBirth: '1980-01-01',
+      name: {
+        firstName: 'Jenny',
+        surname: 'Jones',
+      },
+      dateOfBirth: new Date(Date.parse('1980-01-01')),
       contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
-      },
-    })
-
-    const expandedDeliusServiceUser = expandedDeliusServiceUserFactory.build({
-      ...deliusServiceUser,
-      contactDetails: {
-        emailAddresses: ['jenny.jones@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
-        addresses: [
-          {
-            addressNumber: 'Flat 2',
-            buildingName: null,
-            streetName: 'Test Walk',
-            postcode: 'SW16 1AQ',
-            town: 'London',
-            district: 'City of London',
-            county: 'Greater London',
-            from: '2019-01-01',
-            to: null,
-            noFixedAbode: false,
-          },
-        ],
-      },
-    })
-
-    const responsibleOfficer = deliusOffenderManagerFactory.build({
-      staff: {
-        forenames: 'Peter',
-        surname: 'Practitioner',
-        email: 'p.practitioner@justice.gov.uk',
-        phoneNumber: '01234567890',
-      },
-      team: {
-        telephone: '07890 123456',
-        emailAddress: 'probation-team4692@justice.gov.uk',
-        startDate: '2021-01-01',
+        emailAddress: 'jenny.jones@example.com',
+        mobileNumber: '07123456789',
       },
     })
 
@@ -1372,12 +1111,10 @@ describe('Probation practitioner referrals dashboard', () => {
         cy.stubGetApprovedActionPlanSummaries(referral.id, [])
 
         cy.stubGetSupplierAssessment(referral.id, supplierAssessment)
-        cy.stubGetServiceUserByCRN(referral.referral.serviceUser.crn, deliusServiceUser)
-        cy.stubGetExpandedServiceUserByCRN(referral.referral.serviceUser.crn, expandedDeliusServiceUser)
-        cy.stubGetConvictionById(referral.referral.serviceUser.crn, conviction.convictionId, conviction)
+        cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
+        cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
         cy.stubGetUserByUsername(deliusUser.username, deliusUser)
         cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
-        cy.stubGetResponsibleOfficerForServiceUser(referral.referral.serviceUser.crn, [responsibleOfficer])
 
         cy.login()
 

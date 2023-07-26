@@ -2,8 +2,7 @@ import request from 'supertest'
 import { Express } from 'express'
 import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
-import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
-import CommunityApiService from '../../services/communityApiService'
+import RamDeliusApiService from '../../services/ramDeliusApiService'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import sentReferral from '../../../testutils/factories/sentReferral'
@@ -13,13 +12,14 @@ import SentReferral from '../../models/sentReferral'
 import ChangelogDetail from '../../models/changelogDetail'
 import Changelog from '../../models/changelog'
 import interventionFactory from '../../../testutils/factories/intervention'
+import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 
 jest.mock('../../services/interventionsService')
-jest.mock('../../services/communityApiService')
+jest.mock('../../services/ramDeliusApiService')
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
-const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
+const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 
 let app: Express
 let referral: SentReferral
@@ -35,7 +35,7 @@ let changelog: Changelog[]
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, communityApiService },
+    overrides: { interventionsService, ramDeliusApiService },
     userType: AppSetupUserType.probationPractitioner,
   })
   referral = sentReferral.build()
@@ -122,7 +122,7 @@ describe('GET /referrals/:referralId/changelog', () => {
         },
       })
     )
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
   })
 
   it('renders the page to start a referral', () => {
@@ -142,7 +142,7 @@ describe('GET /referrals/:referralId/changelog', () => {
 describe('GET /referrals/:referralId/changelog/:changelogId/details', () => {
   beforeEach(() => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
   })
 
   it('renders the changelog detail for a given complexity level change', () => {

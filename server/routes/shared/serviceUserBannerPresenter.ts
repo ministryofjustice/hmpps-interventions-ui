@@ -6,7 +6,7 @@ export default class ServiceUserBannerPresenter {
   constructor(private readonly serviceUser: DeliusServiceUser) {}
 
   get name(): string {
-    return utils.convertToTitleCase(`${this.serviceUser.firstName} ${this.serviceUser.surname}`)
+    return utils.convertToTitleCase(`${this.serviceUser.name.forename} ${this.serviceUser.name.surname}`)
   }
 
   get dateOfBirth(): string {
@@ -14,29 +14,22 @@ export default class ServiceUserBannerPresenter {
   }
 
   get serviceUserEmail(): string {
-    const { emailAddresses } = this.serviceUser.contactDetails
+    const { emailAddress } = this.serviceUser.contactDetails
 
-    if (emailAddresses && emailAddresses.length > 0) {
-      return emailAddresses[0]
+    if (emailAddress && emailAddress.length > 0) {
+      return emailAddress
     }
 
     return 'Not found'
   }
 
   get serviceUserMobile(): string {
-    const { phoneNumbers } = this.serviceUser.contactDetails
+    const { mobileNumber } = this.serviceUser.contactDetails
     const notFoundMessage = 'Not found'
-
-    if (phoneNumbers) {
-      const mobileNumber = phoneNumbers.find(phoneNumber => phoneNumber.type === 'MOBILE')
-
-      return mobileNumber && mobileNumber.number ? mobileNumber.number : notFoundMessage
-    }
-
-    return notFoundMessage
+    return mobileNumber || notFoundMessage
   }
 
   get crn(): string {
-    return this.serviceUser.otherIds.crn
+    return this.serviceUser.crn
   }
 }

@@ -9,15 +9,14 @@ import interventionFactory from './testutils/factories/intervention'
 import actionPlanAppointmentFactory from './testutils/factories/actionPlanAppointment'
 import draftReferralFactory from './testutils/factories/draftReferral'
 import serviceCategoryFactory from './testutils/factories/serviceCategory'
-import CommunityApiMocks from './mockApis/communityApi'
-import deliusConvictionFactory from './testutils/factories/deliusConviction'
+import caseConvictionFactory from './testutils/factories/caseConviction'
+import caseConvictionsFactory from './testutils/factories/caseConvictions'
 import deliusResponsibleOfficerFactory from './testutils/factories/deliusResponsibleOfficer'
 import AssessRisksAndNeedsServiceMocks from './mockApis/assessRisksAndNeedsService'
 import riskSummaryFactory from './testutils/factories/riskSummary'
 import prisonFactory from './testutils/factories/prison'
 import prisonerFactory from './testutils/factories/prisoner'
 import supplementaryRiskInformationFactory from './testutils/factories/supplementaryRiskInformation'
-import deliusServiceUser from './testutils/factories/deliusServiceUser'
 import PrisonRegisterServiceMocks from './mockApis/prisonRegisterService'
 import PrisonerOffenderSearchMocks from './mockApis/prisonerOffenderSearch'
 import ReferAndMonitorAndDeliusMocks from './mockApis/referAndMonitorAndDelius'
@@ -25,7 +24,6 @@ import deliusUserAccess from './testutils/factories/deliusUserAccess'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
-const communityApiMocks = new CommunityApiMocks(wiremock, '')
 const assessRisksAndNeedsApiMocks = new AssessRisksAndNeedsServiceMocks(wiremock, '')
 const prisonRegisterServiceMocks = new PrisonRegisterServiceMocks(wiremock, '')
 const prisonerOffenderSearchMocks = new PrisonerOffenderSearchMocks(wiremock, '')
@@ -71,9 +69,8 @@ export default async function setUpMocks(): Promise<void> {
       '5f2debc5-4c6a-4972-84ce-0689b8f9ec52',
       supplementaryRiskInformationFactory.build()
     ),
-    communityApiMocks.stubGetActiveConvictionsByCRN('CRN24', [deliusConvictionFactory.build()]),
-    communityApiMocks.stubGetServiceUserByCRN('CRN24', deliusServiceUser.build({ otherIds: { crn: 'CRN24' } })),
-    communityApiMocks.stubGetConvictionById('CRN24', '([0-9]+)', deliusConvictionFactory.build()),
+    referAndMonitorAndDeliusMocks.stubGetConvictionsByCrn('CRN24', caseConvictionsFactory.build()),
+    referAndMonitorAndDeliusMocks.stubGetConvictionByCrnAndId('CRN24', '([0-9]+)', caseConvictionFactory.build()),
     referAndMonitorAndDeliusMocks.stubGetResponsibleOfficer('X320741', deliusResponsibleOfficerFactory.build()),
     interventionsMocks.stubGetActionPlanAppointment(
       '1',

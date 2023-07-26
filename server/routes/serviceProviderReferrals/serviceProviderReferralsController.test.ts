@@ -8,9 +8,6 @@ import apiConfig from '../../config'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import sentReferralSummariesFactory from '../../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import deliusUserFactory from '../../../testutils/factories/deliusUser'
-import MockCommunityApiService from '../testutils/mocks/mockCommunityApiService'
-import CommunityApiService from '../../services/communityApiService'
 import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
 import HmppsAuthService from '../../services/hmppsAuthService'
 import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
@@ -19,18 +16,15 @@ import actionPlanFactory from '../../../testutils/factories/actionPlan'
 import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import interventionFactory from '../../../testutils/factories/intervention'
 import prisonFactory from '../../../testutils/factories/prison'
-import deliusConvictionFactory from '../../../testutils/factories/deliusConviction'
 import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
-import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
 import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
 import approvedActionPlanSummary from '../../../testutils/factories/approvedActionPlanSummary'
 import SentReferral from '../../models/sentReferral'
-import DeliusUser from '../../models/delius/deliusUser'
-import { ExpandedDeliusServiceUser } from '../../models/delius/deliusServiceUser'
+import { RamDeliusUser } from '../../models/delius/deliusUser'
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import { createDraftFactory } from '../../../testutils/factories/draft'
@@ -50,9 +44,10 @@ import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleO
 import deliusResponsibleOfficerFactory from '../../../testutils/factories/deliusResponsibleOfficer'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
 import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
+import ramDeliusUserFactory from '../../../testutils/factories/ramDeliusUser'
+import caseConvictionFactory from '../../../testutils/factories/caseConviction'
 
 jest.mock('../../services/interventionsService')
-jest.mock('../../services/communityApiService')
 jest.mock('../../services/hmppsAuthService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/draftsService')
@@ -66,8 +61,6 @@ const interventionsService = new InterventionsService(
 ) as jest.Mocked<InterventionsService>
 
 const referenceDataService = new MockReferenceDataService() as jest.Mocked<ReferenceDataService>
-
-const communityApiService = new MockCommunityApiService() as jest.Mocked<CommunityApiService>
 
 const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 
@@ -95,7 +88,6 @@ beforeEach(() => {
   app = appWithAllRoutes({
     overrides: {
       interventionsService,
-      communityApiService,
       hmppsAuthService,
       assessRisksAndNeedsService,
       draftsService,
@@ -829,29 +821,33 @@ describe('GET /service-provider/dashboard/completed-cases', () => {
 describe('GET /service-provider/referrals/:id/details', () => {
   const intervention = interventionFactory.build()
   const hmppsAuthUser = hmppsAuthUserFactory.build({ firstName: 'John', lastName: 'Smith' })
-  const conviction = deliusConvictionFactory.build()
+  const conviction = caseConvictionFactory.build({
+    caseDetail: {
+      contactDetails: {
+        telephoneNumber: '07123456789',
+      },
+    },
+  })
   const riskSummary: RiskSummary = riskSummaryFactory.build()
   let sentReferral: SentReferral
-  let deliusUser: DeliusUser
-  let deliusServiceUser: ExpandedDeliusServiceUser
+  let ramDeliusUser: RamDeliusUser
   let supplementaryRiskInformation: SupplementaryRiskInformation
   let responsibleOfficer: DeliusResponsibleOfficer
   let prisonList: Prison[]
 
   beforeEach(() => {
     sentReferral = sentReferralFactory.build()
-    deliusUser = deliusUserFactory.build()
-    deliusServiceUser = expandedDeliusServiceUserFactory.build()
+    ramDeliusUser = ramDeliusUserFactory.build()
+
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
     responsibleOfficer = deliusResponsibleOfficerFactory.build()
     prisonList = prisonFactory.prisonList()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
-    communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
-    communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
-    communityApiService.getConvictionById.mockResolvedValue(conviction)
+    ramDeliusApiService.getConvictionByCrnAndId.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
@@ -862,38 +858,6 @@ describe('GET /service-provider/referrals/:id/details', () => {
     sentReferral = sentReferralFactory.unassigned().build()
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
       riskSummaryComments: 'Alex is low risk to others.',
-    })
-    deliusUser = deliusUserFactory.build({
-      firstName: 'Bernard',
-      surname: 'Beaks',
-      email: 'bernard.beaks@justice.gov.uk',
-    })
-    deliusServiceUser = expandedDeliusServiceUserFactory.build({
-      firstName: 'Alex',
-      surname: 'River',
-      contactDetails: {
-        emailAddresses: ['alex.river@example.com'],
-        phoneNumbers: [
-          {
-            number: '07123456789',
-            type: 'MOBILE',
-          },
-        ],
-        addresses: [
-          {
-            addressNumber: 'Flat 10',
-            buildingName: null,
-            streetName: 'Test Walk',
-            postcode: 'SW16 1AQ',
-            town: 'London',
-            district: 'City of London',
-            county: 'Greater London',
-            from: '2021-01-01',
-            to: null,
-            noFixedAbode: false,
-          },
-        ],
-      },
     })
     responsibleOfficer = deliusResponsibleOfficerFactory.build({
       communityManager: {
@@ -906,8 +870,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     })
 
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
-    communityApiService.getUserByUsername.mockResolvedValue(deliusUser)
-    communityApiService.getExpandedServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
@@ -950,7 +913,6 @@ describe('GET /service-provider/referrals/:id/details', () => {
 describe('GET /service-provider/referrals/:id/progress', () => {
   it('displays information about the intervention progress', async () => {
     const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
-    const deliusServiceUser = deliusServiceUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({
       firstName: 'caseWorkerFirstName',
       lastName: 'caseWorkerLastName',
@@ -964,7 +926,6 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
 
@@ -980,7 +941,6 @@ describe('GET /service-provider/referrals/:id/progress', () => {
 describe('GET /service-provider/referrals/:id/progress', () => {
   it('', async () => {
     const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
-    const deliusServiceUser = deliusServiceUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({
       firstName: 'caseWorkerFirstName',
       lastName: 'caseWorkerLastName',
@@ -1029,7 +989,6 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
     interventionsService.getActionPlanAppointments.mockResolvedValue([appointment, appointmentDuplicate3])
@@ -1050,7 +1009,6 @@ describe('GET /service-provider/referrals/:id/progress', () => {
 describe('GET /service-provider/referrals/:id/progress', () => {
   it('displays information about the intervention progress with Action plan appointment not attended', async () => {
     const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
-    const deliusServiceUser = deliusServiceUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({
       firstName: 'caseWorkerFirstName',
       lastName: 'caseWorkerLastName',
@@ -1078,7 +1036,6 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedSummaries)
     interventionsService.getActionPlanAppointments.mockResolvedValue(actionPlanAppointments)
@@ -1170,7 +1127,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedSummaries)
     interventionsService.getActionPlanAppointments.mockResolvedValue(actionPlanAppointments)
@@ -1192,7 +1149,6 @@ describe('GET /service-provider/referrals/:id/progress', () => {
   })
   it('does not show session history drop down when no children available', async () => {
     const intervention = interventionFactory.build({ contractType: { name: 'accommodation' } })
-    const deliusServiceUser = deliusServiceUserFactory.build()
     const hmppsAuthUser = hmppsAuthUserFactory.build({
       firstName: 'caseWorkerFirstName',
       lastName: 'caseWorkerLastName',
@@ -1238,7 +1194,6 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedSummaries)
     interventionsService.getActionPlanAppointments.mockResolvedValue(actionPlanAppointments)
@@ -1714,7 +1669,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/number-of-sessions', (
     })
     const draftActionPlan = actionPlanFactory.justCreated(referral.id).build()
 
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
     interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -1762,7 +1717,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/number-of-sessions', 
         },
       })
 
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -1799,7 +1754,7 @@ describe('POST /service-provider/action-plan/:actionPlanId/number-of-sessions', 
         },
       })
 
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
       interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -1943,7 +1898,7 @@ describe('GET /service-provider/end-of-service-report/:id', () => {
     interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategories.mockResolvedValue([serviceCategory])
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
     await request(app)
       .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}`)
@@ -1970,7 +1925,7 @@ describe('GET /service-provider/end-of-service-report/:id', () => {
     interventionsService.getEndOfServiceReport.mockResolvedValue(inProgressEndOfServiceReport)
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategories.mockResolvedValue([serviceCategory])
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
     await request(app)
       .get(`/service-provider/end-of-service-report/${inProgressEndOfServiceReport.id}`)
@@ -2045,7 +2000,7 @@ describe('GET /service-provider/end-of-service-report/:id/outcomes/:number', () 
     interventionsService.getServiceCategories.mockResolvedValue([serviceCategory])
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
     await request(app)
       .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
@@ -2273,7 +2228,7 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.getEndOfServiceReport.mockResolvedValue(endOfServiceReport)
       interventionsService.updateDraftEndOfServiceReport.mockResolvedValue(endOfServiceReport)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
       await request(app)
         .post(`/service-provider/end-of-service-report/${endOfServiceReport.id}/outcomes/1`)
@@ -2306,7 +2261,7 @@ describe('GET /service-provider/end-of-service-report/:id/further-information', 
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getServiceCategories.mockResolvedValue([serviceCategory])
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
     await request(app)
       .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/further-information`)
@@ -2371,7 +2326,7 @@ describe('GET /service-provider/end-of-service-report/:id/check-answers', () => 
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getServiceCategories.mockResolvedValue([serviceCategory])
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
     await request(app)
       .get(`/service-provider/end-of-service-report/${endOfServiceReport.id}/check-answers`)
@@ -2436,7 +2391,7 @@ describe('GET /service-provider/action-plan/:id', () => {
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.getActionPlan.mockResolvedValue(actionPlan)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategories[0])
-    communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUserFactory.build())
 
     await request(app)
       .get(`/service-provider/action-plan/${actionPlan.id}`)
