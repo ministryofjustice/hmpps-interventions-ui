@@ -96,7 +96,12 @@ export default class CaseNotesController {
     res: Response,
     loggedInUserType: 'service-provider' | 'probation-practitioner'
   ): Promise<void> {
+    const { accessToken } = res.locals.user.token
     const referralId = req.params.id
+
+    const referral = await Promise.resolve(this.interventionsService.getSentReferral(accessToken, referralId))
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
     const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res, loggedInUserType)
     if (fetchResult.rendered) {
       return
@@ -125,7 +130,7 @@ export default class CaseNotesController {
 
     const presenter = new AddCaseNotePresenter(referralId, loggedInUserType, draftCaseNote.data, error, userInputData)
     const view = new AddCaseNoteView(presenter)
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async viewCaseNote(
@@ -143,10 +148,14 @@ export default class CaseNotesController {
       accessToken,
       caseNote.sentBy.username
     )
+
+    const referral = await Promise.resolve(this.interventionsService.getSentReferral(accessToken, caseNote.referralId))
+    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+
     const sentByUserName = sentByUserDetails.name
     const presenter = new CaseNotePresenter(caseNote, sentByUserName, loggedInUserType, backlinkPageNumber)
     const view = new CaseNoteView(presenter)
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async checkCaseNoteAnswers(
