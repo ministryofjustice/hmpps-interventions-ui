@@ -159,6 +159,9 @@ describe.each([
 
   describe(`GET /${user.userType}/referrals/:id/add-case-note/:draftCaseNoteId/details`, () => {
     it('should present an empty form if the draft is new', async () => {
+      interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+      hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetailsFactory.build())
+
       const draftCaseNote = draftCaseNoteFactory.build()
       draftsService.fetchDraft.mockResolvedValue(draftCaseNote)
       await request(app)
@@ -171,6 +174,9 @@ describe.each([
         data: caseNoteFactory.build({ subject: 'case note subject text', body: 'case note body text' }),
       })
       draftsService.fetchDraft.mockResolvedValue(draftCaseNote)
+      interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+      hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetailsFactory.build())
+
       await request(app)
         .get(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/${draftCaseNote.id}/details`)
         .expect(200)
@@ -183,6 +189,9 @@ describe.each([
     describe('when draft object no longer exists', () => {
       it('should render an appropriate error page', async () => {
         draftsService.fetchDraft.mockResolvedValue(null)
+        interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+        hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetailsFactory.build())
+
         await request(app)
           .get(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/non-existent-draft/details`)
           .expect(410)
@@ -199,6 +208,8 @@ describe.each([
       it('should display errors to the user', async () => {
         const draftCaseNote = draftCaseNoteFactory.build()
         draftsService.fetchDraft.mockResolvedValue(draftCaseNote)
+        interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+        hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetailsFactory.build())
         await request(app)
           .post(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/${draftCaseNote.id}/details`)
           .type('form')
@@ -215,6 +226,9 @@ describe.each([
       it('should direct users to relevant page', async () => {
         const draftCaseNote = draftCaseNoteFactory.build()
         draftsService.fetchDraft.mockResolvedValue(draftCaseNote)
+        interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+        hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetailsFactory.build())
+
         await request(app)
           .post(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/${draftCaseNote.id}/details`)
           .type('form')
@@ -281,6 +295,10 @@ describe.each([
       const userDetails = userDetailsFactory.build({ name: 'firstName lastName' })
       interventionsService.getCaseNote.mockResolvedValue(caseNote)
       hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetails)
+
+      interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
+
       await request(app)
         .get(`/${user.userType}/case-note/${caseNote.id}`)
         .expect(200)
