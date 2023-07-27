@@ -185,7 +185,7 @@
     "moment-timezone": "^0.5.42",
     "nock": "^13.2.9",
     "nodemon": "^2.0.20",
-    "prettier": "^2.8.2",
+    "prettier": "^3.0.0",
     "sass": "^1.57.1",
     "stylelint": "^15.6.0",
     "stylelint-config-sass-guidelines": "^10.0.0",
