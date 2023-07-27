@@ -551,16 +551,17 @@ export default class ShowReferralPresenter {
     return this.prisons.find(prison => prison.prisonId === prisonId)?.prisonName || ''
   }
 
-  isPpAndSenderSamePerson(): boolean {
-    if (this.getPpName() === this.getSenderName()) {
+  isRoAndSenderSamePerson(): boolean {
+    if (this.getRoName() === this.getSenderName()) {
       return true
     }
     return false
   }
 
-  private getPpName(): string {
-    const ppName = this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName
-    return ppName.trim()
+  private getRoName(): string {
+    const dro = this.deliusResponsibleOfficer
+    const roName = `${dro?.name?.forename || ''} ${dro?.name?.forename || ''}`.trim()
+    return roName.trim()
   }
 
   private getSenderName(): string {
