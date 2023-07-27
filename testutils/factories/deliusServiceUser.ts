@@ -2,7 +2,7 @@ import { Factory } from 'fishery'
 import DeliusServiceUser from '../../server/models/delius/deliusServiceUser'
 
 export default Factory.define<DeliusServiceUser>(() => ({
-  crn: 'X123456',
+  crn: 'X320741',
   profile: {
     ethnicity: 'British',
     religion: 'Agnostic',

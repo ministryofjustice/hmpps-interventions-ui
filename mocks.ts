@@ -21,6 +21,8 @@ import PrisonRegisterServiceMocks from './mockApis/prisonRegisterService'
 import PrisonerOffenderSearchMocks from './mockApis/prisonerOffenderSearch'
 import ReferAndMonitorAndDeliusMocks from './mockApis/referAndMonitorAndDelius'
 import deliusUserAccess from './testutils/factories/deliusUserAccess'
+import deliusServiceUser from './testutils/factories/deliusServiceUser'
+import deliusUser from './testutils/factories/deliusUser'
 
 const wiremock = new Wiremock('http://localhost:9092/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
@@ -70,7 +72,10 @@ export default async function setUpMocks(): Promise<void> {
       supplementaryRiskInformationFactory.build()
     ),
     referAndMonitorAndDeliusMocks.stubGetConvictionsByCrn('CRN24', caseConvictionsFactory.build()),
-    referAndMonitorAndDeliusMocks.stubGetConvictionByCrnAndId('CRN24', '([0-9]+)', caseConvictionFactory.build()),
+    referAndMonitorAndDeliusMocks.stubGetConvictionsByCrn('X320741', caseConvictionsFactory.build()),
+    ['CRN24', 'X320741'].forEach(crn =>
+      referAndMonitorAndDeliusMocks.stubGetConvictionByCrnAndId(crn, '([0-9]+)', caseConvictionFactory.build())
+    ),
     referAndMonitorAndDeliusMocks.stubGetResponsibleOfficer('X320741', deliusResponsibleOfficerFactory.build()),
     interventionsMocks.stubGetActionPlanAppointment(
       '1',
@@ -96,5 +101,7 @@ export default async function setUpMocks(): Promise<void> {
     prisonerOffenderSearchMocks.stubGetPrisonerById(prisonerFactory.build()),
     referAndMonitorAndDeliusMocks.stubSentReferral(),
     referAndMonitorAndDeliusMocks.stubGetCrnUserAccess(deliusUserAccess.build()),
+    referAndMonitorAndDeliusMocks.stubGetCaseDetailsByCrn('X320741', deliusServiceUser.build()),
+    referAndMonitorAndDeliusMocks.stubGetUserByUsername('BERNARD.BEAKS', deliusUser.build()),
   ])
 }
