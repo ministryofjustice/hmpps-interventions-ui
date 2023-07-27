@@ -100,7 +100,7 @@ export default class CaseNotesController {
     const referralId = req.params.id
 
     const referral = await Promise.resolve(this.interventionsService.getSentReferral(accessToken, referralId))
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
 
     const fetchResult = await this.fetchDraftCaseNoteOrRenderMessage(req, res, loggedInUserType)
     if (fetchResult.rendered) {
@@ -150,7 +150,7 @@ export default class CaseNotesController {
     )
 
     const referral = await Promise.resolve(this.interventionsService.getSentReferral(accessToken, caseNote.referralId))
-    const serviceUser = await this.communityApiService.getServiceUserByCRN(referral.referral.serviceUser.crn)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
 
     const sentByUserName = sentByUserDetails.name
     const presenter = new CaseNotePresenter(caseNote, sentByUserName, loggedInUserType, backlinkPageNumber)
