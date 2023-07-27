@@ -99,6 +99,10 @@ export default class ShowReferralPresenter {
     return `${this.serviceUserNames}'s responsible officer details`
   }
 
+  get backupContactDetailsHeading(): string {
+    return `Back-up contact for the referral`
+  }
+
   get riskInformationHeading(): string {
     return `${this.serviceUserNames}'s risk information`
   }
@@ -247,6 +251,28 @@ export default class ShowReferralPresenter {
       lines: [officer?.team?.email || 'Not found'],
     })
     return responsibleOfficerDetails
+  }
+
+  get backupContactDetails(): SummaryListItem[] {
+    if (this.sentBy === null || this.deliusResponsibleOfficer === null || this.isPpAndSenderSamePerson()) return []
+
+    const backupContactDetails: SummaryListItem[] = []
+
+    const backupUser = this.sentBy
+
+    if (this.userType === 'service-provider') {
+      backupContactDetails.push({
+        key: 'Name',
+        lines: [`${backupUser?.firstName || ''} ${backupUser?.surname || ''}`.trim() || 'Not found'],
+      })
+    }
+    if (this.userType === 'service-provider') {
+      backupContactDetails.push({
+        key: 'Email',
+        lines: [backupUser?.email || 'Not found'],
+      })
+    }
+    return backupContactDetails
   }
 
   get referralServiceCategories(): ServiceCategory[] {
@@ -523,5 +549,21 @@ export default class ShowReferralPresenter {
 
   private getPrisonName(prisonId: string | null): string {
     return this.prisons.find(prison => prison.prisonId === prisonId)?.prisonName || ''
+  }
+
+  isPpAndSenderSamePerson(): boolean {
+    if (this.getPpName() === this.getSenderName()) {
+      return true
+    }
+    return false
+  }
+
+  private getPpName(): string {
+    const ppName = this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName
+    return ppName.trim()
+  }
+
+  private getSenderName(): string {
+    return `${this.sentBy?.firstName || ''} ${this.sentBy?.surname || ''}`.trim()
   }
 }

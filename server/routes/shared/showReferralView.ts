@@ -37,6 +37,14 @@ export default class ShowReferralView {
     { showBorders: true, showTitle: true }
   )
 
+  private get backupContactSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.backupContactDetails,
+      this.presenter.backupContactDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
   private get interventionDetailsSummaryListArgs() {
     return ViewUtils.summaryListArgsWithSummaryCard(
       this.presenter.interventionDetails,
@@ -162,6 +170,7 @@ export default class ShowReferralView {
         presenter: this.presenter,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         probationPractitionerSummaryListArgs: this.probationPractitionerSummaryListArgs,
+        backupContactSummaryListArgs: this.backupContactSummaryListArgs,
         responsibleOfficerSummaryListArgs: this.responsibleOfficerSummaryListArgs,
         interventionDetailsSummaryListArgs: this.interventionDetailsSummaryListArgs,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
