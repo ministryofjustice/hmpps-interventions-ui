@@ -114,4 +114,20 @@ export default class ReferAndMonitorAndDeliusMocks {
       },
     })
   }
+
+  stubGetUserByUserName = async (username: string, id: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/users/${username}/details`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
 }

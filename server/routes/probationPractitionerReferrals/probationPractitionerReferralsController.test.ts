@@ -539,7 +539,7 @@ describe('GET /probation-practitioner/referrals/:id/action-plan', () => {
   it('displays information about the latest action plan and service user', async () => {
     const sentReferral = sentReferralFactory.assigned().build()
     const serviceCategory = serviceCategoryFactory.build()
-    const deliusServiceUser = deliusServiceUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build({ crn: 'X123456' })
     const actionPlan = actionPlanFactory.submitted().build({ referralId: sentReferral.id })
     const approvedActionPlanSummaries = approvedActionPlanSummary.buildList(2)
     sentReferral.actionPlanId = actionPlan.id
@@ -566,7 +566,7 @@ describe('GET /probation-practitioner/action-plan/:actionPlanId', () => {
   it('displays information about the specified action plan and service user', async () => {
     const sentReferral = sentReferralFactory.assigned().build()
     const serviceCategory = serviceCategoryFactory.build()
-    const deliusServiceUser = deliusServiceUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build({ crn: 'X123456' })
     const actionPlan = actionPlanFactory.approved().build()
     const approvedActionPlanSummaries = approvedActionPlanSummary.buildList(2)
     sentReferral.actionPlanId = actionPlan.id
@@ -605,7 +605,7 @@ describe('POST /probation-practitioner/referrals/:id/action-plan/approve', () =>
   it("redirects back to action-plan if approval hasn't been confirmed", async () => {
     const sentReferral = sentReferralFactory.assigned().build()
     const serviceCategory = serviceCategoryFactory.build()
-    const deliusServiceUser = deliusServiceUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build({ crn: 'X123456' })
     const actionPlan = actionPlanFactory.submitted().build({ referralId: sentReferral.id })
     sentReferral.actionPlanId = actionPlan.id
 
@@ -631,7 +631,7 @@ describe('POST /probation-practitioner/referrals/:id/action-plan/approve', () =>
 describe('GET /probation-practitioner/referrals/:id/action-plan/approved', () => {
   it('displays a panel and link back to the intervention progress page', async () => {
     const sentReferral = sentReferralFactory.assigned().build()
-    const deliusServiceUser = deliusServiceUserFactory.build()
+    const deliusServiceUser = deliusServiceUserFactory.build({ crn: 'X123456' })
 
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)

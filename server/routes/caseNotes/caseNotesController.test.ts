@@ -297,7 +297,7 @@ describe.each([
       hmppsAuthService.getUserDetailsByUsername.mockResolvedValue(userDetails)
 
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
-      communityApiService.getServiceUserByCRN.mockResolvedValue(deliusServiceUserFactory.build())
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUserFactory.build())
 
       await request(app)
         .get(`/${user.userType}/case-note/${caseNote.id}`)
