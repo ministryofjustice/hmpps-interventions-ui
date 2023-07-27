@@ -254,7 +254,7 @@ export default class ShowReferralPresenter {
   }
 
   get backupContactDetails(): SummaryListItem[] {
-    if (this.sentBy === null || this.deliusResponsibleOfficer === null || this.isPpAndSenderSamePerson()) return []
+    if (this.sentBy === null || this.deliusResponsibleOfficer === null || this.isRoAndSenderSamePerson()) return []
 
     const backupContactDetails: SummaryListItem[] = []
 

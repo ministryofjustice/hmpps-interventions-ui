@@ -40,7 +40,7 @@
 
       {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
 
-      {%  if presenter.isPpAndSenderSamePerson() == false %}
+      {%  if presenter.isRoAndSenderSamePerson() == false %}
         {{ govukSummaryList(backupContactSummaryListArgs) }}
       {% endif %}
 
