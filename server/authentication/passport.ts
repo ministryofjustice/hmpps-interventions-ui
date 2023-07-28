@@ -59,7 +59,8 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
           // augment the token response from with extra user details
           const user: User = { username, userId, authSource }
           const { name } = await hmppsAuthService.getUserDetails(accessToken)
-          const organizations = await hmppsAuthService.getUserOrganizations(accessToken, user)
+          const clientCredToken = await hmppsAuthService.getApiClientToken()
+          const organizations = await hmppsAuthService.getUserOrganizations(clientCredToken, user)
           const loggedInUser: LoggedInUser = {
             token: {
               accessToken,
