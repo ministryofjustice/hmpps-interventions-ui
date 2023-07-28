@@ -29,7 +29,10 @@ interface MojPaginationArgs {
 }
 
 export default class Pagination {
-  constructor(private readonly page: Page<unknown>, private readonly params: string | null = null) {}
+  constructor(
+    private readonly page: Page<unknown>,
+    private readonly params: string | null = null
+  ) {}
 
   private constructPageItems(pageNumberRange: number[], chosenPageNumber: number): MojPaginationArgs['items'] {
     return pageNumberRange.map(pageNumber => {

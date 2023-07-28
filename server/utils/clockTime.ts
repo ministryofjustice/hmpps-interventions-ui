@@ -6,7 +6,11 @@ export default class ClockTime {
    * 0 ≤ minute ≤ 59
    * 0 ≤ second ≤ 59
    */
-  private constructor(readonly hour: number, readonly minute: number, readonly second: number) {}
+  private constructor(
+    readonly hour: number,
+    readonly minute: number,
+    readonly second: number
+  ) {}
 
   static fromTwentyFourHourComponents(hour: number, minute: number, second: number): ClockTime | null {
     return ClockTime.isValid(hour, minute, second) ? new ClockTime(hour, minute, second) : null

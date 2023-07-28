@@ -5,7 +5,10 @@ import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresent
 import LoggedInUser from '../../models/loggedInUser'
 
 export default class InterventionDetailsPresenter {
-  constructor(private readonly intervention: Intervention, private readonly loggedInUser: LoggedInUser) {}
+  constructor(
+    private readonly intervention: Intervention,
+    private readonly loggedInUser: LoggedInUser
+  ) {}
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Find interventions', this.loggedInUser)
 

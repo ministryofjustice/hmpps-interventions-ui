@@ -10,7 +10,10 @@ interface EndOfServiceReportFormPagePresenter {
 }
 
 export default class EndOfServiceReportFormPresenter {
-  constructor(private readonly interventionTitle: string, private readonly referral: SentReferral) {}
+  constructor(
+    private readonly interventionTitle: string,
+    private readonly referral: SentReferral
+  ) {}
 
   private get numberOfDesiredOutcomes(): number {
     return this.referral.referral.desiredOutcomes.flatMap(desiredOutcome => desiredOutcome.desiredOutcomesIds).length

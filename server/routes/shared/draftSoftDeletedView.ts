@@ -5,7 +5,10 @@ type BackLink = {
   message?: string
 }
 export default class DraftSoftDeletedView {
-  constructor(private readonly backLink?: BackLink, private readonly softDeletedUserMessage?: string) {}
+  constructor(
+    private readonly backLink?: BackLink,
+    private readonly softDeletedUserMessage?: string
+  ) {}
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [

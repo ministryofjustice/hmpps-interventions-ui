@@ -5,7 +5,10 @@ type BackLink = {
   message?: string
 }
 export default class DraftNotFoundView {
-  constructor(private readonly backLink?: BackLink, private readonly notFoundUserMessage?: string) {}
+  constructor(
+    private readonly backLink?: BackLink,
+    private readonly notFoundUserMessage?: string
+  ) {}
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [

@@ -8,7 +8,10 @@ import { FormData } from '../../../../../utils/forms/formData'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 
 export default class SessionFeedbackForm {
-  constructor(private readonly request: Request, private readonly serviceUser: DeliusServiceUser) {}
+  constructor(
+    private readonly request: Request,
+    private readonly serviceUser: DeliusServiceUser
+  ) {}
 
   async data(): Promise<FormData<Partial<AppointmentSession>>> {
     const serviceUserName = `${this.serviceUser.name.forename} ${this.serviceUser.name.surname}`

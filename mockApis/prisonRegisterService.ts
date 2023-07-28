@@ -1,7 +1,10 @@
 import Wiremock from './wiremock'
 
 export default class PrisonRegisterServiceMocks {
-  constructor(private readonly wiremock: Wiremock, private readonly mockPrefix: string) {}
+  constructor(
+    private readonly wiremock: Wiremock,
+    private readonly mockPrefix: string
+  ) {}
 
   stubGetPrisons = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({

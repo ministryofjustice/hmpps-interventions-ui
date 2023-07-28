@@ -1,7 +1,10 @@
 import Wiremock from './wiremock'
 
 export default class AssessRisksAndNeedsServiceMocks {
-  constructor(private readonly wiremock: Wiremock, private readonly mockPrefix: string) {}
+  constructor(
+    private readonly wiremock: Wiremock,
+    private readonly mockPrefix: string
+  ) {}
 
   stubGetSupplementaryRiskInformation = async (riskId: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({

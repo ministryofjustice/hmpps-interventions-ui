@@ -6,7 +6,10 @@ import { FormValidationError } from '../../../../../utils/formValidationError'
 import { DraftOasysRiskInformation } from '../../../../../models/draftOasysRiskInformation'
 
 export default class EditOasysRiskInformationForm {
-  private constructor(private readonly request: Request, private readonly result: Result<ValidationError>) {}
+  private constructor(
+    private readonly request: Request,
+    private readonly result: Result<ValidationError>
+  ) {}
 
   static async createForm(request: Request): Promise<EditOasysRiskInformationForm> {
     return new EditOasysRiskInformationForm(

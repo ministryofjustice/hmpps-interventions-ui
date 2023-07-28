@@ -6,7 +6,10 @@ import FormUtils from '../../../../utils/formUtils'
 import { FormValidationError } from '../../../../utils/formValidationError'
 
 export default class ActionPlanNumberOfSessionsForm {
-  private constructor(private readonly request: Request, private readonly result: Result<ValidationError>) {}
+  private constructor(
+    private readonly request: Request,
+    private readonly result: Result<ValidationError>
+  ) {}
 
   static async createForm(request: Request): Promise<ActionPlanNumberOfSessionsForm> {
     return new ActionPlanNumberOfSessionsForm(

@@ -1,7 +1,10 @@
 import Wiremock from './wiremock'
 
 export default class ReferAndMonitorAndDeliusMocks {
-  constructor(private readonly wiremock: Wiremock, private readonly mockPrefix: string) {}
+  constructor(
+    private readonly wiremock: Wiremock,
+    private readonly mockPrefix: string
+  ) {}
 
   stubSentReferral = async (): Promise<unknown> => {
     return this.wiremock.stubFor({

@@ -5,7 +5,10 @@ import FormUtils from '../../../../utils/formUtils'
 import { FormValidationError } from '../../../../utils/formValidationError'
 
 export default class ConfirmOasysRiskInformationForm {
-  private constructor(private readonly request: Request, private readonly result: Result<ValidationError>) {}
+  private constructor(
+    private readonly request: Request,
+    private readonly result: Result<ValidationError>
+  ) {}
 
   static async createForm(request: Request): Promise<ConfirmOasysRiskInformationForm> {
     return new ConfirmOasysRiskInformationForm(

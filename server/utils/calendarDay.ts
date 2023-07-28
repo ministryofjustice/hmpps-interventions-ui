@@ -4,7 +4,11 @@ import ClockTime from './clockTime'
 const britishIanaTimeZoneIdentifier = 'Europe/London'
 
 export default class CalendarDay {
-  private constructor(readonly day: number, readonly month: number, readonly year: number) {}
+  private constructor(
+    readonly day: number,
+    readonly month: number,
+    readonly year: number
+  ) {}
 
   static fromComponents(day: number, month: number, year: number): CalendarDay | null {
     return this.isValid(day, month, year) ? new CalendarDay(day, month, year) : null
