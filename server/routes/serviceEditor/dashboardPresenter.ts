@@ -4,7 +4,10 @@ import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresent
 import { SummaryListItem } from '../../utils/summaryList'
 
 export default class DashboardPresenter {
-  constructor(private readonly loggedInUser: LoggedInUser, private readonly interventions: Intervention[]) {}
+  constructor(
+    private readonly loggedInUser: LoggedInUser,
+    private readonly interventions: Intervention[]
+  ) {}
 
   readonly primaryNavBarPresenter = new PrimaryNavBarPresenter('My services', this.loggedInUser)
 

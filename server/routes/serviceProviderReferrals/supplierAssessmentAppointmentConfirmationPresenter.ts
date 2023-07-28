@@ -1,7 +1,10 @@
 import SentReferral from '../../models/sentReferral'
 
 export default class SupplierAssessmentAppointmentConfirmationPresenter {
-  constructor(private readonly referral: SentReferral, private readonly isReschedule: boolean) {}
+  constructor(
+    private readonly referral: SentReferral,
+    private readonly isReschedule: boolean
+  ) {}
 
   readonly title = `Supplier assessment appointment ${this.isReschedule ? 'updated' : 'added'}`
 

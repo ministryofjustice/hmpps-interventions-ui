@@ -7,7 +7,10 @@ export interface PageContentView {
 }
 
 export default class LayoutView {
-  constructor(private readonly presenter: LayoutPresenter, private readonly content: PageContentView) {}
+  constructor(
+    private readonly presenter: LayoutPresenter,
+    private readonly content: PageContentView
+  ) {}
 
   private readonly serviceUserBannerView = this.presenter.serviceUserBannerPresenter
     ? new ServiceUserBannerView(this.presenter.serviceUserBannerPresenter)

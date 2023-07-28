@@ -1,5 +1,8 @@
 export default class ReferralCancellationCheckAnswersPresenter {
-  constructor(private readonly referralId: string, private readonly draftCancellationId: string) {}
+  constructor(
+    private readonly referralId: string,
+    private readonly draftCancellationId: string
+  ) {}
 
   readonly text = {
     title: 'Referral Cancellation',

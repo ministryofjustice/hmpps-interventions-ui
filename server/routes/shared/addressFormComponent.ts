@@ -3,7 +3,10 @@ import { AddressInputPresenter } from '../../utils/presenterUtils'
 import ViewUtils from '../../utils/viewUtils'
 
 export default class AddressFormComponent {
-  constructor(private address: AddressInputPresenter, private key: string) {}
+  constructor(
+    private address: AddressInputPresenter,
+    private key: string
+  ) {}
 
   get inputArgs(): Record<string, InputArgs> {
     return {

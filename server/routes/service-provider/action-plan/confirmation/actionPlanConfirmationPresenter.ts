@@ -4,7 +4,10 @@ import utils from '../../../../utils/utils'
 import PresenterUtils from '../../../../utils/presenterUtils'
 
 export default class ActionPlanConfirmationPresenter {
-  constructor(private readonly sentReferral: SentReferral, private readonly interventionTitle: string) {}
+  constructor(
+    private readonly sentReferral: SentReferral,
+    private readonly interventionTitle: string
+  ) {}
 
   progressHref = `/service-provider/referrals/${this.sentReferral.id}/progress`
 

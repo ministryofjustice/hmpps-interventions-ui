@@ -3,7 +3,10 @@ import AppointmentSummary from '../appointments/appointmentSummary'
 import { DraftAppointmentBooking } from './draftAppointmentBooking'
 
 export default class InitialAssessmentCheckAnswersPresenter {
-  constructor(private readonly draft: Draft<DraftAppointmentBooking>, private readonly referralId: string) {}
+  constructor(
+    private readonly draft: Draft<DraftAppointmentBooking>,
+    private readonly referralId: string
+  ) {}
 
   readonly backLinkHref = `/service-provider/referrals/${this.referralId}/supplier-assessment/schedule/${this.draft.id}/details`
 

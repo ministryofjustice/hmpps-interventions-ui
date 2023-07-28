@@ -16,7 +16,10 @@ There are other components where deeply nested objects are described without the
 dotted notation, for example the footer component’s `navigation` property.
 */
 export default class NestedObjectProperty {
-  constructor(private readonly containingTypeName: string, private readonly combinedPropertyName: string) {
+  constructor(
+    private readonly containingTypeName: string,
+    private readonly combinedPropertyName: string
+  ) {
     if (!NestedObjectProperty.describesPropertyOfNestedObject(combinedPropertyName)) {
       throw new Error(`Property name ${combinedPropertyName} doesn’t describe property of nested object`)
     }

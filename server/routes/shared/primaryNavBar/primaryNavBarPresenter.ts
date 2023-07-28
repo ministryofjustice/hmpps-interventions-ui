@@ -5,7 +5,10 @@ export type PrimaryNavBarHeading = 'Referrals' | 'Reporting' | 'Find interventio
 export type PrimaryNavBarItem = { text: PrimaryNavBarHeading; href: string; active: boolean }
 
 export default class PrimaryNavBarPresenter {
-  constructor(private readonly active: PrimaryNavBarHeading, private readonly loggedInUser: LoggedInUser) {}
+  constructor(
+    private readonly active: PrimaryNavBarHeading,
+    private readonly loggedInUser: LoggedInUser
+  ) {}
 
   // populate the nav bar items based on user roles
   get items(): PrimaryNavBarItem[] {

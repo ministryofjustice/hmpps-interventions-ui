@@ -4,7 +4,10 @@ import utils from '../../utils/utils'
 import PCCRegion from '../../models/pccRegion'
 
 export default class SearchSummaryPresenter {
-  constructor(private readonly filter: InterventionsFilter, private readonly pccRegions: PCCRegion[]) {}
+  constructor(
+    private readonly filter: InterventionsFilter,
+    private readonly pccRegions: PCCRegion[]
+  ) {}
 
   get summary(): SummaryListItem[] {
     const result: SummaryListItem[] = []

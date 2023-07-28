@@ -8,7 +8,10 @@ import DeliusServiceUser from '../models/delius/deliusServiceUser'
 import { CaseConviction, CaseConvictions } from '../models/delius/deliusConviction'
 
 export default class RamDeliusApiService {
-  constructor(private readonly hmppsAuthService: HmppsAuthService, private readonly restClient: RestClient) {}
+  constructor(
+    private readonly hmppsAuthService: HmppsAuthService,
+    private readonly restClient: RestClient
+  ) {}
 
   async getUserByUsername(username: string): Promise<RamDeliusUser> {
     const token = await this.hmppsAuthService.getApiClientToken()

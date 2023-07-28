@@ -2,7 +2,10 @@ import NestedObjectProperty from './nestedObjectProperty'
 import Property from './property'
 
 export default class Type {
-  constructor(private readonly name: string, private readonly macroOptions: Record<string, unknown>[]) {}
+  constructor(
+    private readonly name: string,
+    private readonly macroOptions: Record<string, unknown>[]
+  ) {}
 
   private get properties(): Property[] {
     return this.macroOptions.map(val => new Property(this.name, val)).filter(prop => prop.isIncluded)

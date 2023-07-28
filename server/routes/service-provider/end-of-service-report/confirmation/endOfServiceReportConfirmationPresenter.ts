@@ -4,7 +4,10 @@ import { SummaryListItem } from '../../../../utils/summaryList'
 import utils from '../../../../utils/utils'
 
 export default class EndOfServiceReportConfirmationPresenter {
-  constructor(private readonly referral: SentReferral, private readonly interventionTitle: string) {}
+  constructor(
+    private readonly referral: SentReferral,
+    private readonly interventionTitle: string
+  ) {}
 
   progressHref = `/service-provider/referrals/${this.referral.id}/progress`
 

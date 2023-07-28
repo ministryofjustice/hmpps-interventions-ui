@@ -3,7 +3,10 @@ import LoggedInUser from '../../../models/loggedInUser'
 import PrimaryNavBarPresenter from '../../shared/primaryNavBar/primaryNavBarPresenter'
 
 export default class ConfirmationPresenter {
-  constructor(private readonly referral: SentReferral, private readonly loggedInUser: LoggedInUser) {}
+  constructor(
+    private readonly referral: SentReferral,
+    private readonly loggedInUser: LoggedInUser
+  ) {}
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Find interventions', this.loggedInUser)
 

@@ -2,7 +2,10 @@ import NestedObjectProperty from './nestedObjectProperty'
 import { capitalise, indentString } from './utils'
 
 export default class Property {
-  constructor(private readonly containingTypeName: string, readonly macroOptions: Record<string, unknown>) {}
+  constructor(
+    private readonly containingTypeName: string,
+    readonly macroOptions: Record<string, unknown>
+  ) {}
 
   get name(): string {
     return this.macroOptions.name as string

@@ -9,7 +9,10 @@ import FormUtils from '../../../utils/formUtils'
 import { FormValidationResult } from '../../../utils/forms/formValidationResult'
 
 export default class CompletionDeadlineForm {
-  constructor(private readonly request: Request, private readonly isSentReferral: boolean) {}
+  constructor(
+    private readonly request: Request,
+    private readonly isSentReferral: boolean
+  ) {}
 
   static readonly completionDeadlineFieldId = 'completion-deadline'
 
