@@ -36,9 +36,11 @@ function givenRedisResponse(storedToken: string | null) {
 describe('hmppsAuthService', () => {
   let fakeHmppsAuthApi: nock.Scope
   let hmppsAuthService: HmppsAuthService
+  let fakeManagerUsersApi: nock.Scope
 
   beforeEach(() => {
     fakeHmppsAuthApi = nock(config.apis.hmppsAuth.url)
+    fakeManagerUsersApi = nock(config.apis.hmppsManageUsersApi.url)
     hmppsAuthService = new HmppsAuthService()
   })
 
@@ -50,8 +52,8 @@ describe('hmppsAuthService', () => {
     it('should return data from api', async () => {
       const response = { data: 'data' }
 
-      fakeHmppsAuthApi
-        .get('/api/user/me')
+      fakeManagerUsersApi
+        .get('/users/me')
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, response)
 
@@ -65,8 +67,8 @@ describe('hmppsAuthService', () => {
       const response = { username: 'user_1' }
       const username = 'user_1'
 
-      fakeHmppsAuthApi
-        .get('/api/user/user_1')
+      fakeManagerUsersApi
+        .get('/users/user_1')
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, response)
 
@@ -117,8 +119,8 @@ describe('hmppsAuthService', () => {
           },
         ]
 
-        fakeHmppsAuthApi
-          .get('/api/authuser')
+        fakeManagerUsersApi
+          .get('/externalusers')
           .query({ email: 'user@example.com' })
           .matchHeader('authorization', `Bearer ${token.access_token}`)
           .reply(200, response)
@@ -131,8 +133,8 @@ describe('hmppsAuthService', () => {
     describe('when no user is found with the requested email address', () => {
       it('should raise an error', async () => {
         const noUserResponse = {}
-        fakeHmppsAuthApi
-          .get('/api/authuser')
+        fakeManagerUsersApi
+          .get('/externalusers')
           .query({ email: 'user@example.com' })
           .matchHeader('authorization', `Bearer ${token.access_token}`)
           .reply(204, noUserResponse)
@@ -180,8 +182,8 @@ describe('hmppsAuthService', () => {
             lastLoggedIn: '01/01/2001',
           },
         ]
-        fakeHmppsAuthApi
-          .get('/api/authuser')
+        fakeManagerUsersApi
+          .get('/externalusers')
           .query({ email: 'user@example.com' })
           .matchHeader('authorization', `Bearer ${token.access_token}`)
           .reply(200, invalidUserResponse)
@@ -207,8 +209,8 @@ describe('hmppsAuthService', () => {
         lastLoggedIn: '01/01/2001',
       }
 
-      fakeHmppsAuthApi
-        .get('/api/authuser/AUTH_ADM')
+      fakeManagerUsersApi
+        .get('/externalusers/AUTH_ADM')
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, response)
 
@@ -229,8 +231,8 @@ describe('hmppsAuthService', () => {
         lastLoggedIn: undefined,
       }
 
-      fakeHmppsAuthApi
-        .get('/api/authuser/MISSING')
+      fakeManagerUsersApi
+        .get('/externalusers/MISSING')
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(404, {})
 
@@ -239,8 +241,8 @@ describe('hmppsAuthService', () => {
     })
 
     it('raises an error if required and the response is 404', async () => {
-      fakeHmppsAuthApi
-        .get('/api/authuser/MISSING')
+      fakeManagerUsersApi
+        .get('/externalusers/MISSING')
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(404, {})
 
@@ -250,8 +252,8 @@ describe('hmppsAuthService', () => {
     })
 
     it('raises an error if not required but response is non-404 4xx', async () => {
-      fakeHmppsAuthApi
-        .get('/api/authuser/MISSING')
+      fakeManagerUsersApi
+        .get('/externalusers/MISSING')
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(400, {})
 
@@ -263,8 +265,8 @@ describe('hmppsAuthService', () => {
 
   describe('getUserRoles', () => {
     it('should return data from api', async () => {
-      fakeHmppsAuthApi
-        .get('/api/user/me/roles')
+      fakeManagerUsersApi
+        .get('/users/me/roles')
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, [{ roleCode: 'role1' }, { roleCode: 'role2' }])
 
@@ -318,8 +320,8 @@ describe('hmppsAuthService', () => {
           groupName: 'Better Ltd.',
         },
       ]
-      fakeHmppsAuthApi
-        .get(`/api/authuser/${authUser.username}/groups`)
+      fakeManagerUsersApi
+        .get(`/externalusers/${authUser.userId}/groups`)
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(200, groups)
     })

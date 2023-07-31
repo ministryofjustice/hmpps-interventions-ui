@@ -119,6 +119,18 @@ export default {
       loginClientId: get('LOGIN_CLIENT_ID', 'interventions', requiredInProduction),
       loginClientSecret: get('LOGIN_CLIENT_SECRET', 'clientsecret', requiredInProduction),
     },
+    hmppsManageUsersApi: {
+      url: get('HMPPS_MANAGE_USERS_URL', 'http://localhost:8096', requiredInProduction),
+      timeout: {
+        response: Number(get('HMPPS_AUTH_TIMEOUT_RESPONSE', 20000)),
+        deadline: Number(get('HMPPS_AUTH_TIMEOUT_DEADLINE', 20000)),
+      },
+      agent: new AgentConfig(),
+      apiClientId: get('API_CLIENT_ID', 'interventions', requiredInProduction),
+      apiClientSecret: get('API_CLIENT_SECRET', 'clientsecret', requiredInProduction),
+      loginClientId: get('LOGIN_CLIENT_ID', 'interventions', requiredInProduction),
+      loginClientSecret: get('LOGIN_CLIENT_SECRET', 'clientsecret', requiredInProduction),
+    },
     interventionsService: {
       url: get('INTERVENTIONS_SERVICE_URL', 'http://localhost:9092', requiredInProduction),
       // the interventions-service <-> community-api worst case timeout is 20s, this is intentionally just slightly higher

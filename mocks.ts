@@ -76,7 +76,10 @@ export default async function setUpMocks(): Promise<void> {
     ['CRN24', 'X320741'].forEach(crn =>
       referAndMonitorAndDeliusMocks.stubGetConvictionByCrnAndId(crn, '([0-9]+)', caseConvictionFactory.build())
     ),
-    referAndMonitorAndDeliusMocks.stubGetResponsibleOfficer('X320741', deliusResponsibleOfficerFactory.build()),
+    ['CRN24', 'X320741'].forEach(crn =>
+      referAndMonitorAndDeliusMocks.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
+    ),
+
     interventionsMocks.stubGetActionPlanAppointment(
       '1',
       1,
@@ -101,7 +104,9 @@ export default async function setUpMocks(): Promise<void> {
     prisonerOffenderSearchMocks.stubGetPrisonerById(prisonerFactory.build()),
     referAndMonitorAndDeliusMocks.stubSentReferral(),
     referAndMonitorAndDeliusMocks.stubGetCrnUserAccess(deliusUserAccess.build()),
-    referAndMonitorAndDeliusMocks.stubGetCaseDetailsByCrn('X320741', deliusServiceUser.build()),
+    ['CRN24', 'X320741'].forEach(crn =>
+      referAndMonitorAndDeliusMocks.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
+    ),
     referAndMonitorAndDeliusMocks.stubGetUserByUsername('BERNARD.BEAKS', deliusUser.build()),
   ])
 }

@@ -8,6 +8,7 @@ generic-service:
     INGRESS_URL: "https://refer-monitor-intervention.service.justice.gov.uk"
     DEPLOYMENT_ENV: prod
     HMPPS_AUTH_URL: https://sign-in.hmpps.service.justice.gov.uk/auth
+    HMPPS_MANAGE_USERS_URL: https://manage-users-api.hmpps.service.justice.gov.uk
     COMMUNITY_API_URL: https://community-api-secure.probation.service.justice.gov.uk
     RAM_DELIUS_API_URL: https://refer-and-monitor-and-delius.hmpps.service.justice.gov.uk
     INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service.apps.live-1.cloud-platform.service.justice.gov.uk

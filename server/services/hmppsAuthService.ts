@@ -36,13 +36,13 @@ redisClient.on('error', error => {
 })
 
 export default class HmppsAuthService {
-  private restClient(token: string): RestClient {
-    return new RestClient('HMPPS Auth Client', config.apis.hmppsAuth, token)
+  private manageUsersRestClient(token: string): RestClient {
+    return new RestClient('HMPPS Manage Users Rest Client', config.apis.hmppsManageUsersApi, token)
   }
 
   async getUserDetails(userToken: string): Promise<UserDetails> {
     logger.info(`Getting current user details: calling HMPPS Auth`)
-    return (await this.restClient(userToken).get({ path: '/api/user/me' })) as UserDetails
+    return (await this.manageUsersRestClient(userToken).get({ path: '/users/me' })) as UserDetails
   }
 
   async getUserDetailsByUsername(userToken: string, username: string): Promise<UserDetails> {
@@ -58,12 +58,12 @@ export default class HmppsAuthService {
     }
 
     logger.info(`Getting user details: calling HMPPS Auth`)
-    return (await this.restClient(userToken).get({ path: `/api/user/${username}` })) as UserDetails
+    return (await this.manageUsersRestClient(userToken).get({ path: `/users/${username}` })) as UserDetails
   }
 
   async getUserOrganizations(token: string, user: User): Promise<Array<ServiceProviderOrganization>> {
     return user.authSource === 'auth'
-      ? (await this.getAuthUserGroups(token, user.username))
+      ? (await this.getAuthUserGroups(token, user.userId))
           .filter(group => group.groupCode.startsWith('INT_SP_'))
           .map(group => ({
             id: group.groupCode.replace(/^(INT_SP_)/, ''),
@@ -74,8 +74,8 @@ export default class HmppsAuthService {
 
   async getSPUserByEmailAddress(token: string, emailAddress: string): Promise<AuthUserDetails> {
     logger.info(`Getting auth user detail by email address: calling HMPPS Auth`)
-    const res: Response = (await this.restClient(token).get({
-      path: `/api/authuser`,
+    const res: Response = (await this.manageUsersRestClient(token).get({
+      path: `/externalusers`,
       query: { email: emailAddress },
       raw: true,
     })) as Response
@@ -94,8 +94,8 @@ export default class HmppsAuthService {
   }
 
   async getSPUserByUsername(token: string, username: string, mustExist = true): Promise<AuthUserDetails> {
-    return (await this.restClient(token)
-      .get({ path: `/api/authuser/${username}` })
+    return (await this.manageUsersRestClient(token)
+      .get({ path: `/externalusers/${username}` })
       .catch(error => {
         if (error.status !== 404) throw error
         if (mustExist) throw error
@@ -104,13 +104,13 @@ export default class HmppsAuthService {
   }
 
   async getUserRoles(token: string): Promise<string[]> {
-    return this.restClient(token)
-      .get({ path: '/api/user/me/roles' })
+    return this.manageUsersRestClient(token)
+      .get({ path: '/users/me/roles' })
       .then(roles => (<UserRole[]>roles).map(role => role.roleCode)) as Promise<string[]>
   }
 
-  async getAuthUserGroups(token: string, username: string): Promise<UserGroup[]> {
-    return (await this.restClient(token).get({ path: `/api/authuser/${username}/groups` })) as UserGroup[]
+  async getAuthUserGroups(token: string, userId: string): Promise<UserGroup[]> {
+    return (await this.manageUsersRestClient(token).get({ path: `/externalusers/${userId}/groups` })) as UserGroup[]
   }
 
   async getApiClientToken(): Promise<string> {

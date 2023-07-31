@@ -121,7 +121,7 @@ export default class AuthServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: '/auth/api/user/me',
+        urlPattern: '/hmpps-manage-users/users/me',
       },
       response: {
         status: 200,
@@ -143,7 +143,7 @@ export default class AuthServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: '/auth/api/user/me/roles',
+        urlPattern: '/hmpps-manage-users/users/me/roles',
       },
       response: {
         status: 200,
@@ -159,7 +159,7 @@ export default class AuthServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: '/auth/api/authuser/\\w+/groups',
+        urlPattern: '/hmpps-manage-users/externalusers/9C2744E3-65CD-4B40-B036-95DBD6F9A871/groups',
       },
       response: {
         status: 200,
@@ -176,7 +176,7 @@ export default class AuthServiceMocks {
       request: {
         method: 'GET',
         // We don’t care about the query (email address)
-        urlPath: '/auth/api/authuser',
+        urlPath: '/hmpps-manage-users/externalusers',
       },
       response: {
         status: 200,
@@ -192,7 +192,7 @@ export default class AuthServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `/auth/api/authuser/${username}`,
+        urlPattern: `/hmpps-manage-users/externalusers/${username}`,
       },
       response: {
         status: 200,
