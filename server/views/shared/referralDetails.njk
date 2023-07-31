@@ -37,8 +37,13 @@
       {%  if (responsibleOfficerSummaryListArgs | length)  and  (presenter.isCustodyReferral) %}
           {{ govukSummaryList(responsibleOfficerSummaryListArgs) }}
       {% endif %}
+      {%  if not presenter.isCustodyReferral %}
+        {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
+      {% endif %}  
 
-      {{ govukSummaryList(probationPractitionerSummaryListArgs) }}
+      {%  if (presenter.isRoAndSenderNotTheSamePerson) and (presenter.isServiceProvider) %}
+        {{ govukSummaryList(backupContactSummaryListArgs) }}
+      {% endif %}
 
       {{ govukSummaryList(serviceUserLocationDetailsSummaryListArgs) }}
 

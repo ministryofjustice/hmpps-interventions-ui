@@ -21,12 +21,8 @@ export default class ShowReferralView {
 
   private get probationPractitionerSummaryListArgs() {
     return ViewUtils.summaryListArgsWithSummaryCard(
-      this.presenter.isCustodyReferral
-        ? this.presenter.probationPractitionerDetailsForCustody
-        : this.presenter.probationPractitionerDetailsForCommunity,
-      this.presenter.isCustodyReferral
-        ? 'Referring probation practitioner details'
-        : this.presenter.probationPractitionerDetailsHeading,
+      this.presenter.probationPractitionerDetailsForCommunity,
+      this.presenter.probationPractitionerDetailsHeading,
       { showBorders: true, showTitle: true }
     )
   }
@@ -36,6 +32,14 @@ export default class ShowReferralView {
     this.presenter.responsibleOfficerDetailsHeading,
     { showBorders: true, showTitle: true }
   )
+
+  private get backupContactSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.backupContactDetails,
+      this.presenter.backupContactDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
 
   private get interventionDetailsSummaryListArgs() {
     return ViewUtils.summaryListArgsWithSummaryCard(
@@ -162,6 +166,7 @@ export default class ShowReferralView {
         presenter: this.presenter,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         probationPractitionerSummaryListArgs: this.probationPractitionerSummaryListArgs,
+        backupContactSummaryListArgs: this.backupContactSummaryListArgs,
         responsibleOfficerSummaryListArgs: this.responsibleOfficerSummaryListArgs,
         interventionDetailsSummaryListArgs: this.interventionDetailsSummaryListArgs,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,

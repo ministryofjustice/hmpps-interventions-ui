@@ -99,6 +99,10 @@ export default class ShowReferralPresenter {
     return `${this.serviceUserNames}'s responsible officer details`
   }
 
+  get backupContactDetailsHeading(): string {
+    return `Back-up contact for the referral`
+  }
+
   get riskInformationHeading(): string {
     return `${this.serviceUserNames}'s risk information`
   }
@@ -123,6 +127,10 @@ export default class ShowReferralPresenter {
 
   get isCustodyReferral(): boolean {
     return this.sentReferral.referral.personCurrentLocationType === 'CUSTODY'
+  }
+
+  get isServiceProvider(): boolean {
+    return this.userType === 'service-provider'
   }
 
   get assignedCaseworkerFullName(): string | null {
@@ -247,6 +255,23 @@ export default class ShowReferralPresenter {
       lines: [officer?.team?.email || 'Not found'],
     })
     return responsibleOfficerDetails
+  }
+
+  get backupContactDetails(): SummaryListItem[] {
+    if (this.sentBy === null || this.deliusResponsibleOfficer === null || !this.isRoAndSenderNotTheSamePerson) return []
+
+    const backupContactDetails: SummaryListItem[] = []
+    const backupUser = this.sentBy
+    backupContactDetails.push({
+      key: 'Referring officer name',
+      lines: [`${backupUser?.name.forename || ''} ${backupUser?.name.surname || ''}`.trim() || 'Not found'],
+    })
+    backupContactDetails.push({
+      key: 'Email address',
+      lines: [backupUser?.email || 'Not found'],
+    })
+
+    return backupContactDetails
   }
 
   get referralServiceCategories(): ServiceCategory[] {
@@ -523,5 +548,19 @@ export default class ShowReferralPresenter {
 
   private getPrisonName(prisonId: string | null): string {
     return this.prisons.find(prison => prison.prisonId === prisonId)?.prisonName || ''
+  }
+
+  get isRoAndSenderNotTheSamePerson(): boolean {
+    return this.getRoName() !== this.getSenderName()
+  }
+
+  private getRoName(): string {
+    const officer = this.deliusResponsibleOfficer?.communityManager
+    const roName = `${officer?.name?.forename || ''} ${officer?.name?.surname || ''}`.trim()
+    return this.sentReferral.referral.ppName ? this.sentReferral.referral.ppName : roName
+  }
+
+  private getSenderName(): string {
+    return `${this.sentBy?.name.forename || ''} ${this.sentBy?.name.surname || ''}`.trim()
   }
 }
