@@ -453,17 +453,6 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Team email address')
       .should('contain', 'r.m@digital.justice.gov.uk')
 
-    cy.contains(`Referring probation practitioner details`)
-      .parent()
-      .parent()
-      .children()
-      .last()
-      .children()
-      .should('contain', 'Name')
-      .should('contain', 'Bernard Beaks')
-      .should('contain', 'Email address')
-      .should('contain', 'bernard.beaks@justice.gov.uk')
-
     cy.contains(`Jenny Jones's location and expected release date`)
       .parent()
       .parent()

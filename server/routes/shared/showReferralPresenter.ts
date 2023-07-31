@@ -129,6 +129,10 @@ export default class ShowReferralPresenter {
     return this.sentReferral.referral.personCurrentLocationType === 'CUSTODY'
   }
 
+  get isServiceProvider(): boolean {
+    return this.userType === 'service-provider'
+  }
+
   get assignedCaseworkerFullName(): string | null {
     return this.referralAssigned ? authUserFullName(this.assignee!) : null
   }
@@ -254,24 +258,19 @@ export default class ShowReferralPresenter {
   }
 
   get backupContactDetails(): SummaryListItem[] {
-    if (this.sentBy === null || this.deliusResponsibleOfficer === null || this.isRoAndSenderSamePerson()) return []
+    if (this.sentBy === null || this.deliusResponsibleOfficer === null || !this.isRoAndSenderNotTheSamePerson) return []
 
     const backupContactDetails: SummaryListItem[] = []
-
     const backupUser = this.sentBy
+    backupContactDetails.push({
+      key: 'Referring officer name',
+      lines: [`${backupUser?.name.forename || ''} ${backupUser?.name.surname || ''}`.trim() || 'Not found'],
+    })
+    backupContactDetails.push({
+      key: 'Email address',
+      lines: [backupUser?.email || 'Not found'],
+    })
 
-    if (this.userType === 'service-provider') {
-      backupContactDetails.push({
-        key: 'Name',
-        lines: [`${backupUser?.firstName || ''} ${backupUser?.surname || ''}`.trim() || 'Not found'],
-      })
-    }
-    if (this.userType === 'service-provider') {
-      backupContactDetails.push({
-        key: 'Email',
-        lines: [backupUser?.email || 'Not found'],
-      })
-    }
     return backupContactDetails
   }
 
@@ -551,20 +550,17 @@ export default class ShowReferralPresenter {
     return this.prisons.find(prison => prison.prisonId === prisonId)?.prisonName || ''
   }
 
-  isRoAndSenderSamePerson(): boolean {
-    if (this.getRoName() === this.getSenderName()) {
-      return true
-    }
-    return false
+  get isRoAndSenderNotTheSamePerson(): boolean {
+    return this.getRoName() !== this.getSenderName()
   }
 
   private getRoName(): string {
-    const dro = this.deliusResponsibleOfficer
-    const roName = `${dro?.name?.forename || ''} ${dro?.name?.forename || ''}`.trim()
-    return roName.trim()
+    const officer = this.deliusResponsibleOfficer?.communityManager
+    const roName = `${officer?.name?.forename || ''} ${officer?.name?.surname || ''}`.trim()
+    return this.sentReferral.referral.ppName ? this.sentReferral.referral.ppName : roName
   }
 
   private getSenderName(): string {
-    return `${this.sentBy?.firstName || ''} ${this.sentBy?.surname || ''}`.trim()
+    return `${this.sentBy?.name.forename || ''} ${this.sentBy?.name.surname || ''}`.trim()
   }
 }

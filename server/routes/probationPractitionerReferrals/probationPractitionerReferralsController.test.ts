@@ -504,9 +504,9 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('This intervention is not yet assigned to a caseworker')
-        expect(res.text).toContain('Bernard Beaks')
-        expect(res.text).toContain('bernard.beaks@justice.gov.uk')
         expect(res.text).toContain('Peter Practitioner')
+        expect(res.text).toContain('bobalice@example.com')
+        expect(res.text).toContain('probation-team4692@justice.gov.uk')
         expect(res.text).toContain('alex.river@example.com')
         expect(res.text).toContain('0123456789')
         expect(res.text).toContain('Alex River')

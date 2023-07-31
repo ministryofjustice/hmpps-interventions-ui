@@ -631,6 +631,109 @@ describe(ShowReferralPresenter, () => {
     })
   })
 
+  describe('get back up contact details', () => {
+    describe('when the referring office and responsible officer are different', () => {
+      it('returns the back up contact details', () => {
+        const sentReferral = sentReferralFactory.build({
+          referral: {
+            ppName: 'Bob Alice',
+          },
+        })
+        const presenter = new ShowReferralPresenter(
+          sentReferral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          prisonList,
+          null,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          deliusResponsibleOfficerFactory.build({
+            communityManager: {
+              code: 'abc',
+              name: {
+                forename: 'Peter',
+                surname: 'Practitioner',
+              },
+              username: 'bobalice',
+              email: 'p.practitioner@example.com',
+              telephoneNumber: '01234567890',
+              responsibleOfficer: true,
+              pdu: {
+                code: '97',
+                description: 'Hackney and City',
+              },
+              team: {
+                code: 'RM',
+                description: 'R and M team',
+                email: 'team@nps.gov.uk',
+                telephoneNumber: '01141234567',
+              },
+            },
+          })
+        )
+
+        expect(presenter.backupContactDetails).toEqual([
+          { key: 'Referring officer name', lines: ['Bernard Beaks'] },
+          { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        ])
+      })
+    })
+
+    describe('when the referring office and responsible officer are same', () => {
+      it('returns the back up contact details', () => {
+        const sentReferral = sentReferralFactory.build({
+          referral: {
+            ppName: 'Bernard Beaks',
+          },
+        })
+        const presenter = new ShowReferralPresenter(
+          sentReferral,
+          intervention,
+          deliusConviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          prisonList,
+          null,
+          null,
+          'service-provider',
+          true,
+          deliusServiceUser,
+          riskSummary,
+          deliusResponsibleOfficerFactory.build({
+            communityManager: {
+              code: 'abc',
+              name: {
+                forename: 'Bernard',
+                surname: 'Beaks',
+              },
+              username: 'bobalice',
+              email: 'p.practitioner@example.com',
+              telephoneNumber: '01234567890',
+              responsibleOfficer: true,
+              pdu: {
+                code: '97',
+                description: 'Hackney and City',
+              },
+              team: {
+                code: 'RM',
+                description: 'R and M team',
+                email: 'team@nps.gov.uk',
+                telephoneNumber: '01141234567',
+              },
+            },
+          })
+        )
+
+        expect(presenter.backupContactDetails).toEqual([])
+      })
+    })
+  })
+
   describe('interventionDetails', () => {
     describe('when all possibly optional fields have been set on the referral', () => {
       const referralWithAllOptionalFields = sentReferralFactory.build({

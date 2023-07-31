@@ -21,12 +21,8 @@ export default class ShowReferralView {
 
   private get probationPractitionerSummaryListArgs() {
     return ViewUtils.summaryListArgsWithSummaryCard(
-      this.presenter.isCustodyReferral
-        ? this.presenter.probationPractitionerDetailsForCustody
-        : this.presenter.probationPractitionerDetailsForCommunity,
-      this.presenter.isCustodyReferral
-        ? 'Referring probation practitioner details'
-        : this.presenter.probationPractitionerDetailsHeading,
+      this.presenter.probationPractitionerDetailsForCommunity,
+      this.presenter.probationPractitionerDetailsHeading,
       { showBorders: true, showTitle: true }
     )
   }
