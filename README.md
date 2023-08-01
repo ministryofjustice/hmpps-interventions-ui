@@ -33,6 +33,7 @@ You'll also need to add the following line to your `/etc/hosts` file:
 
 ```
 127.0.0.1 hmpps-auth
+127.0.0.1 hmpps-manage-users
 ```
 
 ### Running the app
