@@ -2093,7 +2093,45 @@ describe('Adding post delivery session feedback', () => {
 
   describe('POST /service-provider/action-plan:actionPlanId/appointment/:sessionNumber/post-session-feedback/edit/:draftBookingId/submit', () => {
     describe('When the draft booking is found', () => {
-      it("updates the appointment with session feedback when attended is set to 'either 'yes' or 'late'", async () => {
+      it("updates the appointment with session feedback when attended is set to 'yes'", async () => {
+        const sessionNumber = 2
+
+        const draftAppointment: DraftAppointment = draftAppointmentFactory.withSubmittedFeedback('yes').build()
+
+        const draftAppointmentResult = draftAppointmentBookingFactory.build({
+          data: draftAppointment,
+        })
+        draftsService.fetchDraft.mockResolvedValue(draftAppointmentResult)
+        const actionPlan = actionPlanFactory.build()
+        interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+
+        await request(app)
+          .post(
+            `/service-provider/action-plan/${actionPlan.id}/appointment/${sessionNumber}/post-session-feedback/edit/${draftAppointmentResult.id}/submit`
+          )
+          .expect(302)
+          .expect(
+            'Location',
+            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=false`
+          )
+
+        expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith(
+          'token',
+          actionPlan.id,
+          sessionNumber,
+          {
+            appointmentTime: draftAppointment!.appointmentTime,
+            durationInMinutes: draftAppointment!.durationInMinutes,
+            appointmentDeliveryType: draftAppointment!.appointmentDeliveryType,
+            sessionType: draftAppointment!.sessionType,
+            appointmentDeliveryAddress: draftAppointment!.appointmentDeliveryAddress,
+            npsOfficeCode: draftAppointment!.npsOfficeCode,
+            attendanceFeedback: { ...draftAppointment!.session!.attendanceFeedback },
+            sessionFeedback: { ...draftAppointment!.session!.sessionFeedback },
+          }
+        )
+      })
+      it("updates the appointment with session feedback when attended is set to 'late'", async () => {
         const sessionNumber = 2
 
         const draftAppointment: DraftAppointment = draftAppointmentFactory.withSubmittedFeedback('late').build()
