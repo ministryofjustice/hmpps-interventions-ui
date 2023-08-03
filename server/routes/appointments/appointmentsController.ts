@@ -683,7 +683,7 @@ export default class AppointmentsController {
           npsOfficeCode: draftAppointment.npsOfficeCode,
           attendanceFeedback: { ...draftAppointment.session.attendanceFeedback },
           sessionFeedback:
-            draftAppointment.session.attendanceFeedback.attended === 'yes'
+            draftAppointment.session.attendanceFeedback.attended !== 'no'
               ? { ...draftAppointment.session.sessionFeedback }
               : null,
         }
@@ -969,7 +969,7 @@ export default class AppointmentsController {
           npsOfficeCode: draftAppointment.npsOfficeCode,
           attendanceFeedback: { ...draftAppointment.session.attendanceFeedback },
           sessionFeedback:
-            draftAppointment.session.attendanceFeedback.attended === 'yes'
+            draftAppointment.session.attendanceFeedback.attended !== 'no'
               ? { ...draftAppointment.session.sessionFeedback }
               : null,
         }
