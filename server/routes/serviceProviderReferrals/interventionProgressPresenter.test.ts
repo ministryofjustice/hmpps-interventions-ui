@@ -154,7 +154,7 @@ describe(InterventionProgressPresenter, () => {
     })
 
     describe('when a session exists but an appointment has not yet been scheduled', () => {
-      it('populates the table with formatted session information, with the "Edit session details" link displayed', () => {
+      it('populates the table with formatted session information, with the "Add session details" link displayed', () => {
         const referral = sentReferralFactory.build()
         const intervention = interventionFactory.build()
         const actionPlan = actionPlanFactory.submitted().build({ id: '77923562-755c-48d9-a74c-0c8565aac9a2' })
@@ -177,7 +177,7 @@ describe(InterventionProgressPresenter, () => {
             links: [
               {
                 href: '/service-provider/action-plan/77923562-755c-48d9-a74c-0c8565aac9a2/sessions/1/edit/start',
-                text: 'Edit session details',
+                text: 'Add session details',
               },
             ],
           },
