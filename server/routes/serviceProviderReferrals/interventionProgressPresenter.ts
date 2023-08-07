@@ -202,6 +202,14 @@ export default class InterventionProgressPresenter {
           },
         ]
         break
+      case SessionStatus.notScheduled:
+        links = [
+          {
+            text: 'Add session details',
+            href: editHref,
+          },
+        ]
+        break
       case SessionStatus.scheduled:
         links = [
           {
