@@ -178,6 +178,8 @@ export default class CaseNotesController {
     }
 
     const loggedInUser = await this.hmppsAuthService.getUserDetails(accessToken)
+    const referral = await Promise.resolve(this.interventionsService.getSentReferral(accessToken, referralId))
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const presenter = new CheckAddCaseNoteAnswersPresenter(
       referralId,
       draft.id,
@@ -186,7 +188,7 @@ export default class CaseNotesController {
       draft.data
     )
     const view = new CheckAddCaseNoteAnswersView(presenter)
-    ControllerUtils.renderWithLayout(res, view, null)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async submitCaseNote(
