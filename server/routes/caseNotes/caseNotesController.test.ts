@@ -249,6 +249,10 @@ describe.each([
       })
       draftsService.fetchDraft.mockResolvedValue(draftCaseNote)
       hmppsAuthService.getUserDetails.mockResolvedValue(userDetailsFactory.build())
+
+      interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUserFactory.build())
+
       await request(app)
         .get(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/${draftCaseNote.id}/check-answers`)
         .expect(200)
@@ -276,6 +280,7 @@ describe.each([
     it('should show confirmation of case note added', async () => {
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
       interventionsService.getIntervention.mockResolvedValue(interventionFactory.build({}))
+
       await request(app)
         .get(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/confirmation`)
         .expect(200)
