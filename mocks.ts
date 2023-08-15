@@ -107,6 +107,6 @@ export default async function setUpMocks(): Promise<void> {
     ['CRN24', 'X320741'].forEach(crn =>
       referAndMonitorAndDeliusMocks.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
     ),
-    referAndMonitorAndDeliusMocks.stubGetUserByUsername('BERNARD.BEAKS', deliusUser.build()),
+    referAndMonitorAndDeliusMocks.stubGetUserByUsername('bernard.beaks', deliusUser.build()),
   ])
 }
