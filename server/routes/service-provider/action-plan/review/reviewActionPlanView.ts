@@ -1,5 +1,6 @@
 import ReviewActionPlanPresenter from './reviewActionPlanPresenter'
 import ActionPlanView from '../../../shared/action-plan/actionPlanView'
+import ViewUtils from '../../../../utils/viewUtils'
 
 export default class ReviewActionPlanView {
   actionPlanView: ActionPlanView
@@ -20,6 +21,7 @@ export default class ReviewActionPlanView {
         presenter: this.presenter,
         insetTextArgs: this.actionPlanView.insetTextActivityArgs,
         backLinkArgs: this.backLinkArgs,
+        errorSummaryArgs: ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary),
       },
     ]
   }

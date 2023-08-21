@@ -38,7 +38,7 @@ describe(ReviewActionPlanPresenter, () => {
       const actionPlan = actionPlanFactory.justCreated(sentReferral.id).build()
       const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
 
-      expect(presenter.submitFormAction).toEqual(`/service-provider/action-plan/${actionPlan.id}/submit`)
+      expect(presenter.submitFormAction).toEqual(`/service-provider/action-plan/${actionPlan.id}/review`)
     })
   })
 
