@@ -1825,17 +1825,60 @@ describe('GET /service-provider/action-plan/:actionPlanId/review', () => {
   })
 })
 
-describe('POST /service-provider/action-plan/:actionPlanId/submit', () => {
-  it('submits the action plan and redirects to the confirmation page', async () => {
+describe('POST /service-provider/action-plan/:actionPlanId/review', () => {
+  beforeEach(() => {
+    const desiredOutcome = { id: '1', description: 'Achieve a thing' }
+    const serviceCategory = serviceCategoryFactory.build({ name: 'accommodation', desiredOutcomes: [desiredOutcome] })
+    const referral = sentReferralFactory.assigned().build({
+      referral: {
+        serviceCategoryIds: [serviceCategory.id],
+        serviceUser: { firstName: 'Alex', lastName: 'River' },
+        desiredOutcomes: [{ serviceCategoryId: serviceCategory.id, desiredOutcomesIds: [desiredOutcome.id] }],
+      },
+    })
+    const draftActionPlan = actionPlanFactory.readyToSubmit(referral.id).build({
+      activities: [{ id: '1', description: 'Do a thing', createdAt: '2021-03-01T10:00:00Z' }],
+      numberOfSessions: 10,
+    })
+    const interventionForTest = interventionFactory.build({
+      contractType: {
+        code: 'ACC',
+        name: 'Accommodation',
+      },
+    })
     const submittedActionPlan = actionPlanFactory.submitted().build()
-
     interventionsService.submitActionPlan.mockResolvedValue(submittedActionPlan)
+    interventionsService.getActionPlan.mockResolvedValue(draftActionPlan)
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getIntervention.mockResolvedValue(interventionForTest)
+  })
 
+  it('does not submit action plan if supplier assessment appointment has not been scheduled', async () => {
+    const submittedActionPlan = actionPlanFactory.submitted().build()
+    interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
+    await request(app).post(`/service-provider/action-plan/${submittedActionPlan.id}/review`).expect(200)
+    expect(interventionsService.submitActionPlan).toHaveBeenCalledTimes(0)
+  })
+
+  it('does not submit action plan if supplier assessment appointment has been scheduled but not attended', async () => {
+    const submittedActionPlan = actionPlanFactory.submitted().build()
+    interventionsService.getSupplierAssessment.mockResolvedValue(
+      supplierAssessmentFactory.withNonAttendedAppointment.build()
+    )
+    await request(app).post(`/service-provider/action-plan/${submittedActionPlan.id}/review`).expect(200)
+    expect(interventionsService.submitActionPlan).toHaveBeenCalledTimes(0)
+  })
+
+  it('submits the action plan and redirects to the confirmation page if supplier assessment appointment has been attended', async () => {
+    const submittedActionPlan = actionPlanFactory.submitted().build()
+    interventionsService.getSupplierAssessment.mockResolvedValue(
+      supplierAssessmentFactory.withAttendedAppointment.build()
+    )
     await request(app)
-      .post(`/service-provider/action-plan/${submittedActionPlan.id}/submit`)
+      .post(`/service-provider/action-plan/${submittedActionPlan.id}/review`)
       .expect(302)
       .expect('Location', `/service-provider/action-plan/${submittedActionPlan.id}/confirmation`)
-
     expect(interventionsService.submitActionPlan).toHaveBeenCalledWith('token', submittedActionPlan.id)
   })
 })

@@ -176,6 +176,10 @@ export default {
   actionPlanApproval: {
     notConfirmed: 'Select the checkbox to confirm before you approve the action plan',
   },
+  reviewActionPlan: {
+    supplierAssessmentAppointmentIncomplete:
+      'You cannot submit an action plan yet. First you need to hold the supplier assessment appointment and then give feedback on it.',
+  },
   attendedAppointment: {
     empty: 'Select whether they attended or not',
   },

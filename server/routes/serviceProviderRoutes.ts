@@ -98,7 +98,8 @@ export default function serviceProviderRoutes(
     serviceProviderReferralsController.finaliseActionPlanActivities(req, res)
   )
   get(router, '/action-plan/:id/review', (req, res) => serviceProviderReferralsController.reviewActionPlan(req, res))
-  post(router, '/action-plan/:id/submit', (req, res) => serviceProviderReferralsController.submitActionPlan(req, res))
+  post(router, '/action-plan/:id/review', (req, res) => serviceProviderReferralsController.reviewActionPlan(req, res))
+
   get(router, '/action-plan/:id/confirmation', (req, res) =>
     serviceProviderReferralsController.showActionPlanConfirmation(req, res)
   )

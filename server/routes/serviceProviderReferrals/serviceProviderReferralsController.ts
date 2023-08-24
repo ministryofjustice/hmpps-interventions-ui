@@ -64,6 +64,8 @@ import FeatureFlagService from '../../services/featureFlagService'
 import UserDataService from '../../services/userDataService'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
+import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
+import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -665,6 +667,30 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       actionPlan.referralId
     )
+    let formError: FormValidationError | null = null
+
+    if (req.method === 'POST') {
+      const supplierAssessmentAppointment = await this.interventionsService.getSupplierAssessment(
+        res.locals.user.token.accessToken,
+        actionPlan.referralId
+      )
+      const supplierAssessmentStatus = sessionStatus.forAppointment(
+        new SupplierAssessmentDecorator(supplierAssessmentAppointment).currentAppointment
+      )
+      if (supplierAssessmentStatus === SessionStatus.completed) {
+        await this.interventionsService.submitActionPlan(res.locals.user.token.accessToken, req.params.id)
+        return res.redirect(`/service-provider/action-plan/${req.params.id}/confirmation`)
+      }
+      formError = {
+        errors: [
+          {
+            formFields: [],
+            errorSummaryLinkedField: '',
+            message: errorMessages.reviewActionPlan.supplierAssessmentAppointmentIncomplete,
+          },
+        ],
+      }
+    }
 
     const [serviceCategories, serviceUser] = await Promise.all([
       Promise.all(
@@ -675,15 +701,10 @@ export default class ServiceProviderReferralsController {
       this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
     ])
 
-    const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan)
+    const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan, formError)
     const view = new ReviewActionPlanView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
-  }
-
-  async submitActionPlan(req: Request, res: Response): Promise<void> {
-    await this.interventionsService.submitActionPlan(res.locals.user.token.accessToken, req.params.id)
-    res.redirect(`/service-provider/action-plan/${req.params.id}/confirmation`)
+    return ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async showActionPlanConfirmation(req: Request, res: Response): Promise<void> {
@@ -696,10 +717,8 @@ export default class ServiceProviderReferralsController {
     const { accessToken: token } = res.locals.user.token
     const sentReferral = await this.interventionsService.getSentReferral(token, actionPlan.referralId)
 
-    const referral = await this.interventionsService.getSentReferral(token, actionPlan.referralId)
-
     const [interventionForPresenterTitle, serviceUser] = await Promise.all([
-      this.interventionsService.getIntervention(token, referral.referral.interventionId),
+      this.interventionsService.getIntervention(token, sentReferral.referral.interventionId),
       this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
     ])
 
