@@ -161,7 +161,7 @@
     "@typescript-eslint/parser": "^5.48.0",
     "concurrently": "^8.0.0",
     "cookie-session": "^2.0.0",
-    "cypress": "^12.3.0",
+    "cypress": "^13.0.0",
     "cypress-multi-reporters": "^1.6.2",
     "cypress-slow-down": "^1.2.1",
     "eslint": "^8.32.0",
