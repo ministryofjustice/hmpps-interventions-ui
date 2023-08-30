@@ -1,4 +1,4 @@
-# branch based deployment script to allow DEV TWO to pick up in-progress changes  
+# branch based deployment script to allow DEV TWO to pick up in-progress changes
 name: Branch Based Deploy
 
 on:
