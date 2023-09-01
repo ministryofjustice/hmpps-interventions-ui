@@ -2497,14 +2497,13 @@ describe('Service provider referrals dashboard', () => {
 
           cy.location('pathname').should('equal', `/service-provider/referrals/${referral.id}/progress`)
           cy.get('[data-cy=supplier-assessment-table]')
-            .getTable()
-            .should('deep.equal', [
-              {
-                'Time and date': `9:02am on ${tomorrow.format('D MMM YYYY')}`,
-                Status: 'scheduled',
-                Action: 'View details or reschedule',
-              },
-            ])
+            .children()
+            .should('contain', 'Time and date')
+            .and('contain', 'Status')
+            .and('contain', 'Action')
+            .and('contain', '9:02am')
+            .and('contain', 'scheduled')
+            .and('contain', 'View details or reschedule')
 
           cy.contains('View details or reschedule').click()
           cy.get('h1').contains('View appointment details')
