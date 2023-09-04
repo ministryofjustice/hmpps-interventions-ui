@@ -4,7 +4,7 @@ import config from './server/config'
 
 const level = (() => {
   if (config.production) {
-    return 'warn'
+    return 'info'
   }
   if (config.testMode) {
     return 'fatal'
