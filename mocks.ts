@@ -67,6 +67,7 @@ export default async function setUpMocks(): Promise<void> {
     })
   await Promise.all([
     assessRisksAndNeedsApiMocks.stubGetRiskSummary('CRN24', riskSummaryFactory.build()),
+    assessRisksAndNeedsApiMocks.stubGetRiskSummary('X320741', riskSummaryFactory.build()),
     assessRisksAndNeedsApiMocks.stubGetSupplementaryRiskInformation(
       '5f2debc5-4c6a-4972-84ce-0689b8f9ec52',
       supplementaryRiskInformationFactory.build()
