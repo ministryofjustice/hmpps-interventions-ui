@@ -9,6 +9,7 @@ import ReportingForm from './performanceReport/reportingForm'
 import PerformanceReportConfirmationView from './performanceReport/confirmation/performanceReportConfirmationView'
 import config from '../../config'
 import InterventionsService from '../../services/interventionsService'
+import log from '../../../log'
 
 export default class ReportingController {
   s3Service: S3
@@ -60,6 +61,8 @@ export default class ReportingController {
       Key: `reports/service-provider/performance/${filename}`,
       Expires: 60 * 15, // 15 minutes - the page can load without the download starting
     })
+
+    log.info(`The download Url for the performance dashboard is  ${downloadUrl}`)
 
     ControllerUtils.renderWithLayout(
       res,
