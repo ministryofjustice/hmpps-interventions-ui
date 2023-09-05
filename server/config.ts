@@ -59,6 +59,8 @@ export default {
       region: 'eu-west-2',
       apiVersion: '2006-03-01',
       signatureVersion: 'v4',
+      accessKeyId: null,
+      secretAccessKey: null,
       endpoint: production ? undefined : 'http://localhost:4566',
     },
     bucket: {
