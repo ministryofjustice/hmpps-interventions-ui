@@ -1,4 +1,3 @@
-import { UUID } from 'aws-sdk/clients/cloudtrail'
 import ServiceUser from '../../../models/serviceUser'
 import { ListStyle, SummaryListItem } from '../../../utils/summaryList'
 import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
@@ -15,7 +14,7 @@ export default class ServiceUserDetailsPresenter {
     private readonly serviceUser: ServiceUser,
     private readonly deliusServiceUserDetails: DeliusServiceUser,
     private readonly prisons: Prison[],
-    private readonly referralId: UUID | null = null,
+    private readonly referralId: string | null = null,
     private readonly personCurrentLocationType: CurrentLocationType | null = null,
     private readonly personCustodyPrisonId: string | null = null,
     private readonly popReleaseDate: string | null = null,
