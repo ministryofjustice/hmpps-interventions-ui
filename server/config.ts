@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv'
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers'
 
 dotenv.config()
 const production = process.env.NODE_ENV === 'production'
@@ -15,6 +16,7 @@ function get<T>(name: string, fallback: T, options = { requireInProduction: fals
 }
 
 const requiredInProduction = { requireInProduction: true }
+const credentials = fromNodeProviderChain()
 
 export class AgentConfig {
   maxSockets = 100
@@ -59,8 +61,7 @@ export default {
       region: 'eu-west-2',
       apiVersion: '2006-03-01',
       signatureVersion: 'v4',
-      accessKeyId: undefined,
-      secretAccessKey: undefined,
+      credentials,
       endpoint: production ? undefined : 'http://localhost:4566',
     },
     bucket: {

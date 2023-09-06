@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import createError from 'http-errors'
-import S3 from 'aws-sdk/clients/s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
 import ReportingPresenter from './performanceReport/reportingPresenter'
 import ReportingView from './performanceReport/reportingView'
 import ControllerUtils from '../../utils/controllerUtils'
@@ -12,10 +13,15 @@ import InterventionsService from '../../services/interventionsService'
 import log from '../../../log'
 
 export default class ReportingController {
-  s3Service: S3
+  s3Client: S3Client
 
   constructor(private readonly interventionsService: InterventionsService) {
-    this.s3Service = new S3(config.s3.service)
+    this.s3Client = new S3Client({
+      region: config.s3.service.region,
+      endpoint: config.s3.service.endpoint,
+      apiVersion: config.s3.service.apiVersion,
+      credentials: config.s3.service.credentials,
+    })
   }
 
   async viewReporting(_req: Request, res: Response): Promise<void> {
@@ -56,11 +62,12 @@ export default class ReportingController {
       throw createError(400, "required query parameter 'filename' missing")
     }
 
-    const downloadUrl = this.s3Service.getSignedUrl('getObject', {
+    const command = new GetObjectCommand({
       Bucket: config.s3.bucket.name,
       Key: `reports/service-provider/performance/${filename}`,
-      Expires: 60 * 15, // 15 minutes - the page can load without the download starting
     })
+
+    const downloadUrl = await getSignedUrl(this.s3Client, command, { expiresIn: 60 * 15 })
 
     log.info(`The download Url for the performance dashboard is  ${downloadUrl}`)
 
