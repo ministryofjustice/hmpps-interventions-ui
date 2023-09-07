@@ -2,6 +2,7 @@
 generic-service:
   nameOverride: hmpps-interventions-ui
   replicaCount: 3
+  serviceAccountName: "hmpps-interventions"
 
   image:
     repository: quay.io/hmpps/hmpps-interventions-ui
