@@ -20,7 +20,6 @@ export default class ReportingController {
       region: config.s3.service.region,
       endpoint: config.s3.service.endpoint,
       apiVersion: config.s3.service.apiVersion,
-      credentials: config.s3.service.credentials,
     })
   }
 
