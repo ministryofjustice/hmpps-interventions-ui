@@ -91,6 +91,7 @@ export default class ExpectedReleaseDateView {
         releaseDateUnknownReasonArgs: this.releaseDateUnknownReasonArgs,
         backLinkArgs: { href: this.presenter.backLinkUrl },
         dateInputArgs: this.dateInputArgs,
+        suppressServiceUserBanner: true,
       },
     ]
   }

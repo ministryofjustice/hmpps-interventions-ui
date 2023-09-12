@@ -24,6 +24,7 @@ export default class ReferralFormView {
       {
         presenter: this.presenter,
         ...ReferralFormView.helpers,
+        suppressServiceUserBanner: true,
       },
     ]
   }

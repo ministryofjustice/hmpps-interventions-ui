@@ -8,12 +8,16 @@ import PresenterUtils from '../../../../../utils/presenterUtils'
 export default class OasysRiskInformationPresenter {
   riskPresenter: RoshPanelPresenter
 
+  readonly displayLabel: string
+
   constructor(
     readonly referralId: string,
     readonly riskSummary: RiskSummary | null,
-    private readonly error: FormValidationError | null = null
+    private readonly error: FormValidationError | null = null,
+    readonly label: string
   ) {
     this.riskPresenter = new RoshPanelPresenter(riskSummary)
+    this.displayLabel = label
   }
 
   readonly errors = {

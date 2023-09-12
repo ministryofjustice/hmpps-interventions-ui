@@ -1,6 +1,7 @@
 import request from 'supertest'
 import { Express } from 'express'
 import createError from 'http-errors'
+import moment from 'moment-timezone'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import getCookieValue from '../testutils/responseUtils'
 import InterventionsService from '../../services/interventionsService'
@@ -46,6 +47,7 @@ import RamDeliusApiService from '../../services/ramDeliusApiService'
 import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 import ramDeliusUserFactory from '../../../testutils/factories/ramDeliusUser'
 import caseConvictionFactory from '../../../testutils/factories/caseConviction'
+import { CurrentLocationType } from '../../models/draftReferral'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/hmppsAuthService')
@@ -472,7 +474,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         },
       }),
     ]
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
@@ -504,7 +506,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         },
       }),
     ]
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
@@ -530,7 +532,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         },
       }),
     ]
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
@@ -551,7 +553,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
   it('displays no records found when the search yields no results', async () => {
     const searchText = 'nonsense'
 
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
@@ -578,7 +580,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
 
   it('displays no records found when the search yields no results - empty search', async () => {
     const searchText = ''
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
@@ -605,7 +607,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         },
       }),
     ]
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
@@ -630,7 +632,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
         },
       }),
     ]
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
@@ -841,7 +843,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build()
     responsibleOfficer = deliusResponsibleOfficerFactory.build()
-    prisonList = prisonFactory.prisonList()
+    prisonList = prisonFactory.build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
@@ -854,8 +856,13 @@ describe('GET /service-provider/referrals/:id/details', () => {
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 
-  it('displays information about the referral and service user', async () => {
-    sentReferral = sentReferralFactory.unassigned().build()
+  it('displays information about the referral and service user for a community referral', async () => {
+    sentReferral = sentReferralFactory.unassigned().build({
+      referral: {
+        personCurrentLocationType: CurrentLocationType.community,
+        isReferralReleasingIn12Weeks: null,
+      },
+    })
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
       riskSummaryComments: 'Alex is low risk to others.',
     })
@@ -882,16 +889,216 @@ describe('GET /service-provider/referrals/:id/details', () => {
         expect(res.text).toContain('Who do you want to assign this referral to?')
         expect(res.text).toContain('Bernard Beaks')
         expect(res.text).toContain('bernard.beaks@justice.gov.uk')
-        expect(res.text).toContain('Peter Practitioner')
-        expect(res.text).toContain('alex.river@example.com')
+        expect(res.text).toContain('Bob Alice')
         expect(res.text).toContain('07123456789')
+        expect(res.text).toContain('alex.river@example.com')
+        expect(res.text).toContain('98454243243')
         expect(res.text).toContain('Alex River')
         expect(res.text).toContain('Alex is low risk to others.')
         expect(res.text).toContain('Alex River&#39;s risk of serious harm(RoSH) levels')
         expect(res.text).toContain('Children')
         expect(res.text).toContain('High')
         expect(res.text).toContain('07890 123456')
-        expect(res.text).toContain('probation-team4692@justice.gov.uk')
+      })
+  })
+
+  it('displays information about the referral and service user for a custody referral', async () => {
+    sentReferral = sentReferralFactory.unassigned().build({
+      referral: {
+        isReferralReleasingIn12Weeks: null,
+      },
+    })
+    supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+      riskSummaryComments: 'Alex is low risk to others.',
+    })
+    responsibleOfficer = deliusResponsibleOfficerFactory.build({
+      communityManager: {
+        name: { forename: 'Peter', surname: 'Practitioner' },
+        team: {
+          telephoneNumber: '07890 123456',
+          email: 'probation-team4692@justice.gov.uk',
+        },
+      },
+    })
+
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+
+    await request(app)
+      .get(`/service-provider/referrals/${sentReferral.id}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Who do you want to assign this referral to?')
+        expect(res.text).toContain('Bernard Beaks')
+        expect(res.text).toContain('bernard.beaks@justice.gov.uk')
+        expect(res.text).toContain('Bob Alice')
+        expect(res.text).toContain('London')
+        expect(res.text).toContain(moment().add(1, 'days').format('YYYY-MM-DD'))
+        expect(res.text).toContain('07123456789')
+        expect(res.text).toContain('alex.river@example.com')
+        expect(res.text).toContain('98454243243')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Alex is low risk to others.')
+        expect(res.text).toContain('Alex River&#39;s risk of serious harm(RoSH) levels')
+        expect(res.text).toContain('Children')
+        expect(res.text).toContain('High')
+        expect(res.text).toContain('07890 123456')
+      })
+  })
+
+  it('displays information about the referral and service user for an unallocated COM where release date is known', async () => {
+    sentReferral = sentReferralFactory.unassigned().build({
+      referral: {
+        isReferralReleasingIn12Weeks: true,
+        ppProbationOffice: null,
+        ppPdu: 'Leeds',
+      },
+    })
+    supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+      riskSummaryComments: 'Alex is low risk to others.',
+    })
+    responsibleOfficer = deliusResponsibleOfficerFactory.build({
+      communityManager: {
+        name: { forename: 'Peter', surname: 'Practitioner' },
+        team: {
+          telephoneNumber: '07890 123456',
+          email: 'probation-team4692@justice.gov.uk',
+        },
+      },
+    })
+
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+
+    await request(app)
+      .get(`/service-provider/referrals/${sentReferral.id}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Who do you want to assign this referral to?')
+        expect(res.text).toContain('Bernard Beaks')
+        expect(res.text).toContain('bernard.beaks@justice.gov.uk')
+        expect(res.text).toContain('Bob Alice')
+        expect(res.text).toContain('Main point of contact details(until probation practitioner is allocated)')
+        expect(res.text).toContain('Role/job title')
+        expect(res.text).toContain('Probabation Practitioner')
+        expect(res.text).toContain('Establishment')
+        expect(res.text).toContain('London')
+        expect(res.text).toContain(moment().add(1, 'days').format('YYYY-MM-DD'))
+        expect(res.text).toContain('Back-up contact for the referral')
+        expect(res.text).toContain('Referring officer name')
+        expect(res.text).toContain('Bernard Beaks')
+        expect(res.text).toContain('alex.river@example.com')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Alex is low risk to others.')
+        expect(res.text).toContain('Alex River&#39;s risk of serious harm(RoSH) levels')
+        expect(res.text).toContain('Children')
+        expect(res.text).toContain('High')
+      })
+  })
+
+  it('displays information about the referral and service user for an unallocated COM where release date is not known', async () => {
+    sentReferral = sentReferralFactory.unassigned().build({
+      referral: {
+        isReferralReleasingIn12Weeks: false,
+        ppProbationOffice: 'London',
+        ppPdu: null,
+      },
+    })
+    supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+      riskSummaryComments: 'Alex is low risk to others.',
+    })
+    responsibleOfficer = deliusResponsibleOfficerFactory.build({
+      communityManager: {
+        name: { forename: 'Peter', surname: 'Practitioner' },
+        team: {
+          telephoneNumber: '07890 123456',
+          email: 'probation-team4692@justice.gov.uk',
+        },
+      },
+    })
+
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+
+    await request(app)
+      .get(`/service-provider/referrals/${sentReferral.id}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Who do you want to assign this referral to?')
+        expect(res.text).toContain('Bernard Beaks')
+        expect(res.text).toContain('bernard.beaks@justice.gov.uk')
+        expect(res.text).toContain('Bob Alice')
+        expect(res.text).toContain('Main point of contact details(until probation practitioner is allocated)')
+        expect(res.text).toContain('Role/job title')
+        expect(res.text).toContain('Probabation Practitioner')
+        expect(res.text).toContain('Probation office')
+        expect(res.text).toContain('London')
+        expect(res.text).toContain('Back-up contact for the referral')
+        expect(res.text).toContain('Referring officer name')
+        expect(res.text).toContain('Bernard Beaks')
+        expect(res.text).toContain('alex.river@example.com')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Alex is low risk to others.')
+        expect(res.text).toContain('Alex River&#39;s risk of serious harm(RoSH) levels')
+        expect(res.text).toContain('Children')
+        expect(res.text).toContain('High')
+      })
+  })
+
+  it('displays information about the referral and service user for an already existing custody referral', async () => {
+    sentReferral = sentReferralFactory.unassigned().build({
+      referral: {
+        ndeliusPPName: null,
+        ppName: null,
+        isReferralReleasingIn12Weeks: null,
+      },
+    })
+    supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
+      riskSummaryComments: 'Alex is low risk to others.',
+    })
+    responsibleOfficer = deliusResponsibleOfficerFactory.build({
+      communityManager: {
+        name: { forename: 'Peter', surname: 'Practitioner' },
+        team: {
+          telephoneNumber: '07890 123456',
+          email: 'probation-team4692@justice.gov.uk',
+        },
+      },
+    })
+
+    interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+    ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
+    assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+
+    await request(app)
+      .get(`/service-provider/referrals/${sentReferral.id}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Who do you want to assign this referral to?')
+        expect(res.text).toContain('Peter Practitioner')
+        expect(res.text).toContain('bobalice@example.com')
+        expect(res.text).toContain('London')
+        expect(res.text).toContain(moment().add(1, 'days').format('YYYY-MM-DD'))
+        expect(res.text).toContain('07123456789')
+        expect(res.text).toContain('alex.river@example.com')
+        expect(res.text).toContain('98454243243')
+        expect(res.text).toContain('Alex River')
+        expect(res.text).toContain('Alex is low risk to others.')
+        expect(res.text).toContain('Alex River&#39;s risk of serious harm(RoSH) levels')
+        expect(res.text).toContain('Children')
+        expect(res.text).toContain('High')
+        expect(res.text).toContain('07890 123456')
       })
   })
 

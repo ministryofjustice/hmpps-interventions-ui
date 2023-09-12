@@ -42,4 +42,6 @@ export default class DesiredOutcomesPresenter {
   readonly title = `What are the desired outcomes for the ${utils.convertToProperCase(
     this.serviceCategory.name
   )} service?`
+
+  readonly label = `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`
 }

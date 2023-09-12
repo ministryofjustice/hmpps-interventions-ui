@@ -85,6 +85,10 @@ export default class ShowReferralPresenter {
     return `${this.serviceUserNames}'s probation practitioner`
   }
 
+  get mainPointOfContactDetailsHeading(): string {
+    return 'Main point of contact details(until probation practitioner is allocated)'
+  }
+
   get roshInformationHeading(): string {
     return `${this.serviceUserNames}'s risk of serious harm(RoSH) levels`
   }
@@ -129,6 +133,10 @@ export default class ShowReferralPresenter {
     return this.sentReferral.referral.personCurrentLocationType === 'CUSTODY'
   }
 
+  get checkIfReferralTypeIsSet(): boolean {
+    return this.sentReferral.referral.personCurrentLocationType !== null
+  }
+
   get isServiceProvider(): boolean {
     return this.userType === 'service-provider'
   }
@@ -139,6 +147,19 @@ export default class ShowReferralPresenter {
 
   get assignedCaseworkerEmail(): string | null {
     return this.referralAssigned ? `${this.assignee!.email}` : null
+  }
+
+  get isCustodyWithNoResponsibleOfficerDetails(): boolean {
+    return (
+      this.isCustodyReferral &&
+      this.sentReferral.referral.ppName === null &&
+      this.sentReferral.referral.ndeliusPPName === null &&
+      this.sentReferral.referral.isReferralReleasingIn12Weeks === null
+    )
+  }
+
+  get checkIfUnAllocatedCOM(): boolean {
+    return this.sentReferral.referral.isReferralReleasingIn12Weeks !== null
   }
 
   get probationPractitionerDetailsForCommunity(): SummaryListItem[] {
@@ -204,10 +225,41 @@ export default class ShowReferralPresenter {
     return probationPractitionerDetails
   }
 
-  readonly probationPractitionerDetailsForCustody: SummaryListItem[] = [
-    { key: 'Name', lines: [`${this.sentBy.name.forename} ${this.sentBy.name.surname}`] },
-    { key: 'Email address', lines: [this.sentBy.email ?? ''] },
-  ]
+  get mainPointOfContactDetailsSummary(): SummaryListItem[] {
+    const probationPractitionerDetails: SummaryListItem[] = []
+    probationPractitionerDetails.push(
+      {
+        key: 'Name',
+        lines: [this.sentReferral.referral.ppName || 'Not found'],
+      },
+      {
+        key: 'Role/job title',
+        lines: [this.sentReferral.referral.roleOrJobTitle || 'Not found'],
+      },
+      { key: 'Email address', lines: [this.deriveEmailAddress] },
+      this.establishmentOrProbationOffice
+    )
+    return probationPractitionerDetails
+  }
+
+  private get establishmentOrProbationOffice(): SummaryListItem {
+    if (this.sentReferral.referral.ppPdu !== null && this.sentReferral.referral.ppPdu !== '') {
+      return {
+        key: 'Establishment',
+        lines: [this.sentReferral.referral.ppPdu],
+      }
+    }
+    if (this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== '') {
+      return {
+        key: 'Probation office',
+        lines: [this.sentReferral.referral.ppProbationOffice],
+      }
+    }
+    return {
+      key: 'Establishment/Probation office',
+      lines: ['Not provided'],
+    }
+  }
 
   get deriveEmailAddress(): string {
     if (this.sentReferral.referral.ppEmailAddress) {
@@ -465,23 +517,26 @@ export default class ShowReferralPresenter {
     if (personCurrentLocationType === 'CUSTODY') {
       const currentPrisonName = this.getPrisonName(this.sentReferral.referral.personCustodyPrisonId)
       const expectedReleaseInfo: string =
-        this.sentReferral.referral.expectedReleaseDate !== ''
+        this.sentReferral.referral.expectedReleaseDate !== null && this.sentReferral.referral.expectedReleaseDate !== ''
           ? this.sentReferral.referral.expectedReleaseDate!
           : this.sentReferral.referral.expectedReleaseDateMissingReason!
-      return [
-        {
-          key: 'Location at time of referral',
-          lines: [personCurrentLocationType ? utils.convertToProperCase(personCurrentLocationType) : ''],
-        },
-        {
-          key: 'Current establishment',
-          lines: [this.sentReferral.referral.personCustodyPrisonId ? currentPrisonName : ''],
-        },
-        {
-          key: 'Expected release date',
-          lines: [expectedReleaseInfo],
-        },
-      ]
+      const items: SummaryListItem[] = []
+      items.push({
+        key: 'Location at time of referral',
+        lines: [this.sentReferral.referral.personCustodyPrisonId ? currentPrisonName : ''],
+      })
+      if (
+        this.sentReferral.referral.isReferralReleasingIn12Weeks !== null &&
+        !this.sentReferral.referral.isReferralReleasingIn12Weeks
+      ) {
+        return items
+      }
+      items.push({
+        key: 'Expected release date',
+        lines: [expectedReleaseInfo],
+      })
+
+      return items
     }
     return [
       {

@@ -368,6 +368,7 @@ describe('Probation practitioner referrals dashboard', () => {
             desiredOutcomesIds: ['9b30ffad-dfcb-44ce-bdca-0ea49239a21a', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
           },
         ],
+        isReferralReleasingIn12Weeks: null,
       },
     })
 
@@ -381,8 +382,6 @@ describe('Probation practitioner referrals dashboard', () => {
 
     const deliusServiceUser = conviction.caseDetail
 
-    const prisons = prisonFactory.prisonList()
-
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
     cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
@@ -391,7 +390,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetApprovedActionPlanSummaries(referral.id, [])
     cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
-    cy.stubGetPrisons(prisons)
+    cy.stubGetPrisons(prisonFactory.build())
 
     cy.login()
 
@@ -440,7 +439,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Service user is helped to secure social or supported housing')
       .should('contain', 'Service user is helped to secure a tenancy in the private rented sector (PRS)')
 
-    cy.contains(`Jenny Jones's responsible officer details`)
+    cy.contains(`Jenny Jones's probation practitioner`)
       .parent()
       .parent()
       .children()
@@ -449,9 +448,9 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Name')
       .should('contain', 'Bob Alice')
       .should('contain', 'Email address')
-      .should('contain', 'bobalice@example.com')
-      .should('contain', 'Team email address')
-      .should('contain', 'r.m@digital.justice.gov.uk')
+      .should('contain', 'b.a@xyz.com')
+      .should('contain', 'Probation Office')
+      .should('contain', 'London')
 
     cy.contains(`Jenny Jones's location and expected release date`)
       .parent()
@@ -460,8 +459,6 @@ describe('Probation practitioner referrals dashboard', () => {
       .last()
       .children()
       .should('contain', 'Location at time of referral')
-      .should('contain', 'Custody')
-      .should('contain', 'Current establishment')
       .should('contain', 'Expected release date')
       .should('contain', moment().add(1, 'days').format('YYYY-MM-DD'))
 
@@ -591,6 +588,7 @@ describe('Probation practitioner referrals dashboard', () => {
         ppProbationOffice: 'London',
         ppPdu: 'London',
         hasValidDeliusPPDetails: true,
+        isReferralReleasingIn12Weeks: null,
       },
     })
 

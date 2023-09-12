@@ -32,7 +32,7 @@ describe(CheckAllReferralInformationPresenter, () => {
   const caseConviction = caseConvictionFactory.build()
   const { conviction } = caseConviction
   const deliusServiceUser = caseConviction.caseDetail
-  const prisonList = prisonFactory.prisonList()
+  const prisonList = prisonFactory.build()
   prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
   describe('serviceUserDetailsSection', () => {

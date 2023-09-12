@@ -16,6 +16,8 @@ export default class FurtherInformationPresenter {
     this.intervention.contractType.name
   )} referral service provider? (optional)`
 
+  readonly label = `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`
+
   readonly hint =
     'For example, relevant previous offences, previously completed programmes or further reasons for this referral'
 

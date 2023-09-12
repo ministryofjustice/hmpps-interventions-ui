@@ -134,6 +134,7 @@ export default class ConfirmProbationPractitionerDetailsView {
         probationPractitionerEmailInputArgs: this.probationPractitionerEmailInputArgs,
         probationPractitionerPduSelectArgs: this.probationPractitionerPduSelectArgs,
         probationPractitionerOfficeSelectArgs: this.probationPractitionerOfficeSelectArgs,
+        suppressServiceUserBanner: true,
       },
     ]
   }

@@ -65,6 +65,7 @@ describe('NeedsAndRequirementsPresenter', () => {
           errorMessage: null,
           label: 'What language?',
         },
+        label: 'Geoffrey River (CRN: X123456)',
         needsInterpreter: {
           errorMessage: null,
           label: 'Does Geoffrey need an interpreter?',

@@ -18,11 +18,6 @@ describe('CurrentLocationPresenter', () => {
         const presenter = new CurrentLocationPresenter(referral, [], {
           errors: [
             {
-              formFields: ['current-location'],
-              errorSummaryLinkedField: 'current-location',
-              message: 'current-location msg',
-            },
-            {
               formFields: ['prison-select'],
               errorSummaryLinkedField: 'prison-select',
               message: 'prison-select msg',
@@ -30,10 +25,7 @@ describe('CurrentLocationPresenter', () => {
           ],
         })
 
-        expect(presenter.errorSummary).toEqual([
-          { field: 'current-location', message: 'current-location msg' },
-          { field: 'prison-select', message: 'prison-select msg' },
-        ])
+        expect(presenter.errorSummary).toEqual([{ field: 'prison-select', message: 'prison-select msg' }])
       })
     })
   })
@@ -46,20 +38,13 @@ describe('CurrentLocationPresenter', () => {
         .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
       const presenter = new CurrentLocationPresenter(referral, [])
 
-      expect(presenter.backLinkUrl).toBe(`/referrals/${referral.id}/needs-and-requirements`)
+      expect(presenter.backLinkUrl).toBe(`/referrals/${referral.id}/form`)
       expect(presenter.text).toEqual({
-        title: 'Submit Geoffrey Blue’s current location',
-        description:
-          'This enables the service provider to prioritise the intervention and allocate it to the right caseworker.',
-        currentLocation: {
-          label: 'Where is Geoffrey today?',
-          errorMessage: null,
-          custodyLabel: 'Custody (select even if Geoffrey is due to be released today)',
-          communityLabel: 'Community',
-        },
+        title: 'Confirm Geoffrey Blue’s current location',
+        label: `Geoffrey Blue (CRN: ${referral.serviceUser?.crn})`,
         submitLocationInput: {
           label: 'Which establishment is Geoffrey in?',
-          hint: 'Start typing, then choose from the list.',
+          hint: 'Start typing prison name, then choose from the list.',
           errorMessage: null,
         },
         warningText: `If Geoffrey's location changes, you will need to make direct contact with the service provider.`,
@@ -75,19 +60,16 @@ describe('CurrentLocationPresenter', () => {
         const presenter = new CurrentLocationPresenter(referral, [], {
           errors: [
             {
-              formFields: ['current-location'],
-              errorSummaryLinkedField: 'current-location',
-              message: 'current-location msg',
+              formFields: ['prison-select'],
+              errorSummaryLinkedField: 'prison-select',
+              message: 'prison-select msg',
             },
           ],
         })
 
         expect(presenter.text).toMatchObject({
-          currentLocation: {
-            errorMessage: 'current-location msg',
-          },
           submitLocationInput: {
-            errorMessage: null,
+            errorMessage: 'prison-select msg',
           },
         })
       })

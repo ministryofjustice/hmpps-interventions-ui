@@ -23,9 +23,7 @@ export default class CurrentLocationForm {
   static validations(referral: DraftReferral): ValidationChain[] {
     const firstName = referral.serviceUser?.firstName ?? ''
     return [
-      body('current-location').isIn(['CUSTODY', 'COMMUNITY']).withMessage(errorMessages.custodyLocation.emptyRadio),
       body('prison-select')
-        .if(body('current-location').equals('CUSTODY'))
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.custodyLocation.empty(firstName)),
     ]
@@ -37,13 +35,8 @@ export default class CurrentLocationForm {
 
   get paramsForUpdate(): Partial<DraftReferral> {
     return {
-      personCurrentLocationType: this.request.body['current-location'],
-      personCustodyPrisonId: this.isCustody ? this.request.body['prison-select'] : null,
+      personCustodyPrisonId: this.request.body['prison-select'],
     }
-  }
-
-  private get isCustody(): boolean {
-    return this.request.body['current-location'] === 'CUSTODY'
   }
 
   get error(): FormValidationError | null {

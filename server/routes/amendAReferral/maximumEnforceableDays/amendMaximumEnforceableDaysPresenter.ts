@@ -21,10 +21,20 @@ export default class AmendMaximumEnforceableDaysPresenter {
   constructor(
     referralId: string,
     private readonly maximumEnforceableDays: number,
+    private readonly firstName: string | null,
+    private readonly lastName: string | null,
+    private readonly crn: string,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {
-    this.enforceableDaysPresenter = new EnforceableDaysPresenter(maximumEnforceableDays, error, userInputData)
+    this.enforceableDaysPresenter = new EnforceableDaysPresenter(
+      crn,
+      maximumEnforceableDays,
+      firstName,
+      lastName,
+      error,
+      userInputData
+    )
     this.fields = {
       reasonForChange: this.utils.stringValue(null, AmendMaximumEnforceableDaysForm.reasonForChangeId),
       ...this.enforceableDaysPresenter.fields,

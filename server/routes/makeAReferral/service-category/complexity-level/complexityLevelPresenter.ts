@@ -44,4 +44,6 @@ export default class ComplexityLevelPresenter {
   readonly title = `What is the complexity level for the ${utils.convertToProperCase(
     this.serviceCategory.name
   )} service?`
+
+  readonly label = `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`
 }

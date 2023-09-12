@@ -81,6 +81,7 @@ describe('Service provider referrals dashboard', () => {
           interventionId: socialInclusionIntervention.id,
           serviceUser: { firstName: 'George', lastName: 'Michael' },
           serviceCategoryIds: [socialInclusionServiceCategory.id],
+          isReferralReleasingIn12Weeks: null,
         },
       }),
       sentReferralFactory.build({
@@ -111,6 +112,7 @@ describe('Service provider referrals dashboard', () => {
               desiredOutcomesIds: ['9b30ffad-dfcb-44ce-bdca-0ea49239a21a', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
             },
           ],
+          isReferralReleasingIn12Weeks: null,
         },
       }),
     ]
@@ -213,7 +215,7 @@ describe('Service provider referrals dashboard', () => {
       .should('contain', 'Service user is helped to secure social or supported housing')
       .should('contain', 'Service user is helped to secure a tenancy in the private rented sector (PRS)')
 
-    cy.contains(`Jenny Jones's responsible officer details`)
+    cy.contains(`Jenny Jones's probation practitioner`)
       .parent()
       .parent()
       .children()
@@ -224,11 +226,11 @@ describe('Service provider referrals dashboard', () => {
       .should('contain', 'Phone')
       .should('contain', '98454243243')
       .should('contain', 'Email address')
-      .should('contain', 'bobalice@example.com')
+      .should('contain', 'b.a@xyz.com')
+      .should('contain', 'Probation Office')
+      .should('contain', 'London')
       .should('contain', 'Team phone')
       .should('contain', '044-2545453442')
-      .should('contain', 'Team email address')
-      .should('contain', 'r.m@digital.justice.gov.uk')
 
     cy.contains(`Back-up contact for the referral`)
       .parent()
@@ -248,8 +250,6 @@ describe('Service provider referrals dashboard', () => {
       .last()
       .children()
       .should('contain', 'Location at time of referral')
-      .should('contain', 'Custody')
-      .should('contain', 'Current establishment')
       .should('contain', 'Expected release date')
       .should('contain', moment().add(1, 'days').format('YYYY-MM-DD'))
 

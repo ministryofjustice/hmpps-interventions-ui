@@ -1,15 +1,3 @@
-{#
-Our use of the task-completed class is a misuse - we’re just using
-it to get a right-floated tag. There’s a broader question of whether
-we’ve mis-implemented the MoJ task list pattern, in which tags are
-only used on individual completed tasks. Needs some design review.
-#}
-{% if taskListSection.status !== undefined %}
-    <strong data-cy="status" class="{{ classForStatus(taskListSection.status) }} moj-task-list__task-completed">
-      {{ taskListSection.status }}
-    </strong>
-{% endif %}
-
 {% if taskListSection.title !== undefined %}
 <h2 class="moj-task-list__section {{ "govuk-!-margin-left-9" if nested }}">
     {% if taskListSection.number !== undefined %}
@@ -27,6 +15,11 @@ only used on individual completed tasks. Needs some design review.
       {% else %}
         <span data-cy="url" class="app-task-list__task-name">{{ task.title }}</span>
       {% endif %}
+    {% if task.status !== undefined %}
+      <strong data-cy="status" class="{{ classForStatus(task.status) }} moj-task-list__task-completed">
+        {{ task.status }}
+      </strong>
+    {% endif %}   
     </li>
   {% endfor %}
 </ul>

@@ -82,6 +82,18 @@ export default async function setUpMocks(): Promise<void> {
       referAndMonitorAndDeliusMocks.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
     ),
 
+    ['CRN23'].forEach(crn =>
+      referAndMonitorAndDeliusMocks.stubGetResponsibleOfficer(
+        crn,
+        deliusResponsibleOfficerFactory.build({
+          communityManager: {
+            responsibleOfficer: false,
+            unallocated: true,
+          },
+        })
+      )
+    ),
+
     interventionsMocks.stubGetActionPlanAppointment(
       '1',
       1,
@@ -102,11 +114,11 @@ export default async function setUpMocks(): Promise<void> {
         ...draftReferral,
       })
     }),
-    prisonRegisterServiceMocks.stubGetPrisons(prisonFactory.prisonList()),
+    prisonRegisterServiceMocks.stubGetPrisons(prisonFactory.build()),
     prisonerOffenderSearchMocks.stubGetPrisonerById(prisonerFactory.build()),
     referAndMonitorAndDeliusMocks.stubSentReferral(),
     referAndMonitorAndDeliusMocks.stubGetCrnUserAccess(deliusUserAccess.build()),
-    ['CRN24', 'X320741'].forEach(crn =>
+    ['CRN24', 'X320741', 'CRN23'].forEach(crn =>
       referAndMonitorAndDeliusMocks.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
     ),
     referAndMonitorAndDeliusMocks.stubGetUserByUsername('bernard.beaks', deliusUser.build()),

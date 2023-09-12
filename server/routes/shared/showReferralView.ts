@@ -27,6 +27,14 @@ export default class ShowReferralView {
     )
   }
 
+  private get mainPointOfContactSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.mainPointOfContactDetailsSummary,
+      this.presenter.mainPointOfContactDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
   private readonly responsibleOfficerSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
     this.presenter.deliusResponsibleOfficersDetails,
     this.presenter.responsibleOfficerDetailsHeading,
@@ -166,6 +174,7 @@ export default class ShowReferralView {
         presenter: this.presenter,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
         probationPractitionerSummaryListArgs: this.probationPractitionerSummaryListArgs,
+        mainPointOfContactSummaryListArgs: this.mainPointOfContactSummaryListArgs,
         backupContactSummaryListArgs: this.backupContactSummaryListArgs,
         responsibleOfficerSummaryListArgs: this.responsibleOfficerSummaryListArgs,
         interventionDetailsSummaryListArgs: this.interventionDetailsSummaryListArgs,

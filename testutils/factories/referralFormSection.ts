@@ -6,23 +6,73 @@ import {
 import utils from '../../server/utils/utils'
 
 class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPresenter> {
-  reviewServiceUser(
+  confirmProbationPractitionerDetails(
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
-    userFirstName: string | null = null,
-    riskInformationUrl: string | null = null,
-    needsAndRequirementsUrl: string | null = null,
-    currentLocationUrl: string | null = null
+    linkUrl: string | null = null,
+    title = 'Confirm probation practitioner details'
   ) {
     return this.params({
       type: 'single',
-      title: 'Review the person’s information',
+      title,
       number: '1',
-      status: referralFormStatus,
+      tasks: [{ title: 'Name,email address and location', url: linkUrl, status: referralFormStatus }],
+    })
+  }
+
+  confirmCurrentLocationAndExpectedReleaseDate(
+    establishmentReferralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    expectedReleaseDateReferralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    userFirstName: string | null = null,
+    userLastName: string | null = null,
+    establishmentUrl: string | null = null,
+    expectedReleaseDateUrl: string | null = null
+  ) {
+    return this.params({
+      type: 'single',
+      title: `Confirm ${utils.convertToTitleCase(
+        `${userFirstName} ${userLastName}`
+      )}'s location and expected release date`,
+      number: '2',
       tasks: [
-        { title: 'Confirm their personal details', url: 'service-user-details' },
-        { title: 'Their risk information', url: riskInformationUrl },
-        { title: 'Their needs and requirements', url: needsAndRequirementsUrl },
-        { title: `Submit ${userFirstName}'s current location`, url: currentLocationUrl },
+        { title: 'Establishment', url: establishmentUrl, status: establishmentReferralFormStatus },
+        { title: 'Expected release date', url: expectedReleaseDateUrl, status: expectedReleaseDateReferralFormStatus },
+      ],
+    })
+  }
+
+  confirmCurrentLocation(
+    establishmentReferralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    userFirstName: string | null = null,
+    userLastName: string | null = null,
+    establishmentUrl: string | null = null
+  ) {
+    return this.params({
+      type: 'single',
+      title: `Confirm ${utils.convertToTitleCase(`${userFirstName} ${userLastName}`)}'s location`,
+      number: '2',
+      tasks: [{ title: 'Establishment', url: establishmentUrl, status: establishmentReferralFormStatus }],
+    })
+  }
+
+  reviewServiceUser(
+    serviceUserDetailsFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    riskFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    needsAndRequirementFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    userFirstName: string | null = null,
+    userLastName: string | null = null,
+    orderNumber = '2',
+    serviceUserDetailsUrl: string | null = null,
+    riskInformationUrl: string | null = null,
+    needsAndRequirementsUrl: string | null = null
+  ) {
+    return this.params({
+      type: 'single',
+      title: `Confirm ${utils.convertToTitleCase(`${userFirstName} ${userLastName}`)}'s information`,
+      number: orderNumber,
+      tasks: [
+        { title: 'Personal details', url: serviceUserDetailsUrl, status: serviceUserDetailsFormStatus },
+        { title: 'Risk information', url: riskInformationUrl, status: riskFormStatus },
+        { title: 'Needs and requirements', url: needsAndRequirementsUrl, status: needsAndRequirementFormStatus },
       ],
     })
   }
@@ -34,13 +84,13 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
   ) {
     return this.params({
       type: 'single',
-      title: 'Choose service categories',
-      number: '2',
-      status: referralFormStatus,
+      title: 'Choose service types',
+      number: '4',
       tasks: [
         {
-          title: `Select service categories for the ${utils.convertToProperCase(contractName)} referral`,
+          title: `Select service types for the ${utils.convertToProperCase(contractName)} referral`,
           url: serviceCategoriesUrl,
+          status: referralFormStatus,
         },
       ],
     })
@@ -48,6 +98,12 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
 
   interventionDetails(
     serviceCategoryName: string,
+    orderNumber = '4',
+    relevantSentenceReferralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
+    relevantDesiredOutcomesFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
+    relevantComplexityLevelFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
+    relevantEnforceableDaysFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
+    relevantCompletionDeadLineFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
     relevantSentenceUrl: string | null = null,
     desiredOutcomesUrl: string | null = null,
@@ -59,21 +115,26 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
     return this.params({
       type: 'single',
       title: `Add ${utils.convertToProperCase(serviceCategoryName)} referral details`,
-      number: '2',
-      status: referralFormStatus,
+      number: orderNumber,
       tasks: [
         {
           title: `Confirm the relevant sentence for the ${utils.convertToProperCase(serviceCategoryName)} referral`,
           url: relevantSentenceUrl,
+          status: relevantSentenceReferralFormStatus,
         },
-        { title: 'Select desired outcomes', url: desiredOutcomesUrl },
-        { title: 'Select required complexity level', url: complexityLevelUrl },
-        { title: 'Enter enforceable days used', url: enforceableDaysUrl },
+        { title: 'Select desired outcomes', url: desiredOutcomesUrl, status: relevantDesiredOutcomesFormStatus },
+        {
+          title: 'Select required complexity level',
+          url: complexityLevelUrl,
+          status: relevantComplexityLevelFormStatus,
+        },
+        { title: 'Enter enforceable days used', url: enforceableDaysUrl, status: relevantEnforceableDaysFormStatus },
         {
           title: `Enter when the ${utils.convertToProperCase(serviceCategoryName)} service needs to be completed`,
           url: completionDateUrl,
+          status: relevantCompletionDeadLineFormStatus,
         },
-        { title: 'Further information for service provider', url: furtherInformationUrl },
+        { title: 'Further information for service provider', url: furtherInformationUrl, status: referralFormStatus },
       ],
     })
   }
@@ -82,12 +143,12 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
     return this.params({
       type: 'single',
       title: `Add ${utils.convertToProperCase(contractName)} referral details`,
-      number: '3',
-      status: ReferralFormStatus.CannotStartYet,
+      number: '5',
       tasks: [
         {
           title: `Details of this part will depend on the services you choose`,
           url: null,
+          status: ReferralFormStatus.CannotStartYet,
         },
       ],
     })
@@ -95,15 +156,14 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
 
   checkAllReferralInformation(
     referralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
-    checkAnswersUrl: string | null = null,
-    sectionNumber = '3'
+    sectionNumber = '5',
+    checkAnswersUrl: string | null = null
   ) {
     return this.params({
       type: 'single',
       title: 'Check all referral information and submit referral',
       number: sectionNumber,
-      status: referralFormStatus,
-      tasks: [{ title: 'Check referral information', url: checkAnswersUrl }],
+      tasks: [{ title: 'Check referral information', url: checkAnswersUrl, status: referralFormStatus }],
     })
   }
 }
@@ -114,6 +174,5 @@ export default ReferralFormSectionFactory.define(() => ({
   type: singleSectionForm,
   title: '',
   number: '1',
-  status: ReferralFormStatus.CannotStartYet,
   tasks: [],
 }))

@@ -37,6 +37,8 @@ export default class ServiceUserDetailsPresenter {
 
   readonly contactDetailsHeading = 'Address and contact details'
 
+  readonly label = `${this.serviceUser?.firstName} ${this.serviceUser?.lastName} (CRN: ${this.serviceUser?.crn})`
+
   // required to force type erasure of type null[] from list of (string[] | null[])
   private notEmpty(value: string | null | undefined): value is string {
     return value !== null && value !== undefined
@@ -136,24 +138,6 @@ export default class ServiceUserDetailsPresenter {
       { key: 'Last name', lines: [this.serviceUser.lastName ?? ''] },
       { key: 'Date of birth', lines: [this.dateOfBirth ? `${this.dateOfBirth} (${this.age} years old)` : ''] },
     ]
-    /* if (config.featureFlags.custodyLocationEnabled) {
-      summary.push({
-        key: 'Location at time of referral',
-        lines: [this.personCurrentLocationType ? utils.convertToProperCase(this.personCurrentLocationType) : ''],
-      })
-      if (this.personCurrentLocationType === 'CUSTODY') {
-        summary.push(
-          {
-            key: 'Current establishment',
-            lines: [this.personCustodyPrisonId ? prisonName : ''],
-          },
-          {
-            key: 'Expected release date',
-            lines: [this.expectedReleaseDate !== '' ? this.expectedReleaseDate : this.expectedReleaseDateUnKnownReason],
-          }
-        )
-      }
-    } */
     summary.push(
       {
         key: 'Address',
