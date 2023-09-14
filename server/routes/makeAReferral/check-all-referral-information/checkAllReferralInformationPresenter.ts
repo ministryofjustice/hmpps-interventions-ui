@@ -124,10 +124,10 @@ export default class CheckAllReferralInformationPresenter {
   }
 
   private get establishmentOrProbationOffice(): SummaryListItem {
-    if (this.referral.ppPdu) {
+    if (this.referral.ppEstablishment) {
       return {
         key: 'Establishment',
-        lines: [this.referral.ppPdu],
+        lines: [this.prisonName(this.referral.ppEstablishment)],
         changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
       }
     }
@@ -158,7 +158,7 @@ export default class CheckAllReferralInformationPresenter {
       summary: [
         {
           key: 'Location at time of referral',
-          lines: [this.referral.personCustodyPrisonId ? this.prisonName : ''],
+          lines: [this.prisonName(this.referral.personCustodyPrisonId)],
           changeLink: `/referrals/${this.referral.id}/submit-current-location?amendPPDetails=true`,
         },
         {
@@ -179,15 +179,19 @@ export default class CheckAllReferralInformationPresenter {
       summary: [
         {
           key: 'Location at time of referral',
-          lines: [this.prisonName],
+          lines: [this.prisonName(this.referral.personCustodyPrisonId)],
           changeLink: `/referrals/${this.referral.id}/submit-current-location?amendPPDetails=true`,
         },
       ],
     }
   }
 
-  private get prisonName(): string {
-    const matchedPerson = this.prisons.find(prison => prison.prisonId === this.referral.personCustodyPrisonId)
+  private prisonName(prisonId: string | null): string {
+    if (prisonId === null) {
+      return ''
+    }
+
+    const matchedPerson = this.prisons.find(prison => prison.prisonId === prisonId)
     return matchedPerson ? matchedPerson.prisonName : ''
   }
 

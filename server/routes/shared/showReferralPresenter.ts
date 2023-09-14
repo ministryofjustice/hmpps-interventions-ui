@@ -243,10 +243,10 @@ export default class ShowReferralPresenter {
   }
 
   private get establishmentOrProbationOffice(): SummaryListItem {
-    if (this.sentReferral.referral.ppPdu !== null && this.sentReferral.referral.ppPdu !== '') {
+    if (this.sentReferral.referral.ppEstablishment !== null && this.sentReferral.referral.ppEstablishment !== '') {
       return {
         key: 'Establishment',
-        lines: [this.sentReferral.referral.ppPdu],
+        lines: [this.getPrisonName(this.sentReferral.referral.ppEstablishment)],
       }
     }
     if (this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== '') {

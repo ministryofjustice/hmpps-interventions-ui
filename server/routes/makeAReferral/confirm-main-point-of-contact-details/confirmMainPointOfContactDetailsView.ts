@@ -80,34 +80,6 @@ export default class ConfirmMainPointOfContactDetailsView {
     }
   }
 
-  private get probationPractitionerPduSelectArgs(): SelectArgs {
-    const pduItems: SelectArgsItem[] = this.presenter.deliusDeliveryUnits.map(deliveryUnit => ({
-      text: deliveryUnit.name,
-      value: deliveryUnit.name.toString(),
-      selected: this.presenter.fields.probationPractitionerPdu
-        ? this.presenter.fields.probationPractitionerPdu === deliveryUnit.name
-        : false,
-    }))
-
-    const items: SelectArgsItem[] = [
-      {
-        text: '-- Select a PDU --',
-      },
-    ]
-
-    items.push(...pduItems)
-
-    return {
-      id: 'probation-practitioner-pdu',
-      name: 'probation-practitioner-pdu',
-      items,
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.probationPractitionerPduSelect.errorMessage),
-      hint: {
-        text: this.presenter.text.probationPractitionerPduSelect.hint,
-      },
-    }
-  }
-
   private get probationPractitionerOfficeSelectArgs(): SelectArgs {
     const officeLocationItems: SelectArgsItem[] = this.presenter.deliusOfficeLocations.map(officeLocation => ({
       text: officeLocation.name,
@@ -135,6 +107,36 @@ export default class ConfirmMainPointOfContactDetailsView {
     }
   }
 
+  private get prisonSelectArgs(): SelectArgs {
+    const prisonItems = this.presenter.prisons.map(prison => {
+      return {
+        text: prison.prisonName,
+        value: prison.prisonId,
+        selected: this.presenter.referral.personCustodyPrisonId
+          ? this.presenter.referral.personCustodyPrisonId === prison.prisonId
+          : false,
+      }
+    })
+
+    const items: SelectArgsItem[] = [
+      {
+        text: '-- Select a Prison Location --',
+      },
+    ]
+
+    items.push(...prisonItems)
+
+    return {
+      id: 'prison-select',
+      name: 'prison-select',
+      items,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.probationPractitionerPduSelect.errorMessage),
+      hint: {
+        text: this.presenter.text.probationPractitionerOfficeSelect.hint,
+      },
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'makeAReferral/confirmMainPointOfContactDetails',
@@ -145,7 +147,7 @@ export default class ConfirmMainPointOfContactDetailsView {
         confirmCorrectDetailsRadiosArgs: this.confirmCorrectDetailsRadiosArgs.bind(this),
         probationPractitionerNameInputArgs: this.probationPractitionerNameInputArgs,
         probationPractitionerEmailInputArgs: this.probationPractitionerEmailInputArgs,
-        probationPractitionerPduSelectArgs: this.probationPractitionerPduSelectArgs,
+        prisonSelectArgs: this.prisonSelectArgs,
         probationPractitionerRoleOrJobTitleInputArgs: this.probationPractitionerRoleOrJobTitleInputArgs,
         probationPractitionerOfficeSelectArgs: this.probationPractitionerOfficeSelectArgs,
         suppressServiceUserBanner: true,

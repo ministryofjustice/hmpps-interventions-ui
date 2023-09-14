@@ -45,10 +45,10 @@ export default class ConfirmMainPointOfContactDetailsForm {
         .if(body('probation-practitioner-email').notEmpty({ ignore_whitespace: true }))
         .isEmail()
         .withMessage(errorMessages.confirmMainPointOfContactDetails.invalidEmail),
-      body('probation-practitioner-pdu')
+      body('prison-select')
         .if(body('location').equals('establishment'))
         .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.confirmMainPointOfContactDetails.emptyPdu),
+        .withMessage(errorMessages.confirmMainPointOfContactDetails.emptyPrisonName),
       body('probation-practitioner-office')
         .if(body('location').equals('probation office'))
         .notEmpty({ ignore_whitespace: true })
@@ -69,7 +69,7 @@ export default class ConfirmMainPointOfContactDetailsForm {
       ppName: this.request.body['probation-practitioner-name'],
       roleOrJobTitle: this.request.body['probation-practitioner-roleOrJobTitle'],
       ppEmailAddress: this.request.body['probation-practitioner-email'],
-      ppPdu: this.request.body['probation-practitioner-pdu'] ? this.request.body['probation-practitioner-pdu'] : '',
+      ppEstablishment: this.request.body['prison-select'] ? this.request.body['prison-select'] : '',
       ppProbationOffice: this.request.body['probation-practitioner-office']
         ? this.request.body['probation-practitioner-office']
         : '',

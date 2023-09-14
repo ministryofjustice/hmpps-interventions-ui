@@ -4,12 +4,14 @@ import PresenterUtils from '../../../utils/presenterUtils'
 import DeliusOfficeLocation from '../../../models/deliusOfficeLocation'
 import DeliusDeliveryUnit from '../../../models/deliusDeliveryUnit'
 import { DeliusResponsibleOfficer } from '../../../models/delius/deliusResponsibleOfficer'
+import Prison from '../../../models/prisonRegister/prison'
 
 export default class ConfirmMainPointOfContactDetailsPresenter {
   readonly backLinkUrl: string
 
   constructor(
     readonly referral: DraftReferral,
+    readonly prisons: Prison[],
     readonly deliusOfficeLocations: DeliusOfficeLocation[],
     readonly deliusDeliveryUnits: DeliusDeliveryUnit[],
     readonly deliusResponsibleOfficer: DeliusResponsibleOfficer | null,

@@ -24,6 +24,6 @@ export default DeliusResponsibleOfficerFactory.define<DeliusResponsibleOfficer>(
       email: 'r.m@digital.justice.gov.uk',
       telephoneNumber: '044-2545453442',
     },
-    unallocated: false,
+    unallocated: true,
   },
 }))

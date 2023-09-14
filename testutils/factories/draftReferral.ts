@@ -119,13 +119,13 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     isReferralReleasingIn12Weeks = true,
     ppName = 'Bob Alice',
     ppEmailAddress = 'bobalice@example.com',
-    ppPdu = '97 Hackney and City',
+    ppEstablishment = 'BFI',
     roleOrJobTitle = 'Probation practitioner'
   ) {
     return this.filledWhetherReferralReleaseWithIn12Weeks(isReferralReleasingIn12Weeks).params({
       ppName,
       ppEmailAddress,
-      ppPdu,
+      ppEstablishment,
       roleOrJobTitle,
     })
   }
@@ -250,6 +250,7 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   ppName: null,
   ppEmailAddress: null,
   ppPdu: null,
+  ppEstablishment: null,
   ppProbationOffice: null,
   hasValidDeliusPPDetails: null,
   isReferralReleasingIn12Weeks: null,

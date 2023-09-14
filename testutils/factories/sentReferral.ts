@@ -62,6 +62,7 @@ const exampleReferralFields = () => {
     ppEmailAddress: 'b.a@xyz.com',
     ppProbationOffice: 'London',
     ppPdu: 'London',
+    ppEstablishment: 'aaa',
     hasValidDeliusPPDetails: false,
     isReferralReleasingIn12Weeks: false,
     roleOrJobTitle: 'Probabation Practitioner',
