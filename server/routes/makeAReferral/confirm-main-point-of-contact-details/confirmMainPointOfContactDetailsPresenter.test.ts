@@ -20,7 +20,7 @@ describe('ConfirmMainPointOfContactDetailsPresenter', () => {
     describe('when error is null', () => {
       it('returns null', () => {
         const referral = draftReferralFactory.serviceCategorySelected().build()
-        const presenter = new ConfirmMainPointOfContactDetailsPresenter(referral, [], [], deliusResponsibleOfficer)
+        const presenter = new ConfirmMainPointOfContactDetailsPresenter(referral, [], [], [], deliusResponsibleOfficer)
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -29,20 +29,27 @@ describe('ConfirmMainPointOfContactDetailsPresenter', () => {
     describe('when error is not null', () => {
       it('returns a summary of the errors sorted into the order their fields appear on the page', () => {
         const referral = draftReferralFactory.serviceCategorySelected().build()
-        const presenter = new ConfirmMainPointOfContactDetailsPresenter(referral, [], [], deliusResponsibleOfficer, {
-          errors: [
-            {
-              formFields: ['probation-practitioner-name'],
-              errorSummaryLinkedField: 'probation-practitioner-name',
-              message: 'probation-practitioner-name msg',
-            },
-            {
-              formFields: ['probation-practitioner-pdu'],
-              errorSummaryLinkedField: 'probation-practitioner-pdu',
-              message: 'probation-practitioner-pdu msg',
-            },
-          ],
-        })
+        const presenter = new ConfirmMainPointOfContactDetailsPresenter(
+          referral,
+          [],
+          [],
+          [],
+          deliusResponsibleOfficer,
+          {
+            errors: [
+              {
+                formFields: ['probation-practitioner-name'],
+                errorSummaryLinkedField: 'probation-practitioner-name',
+                message: 'probation-practitioner-name msg',
+              },
+              {
+                formFields: ['probation-practitioner-pdu'],
+                errorSummaryLinkedField: 'probation-practitioner-pdu',
+                message: 'probation-practitioner-pdu msg',
+              },
+            ],
+          }
+        )
 
         expect(presenter.errorSummary).toEqual([
           { field: 'probation-practitioner-name', message: 'probation-practitioner-name msg' },
@@ -58,7 +65,7 @@ describe('ConfirmMainPointOfContactDetailsPresenter', () => {
         .serviceCategorySelected()
         .serviceUserSelected()
         .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
-      const presenter = new ConfirmMainPointOfContactDetailsPresenter(referral, [], [], deliusResponsibleOfficer)
+      const presenter = new ConfirmMainPointOfContactDetailsPresenter(referral, [], [], [], deliusResponsibleOfficer)
 
       expect(presenter.backLinkUrl).toBe(`/referrals/${referral.id}/form`)
       expect(presenter.text).toEqual({
@@ -100,15 +107,22 @@ describe('ConfirmMainPointOfContactDetailsPresenter', () => {
           .serviceCategorySelected()
           .serviceUserSelected()
           .build({ serviceUser: { firstName: 'Geoffrey' } })
-        const presenter = new ConfirmMainPointOfContactDetailsPresenter(referral, [], [], deliusResponsibleOfficer, {
-          errors: [
-            {
-              formFields: ['location'],
-              errorSummaryLinkedField: 'location',
-              message: 'location msg',
-            },
-          ],
-        })
+        const presenter = new ConfirmMainPointOfContactDetailsPresenter(
+          referral,
+          [],
+          [],
+          [],
+          deliusResponsibleOfficer,
+          {
+            errors: [
+              {
+                formFields: ['location'],
+                errorSummaryLinkedField: 'location',
+                message: 'location msg',
+              },
+            ],
+          }
+        )
 
         expect(presenter.text).toMatchObject({
           location: {

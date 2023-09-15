@@ -1303,7 +1303,7 @@ describe('POST /referrals/:id/confirm-main-point-of-contact', () => {
         ppName: 'John',
         ppEmailAddress: 'a.b@xyz.com',
         ppProbationOffice: 'London',
-        ppPdu: '',
+        ppEstablishment: '',
         roleOrJobTitle: 'Probation Practitioner',
         hasMainPointOfContactDetails: true,
       },

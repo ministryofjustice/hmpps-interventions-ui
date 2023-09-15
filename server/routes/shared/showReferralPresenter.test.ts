@@ -378,7 +378,7 @@ describe(ShowReferralPresenter, () => {
           ppName: 'Bernard Beaks',
           ppEmailAddress: 'bernard.beaks@justice.gov.uk',
           roleOrJobTitle: 'PP',
-          ppPdu: 'London',
+          ppEstablishment: 'aaa',
         },
       }
       const sentReferral = sentReferralFactory.build(referralParamsForSummary)
@@ -416,7 +416,7 @@ describe(ShowReferralPresenter, () => {
           ppEmailAddress: 'bernard.beaks@justice.gov.uk',
           roleOrJobTitle: 'PP',
           ppProbationOffice: 'Leeds',
-          ppPdu: '',
+          ppEstablishment: '',
         },
       }
       const sentReferral = sentReferralFactory.build(referralParamsForSummary)

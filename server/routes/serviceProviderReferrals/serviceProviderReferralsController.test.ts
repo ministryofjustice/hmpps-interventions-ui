@@ -954,7 +954,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       referral: {
         isReferralReleasingIn12Weeks: true,
         ppProbationOffice: null,
-        ppPdu: 'Leeds',
+        ppEstablishment: 'aaa',
       },
     })
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build({
@@ -1007,7 +1007,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       referral: {
         isReferralReleasingIn12Weeks: false,
         ppProbationOffice: 'London',
-        ppPdu: null,
+        ppEstablishment: null,
       },
     })
     supplementaryRiskInformation = supplementaryRiskInformationFactory.build({

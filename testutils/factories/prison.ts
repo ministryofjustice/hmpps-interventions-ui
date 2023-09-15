@@ -53,4 +53,14 @@ export default PrisonFactory.define<Prison[]>(() => [
     types: [],
     operators: [],
   },
+  {
+    prisonId: 'ccc',
+    prisonName: 'Aylesbury (HMYOI)',
+    male: true,
+    female: false,
+    contracted: false,
+    addresses: [],
+    types: [],
+    operators: [],
+  },
 ])

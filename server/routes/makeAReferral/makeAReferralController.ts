@@ -877,11 +877,13 @@ export default class MakeAReferralController {
     const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
     const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
     const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
+    const prisons = await this.prisonRegisterService.getPrisons()
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
     const presenter = new ConfirmMainPointOfContactDetailsPresenter(
       referral,
+      prisons,
       deliusOfficeLocations,
       deliusDeliveryUnits,
       deliusResponsibleOfficer
@@ -896,6 +898,7 @@ export default class MakeAReferralController {
     const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
     const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
     const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
+    const prisons = await this.prisonRegisterService.getPrisons()
     const form = await ConfirmMainPointOfContactDetailsForm.createForm(req, referral, deliusResponsibleOfficer)
 
     let error: FormValidationError | null = null
@@ -925,6 +928,7 @@ export default class MakeAReferralController {
 
       const presenter = new ConfirmMainPointOfContactDetailsPresenter(
         referral,
+        prisons,
         deliusOfficeLocations,
         deliusDeliveryUnits,
         deliusResponsibleOfficer,

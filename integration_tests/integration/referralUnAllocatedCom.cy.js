@@ -259,7 +259,7 @@ describe('Referral form', () => {
       cy.contains('Role/job title').type('Probation Practitoner')
       cy.contains('Email address').type('a.b@xyz.com')
       cy.get('[type="radio"]').check('establishment')
-      cy.get('#probation-practitioner-pdu').type('Surrey')
+      cy.get('#prison-select').type('Bedford (HMP & YOI)')
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
       cy.contains('Save and continue').click()
 
@@ -558,7 +558,7 @@ describe('Referral form', () => {
         .parent()
         .next()
         .should('contain', 'Establishment')
-        .should('contain', '97 Hackney and City')
+        .should('contain', 'Bedford (HMP & YOI)')
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
 
@@ -848,7 +848,7 @@ describe('Referral form', () => {
       cy.contains('Role/job title').type('Probation Practitoner')
       cy.contains('Email address').type('a.b@xyz.com')
       cy.get('[type="radio"]').check('establishment')
-      cy.get('#probation-practitioner-pdu').type('Surrey')
+      cy.get('#prison-select').type('Bedford (HMP & YOI)')
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
       cy.contains('Save and continue').click()
 
@@ -1128,7 +1128,7 @@ describe('Referral form', () => {
         .parent()
         .next()
         .should('contain', 'Establishment')
-        .should('contain', '97 Hackney and City')
+        .should('contain', 'Bedford (HMP & YOI)')
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
       //
@@ -1484,7 +1484,7 @@ describe('Referral form', () => {
       cy.contains('Role/job title').type('Probation Practitoner')
       cy.contains('Email address').type('a.b@xyz.com')
       cy.get('[type="radio"]').check('establishment')
-      cy.get('#probation-practitioner-pdu').type('Surrey')
+      cy.get('#prison-select').type('Bedford (HMP & YOI)')
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
       cy.contains('Save and continue').click()
 

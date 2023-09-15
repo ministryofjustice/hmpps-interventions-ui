@@ -141,7 +141,7 @@ export default {
   confirmMainPointOfContactDetails: {
     emptyRadio: 'Select establishment or probation office',
     emptyName: `Enter name of main point of contact`,
-    emptyPdu: `Enter the prison name`,
+    emptyPrisonName: `Enter the prison name`,
     emptyRoleOrJobTitle: `Enter role/job title`,
     emptyProbationOffice: `Enter the probation office`,
     emptyEmail: `Enter email address`,

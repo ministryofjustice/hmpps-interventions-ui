@@ -31,12 +31,12 @@
         {{ govukInput(probationPractitionerRoleOrJobTitleInputArgs) }}
         {{ govukInput(probationPractitionerEmailInputArgs) }}
         {% set establishmentSelectionHTML %}
-        {{ govukSelect(probationPractitionerPduSelectArgs) }}
+        {{ govukSelect(prisonSelectArgs) }}
           <script src="/assets/accessible-autocomplete.min.js"></script>
           <script>
               accessibleAutocomplete.enhanceSelectElement({
                 defaultValue: '',
-                selectElement: document.querySelector('#probation-practitioner-pdu')
+                selectElement: document.querySelector('#prison-select')
               })
           </script>
         {% endset -%}
