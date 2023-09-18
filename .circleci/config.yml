@@ -141,7 +141,7 @@ workflows:
           name: deploy_dev_two
           env: "dev-two"
           slack_notification: false
-          release_name: "ah_release_1"
+          release_name: "ahrelease1"
           filters:
             branches:
               only:
