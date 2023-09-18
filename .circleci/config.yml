@@ -129,6 +129,27 @@ workflows:
           context:
             - hmpps-common-vars
             - hmpps-interventions-dev-deploy
+      - approve_dev_two:
+          type: approval
+          requires:
+            - build
+            - integration_test
+            - hmpps/helm_lint
+            - build_docker_publish
+            - vulnerability_scan
+      - hmpps/deploy_env:
+          name: deploy_dev_two
+          env: "dev-two"
+          slack_notification: false
+          filters:
+            branches:
+              only:
+                - IPB-665/staging-env-dev-two
+          requires:
+            - approve_dev_two
+          context:
+            - hmpps-common-vars
+            - hmpps-interventions-dev-deploy
       - tag_pact_version:
           name: "tag_pact_version_dev"
           tag: "deployed:dev"
