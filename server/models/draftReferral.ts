@@ -35,7 +35,11 @@ export interface ReferralFields {
   ppEmailAddress: string | null
   ppPdu: string | null
   ppProbationOffice: string | null
+  ppEstablishment: string | null
   hasValidDeliusPPDetails: boolean | null
+  isReferralReleasingIn12Weeks: boolean | null
+  roleOrJobTitle: string | null
+  hasMainPointOfContactDetails: boolean | null
 }
 
 export enum CurrentLocationType {

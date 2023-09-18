@@ -12,6 +12,7 @@ interface Manager {
   responsibleOfficer: boolean
   pdu: Pdu
   team: Team
+  unallocated: boolean
 }
 
 interface Name {

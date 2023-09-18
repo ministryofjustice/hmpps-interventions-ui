@@ -66,7 +66,9 @@ export default async function setUpMocks(): Promise<void> {
       },
     })
   await Promise.all([
-    assessRisksAndNeedsApiMocks.stubGetRiskSummary('CRN24', riskSummaryFactory.build()),
+    ['CRN24', 'X320741'].forEach(crn =>
+      assessRisksAndNeedsApiMocks.stubGetRiskSummary(crn, riskSummaryFactory.build())
+    ),
     assessRisksAndNeedsApiMocks.stubGetSupplementaryRiskInformation(
       '5f2debc5-4c6a-4972-84ce-0689b8f9ec52',
       supplementaryRiskInformationFactory.build()
@@ -78,6 +80,18 @@ export default async function setUpMocks(): Promise<void> {
     ),
     ['CRN24', 'X320741'].forEach(crn =>
       referAndMonitorAndDeliusMocks.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
+    ),
+
+    ['CRN23'].forEach(crn =>
+      referAndMonitorAndDeliusMocks.stubGetResponsibleOfficer(
+        crn,
+        deliusResponsibleOfficerFactory.build({
+          communityManager: {
+            responsibleOfficer: false,
+            unallocated: true,
+          },
+        })
+      )
     ),
 
     interventionsMocks.stubGetActionPlanAppointment(
@@ -100,11 +114,11 @@ export default async function setUpMocks(): Promise<void> {
         ...draftReferral,
       })
     }),
-    prisonRegisterServiceMocks.stubGetPrisons(prisonFactory.prisonList()),
+    prisonRegisterServiceMocks.stubGetPrisons(prisonFactory.build()),
     prisonerOffenderSearchMocks.stubGetPrisonerById(prisonerFactory.build()),
     referAndMonitorAndDeliusMocks.stubSentReferral(),
     referAndMonitorAndDeliusMocks.stubGetCrnUserAccess(deliusUserAccess.build()),
-    ['CRN24', 'X320741'].forEach(crn =>
+    ['CRN24', 'X320741', 'CRN23'].forEach(crn =>
       referAndMonitorAndDeliusMocks.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
     ),
     referAndMonitorAndDeliusMocks.stubGetUserByUsername('bernard.beaks', deliusUser.build()),

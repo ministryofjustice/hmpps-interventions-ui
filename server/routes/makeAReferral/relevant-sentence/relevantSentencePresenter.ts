@@ -19,6 +19,8 @@ export default class RelevantSentencePresenter {
     this.intervention.contractType.name
   )} referral`
 
+  readonly label = `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`
+
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'relevant-sentence-id')
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)

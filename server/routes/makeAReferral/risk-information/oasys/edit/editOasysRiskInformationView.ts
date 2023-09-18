@@ -149,6 +149,7 @@ export default class EditOasysRiskInformationView {
       {
         errorSummaryArgs: this.errorSummaryArgs,
         riskInformation: this.riskSummaryView.oasysRiskInformationArgs,
+        displayLabel: this.presenter.displayLabel,
         latestAssessment: this.presenter.latestAssessment,
         whoIsAtRiskTextareaArgs: this.whoIsAtRiskTextareaArgs,
         natureOfRiskTextareaArgs: this.natureOfRiskTextareaArgs,
@@ -159,6 +160,7 @@ export default class EditOasysRiskInformationView {
         riskToSelfVulnerabilityTextareaArgs: this.riskToSelfVulnerabilityTextareaArgs,
         additionalInformationTextareaArgs: this.additionalInformationTextareaArgs,
         confirmUnderstoodWarningCheckboxArgs: this.confirmUnderstoodWarningCheckboxArgs,
+        suppressServiceUserBanner: true,
       },
     ]
   }

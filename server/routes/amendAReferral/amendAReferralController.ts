@@ -58,6 +58,9 @@ export default class AmendAReferralController {
     const presenter = new AmendMaximumEnforceableDaysPresenter(
       referral.id,
       referral.referral.maximumEnforceableDays,
+      referral.referral.serviceUser.firstName,
+      referral.referral.serviceUser.lastName,
+      referral.referral.serviceUser.crn,
       error,
       userInputData
     )

@@ -1,4 +1,4 @@
-import DraftReferral from '../../../models/draftReferral'
+import DraftReferral, { CurrentLocationType } from '../../../models/draftReferral'
 import { ListStyle, SummaryListItem } from '../../../utils/summaryList'
 import ServiceUserDetailsPresenter from '../service-user-details/serviceUserDetailsPresenter'
 import NeedsAndRequirementsPresenter from '../needs-and-requirements/needsAndRequirementsPresenter'
@@ -45,20 +45,28 @@ export default class CheckAllReferralInformationPresenter {
     }
   }
 
-  private checkIfProbationPractitionerDetailsExist(): boolean {
+  private get checkIfProbationPractitionerDetailsExist(): boolean {
     return (
-      this.referral.ndeliusPPName != null ||
-      this.referral.ndeliusPPEmailAddress != null ||
-      this.referral.ndeliusPDU != null ||
-      this.referral.ppName != null ||
-      this.referral.ppEmailAddress != null ||
-      this.referral.ppPdu != null ||
-      this.referral.ppProbationOffice != null
+      this.referral.ndeliusPPName !== null ||
+      this.referral.ndeliusPPEmailAddress !== null ||
+      this.referral.ndeliusPDU !== null ||
+      this.referral.ppName !== null ||
+      this.referral.ppEmailAddress !== null ||
+      this.referral.ppPdu !== null ||
+      this.referral.ppProbationOffice !== null
     )
   }
 
+  get checkIfUnAllocatedCOM(): boolean {
+    return this.referral.isReferralReleasingIn12Weeks !== null
+  }
+
+  get checkIfExpectedReleaseDateIsAvailable(): boolean {
+    return this.referral.expectedReleaseDate !== null || this.referral.expectedReleaseDateMissingReason !== null
+  }
+
   get probationPractitionerDetailSection(): { title: string; summary: SummaryListItem[] } | null {
-    if (!this.checkIfProbationPractitionerDetailsExist()) {
+    if (!this.checkIfProbationPractitionerDetailsExist) {
       return null
     }
     return {
@@ -86,6 +94,105 @@ export default class CheckAllReferralInformationPresenter {
         },
       ],
     }
+  }
+
+  get mainPointOfContactDetailsSection(): { title: string; summary: SummaryListItem[] } | null {
+    if (!this.checkIfUnAllocatedCOM) {
+      return null
+    }
+    return {
+      title: `Main point of contact details`,
+      summary: [
+        {
+          key: 'Name',
+          lines: [this.referral.ppName || this.referral.ndeliusPPName || 'Not found'],
+          changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+        },
+        {
+          key: 'Role/ job title',
+          lines: [this.referral.roleOrJobTitle || 'Not found'],
+          changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+        },
+        {
+          key: 'Email address',
+          lines: [this.deriveEmailAddress],
+          changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+        },
+        this.establishmentOrProbationOffice,
+      ],
+    }
+  }
+
+  private get establishmentOrProbationOffice(): SummaryListItem {
+    if (this.referral.ppEstablishment) {
+      return {
+        key: 'Establishment',
+        lines: [this.prisonName(this.referral.ppEstablishment)],
+        changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+      }
+    }
+    if (this.referral.ppProbationOffice) {
+      return {
+        key: 'Probation office',
+        lines: [this.referral.ppProbationOffice],
+        changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+      }
+    }
+    return {
+      key: 'Establishment/Probation office',
+      lines: ['Not provided'],
+      changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+    }
+  }
+
+  get expectedReleaseDateSection(): { title: string; summary: SummaryListItem[] } | null {
+    if (this.referral.personCurrentLocationType !== CurrentLocationType.custody) {
+      return null
+    }
+    const expectedReleaseInfo: string =
+      this.referral.expectedReleaseDate !== null
+        ? this.referral.expectedReleaseDate!
+        : this.referral.expectedReleaseDateMissingReason!
+    return {
+      title: `${this.serviceUserNameForServiceCategory}’s location and expected release date`,
+      summary: [
+        {
+          key: 'Location at time of referral',
+          lines: [this.prisonName(this.referral.personCustodyPrisonId)],
+          changeLink: `/referrals/${this.referral.id}/submit-current-location?amendPPDetails=true`,
+        },
+        {
+          key: 'Expected release date',
+          lines: [expectedReleaseInfo],
+          changeLink: `/referrals/${this.referral.id}/expected-release-date?amendPPDetails=true`,
+        },
+      ],
+    }
+  }
+
+  get locationSection(): { title: string; summary: SummaryListItem[] } | null {
+    if (this.referral.isReferralReleasingIn12Weeks === null) {
+      return null
+    }
+    return {
+      title: `${this.serviceUserNameForServiceCategory}’s location`,
+      summary: [
+        {
+          key: 'Location at time of referral',
+          lines: [this.prisonName(this.referral.personCustodyPrisonId)],
+          changeLink: `/referrals/${this.referral.id}/submit-current-location?amendPPDetails=true`,
+        },
+      ],
+    }
+  }
+
+  private prisonName(prisonId: string | null): string {
+    if (prisonId === null) {
+      return ''
+    }
+
+    const matchedPerson = this.prisons.find(prison => prison.prisonId === prisonId)
+    return matchedPerson ? matchedPerson.prisonName : ''
   }
 
   get deriveEmailAddress(): string {

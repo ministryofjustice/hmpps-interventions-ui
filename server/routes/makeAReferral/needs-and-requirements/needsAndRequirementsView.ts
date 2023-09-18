@@ -131,6 +131,7 @@ export default class NeedsAndRequirementsView {
         interpreterLanguageInputArgs: this.interpreterLanguageInputArgs,
         responsibilitiesRadiosArgs: this.responsibilitiesRadiosArgs.bind(this),
         whenUnavailableTextareaArgs: this.whenUnavailableTextareaArgs,
+        suppressServiceUserBanner: true,
       },
     ]
   }

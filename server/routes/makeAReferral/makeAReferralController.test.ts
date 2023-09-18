@@ -23,11 +23,11 @@ import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsServic
 import expandedDeliusServiceUserFactory from '../../../testutils/factories/expandedDeliusServiceUser'
 import draftOasysRiskInformation from '../../../testutils/factories/draftOasysRiskInformation'
 import referralDetailsFactory from '../../../testutils/factories/referralDetails'
-import { CurrentLocationType } from '../../models/draftReferral'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import ReferenceDataService from '../../services/referenceDataService'
 import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
+import { CurrentLocationType } from '../../models/draftReferral'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/ramDeliusApiService')
@@ -100,6 +100,7 @@ describe('POST /intervention/:id/refer', () => {
   describe('when searching for a CRN found in Delius and an intervention has been selected', () => {
     beforeEach(() => {
       ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+      ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(deliusResponsibleOfficerFactory.build())
     })
 
     it('creates a referral on the interventions service and redirects to the referral form', async () => {
@@ -109,8 +110,44 @@ describe('POST /intervention/:id/refer', () => {
       await request(app)
         .post(`/intervention/${interventionId}/refer`)
         .send({ 'service-user-crn': serviceUserCRN })
-        .expect(303)
-        .expect('Location', '/referrals/1/form')
+        .expect(301)
+        .expect('Location', '/referrals/1/referral-type-form')
+
+      expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
+    })
+
+    it('updates the newly-created referral on the interventions service with the found service user', async () => {
+      await request(app)
+        .post('/intervention/98a42c61-c30f-4beb-8062-04033c376e2d/refer')
+        .send({ 'service-user-crn': 'X123456' })
+
+      expect(interventionsService.patchDraftReferral).toHaveBeenCalledWith('token', '1', {
+        serviceUser,
+      })
+    })
+  })
+
+  describe('The user is taken to prison release form page when there is no allocated COM', () => {
+    beforeEach(() => {
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+      ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(
+        deliusResponsibleOfficerFactory.build({
+          communityManager: {
+            unallocated: true,
+          },
+        })
+      )
+    })
+
+    it('creates a referral on the interventions service and redirects to the referral form', async () => {
+      const interventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
+      const serviceUserCRN = 'X123456'
+
+      await request(app)
+        .post(`/intervention/${interventionId}/refer`)
+        .send({ 'service-user-crn': serviceUserCRN })
+        .expect(301)
+        .expect('Location', '/referrals/1/prison-release-form')
 
       expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
     })
@@ -127,6 +164,10 @@ describe('POST /intervention/:id/refer', () => {
   })
 
   describe('when a non standard CRN is entered', () => {
+    beforeEach(() => {
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+      ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(deliusResponsibleOfficerFactory.build())
+    })
     describe('having leading and trailing whitespace', () => {
       it('trims any leading and trailing whitespace', async () => {
         const interventionId = '98a42c61-c30f-4beb-8062-04033c376e2d'
@@ -136,8 +177,8 @@ describe('POST /intervention/:id/refer', () => {
         await request(app)
           .post(`/intervention/${interventionId}/refer`)
           .send({ 'service-user-crn': serviceUserCRN })
-          .expect(303)
-          .expect('Location', '/referrals/1/form')
+          .expect(301)
+          .expect('Location', '/referrals/1/referral-type-form')
 
         expect(ramDeliusApiService.getCaseDetailsByCrn).toHaveBeenCalledWith(serviceUserCRNTrimmed)
         expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(
@@ -156,8 +197,8 @@ describe('POST /intervention/:id/refer', () => {
         await request(app)
           .post(`/intervention/${interventionId}/refer`)
           .send({ 'service-user-crn': serviceUserCRN })
-          .expect(303)
-          .expect('Location', '/referrals/1/form')
+          .expect(301)
+          .expect('Location', '/referrals/1/referral-type-form')
 
         expect(ramDeliusApiService.getCaseDetailsByCrn).toHaveBeenCalledWith(serviceUserCRNTransformed)
         expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(
@@ -218,6 +259,153 @@ describe('POST /intervention/:id/refer', () => {
 
       expect(ramDeliusApiService.getCaseDetailsByCrn).toHaveBeenCalledTimes(1)
     })
+  })
+})
+
+describe('GET /referrals/:id/referral-type-form', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build()
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('renders the page to select the referral type', () => {
+    return request(app)
+      .get('/referrals/1/referral-type-form')
+      .expect('Content-Type', /html/)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('What type of referral is this?')
+      })
+  })
+})
+
+describe('POST /referrals/:id/referral-type-form', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build()
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('renders the form page when the user selects the custody', () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      personCurrentLocationType: CurrentLocationType.custody,
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+    return request(app)
+      .post('/referrals/1/referral-type-form')
+      .type('form')
+      .send({
+        'current-location': CurrentLocationType.custody,
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+  })
+  it('renders the form page when the user selects the custody', () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      personCurrentLocationType: CurrentLocationType.community,
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+    return request(app)
+      .post('/referrals/1/referral-type-form')
+      .type('form')
+      .send({
+        'current-location': CurrentLocationType.community,
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+  })
+  it('returns the 400 when there is a API error', () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to update current location'))
+    return request(app)
+      .post('/referrals/1/referral-type-form')
+      .type('form')
+      .send({
+        'current-location': CurrentLocationType.community,
+      })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to update current location')
+      })
+  })
+})
+
+describe('GET /referrals/:id/prison-release-form', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: {
+        firstName: 'Alex',
+        lastName: 'River',
+      },
+    })
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('renders the page to select whether the referrer knows the prison release date', () => {
+    return request(app)
+      .get('/referrals/1/prison-release-form')
+      .expect('Content-Type', /html/)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Will Alex River be released from prison in the next 12 weeks?')
+      })
+  })
+})
+
+describe('POST /referrals/:id/prison-release-form', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build()
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('renders the form page when the user knows when the referral is releasing from prison', () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      isReferralReleasingIn12Weeks: true,
+      personCurrentLocationType: CurrentLocationType.custody,
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+    return request(app)
+      .post('/referrals/1/prison-release-form')
+      .type('form')
+      .send({
+        'prison-release': 'yes',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+  })
+  it('renders the form page when the user does not know when the referral is releasing from prison', () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      isReferralReleasingIn12Weeks: false,
+      personCurrentLocationType: CurrentLocationType.custody,
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+    return request(app)
+      .post('/referrals/1/prison-release-form')
+      .type('form')
+      .send({
+        'prison-release': 'no',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+  })
+  it('returns the 500 when there is a API error', () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to update prison release information'))
+    return request(app)
+      .post('/referrals/1/referral-type-form')
+      .type('form')
+      .send({
+        'current-location': CurrentLocationType.community,
+      })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to update prison release information')
+      })
   })
 })
 
@@ -283,7 +471,7 @@ describe('GET /referrals/:id/service-user-details', () => {
   beforeEach(() => {
     const serviceCategory = serviceCategoryFactory.build()
     const referral = draftReferralFactory.serviceUserSelected().build({ id: '1' })
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(expandedDeliusServiceUserFactory.build())
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
@@ -571,7 +759,7 @@ describe('POST /referrals/:id/needs-and-requirements', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
-  it('updates the referral on the backend and redirects to the submit current location page', async () => {
+  it('updates the referral on the backend and redirects to the form', async () => {
     const updatedReferral = draftReferralFactory.serviceUserSelected().build({
       serviceUser: { firstName: 'Geoffrey' },
       additionalNeedsInformation: 'Alex is currently sleeping on his aunt’s sofa',
@@ -596,7 +784,7 @@ describe('POST /referrals/:id/needs-and-requirements', () => {
         'when-unavailable': 'He works on Fridays 7am - midday',
       })
       .expect(302)
-      .expect('Location', '/referrals/1/submit-current-location')
+      .expect('Location', '/referrals/1/form')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',
@@ -780,7 +968,7 @@ describe('GET /referrals/:id/submit-current-location', () => {
       .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
     interventionsService.getDraftReferral.mockResolvedValue(referral)
 
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 
@@ -789,7 +977,7 @@ describe('GET /referrals/:id/submit-current-location', () => {
       .get('/referrals/1/submit-current-location')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Submit Geoffrey Blue’s current location')
+        expect(res.text).toContain('Confirm Geoffrey Blue’s current location')
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
@@ -812,14 +1000,13 @@ describe('POST /referrals/:id/submit-current-location', () => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   })
 
   it('updates the referral on the backend and redirects to the expected release date page', async () => {
     const updatedReferral = draftReferralFactory.serviceUserSelected().build({
       serviceUser: { firstName: 'Geoffrey' },
-      personCurrentLocationType: CurrentLocationType.custody,
       personCustodyPrisonId: 'abc',
     })
 
@@ -839,35 +1026,7 @@ describe('POST /referrals/:id/submit-current-location', () => {
       'token',
       '1',
       {
-        personCurrentLocationType: CurrentLocationType.custody,
         personCustodyPrisonId: 'abc',
-      },
-    ])
-  })
-
-  it('updates the referral on the backend and redirects to the confirm probation practitioner details page when custody selected', async () => {
-    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
-      serviceUser: { firstName: 'Geoffrey' },
-      personCurrentLocationType: CurrentLocationType.community,
-    })
-
-    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
-
-    await request(app)
-      .post('/referrals/1/submit-current-location')
-      .type('form')
-      .send({
-        'current-location': 'COMMUNITY',
-      })
-      .expect(302)
-      .expect('Location', '/referrals/1/confirm-probation-practitioner-details')
-
-    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
-      'token',
-      '1',
-      {
-        personCurrentLocationType: CurrentLocationType.community,
-        personCustodyPrisonId: null,
       },
     ])
   })
@@ -915,7 +1074,7 @@ describe('GET /referrals/:id/confirm-probation-practitioner-details', () => {
       .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
     interventionsService.getDraftReferral.mockResolvedValue(referral)
 
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
     const officeList = deliusOfficeLocationFactory.officeList()
@@ -956,7 +1115,7 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
     const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
     const officeList = deliusOfficeLocationFactory.officeList()
@@ -1041,8 +1200,148 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
         'confirm-details': 'no',
         'probation-practitioner-name': 'John',
         'probation-practitioner-email': 'john@example.com',
-        'probation-practitioner-office': undefined,
+        'probation-practitioner-office': 'undefined',
         'probation-practitioner-pdu': 'East Sussex',
+      })
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Some backend error message')
+      })
+  })
+})
+
+describe('GET /referrals/:id/confirm-main-point-of-contact', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory
+      .serviceUserSelected()
+      .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+
+    const prisonList = prisonFactory.build()
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+
+    const officeList = deliusOfficeLocationFactory.officeList()
+    referenceDataService.getProbationOffices.mockResolvedValue(officeList)
+
+    const pduList = deliusProbationDeliveryUnitFactory.pduList()
+    referenceDataService.getProbationDeliveryUnits.mockResolvedValue(pduList)
+
+    const responsibleOfficer = deliusResponsibleOfficerFactory.build()
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+  })
+
+  it('renders a form page', async () => {
+    await request(app)
+      .get('/referrals/1/confirm-main-point-of-contact')
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Confirm main point of contact details')
+      })
+
+    expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])
+  })
+
+  it('renders an error when the get referral call fails', async () => {
+    interventionsService.getDraftReferral.mockRejectedValue(new Error('Failed to get draft referral'))
+
+    await request(app)
+      .get('/referrals/1/confirm-probation-practitioner-details')
+      .expect(500)
+      .expect(res => {
+        expect(res.text).toContain('Failed to get draft referral')
+      })
+  })
+})
+
+describe('POST /referrals/:id/confirm-main-point-of-contact', () => {
+  beforeEach(() => {
+    const referral = draftReferralFactory.serviceUserSelected().build({ serviceUser: { firstName: 'Geoffrey' } })
+
+    interventionsService.getDraftReferral.mockResolvedValue(referral)
+    const prisonList = prisonFactory.build()
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+
+    const officeList = deliusOfficeLocationFactory.officeList()
+    referenceDataService.getProbationOffices.mockResolvedValue(officeList)
+
+    const pduList = deliusProbationDeliveryUnitFactory.pduList()
+    referenceDataService.getProbationDeliveryUnits.mockResolvedValue(pduList)
+
+    const responsibleOfficer = deliusResponsibleOfficerFactory.build()
+    ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+  })
+
+  it('updates the referral on the backend and redirects to the form page', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: { firstName: 'Geoffrey' },
+      ppName: 'Bob',
+      ppEmailAddress: 'a.b@xyz.com',
+      roleOrJobTitle: 'Probation Practitioner',
+      ppProbationOffice: 'London',
+    })
+
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/confirm-main-point-of-contact')
+      .type('form')
+      .send({
+        location: 'probation office',
+        'probation-practitioner-name': 'John',
+        'probation-practitioner-roleOrJobTitle': 'Probation Practitioner',
+        'probation-practitioner-email': 'a.b@xyz.com',
+        'probation-practitioner-office': 'London',
+        'probation-practitioner-pdu': '',
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        ppName: 'John',
+        ppEmailAddress: 'a.b@xyz.com',
+        ppProbationOffice: 'London',
+        ppEstablishment: '',
+        roleOrJobTitle: 'Probation Practitioner',
+        hasMainPointOfContactDetails: true,
+      },
+    ])
+  })
+
+  describe('when the user enters invalid data', () => {
+    it('does not update the referral on the backend and returns a 400 with an error message', async () => {
+      await request(app)
+        .post('/referrals/1/confirm-main-point-of-contact')
+        .type('form')
+        .send({
+          location: 'probation office',
+          'probation-practitioner-name': '',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain(`Enter name of main point of contact`)
+        })
+
+      expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
+    })
+  })
+
+  it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    interventionsService.patchDraftReferral.mockRejectedValue({
+      message: 'Some backend error message',
+    })
+    await request(app)
+      .post('/referrals/1/confirm-main-point-of-contact')
+      .type('form')
+      .send({
+        location: 'probation office',
+        'probation-practitioner-name': 'John',
+        'probation-practitioner-roleOrJobTitle': 'Probation Practitioner',
+        'probation-practitioner-email': 'a.b@xyz.com',
+        'probation-practitioner-office': 'London',
+        'probation-practitioner-pdu': '',
       })
       .expect(500)
       .expect(res => {
@@ -1868,7 +2167,7 @@ describe('GET /referrals/:id/check-all-referral-information', () => {
         relevantSentenceId: 123,
       })
     const conviction = caseConvictionFactory.build()
-    const prisonList = prisonFactory.prisonList()
+    const prisonList = prisonFactory.build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)

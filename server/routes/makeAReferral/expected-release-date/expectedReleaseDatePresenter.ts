@@ -22,6 +22,7 @@ export default class ExpectedReleaseDatePresenter {
 
   readonly text = {
     title: 'Do you know the expected release date?',
+    label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
     description: 'You can find this in nDelius and NOMIS',
     releaseDate: {
       label: 'Add the expected release date',

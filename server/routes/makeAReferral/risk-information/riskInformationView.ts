@@ -30,6 +30,7 @@ export default class RiskInformationView {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,
         additionalRiskInformationTextareaArgs: this.additionalRiskInformationTextareaArgs,
+        suppressServiceUserBanner: true,
       },
     ]
   }

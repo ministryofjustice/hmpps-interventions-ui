@@ -55,14 +55,18 @@ const exampleReferralFields = () => {
     expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
     expectedReleaseDateMissingReason: null,
     hasExpectedReleaseDate: null,
-    ndeliusPPName: 'John',
+    ndeliusPPName: 'John Davies',
     ndeliusPPEmailAddress: 'john@example.com',
     ndeliusPDU: 'Sheffield',
-    ppName: 'Bob',
-    ppEmailAddress: 'null',
+    ppName: 'Bob Alice',
+    ppEmailAddress: 'b.a@xyz.com',
     ppProbationOffice: 'London',
     ppPdu: 'London',
+    ppEstablishment: 'aaa',
     hasValidDeliusPPDetails: false,
+    isReferralReleasingIn12Weeks: false,
+    roleOrJobTitle: 'Probabation Practitioner',
+    hasMainPointOfContactDetails: false,
   }
 }
 

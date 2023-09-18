@@ -158,6 +158,7 @@ export default class DashboardPresenter {
 
   readonly tableRows: SortableTableRow[] = this.sentReferralSummaries.content.map(referralSummary => {
     const sentAtDay = CalendarDay.britishDayForDate(new Date(referralSummary.sentAt))
+    const releaseDateorDescription = this.determineExpectedReleaseDate(referralSummary)
     const expectedReleaseDate =
       referralSummary.locationType === 'CUSTODY' && referralSummary.expectedReleaseDate
         ? CalendarDay.britishDayForDate(new Date(referralSummary.expectedReleaseDate))
@@ -180,7 +181,9 @@ export default class DashboardPresenter {
       },
       this.showReleaseDateAndLocationColumn
         ? {
-            text: expectedReleaseDate ? DateUtils.formattedDate(expectedReleaseDate, { month: 'short' }) : 'N/A',
+            text: expectedReleaseDate
+              ? DateUtils.formattedDate(expectedReleaseDate, { month: 'short' })
+              : releaseDateorDescription,
             sortValue: null,
             href: null,
           }
@@ -214,5 +217,19 @@ export default class DashboardPresenter {
       return this.prisons.find(prison => prison.prisonId === referralSummary.location)?.prisonName
     }
     return referralSummary.location
+  }
+
+  private determineExpectedReleaseDate(referralSummary: SentReferralSummaries): string | null {
+    if (
+      referralSummary.locationType === 'CUSTODY' &&
+      referralSummary.isReferralReleasingIn12Weeks != null &&
+      !referralSummary.isReferralReleasingIn12Weeks
+    ) {
+      return 'Over 12 weeks'
+    }
+    if (referralSummary.locationType === 'COMMUNITY') {
+      return '---'
+    }
+    return 'Not found'
   }
 }

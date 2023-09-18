@@ -4,6 +4,7 @@ import PresenterUtils from '../../../utils/presenterUtils'
 import Intervention from '../../../models/intervention'
 import utils from '../../../utils/utils'
 import CompletionDeadlineForm from './completionDeadlineForm'
+import ServiceUser from '../../../models/serviceUser'
 
 export default class CompletionDeadlinePresenter {
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
@@ -22,9 +23,12 @@ export default class CompletionDeadlinePresenter {
     private readonly intervention: Intervention,
     readonly sentReferral: boolean | undefined = undefined,
     private readonly referralId: string,
+    private readonly serviceUserDetails: ServiceUser,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {}
+
+  readonly label = `${this.serviceUserDetails.firstName} ${this.serviceUserDetails?.lastName} (CRN: ${this.serviceUserDetails?.crn})`
 
   private readonly utils = new PresenterUtils(this.userInputData)
 

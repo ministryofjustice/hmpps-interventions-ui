@@ -15,6 +15,7 @@ export default class NeedsAndRequirementsPresenter {
 
   readonly text = {
     title: `${this.referral.serviceUser?.firstName}’s needs and requirements`,
+    label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
     additionalNeedsInformation: {
       label: `Additional information about ${this.referral.serviceUser?.firstName}’s needs (optional)`,
       errorMessage: this.errorMessageForField('additional-needs-information'),

@@ -1,4 +1,3 @@
-import { UUID } from 'aws-sdk/clients/cloudtrail'
 import ServiceUser from '../../../models/serviceUser'
 import { ListStyle, SummaryListItem } from '../../../utils/summaryList'
 import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
@@ -15,7 +14,7 @@ export default class ServiceUserDetailsPresenter {
     private readonly serviceUser: ServiceUser,
     private readonly deliusServiceUserDetails: DeliusServiceUser,
     private readonly prisons: Prison[],
-    private readonly referralId: UUID | null = null,
+    private readonly referralId: string | null = null,
     private readonly personCurrentLocationType: CurrentLocationType | null = null,
     private readonly personCustodyPrisonId: string | null = null,
     private readonly popReleaseDate: string | null = null,
@@ -37,6 +36,8 @@ export default class ServiceUserDetailsPresenter {
   readonly personDetailsHeading = 'Personal details'
 
   readonly contactDetailsHeading = 'Address and contact details'
+
+  readonly label = `${this.serviceUser?.firstName} ${this.serviceUser?.lastName} (CRN: ${this.serviceUser?.crn})`
 
   // required to force type erasure of type null[] from list of (string[] | null[])
   private notEmpty(value: string | null | undefined): value is string {
@@ -137,24 +138,6 @@ export default class ServiceUserDetailsPresenter {
       { key: 'Last name', lines: [this.serviceUser.lastName ?? ''] },
       { key: 'Date of birth', lines: [this.dateOfBirth ? `${this.dateOfBirth} (${this.age} years old)` : ''] },
     ]
-    /* if (config.featureFlags.custodyLocationEnabled) {
-      summary.push({
-        key: 'Location at time of referral',
-        lines: [this.personCurrentLocationType ? utils.convertToProperCase(this.personCurrentLocationType) : ''],
-      })
-      if (this.personCurrentLocationType === 'CUSTODY') {
-        summary.push(
-          {
-            key: 'Current establishment',
-            lines: [this.personCustodyPrisonId ? prisonName : ''],
-          },
-          {
-            key: 'Expected release date',
-            lines: [this.expectedReleaseDate !== '' ? this.expectedReleaseDate : this.expectedReleaseDateUnKnownReason],
-          }
-        )
-      }
-    } */
     summary.push(
       {
         key: 'Address',

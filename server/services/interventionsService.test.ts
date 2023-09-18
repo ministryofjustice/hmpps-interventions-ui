@@ -1562,7 +1562,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ppEmailAddress: 'alice@example.com',
       ppProbationOffice: 'London',
       ppPdu: 'East Sussex',
+      ppEstablishment: 'aaa',
       hasValidDeliusPPDetails: false,
+      isReferralReleasingIn12Weeks: false,
+      roleOrJobTitle: 'Probation Practitioner',
+      hasMainPointOfContactDetails: false,
     },
   }
 
@@ -1587,6 +1591,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     expectedReleaseDate: '2021-01-14',
     location: 'aaa',
     locationType: 'COMMUNITY',
+    isReferralReleasingIn12Weeks: false,
   }
 
   const sentReferralSummaries2: SentReferralSummaries = {
@@ -1610,6 +1615,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     expectedReleaseDate: '2021-01-14',
     location: 'aaa',
     locationType: 'COMMUNITY',
+    isReferralReleasingIn12Weeks: false,
   }
 
   const sentReferralSummariesPages: Page<SentReferralSummaries> = {

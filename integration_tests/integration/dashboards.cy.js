@@ -1,6 +1,7 @@
 import sentReferralSummaries from '../../testutils/factories/sentReferralSummaries'
 import interventionFactory from '../../testutils/factories/intervention'
 import pageFactory from '../../testutils/factories/page'
+import prisonFactory from '../../testutils/factories/prison'
 
 describe('Dashboards', () => {
   beforeEach(() => {
@@ -235,6 +236,30 @@ describe('Dashboards', () => {
         serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
       }),
     ]
+    const unassignedReferralsWithUnAllocatedCOM = [
+      sentReferralSummaries.unassigned().build({
+        id: '4',
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'REFERRAL_REF',
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+        expectedReleaseDate: null,
+        locationType: 'CUSTODY',
+        location: 'aaa',
+        isReferralReleasingIn12Weeks: false,
+      }),
+    ]
+    const unassignedReferralsWithNoExpectedReleaseDate = [
+      sentReferralSummaries.unassigned().build({
+        id: '5',
+        sentAt: '2021-01-26T13:00:00.000000Z',
+        referenceNumber: 'REFERRAL_REF',
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+        expectedReleaseDate: null,
+        locationType: 'CUSTODY',
+        location: 'aaa',
+        isReferralReleasingIn12Weeks: null,
+      }),
+    ]
     beforeEach(() => {
       cy.task('stubServiceProviderToken')
       cy.task('stubServiceProviderAuthUser')
@@ -378,7 +403,7 @@ describe('Dashboards', () => {
             .should('deep.equal', [
               {
                 'Name/CRN': 'Jenny Jones\n            X123456',
-                'Expected release date': 'N/A',
+                'Expected release date': '---',
                 Location: 'London',
                 'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
@@ -397,7 +422,7 @@ describe('Dashboards', () => {
             .should('deep.equal', [
               {
                 'Name/CRN': 'Jenny Jones\n            X123456',
-                'Expected release date': 'N/A',
+                'Expected release date': '---',
                 Location: 'London',
                 'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
@@ -416,7 +441,7 @@ describe('Dashboards', () => {
             .should('deep.equal', [
               {
                 'Name/CRN': 'Jenny Jones\n            X123456',
-                'Expected release date': 'N/A',
+                'Expected release date': '---',
                 Location: 'London',
                 'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
@@ -445,8 +470,56 @@ describe('Dashboards', () => {
             .should('deep.equal', [
               {
                 'Name/CRN': 'Jenny Jones\n            X123456',
-                'Expected release date': 'N/A',
+                'Expected release date': '---',
                 Location: 'London',
+                'Referral number': 'REFERRAL_REF',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                'Date received': '26 Jan 2021',
+              },
+            ])
+        })
+        it('should filter unassigned cases by PoP name - When unallocated COM referral is present ', () => {
+          cy.stubGetPrisons(prisonFactory.build())
+          cy.stubGetSentReferralsForUserTokenPaged(
+            pageFactory.pageContent(unassignedReferralsWithUnAllocatedCOM).build()
+          )
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Unassigned cases').click()
+          cy.get('h1').contains('Unassigned cases')
+          cy.get('#case-search-text').type('Jenny Jones')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Expected release date': 'Over 12 weeks',
+                Location: '',
+                'Referral number': 'REFERRAL_REF',
+                'Intervention type': 'Accommodation Services - West Midlands',
+                'Date received': '26 Jan 2021',
+              },
+            ])
+        })
+        it('should filter unassigned cases by PoP name - When expected release date is not present ', () => {
+          cy.stubGetPrisons(prisonFactory.build())
+          cy.stubGetSentReferralsForUserTokenPaged(
+            pageFactory.pageContent(unassignedReferralsWithNoExpectedReleaseDate).build()
+          )
+          cy.login()
+          cy.get('h1').contains('My cases')
+          cy.contains('Unassigned cases').click()
+          cy.get('h1').contains('Unassigned cases')
+          cy.get('#case-search-text').type('Jenny Jones')
+          cy.get('#search-button-all-open-cases').click()
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                'Name/CRN': 'Jenny Jones\n            X123456',
+                'Expected release date': 'Not found',
+                Location: '',
                 'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 'Date received': '26 Jan 2021',

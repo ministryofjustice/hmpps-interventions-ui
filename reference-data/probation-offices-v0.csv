@@ -274,3 +274,4 @@ probation_office_id,name,address,probation_region_id,gov_uk_url,delius_crs_locat
 273,"Tunbridge Wells: 17 Garden Road","17 Garden Road, Garden Road, Tunbridge Wells, TN1 2XP",K,,CRS0152
 274,"Crawley: Midtown House","Midtown House, The High Street, Crawley, RH10 1BW",K,,CRS0153
 275,"Littlehampton: Arun Civic Centre","Arun Civic Centre, Maltravers Road, Littlehampton, BN17 5LF",K,,CRS0154
+276,"Staffordshire: Stafford Probation Office","Units 8 & 9, Greyfriars Business Park, Frank Foley Way, Stafford, ST16 2ST",E,"https://www.gov.uk/guidance/staffordshire-frank-foley-way",CRS0316

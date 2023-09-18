@@ -2,6 +2,7 @@
 generic-service:
   nameOverride: hmpps-interventions-ui
   replicaCount: 3
+  serviceAccountName: "hmpps-interventions"
 
   image:
     repository: quay.io/hmpps/hmpps-interventions-ui
@@ -32,8 +33,6 @@ generic-service:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "connection_string"
     storage-s3-bucket:
       AWS_S3_BUCKET_NAME: "bucket_name"
-      AWS_S3_ACCESSKEYID: "access_key_id"
-      AWS_S3_SECRETACCESSKEY: "secret_access_key"
 
   poddisruptionbudget:
     enabled: false

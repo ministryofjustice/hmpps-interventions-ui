@@ -4,7 +4,6 @@ import sentReferralFactory from '../../testutils/factories/sentReferral'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusServiceUserFactory from '../../testutils/factories/expandedDeliusServiceUser'
 import interventionFactory from '../../testutils/factories/intervention'
-import prisonFactory from '../../testutils/factories/prison'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 import ReferralSectionVerifier from './make_a_referral/referralSectionVerifier'
 import riskSummaryFactory from '../../testutils/factories/riskSummary'
@@ -79,7 +78,27 @@ describe('Referral form', () => {
         },
       })
 
-      const completedCurrentLocationDraftReferral = draftReferralFactory
+      const completedPersonCurrentLocationType = draftReferralFactory
+        .filledPersonalCurrentLocationType(CurrentLocationType.custody)
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: [accommodationServiceCategory.id],
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          interventionId: draftReferral.interventionId,
+        })
+
+      const completedPPDetails = draftReferralFactory.filledFormUptoPPDetails().build({
+        id: draftReferral.id,
+        serviceCategoryIds: [accommodationServiceCategory.id],
+        serviceProvider: {
+          name: 'Harmony Living',
+        },
+        interventionId: draftReferral.interventionId,
+      })
+
+      const completedNeedsAndRequirementsDraftReferral = draftReferralFactory
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory])
         .build({
           id: draftReferral.id,
@@ -90,8 +109,8 @@ describe('Referral form', () => {
           },
         })
 
-      const completedServiceUserDetailsDraftReferral = draftReferralFactory
-        .filledFormUpToExpectedReleaseDate([accommodationServiceCategory], false, CurrentLocationType.custody)
+      const completedExpectedReleaseDateDraftReferral = draftReferralFactory
+        .filledFormUpToExpectedReleaseDate(CurrentLocationType.custody)
         .build({
           id: draftReferral.id,
           serviceCategoryIds: [accommodationServiceCategory.id],
@@ -101,8 +120,8 @@ describe('Referral form', () => {
           },
         })
 
-      const completedExpectedReleaseDatesDraftReferral = draftReferralFactory
-        .filledFormUpToCurrentLocation([accommodationServiceCategory], false, CurrentLocationType.community)
+      const completedEstablishmentDraftReferral = draftReferralFactory
+        .filledFormUpToCurrentLocation(CurrentLocationType.custody)
         .build({
           id: draftReferral.id,
           serviceCategoryIds: [accommodationServiceCategory.id],
@@ -113,7 +132,7 @@ describe('Referral form', () => {
         })
 
       const completedDraftReferral = draftReferralFactory
-        .filledFormUpToFurtherInformation([accommodationServiceCategory])
+        .filledFormUpToFurtherInformation([accommodationServiceCategory], 'Some information about Alex')
         .build({
           id: draftReferral.id,
           serviceCategoryIds: [accommodationServiceCategory.id],
@@ -121,10 +140,7 @@ describe('Referral form', () => {
           serviceProvider: {
             name: 'Harmony Living',
           },
-          furtherInformation: 'Some information about Alex',
         })
-
-      const prisons = prisonFactory.prisonList()
 
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build({
         id: draftReferral.id,
@@ -147,6 +163,7 @@ describe('Referral form', () => {
       cy.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, draftReferral)
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
+      cy.stubGetResponsibleOfficer(draftReferral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
 
       cy.login()
 
@@ -155,37 +172,128 @@ describe('Referral form', () => {
       cy.visit(`/intervention/${randomInterventionId}/refer`)
 
       cy.contains('The person’s CRN').type('X123456')
+      cy.stubGetDraftReferral(draftReferral.id, completedPersonCurrentLocationType)
 
       cy.contains('Continue').click()
 
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/referral-type-form`)
+
+      cy.get('[type="radio"]').check('CUSTODY')
+
+      cy.contains('Save and continue').click()
+
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
 
-      cy.get('[data-cy=status]').eq(0).contains('NOT STARTED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(1).contains('CANNOT START YET', { matchCase: false })
-      cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
       ReferralSectionVerifier.verifySection
+        .reviewPPDetails({
+          ppDetails: true,
+          ppDetailsStatus: 'NOT STARTED',
+        })
+        .reviewCurrentLocationAndExpectedReleaseDate({
+          establishment: false,
+          establishmentStatus: 'NOT STARTED',
+          expectedReleaseDate: false,
+          expectedReleaseDateStatus: 'NOT STARTED',
+        })
         .reviewServiceUserInformation({
-          confirmServiceUserDetails: true,
-          riskInformation: true,
+          confirmServiceUserDetails: false,
+          confirmServiceUserDetailsStatus: 'NOT STARTED',
+          riskInformation: false,
+          riskInformationStatus: 'NOT STARTED',
           needsAndRequirements: false,
+          needsAndRequirementsStatus: 'NOT STARTED',
         })
         .interventionReferralDetails({
           relevantSentence: false,
+          relevantSentenceStatus: 'CANNOT START YET',
           requiredComplexityLevel: false,
+          requiredComplexityLevelStatus: 'CANNOT START YET',
           desiredOutcomes: false,
+          desiredOutcomesStatus: 'CANNOT START YET',
           enforceableDays: false,
+          enforceableDaysStatus: 'CANNOT START YET',
           completedDate: false,
+          completedDateStatus: 'CANNOT START YET',
           furtherInformation: false,
+          furtherInformationStatus: 'CANNOT START YET',
         })
-        .checkAllReferralInformation({ checkAllReferralInformation: false })
+        .checkAllReferralInformation({
+          checkAllReferralInformation: false,
+          checkAllReferralInformationStatus: 'CANNOT START YET',
+        })
+      cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
 
-      cy.contains('Confirm their personal details').click()
+      cy.contains('Name,email address and location').click()
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+      cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
+      cy.contains('Yes').click()
+      cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
+      cy.contains('Save and continue').click()
+
+      ReferralSectionVerifier.verifySection
+        .reviewPPDetails({
+          ppDetails: true,
+          ppDetailsStatus: 'COMPLETED',
+        })
+        .reviewCurrentLocationAndExpectedReleaseDate({
+          establishment: true,
+          establishmentStatus: 'NOT STARTED',
+          expectedReleaseDate: false,
+          expectedReleaseDateStatus: 'NOT STARTED',
+        })
+
+      cy.contains('Establishment').click()
+      // Submit current location Page
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
+      cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
+      cy.get('h1').contains('Confirm Alex River’s current location')
+
+      cy.contains('Which establishment is Alex in?')
+      cy.contains('Start typing prison name, then choose from the list.')
+      cy.get('#prison-select').type('Aylesbury (HMYOI)')
+      cy.stubGetDraftReferral(draftReferral.id, completedEstablishmentDraftReferral)
+      cy.contains('Save and continue').click()
+
+      // Submit expected release date
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-release-date`)
+      cy.get('h1').contains('Do you know the expected release date')
+      cy.contains('Yes').click()
+      const tomorrow = moment().add(1, 'days')
+      cy.contains('Day').type(tomorrow.format('DD'))
+      cy.contains('Month').type(tomorrow.format('MM'))
+      cy.contains('Year').type(tomorrow.format('YYYY'))
+
+      cy.stubGetDraftReferral(draftReferral.id, completedExpectedReleaseDateDraftReferral)
+      cy.contains('Save and continue').click()
+
+      ReferralSectionVerifier.verifySection
+        .reviewPPDetails({
+          ppDetails: true,
+          ppDetailsStatus: 'COMPLETED',
+        })
+        .reviewCurrentLocationAndExpectedReleaseDate({
+          establishment: true,
+          establishmentStatus: 'COMPLETED',
+          expectedReleaseDate: true,
+          expectedReleaseDateStatus: 'COMPLETED',
+        })
+        .reviewServiceUserInformation({
+          confirmServiceUserDetails: true,
+          confirmServiceUserDetailsStatus: 'NOT STARTED',
+          riskInformation: false,
+          riskInformationStatus: 'NOT STARTED',
+          needsAndRequirements: false,
+          needsAndRequirementsStatus: 'NOT STARTED',
+        })
+
+      cy.contains('Personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
+      cy.contains(`Alex River (CRN: ${completedExpectedReleaseDateDraftReferral.serviceUser.crn})`)
       cy.get('h1').contains("Review Alex River's information")
       cy.contains('X123456')
       cy.contains('River')
-      cy.contains('1 January 1980')
+      cy.contains('1 Jan 1980')
       cy.contains('Flat 2 Test Walk')
       cy.contains('London')
       cy.contains('City of London')
@@ -231,62 +339,54 @@ describe('Referral form', () => {
       cy.contains('Provide details of when Alex will not be able to attend sessions').type(
         'He works Mondays 9am - midday'
       )
-
-      cy.stubGetPrisons(prisons)
-      cy.stubGetDraftReferral(draftReferral.id, completedCurrentLocationDraftReferral)
-
-      cy.contains('Save and continue').click()
-
-      // Submit current location Page
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
-      cy.get('h1').contains('Submit Alex River’s current location')
-
-      cy.withinFieldsetThatContains('Where is Alex today?', () => {
-        cy.contains('Custody (select even if Alex is due to be released today)').click()
-      })
-      cy.get('#prison-select').type('Aylesbury (HMYOI)')
-      cy.stubGetDraftReferral(draftReferral.id, completedExpectedReleaseDatesDraftReferral)
-      cy.contains('Save and continue').click()
-
-      // Submit expected release date
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-release-date`)
-      cy.get('h1').contains('Do you know the expected release date')
-      cy.contains('Yes').click()
-      const tomorrow = moment().add(1, 'days')
-      cy.contains('Day').type(tomorrow.format('DD'))
-      cy.contains('Month').type(tomorrow.format('MM'))
-      cy.contains('Year').type(tomorrow.format('YYYY'))
-
-      cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
+      cy.stubGetDraftReferral(draftReferral.id, completedNeedsAndRequirementsDraftReferral)
       cy.contains('Save and continue').click()
 
       // Service Category details Section
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
 
-      cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(1).contains('NOT STARTED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
       ReferralSectionVerifier.verifySection
+        .reviewPPDetails({
+          ppDetails: true,
+          ppDetailsStatus: 'COMPLETED',
+        })
+        .reviewCurrentLocationAndExpectedReleaseDate({
+          establishment: true,
+          establishmentStatus: 'COMPLETED',
+          expectedReleaseDate: true,
+          expectedReleaseDateStatus: 'COMPLETED',
+        })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
+          confirmServiceUserDetailsStatus: 'COMPLETED',
           riskInformation: true,
+          riskInformationStatus: 'COMPLETED',
           needsAndRequirements: true,
+          needsAndRequirementsStatus: 'COMPLETED',
         })
         .interventionReferralDetails({
           relevantSentence: true,
+          relevantSentenceStatus: 'NOT STARTED',
           requiredComplexityLevel: false,
+          requiredComplexityLevelStatus: 'NOT STARTED',
           desiredOutcomes: false,
+          desiredOutcomesStatus: 'NOT STARTED',
           enforceableDays: false,
+          enforceableDaysStatus: 'NOT STARTED',
           completedDate: false,
+          completedDateStatus: 'NOT STARTED',
           furtherInformation: false,
+          furtherInformationStatus: 'NOT STARTED',
         })
-        .checkAllReferralInformation({ checkAllReferralInformation: false })
-
-      cy.contains('Confirm their personal details').should('have.attr', 'href')
+        .checkAllReferralInformation({
+          checkAllReferralInformation: false,
+          checkAllReferralInformationStatus: 'CANNOT START YET',
+        })
 
       cy.contains('Confirm the relevant sentence for the Accommodation referral').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/relevant-sentence`)
+      cy.contains(`Alex River (CRN: ${completedNeedsAndRequirementsDraftReferral.serviceUser.crn})`)
       cy.get('h1').contains('Select the relevant sentence for the Accommodation referral')
 
       cy.contains('Burglary').click()
@@ -340,25 +440,43 @@ describe('Referral form', () => {
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
 
-      cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(1).contains('COMPLETED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(2).contains('NOT STARTED', { matchCase: false })
       ReferralSectionVerifier.verifySection
+        .reviewPPDetails({
+          ppDetails: true,
+          ppDetailsStatus: 'COMPLETED',
+        })
+        .reviewCurrentLocationAndExpectedReleaseDate({
+          establishment: true,
+          establishmentStatus: 'COMPLETED',
+          expectedReleaseDate: true,
+          expectedReleaseDateStatus: 'COMPLETED',
+        })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
+          confirmServiceUserDetailsStatus: 'COMPLETED',
           riskInformation: true,
+          riskInformationStatus: 'COMPLETED',
           needsAndRequirements: true,
+          needsAndRequirementsStatus: 'COMPLETED',
         })
         .interventionReferralDetails({
           relevantSentence: true,
+          relevantSentenceStatus: 'COMPLETED',
           requiredComplexityLevel: true,
+          requiredComplexityLevelStatus: 'COMPLETED',
           desiredOutcomes: true,
+          desiredOutcomesStatus: 'COMPLETED',
           enforceableDays: true,
+          enforceableDaysStatus: 'COMPLETED',
           completedDate: true,
+          completedDateStatus: 'COMPLETED',
           furtherInformation: true,
+          furtherInformationStatus: 'COMPLETED',
         })
-        .checkAllReferralInformation({ checkAllReferralInformation: true })
-
+        .checkAllReferralInformation({
+          checkAllReferralInformation: true,
+          checkAllReferralInformationStatus: 'NOT STARTED',
+        })
       cy.stubGetDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
       cy.get('a').contains('Check referral information').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-all-referral-information`)
@@ -383,7 +501,7 @@ describe('Referral form', () => {
         .parent()
         .next()
         .should('contain', 'Name')
-        .should('contain', 'Victor Drake')
+        .should('contain', 'Bob Alice')
         .contains('Change')
         .should(
           'have.attr',
@@ -395,7 +513,7 @@ describe('Referral form', () => {
         .parent()
         .next()
         .should('contain', 'Email')
-        .should('contain', 'a.b@xyz.com')
+        .should('contain', 'bobalice@example.com')
         .contains('Change')
         .should(
           'have.attr',
@@ -407,7 +525,7 @@ describe('Referral form', () => {
         .parent()
         .next()
         .should('contain', 'PDU (Probation Delivery Unit)')
-        .should('contain', 'London')
+        .should('contain', '97 Hackney and City')
         .contains('Change')
         .should(
           'have.attr',
@@ -563,6 +681,7 @@ describe('Referral form', () => {
           name: "Women's Services",
         },
       })
+
       const draftReferral = draftReferralFactory.serviceUserSelected().build({
         id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
         serviceCategoryIds: null,
@@ -572,26 +691,67 @@ describe('Referral form', () => {
         },
       })
 
-      const completedCurrentLocationDraftReferral = draftReferralFactory
+      const completedPersonCurrentLocationType = draftReferralFactory
+        .filledPersonalCurrentLocationType(CurrentLocationType.custody)
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: [accommodationServiceCategory.id],
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          interventionId: draftReferral.interventionId,
+        })
+
+      const completedPPDetails = draftReferralFactory.filledFormUptoPPDetails().build({
+        id: draftReferral.id,
+        serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+        serviceProvider: {
+          name: 'Harmony Living',
+        },
+        interventionId: draftReferral.interventionId,
+      })
+
+      const completedNeedsAndRequirementsDraftReferral = draftReferralFactory
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
           id: draftReferral.id,
-          serviceCategoryIds: null,
+          serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
           interventionId: draftReferral.interventionId,
           serviceProvider: {
             name: 'Harmony Living',
           },
         })
 
-      const completedServiceUserDetailsDraftReferral = draftReferralFactory
-        .filledFormUpToCurrentLocation(
+      const completedExpectedReleaseDateDraftReferral = draftReferralFactory
+        .filledFormUpToExpectedReleaseDate(CurrentLocationType.custody)
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+          interventionId: draftReferral.interventionId,
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+        })
+
+      const completedEstablishmentDraftReferral = draftReferralFactory
+        .filledFormUpToCurrentLocation(CurrentLocationType.custody)
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+          interventionId: draftReferral.interventionId,
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+        })
+
+      const completedDraftReferral = draftReferralFactory
+        .filledFormUpToFurtherInformation(
           [accommodationServiceCategory, socialInclusionServiceCategory],
-          false,
-          CurrentLocationType.community
+          'Some information about Alex'
         )
         .build({
           id: draftReferral.id,
-          serviceCategoryIds: null,
+          serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
           interventionId: draftReferral.interventionId,
           serviceProvider: {
             name: 'Harmony Living',
@@ -599,10 +759,10 @@ describe('Referral form', () => {
         })
 
       const completedSelectingServiceCategories = draftReferralFactory
-        .filledFormUpToCurrentLocation(
+        .filledFormUpToNeedsAndRequirements(
           [accommodationServiceCategory, socialInclusionServiceCategory],
           false,
-          CurrentLocationType.community
+          CurrentLocationType.custody
         )
         .selectedServiceCategories([accommodationServiceCategory, socialInclusionServiceCategory])
         .build({
@@ -613,18 +773,7 @@ describe('Referral form', () => {
           },
         })
 
-      const completedDraftReferral = draftReferralFactory
-        .filledFormUpToFurtherInformation([accommodationServiceCategory, socialInclusionServiceCategory])
-        .build({
-          id: draftReferral.id,
-          interventionId: intervention.id,
-          serviceProvider: {
-            name: 'Harmony Living',
-          },
-        })
-
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
-      const prisons = prisonFactory.prisonList()
 
       cy.stubCreateDraftReferral(draftReferral)
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
@@ -654,28 +803,111 @@ describe('Referral form', () => {
 
       cy.contains('Continue').click()
 
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/referral-type-form`)
+
+      cy.get('[type="radio"]').check('CUSTODY')
+
+      cy.stubGetDraftReferral(draftReferral.id, completedPersonCurrentLocationType)
+      cy.contains('Save and continue').click()
+
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
-      cy.get('[data-cy=status]').eq(0).contains('NOT STARTED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(1).contains('CANNOT START YET', { matchCase: false })
-      cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
-      cy.get('[data-cy=status]').eq(3).contains('CANNOT START YET', { matchCase: false })
+      cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
+
       ReferralSectionVerifier.verifySection
+        .reviewPPDetails({
+          ppDetails: true,
+          ppDetailsStatus: 'NOT STARTED',
+        })
+        .reviewCurrentLocationAndExpectedReleaseDate({
+          establishment: false,
+          establishmentStatus: 'NOT STARTED',
+          expectedReleaseDate: false,
+          expectedReleaseDateStatus: 'NOT STARTED',
+        })
+        .reviewServiceUserInformation({
+          confirmServiceUserDetails: false,
+          confirmServiceUserDetailsStatus: 'NOT STARTED',
+          riskInformation: false,
+          riskInformationStatus: 'NOT STARTED',
+          needsAndRequirements: false,
+          needsAndRequirementsStatus: 'NOT STARTED',
+        })
+        .selectServiceCategories({ selectServiceCategories: false, selectServiceCategoriesStatus: 'CANNOT START YET' })
+        .disabledCohortInterventionReferralDetails()
+        .checkAllReferralInformation({
+          checkAllReferralInformation: false,
+          checkAllReferralInformationStatus: 'CANNOT START YET',
+        })
+
+      cy.contains('Name,email address and location').click()
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+      cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
+      cy.contains('Yes').click()
+      cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
+      cy.contains('Save and continue').click()
+
+      ReferralSectionVerifier.verifySection
+        .reviewPPDetails({
+          ppDetails: true,
+          ppDetailsStatus: 'COMPLETED',
+        })
+        .reviewCurrentLocationAndExpectedReleaseDate({
+          establishment: true,
+          establishmentStatus: 'NOT STARTED',
+          expectedReleaseDate: false,
+          expectedReleaseDateStatus: 'NOT STARTED',
+        })
+
+      cy.contains('Establishment').click()
+      // Submit current location Page
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
+      cy.get('h1').contains('Confirm Alex River’s current location')
+
+      cy.contains('Which establishment is Alex in?')
+      cy.contains('Start typing prison name, then choose from the list.')
+      cy.get('#prison-select').type('Aylesbury (HMYOI)')
+      cy.stubGetDraftReferral(draftReferral.id, completedEstablishmentDraftReferral)
+      cy.contains('Save and continue').click()
+
+      // Submit expected release date
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-release-date`)
+      cy.get('h1').contains('Do you know the expected release date')
+      cy.contains('Yes').click()
+      const tomorrow = moment().add(1, 'days')
+      cy.contains('Day').type(tomorrow.format('DD'))
+      cy.contains('Month').type(tomorrow.format('MM'))
+      cy.contains('Year').type(tomorrow.format('YYYY'))
+
+      cy.stubGetDraftReferral(draftReferral.id, completedExpectedReleaseDateDraftReferral)
+      cy.contains('Save and continue').click()
+
+      ReferralSectionVerifier.verifySection
+        .reviewPPDetails({
+          ppDetails: true,
+          ppDetailsStatus: 'COMPLETED',
+        })
+        .reviewCurrentLocationAndExpectedReleaseDate({
+          establishment: true,
+          establishmentStatus: 'COMPLETED',
+          expectedReleaseDate: true,
+          expectedReleaseDateStatus: 'COMPLETED',
+        })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
-          riskInformation: true,
+          confirmServiceUserDetailsStatus: 'NOT STARTED',
+          riskInformation: false,
+          riskInformationStatus: 'NOT STARTED',
           needsAndRequirements: false,
+          needsAndRequirementsStatus: 'NOT STARTED',
         })
-        .selectServiceCategories({ selectServiceCategories: false })
-        .disabledCohortInterventionReferralDetails()
-        .checkAllReferralInformation({ checkAllReferralInformation: false })
 
-      cy.contains('Confirm their personal details').click()
+      cy.contains('Personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
       cy.get('h1').contains("Review Alex River's information")
       cy.contains('X123456')
       cy.contains('River')
-      cy.contains('1 January 1980')
+      cy.contains('1 Jan 1980')
       cy.contains('Flat 2 Test Walk')
       cy.contains('London')
       cy.contains('City of London')
@@ -686,6 +918,11 @@ describe('Referral form', () => {
       cy.contains('English')
       cy.contains('Agnostic')
       cy.contains('Autism')
+      cy.contains('Address and contact details')
+      cy.contains('Email address')
+      cy.contains('alex.river@example.com')
+      cy.contains('Phone number')
+      cy.contains('0123456789')
 
       cy.contains('Save and continue').click()
 
@@ -694,11 +931,13 @@ describe('Referral form', () => {
       cy.withinFieldsetThatContains('Do you want to edit this OASys risk information for the Service Provider?', () => {
         cy.contains('Yes').click()
       })
-      cy.stubPatchDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
       cy.contains('Save and continue').click()
+      cy.stubPatchDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/edit-oasys-risk-information`)
       cy.get('#confirm-understood').click()
+
       cy.contains('Save and continue').click()
+
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/needs-and-requirements`)
       cy.get('h1').contains('Alex’s needs and requirements')
 
@@ -714,73 +953,56 @@ describe('Referral form', () => {
       cy.contains('Provide details of when Alex will not be able to attend sessions').type(
         'He works Mondays 9am - midday'
       )
-
-      cy.stubGetPrisons(prisons)
-      cy.stubGetDraftReferral(draftReferral.id, completedCurrentLocationDraftReferral)
+      cy.stubGetDraftReferral(draftReferral.id, completedNeedsAndRequirementsDraftReferral)
       cy.contains('Save and continue').click()
 
-      // Submit current location Page
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
-      cy.get('h1').contains('Submit Alex River’s current location')
-
-      cy.withinFieldsetThatContains('Where is Alex today?', () => {
-        cy.contains('Community').click()
-      })
-
-      cy.stubGetDraftReferral(draftReferral.id, completedServiceUserDetailsDraftReferral)
-      cy.contains('Save and continue').click()
-
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
-
-      cy.contains('No').click()
-      cy.get('#probation-practitioner-name').type('John')
-      cy.get('#probation-practitioner-pdu').type('Hackney and City')
-      cy.contains('Save and continue').click()
-
+      // Service Category details Section
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
 
-      cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(1).contains('NOT STARTED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(2).contains('CANNOT START YET', { matchCase: false })
-      cy.get('[data-cy=status]').eq(3).contains('CANNOT START YET', { matchCase: false })
       ReferralSectionVerifier.verifySection
+        .reviewPPDetails({
+          ppDetails: true,
+          ppDetailsStatus: 'COMPLETED',
+        })
+        .reviewCurrentLocationAndExpectedReleaseDate({
+          establishment: true,
+          establishmentStatus: 'COMPLETED',
+          expectedReleaseDate: true,
+          expectedReleaseDateStatus: 'COMPLETED',
+        })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
+          confirmServiceUserDetailsStatus: 'COMPLETED',
           riskInformation: true,
+          riskInformationStatus: 'COMPLETED',
           needsAndRequirements: true,
+          needsAndRequirementsStatus: 'COMPLETED',
         })
-        .selectServiceCategories({ selectServiceCategories: true })
-        .checkAllReferralInformation({ checkAllReferralInformation: false })
-      cy.contains('Select service categories').click()
-      cy.get('h1').contains('What service categories are you referring Alex to?')
-      cy.contains('Accommodation').click()
-      cy.contains('Social inclusion').click()
-
-      cy.stubGetDraftReferral(draftReferral.id, completedSelectingServiceCategories)
-      cy.contains('Save and continue').click()
-      cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(1).contains('COMPLETED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(2).contains('NOT STARTED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(3).contains('CANNOT START YET', { matchCase: false })
-      ReferralSectionVerifier.verifySection
-        .reviewServiceUserInformation({
-          confirmServiceUserDetails: true,
-          riskInformation: true,
-          needsAndRequirements: true,
-        })
-        .selectServiceCategories({ selectServiceCategories: true })
+        .selectServiceCategories({ selectServiceCategories: true, selectServiceCategoriesStatus: 'COMPLETED' })
         .cohortInterventionReferralDetails({
           relevantSentence: true,
+          relevantSentenceStatus: 'NOT STARTED',
           requiredComplexityLevel1: false,
+          requiredComplexityLevel1Status: 'NOT STARTED',
           desiredOutcomes1: false,
+          desiredOutcomes1Status: 'NOT STARTED',
           requiredComplexityLevel2: false,
+          requiredComplexityLevel2Status: 'NOT STARTED',
           desiredOutcomes2: false,
+          desiredOutcomes2Status: 'NOT STARTED',
           enforceableDays: false,
+          enforceableDaysStatus: 'NOT STARTED',
           completedDate: false,
+          completedDateStatus: 'NOT STARTED',
           furtherInformation: false,
+          furtherInformationStatus: 'NOT STARTED',
         })
-        .checkAllReferralInformation({ checkAllReferralInformation: false })
+        .checkAllReferralInformation({
+          checkAllReferralInformation: false,
+          checkAllReferralInformationStatus: 'CANNOT START YET',
+        })
 
+      cy.stubGetDraftReferral(draftReferral.id, completedSelectingServiceCategories)
       cy.contains("Confirm the relevant sentence for the Women's services referral").click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/relevant-sentence`)
@@ -861,28 +1083,48 @@ describe('Referral form', () => {
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/form`)
 
-      cy.get('[data-cy=status]').eq(0).contains('COMPLETED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(1).contains('COMPLETED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(2).contains('COMPLETED', { matchCase: false })
-      cy.get('[data-cy=status]').eq(3).contains('NOT STARTED', { matchCase: false })
       ReferralSectionVerifier.verifySection
+        .reviewPPDetails({
+          ppDetails: true,
+          ppDetailsStatus: 'COMPLETED',
+        })
+        .reviewCurrentLocationAndExpectedReleaseDate({
+          establishment: true,
+          establishmentStatus: 'COMPLETED',
+          expectedReleaseDate: true,
+          expectedReleaseDateStatus: 'COMPLETED',
+        })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
+          confirmServiceUserDetailsStatus: 'COMPLETED',
           riskInformation: true,
+          riskInformationStatus: 'COMPLETED',
           needsAndRequirements: true,
+          needsAndRequirementsStatus: 'COMPLETED',
         })
-        .selectServiceCategories({ selectServiceCategories: true })
+        .selectServiceCategories({ selectServiceCategories: true, selectServiceCategoriesStatus: 'COMPLETED' })
         .cohortInterventionReferralDetails({
           relevantSentence: true,
+          relevantSentenceStatus: 'COMPLETED',
           requiredComplexityLevel1: true,
+          requiredComplexityLevel1Status: 'COMPLETED',
           desiredOutcomes1: true,
+          desiredOutcomes1Status: 'COMPLETED',
           requiredComplexityLevel2: true,
+          requiredComplexityLevel2Status: 'COMPLETED',
           desiredOutcomes2: true,
+          desiredOutcomes2Status: 'COMPLETED',
           enforceableDays: true,
+          enforceableDaysStatus: 'COMPLETED',
           completedDate: true,
+          completedDateStatus: 'COMPLETED',
           furtherInformation: true,
+          furtherInformationStatus: 'COMPLETED',
         })
-        .checkAllReferralInformation({ checkAllReferralInformation: true })
+        .checkAllReferralInformation({
+          checkAllReferralInformation: true,
+          checkAllReferralInformationStatus: 'NOT STARTED',
+        })
 
       cy.stubGetDraftOasysRiskInformation(draftReferral.id, draftOasysRiskInformation.build())
       cy.get('a').contains('Check referral information').click()

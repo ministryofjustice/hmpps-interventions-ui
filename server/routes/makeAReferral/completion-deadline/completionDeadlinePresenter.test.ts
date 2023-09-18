@@ -8,7 +8,13 @@ describe('CompletionDeadlinePresenter', () => {
     describe('when the referral has no completion deadline and there is no user input data', () => {
       it('returns empty strings', () => {
         const referral = draftReferralFactory.build()
-        const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, false, referral.id)
+        const presenter = new CompletionDeadlinePresenter(
+          referral.completionDeadline,
+          intervention,
+          false,
+          referral.id,
+          referral.serviceUser
+        )
 
         expect(presenter.fields.completionDeadline.day.value).toBe('')
         expect(presenter.fields.completionDeadline.month.value).toBe('')
@@ -19,7 +25,13 @@ describe('CompletionDeadlinePresenter', () => {
     describe('when the referral has a completion deadline and there is no user input data', () => {
       it('returns the corresponding values from the completion deadline', () => {
         const referral = draftReferralFactory.build({ completionDeadline: '2021-09-12' })
-        const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, false, referral.id)
+        const presenter = new CompletionDeadlinePresenter(
+          referral.completionDeadline,
+          intervention,
+          false,
+          referral.id,
+          referral.serviceUser
+        )
 
         expect(presenter.fields.completionDeadline.day.value).toBe('12')
         expect(presenter.fields.completionDeadline.month.value).toBe('9')
@@ -35,6 +47,7 @@ describe('CompletionDeadlinePresenter', () => {
           intervention,
           undefined,
           referral.id,
+          referral.serviceUser,
           null,
           {
             'completion-deadline-day': 'egg',
@@ -53,7 +66,13 @@ describe('CompletionDeadlinePresenter', () => {
     describe('when a null error is passed in', () => {
       it('returns no errors', () => {
         const referral = draftReferralFactory.build()
-        const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, false, referral.id)
+        const presenter = new CompletionDeadlinePresenter(
+          referral.completionDeadline,
+          intervention,
+          false,
+          referral.id,
+          referral.serviceUser
+        )
 
         expect(presenter.fields.completionDeadline.errorMessage).toBeNull()
         expect(presenter.fields.completionDeadline.day.hasError).toEqual(false)
@@ -71,6 +90,7 @@ describe('CompletionDeadlinePresenter', () => {
           intervention,
           undefined,
           referral.id,
+          referral.serviceUser,
           {
             errors: [
               {
@@ -96,7 +116,13 @@ describe('CompletionDeadlinePresenter', () => {
   describe('title', () => {
     it('returns a title', () => {
       const referral = draftReferralFactory.build()
-      const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, false, referral.id)
+      const presenter = new CompletionDeadlinePresenter(
+        referral.completionDeadline,
+        intervention,
+        false,
+        referral.id,
+        referral.serviceUser
+      )
 
       expect(presenter.title).toEqual("What date does the Women's service intervention need to be completed by?")
     })
@@ -105,13 +131,25 @@ describe('CompletionDeadlinePresenter', () => {
   describe('hint', () => {
     it('returns a completion deadline hint', () => {
       const referral = draftReferralFactory.build()
-      const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, false, referral.id)
+      const presenter = new CompletionDeadlinePresenter(
+        referral.completionDeadline,
+        intervention,
+        false,
+        referral.id,
+        referral.serviceUser
+      )
 
       expect(presenter.completionDeadlineHint).toEqual('For example, 27 10 2021')
     })
     it('returns a reason for change hint', () => {
       const referral = draftReferralFactory.build()
-      const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, false, referral.id)
+      const presenter = new CompletionDeadlinePresenter(
+        referral.completionDeadline,
+        intervention,
+        false,
+        referral.id,
+        referral.serviceUser
+      )
 
       expect(presenter.reasonForChangeHint).toEqual(
         'For example, there are not enough days to deliver the intervention based on the complexity levels.'
@@ -122,13 +160,25 @@ describe('CompletionDeadlinePresenter', () => {
   describe('backLink', () => {
     it('returns backlink for sent referrals', () => {
       const referral = draftReferralFactory.build()
-      const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, true, referral.id)
+      const presenter = new CompletionDeadlinePresenter(
+        referral.completionDeadline,
+        intervention,
+        true,
+        referral.id,
+        referral.serviceUser
+      )
 
       expect(presenter.backLinkHref).toEqual(`/probation-practitioner/referrals/${referral.id}/details`)
     })
     it('returns no backlink for draft referrals', () => {
       const referral = draftReferralFactory.build()
-      const presenter = new CompletionDeadlinePresenter(referral.completionDeadline, intervention, false, referral.id)
+      const presenter = new CompletionDeadlinePresenter(
+        referral.completionDeadline,
+        intervention,
+        false,
+        referral.id,
+        referral.serviceUser
+      )
 
       expect(presenter.backLinkHref).toEqual(null)
     })

@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import ClockTime from './clockTime'
 import CalendarDay from './calendarDay'
 
@@ -94,8 +95,6 @@ export default class DateUtils {
   }
 
   static age(dateOfBirth: string): number {
-    const calendarDay = new Date(dateOfBirth)
-    const timeDiff = Date.now() - calendarDay.getTime()
-    return Math.floor(timeDiff / (1000 * 3600 * 24) / 365)
+    return moment().diff(dateOfBirth, 'years')
   }
 }

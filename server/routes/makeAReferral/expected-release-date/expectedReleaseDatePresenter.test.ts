@@ -44,6 +44,7 @@ describe('ExpectedReleaseDatePresenter', () => {
       expect(presenter.text).toEqual({
         title: 'Do you know the expected release date?',
         description: 'You can find this in nDelius and NOMIS',
+        label: 'Geoffrey River (CRN: X123456)',
         releaseDate: {
           label: 'Add the expected release date',
         },

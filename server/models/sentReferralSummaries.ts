@@ -16,4 +16,5 @@ export default interface SentReferralSummaries {
   expectedReleaseDate: string | null
   location: string | null
   locationType: string | null
+  isReferralReleasingIn12Weeks: boolean | null
 }
