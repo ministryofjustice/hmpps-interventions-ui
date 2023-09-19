@@ -97,6 +97,7 @@ workflows:
               only:
                 - main
                 - /hotfix\/.*/
+                - IPB-665/staging-env-dev-two
       - hmpps/build_docker:
           name: build_docker
           git-lfs: true
