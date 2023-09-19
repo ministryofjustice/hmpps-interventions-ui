@@ -57,7 +57,6 @@ import DraftReferral from '../../models/draftReferral'
 import ConfirmOasysRiskInformationForm from './risk-information/oasys/confirmOasysRiskInformationForm'
 import EditOasysRiskInformationForm from './risk-information/oasys/edit/editOasysRiskInformationForm'
 import { DraftOasysRiskInformation } from '../../models/draftOasysRiskInformation'
-import OasysRiskSummaryView from './risk-information/oasys/oasysRiskSummaryView'
 import CurrentLocationPresenter from './current-location/currentLocationPresenter'
 import CurrentLocationView from './current-location/currentLocationView'
 import PrisonRegisterService from '../../services/prisonRegisterService'
@@ -78,6 +77,7 @@ import PrisonReleaseFormView from './prison-release-form/prisonReleaseFormView'
 import ConfirmMainPointOfContactDetailsPresenter from './confirm-main-point-of-contact-details/confirmMainPointOfContactDetailsPresenter'
 import ConfirmMainPointOfContactDetailsView from './confirm-main-point-of-contact-details/confirmMainPointOfContactDetailsView'
 import ConfirmMainPointOfContactDetailsForm from './confirm-main-point-of-contact-details/confirmMainPointOfContactDetailsForm'
+import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 
 export default class MakeAReferralController {
   constructor(
@@ -944,6 +944,45 @@ export default class MakeAReferralController {
     await this.displayOasysRiskInformationPage(res, referral, serviceUser)
   }
 
+  private updateRiskSummary(
+    editedOasysRiskInformation: DraftOasysRiskInformation,
+    riskSummary: RiskSummary | null
+  ): RiskSummary | null {
+    return riskSummary
+      ? {
+          ...riskSummary,
+          summary: {
+            whoIsAtRisk: editedOasysRiskInformation.riskSummaryWhoIsAtRisk,
+            natureOfRisk: editedOasysRiskInformation.riskSummaryNatureOfRisk,
+            riskImminence: editedOasysRiskInformation.riskSummaryRiskImminence,
+            riskInCommunity: riskSummary.summary.riskInCommunity,
+          },
+          riskToSelf: {
+            suicide: {
+              risk: riskSummary.riskToSelf.suicide?.risk ?? null,
+              current: riskSummary.riskToSelf.suicide?.current ?? null,
+              currentConcernsText: editedOasysRiskInformation.riskToSelfSuicide,
+            },
+            selfHarm: {
+              risk: riskSummary.riskToSelf.selfHarm?.risk ?? null,
+              current: riskSummary.riskToSelf.selfHarm?.current ?? null,
+              currentConcernsText: editedOasysRiskInformation.riskToSelfSelfHarm,
+            },
+            hostelSetting: {
+              risk: riskSummary.riskToSelf.hostelSetting?.risk ?? null,
+              current: riskSummary.riskToSelf.hostelSetting?.current ?? null,
+              currentConcernsText: editedOasysRiskInformation.riskToSelfHostelSetting,
+            },
+            vulnerability: {
+              risk: riskSummary.riskToSelf.vulnerability?.risk ?? null,
+              current: riskSummary.riskToSelf.vulnerability?.current ?? null,
+              currentConcernsText: editedOasysRiskInformation.riskToSelfVulnerability,
+            },
+          },
+        }
+      : null
+  }
+
   private async displayOasysRiskInformationPage(
     res: Response,
     referral: DraftReferral,
@@ -952,38 +991,23 @@ export default class MakeAReferralController {
   ) {
     const { accessToken } = res.locals.user.token
     const label = `${referral.serviceUser?.firstName} ${referral.serviceUser?.lastName} (CRN: ${referral.serviceUser?.crn})`
+    const editedOasysRiskInformation = await this.getDraftOasysRiskInformation(accessToken, referral.id)
     const riskSummary = await this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken)
-    const presenter = new OasysRiskInformationPresenter(referral.id, riskSummary, error, label)
+    const updatedRiskSummary = editedOasysRiskInformation
+      ? this.updateRiskSummary(editedOasysRiskInformation, riskSummary)
+      : riskSummary
+    const presenter = new OasysRiskInformationPresenter(referral.id, updatedRiskSummary, error, label)
     const view = new OasysRiskInformationView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
   async confirmEditOasysRiskInformation(req: Request, res: Response): Promise<void> {
-    const { accessToken } = res.locals.user.token
     const referralId = req.params.id
     const confirmEditRiskForm = await ConfirmOasysRiskInformationForm.createForm(req)
     if (confirmEditRiskForm.isValid) {
       if (confirmEditRiskForm.userWantsToEdit) {
         res.redirect(`/referrals/${referralId}/edit-oasys-risk-information`)
       } else {
-        const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
-        const riskSummary = await this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken)
-        const oasysRiskSummaryView = new OasysRiskSummaryView(riskSummary)
-        const draftOasysRiskInformation: DraftOasysRiskInformation = {
-          riskSummaryWhoIsAtRisk: oasysRiskSummaryView.oasysRiskInformationArgs.summary.whoIsAtRisk.text,
-          riskSummaryNatureOfRisk: oasysRiskSummaryView.oasysRiskInformationArgs.summary.natureOfRisk.text,
-          riskSummaryRiskImminence: oasysRiskSummaryView.oasysRiskInformationArgs.summary.riskImminence.text,
-          riskToSelfSuicide: oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.suicide.text,
-          riskToSelfSelfHarm: oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.selfHarm.text,
-          riskToSelfHostelSetting: oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.hostelSetting.text,
-          riskToSelfVulnerability: oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.vulnerability.text,
-          additionalInformation: null,
-        }
-        await this.interventionsService.updateDraftOasysRiskInformation(
-          accessToken,
-          referralId,
-          draftOasysRiskInformation
-        )
         res.redirect(`/referrals/${req.params.id}/needs-and-requirements`)
       }
     } else {
