@@ -95,7 +95,7 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - IPB-665/staging-env-dev-two
                 - /hotfix\/.*/
       - hmpps/build_docker:
           name: build_docker
@@ -105,7 +105,7 @@ workflows:
           filters:
             branches:
               ignore:
-                - main
+                - IPB-665/staging-env-dev-two
                 - /hotfix\/.*/
       - hmpps/trivy_pipeline_scan:
           name: vulnerability_scan
@@ -118,7 +118,7 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - IPB-665/staging-env-dev-two
                 - /hotfix\/.*/
           requires:
             - build
@@ -126,6 +126,28 @@ workflows:
             - hmpps/helm_lint
             - build_docker_publish
             - vulnerability_scan
+          context:
+            - hmpps-common-vars
+            - hmpps-interventions-dev-deploy
+      - approve_dev_two:
+          type: approval
+          requires:
+            - build
+            - integration_test
+            - hmpps/helm_lint
+            - build_docker_publish
+            - vulnerability_scan
+      - hmpps/deploy_env:
+          name: deploy_dev_two
+          env: "dev-two"
+          slack_notification: false
+          release_name: "ahrelease1"
+          filters:
+            branches:
+              only:
+                - IPB-665/staging-env-dev-two
+          requires:
+            - approve_dev_two
           context:
             - hmpps-common-vars
             - hmpps-interventions-dev-deploy
@@ -178,7 +200,7 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - IPB-665/staging-env-dev-two
     jobs:
       - hmpps/npm_security_audit:
           slack_channel: "interventions-dev-notifications"
