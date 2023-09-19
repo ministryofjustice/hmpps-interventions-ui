@@ -86,7 +86,7 @@ workflows:
       - build:
           context: [hmpps-common-vars]
       - integration_test
-      - hmpps/helm_lint
+      - hmpps/helm_lint:
           filters:
             branches:
               ignore:
