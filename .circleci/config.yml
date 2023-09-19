@@ -95,9 +95,8 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - IPB-665/staging-env-dev-two
                 - /hotfix\/.*/
-                - IPB-665\/staging-env-dev-two
       - hmpps/build_docker:
           name: build_docker
           git-lfs: true
@@ -106,7 +105,7 @@ workflows:
           filters:
             branches:
               ignore:
-                - main
+                - IPB-665/staging-env-dev-two
                 - /hotfix\/.*/
       - hmpps/trivy_pipeline_scan:
           name: vulnerability_scan
@@ -119,7 +118,7 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - IPB-665/staging-env-dev-two
                 - /hotfix\/.*/
           requires:
             - build
@@ -201,7 +200,7 @@ workflows:
           filters:
             branches:
               only:
-                - main
+                - IPB-665/staging-env-dev-two
     jobs:
       - hmpps/npm_security_audit:
           slack_channel: "interventions-dev-notifications"
