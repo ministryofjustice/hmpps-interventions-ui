@@ -87,6 +87,11 @@ workflows:
           context: [hmpps-common-vars]
       - integration_test
       - hmpps/helm_lint
+          filters:
+            branches:
+              ignore:
+                - IPB-665/staging-env-dev-two
+                - /hotfix\/.*/
       - hmpps/helm_lint:
           name: helm_lint_dev_two
           env: dev-two
