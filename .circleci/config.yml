@@ -87,6 +87,9 @@ workflows:
           context: [hmpps-common-vars]
       - integration_test
       - hmpps/helm_lint
+      - hmpps/helm_lint
+          name: helm_lint_dev_two
+          env: dev-two
       - hmpps/build_docker:
           name: build_docker_publish
           git-lfs: true
@@ -134,7 +137,7 @@ workflows:
           requires:
             - build
             - integration_test
-            - hmpps/helm_lint
+            - helm_lint_dev_two
             - build_docker_publish
             - vulnerability_scan
       - hmpps/deploy_env:
