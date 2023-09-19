@@ -87,7 +87,7 @@ workflows:
           context: [hmpps-common-vars]
       - integration_test
       - hmpps/helm_lint
-      - hmpps/helm_lint
+      - hmpps/helm_lint:
           name: helm_lint_dev_two
           env: dev-two
       - hmpps/build_docker:
