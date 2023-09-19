@@ -118,7 +118,7 @@ workflows:
           filters:
             branches:
               only:
-                - IPB-665/staging-env-dev-two
+                - main
                 - /hotfix\/.*/
           requires:
             - build
