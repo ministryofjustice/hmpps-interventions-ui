@@ -719,7 +719,10 @@ describe('POST /referrals/:id/confirm-edit-oasys-risk-information', () => {
     })
   })
   describe("when the user selects that they don't want to edit risk information", () => {
-    it('the draft oasys risk information on the backend remains the same and redirects to the next question', async () => {
+    it('updates the draft oasys risk information on the backend and redirects to the next question', async () => {
+      interventionsService.getDraftReferral.mockResolvedValue(draftReferralFactory.build())
+      assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummaryFactory.build())
+      interventionsService.updateDraftOasysRiskInformation.mockResolvedValue(draftOasysRiskInformation.build())
       await request(app)
         .post('/referrals/1/confirm-edit-oasys-risk-information')
         .type('form')
@@ -729,6 +732,61 @@ describe('POST /referrals/:id/confirm-edit-oasys-risk-information', () => {
         })
         .expect(302)
         .expect('Location', '/referrals/1/needs-and-requirements')
+      expect(interventionsService.updateDraftOasysRiskInformation.mock.calls[0]).toEqual([
+        'token',
+        '1',
+        {
+          riskSummaryWhoIsAtRisk: null,
+          riskSummaryNatureOfRisk: 'physically aggressive',
+          riskSummaryRiskImminence: 'can happen at the drop of a hat',
+          riskToSelfSuicide: 'Manic episodes are common.',
+          riskToSelfSelfHarm: null,
+          riskToSelfHostelSetting: null,
+          riskToSelfVulnerability: null,
+          additionalInformation: null,
+        },
+      ])
+    })
+  })
+
+  describe("when the user selects that they don't want to edit risk information after having already edited the risk information", () => {
+    it('updates the draft oasys risk information on the backend with the edited risk information and redirects to the next question', async () => {
+      interventionsService.getDraftReferral.mockResolvedValue(draftReferralFactory.build())
+      assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummaryFactory.build())
+      interventionsService.getDraftOasysRiskInformation.mockResolvedValue({
+        riskSummaryWhoIsAtRisk: 'Risk to staff',
+        riskSummaryNatureOfRisk: 'Violent',
+        riskSummaryRiskImminence: 'Can happen at the drop of a hat',
+        riskToSelfSuicide: 'Manic episodes are frequent',
+        riskToSelfSelfHarm: null,
+        riskToSelfHostelSetting: null,
+        riskToSelfVulnerability: null,
+        additionalInformation: 'No more comments.',
+      })
+      interventionsService.updateDraftOasysRiskInformation.mockResolvedValue(draftOasysRiskInformation.build())
+      await request(app)
+        .post('/referrals/1/confirm-edit-oasys-risk-information')
+        .type('form')
+        .send({
+          'edit-risk-confirmation': 'no',
+          'confirm-understood': 'understood',
+        })
+        .expect(302)
+        .expect('Location', '/referrals/1/needs-and-requirements')
+      expect(interventionsService.updateDraftOasysRiskInformation.mock.calls[0]).toEqual([
+        'token',
+        '1',
+        {
+          riskSummaryWhoIsAtRisk: 'Risk to staff',
+          riskSummaryNatureOfRisk: 'Violent',
+          riskSummaryRiskImminence: 'Can happen at the drop of a hat',
+          riskToSelfSuicide: 'Manic episodes are frequent',
+          riskToSelfSelfHarm: null,
+          riskToSelfHostelSetting: null,
+          riskToSelfVulnerability: null,
+          additionalInformation: null,
+        },
+      ])
     })
   })
 })
