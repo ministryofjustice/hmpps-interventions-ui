@@ -78,6 +78,7 @@ import ConfirmMainPointOfContactDetailsPresenter from './confirm-main-point-of-c
 import ConfirmMainPointOfContactDetailsView from './confirm-main-point-of-contact-details/confirmMainPointOfContactDetailsView'
 import ConfirmMainPointOfContactDetailsForm from './confirm-main-point-of-contact-details/confirmMainPointOfContactDetailsForm'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
+import OasysRiskSummaryView from './risk-information/oasys/oasysRiskSummaryView'
 
 export default class MakeAReferralController {
   constructor(
@@ -1006,12 +1007,46 @@ export default class MakeAReferralController {
   }
 
   async confirmEditOasysRiskInformation(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
     const referralId = req.params.id
     const confirmEditRiskForm = await ConfirmOasysRiskInformationForm.createForm(req)
     if (confirmEditRiskForm.isValid) {
       if (confirmEditRiskForm.userWantsToEdit) {
         res.redirect(`/referrals/${referralId}/edit-oasys-risk-information`)
       } else {
+        const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
+        const riskSummary = await this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken)
+        const editedOasysRiskInformation = await this.getDraftOasysRiskInformation(accessToken, referral.id)
+        const oasysRiskSummaryView = new OasysRiskSummaryView(riskSummary)
+        const draftOasysRiskInformation: DraftOasysRiskInformation = {
+          riskSummaryWhoIsAtRisk:
+            editedOasysRiskInformation?.riskSummaryWhoIsAtRisk ??
+            oasysRiskSummaryView.oasysRiskInformationArgs.summary.whoIsAtRisk.text,
+          riskSummaryNatureOfRisk:
+            editedOasysRiskInformation?.riskSummaryNatureOfRisk ??
+            oasysRiskSummaryView.oasysRiskInformationArgs.summary.natureOfRisk.text,
+          riskSummaryRiskImminence:
+            editedOasysRiskInformation?.riskSummaryRiskImminence ??
+            oasysRiskSummaryView.oasysRiskInformationArgs.summary.riskImminence.text,
+          riskToSelfSuicide:
+            editedOasysRiskInformation?.riskToSelfSuicide ??
+            oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.suicide.text,
+          riskToSelfSelfHarm:
+            editedOasysRiskInformation?.riskToSelfSelfHarm ??
+            oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.selfHarm.text,
+          riskToSelfHostelSetting:
+            editedOasysRiskInformation?.riskToSelfHostelSetting ??
+            oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.hostelSetting.text,
+          riskToSelfVulnerability:
+            editedOasysRiskInformation?.riskToSelfVulnerability ??
+            oasysRiskSummaryView.oasysRiskInformationArgs.riskToSelf.vulnerability.text,
+          additionalInformation: null,
+        }
+        await this.interventionsService.updateDraftOasysRiskInformation(
+          accessToken,
+          referralId,
+          draftOasysRiskInformation
+        )
         res.redirect(`/referrals/${req.params.id}/needs-and-requirements`)
       }
     } else {
