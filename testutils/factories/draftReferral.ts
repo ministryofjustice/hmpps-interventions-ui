@@ -256,4 +256,5 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   isReferralReleasingIn12Weeks: null,
   roleOrJobTitle: null,
   hasMainPointOfContactDetails: null,
+  ppLocationType: null,
 }))

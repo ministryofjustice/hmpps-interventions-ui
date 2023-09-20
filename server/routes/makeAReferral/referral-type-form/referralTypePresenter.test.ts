@@ -38,7 +38,7 @@ describe('ReferralTypePresenter', () => {
         .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
       const presenter = new ReferralTypePresenter(referral)
 
-      expect(presenter.backLinkUrl).toBe(`/intervention/${referral.id}/refer?`)
+      expect(presenter.backLinkUrl).toBe(`/intervention/${referral.interventionId}/refer?`)
       expect(presenter.text).toEqual({
         title: 'What type of referral is this?',
         description: 'Geoffrey Blue (CRN: X123456)',

@@ -80,6 +80,7 @@ export default class ConfirmProbationPractitionerDetailsView {
     return {
       id: 'probation-practitioner-pdu',
       name: 'probation-practitioner-pdu',
+      classes: 'confirm-pdu',
       items,
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.probationPractitionerPduSelect.errorMessage),
       label: {
@@ -111,6 +112,7 @@ export default class ConfirmProbationPractitionerDetailsView {
     return {
       id: 'probation-practitioner-office',
       name: 'probation-practitioner-office',
+      classes: 'confirm-probation-office',
       items,
       label: {
         text: this.presenter.text.probationPractitionerOfficeSelect.label,

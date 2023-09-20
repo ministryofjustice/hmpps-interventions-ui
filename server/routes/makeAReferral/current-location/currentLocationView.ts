@@ -29,6 +29,7 @@ export default class CurrentLocationView {
     return {
       id: 'prison-select',
       name: 'prison-select',
+      classes: 'select-location',
       items,
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.submitLocationInput.errorMessage),
       label: {

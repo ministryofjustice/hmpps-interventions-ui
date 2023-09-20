@@ -45,7 +45,7 @@
         {{ govukRadios(confirmCorrectDetailsRadiosArgs(noConfirmCorrectDetailsSelectionHTML)) }}
         {{ govukSelect(probationPractitionerOfficeSelectArgs) }}
         <br>
-        {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
+        {{ govukButton({ classes: "confirm-pp-details", text: "Save and continue", preventDoubleClick: true }) }}
       </form>
     </div>
   </div>
@@ -55,5 +55,17 @@
       defaultValue: '',
        selectElement: document.querySelector('#probation-practitioner-office')
      })
+    $(function () {
+      $('.confirm-pp-details').on('click', function () {
+        if (!$.trim($('#probation-practitioner-pdu').val()).length) {
+          $('.confirm-pdu').val('')
+          $('.confirm-pdu').selected = false
+        }
+        if (!$.trim($('#probation-practitioner-office').val()).length) {
+          $('.confirm-probation-office').val('')
+          $('.confirm-probation-office').selected = false
+        }
+    })
+  })     
   </script>
 {% endblock %}

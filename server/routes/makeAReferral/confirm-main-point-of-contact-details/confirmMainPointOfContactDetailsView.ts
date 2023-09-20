@@ -19,8 +19,8 @@ export default class ConfirmMainPointOfContactDetailsView {
           value: 'establishment',
           text: 'Establishment',
           checked:
-            this.presenter.fields.probationPractitionerPdu !== null &&
-            this.presenter.fields.probationPractitionerPdu !== '',
+            this.presenter.fields.probationPractitionerEstablishment !== null &&
+            this.presenter.fields.probationPractitionerEstablishment !== '',
           conditional: {
             html: establishmentSelectionHTML,
           },
@@ -100,6 +100,7 @@ export default class ConfirmMainPointOfContactDetailsView {
     return {
       id: 'probation-practitioner-office',
       name: 'probation-practitioner-office',
+      classes: 'confirm-probation-office',
       items,
       hint: {
         text: this.presenter.text.probationPractitionerOfficeSelect.hint,
@@ -112,8 +113,8 @@ export default class ConfirmMainPointOfContactDetailsView {
       return {
         text: prison.prisonName,
         value: prison.prisonId,
-        selected: this.presenter.referral.personCustodyPrisonId
-          ? this.presenter.referral.personCustodyPrisonId === prison.prisonId
+        selected: this.presenter.referral.ppEstablishment
+          ? this.presenter.referral.ppEstablishment === prison.prisonId
           : false,
       }
     })
@@ -129,8 +130,11 @@ export default class ConfirmMainPointOfContactDetailsView {
     return {
       id: 'prison-select',
       name: 'prison-select',
+      classes: 'confirm-establishment',
       items,
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.probationPractitionerPduSelect.errorMessage),
+      errorMessage: ViewUtils.govukErrorMessage(
+        this.presenter.text.probationPractitionerEstablishmentSelect.errorMessage
+      ),
       hint: {
         text: this.presenter.text.probationPractitionerOfficeSelect.hint,
       },

@@ -31,7 +31,10 @@ export default class CalendarDayInput {
   }
 
   async validate(): Promise<FormValidationResult<CalendarDay>> {
-    const result = await FormUtils.runValidations({ request: this.request, validations: this.validations })
+    const allvalidations = []
+    allvalidations.push(...this.validations)
+    allvalidations.push(this.futureDateValidation)
+    const result = await FormUtils.runValidations({ request: this.request, validations: allvalidations })
 
     const error = this.error(result)
     if (error) {
@@ -104,27 +107,6 @@ export default class CalendarDayInput {
         }) // sure, dates bigger than this are real dates, but they're not valid here - minimum date protects from submission errors
         .withMessage(this.errorMessages.invalidDate),
       ExpressValidator.body(this.keys.day).custom(() => {
-        if (this.checkFutureDate) {
-          const year = this.request.body[this.keys.year]
-          const month = this.request.body[this.keys.month]
-          const day = this.request.body[this.keys.day]
-          if (
-            this.checkIfNotEmptyAndInteger(year) &&
-            this.checkIfNotEmptyAndInteger(month) &&
-            this.checkIfNotEmptyAndInteger(day)
-          ) {
-            const enteredDate = new Date(Number(year), Number(month - 1), Number(day))
-            const currentDate = new Date()
-            currentDate.setHours(0, 0, 0, 0)
-            if (enteredDate < currentDate) {
-              throw new Error(this.checkFutureDateErrorMessage!)
-            }
-          }
-          return true
-        }
-        return true
-      }),
-      ExpressValidator.body(this.keys.day).custom(() => {
         const enteredDate = new Date(
           Number(this.request.body[this.keys.year]),
           Number(this.request.body[this.keys.month] - 1),
@@ -166,6 +148,30 @@ export default class CalendarDayInput {
         return true
       }),
     ]
+  }
+
+  private get futureDateValidation() {
+    return ExpressValidator.body(this.keys.day).custom(() => {
+      if (this.checkFutureDate) {
+        const year = this.request.body[this.keys.year]
+        const month = this.request.body[this.keys.month]
+        const day = this.request.body[this.keys.day]
+        if (
+          this.checkIfNotEmptyAndInteger(year) &&
+          this.checkIfNotEmptyAndInteger(month) &&
+          this.checkIfNotEmptyAndInteger(day)
+        ) {
+          const enteredDate = new Date(Number(year), Number(month - 1), Number(day))
+          const currentDate = new Date()
+          currentDate.setHours(0, 0, 0, 0)
+          if (enteredDate < currentDate) {
+            throw new Error(this.checkFutureDateErrorMessage!)
+          }
+        }
+        return true
+      }
+      return true
+    })
   }
 
   private get calendarDay(): CalendarDay | null {

@@ -49,7 +49,7 @@ export default class ConfirmMainPointOfContactDetailsPresenter {
       label: 'Email address',
       errorMessage: this.errorMessageForField('probation-practitioner-email'),
     },
-    probationPractitionerPduSelect: {
+    probationPractitionerEstablishmentSelect: {
       label: 'Establishment',
       hint: `Start typing then choose prison name from the list.`,
       errorMessage: this.errorMessageForField('probation-practitioner-pdu'),
@@ -70,7 +70,7 @@ export default class ConfirmMainPointOfContactDetailsPresenter {
       this.referral.roleOrJobTitle,
       'probation-practitioner-roleOrJobTitle'
     ),
-    probationPractitionerPdu: this.utils.stringValue(this.referral.ppPdu, 'probation-practitioner-pdu'),
+    probationPractitionerEstablishment: this.utils.stringValue(this.referral.ppEstablishment, 'prison-select'),
     probationPractitionerOffice: this.utils.stringValue(
       this.referral.ppProbationOffice,
       'probation-practitioner-office'

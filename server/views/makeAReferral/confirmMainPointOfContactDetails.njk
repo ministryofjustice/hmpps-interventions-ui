@@ -35,7 +35,7 @@
           <script src="/assets/accessible-autocomplete.min.js"></script>
           <script>
               accessibleAutocomplete.enhanceSelectElement({
-                defaultValue: '',
+                preserveNullOptions: true,
                 selectElement: document.querySelector('#prison-select')
               })
           </script>
@@ -44,16 +44,31 @@
         {{ govukSelect(probationPractitionerOfficeSelectArgs) }}
           <script>
             accessibleAutocomplete.enhanceSelectElement({
-              defaultValue: '',
+              preserveNullOptions:true,
               selectElement: document.querySelector('#probation-practitioner-office')
             })
           </script>
         {% endset -%}
         {{ govukRadios(confirmCorrectDetailsRadiosArgs(establishmentSelectionHTML, probationOfficeSelectionHTML)) }}
         <br>
-        {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
+        {{ govukButton({ classes: "confirm-main-contact", text: "Save and continue", preventDoubleClick: true }) }}
       </form>
     </div>
   </div>
+  <script type="">
+    $(function () {
+      $('.confirm-main-contact').on('click', function () {
+        if (!$.trim($('#prison-select').val()).length) {
+          $('.confirm-establishment').val('')
+          $('.confirm-establishment').selected = false
+        }
+        if (!$.trim($('#probation-practitioner-office').val()).length) {
+          $('.confirm-probation-office').val('')
+          $('.confirm-probation-office').selected = false
+        }
+
+    })
+  })
+  </script>  
 
 {% endblock %}

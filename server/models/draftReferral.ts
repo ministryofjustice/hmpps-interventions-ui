@@ -40,6 +40,7 @@ export interface ReferralFields {
   isReferralReleasingIn12Weeks: boolean | null
   roleOrJobTitle: string | null
   hasMainPointOfContactDetails: boolean | null
+  ppLocationType: string | null
 }
 
 export enum CurrentLocationType {

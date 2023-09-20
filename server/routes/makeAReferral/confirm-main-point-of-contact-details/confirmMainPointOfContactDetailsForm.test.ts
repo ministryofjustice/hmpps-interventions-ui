@@ -220,6 +220,7 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
         roleOrJobTitle: 'PP',
         ppEmailAddress: 'bob@example.com',
         ppEstablishment: 'London',
+        ppLocationType: 'establishment',
         ppProbationOffice: '',
         hasMainPointOfContactDetails: true,
       })

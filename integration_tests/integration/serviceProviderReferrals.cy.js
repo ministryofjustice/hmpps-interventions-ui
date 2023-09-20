@@ -291,7 +291,7 @@ describe('Service provider referrals dashboard', () => {
       .should('contain', 'Additional information')
       .should('contain', 'They are low risk.')
 
-    cy.contains(`Service user needs`)
+    cy.contains(`Jenny Jones's needs and requirements`)
       .parent()
       .parent()
       .children()
