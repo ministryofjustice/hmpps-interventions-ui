@@ -38,7 +38,7 @@ describe('PrisonReleasePresenter', () => {
         .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
       const presenter = new PrisonReleasePresenter(referral)
 
-      expect(presenter.backLinkUrl).toBe(`/intervention/${referral.id}/refer?`)
+      expect(presenter.backLinkUrl).toBe(`/intervention/${referral.interventionId}/refer?`)
       expect(presenter.text).toEqual({
         title: 'Will Geoffrey Blue be released from prison in the next 12 weeks?',
         description: 'Geoffrey Blue (CRN: X123456)',

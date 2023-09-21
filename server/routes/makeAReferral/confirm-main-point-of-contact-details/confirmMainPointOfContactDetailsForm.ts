@@ -74,6 +74,7 @@ export default class ConfirmMainPointOfContactDetailsForm {
         ? this.request.body['probation-practitioner-office']
         : '',
       hasMainPointOfContactDetails: this.hasMainPointOfContactDetails,
+      ppLocationType: this.request.body.location,
     }
   }
 

@@ -36,7 +36,7 @@
           iconFallbackText: "Warning"
         }) }}
 
-        {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
+        {{ govukButton({ classes: "confirm-location", text: "Save and continue", preventDoubleClick: true }) }}
       </form>
     </div>
   </div>
@@ -48,6 +48,13 @@
       defaultValue: '',
       selectElement: document.querySelector('#prison-select')
     })
+    $(function () {
+      $('.confirm-location').on('click', function () {
+        if (!$.trim($('#prison-select').val()).length) {
+          $('.select-location').val('')
+        }
+    })
+  })    
 </script>
 
 {% endblock %}

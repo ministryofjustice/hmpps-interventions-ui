@@ -70,11 +70,11 @@ export default class ShowReferralPresenter {
   }
 
   get serviceUserDetailsHeading(): string {
-    return `Personal details`
+    return `${this.serviceUserNames}'s Personal details`
   }
 
   get serviceUserNeedsHeading(): string {
-    return `Service user needs`
+    return `${this.serviceUserNames}'s needs and requirements`
   }
 
   get interventionHeading(): string {
@@ -112,7 +112,7 @@ export default class ShowReferralPresenter {
   }
 
   get contactDetailsHeading(): string {
-    return 'Address and contact details'
+    return `${this.serviceUserNames}'s Address and contact details`
   }
 
   readonly text = {

@@ -10,7 +10,7 @@ export default class PrisonReleasePresenter {
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
-    this.backLinkUrl = `/intervention/${referral.id}/refer?`
+    this.backLinkUrl = `/intervention/${referral.interventionId}/refer?`
   }
 
   private errorMessageForField(field: string): string | null {

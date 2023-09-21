@@ -88,7 +88,7 @@ describe('ConfirmMainPointOfContactDetailsPresenter', () => {
           label: 'Email address',
           errorMessage: null,
         },
-        probationPractitionerPduSelect: {
+        probationPractitionerEstablishmentSelect: {
           label: 'Establishment',
           hint: `Start typing then choose prison name from the list.`,
           errorMessage: null,
