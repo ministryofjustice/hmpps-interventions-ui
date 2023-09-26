@@ -46,7 +46,7 @@ describe(SentencePresenter, () => {
 
       const presenter = new SentencePresenter(conviction.conviction)
 
-      expect(presenter.endOfSentenceDate).toEqual('15 Sept 2025')
+      expect(presenter.endOfSentenceDate).toEqual('15 Sep 2025')
     })
   })
 })

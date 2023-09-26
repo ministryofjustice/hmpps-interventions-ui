@@ -400,7 +400,7 @@ describe(ShowReferralPresenter, () => {
 
       expect(presenter.mainPointOfContactDetailsSummary).toEqual([
         { key: 'Name', lines: ['Bernard Beaks'] },
-        { key: 'Role/job title', lines: ['PP'] },
+        { key: 'Role / job title', lines: ['PP'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
         { key: 'Establishment', lines: ['London'] },
       ])
@@ -438,7 +438,7 @@ describe(ShowReferralPresenter, () => {
 
       expect(presenter.mainPointOfContactDetailsSummary).toEqual([
         { key: 'Name', lines: ['Bernard Beaks'] },
-        { key: 'Role/job title', lines: ['PP'] },
+        { key: 'Role / job title', lines: ['PP'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
         { key: 'Probation office', lines: ['Leeds'] },
       ])
@@ -527,12 +527,11 @@ describe(ShowReferralPresenter, () => {
         riskSummary,
         deliusRoOfficer
       )
-
       expect(presenter.serviceUserLocationDetails).toEqual([
         { key: 'Location at time of referral', lines: ['London'] },
         {
           key: 'Expected release date',
-          lines: [moment().add(2, 'days').format('YYYY-MM-DD')],
+          lines: [moment.tz('Europe/London').add(2, 'days').format('DD MMM YYYY')],
         },
       ])
     })
@@ -568,7 +567,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'Location at time of referral', lines: ['London'] },
         {
           key: 'Expected release date',
-          lines: [moment().add(2, 'days').format('YYYY-MM-DD')],
+          lines: [moment().add(2, 'days').format('DD MMM YYYY')],
         },
       ])
     })
@@ -958,11 +957,11 @@ describe(ShowReferralPresenter, () => {
           { key: 'Sentence', lines: ['Burglary'] },
           { key: 'Subcategory', lines: ['Theft act, 1968'] },
           { key: 'End of sentence date', lines: ['15 Nov 2025'] },
-          { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
           {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
           },
+          { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
           {
             key: 'Further information for the provider',
             lines: ['Some information about the service user'],
@@ -1046,11 +1045,11 @@ describe(ShowReferralPresenter, () => {
           { key: 'Sentence', lines: ['Burglary'] },
           { key: 'Subcategory', lines: ['Theft act, 1968'] },
           { key: 'End of sentence date', lines: ['15 Nov 2025'] },
-          { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
           {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
           },
+          { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
           {
             key: 'Further information for the provider',
             lines: ['N/A'],

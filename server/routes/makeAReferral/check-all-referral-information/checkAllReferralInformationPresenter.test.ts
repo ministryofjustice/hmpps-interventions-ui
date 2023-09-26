@@ -662,7 +662,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           },
           {
             key: 'End of sentence date',
-            lines: ['15 Sept 2025'],
+            lines: ['15 Sep 2025'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
           },
           {

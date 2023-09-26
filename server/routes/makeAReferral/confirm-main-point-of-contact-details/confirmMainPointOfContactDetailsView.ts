@@ -12,6 +12,12 @@ export default class ConfirmMainPointOfContactDetailsView {
     probationOfficeSelectionHTML: string
   ): RadiosArgs {
     return {
+      fieldset: {
+        legend: {
+          text: 'Location',
+          classes: 'govuk-heading-m',
+        },
+      },
       idPrefix: 'location',
       name: 'location',
       items: [
@@ -91,7 +97,7 @@ export default class ConfirmMainPointOfContactDetailsView {
 
     const items: SelectArgsItem[] = [
       {
-        text: '-- Select a Probation Office --',
+        text: '-- Start typing then choose probation office from the list --',
       },
     ]
 
@@ -121,7 +127,7 @@ export default class ConfirmMainPointOfContactDetailsView {
 
     const items: SelectArgsItem[] = [
       {
-        text: '-- Select a Prison Location --',
+        text: '-- Start typing then choose prison name from the list --',
       },
     ]
 

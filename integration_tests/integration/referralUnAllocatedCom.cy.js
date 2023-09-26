@@ -252,11 +252,11 @@ describe('Referral form', () => {
         })
       cy.contains(`Alex River (CRN: ${completedWhetherReferralReleasingIn12Weeks.serviceUser.crn})`)
 
-      cy.contains('Name,email address and location').click()
+      cy.contains('Name, email address and location').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-main-point-of-contact`)
       cy.contains(`Alex River (CRN: ${completedWhetherReferralReleasingIn12Weeks.serviceUser.crn})`)
       cy.contains('Name').type('Alex River')
-      cy.contains('Role/job title').type('Probation Practitoner')
+      cy.contains('Role / job title').type('Probation Practitoner')
       cy.contains('Email address').type('a.b@xyz.com')
       cy.get('[type="radio"]').check('establishment')
       cy.get('#prison-select').type('Bedford (HMP & YOI)')
@@ -289,7 +289,7 @@ describe('Referral form', () => {
 
       // Submit expected release date
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-release-date`)
-      cy.get('h1').contains('Do you know the expected release date')
+      cy.get('h2').contains(`Confirm Alex River's expected release date`)
       cy.contains('Yes').click()
       const tomorrow = moment().add(1, 'days')
       cy.contains('Day').type(tomorrow.format('DD'))
@@ -541,7 +541,7 @@ describe('Referral form', () => {
       cy.contains('Main point of contact details')
         .parent()
         .next()
-        .should('contain', 'Role/ job title')
+        .should('contain', 'Role / job title')
         .should('contain', 'Probation practitioner')
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
@@ -841,11 +841,11 @@ describe('Referral form', () => {
         })
       cy.contains(`Alex River (CRN: ${completedWhetherReferralReleasingIn12Weeks.serviceUser.crn})`)
 
-      cy.contains('Name,email address and location').click()
+      cy.contains('Name, email address and location').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-main-point-of-contact`)
       cy.contains(`Alex River (CRN: ${completedWhetherReferralReleasingIn12Weeks.serviceUser.crn})`)
       cy.contains('Name').type('Alex River')
-      cy.contains('Role/job title').type('Probation Practitoner')
+      cy.contains('Role / job title').type('Probation Practitoner')
       cy.contains('Email address').type('a.b@xyz.com')
       cy.get('[type="radio"]').check('establishment')
       cy.get('#prison-select').type('Bedford (HMP & YOI)')
@@ -1111,7 +1111,7 @@ describe('Referral form', () => {
       cy.contains('Main point of contact details')
         .parent()
         .next()
-        .should('contain', 'Role/ job title')
+        .should('contain', 'Role / job title')
         .should('contain', 'Probation practitioner')
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
@@ -1477,11 +1477,11 @@ describe('Referral form', () => {
           checkAllReferralInformationStatus: 'CANNOT START YET',
         })
 
-      cy.contains('Name,email address and location').click()
+      cy.contains('Name, email address and location').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-main-point-of-contact`)
       cy.contains(`Alex River (CRN: ${completedWhetherReferralReleasingIn12Weeks.serviceUser.crn})`)
       cy.contains('Name').type('Alex River')
-      cy.contains('Role/job title').type('Probation Practitoner')
+      cy.contains('Role / job title').type('Probation Practitoner')
       cy.contains('Email address').type('a.b@xyz.com')
       cy.get('[type="radio"]').check('establishment')
       cy.get('#prison-select').type('Bedford (HMP & YOI)')
@@ -1514,7 +1514,7 @@ describe('Referral form', () => {
 
       // Submit expected release date
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-release-date`)
-      cy.get('h1').contains('Do you know the expected release date')
+      cy.get('h2').contains(`Confirm Alex River's expected release date`)
       cy.contains('Yes').click()
       const tomorrow = moment().add(1, 'days')
       cy.contains('Day').type(tomorrow.format('DD'))

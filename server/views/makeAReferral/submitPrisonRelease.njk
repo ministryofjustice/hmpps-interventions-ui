@@ -24,7 +24,8 @@
         {{ govukErrorSummary(errorSummaryArgs) }}
       {% endif %}
 
-      <p class="govuk-body">{{ presenter.text.description }} </p>
+      <p class="govuk-caption-xl">{{ presenter.text.description }} </p>
+      </br>
 
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">

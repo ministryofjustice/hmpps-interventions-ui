@@ -43,9 +43,9 @@ describe('ReferralTypePresenter', () => {
         title: 'What type of referral is this?',
         description: 'Geoffrey Blue (CRN: X123456)',
         currentLocation: {
-          label: 'Geoffrey Blue is currently',
+          label: 'Geoffrey Blue is currently:',
           errorMessage: null,
-          custodyLabel: 'In Prison (pre-release)',
+          custodyLabel: 'In prison (pre-release)',
           communityLabel: 'Community',
         },
       })

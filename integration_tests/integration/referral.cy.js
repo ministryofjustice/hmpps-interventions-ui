@@ -223,7 +223,7 @@ describe('Referral form', () => {
         })
       cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
 
-      cy.contains('Name,email address and location').click()
+      cy.contains('Name, email address and location').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
       cy.contains('Yes').click()
@@ -256,7 +256,7 @@ describe('Referral form', () => {
 
       // Submit expected release date
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-release-date`)
-      cy.get('h1').contains('Do you know the expected release date')
+      cy.get('h2').contains(`Confirm Alex River's expected release date`)
       cy.contains('Yes').click()
       const tomorrow = moment().add(1, 'days')
       cy.contains('Day').type(tomorrow.format('DD'))
@@ -839,7 +839,7 @@ describe('Referral form', () => {
           checkAllReferralInformationStatus: 'CANNOT START YET',
         })
 
-      cy.contains('Name,email address and location').click()
+      cy.contains('Name, email address and location').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
       cy.contains('Yes').click()
@@ -871,7 +871,7 @@ describe('Referral form', () => {
 
       // Submit expected release date
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-release-date`)
-      cy.get('h1').contains('Do you know the expected release date')
+      cy.get('h2').contains(`Confirm Alex River's expected release date`)
       cy.contains('Yes').click()
       const tomorrow = moment().add(1, 'days')
       cy.contains('Day').type(tomorrow.format('DD'))

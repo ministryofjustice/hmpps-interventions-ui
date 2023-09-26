@@ -10,10 +10,10 @@ function hrefAttrChainer(isActive) {
 class _ReferralSectionChecker {
   reviewPPDetails(activeLinks) {
     cy.get('[data-cy=url]')
-      .contains('Name,email address and location')
+      .contains('Name, email address and location')
       .should(hrefAttrChainer(activeLinks.ppDetails), 'href')
     cy.get('[data-cy=url]')
-      .contains('Name,email address and location')
+      .contains('Name, email address and location')
       .next()
       .contains(activeLinks.ppDetailsStatus, { matchCase: false })
     return this

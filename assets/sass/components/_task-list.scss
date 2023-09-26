@@ -15,3 +15,17 @@
 .moj-task-list__items-last-of-section {
   margin-bottom: 60px;
 }
+
+.app-task-list__task-name
+{
+  display:block
+}
+
+@media(min-width: 28.125em)
+{
+  .app-task-list__task-name
+  {
+    float:left;
+    width:75%
+  }
+}

@@ -1,5 +1,5 @@
+import moment from 'moment-timezone'
 import { DeliusConviction } from '../../../models/delius/deliusConviction'
-import DateUtils from '../../../utils/dateUtils'
 
 export default class SentencePresenter {
   readonly category: string
@@ -19,7 +19,7 @@ export default class SentencePresenter {
     this.subcategory = mainOffence.subCategory
 
     this.endOfSentenceDate = conviction?.sentence?.expectedEndDate
-      ? DateUtils.formattedDate(new Date(conviction.sentence.expectedEndDate), { month: 'short' })
+      ? moment(conviction.sentence.expectedEndDate).format('D MMM YYYY')
       : 'Not found'
   }
 }
