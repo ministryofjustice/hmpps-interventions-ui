@@ -6,7 +6,9 @@
 {% extends "../../../serviceProviderReferrals/actionPlan/actionPlanFormTemplate.njk" %}
 
 {% set pageTitle = "Appointment feedback" %}
-{% set pageSubTitle = "Add session feedback" %}
+{% set pageSubTitle %}
+{{ presenter.text.pageSubTitle }}
+{% endset -%}
 
 {% block formSection %}
   <form method="post">

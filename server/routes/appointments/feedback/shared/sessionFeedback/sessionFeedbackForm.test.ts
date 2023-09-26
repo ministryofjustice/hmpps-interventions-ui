@@ -13,32 +13,58 @@ describe(SessionFeedbackForm, () => {
           'notify-probation-practitioner': 'no',
         })
 
-        const data = await new SessionFeedbackForm(request, serviceUser).data()
+        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
 
         expect(data.paramsForUpdate?.notifyProbationPractitioner).toEqual(false)
       })
     })
 
     describe('invalid fields', () => {
-      it('returns errors when required fields are not present', async () => {
-        const request = TestUtils.createRequest({})
+      describe('submitting feedback for supplier assessment appointment', () => {
+        it('returns errors when required fields are not present', async () => {
+          const request = TestUtils.createRequest({})
 
-        const data = await new SessionFeedbackForm(request, serviceUser).data()
+          const data = await new SessionFeedbackForm(request, serviceUser, true).data()
 
-        expect(data.error?.errors).toContainEqual({
-          errorSummaryLinkedField: 'notify-probation-practitioner',
-          formFields: ['notify-probation-practitioner'],
-          message: 'Select whether to notify the probation practitioner or not',
+          expect(data.error?.errors).toContainEqual({
+            errorSummaryLinkedField: 'notify-probation-practitioner',
+            formFields: ['notify-probation-practitioner'],
+            message: 'Select whether to notify the probation practitioner or not',
+          })
+          expect(data.error?.errors).toContainEqual({
+            errorSummaryLinkedField: 'session-summary',
+            formFields: ['session-summary'],
+            message: 'Enter what you did in the appointment',
+          })
+          expect(data.error?.errors).toContainEqual({
+            errorSummaryLinkedField: 'session-response',
+            formFields: ['session-response'],
+            message: 'Enter how Alex River responded to the appointment',
+          })
         })
-        expect(data.error?.errors).toContainEqual({
-          errorSummaryLinkedField: 'session-summary',
-          formFields: ['session-summary'],
-          message: 'Enter what you did in the session',
-        })
-        expect(data.error?.errors).toContainEqual({
-          errorSummaryLinkedField: 'session-response',
-          formFields: ['session-response'],
-          message: 'Enter how Alex River responded to the session',
+      })
+
+      describe('submitting feedback for action plan appointment', () => {
+        it('returns errors when required fields are not present', async () => {
+          const request = TestUtils.createRequest({})
+
+          const data = await new SessionFeedbackForm(request, serviceUser, false).data()
+
+          expect(data.error?.errors).toContainEqual({
+            errorSummaryLinkedField: 'notify-probation-practitioner',
+            formFields: ['notify-probation-practitioner'],
+            message: 'Select whether to notify the probation practitioner or not',
+          })
+          expect(data.error?.errors).toContainEqual({
+            errorSummaryLinkedField: 'session-summary',
+            formFields: ['session-summary'],
+            message: 'Enter what you did in the session',
+          })
+          expect(data.error?.errors).toContainEqual({
+            errorSummaryLinkedField: 'session-response',
+            formFields: ['session-response'],
+            message: 'Enter how Alex River responded to the session',
+          })
         })
       })
 
@@ -50,7 +76,7 @@ describe(SessionFeedbackForm, () => {
           'notify-probation-practitioner': 'yes',
         })
 
-        const data = await new SessionFeedbackForm(request, serviceUser).data()
+        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
 
         expect(data.error?.errors).toEqual([
           {
@@ -67,7 +93,7 @@ describe(SessionFeedbackForm, () => {
           'session-response': 'response',
         })
 
-        const data = await new SessionFeedbackForm(request, serviceUser).data()
+        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
 
         expect(data.error?.errors).toEqual([
           {

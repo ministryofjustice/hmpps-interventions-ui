@@ -7,10 +7,12 @@
 {% extends "../../../serviceProviderReferrals/actionPlan/actionPlanFormTemplate.njk" %}
 
 {% set pageTitle = "Appointment feedback" %}
-{% set pageSubTitle = "Record session attendance" %}
+{% set pageSubTitle %}
+{{ presenter.text.pageSubTitle }}
+{% endset -%}
 
 {% block formSection %}
-    <h2 class="govuk-heading-m">Session details</h2>
+    <h2 class="govuk-heading-m">{{presenter.text.heading}}</h2>
   {{ govukSummaryList(summaryListArgs) }}
 
   <form method="post">

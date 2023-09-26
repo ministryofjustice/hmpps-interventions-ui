@@ -7,6 +7,8 @@ import AppointmentSummary from '../../../appointmentSummary'
 interface AttendanceFeedbackFormText {
   title: string
   subTitle: string
+  heading: string
+  pageSubTitle: string
   attendanceQuestion: string
   attendanceQuestionHint: string
   additionalAttendanceInformationLabel: string
@@ -20,6 +22,8 @@ export default abstract class AttendanceFeedbackPresenter {
     private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
     private readonly title: string,
     private readonly subTitle: string,
+    private readonly heading: string,
+    private readonly pageSubTitle: string,
     private readonly attendanceFeedbackQuestionnaire: AttendanceFeedbackQuestionnaire,
     readonly appointmentSummary: AppointmentSummary,
     private readonly error: FormValidationError | null = null,
@@ -28,6 +32,8 @@ export default abstract class AttendanceFeedbackPresenter {
     this.text = {
       title,
       subTitle,
+      heading,
+      pageSubTitle,
       attendanceQuestion: attendanceFeedbackQuestionnaire.attendanceQuestion.text,
       attendanceQuestionHint: attendanceFeedbackQuestionnaire.attendanceQuestion.hint,
       additionalAttendanceInformationLabel: attendanceFeedbackQuestionnaire.additionalAttendanceInformationQuestion,

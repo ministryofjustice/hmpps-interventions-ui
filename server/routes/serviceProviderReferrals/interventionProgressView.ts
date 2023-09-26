@@ -51,7 +51,7 @@ export default class InterventionProgressView {
   }
 
   get sessionFeedbackAddedNotificationBannerArgs(): NotificationBannerArgs {
-    const html = `<h1 class="govuk-notification-banner__heading">Session feedback added</h1>
+    const html = `<h1 class="govuk-notification-banner__heading">${this.presenter.text.feedbackAddedNotificationBannerHeading}</h1>
                   <p class="govuk-body-m">${this.presenter.sessionFeedbackAddedNotificationBannerText}</p>`
 
     return {

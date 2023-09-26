@@ -550,7 +550,7 @@ export default class AppointmentsController {
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
     if (req.method === 'POST') {
-      const data = await new SessionFeedbackForm(req, serviceUser).data()
+      const data = await new SessionFeedbackForm(req, serviceUser, true).data()
       if (data.error) {
         res.status(400)
         formError = data.error
@@ -703,7 +703,7 @@ export default class AppointmentsController {
     const didNotAttend = appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
 
     res.redirect(
-      `/service-provider/referrals/${referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}&dna=${didNotAttend}`
+      `/service-provider/referrals/${referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}&dna=${didNotAttend}&saa=true`
     )
   }
 
@@ -748,7 +748,8 @@ export default class AppointmentsController {
       appointmentSummary,
       serviceUser,
       userType,
-      referralId
+      referralId,
+      true
     )
     const view = new SubmittedFeedbackView(presenter)
 
@@ -847,7 +848,7 @@ export default class AppointmentsController {
     let userInputData: Record<string, unknown> | null = null
 
     if (req.method === 'POST') {
-      const data = await new SessionFeedbackForm(req, serviceUser).data()
+      const data = await new SessionFeedbackForm(req, serviceUser, false).data()
       if (data.error) {
         res.status(400)
         formError = data.error
@@ -998,7 +999,7 @@ export default class AppointmentsController {
     const didNotAttend = appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
 
     res.redirect(
-      `/service-provider/referrals/${actionPlan.referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}&dna=${didNotAttend}`
+      `/service-provider/referrals/${actionPlan.referralId}/progress?showFeedbackBanner=true&notifyPP=${notifyPP}&dna=${didNotAttend}&saa=false`
     )
   }
 
@@ -1088,7 +1089,8 @@ export default class AppointmentsController {
       await this.createAppointmentSummary(accessToken, appointmentToReturn, referral),
       serviceUser,
       userType,
-      referral.id
+      referral.id,
+      false
     )
     const view = new SubmittedFeedbackView(presenter)
 
@@ -1121,6 +1123,7 @@ export default class AppointmentsController {
       serviceUser,
       'probation-practitioner',
       referral.id,
+      false,
       null
     )
     const view = new SubmittedFeedbackView(presenter)

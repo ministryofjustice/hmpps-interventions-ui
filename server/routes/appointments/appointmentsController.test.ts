@@ -520,12 +520,12 @@ describe('viewing supplier assessment feedback', () => {
           .get(`/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`)
           .expect(200)
           .expect(res => {
-            expect(res.text).toContain('Session feedback')
-            expect(res.text).toContain('Did Alex River come to the session?')
+            expect(res.text).toContain('Appointment feedback')
+            expect(res.text).toContain('Did Alex River come to the appointment?')
             expect(res.text).toContain('Yes, they were on time')
-            expect(res.text).toContain('What did you do in the session?')
+            expect(res.text).toContain('What did you do in the appointment?')
             expect(res.text).toContain('stub session summary')
-            expect(res.text).toContain('How did Alex River respond to the session?')
+            expect(res.text).toContain('How did Alex River respond to the appointment?')
             expect(res.text).toContain('stub session response')
             expect(res.text).toContain('Did anything concern you about Alex River?')
             expect(res.text).toContain('No')
@@ -874,8 +874,8 @@ describe('Adding supplier assessment feedback', () => {
         .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Record session attendance')
-          expect(res.text).toContain('Session details')
+          expect(res.text).toContain('Record appointment attendance')
+          expect(res.text).toContain('Appointment details')
           expect(res.text).toContain('1 February 2021')
           expect(res.text).toContain('1:00pm to 2:00pm')
         })
@@ -1010,12 +1010,12 @@ describe('Adding supplier assessment feedback', () => {
         .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Add session feedback')
-          expect(res.text).toContain('What did you do in the session?')
+          expect(res.text).toContain('Add appointment feedback')
+          expect(res.text).toContain('What did you do in the appointment?')
           expect(res.text).toContain(
-            'Add details about what you did, anything that was achieved and what came out of the session.'
+            'Add details about what you did, anything that was achieved and what came out of the appointment.'
           )
-          expect(res.text).toContain('How did Alex River respond to the session?')
+          expect(res.text).toContain('How did Alex River respond to the appointment?')
           expect(res.text).toContain(
             'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support them.'
           )
@@ -1148,14 +1148,14 @@ describe('Adding supplier assessment feedback', () => {
         )
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('session feedback')
+          expect(res.text).toContain('appointment feedback')
           expect(res.text).toContain('In-person meeting (probation office)')
-          expect(res.text).toContain('Confirm session feedback')
-          expect(res.text).toContain('Did Alex River come to the session?')
+          expect(res.text).toContain('Confirm appointment feedback')
+          expect(res.text).toContain('Did Alex River come to the appointment?')
           expect(res.text).toContain('Yes, they were on time')
-          expect(res.text).toContain('What did you do in the session?')
+          expect(res.text).toContain('What did you do in the appointment?')
           expect(res.text).toContain('stub session summary')
-          expect(res.text).toContain('How did Alex River respond to the session?')
+          expect(res.text).toContain('How did Alex River respond to the appointment?')
           expect(res.text).toContain('stub session response')
           expect(res.text).toContain('Did anything concern you about Alex River?')
           expect(res.text).toContain('No')
@@ -1213,7 +1213,7 @@ describe('Adding supplier assessment feedback', () => {
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=false&dna=false`
+            `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=false&dna=false&saa=true`
           )
 
         expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith(
@@ -1250,7 +1250,7 @@ describe('Adding supplier assessment feedback', () => {
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=true&dna=false`
+            `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=true&dna=false&saa=true`
           )
 
         expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith(
@@ -1282,7 +1282,7 @@ describe('Adding supplier assessment feedback', () => {
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=null&dna=true`
+            `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=null&dna=true&saa=true`
           )
 
         expect(interventionsService.submitSupplierAssessmentAppointmentFeedback).toHaveBeenCalledWith(
@@ -1339,12 +1339,12 @@ describe('Adding supplier assessment feedback', () => {
         .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Session feedback')
-          expect(res.text).toContain('Did Alex River come to the session?')
+          expect(res.text).toContain('Appointment feedback')
+          expect(res.text).toContain('Did Alex River come to the appointment?')
           expect(res.text).toContain('Yes, they were on time')
-          expect(res.text).toContain('What did you do in the session?')
+          expect(res.text).toContain('What did you do in the appointment?')
           expect(res.text).toContain('stub session summary')
-          expect(res.text).toContain('How did Alex River respond to the session?')
+          expect(res.text).toContain('How did Alex River respond to the appointment?')
           expect(res.text).toContain('stub session response')
         })
     })
@@ -1394,8 +1394,8 @@ describe('Adding supplier assessment feedback', () => {
         )
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Session feedback')
-          expect(res.text).toContain('Did Alex River come to the session?')
+          expect(res.text).toContain('Appointment feedback')
+          expect(res.text).toContain('Did Alex River come to the appointment?')
           expect(res.text).toContain('No')
           expect(res.text).toContain('They missed the bus')
         })
@@ -2080,7 +2080,7 @@ describe('Adding post delivery session feedback', () => {
         .expect(302)
         .expect(
           'Location',
-          `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=false&dna=false`
+          `/service-provider/referrals/${referral.id}/progress?showFeedbackBanner=true&notifyPP=false&dna=false&saa=false`
         )
 
       expect(interventionsService.submitActionPlanSessionFeedback).toHaveBeenCalledWith(
@@ -2112,7 +2112,7 @@ describe('Adding post delivery session feedback', () => {
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=false`
+            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=false&saa=false`
           )
 
         expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith(
@@ -2150,7 +2150,7 @@ describe('Adding post delivery session feedback', () => {
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=false`
+            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=false&saa=false`
           )
 
         expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith(
@@ -2188,7 +2188,7 @@ describe('Adding post delivery session feedback', () => {
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=true`
+            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=true&saa=false`
           )
 
         expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith(
@@ -2226,7 +2226,7 @@ describe('Adding post delivery session feedback', () => {
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=false`
+            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=false&saa=false`
           )
 
         expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith(

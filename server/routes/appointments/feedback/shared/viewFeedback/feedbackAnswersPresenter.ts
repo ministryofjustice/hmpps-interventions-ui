@@ -10,10 +10,16 @@ export default class FeedbackAnswersPresenter {
 
   constructor(
     private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
-    private readonly serviceUser: DeliusServiceUser
+    private readonly serviceUser: DeliusServiceUser,
+    private readonly isSupplierAssessmentAppointment: boolean
   ) {
     this.attendanceFeedbackQuestionnaire = new AttendanceFeedbackQuestionnaire(appointment, serviceUser)
     this.behaviourFeedbackQuestionnaire = new SessionFeedbackQuestionnaire(appointment, serviceUser)
+  }
+
+  readonly text = {
+    attendanceHeading: `${this.isSupplierAssessmentAppointment ? 'Appointment' : 'Session'} attendance`,
+    feedbackHeading: `${this.isSupplierAssessmentAppointment ? 'Appointment' : 'Session'} feedback`,
   }
 
   get attendedAnswers(): { question: string; answer: string } | null {
@@ -27,7 +33,9 @@ export default class FeedbackAnswersPresenter {
       return null
     }
     return {
-      question: `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} come to the session?`,
+      question:
+        `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} come to the ` +
+        `${this.isSupplierAssessmentAppointment ? 'appointment' : 'session'}?`,
       answer: selected.text,
     }
   }

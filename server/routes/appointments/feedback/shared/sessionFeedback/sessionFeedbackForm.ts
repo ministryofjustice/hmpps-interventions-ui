@@ -10,14 +10,15 @@ import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
 export default class SessionFeedbackForm {
   constructor(
     private readonly request: Request,
-    private readonly serviceUser: DeliusServiceUser
+    private readonly serviceUser: DeliusServiceUser,
+    private readonly isSupplierAssessmentAppointment: boolean
   ) {}
 
   async data(): Promise<FormData<Partial<AppointmentSession>>> {
     const serviceUserName = `${this.serviceUser.name.forename} ${this.serviceUser.name.surname}`
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: SessionFeedbackForm.validations(serviceUserName),
+      validations: SessionFeedbackForm.validations(serviceUserName, this.isSupplierAssessmentAppointment),
     })
 
     const error = this.error(validationResult)
@@ -40,16 +41,16 @@ export default class SessionFeedbackForm {
     }
   }
 
-  static validations(serviceUserName: string): ValidationChain[] {
+  static validations(serviceUserName: string, isSupplierAssessmentAppointment: boolean): ValidationChain[] {
     return [
       body('session-summary')
         .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.sessionSummary.empty)
+        .withMessage(errorMessages.sessionSummary.empty(isSupplierAssessmentAppointment))
         .bail()
         .trim(),
       body('session-response')
         .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.sessionResponse.empty(serviceUserName))
+        .withMessage(errorMessages.sessionResponse.empty(serviceUserName, isSupplierAssessmentAppointment))
         .bail()
         .trim(),
       body('notify-probation-practitioner')

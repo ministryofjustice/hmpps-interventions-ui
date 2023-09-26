@@ -14,8 +14,8 @@ export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends 
     readonly appointmentSummary: AppointmentSummary,
     private readonly draftId: string | undefined = undefined
   ) {
-    super(actionPlanAppointment, appointmentSummary)
-    this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(actionPlanAppointment, serviceUser)
+    super(actionPlanAppointment, appointmentSummary, 'Confirm session feedback')
+    this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(actionPlanAppointment, serviceUser, false)
   }
 
   readonly submitHref = this.draftId

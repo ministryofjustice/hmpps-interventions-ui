@@ -13,19 +13,31 @@ export default class SessionFeedbackQuestionnaire {
   }
 
   get sessionSummaryQuestion(): { text: string; hint: string } {
-    return {
-      text: `What did you do in the session?`,
-      hint: 'Add details about what you did, anything that was achieved and what came out of the session.',
-    }
+    return this.appointmentDecorator.isInitialAssessmentAppointment
+      ? {
+          text: `What did you do in the appointment?`,
+          hint: 'Add details about what you did, anything that was achieved and what came out of the appointment.',
+        }
+      : {
+          text: `What did you do in the session?`,
+          hint: 'Add details about what you did, anything that was achieved and what came out of the session.',
+        }
   }
 
   get sessionResponseQuestion(): { text: string; hint: string } {
-    return {
-      text: `How did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} respond to the session?`,
-      hint:
-        `Add whether ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} seemed engaged, ` +
-        `including any progress or positive changes. This helps the probation practitioner to support them.`,
-    }
+    return this.appointmentDecorator.isInitialAssessmentAppointment
+      ? {
+          text: `How did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} respond to the appointment?`,
+          hint:
+            `Add whether ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} seemed engaged, ` +
+            `including any progress or positive changes. This helps the probation practitioner to support them.`,
+        }
+      : {
+          text: `How did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} respond to the session?`,
+          hint:
+            `Add whether ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} seemed engaged, ` +
+            `including any progress or positive changes. This helps the probation practitioner to support them.`,
+        }
   }
 
   get sessionConcernsQuestion(): { text: string } {

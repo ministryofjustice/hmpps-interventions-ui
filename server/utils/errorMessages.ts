@@ -199,10 +199,12 @@ export default {
     empty: 'Enter how you tried to contact them and anything you know about why they did not attend',
   },
   sessionSummary: {
-    empty: 'Enter what you did in the session',
+    empty: (isInitialAppointment: boolean) =>
+      `Enter what you did in the ${isInitialAppointment ? 'appointment' : 'session'}`,
   },
   sessionResponse: {
-    empty: (name: string) => `Enter how ${name} responded to the session`,
+    empty: (name: string, isInitialAppointment: boolean) =>
+      `Enter how ${name} responded to the ${isInitialAppointment ? 'appointment' : 'session'}`,
   },
   sessionConcerns: {
     empty: 'Enter a description of what concerned you',

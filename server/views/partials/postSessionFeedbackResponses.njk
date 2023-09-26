@@ -1,5 +1,5 @@
 {% if presenter.appointment.appointmentFeedback.sessionFeedback.sessionSummary %}
-    <h1 class="govuk-heading-m">Session attendance</h1>
+    <h1 class="govuk-heading-m">{{ feedbackAnswersPresenter.text.attendanceHeading }}</h1>
 {% endif %}
 
 {#
@@ -27,7 +27,7 @@
 <br>
 
 {% if presenter.appointment.appointmentFeedback.sessionFeedback.sessionSummary %}
-<h1 class="govuk-heading-m">Session feedback</h1>
+<h1 class="govuk-heading-m">{{ feedbackAnswersPresenter.text.feedbackHeading }}</h1>
 {% endif %}
 
 {% if feedbackAnswersPresenter.sessionSummaryAnswers %}

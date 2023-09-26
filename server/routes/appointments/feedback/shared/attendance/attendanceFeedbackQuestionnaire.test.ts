@@ -11,7 +11,7 @@ describe(AttendanceFeedbackQuestionnaire, () => {
           initialAssessmentAppointment.build(),
           deliusServiceUser.build()
         )
-        expect(questionnaire.attendanceQuestion.text).toEqual('Did Alex River come to the session?')
+        expect(questionnaire.attendanceQuestion.text).toEqual('Did Alex River come to the appointment?')
       })
     })
 

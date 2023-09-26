@@ -17,6 +17,8 @@ describe(AttendanceFeedbackPresenter, () => {
         appointment,
         'title',
         'subTitle',
+        'Appointment details',
+        'Record appointment attendance',
         new AttendanceFeedbackQuestionnaire(appointment, deliusServiceUser.build()),
         new AppointmentSummary(appointment),
         error,
