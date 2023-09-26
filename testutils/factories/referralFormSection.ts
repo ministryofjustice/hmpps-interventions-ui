@@ -15,7 +15,7 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
       type: 'single',
       title,
       number: '1',
-      tasks: [{ title: 'Name,email address and location', url: linkUrl, status: referralFormStatus }],
+      tasks: [{ title: 'Name, email address and location', url: linkUrl, status: referralFormStatus }],
     })
   }
 
@@ -67,7 +67,7 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
   ) {
     return this.params({
       type: 'single',
-      title: `Confirm ${utils.convertToTitleCase(`${userFirstName} ${userLastName}`)}'s information`,
+      title: `Review ${utils.convertToTitleCase(`${userFirstName} ${userLastName}`)}'s information`,
       number: orderNumber,
       tasks: [
         { title: 'Personal details', url: serviceUserDetailsUrl, status: serviceUserDetailsFormStatus },

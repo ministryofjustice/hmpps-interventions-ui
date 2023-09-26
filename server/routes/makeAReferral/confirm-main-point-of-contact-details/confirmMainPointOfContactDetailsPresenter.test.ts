@@ -81,7 +81,7 @@ describe('ConfirmMainPointOfContactDetailsPresenter', () => {
           errorMessage: null,
         },
         probationRoleOrJobTitle: {
-          label: 'Role/job title',
+          label: 'Role / job title',
           errorMessage: null,
         },
         probationPractitionerEmail: {

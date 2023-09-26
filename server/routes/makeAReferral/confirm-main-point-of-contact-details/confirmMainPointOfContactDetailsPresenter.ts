@@ -42,7 +42,7 @@ export default class ConfirmMainPointOfContactDetailsPresenter {
       errorMessage: this.errorMessageForField('probation-practitioner-name'),
     },
     probationRoleOrJobTitle: {
-      label: 'Role/job title',
+      label: 'Role / job title',
       errorMessage: this.errorMessageForField('probation-practitioner-roleOrJobTitle'),
     },
     probationPractitionerEmail: {

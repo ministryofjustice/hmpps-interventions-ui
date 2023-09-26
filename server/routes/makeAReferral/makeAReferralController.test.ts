@@ -923,7 +923,7 @@ describe('GET /referrals/:id/expected-release-date', () => {
       .get('/referrals/1/expected-release-date')
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Do you know the expected release date')
+        expect(res.text).toContain(`Confirm Geoffrey Blue&#39;s expected release date`)
       })
 
     expect(interventionsService.getDraftReferral.mock.calls[0]).toEqual(['token', '1'])

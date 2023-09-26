@@ -21,9 +21,9 @@ export default class ReferralTypePresenter {
     title: `What type of referral is this?`,
     description: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
     currentLocation: {
-      label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} is currently`,
+      label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} is currently:`,
       errorMessage: this.errorMessageForField('current-location'),
-      custodyLabel: `In Prison (pre-release)`,
+      custodyLabel: `In prison (pre-release)`,
       communityLabel: `Community`,
     },
   }

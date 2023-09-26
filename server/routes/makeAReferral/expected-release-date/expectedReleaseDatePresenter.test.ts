@@ -42,7 +42,8 @@ describe('ExpectedReleaseDatePresenter', () => {
 
       expect(presenter.backLinkUrl).toBe(`/referrals/${referral.id}/submit-current-location`)
       expect(presenter.text).toEqual({
-        title: 'Do you know the expected release date?',
+        title: `Confirm Geoffrey River's expected release date`,
+        caption: "Do you know Geoffrey's expected release date?",
         description: 'You can find this in nDelius and NOMIS',
         label: 'Geoffrey River (CRN: X123456)',
         releaseDate: {

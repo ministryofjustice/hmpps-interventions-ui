@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import DraftReferral, { CurrentLocationType } from '../../../models/draftReferral'
 import { ListStyle, SummaryListItem } from '../../../utils/summaryList'
 import ServiceUserDetailsPresenter from '../service-user-details/serviceUserDetailsPresenter'
@@ -109,7 +110,7 @@ export default class CheckAllReferralInformationPresenter {
           changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
         },
         {
-          key: 'Role/ job title',
+          key: 'Role / job title',
           lines: [this.referral.roleOrJobTitle || 'Not found'],
           changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
         },
@@ -151,7 +152,7 @@ export default class CheckAllReferralInformationPresenter {
     }
     const expectedReleaseInfo: string =
       this.referral.expectedReleaseDate !== null
-        ? this.referral.expectedReleaseDate!
+        ? moment(this.referral.expectedReleaseDate!).format('D MMM YYYY')
         : this.referral.expectedReleaseDateMissingReason!
     return {
       title: `${this.serviceUserNameForServiceCategory}’s location and expected release date`,
@@ -413,6 +414,8 @@ export default class CheckAllReferralInformationPresenter {
   }
 
   private readonly serviceUserName = this.referral.serviceUser.firstName ?? ''
+
+  readonly crnDescription = `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`
 
   private readonly serviceUserNameForServiceCategory =
     this.referral.serviceUser.firstName && this.referral.serviceUser.lastName

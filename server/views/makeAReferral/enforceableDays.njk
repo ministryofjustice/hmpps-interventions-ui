@@ -18,7 +18,7 @@
         {{ govukBackLink(backLinkArgs) }}
       {% endif %}
 
-      <p class="govuk-body">{{ presenter.text.label }} </p>
+      <p class="govuk-caption-xl">{{ presenter.text.label }} </p><br/>
       <form method="post" novalidate>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 

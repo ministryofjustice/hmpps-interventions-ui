@@ -13,6 +13,8 @@ export default class ReferralFormPresenter {
 
   private readonly formSectionBuilder: FormSectionBuilder
 
+  readonly backLinkUrl: string
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
@@ -21,9 +23,15 @@ export default class ReferralFormPresenter {
     this.taskValues = new TaskValues(referral, draftOasysRiskInformation)
     this.sectionValues = new SectionValues(this.taskValues)
     this.formSectionBuilder = new FormSectionBuilder(referral, intervention, this.taskValues, this.sectionValues)
+    this.backLinkUrl =
+      this.referral.isReferralReleasingIn12Weeks !== null
+        ? `/referrals/${referral.id}/prison-release-form`
+        : `/referrals/${referral.id}/referral-type-form`
   }
 
-  readonly description = `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`
+  readonly crnDescription = `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`
+
+  readonly description = 'This information will be sent to the service provider.'
 
   get sections(): ReferralFormSectionPresenter[] {
     if (new InterventionDecorator(this.intervention).isCohortIntervention) {
@@ -96,7 +104,7 @@ class FormSectionBuilder {
   private buildReviewServiceUserInformationSection(): ReferralFormSingleListSectionPresenter {
     return {
       type: 'single',
-      title: `Confirm ${utils.convertToTitleCase(
+      title: `Review ${utils.convertToTitleCase(
         `${this.referral.serviceUser.firstName} ${this.referral.serviceUser.lastName}`
       )}'s information`,
       number: this.referral.personCurrentLocationType === CurrentLocationType.custody ? '3' : '2',
@@ -143,7 +151,7 @@ class FormSectionBuilder {
       number: '1',
       tasks: [
         {
-          title: 'Name,email address and location',
+          title: 'Name, email address and location',
           url:
             this.referral.isReferralReleasingIn12Weeks === null
               ? 'confirm-probation-practitioner-details'

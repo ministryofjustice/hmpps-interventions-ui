@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import SentReferral from '../../models/sentReferral'
 import { RamDeliusUser } from '../../models/delius/deliusUser'
 import { SummaryListItem } from '../../utils/summaryList'
@@ -17,7 +18,6 @@ import SentencePresenter from '../makeAReferral/relevant-sentence/sentencePresen
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import RoshPanelPresenter from './roshPanelPresenter'
-import DateUtils from '../../utils/dateUtils'
 import Prison from '../../models/prisonRegister/prison'
 import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
 import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
@@ -63,6 +63,8 @@ export default class ShowReferralPresenter {
 
   readonly interventionDetailsHeading = 'Intervention details'
 
+  readonly crnDescription = `${this.sentReferral.referral.serviceUser?.firstName} ${this.sentReferral.referral.serviceUser?.lastName} (CRN: ${this.sentReferral.referral.serviceUser?.crn})`
+
   get serviceUserNames(): string {
     return `${utils.convertToTitleCase(
       `${this.sentReferral.referral.serviceUser.firstName} ${this.sentReferral.referral.serviceUser.lastName}`
@@ -86,7 +88,7 @@ export default class ShowReferralPresenter {
   }
 
   get mainPointOfContactDetailsHeading(): string {
-    return 'Main point of contact details(until probation practitioner is allocated)'
+    return 'Main point of contact details (until probation practitioner is allocated)'
   }
 
   get roshInformationHeading(): string {
@@ -233,7 +235,7 @@ export default class ShowReferralPresenter {
         lines: [this.sentReferral.referral.ppName || 'Not found'],
       },
       {
-        key: 'Role/job title',
+        key: 'Role / job title',
         lines: [this.sentReferral.referral.roleOrJobTitle || 'Not found'],
       },
       { key: 'Email address', lines: [this.deriveEmailAddress] },
@@ -446,23 +448,23 @@ export default class ShowReferralPresenter {
         lines: [sentencePresenter.endOfSentenceDate],
       },
       {
-        key: 'Date intervention to be completed by',
-        lines: [
-          this.sentReferral.referral.completionDeadline
-            ? DateUtils.formattedDate(this.sentReferral.referral.completionDeadline, { month: 'short' })
-            : '',
-        ],
-        changeLink:
-          this.userType === 'probation-practitioner'
-            ? `/referrals/${this.sentReferral.id}/completion-deadline`
-            : undefined,
-      },
-      {
         key: 'Maximum number of enforceable days',
         lines: [String(this.sentReferral.referral.maximumEnforceableDays)],
         changeLink:
           this.userType === 'probation-practitioner'
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-maximum-enforceable-days`
+            : undefined,
+      },
+      {
+        key: 'Date intervention to be completed by',
+        lines: [
+          this.sentReferral.referral.completionDeadline
+            ? moment(this.sentReferral.referral.completionDeadline).format('D MMM YYYY')
+            : '',
+        ],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/referrals/${this.sentReferral.id}/completion-deadline`
             : undefined,
       },
       {
@@ -518,7 +520,7 @@ export default class ShowReferralPresenter {
       const currentPrisonName = this.getPrisonName(this.sentReferral.referral.personCustodyPrisonId)
       const expectedReleaseInfo: string =
         this.sentReferral.referral.expectedReleaseDate !== null && this.sentReferral.referral.expectedReleaseDate !== ''
-          ? this.sentReferral.referral.expectedReleaseDate!
+          ? moment(this.sentReferral.referral.expectedReleaseDate).format('D MMM YYYY')
           : this.sentReferral.referral.expectedReleaseDateMissingReason!
       const items: SummaryListItem[] = []
       items.push({
