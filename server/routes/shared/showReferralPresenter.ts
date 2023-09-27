@@ -72,7 +72,7 @@ export default class ShowReferralPresenter {
   }
 
   get serviceUserDetailsHeading(): string {
-    return `${this.serviceUserNames}'s Personal details`
+    return `${this.serviceUserNames}'s personal details`
   }
 
   get serviceUserNeedsHeading(): string {
@@ -96,7 +96,11 @@ export default class ShowReferralPresenter {
   }
 
   get serviceUserLocationDetailsHeading(): string {
-    if (this.sentReferral.referral.personCurrentLocationType === 'COMMUNITY')
+    if (
+      this.sentReferral.referral.personCurrentLocationType === 'COMMUNITY' ||
+      (this.sentReferral.referral.isReferralReleasingIn12Weeks !== null &&
+        !this.sentReferral.referral.isReferralReleasingIn12Weeks)
+    )
       return `${this.serviceUserNames}'s location`
     return `${this.serviceUserNames}'s location and expected release date`
   }
@@ -114,7 +118,7 @@ export default class ShowReferralPresenter {
   }
 
   get contactDetailsHeading(): string {
-    return `${this.serviceUserNames}'s Address and contact details`
+    return `${this.serviceUserNames}'s address and contact details`
   }
 
   readonly text = {

@@ -1,8 +1,8 @@
+import moment from 'moment-timezone'
 import CalendarDay from '../../utils/calendarDay'
 import { SortableTableHeaders, SortableTableRow } from '../../utils/viewUtils'
 import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
 import utils from '../../utils/utils'
-import DateUtils from '../../utils/dateUtils'
 import LoggedInUser from '../../models/loggedInUser'
 import { Page } from '../../models/pagination'
 import Pagination from '../../utils/pagination/pagination'
@@ -182,7 +182,7 @@ export default class DashboardPresenter {
       this.showReleaseDateAndLocationColumn
         ? {
             text: expectedReleaseDate
-              ? DateUtils.formattedDate(expectedReleaseDate, { month: 'short' })
+              ? moment(referralSummary.expectedReleaseDate).format('D MMM YYYY')
               : releaseDateorDescription,
             sortValue: null,
             href: null,
@@ -201,7 +201,7 @@ export default class DashboardPresenter {
         ? { text: referralSummary.assignedTo?.username ?? '', sortValue: assignee, href: null }
         : null,
       {
-        text: DateUtils.formattedDate(sentAtDay, { month: 'short' }),
+        text: moment(referralSummary.sentAt).format('D MMM YYYY'),
         sortValue: sentAtDay.iso8601,
         href: null,
       },

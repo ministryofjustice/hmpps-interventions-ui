@@ -253,7 +253,7 @@ describe('Service provider referrals dashboard', () => {
       .should('contain', 'Expected release date')
       .should('contain', moment().add(1, 'days').format('DD MMM YYYY'))
 
-    cy.contains(`Personal details`)
+    cy.contains(`Jenny Jones's personal details`)
       .parent()
       .parent()
       .children()
@@ -265,7 +265,7 @@ describe('Service provider referrals dashboard', () => {
       .should('contain', 'Agnostic')
       .should('contain', '1 Jan 1980 (43 years old)')
 
-    cy.contains(`Address and contact details`)
+    cy.contains(`Jenny Jones's address and contact details`)
       .parent()
       .parent()
       .children()

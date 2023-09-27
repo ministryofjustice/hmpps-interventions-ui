@@ -15,7 +15,7 @@ export default class ConfirmMainPointOfContactDetailsView {
       fieldset: {
         legend: {
           text: 'Location',
-          classes: 'govuk-heading-m',
+          classes: 'govuk-fieldset__legend--m',
         },
       },
       idPrefix: 'location',
@@ -97,7 +97,7 @@ export default class ConfirmMainPointOfContactDetailsView {
 
     const items: SelectArgsItem[] = [
       {
-        text: '-- Start typing then choose probation office from the list --',
+        text: '-- probation office --',
       },
     ]
 
@@ -127,7 +127,7 @@ export default class ConfirmMainPointOfContactDetailsView {
 
     const items: SelectArgsItem[] = [
       {
-        text: '-- Start typing then choose prison name from the list --',
+        text: '-- prison name --',
       },
     ]
 
@@ -142,7 +142,7 @@ export default class ConfirmMainPointOfContactDetailsView {
         this.presenter.text.probationPractitionerEstablishmentSelect.errorMessage
       ),
       hint: {
-        text: this.presenter.text.probationPractitionerOfficeSelect.hint,
+        text: this.presenter.text.probationPractitionerEstablishmentSelect.hint,
       },
     }
   }
