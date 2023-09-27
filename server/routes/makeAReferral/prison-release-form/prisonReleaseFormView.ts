@@ -14,7 +14,7 @@ export default class PrisonReleaseFormView {
       fieldset: {
         legend: {
           text: this.presenter.text.title,
-          classes: 'govuk-fieldset__legend--l',
+          classes: 'govuk-fieldset__legend--xl',
         },
       },
       items: [
