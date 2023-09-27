@@ -181,7 +181,9 @@ export default class DashboardPresenter {
       },
       this.showReleaseDateAndLocationColumn
         ? {
-            text: expectedReleaseDate ? moment(expectedReleaseDate).format('D MMM YYYY') : releaseDateorDescription,
+            text: expectedReleaseDate
+              ? moment(referralSummary.expectedReleaseDate).format('D MMM YYYY')
+              : releaseDateorDescription,
             sortValue: null,
             href: null,
           }
@@ -199,7 +201,7 @@ export default class DashboardPresenter {
         ? { text: referralSummary.assignedTo?.username ?? '', sortValue: assignee, href: null }
         : null,
       {
-        text: moment(sentAtDay).format('D MMM YYYY'),
+        text: moment(referralSummary.sentAt).format('D MMM YYYY'),
         sortValue: sentAtDay.iso8601,
         href: null,
       },
