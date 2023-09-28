@@ -67,7 +67,7 @@ const exampleReferralFields = () => {
     isReferralReleasingIn12Weeks: false,
     roleOrJobTitle: 'Probabation Practitioner',
     hasMainPointOfContactDetails: false,
-    ppLocationType: 'establishment',
+    ppLocationType: null,
   }
 }
 
