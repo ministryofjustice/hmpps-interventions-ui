@@ -21,7 +21,7 @@ describe(FeedbackAnswersPresenter, () => {
       })
       const serviceUser = deliusServiceUserFactory.build()
 
-      const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
+      const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
       expect(presenter.attendedAnswers).toEqual({
         question: 'Did Alex River come to the session?',
@@ -46,7 +46,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build()
 
-        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
         expect(presenter.attendedAnswers).toBeNull()
       })
     })
@@ -71,7 +71,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build()
 
-        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
         expect(presenter.additionalAttendanceAnswers).toEqual({
           question: "Add additional information about Alex's attendance:",
@@ -98,7 +98,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build()
 
-        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
         expect(presenter.additionalAttendanceAnswers).toBeNull()
       })
     })
@@ -117,7 +117,7 @@ describe(FeedbackAnswersPresenter, () => {
 
         const serviceUser = deliusServiceUserFactory.build({ name: { forename: 'Alex' } })
 
-        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
           question: 'Did anything concern you about Alex River?',
@@ -138,7 +138,7 @@ describe(FeedbackAnswersPresenter, () => {
 
         const serviceUser = deliusServiceUserFactory.build()
 
-        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
           question: 'Did anything concern you about Alex River?',
@@ -158,7 +158,7 @@ describe(FeedbackAnswersPresenter, () => {
         })
         const serviceUser = deliusServiceUserFactory.build()
 
-        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser)
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
         expect(presenter.notifyProbationPractitionerAnswers).toBeNull()
       })

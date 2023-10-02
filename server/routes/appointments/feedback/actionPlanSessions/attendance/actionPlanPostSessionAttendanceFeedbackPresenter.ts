@@ -20,6 +20,8 @@ export default class ActionPlanPostSessionAttendanceFeedbackPresenter extends At
       actionPlanAppointment,
       `Record session attendance`,
       'The date and time of the session are a permanent record of where this person was.',
+      'Session details',
+      'Record session attendance',
       new AttendanceFeedbackQuestionnaire(actionPlanAppointment, serviceUser),
       appointmentSummary,
       error,

@@ -57,7 +57,8 @@ export default class InterventionProgressPresenter {
     private readonly dashboardOriginPage?: string,
     readonly showFeedbackBanner: boolean | null = null,
     readonly notifyPP: boolean | null = null,
-    readonly dna: boolean | null = null
+    readonly dna: boolean | null = null,
+    readonly isSupplierAssessmentAppointment: boolean | null = null
   ) {
     const subNavUrlPrefix = 'service-provider'
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
@@ -90,6 +91,9 @@ export default class InterventionProgressPresenter {
   readonly text = {
     title: `${utils.convertToTitleCase(this.intervention.contractType.name)}: progress`,
     endOfServiceReportStatus: this.endOfServiceReportSubmitted ? 'Submitted' : 'Not submitted',
+    feedbackAddedNotificationBannerHeading: `${
+      this.isSupplierAssessmentAppointment ? 'Appointment' : 'Session'
+    } feedback added`,
   }
 
   get referralEnded(): boolean {

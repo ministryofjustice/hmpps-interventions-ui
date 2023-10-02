@@ -17,8 +17,9 @@ export default class InitialAssessmentSessionFeedbackPresenter {
   readonly questionnaire = new SessionFeedbackQuestionnaire(this.appointment, this.serviceUser)
 
   readonly text = {
-    title: `Add session feedback`,
+    title: `Add appointment feedback`,
     subTitle: `This helps the probation practitioner to support the person on probation.`,
+    pageSubTitle: 'Add appointment feedback',
   }
 
   get backLinkHref(): string | null {

@@ -2349,21 +2349,21 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Yes').click()
             cy.contains('Save and continue').click()
 
-            cy.contains('Add session feedback')
+            cy.contains('Add appointment feedback')
 
-            cy.contains('What did you do in the session?').type('Discussed his mental health')
-            cy.contains('How did Alex River respond to the session?').type('Engaged well')
+            cy.contains('What did you do in the appointment?').type('Discussed his mental health')
+            cy.contains('How did Alex River respond to the appointment?').type('Engaged well')
             cy.get('input[name="notify-probation-practitioner"][value="no"]').click()
 
             cy.contains('Save and continue').click()
 
-            cy.contains('Confirm session feedback')
-            cy.contains('Session attendance')
+            cy.contains('Confirm appointment feedback')
+            cy.contains('Appointment attendance')
             cy.contains('Yes, they were on time')
-            cy.contains('Session feedback')
-            cy.contains('What did you do in the session?')
+            cy.contains('Appointment feedback')
+            cy.contains('What did you do in the appointment?')
             cy.contains('Discussed his mental health')
-            cy.contains('How did Alex River respond to the session?')
+            cy.contains('How did Alex River respond to the appointment?')
             cy.contains('Engaged well')
             cy.contains('Did anything concern you about Alex River?')
             cy.contains('No')
@@ -2403,7 +2403,7 @@ describe('Service provider referrals dashboard', () => {
 
             cy.stubScheduleSupplierAssessmentAppointment(supplierAssessment.id, scheduledAppointment)
             cy.get('form').contains('Confirm').click()
-            cy.contains('Session feedback added')
+            cy.contains('Appointment feedback added')
             cy.contains('The probation practitioner will be able to view the feedback in the service.')
           })
         })
@@ -2756,8 +2756,8 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
 
-          cy.contains('Confirm session feedback')
-          cy.contains('Did Alex River come to the session?')
+          cy.contains('Confirm appointment feedback')
+          cy.contains('Did Alex River come to the appointment?')
           cy.contains('No')
           cy.contains('Add how you tried to contact Alex River and anything you know about why they did not attend.')
           cy.contains('Alex did not answer his phone')
@@ -2793,7 +2793,7 @@ describe('Service provider referrals dashboard', () => {
           cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithAttendanceFeedback)
           cy.get('form').contains('Confirm').click()
 
-          cy.contains('Session feedback added')
+          cy.contains('Appointment feedback added')
           cy.contains(
             'The probation practitioner will get an email about Alex River not attending. They’ll also be able to view the feedback in the service.'
           )
@@ -2861,7 +2861,7 @@ describe('Service provider referrals dashboard', () => {
           cy.get('[data-cy=supplier-assessment-table]').contains('View feedback').click()
 
           cy.contains('24 March 2022')
-          cy.contains('Did Alex River come to the session?')
+          cy.contains('Did Alex River come to the appointment?')
           cy.contains('No')
           cy.contains('Add how you tried to contact Alex River and anything you know about why they did not attend.')
           cy.contains('Alex did not answer his phone')
@@ -2963,8 +2963,8 @@ describe('Service provider referrals dashboard', () => {
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/behaviour`
           )
 
-          cy.contains('What did you do in the session?').type('Discussed his mental health')
-          cy.contains('How did Alex River respond to the session?').type("Wasn't engaged")
+          cy.contains('What did you do in the appointment?').type('Discussed his mental health')
+          cy.contains('How did Alex River respond to the appointment?').type("Wasn't engaged")
           cy.contains('Did anything concern you about Alex River?')
           cy.contains('Yes').click()
           cy.contains('Add enough detail to help the probation practitioner to know what happened.').type(
@@ -3000,14 +3000,14 @@ describe('Service provider referrals dashboard', () => {
             'equal',
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
-          cy.contains('Session attendance')
-          cy.contains('Session feedback')
-          cy.contains('Did Alex River come to the session?')
+          cy.contains('Appointment attendance')
+          cy.contains('Appointment feedback')
+          cy.contains('Did Alex River come to the appointment?')
           cy.contains('Yes, they were on time')
-          cy.contains('Session feedback')
-          cy.contains('What did you do in the session?')
+          cy.contains('Appointment feedback')
+          cy.contains('What did you do in the appointment?')
           cy.contains('Discussed his mental health')
-          cy.contains('How did Alex River respond to the session?')
+          cy.contains('How did Alex River respond to the appointment?')
           cy.contains("Wasn't engaged")
           cy.contains('Did anything concern you about Alex River?')
           cy.contains('Yes - Alex was acting very suspicious.')
@@ -3037,7 +3037,7 @@ describe('Service provider referrals dashboard', () => {
           cy.stubSubmitSupplierAssessmentAppointmentFeedback(sentReferral.id, appointmentWithSessionFeedback)
           cy.get('form').contains('Confirm').click()
 
-          cy.contains('Session feedback added')
+          cy.contains('Appointment feedback added')
 
           cy.location('pathname').should('equal', `/service-provider/referrals/${sentReferral.id}/progress`)
 

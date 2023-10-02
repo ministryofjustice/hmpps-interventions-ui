@@ -5,7 +5,8 @@ import AppointmentSummary from '../../../appointmentSummary'
 export default abstract class CheckFeedbackAnswersPresenter {
   protected constructor(
     protected appointment: ActionPlanAppointment | InitialAssessmentAppointment,
-    readonly appointmentSummary: AppointmentSummary
+    readonly appointmentSummary: AppointmentSummary,
+    readonly title: string
   ) {}
 
   abstract readonly submitHref: string
@@ -15,6 +16,6 @@ export default abstract class CheckFeedbackAnswersPresenter {
   abstract readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
 
   readonly text = {
-    title: `Confirm session feedback`,
+    title: this.title,
   }
 }

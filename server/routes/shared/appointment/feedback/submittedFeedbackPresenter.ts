@@ -12,14 +12,19 @@ export default class SubmittedFeedbackPresenter {
     private readonly serviceUser: DeliusServiceUser,
     private readonly userType: 'probation-practitioner' | 'service-provider',
     private readonly referralId: string,
+    private readonly isSupplierAssessmentAppointment: boolean,
     private readonly actionPlanId: string | null = null
   ) {
-    this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(appointment, serviceUser)
+    this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(
+      appointment,
+      serviceUser,
+      isSupplierAssessmentAppointment
+    )
   }
 
   readonly backLinkHref = `/${this.userType}/referrals/${this.referralId}/progress`
 
   readonly text = {
-    title: `Session feedback`,
+    title: `${this.isSupplierAssessmentAppointment ? 'Appointment' : 'Session'} feedback`,
   }
 }

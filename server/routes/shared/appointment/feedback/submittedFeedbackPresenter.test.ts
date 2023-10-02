@@ -17,7 +17,8 @@ describe(SubmittedFeedbackPresenter, () => {
         new AppointmentSummary(actionPlanAppointment),
         serviceUser,
         userType,
-        referralId
+        referralId,
+        false
       )
       expect(presenter.text).toMatchObject({
         title: 'Session feedback',
@@ -28,7 +29,8 @@ describe(SubmittedFeedbackPresenter, () => {
         new AppointmentSummary(actionPlanAppointment),
         serviceUser,
         userType,
-        referralId
+        referralId,
+        false
       )
       expect(presenter.text).toMatchObject({
         title: 'Session feedback',
@@ -45,7 +47,8 @@ describe(SubmittedFeedbackPresenter, () => {
         new AppointmentSummary(actionPlanAppointment),
         serviceUser,
         'probation-practitioner',
-        'test-referral-id'
+        'test-referral-id',
+        false
       )
 
       expect(presenter.backLinkHref).toEqual('/probation-practitioner/referrals/test-referral-id/progress')

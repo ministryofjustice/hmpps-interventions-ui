@@ -14,8 +14,8 @@ export default class InitialAssessmentFeedbackCheckAnswersPresenter extends Chec
     readonly appointmentSummary: AppointmentSummary,
     private readonly draftId: string | undefined = undefined
   ) {
-    super(appointment, appointmentSummary)
-    this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(appointment, serviceUser)
+    super(appointment, appointmentSummary, 'Confirm appointment feedback')
+    this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(appointment, serviceUser, true)
   }
 
   readonly submitHref = this.draftId

@@ -15,7 +15,7 @@ export default class AttendanceFeedbackQuestionnaire {
   get attendanceQuestion(): { text: string; hint: string } {
     if (this.appointmentDecorator.isInitialAssessmentAppointment) {
       return {
-        text: `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} come to the session?`,
+        text: `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} come to the appointment?`,
         hint: 'Select one option',
       }
     }

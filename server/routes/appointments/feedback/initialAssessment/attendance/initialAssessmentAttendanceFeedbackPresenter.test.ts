@@ -15,9 +15,9 @@ describe(InitialAssessmentAttendanceFeedbackPresenter, () => {
       )
 
       expect(presenter.text).toMatchObject({
-        title: 'Record session attendance',
-        subTitle: 'The date and time of the session are a permanent record of where this person was.',
-        attendanceQuestion: 'Did Alex River come to the session?',
+        title: 'Record appointment attendance',
+        subTitle: 'The date and time of the appointment are a permanent record of where this person was.',
+        attendanceQuestion: 'Did Alex River come to the appointment?',
         attendanceQuestionHint: 'Select one option',
         additionalAttendanceInformationLabel: "Add additional information about Alex's attendance:",
       })
