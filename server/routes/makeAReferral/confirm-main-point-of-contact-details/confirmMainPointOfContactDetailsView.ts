@@ -97,7 +97,7 @@ export default class ConfirmMainPointOfContactDetailsView {
 
     const items: SelectArgsItem[] = [
       {
-        text: '-- probation office --',
+        text: '',
       },
     ]
 
@@ -127,7 +127,7 @@ export default class ConfirmMainPointOfContactDetailsView {
 
     const items: SelectArgsItem[] = [
       {
-        text: '-- prison name --',
+        text: '',
       },
     ]
 

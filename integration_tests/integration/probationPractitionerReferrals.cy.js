@@ -460,7 +460,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .children()
       .should('contain', 'Location at time of referral')
       .should('contain', 'Expected release date')
-      .should('contain', moment().add(1, 'days').format('DD MMM YYYY'))
+      .should('contain', moment().add(1, 'days').format('D MMM YYYY'))
 
     cy.contains(`Jenny Jones's personal details`)
       .parent()

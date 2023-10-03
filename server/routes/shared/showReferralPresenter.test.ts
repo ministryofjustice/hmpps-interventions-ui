@@ -531,7 +531,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'Location at time of referral', lines: ['London'] },
         {
           key: 'Expected release date',
-          lines: [moment.tz('Europe/London').add(2, 'days').format('DD MMM YYYY')],
+          lines: [moment.tz('Europe/London').add(2, 'days').format('D MMM YYYY')],
         },
       ])
     })
@@ -567,7 +567,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'Location at time of referral', lines: ['London'] },
         {
           key: 'Expected release date',
-          lines: [moment().add(2, 'days').format('DD MMM YYYY')],
+          lines: [moment().add(2, 'days').format('D MMM YYYY')],
         },
       ])
     })

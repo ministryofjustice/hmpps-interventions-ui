@@ -92,7 +92,7 @@ export default class ShowReferralPresenter {
   }
 
   get roshInformationHeading(): string {
-    return `${this.serviceUserNames}'s risk of serious harm(RoSH) levels`
+    return `${this.serviceUserNames}'s risk of serious harm (RoSH) levels`
   }
 
   get serviceUserLocationDetailsHeading(): string {

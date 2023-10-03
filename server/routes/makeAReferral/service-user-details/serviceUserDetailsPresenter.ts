@@ -116,7 +116,7 @@ export default class ServiceUserDetailsPresenter {
       },
       {
         key: 'Email address',
-        lines: email || ['Not Found'],
+        lines: email || ['Not found'],
         listStyle: ListStyle.noMarkers,
       },
       { key: 'Ethnicity', lines: [this.serviceUser.ethnicity ?? ''] },

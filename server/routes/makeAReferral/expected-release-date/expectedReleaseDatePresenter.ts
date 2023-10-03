@@ -24,7 +24,7 @@ export default class ExpectedReleaseDatePresenter {
     label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
     title: `Confirm ${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName}'s expected release date`,
     caption: `Do you know ${this.referral.serviceUser?.firstName}'s expected release date?`,
-    description: 'You can find this in nDelius',
+    description: 'You can find this in nDelius.',
     releaseDate: {
       label: 'Add the expected release date',
     },
