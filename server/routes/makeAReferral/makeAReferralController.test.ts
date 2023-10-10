@@ -350,7 +350,7 @@ describe('GET /referrals/:id/prison-release-form', () => {
       .expect('Content-Type', /html/)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Will Alex River be released from prison in the next 12 weeks?')
+        expect(res.text).toContain('Will Alex River be released during the intervention?')
       })
   })
 })

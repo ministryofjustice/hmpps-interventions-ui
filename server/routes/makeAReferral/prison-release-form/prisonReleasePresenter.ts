@@ -18,12 +18,12 @@ export default class PrisonReleasePresenter {
   }
 
   readonly text = {
-    title: `Will ${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} be released from prison in the next 12 weeks?`,
+    title: `Will ${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} be released during the intervention?`,
     description: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
     fromPrison: {
       errorMessage: this.errorMessageForField('prison-release'),
       released: `Yes`,
-      notReleased: `No`,
+      notReleased: `No - ${this.referral.serviceUser?.firstName} has just arrived in prison and has immediate intervention needs (such as ending a tenancy)`,
     },
   }
 
