@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import DateUtils from './dateUtils'
 import CalendarDay from './calendarDay'
 import ClockTime from './clockTime'
@@ -130,10 +131,8 @@ describe('DateUtils', () => {
     })
   })
   describe('age', () => {
-    const fixedDate = new Date('2023-07-29T00:00:00.000Z')
-
     beforeEach(() => {
-      jest.spyOn(Date.prototype, 'toISOString').mockReturnValue(fixedDate.toISOString())
+      moment.now = jest.fn().mockReturnValue(new Date('2023-07-29T00:00:00.000Z'))
     })
 
     afterEach(() => {

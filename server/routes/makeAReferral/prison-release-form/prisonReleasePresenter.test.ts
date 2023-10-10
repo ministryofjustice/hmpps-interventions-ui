@@ -40,11 +40,12 @@ describe('PrisonReleasePresenter', () => {
 
       expect(presenter.backLinkUrl).toBe(`/intervention/${referral.interventionId}/refer?`)
       expect(presenter.text).toEqual({
-        title: 'Will Geoffrey Blue be released from prison in the next 12 weeks?',
+        title: 'Will Geoffrey Blue be released during the intervention?',
         description: 'Geoffrey Blue (CRN: X123456)',
         fromPrison: {
           errorMessage: null,
-          notReleased: 'No',
+          notReleased:
+            'No - Geoffrey has just arrived in prison and has immediate intervention needs (such as ending a tenancy)',
           released: 'Yes',
         },
       })
@@ -67,11 +68,12 @@ describe('PrisonReleasePresenter', () => {
         })
 
         expect(presenter.text).toEqual({
-          title: 'Will Geoffrey Blue be released from prison in the next 12 weeks?',
+          title: 'Will Geoffrey Blue be released during the intervention?',
           description: 'Geoffrey Blue (CRN: X123456)',
           fromPrison: {
             errorMessage: 'prison-release msg',
-            notReleased: 'No',
+            notReleased:
+              'No - Geoffrey has just arrived in prison and has immediate intervention needs (such as ending a tenancy)',
             released: 'Yes',
           },
         })
