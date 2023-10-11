@@ -44,8 +44,7 @@ describe('PrisonReleasePresenter', () => {
         description: 'Geoffrey Blue (CRN: X123456)',
         fromPrison: {
           errorMessage: null,
-          notReleased:
-            'No - Geoffrey has just arrived in prison and has immediate intervention needs (such as ending a tenancy)',
+          notReleased: 'No - Geoffrey has just arrived in prison and has immediate intervention needs',
           released: 'Yes',
         },
       })
@@ -72,8 +71,7 @@ describe('PrisonReleasePresenter', () => {
           description: 'Geoffrey Blue (CRN: X123456)',
           fromPrison: {
             errorMessage: 'prison-release msg',
-            notReleased:
-              'No - Geoffrey has just arrived in prison and has immediate intervention needs (such as ending a tenancy)',
+            notReleased: 'No - Geoffrey has just arrived in prison and has immediate intervention needs',
             released: 'Yes',
           },
         })

@@ -23,7 +23,7 @@ export default class PrisonReleasePresenter {
     fromPrison: {
       errorMessage: this.errorMessageForField('prison-release'),
       released: `Yes`,
-      notReleased: `No - ${this.referral.serviceUser?.firstName} has just arrived in prison and has immediate intervention needs (such as ending a tenancy)`,
+      notReleased: `No - ${this.referral.serviceUser?.firstName} has just arrived in prison and has immediate intervention needs`,
     },
   }
 
