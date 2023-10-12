@@ -47,9 +47,9 @@ import logger from '../../../log'
 import SentReferral from '../../models/sentReferral'
 import { DraftAppointment, DraftAppointmentBooking } from '../serviceProviderReferrals/draftAppointment'
 import SupplierAssessment from '../../models/supplierAssessment'
-import AppointmentAttendance from '../../models/appointmentAttendance'
 import { FormData } from '../../utils/forms/formData'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
+import AppointmentAttendanceFormDetails from '../../models/AppointmentAttendanceFormDetails'
 
 export default class AppointmentsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -811,8 +811,7 @@ export default class AppointmentsController {
           await this.draftsService.updateDraft(draft.id, draft.data, { userId: res.locals.user.userId })
 
           basePath = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draftBookingId}`
-          redirectPath =
-            draftAppointment.session!.attendanceFeedback.attended === 'no' ? 'check-your-answers' : 'behaviour'
+          redirectPath = draftAppointment.session!.didSessionHappen === false ? 'check-your-answers' : 'behaviour'
         } else {
           const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
             accessToken,
@@ -822,9 +821,7 @@ export default class AppointmentsController {
           )
           basePath = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback`
           redirectPath =
-            updatedAppointment.appointmentFeedback?.attendanceFeedback?.attended === 'no'
-              ? 'check-your-answers'
-              : 'behaviour'
+            updatedAppointment.appointmentFeedback?.didSessionHappen === false ? 'check-your-answers' : 'behaviour'
         }
         res.redirect(`${basePath}/${redirectPath}`)
         return
@@ -900,9 +897,14 @@ export default class AppointmentsController {
             draftAppointment.session.sessionFeedback.sessionResponse = data.paramsForUpdate.sessionResponse!
             draftAppointment.session.sessionFeedback.notifyProbationPractitioner =
               data.paramsForUpdate.notifyProbationPractitioner!
-            if (data.paramsForUpdate.notifyProbationPractitioner === true) {
-              draftAppointment.session.sessionFeedback.sessionConcerns = data.paramsForUpdate.sessionConcerns!
-            }
+            draftAppointment.session.sessionFeedback.sessionConcerns =
+              data.paramsForUpdate.notifyProbationPractitioner === true ? data.paramsForUpdate.sessionConcerns! : null
+            draftAppointment.session.sessionFeedback.late = data.paramsForUpdate.late!
+            draftAppointment.session.sessionFeedback.lateReason =
+              data.paramsForUpdate.late === true ? data.paramsForUpdate.lateReason! : null
+            draftAppointment.session.sessionFeedback.futureSessionPlans = data.paramsForUpdate.futureSessionPlans
+              ? data.paramsForUpdate.futureSessionPlans
+              : null
           } else {
             throw new Error('Draft appointment data is missing.')
           }
@@ -1231,16 +1233,20 @@ export default class AppointmentsController {
       }
       return {
         appointmentFeedback: {
+          didSessionHappen: null,
           attendanceFeedback: {
             attended: null,
             additionalAttendanceInformation: null,
             attendanceFailureInformation: null,
           },
           sessionFeedback: {
+            late: null,
+            lateReason: null,
             notifyProbationPractitioner: null,
             sessionSummary: null,
             sessionResponse: null,
             sessionConcerns: null,
+            futureSessionPlans: null,
           },
           submitted: false,
           submittedBy: null,
@@ -1292,16 +1298,20 @@ export default class AppointmentsController {
       }
       return {
         appointmentFeedback: {
+          didSessionHappen: null,
           attendanceFeedback: {
             attended: null,
             additionalAttendanceInformation: null,
             attendanceFailureInformation: null,
           },
           sessionFeedback: {
+            late: null,
+            lateReason: null,
             notifyProbationPractitioner: null,
             sessionSummary: null,
             sessionResponse: null,
             sessionConcerns: null,
+            futureSessionPlans: null,
           },
           submitted: false,
           submittedBy: null,
@@ -1344,34 +1354,46 @@ export default class AppointmentsController {
   /* eslint-disable no-param-reassign */
   private createOrUpdateDraftAttendance(
     draftAppointment: DraftAppointment,
-    data: FormData<Partial<AppointmentAttendance>>
+    data: FormData<Partial<AppointmentAttendanceFormDetails>>
   ): void {
     if (draftAppointment && data.paramsForUpdate) {
       if (draftAppointment.session) {
-        if (data.paramsForUpdate.attended! === 'no') {
+        if (!data.paramsForUpdate.didSessionHappen!) {
           draftAppointment.session.sessionFeedback = {
+            late: null,
+            lateReason: null,
             notifyProbationPractitioner: null,
             sessionSummary: null,
             sessionResponse: null,
             sessionConcerns: null,
+            futureSessionPlans: null,
           }
-          draftAppointment.session.attendanceFeedback.attendanceFailureInformation =
-            data.paramsForUpdate.attendanceFailureInformation!
+          draftAppointment.session.didSessionHappen = false
+          draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended!
+          // Need to set on new page later on.
+          // draftAppointment.session.attendanceFeedback.attendanceFailureInformation =
+          //   data.paramsForUpdate.attendanceFailureInformation!
         } else {
-          draftAppointment.session.attendanceFeedback.attendanceFailureInformation = null
+          draftAppointment.session.didSessionHappen = data.paramsForUpdate.didSessionHappen
+          draftAppointment.session.attendanceFeedback.attended = 'yes'
+          // draftAppointment.session.attendanceFeedback.attendanceFailureInformation = null
         }
-        draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended!
+        draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended! // What's this for???
       } else {
         draftAppointment.session = {
+          didSessionHappen: data.paramsForUpdate.didSessionHappen!,
           attendanceFeedback: {
-            attended: data.paramsForUpdate.attended!,
-            attendanceFailureInformation: data.paramsForUpdate.attendanceFailureInformation!,
+            attended: data.paramsForUpdate.didSessionHappen ? 'yes' : data.paramsForUpdate.attended!,
+            attendanceFailureInformation: data.paramsForUpdate.attendanceFailureInformation!, // needs to be moved later
           },
           sessionFeedback: {
+            late: null,
+            lateReason: null,
             notifyProbationPractitioner: null,
             sessionSummary: null,
             sessionResponse: null,
             sessionConcerns: null,
+            futureSessionPlans: null,
           },
           submitted: false,
           submittedBy: null,

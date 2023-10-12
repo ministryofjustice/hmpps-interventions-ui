@@ -216,6 +216,12 @@ export default {
     empty: 'Enter a description of what concerned you',
     notifyProbationPractitionerNotSelected: 'Select whether to notify the probation practitioner or not',
   },
+  late: {
+    optionNotSelected: 'Select whether Alex River was late'
+  },
+  lateReason: {
+    empty: 'Add anything you know about the lateness'
+  },
   scheduleAppointment: {
     time: {
       calendarDay: {

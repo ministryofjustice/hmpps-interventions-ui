@@ -5,3 +5,4 @@ export default interface AppointmentAttendance {
   additionalAttendanceInformation?: string | null
   attendanceFailureInformation: string | null
 }
+

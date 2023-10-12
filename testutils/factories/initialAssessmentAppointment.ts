@@ -89,16 +89,20 @@ export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
   appointmentDeliveryAddress: null,
   npsOfficeCode: null,
   appointmentFeedback: {
+    didSessionHappen: null,
     attendanceFeedback: {
       attended: null,
       additionalAttendanceInformation: null,
       attendanceFailureInformation: null,
     },
     sessionFeedback: {
+      late: null,
+      lateReason: null,
       notifyProbationPractitioner: null,
       sessionSummary: null,
       sessionResponse: null,
       sessionConcerns: null,
+      futureSessionPlans: null
     },
     submitted: false,
     submittedBy: null,

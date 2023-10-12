@@ -12,14 +12,17 @@ export default class AttendanceFeedbackQuestionnaire {
     this.appointmentDecorator = new AppointmentDecorator(appointment)
   }
 
-  get attendanceQuestion(): { text: string; hint: string } {
+  get attendanceQuestion(): { text: string; hint: string | null } {
     if (this.appointmentDecorator.isInitialAssessmentAppointment) {
       return {
         text: `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} come to the appointment?`,
         hint: 'Select one option',
       }
     }
-    return { text: this.methodSpecificAttendanceQuestion, hint: 'Select one option' }
+    return {
+      text: `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} attend the session?`,
+      hint: null,
+    }
   }
 
   get additionalAttendanceInformationQuestion(): string {

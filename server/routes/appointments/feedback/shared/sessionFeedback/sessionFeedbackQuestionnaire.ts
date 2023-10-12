@@ -40,9 +40,22 @@ export default class SessionFeedbackQuestionnaire {
         }
   }
 
+  get futureSessionPlansQuestion(): { text: string; hint: string } {
+    return {
+      text: `Add anything you have planned for the next session (optional)`,
+      hint: `You’ll be able to view these plans in this service, for example before you hold the next session.`,
+    }
+  }
+
   get sessionConcernsQuestion(): { text: string } {
     return {
       text: `Add enough detail to help the probation practitioner to know what happened.`,
+    }
+  }
+
+  get lateReasonQuestion(): { text: string } {
+    return {
+      text: `Add how late they were and anything you know about the reason.`,
     }
   }
 
@@ -64,6 +77,13 @@ export default class SessionFeedbackQuestionnaire {
       text: `Do you want to notify the probation practitioner about poor behaviour?`,
       explanation: 'If you select yes, the probation practitioner will get an email about your concerns.',
       hint: 'Select one option',
+    }
+  }
+
+  get lateQuestion(): { text: string; hint: string } {
+    return {
+      text: `Was Alex River late?`,
+      hint: `This helps the probation practitioner to support Alex River.`,
     }
   }
 }

@@ -32,10 +32,13 @@ export default class SessionFeedbackForm {
 
     return {
       paramsForUpdate: {
+        late: this.late,
+        lateReason: this.request.body['late-reason'],
         sessionSummary: this.request.body['session-summary'],
         sessionResponse: this.request.body['session-response'],
         sessionConcerns: this.request.body['session-concerns'],
         notifyProbationPractitioner: this.notifyProbationPractitioner,
+        futureSessionPlans: this.request.body['future-session-plans'],
       },
       error: null,
     }
@@ -60,6 +63,11 @@ export default class SessionFeedbackForm {
         .if(body('notify-probation-practitioner').equals('yes'))
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.sessionConcerns.empty),
+      body('late').isIn(['yes', 'no']).withMessage(errorMessages.late.optionNotSelected),
+      body('late-reason')
+        .if(body('late').equals('yes'))
+        .notEmpty({ ignore_whitespace: true })
+        .withMessage(errorMessages.lateReason.empty),
     ]
   }
 
@@ -79,5 +87,9 @@ export default class SessionFeedbackForm {
 
   private get notifyProbationPractitioner(): boolean {
     return this.request.body['notify-probation-practitioner'] === 'yes'
+  }
+
+  private get late(): boolean {
+    return this.request.body['late'] === 'yes'
   }
 }

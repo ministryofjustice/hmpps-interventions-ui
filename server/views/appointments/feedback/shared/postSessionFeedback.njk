@@ -18,9 +18,15 @@
         {{ govukTextarea(sessionConcernsTextAreaArgs) }}
     {% endset -%}
 
+    {% set lateReasonHtml %}
+        {{ govukTextarea(lateReasonTextAreaArgs) }}
+    {% endset -%}
+
+    {{ govukRadios(wasLateRadioButtonArgs(lateReasonHtml)) }}
     {{ govukTextarea(sessionSummaryTextAreaArgs) }}
     {{ govukTextarea(sessionResponseTextAreaArgs) }}
     {{ govukRadios(radioButtonArgs(hasConcernsHtml)) }}
+    {{ govukTextarea(futureSessionPlansTextAreaArgs) }}
 
     {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
   </form>

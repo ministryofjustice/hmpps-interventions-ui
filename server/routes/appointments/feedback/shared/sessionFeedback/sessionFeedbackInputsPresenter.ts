@@ -34,6 +34,13 @@ export default class SessionFeedbackInputsPresenter {
       ),
       errorMessage: this.errorMessageForField('session-response'),
     },
+    futureSessionPlans: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.futureSessionPlans || null,
+        'future-session-plans'
+      ),
+      errorMessage: this.errorMessageForField('future-session-plans'),
+    },
     sessionConcerns: {
       value: new PresenterUtils(this.userInputData).stringValue(
         this.appointment.appointmentFeedback?.sessionFeedback?.sessionConcerns || null,
@@ -47,6 +54,17 @@ export default class SessionFeedbackInputsPresenter {
         'notify-probation-practitioner'
       ),
       errorMessage: this.errorMessageForField('notify-probation-practitioner'),
+    },
+    late: {
+      value: this.utils.booleanValue(this.appointment.appointmentFeedback?.sessionFeedback?.late ?? null, 'late'),
+      errorMessage: this.errorMessageForField('late'),
+    },
+    lateReason: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.lateReason || null,
+        'late-reason'
+      ),
+      errorMessage: this.errorMessageForField('late-reason'),
     },
   }
 }

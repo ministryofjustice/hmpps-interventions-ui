@@ -13,6 +13,14 @@ export default class CheckFeedbackAnswersView {
     }
   }
 
+  private get sessionDetailsSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.appointmentSummary.appointmentSummaryList,
+      'a random heading',
+      { showBorders: true, showTitle: true }
+    )
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'appointments/feedback/shared/postSessionFeedbackCheckAnswers',
@@ -21,6 +29,7 @@ export default class CheckFeedbackAnswersView {
         feedbackAnswersPresenter: this.presenter.feedbackAnswersPresenter,
         summaryListArgs: this.summaryListArgs,
         backLinkArgs: this.backLinkArgs,
+        sessionDetailsSummaryListArgs: this.sessionDetailsSummaryListArgs,
       },
     ]
   }

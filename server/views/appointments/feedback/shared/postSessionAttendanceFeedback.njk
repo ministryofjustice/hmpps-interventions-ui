@@ -18,11 +18,11 @@
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
-    {% set attendanceFailureInformationHtml %}
-        {{ govukTextarea(attendanceFailureInformationTextAreaArgs) }}
+    {% set noSessionHtml %}
+        {{ govukRadios(attendanceRadioButtonArgs) }}
     {% endset -%}
 
-    {{ govukRadios(radioButtonArgs(attendanceFailureInformationHtml)) }}
+    {{ govukRadios(didSessionHappenRadioButtonArgs(noSessionHtml)) }}
 
     {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
   </form>
