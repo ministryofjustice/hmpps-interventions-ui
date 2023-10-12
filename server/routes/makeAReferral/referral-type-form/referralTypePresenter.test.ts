@@ -46,7 +46,7 @@ describe('ReferralTypePresenter', () => {
           label: 'Geoffrey Blue is currently:',
           errorMessage: null,
           custodyLabel: 'In prison (pre-release)',
-          communityLabel: 'Community',
+          communityLabel: 'In the community',
         },
       })
     })
