@@ -16,7 +16,23 @@ export default class CheckFeedbackAnswersView {
   private get sessionDetailsSummaryListArgs() {
     return ViewUtils.summaryListArgsWithSummaryCard(
       this.presenter.appointmentSummary.appointmentSummaryList,
-      'a random heading',
+      this.presenter.sessionDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
+  private get sessionAttendanceSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.sessionAttendanceSummaryListArgs,
+      this.presenter.sessionAttendanceHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
+  private get sessionFeedbackSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.sessionFeedbackSummaryListArgs,
+      this.presenter.sessionFeedbackHeading,
       { showBorders: true, showTitle: true }
     )
   }
@@ -30,6 +46,8 @@ export default class CheckFeedbackAnswersView {
         summaryListArgs: this.summaryListArgs,
         backLinkArgs: this.backLinkArgs,
         sessionDetailsSummaryListArgs: this.sessionDetailsSummaryListArgs,
+        sessionAttendanceSummaryListArgs: this.sessionAttendanceSummaryListArgs,
+        sessionFeedbackSummaryListArgs: this.sessionFeedbackSummaryListArgs,
       },
     ]
   }

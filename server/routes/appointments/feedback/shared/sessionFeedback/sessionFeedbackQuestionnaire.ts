@@ -82,7 +82,7 @@ export default class SessionFeedbackQuestionnaire {
 
   get lateQuestion(): { text: string; hint: string } {
     return {
-      text: `Was Alex River late?`,
+      text: `Was ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} late?`,
       hint: `This helps the probation practitioner to support Alex River.`,
     }
   }

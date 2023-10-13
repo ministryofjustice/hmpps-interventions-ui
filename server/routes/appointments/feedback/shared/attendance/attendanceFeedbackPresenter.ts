@@ -38,8 +38,8 @@ export default abstract class AttendanceFeedbackPresenter {
       attendanceQuestion: attendanceFeedbackQuestionnaire.attendanceQuestion.text,
       additionalAttendanceInformationLabel: attendanceFeedbackQuestionnaire.additionalAttendanceInformationQuestion,
       attendanceFailureInformationQuestion: attendanceFeedbackQuestionnaire.attendanceFailureInformationQuestion,
-      didSessionHappenQuestion: 'Did the session happen?',
-      didSessionHappenQuestionHint: 'The session happened if something was delivered.',
+      didSessionHappenQuestion: attendanceFeedbackQuestionnaire.sessionHappenQuestion.text,
+      didSessionHappenQuestionHint: attendanceFeedbackQuestionnaire.sessionHappenQuestion.hint,
     }
   }
 

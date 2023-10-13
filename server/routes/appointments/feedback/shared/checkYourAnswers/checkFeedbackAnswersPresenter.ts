@@ -1,7 +1,7 @@
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../../models/appointment'
 import FeedbackAnswersPresenter from '../viewFeedback/feedbackAnswersPresenter'
 import AppointmentSummary from '../../../appointmentSummary'
-import {SummaryListItem} from "../../../../../utils/summaryList";
+import { SummaryListItem } from '../../../../../utils/summaryList'
 
 export default abstract class CheckFeedbackAnswersPresenter {
   protected constructor(
@@ -16,69 +16,78 @@ export default abstract class CheckFeedbackAnswersPresenter {
 
   abstract readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
 
-  // get probationPractitionerDetailsForCommunity(): SummaryListItem[] {
-  //   const probationPractitionerDetails: SummaryListItem[] = []
-  //   if (this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName) {
-  //     probationPractitionerDetails.push(
-  //         {
-  //           key: 'Name',
-  //           lines: [this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName || 'Not found'],
-  //         },
-  //         { key: 'Email address', lines: [this.deriveEmailAddress] }
-  //     )
-  //     if (this.userType === 'service-provider') {
-  //       probationPractitionerDetails.push({
-  //         key: 'Phone number',
-  //         lines: [officer?.telephoneNumber || 'Not found'],
-  //       })
-  //     }
-  //     probationPractitionerDetails.push({
-  //       key:
-  //           this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-  //               ? 'Probation Office'
-  //               : 'PDU (Probation Delivery Unit)',
-  //       lines: [
-  //         this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-  //             ? this.sentReferral.referral.ppProbationOffice
-  //             : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '',
-  //       ],
-  //     })
-  //     if (this.userType === 'service-provider') {
-  //       probationPractitionerDetails.push({
-  //         key: 'Team phone number',
-  //         lines: [officer?.team?.telephoneNumber || 'Not found'],
-  //       })
-  //     }
-  //
-  //     return probationPractitionerDetails
-  //   }
-  //   probationPractitionerDetails.push(
-  //       {
-  //         key: 'Name',
-  //         lines: [`${officer?.name?.forename || ''} ${officer?.name?.surname || ''}`.trim() || 'Not found'],
-  //       },
-  //       { key: 'Email address', lines: [officer?.email || 'Not found'] }
-  //   )
-  //   if (this.userType === 'service-provider') {
-  //     probationPractitionerDetails.push({
-  //       key: 'Phone number',
-  //       lines: [officer?.telephoneNumber || 'Not found'],
-  //     })
-  //   }
-  //   probationPractitionerDetails.push({
-  //     key: 'PDU (Probation Delivery Unit)',
-  //     lines: [`${officer?.pdu.code || ''} ${officer?.pdu.description || ''}`.trim() || 'Not found'],
-  //   })
-  //   if (this.userType === 'service-provider') {
-  //     probationPractitionerDetails.push({
-  //       key: 'Team phone number',
-  //       lines: [officer?.team?.telephoneNumber || 'Not found'],
-  //     })
-  //   }
-  //   return probationPractitionerDetails
-  // }
+  readonly sessionDetailsHeading = `Session details`
+
+  readonly sessionAttendanceHeading = `Session attendance`
+
+  readonly sessionFeedbackHeading = `Session feedback`
 
   readonly text = {
     title: this.title,
   }
+
+  get sessionAttendanceSummaryListArgs(): SummaryListItem[] {
+    const sessionAttendanceDetails: SummaryListItem[] = []
+    if (this.feedbackAnswersPresenter.sessionHappenAnswers) {
+      sessionAttendanceDetails.push({
+        key: this.feedbackAnswersPresenter.sessionHappenAnswers.question,
+        lines: [this.feedbackAnswersPresenter.sessionHappenAnswers.answer],
+      })
+    }
+    if (this.feedbackAnswersPresenter.attendedAnswers) {
+      sessionAttendanceDetails.push({
+        key: this.feedbackAnswersPresenter.attendedAnswers.question,
+        lines: [this.feedbackAnswersPresenter.attendedAnswers.answer],
+      })
+    }
+    if (this.feedbackAnswersPresenter.additionalAttendanceAnswers) {
+      sessionAttendanceDetails.push({
+        key: this.feedbackAnswersPresenter.additionalAttendanceAnswers.question,
+        lines: [this.feedbackAnswersPresenter.additionalAttendanceAnswers.answer],
+      })
+    }
+    return sessionAttendanceDetails
+  }
+
+  get sessionFeedbackSummaryListArgs(): SummaryListItem[] {
+    const sessionFeedbackDetails: SummaryListItem[] = []
+    if (this.feedbackAnswersPresenter.lateAnswers) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.lateAnswers.question,
+        lines: [this.feedbackAnswersPresenter.lateAnswers.answer],
+      })
+    }
+    if (this.feedbackAnswersPresenter.sessionSummaryAnswers) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.sessionSummaryAnswers.question,
+        lines: [this.feedbackAnswersPresenter.sessionSummaryAnswers.answer],
+      })
+    }
+    if (this.feedbackAnswersPresenter.sessionResponseAnswers) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.sessionResponseAnswers.question,
+        lines: [this.feedbackAnswersPresenter.sessionResponseAnswers.answer],
+      })
+    }
+    if (this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers.question,
+        lines: [this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers.answer],
+      })
+    }
+    if (this.feedbackAnswersPresenter.behaviourDescriptionAnswers) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.behaviourDescriptionAnswers.question,
+        lines: [this.feedbackAnswersPresenter.behaviourDescriptionAnswers.answer],
+      })
+    }
+    if (this.feedbackAnswersPresenter.futureSessionPlans) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.futureSessionPlans.question,
+        lines: [this.feedbackAnswersPresenter.futureSessionPlans.answer],
+      })
+    }
+    return sessionFeedbackDetails
+  }
+
 }

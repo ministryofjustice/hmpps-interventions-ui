@@ -68,6 +68,17 @@ export default class FeedbackAnswersPresenter {
     }
   }
 
+  get sessionHappenAnswers(): { question: string; answer: string } | null {
+    if (!this.appointment.appointmentFeedback.didSessionHappen) {
+      return null
+    }
+
+    return {
+      question: this.attendanceFeedbackQuestionnaire.sessionHappenQuestion.text,
+      answer: this.appointment.appointmentFeedback.didSessionHappen ? 'Yes' : 'No',
+    }
+  }
+
   get attendanceFailureInformationAnswers(): { question: string; answer: string } | null {
     if (!this.appointment.appointmentFeedback.attendanceFeedback.attendanceFailureInformation) {
       return null
@@ -136,6 +147,28 @@ export default class FeedbackAnswersPresenter {
     return {
       question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerQuestion.text,
       answer: `${notifyPP}`,
+    }
+  }
+
+  get lateAnswers(): { question: string; answer: string } | null {
+    if (!this.appointment.appointmentFeedback.sessionFeedback.late) {
+      return null
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.lateQuestion.text,
+      answer: this.appointment.appointmentFeedback.sessionFeedback.late ? 'Yes' : 'No',
+    }
+  }
+
+  get futureSessionPlans(): { question: string; answer: string } | null {
+    if (!this.appointment.appointmentFeedback.sessionFeedback.futureSessionPlans) {
+      return null
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.futureSessionPlansQuestion.text,
+      answer: this.appointment.appointmentFeedback.sessionFeedback.futureSessionPlans,
     }
   }
 }
