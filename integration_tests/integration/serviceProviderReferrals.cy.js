@@ -177,8 +177,7 @@ describe('Service provider referrals dashboard', () => {
       ])
 
     cy.contains('Jenny Jones').click()
-    cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/progress`)
-    cy.visit(`/service-provider/referrals/${referralToSelect.id}/details`)
+    cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/details`)
     cy.get('h2').contains('Who do you want to assign this referral to?')
     cy.contains('jenny.jones@example.com')
     cy.contains('07123456789')
@@ -3264,7 +3263,7 @@ describe('Service provider referrals dashboard', () => {
         cy.contains('Next').click()
 
         cy.contains('Jenny Jones').click()
-        cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/progress`)
+        cy.location('pathname').should('equal', `/service-provider/referrals/${referralToSelect.id}/details`)
 
         cy.contains('Back').click()
         cy.location('pathname').should('equal', `/service-provider/dashboard/${table.pathname}`)
