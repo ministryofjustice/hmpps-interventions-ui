@@ -89,7 +89,7 @@ describe(DashboardPresenter, () => {
             {
               text: 'Rob Shah-Brookes:X123456',
               sortValue: 'shah-brookes, rob',
-              href: '/service-provider/referrals/1/progress',
+              href: '/service-provider/referrals/1/details',
               doubleCell: true,
             },
             { text: 'ABCABCA1', sortValue: null, href: null },
@@ -101,7 +101,7 @@ describe(DashboardPresenter, () => {
             {
               text: 'Hardip Fraiser:X123456',
               sortValue: 'fraiser, hardip',
-              href: '/service-provider/referrals/2/progress',
+              href: '/service-provider/referrals/2/details',
               doubleCell: true,
             },
             { text: 'ABCABCA2', sortValue: null, href: null },
@@ -117,7 +117,7 @@ describe(DashboardPresenter, () => {
             {
               text: 'Jenny Catherine:X123456',
               sortValue: 'catherine, jenny',
-              href: '/service-provider/referrals/3/progress',
+              href: '/service-provider/referrals/3/details',
               doubleCell: true,
             },
             { text: 'ABCABCA3', sortValue: null, href: null },
@@ -233,7 +233,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Rob Shah-Brookes:X123456',
                 sortValue: 'shah-brookes, rob',
-                href: '/service-provider/referrals/1/progress',
+                href: '/service-provider/referrals/1/details',
                 doubleCell: true,
               },
               { text: '29 Jul 2023', sortValue: null, href: null },
@@ -246,7 +246,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Hardip Fraiser:X123456',
                 sortValue: 'fraiser, hardip',
-                href: '/service-provider/referrals/2/progress',
+                href: '/service-provider/referrals/2/details',
                 doubleCell: true,
               },
               { text: '---', sortValue: null, href: null },
@@ -263,7 +263,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Jenny Catherine:X123456',
                 sortValue: 'catherine, jenny',
-                href: '/service-provider/referrals/3/progress',
+                href: '/service-provider/referrals/3/details',
                 doubleCell: true,
               },
               { text: '---', sortValue: null, href: null },
@@ -280,7 +280,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Bernard Beaks:X123456',
                 sortValue: 'beaks, bernard',
-                href: '/service-provider/referrals/4/progress',
+                href: '/service-provider/referrals/4/details',
                 doubleCell: true,
               },
               { text: 'Over 12 weeks', sortValue: null, href: null },
@@ -297,7 +297,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Alice Grace:X123456',
                 sortValue: 'grace, alice',
-                href: '/service-provider/referrals/5/progress',
+                href: '/service-provider/referrals/5/details',
                 doubleCell: true,
               },
               { text: 'Not found', sortValue: null, href: null },
@@ -317,7 +317,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Rob Shah-Brookes:X123456',
                 sortValue: 'shah-brookes, rob',
-                href: '/service-provider/referrals/1/progress',
+                href: '/service-provider/referrals/1/details',
                 doubleCell: true,
               },
               { text: 'ABCABCA1', sortValue: null, href: null },
@@ -328,7 +328,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Hardip Fraiser:X123456',
                 sortValue: 'fraiser, hardip',
-                href: '/service-provider/referrals/2/progress',
+                href: '/service-provider/referrals/2/details',
                 doubleCell: true,
               },
               { text: 'ABCABCA2', sortValue: null, href: null },
@@ -343,7 +343,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Jenny Catherine:X123456',
                 sortValue: 'catherine, jenny',
-                href: '/service-provider/referrals/3/progress',
+                href: '/service-provider/referrals/3/details',
                 doubleCell: true,
               },
               { text: 'ABCABCA3', sortValue: null, href: null },
@@ -358,7 +358,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Bernard Beaks:X123456',
                 sortValue: 'beaks, bernard',
-                href: '/service-provider/referrals/4/progress',
+                href: '/service-provider/referrals/4/details',
                 doubleCell: true,
               },
               { text: 'ABCABCA4', sortValue: null, href: null },
@@ -373,7 +373,7 @@ describe(DashboardPresenter, () => {
               {
                 text: 'Alice Grace:X123456',
                 sortValue: 'grace, alice',
-                href: '/service-provider/referrals/5/progress',
+                href: '/service-provider/referrals/5/details',
                 doubleCell: true,
               },
               { text: 'ABCABCA5', sortValue: null, href: null },

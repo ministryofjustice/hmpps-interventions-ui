@@ -209,7 +209,7 @@ export default class DashboardPresenter {
   })
 
   private static hrefForViewing(referralSummary: SentReferralSummaries): string {
-    return `/service-provider/referrals/${referralSummary.id}/progress`
+    return `/service-provider/referrals/${referralSummary.id}/details`
   }
 
   private getLocation(referralSummary: SentReferralSummaries) {
