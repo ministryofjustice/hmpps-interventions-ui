@@ -6,7 +6,7 @@ jobs:
   check-jira-prefix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.1.1
       - uses: deepakputhraya/action-branch-name@master
         with:
           regex: '^(no-ticket/|renovate[-/]|hotfix/|IPB-[0-9]+/)' # start branch with either 'no-ticket/' or 'IPB-NUMBER/', allowing for bots and hotfixes
