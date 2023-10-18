@@ -15,7 +15,7 @@ class Oauth2TokenFactory extends Factory<string, TokenParams> {
       authSource: 'delius',
       userID: '2500128586',
       username: 'joe.smith',
-      roles: ['ROLE_PROBATION'],
+      roles: ['ROLE_PROBATION', 'ROLE_INTERVENTIONS_SERVICE'],
     })
   }
 
@@ -24,7 +24,7 @@ class Oauth2TokenFactory extends Factory<string, TokenParams> {
       authSource: 'auth',
       userID: '6c4036b7-e87d-44fb-864f-5a06c1c492f3',
       username: 'TEST_INTERVENTIONS_SP_1',
-      roles: ['ROLE_CRS_PROVIDER'],
+      roles: ['ROLE_CRS_PROVIDER', 'ROLE_INTERVENTIONS_SERVICE'],
     })
   }
 }
