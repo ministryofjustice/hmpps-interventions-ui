@@ -120,7 +120,7 @@ describe(FeedbackAnswersPresenter, () => {
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
-          question: 'Did anything concern you about Alex River?',
+          question: 'Do you want to notify the probation practitioner about poor behaviour?',
           answer: 'Yes',
         })
       })
@@ -141,7 +141,7 @@ describe(FeedbackAnswersPresenter, () => {
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
-          question: 'Did anything concern you about Alex River?',
+          question: 'Do you want to notify the probation practitioner about poor behaviour?',
           answer: 'No',
         })
       })

@@ -1340,7 +1340,7 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Discussed accommodation')
             cy.contains('How did Alex River respond to the session?')
             cy.contains('Engaged well')
-            cy.contains('Did anything concern you about Alex River?')
+            cy.contains('Do you want to notify the probation practitioner about poor behaviour?')
             cy.contains('No')
 
             const scheduledAppointment = actionPlanAppointmentFactory.build({
@@ -1610,7 +1610,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Discussed accommodation')
       cy.contains('How did Alex River respond to the session?')
       cy.contains('Engaged well')
-      cy.contains('Did anything concern you about Alex River?')
+      cy.contains('Do you want to notify the probation practitioner about poor behaviour?')
       cy.contains('No')
 
       cy.stubSubmitActionPlanSessionFeedback(actionPlan.id, 1, appointmentWithSubmittedFeedback)
@@ -2033,7 +2033,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Discussed accommodation')
       cy.contains('How did Alex River respond to the session?')
       cy.contains('Engaged well')
-      cy.contains('Did anything concern you about Alex River?')
+      cy.contains('Do you want to notify the probation practitioner about poor behaviour?')
       cy.contains('No')
     })
   })
@@ -2364,7 +2364,7 @@ describe('Service provider referrals dashboard', () => {
             cy.contains('Discussed his mental health')
             cy.contains('How did Alex River respond to the appointment?')
             cy.contains('Engaged well')
-            cy.contains('Did anything concern you about Alex River?')
+            cy.contains('Do you want to notify the probation practitioner about poor behaviour?')
             cy.contains('No')
 
             const time = new Date()
@@ -2964,7 +2964,7 @@ describe('Service provider referrals dashboard', () => {
 
           cy.contains('What did you do in the appointment?').type('Discussed his mental health')
           cy.contains('How did Alex River respond to the appointment?').type("Wasn't engaged")
-          cy.contains('Did anything concern you about Alex River?')
+          cy.contains('Do you want to notify the probation practitioner about poor behaviour?')
           cy.contains('Yes').click()
           cy.contains('Add enough detail to help the probation practitioner to know what happened.').type(
             'Alex was acting very suspicious.'
@@ -3008,7 +3008,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Discussed his mental health')
           cy.contains('How did Alex River respond to the appointment?')
           cy.contains("Wasn't engaged")
-          cy.contains('Did anything concern you about Alex River?')
+          cy.contains('Do you want to notify the probation practitioner about poor behaviour?')
           cy.contains('Yes - Alex was acting very suspicious.')
 
           const submittedAppointment = initialAssessmentAppointmentFactory.build({
