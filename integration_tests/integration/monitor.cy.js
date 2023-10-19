@@ -449,7 +449,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.contains('stub session summary')
       cy.contains('How did Alex River respond to the session?')
       cy.contains('stub session response')
-      cy.contains('Did anything concern you about Alex River?')
+      cy.contains('Do you want to notify the probation practitioner about poor behaviour?')
       cy.contains('No')
     })
   })
