@@ -257,4 +257,5 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   roleOrJobTitle: null,
   hasMainPointOfContactDetails: null,
   ppLocationType: null,
+  allocatedCommunityPP: null,
 }))

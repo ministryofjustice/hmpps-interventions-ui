@@ -204,6 +204,12 @@ describe('Referral form', () => {
 
       cy.contains('Continue').click()
 
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/community-allocated-form`)
+
+      cy.get('[type="radio"]').check('no')
+
+      cy.contains('Save and continue').click()
+
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/prison-release-form`)
 
       cy.get('[type="radio"]').check('yes')
@@ -794,6 +800,12 @@ describe('Referral form', () => {
       cy.stubGetDraftReferral(draftReferral.id, draftReferral)
 
       cy.contains('Continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/community-allocated-form`)
+
+      cy.get('[type="radio"]').check('no')
+
+      cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/prison-release-form`)
 
@@ -1440,6 +1452,12 @@ describe('Referral form', () => {
       cy.contains('The person’s CRN').type('X123456')
 
       cy.contains('Continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/community-allocated-form`)
+
+      cy.get('[type="radio"]').check('no')
+
+      cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/prison-release-form`)
 

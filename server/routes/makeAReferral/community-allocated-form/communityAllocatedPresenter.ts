@@ -2,7 +2,7 @@ import DraftReferral from '../../../models/draftReferral'
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 
-export default class ReferralTypePresenter {
+export default class CommunityAllocatedPresenter {
   readonly backLinkUrl: string
 
   constructor(
@@ -10,7 +10,7 @@ export default class ReferralTypePresenter {
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
-    this.backLinkUrl = `/referrals/${referral.id}/community-allocated-form`
+    this.backLinkUrl = `/intervention/${referral.interventionId}/refer?`
   }
 
   private errorMessageForField(field: string): string | null {
@@ -18,23 +18,22 @@ export default class ReferralTypePresenter {
   }
 
   readonly text = {
-    title: `What type of referral is this?`,
+    title: `Does ${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} have an allocated community probation practitioner?`,
     description: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
-    currentLocation: {
-      label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} is currently:`,
-      errorMessage: this.errorMessageForField('current-location'),
-      custodyLabel: `In prison (pre-release)`,
-      communityLabel: `In the community`,
+    communityAllocated: {
+      errorMessage: this.errorMessageForField('community-allocated'),
+      allocated: `Yes`,
+      notAllocated: `No`,
     },
   }
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error, {
-    fieldOrder: ['current-location'],
+    fieldOrder: ['community-allocated'],
   })
 
   private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    currentLocation: this.utils.stringValue(this.referral.personCurrentLocationType, 'current-location'),
+    communityAllocated: this.utils.booleanValue(this.referral.allocatedCommunityPP, 'community-allocated'),
   }
 }

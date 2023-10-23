@@ -41,6 +41,7 @@ export interface ReferralFields {
   roleOrJobTitle: string | null
   hasMainPointOfContactDetails: boolean | null
   ppLocationType: string | null
+  allocatedCommunityPP: boolean | null
 }
 
 export enum CurrentLocationType {
