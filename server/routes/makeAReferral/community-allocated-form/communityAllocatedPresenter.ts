@@ -22,8 +22,8 @@ export default class CommunityAllocatedPresenter {
     description: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
     communityAllocated: {
       errorMessage: this.errorMessageForField('community-allocated'),
-      allocated: `Yes`,
-      notAllocated: `No`,
+      allocated: `Yes - ${this.referral.serviceUser?.firstName} has an allocated probation practitioner (community offender manager) on nDelius`,
+      notAllocated: `No - ${this.referral.serviceUser?.firstName} does not have an allocated probation practitioner (community offender manager) on nDelius`,
     },
   }
 

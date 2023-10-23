@@ -44,8 +44,8 @@ describe('CommunityAllocatedPresenter', () => {
         description: `Geoffrey Blue (CRN: X123456)`,
         communityAllocated: {
           errorMessage: null,
-          allocated: `Yes`,
-          notAllocated: `No`,
+          allocated: `Yes - Geoffrey has an allocated probation practitioner (community offender manager) on nDelius`,
+          notAllocated: `No - Geoffrey does not have an allocated probation practitioner (community offender manager) on nDelius`,
         },
       })
     })
@@ -71,8 +71,8 @@ describe('CommunityAllocatedPresenter', () => {
           description: `Geoffrey Blue (CRN: X123456)`,
           communityAllocated: {
             errorMessage: 'community-allocated msg',
-            allocated: `Yes`,
-            notAllocated: `No`,
+            allocated: `Yes - Geoffrey has an allocated probation practitioner (community offender manager) on nDelius`,
+            notAllocated: `No - Geoffrey does not have an allocated probation practitioner (community offender manager) on nDelius`,
           },
         })
       })
