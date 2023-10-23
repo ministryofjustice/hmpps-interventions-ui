@@ -18,7 +18,7 @@ export default class CommunityAllocatedPresenter {
   }
 
   readonly text = {
-    title: `Does ${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} have an allocated community probation practitioner?`,
+    title: `Does ${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} have an allocated probation practitioner?`,
     description: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
     communityAllocated: {
       errorMessage: this.errorMessageForField('community-allocated'),

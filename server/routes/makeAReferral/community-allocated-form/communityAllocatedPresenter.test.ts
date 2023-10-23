@@ -40,7 +40,7 @@ describe('CommunityAllocatedPresenter', () => {
 
       expect(presenter.backLinkUrl).toBe(`/intervention/${referral.interventionId}/refer?`)
       expect(presenter.text).toEqual({
-        title: `Does Geoffrey Blue have an allocated community probation practitioner?`,
+        title: `Does Geoffrey Blue have an allocated probation practitioner?`,
         description: `Geoffrey Blue (CRN: X123456)`,
         communityAllocated: {
           errorMessage: null,
@@ -67,7 +67,7 @@ describe('CommunityAllocatedPresenter', () => {
         })
 
         expect(presenter.text).toEqual({
-          title: `Does Geoffrey Blue have an allocated community probation practitioner?`,
+          title: `Does Geoffrey Blue have an allocated probation practitioner?`,
           description: `Geoffrey Blue (CRN: X123456)`,
           communityAllocated: {
             errorMessage: 'community-allocated msg',
