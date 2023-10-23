@@ -132,6 +132,9 @@ export default {
   prisonRelease: {
     emptyRadio: 'Select yes or no',
   },
+  communityAllocated: {
+    emptyRadio: 'Select yes or no',
+  },
   confirmProbationPractitionerDetails: {
     emptyRadio: 'Select yes or no',
     emptyName: `Enter name of probation practitioner`,

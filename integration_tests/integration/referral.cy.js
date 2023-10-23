@@ -176,6 +176,12 @@ describe('Referral form', () => {
 
       cy.contains('Continue').click()
 
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/community-allocated-form`)
+
+      cy.get('[type="radio"]').check('yes')
+
+      cy.contains('Save and continue').click()
+
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/referral-type-form`)
 
       cy.get('[type="radio"]').check('CUSTODY')
@@ -802,6 +808,12 @@ describe('Referral form', () => {
       cy.contains('The person’s CRN').type('X123456')
 
       cy.contains('Continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/community-allocated-form`)
+
+      cy.get('[type="radio"]').check('yes')
+
+      cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/referral-type-form`)
 

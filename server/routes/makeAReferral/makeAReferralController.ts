@@ -79,6 +79,9 @@ import ConfirmMainPointOfContactDetailsView from './confirm-main-point-of-contac
 import ConfirmMainPointOfContactDetailsForm from './confirm-main-point-of-contact-details/confirmMainPointOfContactDetailsForm'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import OasysRiskSummaryView from './risk-information/oasys/oasysRiskSummaryView'
+import CommunityAllocatedPresenter from './community-allocated-form/communityAllocatedPresenter'
+import CommunityAllocatedView from './community-allocated-form/communityAllocatedView'
+import CommunityAllocatedForm from './community-allocated-form/communityAllocatedForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -108,7 +111,6 @@ export default class MakeAReferralController {
     // We trim and change to uppercase to make user experience more pleasant. All CRNs are uppercase in delius.
     const crn = req.body['service-user-crn']?.trim()?.toUpperCase()
     const { interventionId } = req.params
-    const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(crn)
 
     if (form.isValid) {
       try {
@@ -154,11 +156,7 @@ export default class MakeAReferralController {
         serviceUser: this.interventionsService.serializeDeliusServiceUser(serviceUser),
       })
 
-      if (this.userHasComAllocated(deliusResponsibleOfficer)) {
-        res.redirect(301, `/referrals/${referral.id}/referral-type-form`)
-      } else {
-        res.redirect(301, `/referrals/${referral.id}/prison-release-form`)
-      }
+      res.redirect(301, `/referrals/${referral.id}/community-allocated-form`)
     } else {
       const presenter = new ReferralStartPresenter(interventionId, error)
       const view = new ReferralStartView(presenter)
@@ -229,6 +227,17 @@ export default class MakeAReferralController {
     const [serviceUser] = await Promise.all([this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)])
     const presenter = new ReferralTypePresenter(referral, null, req.body)
     const view = new ReferralTypeFormView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
+  async viewCommunityAllocatedForm(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
+
+    const [serviceUser] = await Promise.all([this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)])
+    const presenter = new CommunityAllocatedPresenter(referral, null, req.body)
+    const view = new CommunityAllocatedView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
@@ -698,6 +707,42 @@ export default class MakeAReferralController {
 
     if (error === null) {
       res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new PrisonReleasePresenter(referral, error, req.body)
+      const view = new PrisonReleaseFormView(presenter)
+
+      res.status(400)
+      ControllerUtils.renderWithLayout(res, view, serviceUser)
+    }
+  }
+
+  async submitCommunityAllocatedForm(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const form = await CommunityAllocatedForm.createForm(req, referral)
+
+    let error: FormValidationError | null = null
+
+    if (form.isValid) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null && form.paramsForUpdate.allocatedCommunityPP) {
+      res.redirect(`/referrals/${req.params.id}/referral-type-form`)
+    } else if (error === null && !form.paramsForUpdate.allocatedCommunityPP) {
+      res.redirect(`/referrals/${req.params.id}/prison-release-form`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 

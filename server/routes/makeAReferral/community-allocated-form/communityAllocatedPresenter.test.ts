@@ -1,12 +1,12 @@
-import PrisonReleasePresenter from './prisonReleasePresenter'
+import CommunityAllocatedPresenter from './communityAllocatedPresenter'
 import draftReferralFactory from '../../../../testutils/factories/draftReferral'
 
-describe('PrisonReleasePresenter', () => {
+describe('CommunityAllocatedPresenter', () => {
   describe('errorSummary', () => {
     describe('when error is null', () => {
       it('returns null', () => {
         const referral = draftReferralFactory.serviceCategorySelected().build()
-        const presenter = new PrisonReleasePresenter(referral, null)
+        const presenter = new CommunityAllocatedPresenter(referral, null)
 
         expect(presenter.errorSummary).toBeNull()
       })
@@ -15,17 +15,17 @@ describe('PrisonReleasePresenter', () => {
     describe('when error is not null', () => {
       it('returns a summary of the errors sorted into the order their fields appear on the page', () => {
         const referral = draftReferralFactory.serviceCategorySelected().build()
-        const presenter = new PrisonReleasePresenter(referral, {
+        const presenter = new CommunityAllocatedPresenter(referral, {
           errors: [
             {
-              formFields: ['prison-release'],
-              errorSummaryLinkedField: 'prison-release',
-              message: 'prison-release msg',
+              formFields: ['community-allocated'],
+              errorSummaryLinkedField: 'community-allocated',
+              message: 'community-allocated msg',
             },
           ],
         })
 
-        expect(presenter.errorSummary).toEqual([{ field: 'prison-release', message: 'prison-release msg' }])
+        expect(presenter.errorSummary).toEqual([{ field: 'community-allocated', message: 'community-allocated msg' }])
       })
     })
   })
@@ -36,16 +36,16 @@ describe('PrisonReleasePresenter', () => {
         .serviceCategorySelected()
         .serviceUserSelected()
         .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
-      const presenter = new PrisonReleasePresenter(referral)
+      const presenter = new CommunityAllocatedPresenter(referral)
 
-      expect(presenter.backLinkUrl).toBe(`/referrals/${referral.id}/community-allocated-form`)
+      expect(presenter.backLinkUrl).toBe(`/intervention/${referral.interventionId}/refer?`)
       expect(presenter.text).toEqual({
-        title: 'Will Geoffrey Blue be released during the intervention?',
-        description: 'Geoffrey Blue (CRN: X123456)',
-        fromPrison: {
+        title: `Does Geoffrey Blue have an allocated community probation practitioner?`,
+        description: `Geoffrey Blue (CRN: X123456)`,
+        communityAllocated: {
           errorMessage: null,
-          notReleased: 'No - Geoffrey has just arrived in prison and has immediate intervention needs',
-          released: 'Yes',
+          allocated: `Yes`,
+          notAllocated: `No`,
         },
       })
     })
@@ -56,23 +56,23 @@ describe('PrisonReleasePresenter', () => {
           .serviceCategorySelected()
           .serviceUserSelected()
           .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
-        const presenter = new PrisonReleasePresenter(referral, {
+        const presenter = new CommunityAllocatedPresenter(referral, {
           errors: [
             {
-              formFields: ['prison-release'],
-              errorSummaryLinkedField: 'prison-release',
-              message: 'prison-release msg',
+              formFields: ['community-allocated'],
+              errorSummaryLinkedField: 'community-allocated',
+              message: 'community-allocated msg',
             },
           ],
         })
 
         expect(presenter.text).toEqual({
-          title: 'Will Geoffrey Blue be released during the intervention?',
-          description: 'Geoffrey Blue (CRN: X123456)',
-          fromPrison: {
-            errorMessage: 'prison-release msg',
-            notReleased: 'No - Geoffrey has just arrived in prison and has immediate intervention needs',
-            released: 'Yes',
+          title: `Does Geoffrey Blue have an allocated community probation practitioner?`,
+          description: `Geoffrey Blue (CRN: X123456)`,
+          communityAllocated: {
+            errorMessage: 'community-allocated msg',
+            allocated: `Yes`,
+            notAllocated: `No`,
           },
         })
       })
