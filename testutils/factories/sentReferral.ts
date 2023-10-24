@@ -68,7 +68,7 @@ const exampleReferralFields = () => {
     roleOrJobTitle: 'Probabation Practitioner',
     hasMainPointOfContactDetails: false,
     ppLocationType: null,
-    allocatedCommunityPP: false,
+    allocatedCommunityPP: null,
   }
 }
 
