@@ -2,3 +2,7 @@
   background-color: govuk-colour('orange');
   border-color: govuk-colour('orange');
 }
+
+.govuk-notification-banner__heading {
+  max-width: none;
+}
