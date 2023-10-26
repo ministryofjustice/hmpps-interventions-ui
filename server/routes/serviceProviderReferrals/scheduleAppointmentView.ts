@@ -115,7 +115,7 @@ export default class ScheduleAppointmentView {
         label: {
           text: 'AM or PM',
         },
-        classes: this.presenter.fields.time.partOfDay.hasError ? 'govuk-select--error' : '',
+        classes: this.presenter.fields.time.partOfDay.hasError ? 'govuk-select--error' : 'govuk-select--time',
       },
     }
   }
