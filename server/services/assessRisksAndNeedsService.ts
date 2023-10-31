@@ -26,7 +26,9 @@ export default class AssessRisksAndNeedsService {
       })) as RiskSummary
     } catch (err) {
       const restClientError = err as RestClientError
-      if (restClientError.status === 404) {
+
+      if (restClientError.status === 403 || restClientError.status === 404) {
+        // risk throws 403 when the user is not authorised and this is expected and does not constitute an error
         // missing (or out of date) risk information is expected and does not constitute an error
         return null
       }
