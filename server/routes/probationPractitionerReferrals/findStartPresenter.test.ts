@@ -54,21 +54,21 @@ describe('FindStartPresenter', () => {
           providerName: 'service provider name 2',
           serviceUserFullName: 'Hardip Fraiser',
           contractTypeName: 'Accommodation',
-          url: '/referrals/2/form',
+          url: '/referrals/2/community-allocated-form',
         },
         {
           createdAt: '2 Jan 2021',
           providerName: 'service provider name 1',
           serviceUserFullName: 'Rob Shah-Brookes',
           contractTypeName: 'Accommodation',
-          url: '/referrals/1/form',
+          url: '/referrals/1/community-allocated-form',
         },
         {
           createdAt: '1 Jan 2021',
           providerName: 'service provider name 3',
           serviceUserFullName: 'Jenny Catherine',
           contractTypeName: 'Accommodation',
-          url: '/referrals/3/form',
+          url: '/referrals/3/community-allocated-form',
         },
       ])
     })
