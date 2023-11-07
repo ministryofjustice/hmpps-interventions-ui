@@ -22,7 +22,7 @@ export default class FindStartPresenter {
         providerName: referral.serviceProvider?.name ?? '',
         contractTypeName: referral.contractTypeName,
         createdAt: DateUtils.formattedDate(referral.createdAt, { month: 'short' }),
-        url: `/referrals/${referral.id}/form`,
+        url: `/referrals/${referral.id}/community-allocated-form`,
       }))
   }
 
