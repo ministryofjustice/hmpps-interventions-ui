@@ -22,7 +22,7 @@
     "start": "node $NODE_OPTIONS $INTERVENTIONS_SERVER_NODE_OPTIONS dist/server.js",
     "start:dev": "npm run build && NODE_ENV=development npm run watch",
     "start:test": "export $(cat test.env) && npm run start",
-    "test": "jest --runInBand",
+    "test": "jest --runInBand --detectOpenHandles",
     "test-debug": "npm test --watch -t",
     "int-test": "cypress run --config video=false",
     "int-test-ui": "cypress open",
@@ -35,8 +35,8 @@
     "prepare": "husky install"
   },
   "engines": {
-    "npm": ">=6",
-    "node": ">=14"
+    "npm": ">=10",
+    "node": ">=21"
   },
   "jest": {
     "preset": "ts-jest",
