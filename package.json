@@ -142,7 +142,7 @@
     "moment-timezone": "^0.5.42"
   },
   "devDependencies": {
-    "@pact-foundation/pact": "^9.18.1",
+    "@pact-foundation/pact": "^12.0.0",
     "@types/bunyan": "^1.8.8",
     "@types/bunyan-format": "^0.2.5",
     "@types/compression": "^1.7.2",
