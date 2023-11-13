@@ -2,12 +2,12 @@ version: 2.1
 
 orbs:
   hmpps: ministryofjustice/hmpps@7.5.0
-  node: circleci/node@4.1.0
+  node: circleci/node@4.9.0
 
 executors:
   integration:
     docker:
-      - image: cimg/node:16.20-browsers
+      - image: cimg/node:20.9-browsers
       - image: rodolpheche/wiremock:2.31.0-alpine
         command: ["--port", "9091"]
       - image: bitnami/redis:6.2
@@ -22,11 +22,11 @@ jobs:
       PACT_BROKER_USERNAME: "interventions"
     executor:
       name: hmpps/node
-      tag: 16.17-browsers
+      tag: 20.9-browsers
     steps:
       - checkout
       - node/install-npm:
-          version: 7.5.4
+          version: 10.1.0
       - node/install-packages
       - run: npm run test
       - store_artifacts:
@@ -48,7 +48,7 @@ jobs:
       PACT_BROKER_USERNAME: "interventions"
     executor:
       name: hmpps/node
-      tag: 16.17-browsers
+      tag: 20.9-browsers
     parameters:
       tag:
         type: string
@@ -64,8 +64,7 @@ jobs:
     executor: integration
     steps:
       - checkout
-      - node/install-npm:
-          version: 7.5.4
+      - run: sudo npm install -g npm@latest
       - node/install-packages
       - run: npm run build
       - run: # Run linter after build because the integration test code depends on compiled typescript...
@@ -80,7 +79,6 @@ jobs:
           path: integration_tests/screenshots
 
 workflows:
-  version: 2
   build_test_and_deploy:
     jobs:
       - build:

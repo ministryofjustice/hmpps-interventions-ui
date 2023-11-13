@@ -35,8 +35,8 @@
     "prepare": "husky install"
   },
   "engines": {
-    "npm": ">=6",
-    "node": ">=14"
+    "node": "^20",
+    "npm": "^10"
   },
   "jest": {
     "preset": "ts-jest",
@@ -47,6 +47,7 @@
       "<rootDir>/(server|job)/**/?(*.)(spec|test).{ts,js,jsx,mjs}"
     ],
     "testEnvironment": "node",
+    "forceExit": true,
     "reporters": [
       "default",
       [
