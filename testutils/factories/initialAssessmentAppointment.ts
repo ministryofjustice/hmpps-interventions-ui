@@ -89,8 +89,8 @@ export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
   appointmentDeliveryAddress: null,
   npsOfficeCode: null,
   appointmentFeedback: {
-    didSessionHappen: null,
     attendanceFeedback: {
+      didSessionHappen: null,
       attended: null,
       additionalAttendanceInformation: null,
       attendanceFailureInformation: null,
@@ -102,7 +102,13 @@ export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
       sessionSummary: null,
       sessionResponse: null,
       sessionConcerns: null,
-      futureSessionPlans: null
+      futureSessionPlans: null,
+      noSessionReasonType: null,
+      noSessionReasonPopAcceptable: null,
+      noSessionReasonPopUnacceptable: null,
+      noSessionReasonLogistics: null,
+      noSessionReasonOther: null,
+      noAttendanceInformation: null,
     },
     submitted: false,
     submittedBy: null,

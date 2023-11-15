@@ -147,7 +147,7 @@ export default class InterventionProgressPresenter {
           tagClass: presenter.tagClass,
           link: {
             text: 'View feedback form',
-            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.id}/post-session-feedback`,
+            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.appointmentId}/post-session-feedback`,
           },
         }
       case SessionStatus.completed:
@@ -156,7 +156,7 @@ export default class InterventionProgressPresenter {
           tagClass: presenter.tagClass,
           link: {
             text: 'View feedback form',
-            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.id}/post-session-feedback`,
+            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.appointmentId}/post-session-feedback`,
           },
         }
       case SessionStatus.awaitingFeedback:

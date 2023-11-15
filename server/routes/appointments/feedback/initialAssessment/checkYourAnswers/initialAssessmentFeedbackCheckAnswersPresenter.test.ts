@@ -31,7 +31,7 @@ describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
             appointmentFeedback: { attendanceFeedback: { attended: 'yes' } },
           }),
           initialAssessmentAppointmentFactory.build({
-            appointmentFeedback: { attendanceFeedback: { attended: 'late' } },
+            appointmentFeedback: { attendanceFeedback: { attended: 'yes' } },
           }),
         ]
 

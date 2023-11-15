@@ -1,0 +1,40 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+
+{% extends "../../../serviceProviderReferrals/actionPlan/actionPlanFormTemplate.njk" %}
+
+{% set pageTitle = "Appointment feedback" %}
+{% set pageSubTitle %}
+{{ presenter.text.pageSubTitle }}
+{% endset -%}
+
+{% block formSection %}
+  <form method="post">
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+    {% set hasConcernsHtml %}
+        {{ govukTextarea(sessionConcernsTextAreaArgs) }}
+    {% endset -%}
+
+    {% set popAcceptableAdditionalInformationHtml %}
+        {{ govukTextarea(popAcceptableAdditionalInformationTextAreaArgs) }}
+    {% endset -%}
+
+    {% set popUnacceptableAdditionalInformationHtml %}
+        {{ govukTextarea(popUnacceptableAdditionalInformationTextAreaArgs) }}
+    {% endset -%}
+
+    {% set logisticsAdditionalInformationHtml %}
+        {{ govukTextarea(logisticsAdditionalInformationTextAreaArgs) }}
+    {% endset -%}
+
+    {{ govukRadios(noSessionReasonButtonArgs(popUnacceptableAdditionalInformationHtml, popAcceptableAdditionalInformationHtml, logisticsAdditionalInformationHtml)) }}
+    <a class="govuk-link govuk-body"  href="https://eu.surveymonkey.com/r/369L5GL">Send feedback about this question.</a>
+    <p></p>
+    {{ govukRadios(radioButtonArgs(hasConcernsHtml)) }}
+
+    {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
+  </form>
+{% endblock %}

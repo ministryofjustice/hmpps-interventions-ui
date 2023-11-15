@@ -27,9 +27,7 @@ export default class AttendanceFeedbackForm {
     return {
       paramsForUpdate: {
         didSessionHappen: this.request.body['did-session-happen'] === 'yes',
-        attended: this.request.body.attended,
-        attendanceFailureInformation:
-          this.request.body.attended === 'no' ? this.request.body['attendance-failure-information'] : null,
+        attended: this.request.body['did-session-happen'] === 'yes' ? 'yes' : this.request.body.attended,
       },
       error: null,
     }
@@ -37,11 +35,11 @@ export default class AttendanceFeedbackForm {
 
   static get validations(): ValidationChain[] {
     return [
-      // body('attended').isIn(['yes', 'late', 'no']).withMessage(errorMessages.attendedAppointment.empty),
-      // body('attendance-failure-information')
-      //   .if(body('attended').equals('no'))
-      //   .notEmpty({ ignore_whitespace: true })
-      //   .withMessage(errorMessages.attendanceFailureInformation.empty),
+      body('did-session-happen').isIn(['yes', 'no']).withMessage(errorMessages.didSessionHappen.empty),
+      body('attended')
+        .if(body('did-session-happen').equals('no'))
+        .isIn(['yes', 'no', 'do_not_know'])
+        .withMessage(errorMessages.attendedAppointment.empty),
     ]
   }
 

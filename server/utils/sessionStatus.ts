@@ -7,6 +7,7 @@ export enum SessionStatus {
   awaitingFeedback,
   completed,
   didNotAttend,
+  didNotHappen,
 }
 export default {
   forAppointment: (appointment: InitialAssessmentAppointment | ActionPlanAppointment | null): SessionStatus => {
@@ -16,10 +17,27 @@ export default {
     const appointmentDecorator = new AppointmentDecorator(appointment)
     if (appointment.appointmentFeedback.submitted) {
       const sessionFeedbackAttendance = appointment.appointmentFeedback.attendanceFeedback
+      console.log('-------------------')
+      console.log(appointment)
+      console.log('-------------------')
+      if (appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === true) {
+        return SessionStatus.completed
+      }
+      if (appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === false) {
+        if (sessionFeedbackAttendance.attended === 'no') {
+          return SessionStatus.didNotAttend
+        }
+        if (sessionFeedbackAttendance.attended === 'yes' || sessionFeedbackAttendance.attended === 'do_not_know') {
+          return SessionStatus.didNotHappen
+        }
+      }
+
+      // The 2 checks below are to ensure old appointments still work as expected
       if (sessionFeedbackAttendance.attended === 'no') {
         return SessionStatus.didNotAttend
       }
-      if (sessionFeedbackAttendance.attended === 'yes' || sessionFeedbackAttendance.attended === 'late') {
+
+      if (sessionFeedbackAttendance.attended === 'yes') {
         return SessionStatus.completed
       }
     }

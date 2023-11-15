@@ -34,7 +34,7 @@ export default class AttendanceFeedbackView {
       hint: {
         text: this.presenter.text.didSessionHappenQuestionHint,
       },
-      errorMessage: ViewUtils.govukErrorMessage('error message goes here'),
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.didSessionHappen.errorMessage),
       items: [
         {
           value: this.presenter.didSessionHappenResponses.yes.value,

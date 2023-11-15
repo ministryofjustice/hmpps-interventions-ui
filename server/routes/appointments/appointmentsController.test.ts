@@ -2134,7 +2134,7 @@ describe('Adding post delivery session feedback', () => {
       it("updates the appointment with session feedback when attended is set to 'late'", async () => {
         const sessionNumber = 2
 
-        const draftAppointment: DraftAppointment = draftAppointmentFactory.withSubmittedFeedback('late').build()
+        const draftAppointment: DraftAppointment = draftAppointmentFactory.withSubmittedFeedback('yes').build()
 
         const draftAppointmentResult = draftAppointmentBookingFactory.build({
           data: draftAppointment,
@@ -2312,7 +2312,7 @@ describe('Adding post delivery session feedback', () => {
           const deliusServiceUser = deliusServiceUserFactory.build()
 
           const appointmentWithSubmittedFeedback = actionPlanAppointmentFactory.build({
-            id: '1',
+            appointmentId: '1',
             appointmentTime: '2021-02-01T13:00:00Z',
             durationInMinutes: 60,
             appointmentDeliveryType: 'PHONE_CALL',
@@ -2400,7 +2400,7 @@ describe('Adding post delivery session feedback', () => {
 
           await request(app)
             .get(
-              `/probation-practitioner/referrals/${referral.id}/session/${appointmentWithSubmittedFeedback.sessionNumber}/appointment/${appointmentWithSubmittedFeedback.id}/post-session-feedback`
+              `/probation-practitioner/referrals/${referral.id}/session/${appointmentWithSubmittedFeedback.sessionNumber}/appointment/${appointmentWithSubmittedFeedback.appointmentId}/post-session-feedback`
             )
 
             .expect(200)
@@ -2432,7 +2432,7 @@ describe('Adding post delivery session feedback', () => {
           const serviceUser = deliusServiceUserFactory.build()
 
           const appointmentWithSubmittedFeedback = actionPlanAppointmentFactory.build({
-            id: '1',
+            appointmentId: '1',
             appointmentTime: '2021-02-01T13:00:00Z',
             durationInMinutes: 60,
             appointmentDeliveryType: 'PHONE_CALL',
@@ -2464,7 +2464,7 @@ describe('Adding post delivery session feedback', () => {
 
           await request(app)
             .get(
-              `/probation-practitioner/referrals/${referral.id}/session/${appointmentWithSubmittedFeedback.sessionNumber}/appointment/${appointmentWithSubmittedFeedback.id}/post-session-feedback`
+              `/probation-practitioner/referrals/${referral.id}/session/${appointmentWithSubmittedFeedback.sessionNumber}/appointment/${appointmentWithSubmittedFeedback.appointmentId}/post-session-feedback`
             )
             .expect(200)
             .expect(res => {

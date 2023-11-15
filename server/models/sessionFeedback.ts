@@ -7,4 +7,17 @@ export default interface SessionFeedback {
   behaviourDescription?: string | null
   late: boolean | null
   lateReason: string | null
+  noSessionReasonType: NoSessionReasonType | null
+  noSessionReasonPopAcceptable: string | null
+  noSessionReasonPopUnacceptable: string | null
+  noSessionReasonLogistics: string | null
+  // noSessionReasonOther: string | null
+  noAttendanceInformation: string | null
+}
+
+export enum NoSessionReasonType {
+  POP_ACCEPTABLE = 'POP_ACCEPTABLE',
+  POP_UNACCEPTABLE = 'POP_UNACCEPTABLE',
+  LOGISTICS = 'LOGISTICS',
+  // OTHER = 'OTHER',
 }

@@ -70,7 +70,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
         it('includes the referal id and link to the behaviour feedback page', () => {
           const attendedAppointments = [
             actionPlanAppointmentFactory.build({ appointmentFeedback: { attendanceFeedback: { attended: 'yes' } } }),
-            actionPlanAppointmentFactory.build({ appointmentFeedback: { attendanceFeedback: { attended: 'late' } } }),
+            actionPlanAppointmentFactory.build({ appointmentFeedback: { attendanceFeedback: { attended: 'yes' } } }),
           ]
 
           const serviceUser = deliusServiceUserFactory.build()
@@ -119,7 +119,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
         it('includes the referal id and link to the behaviour feedback page', () => {
           const attendedAppointments = [
             actionPlanAppointmentFactory.build({ appointmentFeedback: { attendanceFeedback: { attended: 'yes' } } }),
-            actionPlanAppointmentFactory.build({ appointmentFeedback: { attendanceFeedback: { attended: 'late' } } }),
+            actionPlanAppointmentFactory.build({ appointmentFeedback: { attendanceFeedback: { attended: 'yes' } } }),
           ]
 
           const serviceUser = deliusServiceUserFactory.build()

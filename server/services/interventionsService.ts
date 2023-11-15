@@ -36,7 +36,7 @@ import AmendNeedsAndRequirements from '../models/amendNeedsAndRequirements'
 import { NeedsAndRequirementsType } from '../models/needsAndRequirementsType'
 import ChangelogDetail from '../models/changelogDetail'
 import { AmendOtherNeeds } from '../models/OtherNeeds'
-import SessionFeedback from '../models/sessionFeedback'
+import SessionFeedback, { NoSessionReasonType } from '../models/sessionFeedback'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -111,7 +111,8 @@ export interface CreateCaseNoteParams {
 
 export type CreateAppointmentSchedulingAndFeedback = AppointmentSchedulingDetails & {
   attendanceFeedback: {
-    attended: 'yes' | 'no' | 'late' | null
+    didSessionHappen: boolean | null
+    attended: 'yes' | 'no' | 'do_not_know' | null
     attendanceFailureInformation: string | null
   }
   sessionFeedback: {
@@ -119,6 +120,13 @@ export type CreateAppointmentSchedulingAndFeedback = AppointmentSchedulingDetail
     sessionResponse: string | null
     sessionConcerns: string | null
     notifyProbationPractitioner: boolean | null
+    late: boolean | null
+    lateReason: string | null
+    noSessionReasonType: NoSessionReasonType | null
+    noSessionReasonPopAcceptable: string | null
+    noSessionReasonPopUnacceptable: string | null
+    noSessionReasonLogistics: string | null
+    // noSessionReasonOther: string | null
   } | null
 }
 
@@ -579,14 +587,16 @@ export default class InterventionsService {
 
   async recordActionPlanAppointmentAttendance(
     token: string,
-    actionPlanId: string,
-    sessionNumber: number,
+    referralId: string,
+    appointmentId: string,
+
     appointmentAttendanceUpdate: Partial<AppointmentAttendance>
   ): Promise<ActionPlanAppointment> {
     const restClient = this.createRestClient(token)
 
-    return (await restClient.post({
-      path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/record-attendance`,
+    return (await restClient.put({
+      path: `/referral/${referralId}/delivery-session-appointments/${appointmentId}/attendance`,
+
       headers: { Accept: 'application/json' },
       data: appointmentAttendanceUpdate,
     })) as ActionPlanAppointment
@@ -594,14 +604,15 @@ export default class InterventionsService {
 
   async recordActionPlanAppointmentSessionFeedback(
     token: string,
-    actionPlanId: string,
-    sessionNumber: number,
+    referralId: string,
+    appointmentId: string,
     sessionFeedbackUpdate: Partial<SessionFeedback>
   ): Promise<ActionPlanAppointment> {
     const restClient = this.createRestClient(token)
 
-    return (await restClient.post({
-      path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/record-session-feedback`,
+    return (await restClient.put({
+      // path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/record-session-feedback`,
+      path: `/referral/${referralId}/delivery-session-appointments/${appointmentId}/session-feedback`,
       headers: { Accept: 'application/json' },
       data: sessionFeedbackUpdate,
     })) as ActionPlanAppointment
@@ -609,13 +620,14 @@ export default class InterventionsService {
 
   async submitActionPlanSessionFeedback(
     token: string,
-    actionPlanId: string,
-    sessionNumber: number
+    referralId: string,
+    appointmentId: string
   ): Promise<ActionPlanAppointment> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
-      path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/submit`,
+      // path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/submit`,
+      path: `/referral/${referralId}/delivery-session-appointments/${appointmentId}/submit-feedback`,
       headers: { Accept: 'application/json' },
     })) as ActionPlanAppointment
   }

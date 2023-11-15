@@ -66,5 +66,54 @@ export default class SessionFeedbackInputsPresenter {
       ),
       errorMessage: this.errorMessageForField('late-reason'),
     },
+    noSessionReasonType: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonType || null,
+        'no-session-reason-type'
+      ),
+      errorMessage: this.errorMessageForField('no-session-reason-type'),
+    },
+    noSessionReasonPopAcceptable: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonPopAcceptable || null,
+        'no-session-reason-pop'
+      ),
+      errorMessage: this.errorMessageForField('no-session-reason-pop-acceptable'),
+    },
+    noSessionReasonPopUnAcceptable: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonPopUnacceptable || null,
+        'no-session-reason-pop'
+      ),
+      errorMessage: this.errorMessageForField('no-session-reason-pop-unacceptable'),
+    },
+    noSessionReasonLogistics: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonLogistics || null,
+        'no-session-reason-logistics'
+      ),
+      errorMessage: this.errorMessageForField('no-session-reason-logistics'),
+    },
+    // noSessionReasonOther: {
+    //   value: new PresenterUtils(this.userInputData).stringValue(
+    //     this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonOther || null,
+    //     'no-session-reason-other'
+    //   ),
+    //   errorMessage: this.errorMessageForField('no-session-reason-other'),
+    // },
+    noAttendanceInformation: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.noAttendanceInformation || null,
+        'no-attendance-information'
+      ),
+      errorMessage: this.errorMessageForField('no-attendance-information'),
+    },
+    rescheduleSession: {
+      // value: new PresenterUtils(this.userInputData).stringValue(
+      //     this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonOther || null,
+      // 'reschedule-session'
+      // ),
+      errorMessage: this.errorMessageForField('reschedule-session'),
+    },
   }
 }

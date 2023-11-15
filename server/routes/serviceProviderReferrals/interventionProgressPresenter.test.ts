@@ -275,8 +275,8 @@ describe(InterventionProgressPresenter, () => {
             actionPlan,
             [],
             [
-              actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1, id: '1' }),
-              actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2, id: '2' }),
+              actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1, appointmentId: '1' }),
+              actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 2, appointmentId: '2' }),
             ],
             supplierAssessmentFactory.build(),
             serviceUser,
@@ -320,8 +320,8 @@ describe(InterventionProgressPresenter, () => {
             actionPlan,
             [],
             [
-              actionPlanAppointmentFactory.attended('yes').build({ id: '1', sessionNumber: 1 }),
-              actionPlanAppointmentFactory.attended('late').build({ id: '2', sessionNumber: 1 }),
+              actionPlanAppointmentFactory.attended('yes').build({ appointmentId: '1', sessionNumber: 1 }),
+              actionPlanAppointmentFactory.attended('yes').build({ appointmentId: '2', sessionNumber: 1 }),
             ],
             supplierAssessmentFactory.build(),
             serviceUser,
@@ -355,7 +355,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             actionPlan,
             [],
-            [actionPlanAppointmentFactory.attended('no').build({ id: '1' })],
+            [actionPlanAppointmentFactory.attended('no').build({ appointmentId: '1' })],
             supplierAssessmentFactory.build(),
             serviceUser,
             null

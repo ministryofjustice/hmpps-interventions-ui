@@ -1,4 +1,4 @@
-import { SessionStatus } from '../../utils/sessionStatus'
+import {SessionStatus} from '../../utils/sessionStatus'
 
 export default class SessionStatusPresenter {
   constructor(private readonly status: SessionStatus) {}
@@ -13,6 +13,8 @@ export default class SessionStatusPresenter {
         return 'needs feedback'
       case SessionStatus.completed:
         return 'completed'
+      case SessionStatus.didNotHappen:
+        return 'did not happen'
       default:
         return 'not scheduled'
     }
@@ -28,6 +30,8 @@ export default class SessionStatusPresenter {
         return 'govuk-tag--red'
       case SessionStatus.completed:
         return 'govuk-tag--green'
+      case SessionStatus.didNotHappen:
+        return 'govuk-tag--yellow'
       default:
         return 'govuk-tag--grey'
     }

@@ -16,6 +16,10 @@ export default abstract class CheckFeedbackAnswersPresenter {
 
   abstract readonly feedbackAnswersPresenter: FeedbackAnswersPresenter
 
+  abstract readonly attendanceFeedbackChangeLink: string
+
+  abstract readonly sessionFeedbackChangeLink: string
+
   readonly sessionDetailsHeading = `Session details`
 
   readonly sessionAttendanceHeading = `Session attendance`
@@ -69,10 +73,31 @@ export default abstract class CheckFeedbackAnswersPresenter {
         lines: [this.feedbackAnswersPresenter.sessionResponseAnswers.answer],
       })
     }
-    if (this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers) {
+    if (this.feedbackAnswersPresenter.noSessionReasonTypeAnswers) {
       sessionFeedbackDetails.push({
-        key: this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers.question,
-        lines: [this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers.answer],
+        key: this.feedbackAnswersPresenter.noSessionReasonTypeAnswers.question,
+        lines: [
+          this.feedbackAnswersPresenter.noSessionReasonTypeAnswers.answerType,
+          this.feedbackAnswersPresenter.noSessionReasonTypeAnswers.answerReasoning,
+        ],
+      })
+    }
+    if (this.feedbackAnswersPresenter.noAttendanceInformationAnswers) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.noAttendanceInformationAnswers.question,
+        lines: [this.feedbackAnswersPresenter.noAttendanceInformationAnswers.answer],
+      })
+    }
+    // if (this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers) {
+    //   sessionFeedbackDetails.push({
+    //     key: this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers.question,
+    //     lines: [this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers.answer],
+    //   })
+    // }
+    if (this.feedbackAnswersPresenter.sessionConcernsAnswers) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.sessionConcernsAnswers.question,
+        lines: [this.feedbackAnswersPresenter.sessionConcernsAnswers.answer],
       })
     }
     if (this.feedbackAnswersPresenter.behaviourDescriptionAnswers) {
@@ -89,5 +114,4 @@ export default abstract class CheckFeedbackAnswersPresenter {
     }
     return sessionFeedbackDetails
   }
-
 }

@@ -25,7 +25,12 @@ export default class CheckFeedbackAnswersView {
     return ViewUtils.summaryListArgsWithSummaryCard(
       this.presenter.sessionAttendanceSummaryListArgs,
       this.presenter.sessionAttendanceHeading,
-      { showBorders: true, showTitle: true }
+      { showBorders: true, showTitle: true },
+      {
+        href: this.presenter.attendanceFeedbackChangeLink,
+        text: 'Change',
+        visuallyHiddenText: 'Change session attendance details',
+      }
     )
   }
 
@@ -33,7 +38,12 @@ export default class CheckFeedbackAnswersView {
     return ViewUtils.summaryListArgsWithSummaryCard(
       this.presenter.sessionFeedbackSummaryListArgs,
       this.presenter.sessionFeedbackHeading,
-      { showBorders: true, showTitle: true }
+      { showBorders: true, showTitle: true },
+      {
+        href: this.presenter.sessionFeedbackChangeLink,
+        text: 'Change',
+        visuallyHiddenText: 'Change session feedback details',
+      }
     )
   }
 

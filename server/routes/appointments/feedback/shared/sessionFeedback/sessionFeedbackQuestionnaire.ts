@@ -53,11 +53,41 @@ export default class SessionFeedbackQuestionnaire {
     }
   }
 
+  get noAttendanceInformationQuestion(): { text: string } {
+    return {
+      text: `Add anything you know about why they did not attend and how you tried to contact them.`,
+    }
+  }
+
   get lateReasonQuestion(): { text: string } {
     return {
       text: `Add how late they were and anything you know about the reason.`,
     }
   }
+
+  get noSessionReasonAdditionalInformationPOPAcceptableQuestion(): { text: string } {
+    return {
+      text: `Add details about why they were not able to take part. You'll be asked separately about whether you have concerns about them.`,
+    }
+  }
+
+  get noSessionReasonAdditionalInformationPOPUnacceptableQuestion(): { text: string } {
+    return {
+      text: `Add details about their behaviour. You'll be asked separately about whether you have concerns about them.`,
+    }
+  }
+
+  get noSessionReasonAdditionalInformationLogisticsQuestion(): { text: string } {
+    return {
+      text: `Add details about the issue.`,
+    }
+  }
+
+  // get noSessionReasonAdditionalInformationOtherQuestion(): { text: string } {
+  //   return {
+  //     text: `Explain what happened and who was involved.`,
+  //   }
+  // }
 
   get behaviourQuestion(): { text: string; hint: string } {
     if (this.appointmentDecorator.isInitialAssessmentAppointment) {
@@ -84,6 +114,19 @@ export default class SessionFeedbackQuestionnaire {
     return {
       text: `Was ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} late?`,
       hint: `This helps the probation practitioner to support Alex River.`,
+    }
+  }
+
+  get noSessionReasonQuestion(): { text: string } {
+    return {
+      text: `Why did the session not happen?`,
+    }
+  }
+
+  get rescheduleSessionQuestion(): { text: string, hint: string } {
+    return {
+      text: `Would you like to reschedule this session now?`,
+      hint: `If you select no, you’ll still be able to reschedule it later.`
     }
   }
 }

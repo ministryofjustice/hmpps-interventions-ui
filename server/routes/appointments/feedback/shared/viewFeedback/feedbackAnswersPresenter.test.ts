@@ -58,7 +58,7 @@ describe(FeedbackAnswersPresenter, () => {
         const appointment = actionPlanAppointmentFactory.build({
           appointmentFeedback: {
             attendanceFeedback: {
-              attended: 'late',
+              attended: 'yes',
               additionalAttendanceInformation: 'Alex missed the bus',
             },
             sessionFeedback: {
@@ -85,7 +85,7 @@ describe(FeedbackAnswersPresenter, () => {
         const appointment = actionPlanAppointmentFactory.build({
           appointmentFeedback: {
             attendanceFeedback: {
-              attended: 'late',
+              attended: 'yes',
               additionalAttendanceInformation: null,
             },
             sessionFeedback: {

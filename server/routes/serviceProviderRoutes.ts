@@ -171,6 +171,22 @@ export default function serviceProviderRoutes(
     '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/edit/:draftBookingId/behaviour',
     (req, res) => appointmentsController.addActionPlanSessionAppointmentSessionFeedback(req, res)
   )
+  get(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/no-session', (req, res) =>
+    appointmentsController.addActionPlanNoSessionAppointmentSessionFeedback(req, res)
+  )
+  post(router, '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/no-session', (req, res) =>
+    appointmentsController.addActionPlanNoSessionAppointmentSessionFeedback(req, res)
+  )
+  get(
+    router,
+    '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/edit/:draftBookingId/no-session',
+    (req, res) => appointmentsController.addActionPlanNoSessionAppointmentSessionFeedback(req, res)
+  )
+  post(
+    router,
+    '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/edit/:draftBookingId/no-session',
+    (req, res) => appointmentsController.addActionPlanNoSessionAppointmentSessionFeedback(req, res)
+  )
   get(
     router,
     '/action-plan/:actionPlanId/appointment/:sessionNumber/post-session-feedback/check-your-answers',

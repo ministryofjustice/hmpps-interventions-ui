@@ -1,15 +1,15 @@
 import ActionPlan from '../../models/actionPlan'
 import SentReferral from '../../models/sentReferral'
 import utils from '../../utils/utils'
-import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
+import ReferralOverviewPagePresenter, {ReferralOverviewPageSection} from '../shared/referralOverviewPagePresenter'
 import DateUtils from '../../utils/dateUtils'
-import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
+import sessionStatus, {SessionStatus} from '../../utils/sessionStatus'
 import SessionStatusPresenter from '../shared/sessionStatusPresenter'
 import Intervention from '../../models/intervention'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
-import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../models/appointment'
-import AuthUserDetails, { authUserFullName } from '../../models/hmppsAuth/authUserDetails'
+import {ActionPlanAppointment, InitialAssessmentAppointment} from '../../models/appointment'
+import AuthUserDetails, {authUserFullName} from '../../models/hmppsAuth/authUserDetails'
 import ActionPlanProgressPresenter from '../shared/action-plan/actionPlanProgressPresenter'
 import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
@@ -155,7 +155,7 @@ export default class InterventionProgressPresenter {
 
     const viewHref = `/service-provider/action-plan/${this.actionPlan!.id}/session/${
       appointment.sessionNumber
-    }/appointment/${appointment.id}/post-session-feedback`
+    }/appointment/${appointment.appointmentId}/post-session-feedback`
     const editHref = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${
       appointment.sessionNumber
     }/edit/start`
@@ -165,6 +165,7 @@ export default class InterventionProgressPresenter {
 
     switch (status) {
       case SessionStatus.didNotAttend:
+      case SessionStatus.didNotHappen:
         if (isParent) {
           links = [
             {
@@ -301,6 +302,7 @@ export default class InterventionProgressPresenter {
       case SessionStatus.awaitingFeedback:
       case SessionStatus.scheduled:
       case SessionStatus.didNotAttend:
+      case SessionStatus.didNotHappen:
         return 'Feedback needs to be added on the same day the assessment is delivered.'
       case SessionStatus.completed:
         return 'The initial assessment has been delivered and feedback added.'
@@ -341,6 +343,7 @@ export default class InterventionProgressPresenter {
           },
         ]
       case SessionStatus.didNotAttend:
+      case SessionStatus.didNotHappen:
         return isCurrentAppointment
           ? [
               {

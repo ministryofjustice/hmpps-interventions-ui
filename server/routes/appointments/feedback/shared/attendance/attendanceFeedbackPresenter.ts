@@ -50,7 +50,7 @@ export default abstract class AttendanceFeedbackPresenter {
   readonly fields = {
     didSessionHappen: {
       value: new PresenterUtils(this.userInputData).booleanValue(
-        this.appointment.appointmentFeedback?.didSessionHappen ?? null,
+        this.appointment.appointmentFeedback?.attendanceFeedback.didSessionHappen ?? null,
         'did-session-happen'
       ),
       errorMessage: PresenterUtils.errorMessage(this.error, 'did-session-happen'),
@@ -85,7 +85,7 @@ export default abstract class AttendanceFeedbackPresenter {
       text: 'No',
     },
     dontKnow: {
-      value: 'do-not-know',
+      value: 'do_not_know',
       text: 'I do not know',
     },
   }

@@ -115,7 +115,8 @@ export default class ViewUtils {
   static summaryListArgsWithSummaryCard(
     summaryListItems: SummaryListItem[],
     heading: string | null | undefined = null,
-    options: { showBorders: boolean; showTitle: boolean } = { showBorders: true, showTitle: true }
+    options: { showBorders: boolean; showTitle: boolean } = { showBorders: true, showTitle: true },
+    actions: { href: string; text: string; visuallyHiddenText: string | null } | null = null
   ): SummaryListArgs {
     return {
       card: (() => {
@@ -123,6 +124,9 @@ export default class ViewUtils {
           return {
             title: {
               text: heading,
+            },
+            actions: {
+              items: [actions],
             },
           }
         }
