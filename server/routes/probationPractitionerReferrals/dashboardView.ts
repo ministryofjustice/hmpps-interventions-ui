@@ -48,6 +48,19 @@ export default class DashboardView {
     }
   }
 
+  get whatsNewBannerArgs(): NotificationBannerArgs {
+    const html = `<p class="govuk-notification-banner__heading">${this.presenter.whatsNewBanner?.heading}</p>
+                  <p class="govuk-body">${this.presenter.whatsNewBanner?.text}<br/>
+                    <a class="govuk-notification-banner__link" href='/probation-practitioner/whats-new'>${this.presenter.whatsNewBanner?.linkText}</a>
+                  </p>
+                  <p><a class="govuk-notification-banner__link" href=${this.presenter.closeWhatsNewBannerHref}>Close</a></p>`
+    return {
+      titleText: 'What’s new',
+      html,
+      classes: 'govuk-notification-banner--info',
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'probationPractitionerReferrals/dashboard',
@@ -59,6 +72,7 @@ export default class DashboardView {
         pagination: this.presenter.pagination.mojPaginationArgs,
         showSearchResult: {},
         serviceOutageBannerArgs: this.serviceOutageBannerArgs,
+        whatsNewBannerArgs: this.whatsNewBannerArgs,
       },
     ]
   }

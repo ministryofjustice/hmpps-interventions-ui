@@ -1,6 +1,7 @@
 import csv from 'csvtojson'
 import DeliusOfficeLocation from '../models/deliusOfficeLocation'
 import DeliusDeliveryUnit from '../models/deliusDeliveryUnit'
+import WhatsNewBanner from '../models/whatsNewBanner'
 
 export default class ReferenceDataService {
   async getProbationOffices(): Promise<DeliusOfficeLocation[]> {
@@ -31,6 +32,40 @@ export default class ReferenceDataService {
             probationRegionId: jsonFile.probation_region_id,
           }
         })
+      })
+  }
+
+  async getWhatsNewBannerForSP(): Promise<WhatsNewBanner | undefined> {
+    return csv()
+      .fromFile('reference-data/whats-new-banner-sp-v0.csv')
+      .then(json => {
+        return json
+          .map(jsonFile => {
+            return {
+              version: Number(jsonFile.version),
+              heading: jsonFile.heading,
+              text: jsonFile.text,
+              linkText: jsonFile.link_text,
+            }
+          })
+          .pop()
+      })
+  }
+
+  async getWhatsNewBannerForPP(): Promise<WhatsNewBanner | undefined> {
+    return csv()
+      .fromFile('reference-data/whats-new-banner-pp-v0.csv')
+      .then(json => {
+        return json
+          .map(jsonFile => {
+            return {
+              version: Number(jsonFile.version),
+              heading: jsonFile.heading,
+              text: jsonFile.text,
+              linkText: jsonFile.link_text,
+            }
+          })
+          .pop()
       })
   }
 }

@@ -54,6 +54,8 @@ describe(DashboardPresenter, () => {
         'tableId',
         'sentAt,DESC',
         true,
+        undefined,
+        false,
         'abc',
         prisons
       )
@@ -80,6 +82,8 @@ describe(DashboardPresenter, () => {
           'tableId',
           'sentAt,DESC',
           true,
+          undefined,
+          false,
           'abc',
           prisons
         )
@@ -143,6 +147,8 @@ describe(DashboardPresenter, () => {
             'tableId',
             'sentAt,DESC',
             true,
+            undefined,
+            false,
             'abc',
             prisons
           )
@@ -223,6 +229,8 @@ describe(DashboardPresenter, () => {
           'tableId',
           'sentAt,DESC',
           true,
+          undefined,
+          false,
           'abc',
           prisons
         )

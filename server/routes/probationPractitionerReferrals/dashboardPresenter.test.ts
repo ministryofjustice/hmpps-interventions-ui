@@ -50,6 +50,8 @@ describe('DashboardPresenter', () => {
         'ppOpenCases',
         'sentAt,ASC',
         true,
+        undefined,
+        false,
         'abc'
       )
 

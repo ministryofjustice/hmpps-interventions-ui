@@ -7,6 +7,7 @@ import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
 import ReferenceDataService from './services/referenceDataService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import RamDeliusApiService from './services/ramDeliusApiService'
+import WhatsNewCookieService from './services/whatsNewCookieService'
 
 const assessRisksAndNeedsRestClient = new RestClient('assessRisksAndNeedsClient', config.apis.assessRisksAndNeedsApi)
 const ramDeliusApiRestClient = new RestClient('ramDeliusApiClient', config.apis.ramDeliusApi)
@@ -17,6 +18,7 @@ const interventionsService = new InterventionsService(config.apis.interventionsS
 const assessRisksAndNeedsService = new AssessRisksAndNeedsService(assessRisksAndNeedsRestClient)
 const referenceDataService = new ReferenceDataService()
 const prisonRegisterService = new PrisonRegisterService()
+const whatsNewCookieService = new WhatsNewCookieService()
 
 const app = createApp(
   ramDeliusApiService,
@@ -24,7 +26,8 @@ const app = createApp(
   hmppsAuthService,
   assessRisksAndNeedsService,
   referenceDataService,
-  prisonRegisterService
+  prisonRegisterService,
+  whatsNewCookieService
 )
 
 export default app

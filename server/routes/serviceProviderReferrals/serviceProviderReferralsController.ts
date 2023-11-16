@@ -66,6 +66,7 @@ import PrisonRegisterService from '../../services/prisonRegisterService'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
+import WhatsNewCookieService from '../../services/whatsNewCookieService'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -84,7 +85,8 @@ export default class ServiceProviderReferralsController {
     private readonly referenceDataService: ReferenceDataService,
     private readonly userDataService: UserDataService,
     private readonly prisonRegisterService: PrisonRegisterService,
-    private readonly ramDeliusApiService: RamDeliusApiService
+    private readonly ramDeliusApiService: RamDeliusApiService,
+    private readonly whatsNewCookieService: WhatsNewCookieService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
@@ -213,6 +215,14 @@ export default class ServiceProviderReferralsController {
     if (req.query.dismissDowntimeBanner) {
       req.session.disableDowntimeBanner = true
     }
+
+    const whatsNewBanner = await this.referenceDataService.getWhatsNewBannerForSP()
+    let showWhatsNewBanner = whatsNewBanner?.version !== this.whatsNewCookieService.getDismissedVersion(req)
+    if (whatsNewBanner?.version && req.query.dismissWhatsNewBanner) {
+      this.whatsNewCookieService.persistDismissedVersion(res, whatsNewBanner.version)
+      showWhatsNewBanner = false
+    }
+
     const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
       req,
       res,
@@ -250,6 +260,8 @@ export default class ServiceProviderReferralsController {
       tablePersistentId,
       sort[0],
       disablePlannedDowntimeNotification,
+      whatsNewBanner,
+      showWhatsNewBanner,
       req.session.dashboardOriginPage,
       prisons,
       getSentReferralsFilterParams.search
@@ -1091,6 +1103,10 @@ export default class ServiceProviderReferralsController {
         })
     )
     res.redirect(303, `/service-provider/action-plan/${newDraftActionPlan.id}/add-activity/1`)
+  }
+
+  async showWhatsNew(req: Request, res: Response): Promise<void> {
+    ControllerUtils.renderWithLayout(res, { renderArgs: ['serviceProviderReferrals/whatsNew', {}] }, null)
   }
 
   private parseActivityNumber(number: string, actionPlan?: ActionPlan): number {

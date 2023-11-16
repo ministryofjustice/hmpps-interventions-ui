@@ -22,6 +22,7 @@ import ReferenceDataService from '../../services/referenceDataService'
 import UserDataService from '../../services/userDataService'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import MockRamDeliusApiService from './mocks/mockRamDeliusApiService'
+import WhatsNewCookieService from '../../services/whatsNewCookieService'
 
 export enum AppSetupUserType {
   probationPractitioner = 'delius',
@@ -119,6 +120,7 @@ export default function appWithAllRoutes({
     referenceDataService: {} as ReferenceDataService,
     userDataService: {} as UserDataService,
     prisonRegisterService: {} as PrisonRegisterService,
+    whatsNewCookieService: {} as WhatsNewCookieService,
     ...overrides,
   }
 

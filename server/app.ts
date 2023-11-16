@@ -34,6 +34,7 @@ import UserDataService from './services/userDataService'
 import logger from '../log'
 import PrisonRegisterService from './services/prisonRegisterService'
 import RamDeliusApiService from './services/ramDeliusApiService'
+import WhatsNewCookieService from './services/whatsNewCookieService'
 
 const RedisStore = connectRedis(session)
 
@@ -51,7 +52,8 @@ export default function createApp(
   hmppsAuthService: HmppsAuthService,
   assessRisksAndNeedsService: AssessRisksAndNeedsService,
   referenceDataService: ReferenceDataService,
-  prisonRegisterService: PrisonRegisterService
+  prisonRegisterService: PrisonRegisterService,
+  whatsNewCookieService: WhatsNewCookieService
 ): express.Application {
   const app = express()
 
@@ -265,6 +267,7 @@ export default function createApp(
     referenceDataService,
     userDataService,
     prisonRegisterService,
+    whatsNewCookieService,
   }
 
   app.use('/', indexRoutes(standardRouter(), services))

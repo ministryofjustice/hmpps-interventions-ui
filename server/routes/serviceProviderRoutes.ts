@@ -15,6 +15,7 @@ import PrisonRegisterService from '../services/prisonRegisterService'
 import AssessRisksAndNeedsService from '../services/assessRisksAndNeedsService'
 import UserDataService from '../services/userDataService'
 import HmppsAuthService from '../services/hmppsAuthService'
+import WhatsNewCookieService from '../services/whatsNewCookieService'
 
 export const serviceProviderUrlPrefix = '/service-provider'
 export default function serviceProviderRoutes(
@@ -28,6 +29,7 @@ export default function serviceProviderRoutes(
     assessRisksAndNeedsService: AssessRisksAndNeedsService
     userDataService: UserDataService
     hmppsAuthService: HmppsAuthService
+    whatsNewCookieService: WhatsNewCookieService
   }
 ): Router {
   const serviceProviderReferralsController = new ServiceProviderReferralsController(
@@ -38,7 +40,8 @@ export default function serviceProviderRoutes(
     services.referenceDataService,
     services.userDataService,
     services.prisonRegisterService,
-    services.ramDeliusApiService
+    services.ramDeliusApiService,
+    services.whatsNewCookieService
   )
   const appointmentsController = new AppointmentsController(
     services.interventionsService,
@@ -347,6 +350,8 @@ export default function serviceProviderRoutes(
   get(router, '/referrals/:id/add-case-note/confirmation', (req, res) =>
     caseNotesController.addCaseNoteConfirmation(req, res, 'service-provider')
   )
+
+  get(router, '/whats-new', (req, res) => serviceProviderReferralsController.showWhatsNew(req, res))
 
   if (config.features.serviceProviderReporting) {
     const reportingController = new ReportingController(services.interventionsService)

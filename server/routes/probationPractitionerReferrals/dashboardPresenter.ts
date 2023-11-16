@@ -8,6 +8,7 @@ import { Page } from '../../models/pagination'
 import Pagination from '../../utils/pagination/pagination'
 import ControllerUtils from '../../utils/controllerUtils'
 import SentReferralSummaries from '../../models/sentReferralSummaries'
+import WhatsNewBanner from '../../models/whatsNewBanner'
 
 export type PPDashboardType = 'Open cases' | 'Unassigned cases' | 'Completed cases' | 'Cancelled cases'
 export default class DashboardPresenter {
@@ -24,6 +25,8 @@ export default class DashboardPresenter {
     readonly tablePersistentId: string,
     private readonly requestedSort: string,
     readonly disableDowntimeBanner: boolean,
+    readonly whatsNewBanner: WhatsNewBanner | undefined,
+    readonly showWhatsNewBanner: boolean,
     readonly dashboardOrigin: string
   ) {
     this.pagination = new Pagination(sentReferrals)
@@ -35,6 +38,10 @@ export default class DashboardPresenter {
 
   get closeHref(): string {
     return `${this.dashboardOrigin}?dismissDowntimeBanner=true`
+  }
+
+  get closeWhatsNewBannerHref(): string {
+    return `${this.dashboardOrigin}?dismissWhatsNewBanner=true`
   }
 
   // this maps the column headings in the table to the database field used

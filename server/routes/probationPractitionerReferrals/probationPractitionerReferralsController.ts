@@ -31,6 +31,7 @@ import ActionPlanUtils from '../../utils/actionPlanUtils'
 import UserDataService from '../../services/userDataService'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
+import WhatsNewCookieService from '../../services/whatsNewCookieService'
 
 export default class ProbationPractitionerReferralsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -43,7 +44,8 @@ export default class ProbationPractitionerReferralsController {
     private readonly referenceDataService: ReferenceDataService,
     private readonly userDataService: UserDataService,
     private readonly prisonRegisterService: PrisonRegisterService,
-    private readonly ramDeliusApiService: RamDeliusApiService
+    private readonly ramDeliusApiService: RamDeliusApiService,
+    private readonly whatsNewCookieService: WhatsNewCookieService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
@@ -93,6 +95,14 @@ export default class ProbationPractitionerReferralsController {
     if (req.query.dismissDowntimeBanner) {
       req.session.disableDowntimeBanner = true
     }
+
+    const whatsNewBanner = await this.referenceDataService.getWhatsNewBannerForPP()
+    let showWhatsNewBanner = whatsNewBanner?.version !== this.whatsNewCookieService.getDismissedVersion(req)
+    if (whatsNewBanner?.version && req.query.dismissWhatsNewBanner) {
+      this.whatsNewCookieService.persistDismissedVersion(res, whatsNewBanner.version)
+      showWhatsNewBanner = false
+    }
+
     const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
       req,
       res,
@@ -128,6 +138,8 @@ export default class ProbationPractitionerReferralsController {
       tablePersistentId,
       sort[0],
       disablePlannedDowntimeNotification,
+      whatsNewBanner,
+      showWhatsNewBanner,
       req.session.dashboardOriginPage
     )
 
@@ -424,5 +436,9 @@ export default class ProbationPractitionerReferralsController {
       },
       serviceUser
     )
+  }
+
+  async showWhatsNew(req: Request, res: Response): Promise<void> {
+    ControllerUtils.renderWithLayout(res, { renderArgs: ['probationPractitionerReferrals/whatsNew', {}] }, null)
   }
 }

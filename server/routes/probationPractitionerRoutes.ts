@@ -18,7 +18,8 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     services.referenceDataService,
     services.userDataService,
     services.prisonRegisterService,
-    services.ramDeliusApiService
+    services.ramDeliusApiService,
+    services.whatsNewCookieService
   )
   const appointmentsController = new AppointmentsController(
     services.interventionsService,
@@ -201,6 +202,8 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   post(router, '/referrals/:referralId/interpreter-needs', (req, res) =>
     amendAReferralController.updateInterpreterNeeds(req, res)
   )
+
+  get(router, '/whats-new', (req, res) => probationPractitionerReferralsController.showWhatsNew(req, res))
 
   return router
 }
