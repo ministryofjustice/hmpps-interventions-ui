@@ -33,7 +33,18 @@ export default class ReportingForm {
       new Date(fromDateResult.value.iso8601) > new Date(toDateResult.value.iso8601)
     ) {
       errors.push(CalendarDayInput.createError('from-date', errorMessages.reportingDate.from.mustBeBeforeToDate).errors)
-      errors.push(CalendarDayInput.createError('to-date', errorMessages.reportingDate.from.mustBeBeforeToDate).errors)
+      errors.push(CalendarDayInput.createError('to-date', errorMessages.reportingDate.to.mustBeAfterFromDate).errors)
+    }
+
+    if (fromDateResult.value && toDateResult.value) {
+      const fromDate = new Date(fromDateResult.value.iso8601)
+      const toDate = new Date(toDateResult.value.iso8601)
+      const diff = (toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
+      if (diff > 6)
+        errors.push(
+          CalendarDayInput.createError('from-date', errorMessages.reportingDate.from.mustNotMoreThan6Months).errors,
+          CalendarDayInput.createError('to-date', errorMessages.reportingDate.to.mustNotMoreThan6Months).errors
+        )
     }
 
     const todayDate = new Date()

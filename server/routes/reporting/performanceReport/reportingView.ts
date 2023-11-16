@@ -26,7 +26,7 @@ export default class ReportingView {
       namePrefix: 'from-date',
       fieldset: {
         legend: {
-          text: 'From date',
+          text: 'Date from',
           isPageHeading: false,
           classes: 'govuk-fieldset__legend--m',
         },
@@ -61,7 +61,7 @@ export default class ReportingView {
       namePrefix: 'to-date',
       fieldset: {
         legend: {
-          text: 'To date',
+          text: 'Date to',
           isPageHeading: false,
           classes: 'govuk-fieldset__legend--m',
         },

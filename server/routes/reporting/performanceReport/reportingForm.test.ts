@@ -42,13 +42,42 @@ describe(ReportingForm, () => {
             {
               errorSummaryLinkedField: 'from-date-day',
               formFields: ['from-date-day', 'from-date-month', 'from-date-year'],
-              message: 'The "from" date must be before the "to" date',
+              message: 'Enter a date that is before or the same as the "date to"',
             },
 
             {
               errorSummaryLinkedField: 'to-date-day',
               formFields: ['to-date-day', 'to-date-month', 'to-date-year'],
-              message: 'The "from" date must be before the "to" date',
+              message: 'Enter a date that is later than or the same as the "date from"',
+            },
+          ])
+        })
+      })
+
+      describe('when the "from" date is more than 6 months than the "to" date', () => {
+        it('returns an error object with a message', async () => {
+          const request = TestUtils.createRequest({
+            'from-date-year': '2023',
+            'from-date-month': '02',
+            'from-date-day': '12',
+            'to-date-year': '2023',
+            'to-date-month': '11',
+            'to-date-day': '16',
+          })
+
+          const result = await new ReportingForm(request).data()
+
+          expect(result.value).toBeNull()
+          expect(result.error!.errors).toEqual([
+            {
+              errorSummaryLinkedField: 'from-date-day',
+              formFields: ['from-date-day', 'from-date-month', 'from-date-year'],
+              message: 'Enter a date that is within 6 months of the "date to"',
+            },
+            {
+              errorSummaryLinkedField: 'to-date-day',
+              formFields: ['to-date-day', 'to-date-month', 'to-date-year'],
+              message: 'Enter a date that is within 6 months of the "date from"',
             },
           ])
         })
@@ -82,6 +111,10 @@ describe(ReportingForm, () => {
         const today = new Date()
         const tomorrow = new Date(today)
         tomorrow.setDate(tomorrow.getDate() + 1)
+
+        const todayDay = today.getUTCDate().toString()
+        const todayYear = today.getUTCFullYear().toString()
+        const todayMonth = (Number(today.getUTCMonth()) + 1).toString()
 
         const tomorrowDay = tomorrow.getUTCDate().toString()
         const tomorrowYear = tomorrow.getUTCFullYear().toString()
@@ -117,9 +150,9 @@ describe(ReportingForm, () => {
 
         it('returns an error object with a message if the "to" date is in the future', async () => {
           const request = TestUtils.createRequest({
-            'from-date-year': '2021',
-            'from-date-month': '06',
-            'from-date-day': '12',
+            'from-date-year': todayYear,
+            'from-date-month': todayMonth,
+            'from-date-day': todayDay,
             'to-date-year': tomorrowYear,
             'to-date-month': tomorrowMonth,
             'to-date-day': tomorrowDay,
@@ -161,12 +194,12 @@ describe(ReportingForm, () => {
             {
               errorSummaryLinkedField: 'from-date-day',
               formFields: ['from-date-day', 'from-date-month', 'from-date-year'],
-              message: 'The "from" date must be before the "to" date',
+              message: 'Enter a date that is before or the same as the "date to"',
             },
             {
               errorSummaryLinkedField: 'to-date-day',
               formFields: ['to-date-day', 'to-date-month', 'to-date-year'],
-              message: 'The "from" date must be before the "to" date',
+              message: 'Enter a date that is later than or the same as the "date from"',
             },
           ])
         })

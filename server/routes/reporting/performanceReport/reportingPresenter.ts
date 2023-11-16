@@ -14,7 +14,7 @@ export default class ReportingPresenter {
 
   readonly text = {
     title: 'Reporting',
-    subtitle: 'Download service provider data as CSV documents.',
+    subtitle: 'Download a CSV of case data from this service. You can download up to 6 months data per search.',
     hint: 'For example, 11 12 2020',
   }
 
