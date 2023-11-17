@@ -178,6 +178,7 @@ export default {
   },
   featureFlags: {
     custodyLocationEnabled: get('FLAG_CUSTODY_LOCATION_ENABLED', true),
+    progressScreensEnabled: get('FEATURE_UPDATED_PROGRESS_SCREENS_ENABLED', true),
   },
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   draftsService: {
