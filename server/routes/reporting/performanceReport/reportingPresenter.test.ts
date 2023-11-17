@@ -10,7 +10,7 @@ describe(ReportingPresenter, () => {
 
       expect(presenter.text).toMatchObject({
         title: 'Reporting',
-        subtitle: 'Download service provider data as CSV documents.',
+        subtitle: 'Download a CSV of case data from this service. You can download up to 6 months data per search.',
         hint: 'For example, 11 12 2020',
       })
     })
@@ -19,9 +19,8 @@ describe(ReportingPresenter, () => {
   describe('fields', () => {
     describe('fromDate', () => {
       describe('when no user information has been entered', () => {
-        it('uses an empty string value as the field value', () => {
+        it('uses the default value set', () => {
           const presenter = new ReportingPresenter(loggedInUser)
-
           expect(presenter.fields.fromDate.day.value).toEqual('')
           expect(presenter.fields.fromDate.month.value).toEqual('')
           expect(presenter.fields.fromDate.year.value).toEqual('')
