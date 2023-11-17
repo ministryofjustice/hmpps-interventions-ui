@@ -98,7 +98,7 @@ export default class MakeAReferralController {
     const presenter = new ReferralStartPresenter(interventionId)
     const view = new ReferralStartView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    await ControllerUtils.renderWithLayout(req, res, view, null, 'probation-practitioner')
   }
 
   async createReferral(req: Request, res: Response): Promise<void> {
@@ -162,7 +162,7 @@ export default class MakeAReferralController {
       const view = new ReferralStartView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -174,7 +174,7 @@ export default class MakeAReferralController {
     const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser, prisons, referral.id)
     const view = new ServiceUserDetailsView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async confirmServiceUserDetails(req: Request, res: Response): Promise<void> {
@@ -216,7 +216,7 @@ export default class MakeAReferralController {
     const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
     const view = new ReferralFormView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async viewReferralTypeForm(req: Request, res: Response): Promise<void> {
@@ -227,7 +227,7 @@ export default class MakeAReferralController {
     const [serviceUser] = await Promise.all([this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)])
     const presenter = new ReferralTypePresenter(referral, null, req.body)
     const view = new ReferralTypeFormView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async viewCommunityAllocatedForm(req: Request, res: Response): Promise<void> {
@@ -238,7 +238,7 @@ export default class MakeAReferralController {
     const [serviceUser] = await Promise.all([this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)])
     const presenter = new CommunityAllocatedPresenter(referral, null, req.body)
     const view = new CommunityAllocatedView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async viewPrisonReleaseForm(req: Request, res: Response): Promise<void> {
@@ -249,7 +249,7 @@ export default class MakeAReferralController {
     const serviceUser = await Promise.resolve(this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn))
     const presenter = new PrisonReleasePresenter(referral, null, req.body)
     const view = new PrisonReleaseFormView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async viewRelevantSentence(req: Request, res: Response): Promise<void> {
@@ -272,7 +272,7 @@ export default class MakeAReferralController {
     const presenter = new RelevantSentencePresenter(referral, intervention, convictions)
     const view = new RelevantSentenceView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateRelevantSentence(req: Request, res: Response): Promise<void> {
@@ -325,7 +325,7 @@ export default class MakeAReferralController {
       const view = new RelevantSentenceView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -374,7 +374,7 @@ export default class MakeAReferralController {
     const presenter = new ComplexityLevelPresenter(referral, serviceCategory, formError)
     const view = new ComplexityLevelView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async viewCompletionDeadline(req: Request, res: Response): Promise<void> {
@@ -400,7 +400,7 @@ export default class MakeAReferralController {
 
     const view = new CompletionDeadlineView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUserDetails)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUserDetails, 'probation-practitioner')
   }
 
   async updateCompletionDeadline(req: Request, res: Response): Promise<void> {
@@ -465,7 +465,7 @@ export default class MakeAReferralController {
       const view = new CompletionDeadlineView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUserDetails)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUserDetails, 'probation-practitioner')
     }
   }
 
@@ -503,7 +503,7 @@ export default class MakeAReferralController {
 
     const view = new FurtherInformationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateFurtherInformation(req: Request, res: Response): Promise<void> {
@@ -541,7 +541,7 @@ export default class MakeAReferralController {
       const view = new FurtherInformationView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -591,7 +591,7 @@ export default class MakeAReferralController {
     const presenter = new DesiredOutcomesPresenter(referral, serviceCategory, formError)
     const view = new DesiredOutcomesView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async viewNeedsAndRequirements(req: Request, res: Response): Promise<void> {
@@ -602,7 +602,7 @@ export default class MakeAReferralController {
     const presenter = new NeedsAndRequirementsPresenter(referral)
     const view = new NeedsAndRequirementsView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateNeedsAndRequirements(req: Request, res: Response): Promise<void> {
@@ -635,7 +635,7 @@ export default class MakeAReferralController {
       const view = new NeedsAndRequirementsView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -647,7 +647,7 @@ export default class MakeAReferralController {
     const presenter = new CurrentLocationPresenter(referral, prisons, null, req.body)
     const view = new CurrentLocationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async submitReferralTypeForm(req: Request, res: Response): Promise<void> {
@@ -680,7 +680,7 @@ export default class MakeAReferralController {
       const view = new ReferralTypeFormView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -714,7 +714,7 @@ export default class MakeAReferralController {
       const view = new PrisonReleaseFormView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -750,7 +750,7 @@ export default class MakeAReferralController {
       const view = new PrisonReleaseFormView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -800,7 +800,7 @@ export default class MakeAReferralController {
       const view = new CurrentLocationView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -812,7 +812,7 @@ export default class MakeAReferralController {
     const presenter = new ExpectedReleaseDatePresenter(referral)
     const view = new ExpectedReleaseDateView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateExpectedReleaseDate(req: Request, res: Response): Promise<void> {
@@ -848,7 +848,7 @@ export default class MakeAReferralController {
       const view = new ExpectedReleaseDateView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -868,7 +868,7 @@ export default class MakeAReferralController {
     )
     const view = new ConfirmProbationPractitionerDetailsView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
@@ -914,7 +914,7 @@ export default class MakeAReferralController {
       const view = new ConfirmProbationPractitionerDetailsView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -936,7 +936,7 @@ export default class MakeAReferralController {
     )
     const view = new ConfirmMainPointOfContactDetailsView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateMainPointOfContactDetails(req: Request, res: Response): Promise<void> {
@@ -984,14 +984,14 @@ export default class MakeAReferralController {
       const view = new ConfirmMainPointOfContactDetailsView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
   async viewRiskInformation(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
-    await this.displayOasysRiskInformationPage(res, referral, serviceUser)
+    await this.displayOasysRiskInformationPage(req, res, referral, serviceUser)
   }
 
   private updateRiskSummary(
@@ -1034,6 +1034,7 @@ export default class MakeAReferralController {
   }
 
   private async displayOasysRiskInformationPage(
+    req: Request,
     res: Response,
     referral: DraftReferral,
     serviceUser: DeliusServiceUser,
@@ -1048,7 +1049,7 @@ export default class MakeAReferralController {
       : riskSummary
     const presenter = new OasysRiskInformationPresenter(referral.id, updatedRiskSummary, error, label)
     const view = new OasysRiskInformationView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async confirmEditOasysRiskInformation(req: Request, res: Response): Promise<void> {
@@ -1097,7 +1098,7 @@ export default class MakeAReferralController {
     } else {
       const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, referralId)
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
-      await this.displayOasysRiskInformationPage(res, referral, serviceUser, confirmEditRiskForm.error)
+      await this.displayOasysRiskInformationPage(req, res, referral, serviceUser, confirmEditRiskForm.error)
     }
   }
 
@@ -1145,7 +1146,7 @@ export default class MakeAReferralController {
     const presenter = new EditOasysRiskInformationPresenter(riskSummary, draftOasysRiskInformation, error, label)
     const view = new EditOasysRiskInformationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateRiskInformation(req: Request, res: Response): Promise<void> {
@@ -1180,7 +1181,7 @@ export default class MakeAReferralController {
       const view = new RiskInformationView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -1197,7 +1198,7 @@ export default class MakeAReferralController {
     )
     const view = new EnforceableDaysView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateEnforceableDays(req: Request, res: Response): Promise<void> {
@@ -1237,7 +1238,7 @@ export default class MakeAReferralController {
       const view = new EnforceableDaysView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
   }
 
@@ -1270,7 +1271,7 @@ export default class MakeAReferralController {
     )
     const view = new CheckAllReferralInformationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, caseConviction.caseDetail)
+    await ControllerUtils.renderWithLayout(req, res, view, caseConviction.caseDetail, 'probation-practitioner')
   }
 
   async sendDraftReferral(req: Request, res: Response): Promise<void> {
@@ -1304,7 +1305,7 @@ export default class MakeAReferralController {
     const presenter = new UpdateServiceCategoriesPresenter(referral, intervention.serviceCategories, formError)
     const view = new UpdateServiceCategoriesView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async viewConfirmation(req: Request, res: Response): Promise<void> {
@@ -1314,7 +1315,7 @@ export default class MakeAReferralController {
     const presenter = new ConfirmationPresenter(referral, res.locals.user)
     const view = new ConfirmationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async isSentReferral(req: Request, res: Response): Promise<boolean> {

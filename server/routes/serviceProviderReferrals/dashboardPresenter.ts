@@ -11,7 +11,6 @@ import SentReferralSummaries from '../../models/sentReferralSummaries'
 import PresenterUtils from '../../utils/presenterUtils'
 import DashboardDetails from '../../models/dashboardDetails'
 import Prison from '../../models/prisonRegister/prison'
-import WhatsNewBanner from '../../models/whatsNewBanner'
 
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
 const dashboardDetails: Record<DashboardType, DashboardDetails> = {
@@ -59,8 +58,6 @@ export default class DashboardPresenter {
     readonly tablePersistentId: string,
     private readonly requestedSort: string,
     readonly disableDowntimeBanner: boolean,
-    readonly whatsNewBanner: WhatsNewBanner | undefined,
-    readonly showWhatsNewBanner: boolean,
     readonly dashboardOrigin: string,
     private prisons: Prison[],
     readonly searchText: string | null = null,
@@ -74,10 +71,6 @@ export default class DashboardPresenter {
 
   get closeHref(): string {
     return `${this.dashboardOrigin}?dismissDowntimeBanner=true`
-  }
-
-  get closeWhatsNewBannerHref(): string {
-    return `${this.dashboardOrigin}?dismissWhatsNewBanner=true`
   }
 
   // this maps the column headings in the table to the database field used

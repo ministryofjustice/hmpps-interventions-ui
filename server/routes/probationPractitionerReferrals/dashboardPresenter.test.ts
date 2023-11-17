@@ -49,8 +49,6 @@ describe('DashboardPresenter', () => {
         'Open cases',
         'ppOpenCases',
         'sentAt,ASC',
-        true,
-        undefined,
         false,
         'abc'
       )

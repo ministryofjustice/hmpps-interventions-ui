@@ -36,13 +36,14 @@ describe(ControllerUtils, () => {
 
   describe('.renderWithLayout', () => {
     describe('with null serviceUser', () => {
-      it('calls render on the response, passing the content view’s renderArgs augmented with a headerPresenter object in the locals', () => {
+      it('calls render on the response, passing the content view’s renderArgs augmented with a headerPresenter object in the locals', async () => {
+        const req = { render: jest.fn(), locals: { user: null } } as unknown as Request
         const res = { render: jest.fn(), locals: { user: null } } as unknown as Response
         const renderArgs: [string, Record<string, unknown>] = ['myTemplate', { foo: '1', bar: '2' }]
         const contentView = { renderArgs }
         config.googleAnalyticsTrackingId = 'UA-TEST-ID'
 
-        ControllerUtils.renderWithLayout(res, contentView, null)
+        await ControllerUtils.renderWithLayout(req, res, contentView, null, null)
 
         expect(res.render).toHaveBeenCalledWith('myTemplate', {
           foo: '1',
@@ -54,14 +55,15 @@ describe(ControllerUtils, () => {
     })
 
     describe('with non-null serviceUser', () => {
-      it('calls render on the response, passing the content view’s renderArgs, augmented with headerPresenter and serviceUserNotificationBannerArgs objects in the locals', () => {
+      it('calls render on the response, passing the content view’s renderArgs, augmented with headerPresenter and serviceUserNotificationBannerArgs objects in the locals', async () => {
+        const req = { render: jest.fn(), locals: { user: null } } as unknown as Request
         const res = { render: jest.fn(), locals: { user: null } } as unknown as Response
         const renderArgs: [string, Record<string, unknown>] = ['myTemplate', { foo: '1', bar: '2' }]
         const contentView = { renderArgs }
         const serviceUser = deliusServiceUserFactory.build()
         config.googleAnalyticsTrackingId = 'UA-TEST-ID'
 
-        ControllerUtils.renderWithLayout(res, contentView, serviceUser)
+        await ControllerUtils.renderWithLayout(req, res, contentView, serviceUser, null)
 
         expect(res.render).toHaveBeenCalledWith('myTemplate', {
           foo: '1',
@@ -94,6 +96,7 @@ describe(ControllerUtils, () => {
           { params: { draftBookingId: 'abc123' } } as unknown as Request,
           { locals: { user: { userId: 'jane.bloggs' } } } as unknown as Response,
           draftsService,
+          null,
           {
             idParamName: 'draftBookingId',
             typeName: 'booking',
@@ -118,6 +121,7 @@ describe(ControllerUtils, () => {
           { params: { draftBookingId: 'abc123' } } as unknown as Request,
           res as unknown as Response,
           draftsService,
+          null,
           {
             idParamName: 'draftBookingId',
             typeName: 'booking',
@@ -146,6 +150,7 @@ describe(ControllerUtils, () => {
           { params: { draftBookingId: 'abc123' } } as unknown as Request,
           res as unknown as Response,
           draftsService,
+          null,
           {
             idParamName: 'draftBookingId',
             typeName: 'booking',
@@ -174,6 +179,7 @@ describe(ControllerUtils, () => {
           { params: { draftBookingId: 'abc123' } } as unknown as Request,
           res as unknown as Response,
           draftsService,
+          null,
           {
             idParamName: 'draftBookingId',
             typeName: 'booking',
@@ -201,6 +207,7 @@ describe(ControllerUtils, () => {
           { params: { draftBookingId: 'abc123' } } as unknown as Request,
           res as unknown as Response,
           draftsService,
+          null,
           {
             idParamName: 'draftBookingId',
             typeName: 'booking',

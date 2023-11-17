@@ -13,7 +13,6 @@ import ReferenceDataService from '../services/referenceDataService'
 import UserDataService from '../services/userDataService'
 import PrisonRegisterService from '../services/prisonRegisterService'
 import RamDeliusApiService from '../services/ramDeliusApiService'
-import WhatsNewCookieService from '../services/whatsNewCookieService'
 
 export interface Services {
   ramDeliusApiService: RamDeliusApiService
@@ -24,7 +23,6 @@ export interface Services {
   referenceDataService: ReferenceDataService
   userDataService: UserDataService
   prisonRegisterService: PrisonRegisterService
-  whatsNewCookieService: WhatsNewCookieService
 }
 
 export const get = (router: Router, path: string, handler: RequestHandler): Router =>

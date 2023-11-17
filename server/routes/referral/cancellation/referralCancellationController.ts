@@ -85,7 +85,7 @@ export default class ReferralCancellationController {
     )
     const view = new ReferralCancellationReasonView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async cancellationCheckAnswers(req: Request, res: Response): Promise<void> {
@@ -104,7 +104,7 @@ export default class ReferralCancellationController {
     const presenter = new ReferralCancellationCheckAnswersPresenter(req.params.id, draftCancellation.id)
     const view = new ReferralCancellationCheckAnswersView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async submitCancellation(req: Request, res: Response): Promise<void> {
@@ -151,7 +151,7 @@ export default class ReferralCancellationController {
     )
     const view = new ReferralCancellationConfirmationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   private async fetchDraftCancellationOrRenderMessage(req: Request, res: Response) {
@@ -159,12 +159,18 @@ export default class ReferralCancellationController {
       target: `/probation-practitioner/referrals/${req.params.id}/progress`,
       message: 'go to the referral to cancel it',
     }
-    return ControllerUtils.fetchDraftOrRenderMessage<DraftCancellationData>(req, res, this.draftsService, {
-      idParamName: 'draftCancellationId',
-      notFoundUserMessage:
-        'You have not cancelled this referral. This is because too much time has passed since you started it.',
-      typeName: 'cancellation',
-      backLink,
-    })
+    return ControllerUtils.fetchDraftOrRenderMessage<DraftCancellationData>(
+      req,
+      res,
+      this.draftsService,
+      'probation-practitioner',
+      {
+        idParamName: 'draftCancellationId',
+        notFoundUserMessage:
+          'You have not cancelled this referral. This is because too much time has passed since you started it.',
+        typeName: 'cancellation',
+        backLink,
+      }
+    )
   }
 }

@@ -11,6 +11,6 @@ export default class ServiceEditorController {
     const interventions = await this.interventionsService.getMyInterventions(res.locals.user.token.accessToken)
     const presenter = new DashboardPresenter(res.locals.user, interventions)
     const view = new DashboardView(presenter)
-    ControllerUtils.renderWithLayout(res, view, null)
+    await ControllerUtils.renderWithLayout(req, res, view, null, null)
   }
 }

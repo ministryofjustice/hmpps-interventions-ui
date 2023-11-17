@@ -35,7 +35,7 @@ export default class ReferenceDataService {
       })
   }
 
-  async getWhatsNewBannerForSP(): Promise<WhatsNewBanner | undefined> {
+  private static async getWhatsNewBannerForSP(backHref: string): Promise<WhatsNewBanner | undefined> {
     return csv()
       .fromFile('reference-data/whats-new-banner-sp-v0.csv')
       .then(json => {
@@ -46,13 +46,14 @@ export default class ReferenceDataService {
               heading: jsonFile.heading,
               text: jsonFile.text,
               linkText: jsonFile.link_text,
+              link: `/service-provider/whats-new?backHref=${backHref}`,
             }
           })
           .pop()
       })
   }
 
-  async getWhatsNewBannerForPP(): Promise<WhatsNewBanner | undefined> {
+  private static async getWhatsNewBannerForPP(backHref: string): Promise<WhatsNewBanner | undefined> {
     return csv()
       .fromFile('reference-data/whats-new-banner-pp-v0.csv')
       .then(json => {
@@ -63,9 +64,16 @@ export default class ReferenceDataService {
               heading: jsonFile.heading,
               text: jsonFile.text,
               linkText: jsonFile.link_text,
+              link: `/probation-practitioner/whats-new?backHref=${backHref}`,
             }
           })
           .pop()
       })
+  }
+
+  static async getWhatsNewBanner(userType: string, backHref: string): Promise<WhatsNewBanner | undefined> {
+    return userType === 'service-provider'
+      ? ReferenceDataService.getWhatsNewBannerForSP(backHref)
+      : ReferenceDataService.getWhatsNewBannerForPP(backHref)
   }
 }

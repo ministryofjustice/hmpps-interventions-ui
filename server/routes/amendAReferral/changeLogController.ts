@@ -35,7 +35,7 @@ export default class ChangeLogController {
     const presenter = new ChangelogPresenter(formError, changeLog, referralId, intervention, loggedInUserType)
     const view = new ChangelogView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, loggedInUserType)
   }
 
   async getChangelogDetails(
@@ -59,6 +59,6 @@ export default class ChangeLogController {
     )
     const view = new ChangelogDetailView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, loggedInUserType)
   }
 }

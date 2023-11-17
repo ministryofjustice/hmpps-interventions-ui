@@ -65,7 +65,7 @@ export default class AmendAReferralController {
       userInputData
     )
     const view = new AmendMaximumEnforceableDaysView(presenter)
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateAdditionalInformation(req: Request, res: Response): Promise<void> {
@@ -104,7 +104,7 @@ export default class AmendAReferralController {
       req.query.noChanges === 'true'
     )
     const view = new AmendAdditionalInformationView(presenter)
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateDesiredOutcomes(req: Request, res: Response): Promise<void> {
@@ -151,7 +151,7 @@ export default class AmendAReferralController {
       req.query.noChanges === 'true'
     )
     const view = new AmendDesiredOutcomesView(presenter)
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async amendAccessibilityNeeds(req: Request, res: Response): Promise<void> {
@@ -189,7 +189,7 @@ export default class AmendAReferralController {
       req.query.noChanges === 'true'
     )
     const view = new AmendAccessibilityNeedsView(presenter)
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateComplexityLevel(req: Request, res: Response): Promise<void> {
@@ -234,7 +234,7 @@ export default class AmendAReferralController {
     )
     const view = new AmendComplexityLevelView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateInterpreterNeeds(req: Request, res: Response): Promise<void> {
@@ -287,7 +287,7 @@ export default class AmendAReferralController {
     )
     const view = new IntepreterRequiredView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async updateEmploymentResponsibilities(req: Request, res: Response): Promise<void> {
@@ -337,6 +337,6 @@ export default class AmendAReferralController {
     )
     const view = new AmendEmploymentResponsibilitiesView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 }

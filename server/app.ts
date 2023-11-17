@@ -34,7 +34,6 @@ import UserDataService from './services/userDataService'
 import logger from '../log'
 import PrisonRegisterService from './services/prisonRegisterService'
 import RamDeliusApiService from './services/ramDeliusApiService'
-import WhatsNewCookieService from './services/whatsNewCookieService'
 
 const RedisStore = connectRedis(session)
 
@@ -52,8 +51,7 @@ export default function createApp(
   hmppsAuthService: HmppsAuthService,
   assessRisksAndNeedsService: AssessRisksAndNeedsService,
   referenceDataService: ReferenceDataService,
-  prisonRegisterService: PrisonRegisterService,
-  whatsNewCookieService: WhatsNewCookieService
+  prisonRegisterService: PrisonRegisterService
 ): express.Application {
   const app = express()
 
@@ -267,7 +265,6 @@ export default function createApp(
     referenceDataService,
     userDataService,
     prisonRegisterService,
-    whatsNewCookieService,
   }
 
   app.use('/', indexRoutes(standardRouter(), services))
@@ -278,7 +275,7 @@ export default function createApp(
   // final regular middleware is for handling 404s
   app.use((req, res, next) => {
     res.status(404)
-    return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/notFound', {}] }, null)
+    return ControllerUtils.renderWithLayout(req, res, { renderArgs: ['errors/notFound', {}] }, null, null)
   })
 
   // The Sentry error handler must be before any other error middleware and after all controllers

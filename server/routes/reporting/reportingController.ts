@@ -25,7 +25,7 @@ export default class ReportingController {
   async viewReporting(_req: Request, res: Response): Promise<void> {
     const presenter = new ReportingPresenter(res.locals.user)
     const view = new ReportingView(presenter)
-    ControllerUtils.renderWithLayout(res, view, null)
+    await ControllerUtils.renderWithLayout(_req, res, view, null, 'service-provider')
   }
 
   async createReport(req: Request, res: Response): Promise<void> {
@@ -42,7 +42,7 @@ export default class ReportingController {
       userInputData = req.body
       const presenter = new ReportingPresenter(res.locals.user, formError, userInputData)
       const view = new ReportingView(presenter)
-      ControllerUtils.renderWithLayout(res, view, null)
+      await ControllerUtils.renderWithLayout(req, res, view, null, 'service-provider')
     } else {
       await this.interventionsService.generateServiceProviderPerformanceReport(accessToken, data.value)
       res.redirect('/service-provider/performance-report/confirmation')
@@ -51,7 +51,7 @@ export default class ReportingController {
 
   async showPerformanceReportConfirmation(_req: Request, res: Response): Promise<void> {
     const view = new PerformanceReportConfirmationView()
-    ControllerUtils.renderWithLayout(res, view, null)
+    await ControllerUtils.renderWithLayout(_req, res, view, null, 'service-provider')
   }
 
   async downloadPerformanceReport(req: Request, res: Response): Promise<void> {
@@ -67,10 +67,12 @@ export default class ReportingController {
 
     const downloadUrl = await getSignedUrl(this.s3Client, command, { expiresIn: 60 * 15 })
 
-    ControllerUtils.renderWithLayout(
+    await ControllerUtils.renderWithLayout(
+      req,
       res,
       { renderArgs: ['reporting/performanceReport/performanceReportDownload', { downloadUrl, filename }] },
-      null
+      null,
+      'service-provider'
     )
   }
 }

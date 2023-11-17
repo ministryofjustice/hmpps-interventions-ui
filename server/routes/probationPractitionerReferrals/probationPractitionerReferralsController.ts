@@ -31,7 +31,6 @@ import ActionPlanUtils from '../../utils/actionPlanUtils'
 import UserDataService from '../../services/userDataService'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
-import WhatsNewCookieService from '../../services/whatsNewCookieService'
 
 export default class ProbationPractitionerReferralsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -44,8 +43,7 @@ export default class ProbationPractitionerReferralsController {
     private readonly referenceDataService: ReferenceDataService,
     private readonly userDataService: UserDataService,
     private readonly prisonRegisterService: PrisonRegisterService,
-    private readonly ramDeliusApiService: RamDeliusApiService,
-    private readonly whatsNewCookieService: WhatsNewCookieService
+    private readonly ramDeliusApiService: RamDeliusApiService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
@@ -96,13 +94,6 @@ export default class ProbationPractitionerReferralsController {
       req.session.disableDowntimeBanner = true
     }
 
-    const whatsNewBanner = await this.referenceDataService.getWhatsNewBannerForPP()
-    let showWhatsNewBanner = whatsNewBanner?.version !== this.whatsNewCookieService.getDismissedVersion(req)
-    if (whatsNewBanner?.version && req.query.dismissWhatsNewBanner) {
-      this.whatsNewCookieService.persistDismissedVersion(res, whatsNewBanner.version)
-      showWhatsNewBanner = false
-    }
-
     const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
       req,
       res,
@@ -138,13 +129,11 @@ export default class ProbationPractitionerReferralsController {
       tablePersistentId,
       sort[0],
       disablePlannedDowntimeNotification,
-      whatsNewBanner,
-      showWhatsNewBanner,
       req.session.dashboardOriginPage
     )
 
     const view = new DashboardView(presenter)
-    ControllerUtils.renderWithLayout(res, view, null)
+    await ControllerUtils.renderWithLayout(req, res, view, null, 'probation-practitioner')
   }
 
   async showFindStartPage(req: Request, res: Response): Promise<void> {
@@ -166,7 +155,7 @@ export default class ProbationPractitionerReferralsController {
 
     const view = new FindStartView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    await ControllerUtils.renderWithLayout(req, res, view, null, 'probation-practitioner')
   }
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
@@ -235,7 +224,7 @@ export default class ProbationPractitionerReferralsController {
     )
     const view = new InterventionProgressView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async showReferral(req: Request, res: Response): Promise<void> {
@@ -291,7 +280,7 @@ export default class ProbationPractitionerReferralsController {
       !!approvedActionPlanSummaries.length
     )
     const view = new ShowReferralView(presenter)
-    ControllerUtils.renderWithLayout(res, view, caseConviction.caseDetail)
+    await ControllerUtils.renderWithLayout(req, res, view, caseConviction.caseDetail, 'probation-practitioner')
   }
 
   async viewEndOfServiceReport(req: Request, res: Response): Promise<void> {
@@ -312,7 +301,7 @@ export default class ProbationPractitionerReferralsController {
     )
     const view = new EndOfServiceReportView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async viewLatestActionPlan(req: Request, res: Response): Promise<void> {
@@ -335,7 +324,7 @@ export default class ProbationPractitionerReferralsController {
 
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId)
 
-    return this.renderActionPlan(res, sentReferral, actionPlan, formValidationError)
+    return this.renderActionPlan(req, res, sentReferral, actionPlan, formValidationError)
   }
 
   async viewActionPlanById(req: Request, res: Response): Promise<void> {
@@ -357,10 +346,11 @@ export default class ProbationPractitionerReferralsController {
       })
     }
 
-    return this.renderActionPlan(res, sentReferral, actionPlan)
+    return this.renderActionPlan(req, res, sentReferral, actionPlan)
   }
 
   private async renderActionPlan(
+    req: Request,
     res: Response,
     sentReferral: SentReferral,
     actionPlan: ActionPlan,
@@ -389,7 +379,7 @@ export default class ProbationPractitionerReferralsController {
       actionPlanVersions
     )
     const view = new ActionPlanView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async approveActionPlan(req: Request, res: Response): Promise<void> {
@@ -421,7 +411,8 @@ export default class ProbationPractitionerReferralsController {
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
 
-    ControllerUtils.renderWithLayout(
+    await ControllerUtils.renderWithLayout(
+      req,
       res,
       {
         renderArgs: [
@@ -434,11 +425,29 @@ export default class ProbationPractitionerReferralsController {
           },
         ],
       },
-      serviceUser
+      serviceUser,
+      'probation-practitioner'
     )
   }
 
   async showWhatsNew(req: Request, res: Response): Promise<void> {
-    ControllerUtils.renderWithLayout(res, { renderArgs: ['probationPractitionerReferrals/whatsNew', {}] }, null)
+    await ControllerUtils.renderWithLayout(
+      req,
+      res,
+      {
+        renderArgs: [
+          'probationPractitionerReferrals/whatsNew',
+          {
+            backButtonArgs: {
+              text: 'Back',
+              href: req.query.backHref,
+            },
+            hideWhatsNewBanner: true,
+          },
+        ],
+      },
+      null,
+      'probation-practitioner'
+    )
   }
 }

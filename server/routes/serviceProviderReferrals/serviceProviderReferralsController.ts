@@ -66,7 +66,6 @@ import PrisonRegisterService from '../../services/prisonRegisterService'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
-import WhatsNewCookieService from '../../services/whatsNewCookieService'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -85,8 +84,7 @@ export default class ServiceProviderReferralsController {
     private readonly referenceDataService: ReferenceDataService,
     private readonly userDataService: UserDataService,
     private readonly prisonRegisterService: PrisonRegisterService,
-    private readonly ramDeliusApiService: RamDeliusApiService,
-    private readonly whatsNewCookieService: WhatsNewCookieService
+    private readonly ramDeliusApiService: RamDeliusApiService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
   }
@@ -111,7 +109,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.MyCases
     )
-    this.renderDashboardWithoutPagination(req, res, referralsSummary, 'My cases')
+    await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'My cases')
   }
 
   private handlePaginatedSearchText(req: Request) {
@@ -151,7 +149,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.OpenCases
     )
-    this.renderDashboardWithoutPagination(req, res, referralsSummary, 'All open cases')
+    await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'All open cases')
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -176,7 +174,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.UnassignedCases
     )
-    this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Unassigned cases')
+    await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Unassigned cases')
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
@@ -201,7 +199,7 @@ export default class ServiceProviderReferralsController {
       res.locals.user.token.accessToken,
       SPDashboardType.CompletedCases
     )
-    this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Completed cases')
+    await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Completed cases')
   }
 
   private async renderDashboard(
@@ -215,14 +213,6 @@ export default class ServiceProviderReferralsController {
     if (req.query.dismissDowntimeBanner) {
       req.session.disableDowntimeBanner = true
     }
-
-    const whatsNewBanner = await this.referenceDataService.getWhatsNewBannerForSP()
-    let showWhatsNewBanner = whatsNewBanner?.version !== this.whatsNewCookieService.getDismissedVersion(req)
-    if (whatsNewBanner?.version && req.query.dismissWhatsNewBanner) {
-      this.whatsNewCookieService.persistDismissedVersion(res, whatsNewBanner.version)
-      showWhatsNewBanner = false
-    }
-
     const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
       req,
       res,
@@ -260,25 +250,23 @@ export default class ServiceProviderReferralsController {
       tablePersistentId,
       sort[0],
       disablePlannedDowntimeNotification,
-      whatsNewBanner,
-      showWhatsNewBanner,
       req.session.dashboardOriginPage,
       prisons,
       getSentReferralsFilterParams.search
     )
     const view = new DashboardView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    await ControllerUtils.renderWithLayout(req, res, view, null, 'service-provider')
   }
 
   // To be removed once we are happy with the pagination work.
-  private renderDashboardWithoutPagination(
+  private async renderDashboardWithoutPagination(
     req: Request,
     res: Response,
     referralsSummary: ServiceProviderSentReferralSummary[],
     dashboardType: DashboardType,
     searchText?: string
-  ): void {
+  ): Promise<void> {
     req.session.dashboardOriginPage = req.originalUrl
     const presenter = new DashboardWithoutPaginationPresenter(
       referralsSummary,
@@ -288,7 +276,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new DashboardWithoutPaginationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, null)
+    await ControllerUtils.renderWithLayout(req, res, view, null, 'service-provider').then()
   }
 
   async showReferral(req: Request, res: Response): Promise<void> {
@@ -346,7 +334,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new ShowReferralView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, caseConviction.caseDetail)
+    await ControllerUtils.renderWithLayout(req, res, view, caseConviction.caseDetail, 'service-provider')
   }
 
   async showInterventionProgress(req: Request, res: Response): Promise<void> {
@@ -425,7 +413,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new InterventionProgressView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async startAssignment(req: Request, res: Response): Promise<void> {
@@ -465,13 +453,19 @@ export default class ServiceProviderReferralsController {
       target: `/service-provider/referrals/${req.params.id}/details`,
       message: 'assign the referral',
     }
-    return ControllerUtils.fetchDraftOrRenderMessage<DraftAssignmentData>(req, res, this.draftsService, {
-      idParamName: 'draftAssignmentId',
-      notFoundUserMessage:
-        'You have not assigned this referral to a caseworker. This is because too much time has passed since you started assigning it.',
-      typeName: 'assignment',
-      backLink,
-    })
+    return ControllerUtils.fetchDraftOrRenderMessage<DraftAssignmentData>(
+      req,
+      res,
+      this.draftsService,
+      'service-provider',
+      {
+        idParamName: 'draftAssignmentId',
+        notFoundUserMessage:
+          'You have not assigned this referral to a caseworker. This is because too much time has passed since you started assigning it.',
+        typeName: 'assignment',
+        backLink,
+      }
+    )
   }
 
   async checkAssignment(req: Request, res: Response): Promise<void> {
@@ -498,7 +492,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new CheckAssignmentPresenter(referral.id, draftAssignment.id, assignee, email, intervention)
     const view = new CheckAssignmentView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async submitAssignment(req: Request, res: Response): Promise<void> {
@@ -551,7 +545,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new AssignmentConfirmationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async createDraftActionPlan(req: Request, res: Response): Promise<void> {
@@ -585,7 +579,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new AddActionPlanActivitiesPresenter(sentReferral, serviceCategories, actionPlan, activityNumber)
     const view = new AddActionPlanActivitiesView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async addOrUpdateActionPlanActivity(req: Request, res: Response): Promise<void> {
@@ -639,7 +633,7 @@ export default class ServiceProviderReferralsController {
     const view = new AddActionPlanActivitiesView(presenter)
 
     res.status(400)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async finaliseActionPlanActivities(req: Request, res: Response): Promise<void> {
@@ -671,7 +665,7 @@ export default class ServiceProviderReferralsController {
       const view = new AddActionPlanActivitiesView(presenter)
 
       res.status(400)
-      ControllerUtils.renderWithLayout(res, view, serviceUser)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
     }
   }
 
@@ -718,7 +712,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new ReviewActionPlanPresenter(sentReferral, serviceCategories, actionPlan, formError)
     const view = new ReviewActionPlanView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async showActionPlanConfirmation(req: Request, res: Response): Promise<void> {
@@ -739,7 +733,7 @@ export default class ServiceProviderReferralsController {
     const presenter = new ActionPlanConfirmationPresenter(sentReferral, interventionForPresenterTitle.contractType.name)
     const view = new ActionPlanConfirmationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async addNumberOfSessionsToActionPlan(req: Request, res: Response): Promise<void> {
@@ -787,7 +781,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new AddActionPlanNumberOfSessionsView(presenter)
     res.status(formError === null ? 200 : 400)
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async createDraftEndOfServiceReport(req: Request, res: Response): Promise<void> {
@@ -894,7 +888,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new EndOfServiceReportOutcomeView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async editEndOfServiceReportFurtherInformation(req: Request, res: Response): Promise<void> {
@@ -930,7 +924,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new EndOfServiceReportFurtherInformationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async endOfServiceReportCheckAnswers(req: Request, res: Response): Promise<void> {
@@ -956,7 +950,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new EndOfServiceReportCheckAnswersView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async submitEndOfServiceReport(req: Request, res: Response): Promise<void> {
@@ -981,7 +975,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new EndOfServiceReportConfirmationView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async viewEndOfServiceReport(req: Request, res: Response): Promise<void> {
@@ -1009,7 +1003,7 @@ export default class ServiceProviderReferralsController {
     )
     const view = new EndOfServiceReportView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async viewActionPlan(req: Request, res: Response): Promise<void> {
@@ -1023,7 +1017,7 @@ export default class ServiceProviderReferralsController {
     }
 
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId)
-    return this.renderActionPlan(res, sentReferral, actionPlan)
+    return this.renderActionPlan(req, res, sentReferral, actionPlan)
   }
 
   async viewActionPlanById(req: Request, res: Response): Promise<void> {
@@ -1033,10 +1027,10 @@ export default class ServiceProviderReferralsController {
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, id)
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
-    return this.renderActionPlan(res, sentReferral, actionPlan)
+    return this.renderActionPlan(req, res, sentReferral, actionPlan)
   }
 
-  private async renderActionPlan(res: Response, sentReferral: SentReferral, actionPlan: ActionPlan) {
+  private async renderActionPlan(req: Request, res: Response, sentReferral: SentReferral, actionPlan: ActionPlan) {
     const { accessToken } = res.locals.user.token
 
     const [serviceCategories, serviceUser, approvedActionPlanSummaries] = await Promise.all([
@@ -1058,7 +1052,7 @@ export default class ServiceProviderReferralsController {
       approvedActionPlanSummaries
     )
     const view = new ActionPlanView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async actionPlanEditConfirmation(req: Request, res: Response): Promise<void> {
@@ -1078,7 +1072,7 @@ export default class ServiceProviderReferralsController {
 
     const presenter = new ActionPlanEditConfirmationPresenter(actionPlan)
     const view = new ActionPlanEditConfirmationView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async createNewDraftActionPlan(req: Request, res: Response): Promise<void> {
@@ -1106,7 +1100,24 @@ export default class ServiceProviderReferralsController {
   }
 
   async showWhatsNew(req: Request, res: Response): Promise<void> {
-    ControllerUtils.renderWithLayout(res, { renderArgs: ['serviceProviderReferrals/whatsNew', {}] }, null)
+    await ControllerUtils.renderWithLayout(
+      req,
+      res,
+      {
+        renderArgs: [
+          'serviceProviderReferrals/whatsNew',
+          {
+            backButtonArgs: {
+              text: 'Back',
+              href: req.query.backHref,
+            },
+            hideWhatsNewBanner: true,
+          },
+        ],
+      },
+      null,
+      'service-provider'
+    )
   }
 
   private parseActivityNumber(number: string, actionPlan?: ActionPlan): number {

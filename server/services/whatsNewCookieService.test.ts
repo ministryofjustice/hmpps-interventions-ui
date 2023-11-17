@@ -4,7 +4,6 @@ import NotificationCookieService from './whatsNewCookieService'
 describe('WhatsNew cookie', () => {
   let res: Response
   let req: Request
-  const notificationCookieService = new NotificationCookieService()
 
   beforeEach(() => {
     res = { cookie: jest.fn() } as unknown as Response
@@ -12,7 +11,7 @@ describe('WhatsNew cookie', () => {
   })
 
   it('should store cookie correctly', () => {
-    notificationCookieService.persistDismissedVersion(res, 1)
+    NotificationCookieService.persistDismissedVersion(res, 1)
     expect(res.cookie).toHaveBeenCalledWith('whats-new-banner', 1, {
       httpOnly: true,
       maxAge: 4492800000,
@@ -20,6 +19,6 @@ describe('WhatsNew cookie', () => {
   })
 
   it('should find matching cookie', () => {
-    expect(notificationCookieService.getDismissedVersion(req)).toEqual(1)
+    expect(NotificationCookieService.getDismissedVersion(req)).toEqual(1)
   })
 })

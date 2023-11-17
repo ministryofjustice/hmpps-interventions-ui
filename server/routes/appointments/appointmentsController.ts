@@ -73,7 +73,7 @@ export default class AppointmentsController {
   }
 
   async scheduleSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
-    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res, 'service-provider')
     if (fetchResult.rendered) {
       return
     }
@@ -141,7 +141,7 @@ export default class AppointmentsController {
     )
 
     const view = new ScheduleAppointmentView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async checkSupplierAssessmentAnswers(req: Request, res: Response): Promise<void> {
@@ -150,7 +150,7 @@ export default class AppointmentsController {
     const referral = await this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
 
-    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res, 'service-provider')
     if (fetchResult.rendered) {
       return
     }
@@ -158,7 +158,7 @@ export default class AppointmentsController {
     const presenter = new InitialAssessmentCheckAnswersPresenter(fetchResult.draft, referral.id)
     const view = new ScheduleAppointmentCheckAnswersView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async submitSupplierAssessmentAppointment(req: Request, res: Response): Promise<void> {
@@ -171,7 +171,7 @@ export default class AppointmentsController {
     const hasExistingScheduledAppointment =
       currentAppointment !== null && !currentAppointment.appointmentFeedback.submitted
 
-    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res)
+    const fetchResult = await this.fetchDraftBookingOrRenderMessage(req, res, 'service-provider')
     if (fetchResult.rendered) {
       return
     }
@@ -230,7 +230,7 @@ export default class AppointmentsController {
     const presenter = new SupplierAssessmentAppointmentConfirmationPresenter(referral, isReschedule)
     const view = new SupplierAssessmentAppointmentConfirmationView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async showSupplierAssessmentAppointment(
@@ -259,7 +259,7 @@ export default class AppointmentsController {
     })
     const view = new SupplierAssessmentAppointmentView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, userType)
   }
 
   async startEditingActionPlanSessionAppointment(req: Request, res: Response): Promise<void> {
@@ -274,7 +274,12 @@ export default class AppointmentsController {
 
   async editActionPlanSessionAppointment(req: Request, res: Response): Promise<void> {
     const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, req.params.id)
-    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
+    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(
+      req,
+      res,
+      'service-provider',
+      actionPlan.referralId
+    )
     if (fetchResult.rendered) {
       return
     }
@@ -338,7 +343,7 @@ export default class AppointmentsController {
     )
     const view = new ScheduleAppointmentView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async checkActionPlanSessionAppointmentAnswers(req: Request, res: Response): Promise<void> {
@@ -351,7 +356,12 @@ export default class AppointmentsController {
 
     const sessionNumber = Number(req.params.sessionNumber)
 
-    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
+    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(
+      req,
+      res,
+      'service-provider',
+      actionPlan.referralId
+    )
     if (fetchResult.rendered) {
       return
     }
@@ -364,7 +374,7 @@ export default class AppointmentsController {
     )
     const view = new ScheduleAppointmentCheckAnswersView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async submitActionPlanSessionAppointment(req: Request, res: Response): Promise<void> {
@@ -375,7 +385,12 @@ export default class AppointmentsController {
     const actionPlanId = req.params.id
     const actionPlan = await this.interventionsService.getActionPlan(res.locals.user.token.accessToken, actionPlanId)
 
-    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
+    const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(
+      req,
+      res,
+      'service-provider',
+      actionPlan.referralId
+    )
     if (fetchResult.rendered) {
       return
     }
@@ -471,7 +486,7 @@ export default class AppointmentsController {
         let basePath
         let redirectPath
         if (draftBookingId) {
-          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, 'service-provider')
           if (fetchResult.rendered) {
             return
           }
@@ -519,7 +534,7 @@ export default class AppointmentsController {
     )
     const view = new AttendanceFeedbackView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async addSupplierAssessmentSessionFeedback(req: Request, res: Response): Promise<void> {
@@ -558,7 +573,7 @@ export default class AppointmentsController {
       } else {
         let redirectUrl
         if (draftBookingId) {
-          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, 'service-provider')
           if (fetchResult.rendered) {
             return
           }
@@ -602,7 +617,7 @@ export default class AppointmentsController {
       userInputData
     )
     const view = new SessionFeedbackView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async checkSupplierAssessmentFeedbackAnswers(req: Request, res: Response): Promise<void> {
@@ -642,7 +657,7 @@ export default class AppointmentsController {
     )
     const view = new CheckFeedbackAnswersView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async submitSupplierAssessmentFeedback(req: Request, res: Response): Promise<void> {
@@ -667,7 +682,7 @@ export default class AppointmentsController {
       throw new Error('Attempting to submit supplier assessment feedback without a current appointment')
     }
     if (draftBookingId) {
-      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, 'service-provider')
       if (fetchResult.rendered) {
         return
       }
@@ -753,7 +768,7 @@ export default class AppointmentsController {
     )
     const view = new SubmittedFeedbackView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, userType)
   }
 
   async addActionPlanSessionAppointmentAttendanceFeedback(req: Request, res: Response): Promise<void> {
@@ -776,7 +791,12 @@ export default class AppointmentsController {
         let redirectPath
         if (draftBookingId) {
           const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
-          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(
+            req,
+            res,
+            'service-provider',
+            actionPlan.referralId
+          )
           if (fetchResult.rendered) {
             return
           }
@@ -833,7 +853,7 @@ export default class AppointmentsController {
     )
     const view = new AttendanceFeedbackView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async addActionPlanSessionAppointmentSessionFeedback(req: Request, res: Response): Promise<void> {
@@ -864,7 +884,12 @@ export default class AppointmentsController {
           )
           redirectUrl = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/check-your-answers`
         } else {
-          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(
+            req,
+            res,
+            'service-provider',
+            actionPlan.referralId
+          )
           if (fetchResult.rendered) {
             return
           }
@@ -908,7 +933,7 @@ export default class AppointmentsController {
     const view = new SessionFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async checkActionPlanSessionFeedbackAnswers(req: Request, res: Response): Promise<void> {
@@ -935,7 +960,7 @@ export default class AppointmentsController {
     )
     const view = new CheckFeedbackAnswersView(presenter)
 
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async submitActionPlanSessionFeedback(req: Request, res: Response): Promise<void> {
@@ -954,7 +979,12 @@ export default class AppointmentsController {
     }
 
     if (draftBookingId) {
-      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, actionPlan.referralId)
+      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(
+        req,
+        res,
+        'service-provider',
+        actionPlan.referralId
+      )
       if (fetchResult.rendered) {
         return
       }
@@ -1094,7 +1124,7 @@ export default class AppointmentsController {
     )
     const view = new SubmittedFeedbackView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, userType)
   }
 
   // This is left to keep links in old emails still working - we'll monitor the endpoint and remove it when usage drops off.
@@ -1128,11 +1158,16 @@ export default class AppointmentsController {
     )
     const view = new SubmittedFeedbackView(presenter)
 
-    return ControllerUtils.renderWithLayout(res, view, serviceUser)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   // TODO: Remove DraftAppointmentBooking from here once this has gone live for at least a week.
-  private async fetchDraftAppointmentOrRenderMessage(req: Request, res: Response, referralId?: string) {
+  private async fetchDraftAppointmentOrRenderMessage(
+    req: Request,
+    res: Response,
+    userType: 'service-provider' | 'probation-practitioner',
+    referralId?: string
+  ) {
     const backLink = {
       target: `/service-provider/referrals/${referralId || req.params.id}/progress`,
       message: 'book or change the appointment',
@@ -1141,6 +1176,7 @@ export default class AppointmentsController {
       req,
       res,
       this.draftsService,
+      userType,
       {
         idParamName: 'draftBookingId',
         notFoundUserMessage:
@@ -1151,12 +1187,16 @@ export default class AppointmentsController {
     )
   }
 
-  private async fetchDraftBookingOrRenderMessage(req: Request, res: Response) {
+  private async fetchDraftBookingOrRenderMessage(
+    req: Request,
+    res: Response,
+    userType: 'service-provider' | 'probation-practitioner'
+  ) {
     const backLink = {
       target: `/service-provider/referrals/${req.params.id}/progress`,
       message: 'book or change the appointment',
     }
-    return ControllerUtils.fetchDraftOrRenderMessage<DraftAppointmentBooking>(req, res, this.draftsService, {
+    return ControllerUtils.fetchDraftOrRenderMessage<DraftAppointmentBooking>(req, res, this.draftsService, userType, {
       idParamName: 'draftBookingId',
       notFoundUserMessage:
         'You have not saved the appointment details. This is because too much time has passed since you started.',
@@ -1222,7 +1262,7 @@ export default class AppointmentsController {
     const { accessToken } = user.token
     const { draftBookingId, sessionNumber, actionPlanId } = req.params
     if (draftBookingId) {
-      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, referralId)
+      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, 'service-provider', referralId)
       if (fetchResult.rendered) {
         return null
       }
@@ -1281,7 +1321,7 @@ export default class AppointmentsController {
   ): Promise<InitialAssessmentAppointment | null> {
     const { draftBookingId, id } = req.params
     if (draftBookingId) {
-      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, referralId)
+      const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, 'service-provider', referralId)
       if (fetchResult.rendered) {
         return null
       }

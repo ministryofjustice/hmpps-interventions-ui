@@ -7,6 +7,8 @@ import DraftsService, { Draft } from '../services/draftsService'
 import DraftNotFoundView from '../routes/shared/draftNotFoundView'
 import DraftSoftDeletedView from '../routes/shared/draftSoftDeletedView'
 import UserDataService from '../services/userDataService'
+import ReferenceDataService from '../services/referenceDataService'
+import WhatsNewCookieService from '../services/whatsNewCookieService'
 
 export interface DraftFetchSuccessResult<T> {
   rendered: false
@@ -25,8 +27,37 @@ type BackLink = {
 }
 
 export default class ControllerUtils {
-  static renderWithLayout(res: Response, contentView: PageContentView, serviceUser: DeliusServiceUser | null): void {
-    const presenter = new LayoutPresenter(res.locals.user, serviceUser)
+  static async renderWithLayout(
+    req: Request,
+    res: Response,
+    contentView: PageContentView,
+    serviceUser: DeliusServiceUser | null,
+    userType: 'service-provider' | 'probation-practitioner' | null
+  ): Promise<void> {
+    let whatsNewBanner
+    let showWhatsNewBanner
+
+    if (userType) {
+      whatsNewBanner = await ReferenceDataService.getWhatsNewBanner(userType, req.originalUrl)
+      showWhatsNewBanner = whatsNewBanner?.version !== WhatsNewCookieService.getDismissedVersion(req)
+
+      if (whatsNewBanner?.version && req.query.dismissWhatsNewBanner) {
+        WhatsNewCookieService.persistDismissedVersion(res, whatsNewBanner.version)
+        showWhatsNewBanner = false
+      }
+    }
+
+    if (contentView.renderArgs[1].hideWhatsNewBanner) {
+      showWhatsNewBanner = false
+    }
+
+    const presenter = new LayoutPresenter(
+      req.originalUrl,
+      res.locals.user,
+      serviceUser,
+      whatsNewBanner,
+      showWhatsNewBanner
+    )
     const view = new LayoutView(presenter, contentView)
 
     res.render(...view.renderArgs)
@@ -36,6 +67,7 @@ export default class ControllerUtils {
     req: Request,
     res: Response,
     draftsService: DraftsService,
+    userType: 'service-provider' | 'probation-practitioner' | null,
     {
       idParamName,
       notFoundUserMessage,
@@ -55,7 +87,7 @@ export default class ControllerUtils {
     if (draft === null) {
       res.status(StatusCodes.GONE)
       const view = new DraftNotFoundView(backLink, notFoundUserMessage)
-      this.renderWithLayout(res, view, null)
+      await this.renderWithLayout(req, res, view, null, userType)
       return { rendered: true }
     }
 
@@ -63,7 +95,7 @@ export default class ControllerUtils {
       res.status(StatusCodes.GONE)
       const message = notFoundUserMessage
       const view = new DraftSoftDeletedView(backLink, message)
-      this.renderWithLayout(res, view, null)
+      await this.renderWithLayout(req, res, view, null, userType)
       return { rendered: true }
     }
 
