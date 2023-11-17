@@ -56,7 +56,7 @@ export default class DashboardView {
 
   get serviceOutageBannerArgs(): NotificationBannerArgs {
     const text =
-      'Reporting of data as CSV documents will not be available from 6pm on Thursday 16 November to  6pm on Friday 17 November.'
+      'Refer and monitor an intervention will not be available this weekend. This is from 10am Saturday 28 October to midday Sunday 29 October 2023.'
 
     const html = `<p class="govuk-notification-banner__heading">${text}</p>
                   <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p>`
