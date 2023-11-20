@@ -43,7 +43,7 @@ export default {
   deploymentEnvironment: get('DEPLOYMENT_ENV', 'local', requiredInProduction),
   googleAnalyticsTrackingId: get('GA_ID', '', requiredInProduction),
   features: {
-    serviceProviderReporting: get('FEATURE_SP_REPORTING_ENABLED', 'false') === 'true',
+    serviceProviderReporting: get('FEATURE_SP_REPORTING_ENABLED', 'true') === 'true',
     previouslyApprovedActionPlans: get('FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS', 'false') === 'true',
   },
   userData: {

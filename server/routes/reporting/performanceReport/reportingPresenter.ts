@@ -14,8 +14,8 @@ export default class ReportingPresenter {
 
   readonly text = {
     title: 'Reporting',
-    subtitle: 'Download a CSV of case data from this service. You can download up to 6 months data per search.',
-    hint: 'For example, 11 12 2020',
+    subtitle: "Download a CSV of case data from this service. You can download up to 6 months' data per search.",
+    hint: 'For example, 01 08 2023',
   }
 
   private readonly utils = new PresenterUtils(this.userInputData)

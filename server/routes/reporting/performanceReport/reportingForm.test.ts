@@ -42,13 +42,13 @@ describe(ReportingForm, () => {
             {
               errorSummaryLinkedField: 'from-date-day',
               formFields: ['from-date-day', 'from-date-month', 'from-date-year'],
-              message: 'Enter a date that is before or the same as the "date to"',
+              message: "Enter a date that is before or the same as the 'date to'",
             },
 
             {
               errorSummaryLinkedField: 'to-date-day',
               formFields: ['to-date-day', 'to-date-month', 'to-date-year'],
-              message: 'Enter a date that is later than or the same as the "date from"',
+              message: "Enter a date that is later than or the same as the 'date from'",
             },
           ])
         })
@@ -72,12 +72,12 @@ describe(ReportingForm, () => {
             {
               errorSummaryLinkedField: 'from-date-day',
               formFields: ['from-date-day', 'from-date-month', 'from-date-year'],
-              message: 'Enter a date that is within 6 months of the "date to"',
+              message: "Enter a date that is within 6 months of the 'date to'",
             },
             {
               errorSummaryLinkedField: 'to-date-day',
               formFields: ['to-date-day', 'to-date-month', 'to-date-year'],
-              message: 'Enter a date that is within 6 months of the "date from"',
+              message: "Enter a date that is within 6 months of the 'date from'",
             },
           ])
         })
@@ -194,12 +194,12 @@ describe(ReportingForm, () => {
             {
               errorSummaryLinkedField: 'from-date-day',
               formFields: ['from-date-day', 'from-date-month', 'from-date-year'],
-              message: 'Enter a date that is before or the same as the "date to"',
+              message: "Enter a date that is before or the same as the 'date to'",
             },
             {
               errorSummaryLinkedField: 'to-date-day',
               formFields: ['to-date-day', 'to-date-month', 'to-date-year'],
-              message: 'Enter a date that is later than or the same as the "date from"',
+              message: "Enter a date that is later than or the same as the 'date from'",
             },
           ])
         })
