@@ -36,7 +36,7 @@ export default class ReportingForm {
       errors.push(CalendarDayInput.createError('to-date', errorMessages.reportingDate.to.mustBeAfterFromDate).errors)
     }
 
-    if (fromDateResult.value && toDateResult.value) {
+    if (fromDateResult.value && toDateResult.value && new Date(fromDateResult.value.iso8601) >= dayOneDate) {
       const fromDate = new Date(fromDateResult.value.iso8601)
       const toDate = new Date(toDateResult.value.iso8601)
       const diff = (toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24 * 30)
