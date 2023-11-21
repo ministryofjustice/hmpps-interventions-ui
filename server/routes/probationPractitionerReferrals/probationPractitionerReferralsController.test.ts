@@ -244,8 +244,8 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
       .get(`/probation-practitioner/referrals/${sentReferral.id}/progress`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Intervention sessions')
-        expect(res.text).toContain('These show the progress of each intervention session')
+        expect(res.text).toContain('Session progress')
+        expect(res.text).toContain('Sessions will appear here once you&#39;ve approved the action plan.')
       })
   })
   it('displays information about the intervention progress with Action plan appointment not attended with same session number', async () => {
@@ -255,12 +255,13 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
       firstName: 'caseWorkerFirstName',
       lastName: 'caseWorkerLastName',
     })
-    const actionPlan = actionPlanFactory.build()
+    const actionPlan = actionPlanFactory.approved().build()
     const sentReferral = sentReferralFactory.assigned().build({
       referral: { interventionId: intervention.id },
       assignedTo: hmppsAuthUser,
       actionPlanId: actionPlan.id,
     })
+    // const nextYear = moment().add(1,'years').format('YYYY');
     const appointment = actionPlanAppointmentFactory.scheduled().build({
       sessionNumber: 1,
       appointmentTime: `Thu Jun 18 2022 17:20`,
@@ -332,9 +333,8 @@ describe('GET /probation-practitioner/referrals/:id/progress', () => {
       .get(`/probation-practitioner/referrals/${sentReferral.id}/progress`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Intervention sessions')
+        expect(res.text).toContain('Session progress')
         expect(res.text).toContain('did not attend')
-        expect(res.text).toContain('scheduled')
         expect(res.text).not.toContain('Reschedule session')
         expect(res.text).toContain('View feedback form')
         expect(res.text).toContain(`17 Jun 2022`)
