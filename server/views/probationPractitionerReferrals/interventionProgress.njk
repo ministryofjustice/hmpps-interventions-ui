@@ -12,22 +12,24 @@
 <p class="govuk-body">
   {{ presenter.supplierAssessmentMessage }}
 </p>
-{% if supplierAssessmentSummaryListArgs(govukTag) !== null and isSaaTableShown === false %}
+{% if supplierAssessmentSummaryListArgs(govukTag) and not isSaaTableShown %}
 {{ govukSummaryList(supplierAssessmentSummaryListArgs(govukTag)) }}
 {% endif %}
-{% if supplierAssessmentSummaryTableArgs(govukTag) !== null and isSaaTableShown === true %}
-{{ govukTable(supplierAssessmentSummaryTableArgs(govukTag)) }}
+{% if supplierAssessmentSummaryTableArgs(govukTag) and isSaaTableShown %}
+  {{ govukTable(supplierAssessmentSummaryTableArgs(govukTag)) }}
 {% endif %}
 <h2 class="govuk-heading-m">Action plan</h2>
 <p class="govuk-body">
-  This is the action plan created by the service provider. When they submit changes, you'll need to review them and decide if you want to approve.
+  {{ presenter.actionPlanMessage }}
 </p>
-{{ govukTable(actionPlanTableArgs(govukTag)) }}
-<h2 class="govuk-heading-m">Intervention sessions</h2>
+{% if actionPlanTableArgs(govukTag) and isActionPlanTableShown %}
+  {{ govukTable(actionPlanTableArgs(govukTag)) }}
+{% endif %}
+<h2 class="govuk-heading-m">Session progress</h2>
 <p class="govuk-body">
-  These show the progress of each intervention session.
+  {{ presenter.sessionsMessage }}
 </p>
-{% if presenter.hasSessions %}
+{% if presenter.hasSessions and isSessionTableShown %}
 <table class="govuk-table" data-cy="session-table">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row">
@@ -75,18 +77,13 @@
     {%- endfor %}
   </tbody>
 </table>
-{% else %}
-<p class="govuk-body">
-  Sessions will appear here when the action plan is approved.
-</p>
-<hr class="govuk-section-break govuk-section-break--l govuk-section-break--visible">
 {% endif %}
 <h2 class="govuk-heading-m">End of service report</h2>
 {% if presenter.hasEndOfServiceReport %}
 <p>This is the end of service report created by the service provider.</p>
 {{ govukTable(endOfServiceReportTableArgs(govukTag)) }}
 {% else %}
-<p>Below you will be able to find the end of service report created by the service provider. Once submitted, you will be able to read and download it.</p>
+<p>{{ presenter.eosrMessage }}</p>
 {% endif %}
 {% if presenter.canCancelReferral %}
 <h2 class="govuk-heading-m">Cancel this referral</h2>

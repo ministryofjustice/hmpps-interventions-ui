@@ -12,6 +12,7 @@ import AuthUserDetails, { authUserFullName } from '../../models/hmppsAuth/authUs
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../models/appointment'
 import ActionPlanProgressPresenter from '../shared/action-plan/actionPlanProgressPresenter'
 import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
+import config from '../../config'
 
 interface ProgressSessionTableRow {
   sessionNumber: number
@@ -189,6 +190,8 @@ export default class InterventionProgressPresenter {
 
   readonly hasEndOfServiceReport = (this.referral.endOfServiceReport?.submittedAt ?? null) !== null
 
+  readonly hasApprovedActionPlan = (this.actionPlan?.approvedBy ?? null) !== null
+
   readonly endOfServiceReportTableHeaders = ['Caseworker', 'Status', 'Action']
 
   get endOfServiceReportTableRows(): EndOfServiceTableRow[] {
@@ -251,6 +254,38 @@ export default class InterventionProgressPresenter {
 
   readonly supplierAssessmentSessionStatusPresenter = new SessionStatusPresenter(this.supplierAssessmentSessionStatus)
 
+  get displaySaaTable(): boolean {
+    switch (this.supplierAssessmentStatus) {
+      case SupplierAssessmentStatus.awaitingCaseworker:
+      case SupplierAssessmentStatus.notScheduled:
+        return false
+      case SupplierAssessmentStatus.scheduled:
+      case SupplierAssessmentStatus.delivered:
+        return true
+      default:
+        return true
+    }
+  }
+
+  get displaySessionTable(): boolean {
+    if (!this.hasApprovedActionPlan && config.featureFlags.progressScreensEnabled === true) {
+      return false
+    }
+    return true
+  }
+
+  get displayActionPlanTable(): boolean {
+    switch (this.supplierAssessmentStatus) {
+      case SupplierAssessmentStatus.awaitingCaseworker:
+      case SupplierAssessmentStatus.notScheduled:
+      case SupplierAssessmentStatus.scheduled:
+        return false
+      case SupplierAssessmentStatus.delivered:
+      default:
+        return true
+    }
+  }
+
   private get supplierAssessmentStatus(): SupplierAssessmentStatus {
     switch (this.supplierAssessmentSessionStatus) {
       case SessionStatus.scheduled:
@@ -275,7 +310,10 @@ export default class InterventionProgressPresenter {
       case SupplierAssessmentStatus.notScheduled:
         return 'A caseworker has been assigned and will book the assessment appointment.'
       case SupplierAssessmentStatus.awaitingCaseworker:
-        return 'Once a caseworker has been assigned the assessment will be booked.'
+        if (config.featureFlags.progressScreensEnabled === true) {
+          return 'The assessment will be booked once a service provider caseworker has been assigned to this case.'
+        }
+        return 'Once a caseworker has been assigned the assessment will be booked.' // deprecated
       case SupplierAssessmentStatus.scheduled:
         return 'The appointment has been scheduled by the supplier.'
       case SupplierAssessmentStatus.delivered:
@@ -283,6 +321,39 @@ export default class InterventionProgressPresenter {
       default:
         throw new Error('unexpected status')
     }
+  }
+
+  get actionPlanMessage(): string {
+    switch (this.supplierAssessmentStatus) {
+      case SupplierAssessmentStatus.awaitingCaseworker:
+      case SupplierAssessmentStatus.notScheduled:
+      case SupplierAssessmentStatus.scheduled:
+        if (config.featureFlags.progressScreensEnabled === true) {
+          return "You'll need to read and review the action plan once the service provider has submitted it."
+        }
+        return "This is the action plan created by the service provider. When they submit changes, you'll need to review them and decide if you want to approve." // deprecated
+      case SupplierAssessmentStatus.delivered:
+        return "This is the action plan created by the service provider. When they submit changes, you'll need to review them and decide if you want to approve." // deprecated
+      default:
+        return "This is the action plan created by the service provider. When they submit changes, you'll need to review them and decide if you want to approve." // deprecated
+    }
+  }
+
+  get sessionsMessage(): string {
+    if (config.featureFlags.progressScreensEnabled === false) {
+      return 'These show the progress of each intervention session.'
+    }
+    if (!this.hasApprovedActionPlan && config.featureFlags.progressScreensEnabled === true) {
+      return "Sessions will appear here once you've approved the action plan."
+    }
+    return 'These show the progress of each intervention session.'
+  }
+
+  get eosrMessage(): string {
+    if (!this.hasEndOfServiceReport && config.featureFlags.progressScreensEnabled === true) {
+      return "You'll be able to view the end of service report once submitted by the service provider."
+    }
+    return 'Below you will be able to find the end of service report created by the service provider. Once submitted, you will be able to read and download it.' // deprecated
   }
 
   private supplierAssessmentAppointmentLink(

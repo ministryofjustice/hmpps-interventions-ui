@@ -79,6 +79,18 @@ export default class InterventionProgressView {
     href: this.presenter.hrefBackLink,
   }
 
+  private shouldDisplaySaaTable(): boolean {
+    return config.featureFlags.progressScreensEnabled === true && this.presenter.displaySaaTable
+  }
+
+  private shouldDisplaySessionTable(): boolean {
+    return config.featureFlags.progressScreensEnabled === false || this.presenter.displaySessionTable
+  }
+
+  private shouldDisplayActionPlanTable(): boolean {
+    return config.featureFlags.progressScreensEnabled === false || this.presenter.displayActionPlanTable
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'probationPractitionerReferrals/interventionProgress',
@@ -86,7 +98,9 @@ export default class InterventionProgressView {
         presenter: this.presenter,
         backLinkArgs: this.backLinkArgs,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
-        isSaaTableShown: config.featureFlags.progressScreensEnabled,
+        isSaaTableShown: this.shouldDisplaySaaTable(),
+        isSessionTableShown: this.shouldDisplaySessionTable(),
+        isActionPlanTableShown: this.shouldDisplayActionPlanTable(),
         supplierAssessmentSummaryListArgs: this.supplierAssessmentSummaryListArgs.bind(this),
         supplierAssessmentSummaryTableArgs: this.supplierAssessmentSummaryTableArgs.bind(this),
         endOfServiceReportTableArgs: this.endOfServiceReportTableArgs.bind(this),
