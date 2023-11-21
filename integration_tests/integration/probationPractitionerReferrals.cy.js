@@ -216,8 +216,8 @@ describe('Probation practitioner referrals dashboard', () => {
               .contains('The appointment has been scheduled by the supplier')
               .next()
               .within(() => {
-                cy.contains('Appointment status').next().contains('needs feedback')
-                cy.contains('To do').next().contains('View appointment details').click()
+                cy.contains('needs feedback')
+                cy.contains('View appointment details').click()
                 cy.location('pathname').should(
                   'equal',
                   `/probation-practitioner/referrals/${assignedReferral.id}/supplier-assessment`
@@ -247,8 +247,8 @@ describe('Probation practitioner referrals dashboard', () => {
               .contains('The appointment has been scheduled by the supplier')
               .next()
               .within(() => {
-                cy.contains('Appointment status').next().contains('scheduled')
-                cy.contains('To do').next().contains('View appointment details').click()
+                cy.contains('scheduled')
+                cy.contains('View appointment details').click()
                 cy.location('pathname').should(
                   'equal',
                   `/probation-practitioner/referrals/${assignedReferral.id}/supplier-assessment`
@@ -271,8 +271,8 @@ describe('Probation practitioner referrals dashboard', () => {
             .contains('The initial assessment has been delivered and feedback added.')
             .next()
             .within(() => {
-              cy.contains('Appointment status').next().contains('completed')
-              cy.contains('To do').next().contains('View feedback').click()
+              cy.contains('completed')
+              cy.contains('View feedback').click()
               cy.location('pathname').should(
                 'equal',
                 `/probation-practitioner/referrals/${assignedReferral.id}/supplier-assessment/post-assessment-feedback`
@@ -294,8 +294,8 @@ describe('Probation practitioner referrals dashboard', () => {
             .contains('The initial assessment has been delivered and feedback added.')
             .next()
             .within(() => {
-              cy.contains('Appointment status').next().contains('did not attend')
-              cy.contains('To do').next().contains('View feedback').click()
+              cy.contains('did not attend')
+              cy.contains('View feedback').click()
               cy.location('pathname').should(
                 'equal',
                 `/probation-practitioner/referrals/${assignedReferral.id}/supplier-assessment/post-assessment-feedback`
