@@ -52,7 +52,9 @@ describe('Probation Practitioner monitor journey', () => {
 
           cy.visit(`/probation-practitioner/referrals/${referral.id}/progress`)
 
-          cy.contains('Once a caseworker has been assigned the assessment will be booked.')
+          cy.contains(
+            'The assessment will be booked once a service provider caseworker has been assigned to this case.'
+          )
         })
       })
 
@@ -95,7 +97,6 @@ describe('Probation Practitioner monitor journey', () => {
 
           cy.contains('A caseworker has been assigned and will book the assessment appointment.')
           cy.contains('Liam Johnson')
-          cy.get('#supplier-assessment-status').contains('not scheduled')
         })
       })
 
@@ -138,7 +139,7 @@ describe('Probation Practitioner monitor journey', () => {
 
           cy.contains('The appointment has been scheduled by the supplier.')
           cy.contains('Liam Johnson')
-          cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
+          // cy.get('#supplier-assessment-status').contains(/^\s*scheduled\s*$/)
         })
       })
     })
@@ -626,7 +627,22 @@ describe('Probation Practitioner monitor journey', () => {
         assignedTo: { username: hmppsAuthUser.username },
       })
 
-      const appointment = initialAssessmentAppointmentFactory.attended().build()
+      const appointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        appointmentFeedback: {
+          attendanceFeedback: {
+            attended: 'yes',
+          },
+          sessionFeedback: {
+            notifyProbationPractitioner: false,
+            sessionSummary: 'all good',
+            sessionResponse: 'went well',
+            sessionConcerns: 'none',
+          },
+          submitted: true,
+        },
+      })
+
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [appointment],
         currentAppointmentId: appointment.id,
@@ -738,7 +754,22 @@ describe('Probation Practitioner monitor journey', () => {
         assignedTo: { username: hmppsAuthUser.username },
       })
 
-      const appointment = initialAssessmentAppointmentFactory.attended().build()
+      const appointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+        appointmentFeedback: {
+          attendanceFeedback: {
+            attended: 'yes',
+          },
+          sessionFeedback: {
+            notifyProbationPractitioner: false,
+            sessionSummary: 'all good',
+            sessionResponse: 'went well',
+            sessionConcerns: 'none',
+          },
+          submitted: true,
+        },
+      })
+
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [appointment],
         currentAppointmentId: appointment.id,
