@@ -196,10 +196,12 @@ context('Amend a referral', () => {
 
         cy.contains('Save changes').click()
 
-        cy.get('.govuk-notification-banner').within(() => {
-          cy.contains('Important')
-          cy.contains('You have not made any changes to mobility, disability or accessibility needs.')
-        })
+        cy.get('.govuk-notification-banner')
+          .last()
+          .within(() => {
+            cy.contains('Important')
+            cy.contains('You have not made any changes to mobility, disability or accessibility needs.')
+          })
       })
     })
   })
@@ -290,10 +292,12 @@ context('Amend a referral', () => {
 
         cy.contains('Save changes').click()
 
-        cy.get('.govuk-notification-banner').within(() => {
-          cy.contains('Important')
-          cy.contains('You have not made any changes to additional information.')
-        })
+        cy.get('.govuk-notification-banner')
+          .last()
+          .within(() => {
+            cy.contains('Important')
+            cy.contains('You have not made any changes to additional information.')
+          })
       })
     })
   })
@@ -517,10 +521,12 @@ context('Amend a referral', () => {
 
         cy.contains('Save changes').click()
 
-        cy.get('.govuk-notification-banner').within(() => {
-          cy.contains('Important')
-          cy.contains('You have not made any changes to desired outcomes.')
-        })
+        cy.get('.govuk-notification-banner')
+          .last()
+          .within(() => {
+            cy.contains('Important')
+            cy.contains('You have not made any changes to desired outcomes.')
+          })
       })
     })
   })
