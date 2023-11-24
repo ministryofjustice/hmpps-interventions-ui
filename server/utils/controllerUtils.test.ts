@@ -7,6 +7,8 @@ import DraftsService from '../services/draftsService'
 import UserDataService from '../services/userDataService'
 import { createDraftFactory } from '../../testutils/factories/draft'
 import loggedInUser from '../../testutils/factories/loggedInUser'
+import ReferenceDataService from '../services/referenceDataService'
+import WhatsNewCookieService from '../services/whatsNewCookieService'
 
 describe(ControllerUtils, () => {
   describe('parseQueryParamAsPositiveInteger', () => {
@@ -50,6 +52,8 @@ describe(ControllerUtils, () => {
           bar: '2',
           headerPresenter: expect.anything(),
           googleAnalyticsTrackingId: 'UA-TEST-ID',
+          showWhatsNewBanner: false,
+          whatsNewBannerArgs: expect.anything(),
         })
       })
     })
@@ -71,6 +75,129 @@ describe(ControllerUtils, () => {
           headerPresenter: expect.anything(),
           googleAnalyticsTrackingId: 'UA-TEST-ID',
           serviceUserBannerPresenter: expect.anything(),
+          showWhatsNewBanner: false,
+          whatsNewBannerArgs: expect.anything(),
+        })
+      })
+    })
+
+    describe('with non-null userType and dismissWhatsNewBanner req query is false and dismissed what-new-banner cookie is not latest version', () => {
+      it('calls render on the response, passing whatsNewBanner object and showWhatsNewBanner as true', async () => {
+        const req = {
+          render: jest.fn(),
+          locals: { user: null },
+          query: { dismissWhatsNewBanner: false },
+        } as unknown as Request
+        const res = { render: jest.fn(), locals: { user: null } } as unknown as Response
+        const renderArgs: [string, Record<string, unknown>] = ['myTemplate', { foo: '1', bar: '2' }]
+        const contentView = { renderArgs }
+        const serviceUser = deliusServiceUserFactory.build()
+        config.googleAnalyticsTrackingId = 'UA-TEST-ID'
+
+        WhatsNewCookieService.getDismissedVersion = jest.fn().mockReturnValue(0)
+
+        await ControllerUtils.renderWithLayout(req, res, contentView, serviceUser, 'service-provider')
+        expect(res.render).toHaveBeenCalledWith('myTemplate', {
+          foo: '1',
+          bar: '2',
+          headerPresenter: expect.anything(),
+          googleAnalyticsTrackingId: 'UA-TEST-ID',
+          serviceUserBannerPresenter: expect.anything(),
+          showWhatsNewBanner: true,
+          whatsNewBannerArgs: expect.anything(),
+        })
+      })
+    })
+
+    describe('with non-null userType and dismissWhatsNewBanner req query is true and dismissed what-new-banner cookie is not latest version', () => {
+      it('calls render on the response, passing whatsNewBanner object and showWhatsNewBanner as false', async () => {
+        const req = {
+          render: jest.fn(),
+          locals: { user: null },
+          query: { dismissWhatsNewBanner: true },
+        } as unknown as Request
+        const res = { render: jest.fn(), locals: { user: null } } as unknown as Response
+        const renderArgs: [string, Record<string, unknown>] = ['myTemplate', { foo: '1', bar: '2' }]
+        const contentView = { renderArgs }
+        const serviceUser = deliusServiceUserFactory.build()
+        config.googleAnalyticsTrackingId = 'UA-TEST-ID'
+
+        WhatsNewCookieService.getDismissedVersion = jest.fn().mockReturnValue(0)
+        WhatsNewCookieService.persistDismissedVersion = jest.fn()
+
+        await ControllerUtils.renderWithLayout(req, res, contentView, serviceUser, 'probation-practitioner')
+        expect(res.render).toHaveBeenCalledWith('myTemplate', {
+          foo: '1',
+          bar: '2',
+          headerPresenter: expect.anything(),
+          googleAnalyticsTrackingId: 'UA-TEST-ID',
+          serviceUserBannerPresenter: expect.anything(),
+          showWhatsNewBanner: false,
+          whatsNewBannerArgs: expect.anything(),
+        })
+      })
+    })
+
+    describe('with non-null userType and dismissWhatsNewBanner req query is false and dismissed what-new-banner cookie is latest version', () => {
+      it('calls render on the response, passing whatsNewBanner object and showWhatsNewBanner as false', async () => {
+        const req = {
+          render: jest.fn(),
+          locals: { user: null },
+          query: { dismissWhatsNewBanner: false },
+        } as unknown as Request
+        const res = { render: jest.fn(), locals: { user: null } } as unknown as Response
+        const renderArgs: [string, Record<string, unknown>] = ['myTemplate', { foo: '1', bar: '2' }]
+        const contentView = { renderArgs }
+        const serviceUser = deliusServiceUserFactory.build()
+        config.googleAnalyticsTrackingId = 'UA-TEST-ID'
+
+        WhatsNewCookieService.getDismissedVersion = jest.fn().mockReturnValue(0)
+        ReferenceDataService.getWhatsNewBanner = jest.fn().mockReturnValue({
+          version: 0,
+          heading: 'heading',
+          text: 'text',
+          link: 'link',
+          linkText: 'linkText',
+        })
+
+        await ControllerUtils.renderWithLayout(req, res, contentView, serviceUser, 'service-provider')
+        expect(res.render).toHaveBeenCalledWith('myTemplate', {
+          foo: '1',
+          bar: '2',
+          headerPresenter: expect.anything(),
+          googleAnalyticsTrackingId: 'UA-TEST-ID',
+          serviceUserBannerPresenter: expect.anything(),
+          showWhatsNewBanner: false,
+          whatsNewBannerArgs: expect.anything(),
+        })
+      })
+    })
+
+    describe('with null userType and dismissWhatsNewBanner req query is false and dismissed what-new-banner cookie is not latest version', () => {
+      it('calls render on the response, passing whatsNewBanner object and showWhatsNewBanner as false', async () => {
+        const req = {
+          render: jest.fn(),
+          locals: { user: null },
+          query: { dismissWhatsNewBanner: false },
+        } as unknown as Request
+        const res = { render: jest.fn(), locals: { user: null } } as unknown as Response
+        const renderArgs: [string, Record<string, unknown>] = ['myTemplate', { foo: '1', bar: '2' }]
+        const contentView = { renderArgs }
+        const serviceUser = deliusServiceUserFactory.build()
+        config.googleAnalyticsTrackingId = 'UA-TEST-ID'
+
+        WhatsNewCookieService.getDismissedVersion = jest.fn().mockReturnValue(0)
+        WhatsNewCookieService.persistDismissedVersion = jest.fn()
+
+        await ControllerUtils.renderWithLayout(req, res, contentView, serviceUser, null)
+        expect(res.render).toHaveBeenCalledWith('myTemplate', {
+          foo: '1',
+          bar: '2',
+          headerPresenter: expect.anything(),
+          googleAnalyticsTrackingId: 'UA-TEST-ID',
+          serviceUserBannerPresenter: expect.anything(),
+          showWhatsNewBanner: false,
+          whatsNewBannerArgs: expect.anything(),
         })
       })
     })

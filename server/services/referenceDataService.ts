@@ -37,7 +37,7 @@ export default class ReferenceDataService {
 
   private static async getWhatsNewBannerForSP(backHref: string): Promise<WhatsNewBanner | undefined> {
     return csv()
-      .fromFile('reference-data/whats-new-banner-sp-v0.csv')
+      .fromFile('reference-data/whats-new-banner-sp.csv')
       .then(json => {
         return json
           .map(jsonFile => {
@@ -55,7 +55,7 @@ export default class ReferenceDataService {
 
   private static async getWhatsNewBannerForPP(backHref: string): Promise<WhatsNewBanner | undefined> {
     return csv()
-      .fromFile('reference-data/whats-new-banner-pp-v0.csv')
+      .fromFile('reference-data/whats-new-banner-pp.csv')
       .then(json => {
         return json
           .map(jsonFile => {

@@ -10,14 +10,14 @@ export default class LayoutPresenter {
     private readonly loggedInUser: LoggedInUser | null,
     readonly serviceUser: DeliusServiceUser | null,
     readonly whatsNewBanner: WhatsNewBanner | undefined,
-    readonly showWhatsNewBanner?: boolean
+    readonly showWhatsNewBanner: boolean
   ) {}
 
   readonly serviceUserBannerPresenter = this.serviceUser ? new ServiceUserBannerPresenter(this.serviceUser) : null
 
   readonly headerPresenter = new HeaderPresenter(this.loggedInUser)
 
-  get closeWhatsNewBannerHref(): string {
+  get dismissWhatsNewBannerHref(): string {
     return `${this.originalUrl}?dismissWhatsNewBanner=true`
   }
 }

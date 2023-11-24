@@ -35,7 +35,7 @@ export default class ControllerUtils {
     userType: 'service-provider' | 'probation-practitioner' | null
   ): Promise<void> {
     let whatsNewBanner
-    let showWhatsNewBanner
+    let showWhatsNewBanner = false
 
     if (userType) {
       whatsNewBanner = await ReferenceDataService.getWhatsNewBanner(userType, req.originalUrl)

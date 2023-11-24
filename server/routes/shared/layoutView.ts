@@ -20,12 +20,12 @@ export default class LayoutView {
   get whatsNewBannerArgs(): NotificationBannerArgs {
     const html = `<p class="govuk-notification-banner__heading">${this.presenter.whatsNewBanner?.heading}</p>
                   <p class="govuk-body">
-                    ${this.presenter.whatsNewBanner?.text}<br/>
+                    ${this.presenter.whatsNewBanner?.text} 
                     <a class="govuk-notification-banner__link" href='${this.presenter.whatsNewBanner?.link}'>
                       ${this.presenter.whatsNewBanner?.linkText}
                     </a>
                   </p>
-                  <p><a class="govuk-notification-banner__link" href=${this.presenter.closeWhatsNewBannerHref}>Close</a></p>`
+                  <p><a class="govuk-notification-banner__link" href=${this.presenter.dismissWhatsNewBannerHref}>Dismiss</a></p>`
     return {
       titleText: 'What’s new',
       html,

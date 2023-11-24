@@ -1,33 +1,59 @@
 {% extends "../partials/layout.njk" %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "moj/components/timeline/macro.njk" import mojTimeline %}
 
 {% set pageTitle = "What's new" %}
 
 {% block pageContent %}
-  {{ govukButton(backButtonArgs) }}
+  {{ govukBackLink(backButtonArgs) }}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">What's new</h1>
+      <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
-      <h2 class="govuk-heading-m">Get better information about sessions</h2>
-
+    {% set whatsNewVersion1Html %}
+      <h3 class="govuk-heading-s">New functionality</h3>
       <p>
-        We’ve made some changes to help you get better information about sessions in Refer and monitor an intervention.
-        You’ll now be able to find out:
+        Following our improvements to community referrals in June, we have released new functionality for the remaining referral types:
       </p>
-
       <ul class="govuk-list govuk-list--bullet">
-        <li>if a session happened</li>
-        <li>about sessions which did not happen but the person on probation attended, for example because the caseworker was absent</li>
-        <li>if it’s not known if the person attended, for example it was a phone call and the service provider caseworker could not attend</li>
-        <li>details about lateness, such as how late someone was and any reason they gave</li>
+        <li>pre-release referrals with an allocated COM</li>
+        <li>pre-release referrals without an allocated COM (includes referrals from PRTs)</li>
+        <li>custodial referrals without an allocated COM</li>
       </ul>
+      <p>When you make a referral for an intervention the screens are now tailored to each referral type. This ensures that the most appropriate information is passed onto the service providers.</p>
 
-      <p>The service provider also has the option to outline what’s planned for the next session.</p>
+      <h3 class="govuk-heading-s">New look task list screen</h3>
+      <p>We’ve redesigned the task list screen so that it’s easier to track your progress through the referral. You can see at a glance which tasks have been completed and which ones still need to be done.</p>
 
-      <h2 class="govuk-heading-m">Give feedback on the changes</h2>
+      <h3 class="govuk-heading-s">Contact details for unallocated referrals</h3>
+      <p>Referrals now ask for a main point of contact when there is no allocated COM. This will help service providers to contact the right person and resolve referral issues more quickly.</p>
 
-      <p>We’d like to know what you think. Please share your feedback in this <a class="govuk-link" href="#">one-question survey.</a></p>
+      <h3 class="govuk-heading-s">Full contact details for service providers</h3>
+      <p>We are now providing service providers with more complete contact details for the referral. You will need to review and confirm/update these so they are correct.</p>
+
+      <h3 class="govuk-heading-s">Improved service provider caselist dashboard</h3>
+      <p>Service providers now have better at-a-glance information for expected release date, location and CRN on their caselist dashboard.</p>
+
+      <h3 class="govuk-heading-s">Upcoming release</h3>
+      <p>Our next release will deliver design improvements based on our recent research. This release will include the ability for referrers to amend phone numbers and show prison number on custody referrals.</p>
+    {% endset %}
+
+      {{ mojTimeline({
+        items: [
+          {
+            label: {
+              text: "Changes to making a referral"
+            },
+            html: whatsNewVersion1Html,
+            datetime: {
+              timestamp: "2023-10-16",
+              type: "date"
+            }
+          }
+        ]
+      })
+    }}
     </div>
   </div>
 {% endblock %}
