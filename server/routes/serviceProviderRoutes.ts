@@ -294,6 +294,22 @@ export default function serviceProviderRoutes(
     '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/behaviour',
     (req, res) => appointmentsController.addSupplierAssessmentSessionFeedback(req, res)
   )
+  get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/no-session', (req, res) =>
+    appointmentsController.addSupplierAssessmentNoSessionFeedback(req, res)
+  )
+  get(
+    router,
+    '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/no-session',
+    (req, res) => appointmentsController.addSupplierAssessmentNoSessionFeedback(req, res)
+  )
+  post(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/no-session', (req, res) =>
+    appointmentsController.addSupplierAssessmentNoSessionFeedback(req, res)
+  )
+  post(
+    router,
+    '/referrals/:id/supplier-assessment/post-assessment-feedback/edit/:draftBookingId/no-session',
+    (req, res) => appointmentsController.addSupplierAssessmentNoSessionFeedback(req, res)
+  )
   get(router, '/referrals/:id/supplier-assessment/post-assessment-feedback/check-your-answers', (req, res) =>
     appointmentsController.checkSupplierAssessmentFeedbackAnswers(req, res)
   )

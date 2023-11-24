@@ -632,6 +632,98 @@ export default class AppointmentsController {
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
+  async addSupplierAssessmentNoSessionFeedback(req: Request, res: Response): Promise<void> {
+    const { user } = res.locals
+    const { accessToken } = user.token
+    const referralId = req.params.id
+    const { draftBookingId } = req.params
+
+    const [referral, supplierAssessment] = await Promise.all([
+      this.interventionsService.getSentReferral(accessToken, referralId),
+      this.interventionsService.getSupplierAssessment(accessToken, referralId),
+    ])
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
+    const appointment = await this.getSupplierAssessmentAppointmentFromDraftOrService(
+      req,
+      res,
+      supplierAssessment,
+      referralId
+    )
+
+    if (appointment === null) {
+      if (draftBookingId) {
+        logger.warn(`Attempting to add initial assessment session feedback without a draft appointment`)
+        return
+      }
+      throw new Error('Attempting to add initial assessment session feedback without a current appointment')
+    }
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+    let data: FormData<Partial<AppointmentSession>>
+
+    if (req.method === 'POST') {
+      const { attended } = appointment.appointmentFeedback.attendanceFeedback
+      if (attended === 'yes') {
+        data = await new NoSessionYesAttendedFeedbackForm(req).data()
+      } else if (attended === 'no') {
+        data = await new NoSessionNoAttendedFeedbackForm(req).data()
+      } else if (attended === 'do_not_know') {
+        data = await new NoSessionIdkAttendedFeedbackForm(req).data()
+      } else {
+        throw new Error('Draft appointment data is missing.')
+      }
+      if (data.error) {
+        res.status(400)
+        formError = data.error
+        userInputData = req.body
+      } else {
+        let redirectUrl
+        if (draftBookingId) {
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+          if (fetchResult.rendered) {
+            return
+          }
+          const { draft } = fetchResult
+          const draftAppointment = draft.data as DraftAppointment
+          if (draftAppointment && draftAppointment.session) {
+            await this.updateDraftSessionFeedback(
+              draftAppointment,
+              data.paramsForUpdate,
+              appointment.appointmentFeedback.attendanceFeedback.attended
+            )
+          } else {
+            throw new Error('Draft appointment data is missing.')
+          }
+
+          await this.draftsService.updateDraft(draft.id, draft.data, { userId: res.locals.user.userId })
+
+          redirectUrl = `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/edit/${draftBookingId}/check-your-answers`
+        } else {
+          await this.interventionsService.recordSupplierAssessmentAppointmentSessionFeedback(
+            accessToken,
+            referralId,
+            data.paramsForUpdate
+          )
+          redirectUrl = `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/check-your-answers`
+        }
+
+        res.redirect(redirectUrl)
+        return
+      }
+    }
+
+    const presenter = new InitialAssessmentSessionFeedbackPresenter(
+      appointment,
+      serviceUser,
+      referralId,
+      draftBookingId,
+      formError,
+      userInputData
+    )
+    const view = new SessionFeedbackView(presenter)
+    ControllerUtils.renderWithLayout(res, view, serviceUser)
+  }
+
   async checkSupplierAssessmentFeedbackAnswers(req: Request, res: Response): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
@@ -711,9 +803,6 @@ export default class AppointmentsController {
           attendanceFeedback: { ...draftAppointment.session.attendanceFeedback },
           sessionFeedback: { ...draftAppointment.session.sessionFeedback },
         }
-        console.log('---------------------')
-        console.log(data)
-        console.log('---------------------')
         await this.interventionsService.scheduleAndSubmitSupplierAssessmentAppointmentWithFeedback(
           accessToken,
           supplierAssessment.id,
@@ -1514,7 +1603,6 @@ export default class AppointmentsController {
     if (draftAppointment && data.paramsForUpdate) {
       if (draftAppointment.session) {
         if (!data.paramsForUpdate.didSessionHappen!) {
-          console.log('1')
           draftAppointment.session.sessionFeedback = {
             late: null,
             lateReason: null,
@@ -1530,25 +1618,18 @@ export default class AppointmentsController {
             // noSessionReasonOther: null,
             noAttendanceInformation: null,
           }
-          console.log('2')
           draftAppointment.session.attendanceFeedback.didSessionHappen = false
           draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended!
           // Need to set on new page later on.
           // draftAppointment.session.attendanceFeedback.attendanceFailureInformation =
           //   data.paramsForUpdate.attendanceFailureInformation!
         } else {
-          console.log('3')
           draftAppointment.session.attendanceFeedback.didSessionHappen = data.paramsForUpdate.didSessionHappen
           draftAppointment.session.attendanceFeedback.attended = 'yes'
           // draftAppointment.session.attendanceFeedback.attendanceFailureInformation = null
         }
-        console.log('4')
         draftAppointment.session.attendanceFeedback.attended = data.paramsForUpdate.attended! // What's this for???
       } else {
-        console.log('-----------------------')
-        console.log('5')
-        console.log(data.paramsForUpdate.didSessionHappen)
-        console.log('-----------------------')
         draftAppointment.session = {
           attendanceFeedback: {
             didSessionHappen: data.paramsForUpdate.didSessionHappen!,

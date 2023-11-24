@@ -184,7 +184,7 @@ export default class FeedbackAnswersPresenter {
   }
 
   get lateAnswers(): { question: string; answer: string } | null {
-    if (!this.appointment.appointmentFeedback.sessionFeedback.late) {
+    if (this.appointment.appointmentFeedback.sessionFeedback.late == null) {
       return null
     }
 

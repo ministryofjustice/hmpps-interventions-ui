@@ -24,8 +24,8 @@ describe(FeedbackAnswersPresenter, () => {
       const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
       expect(presenter.attendedAnswers).toEqual({
-        question: 'Did Alex River come to the session?',
-        answer: 'Yes, they were on time',
+        question: 'Did Alex River attend the session?',
+        answer: 'Yes',
       })
     })
 

@@ -140,7 +140,11 @@ export default class InterventionProgressPresenter {
       .sort((a, b) => {
         return a.sessionNumber - b.sessionNumber
       })
-      .filter(x => x.isParent || (!x.isParent && x.statusPresenter.text === 'did not attend'))
+      .filter(
+        x =>
+          x.isParent ||
+          (!x.isParent && (x.statusPresenter.text === 'did not attend' || x.statusPresenter.text === 'did not happen'))
+      )
   }
 
   private sessionTableParams(

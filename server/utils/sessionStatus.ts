@@ -17,9 +17,6 @@ export default {
     const appointmentDecorator = new AppointmentDecorator(appointment)
     if (appointment.appointmentFeedback.submitted) {
       const sessionFeedbackAttendance = appointment.appointmentFeedback.attendanceFeedback
-      console.log('-------------------')
-      console.log(appointment)
-      console.log('-------------------')
       if (appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === true) {
         return SessionStatus.completed
       }

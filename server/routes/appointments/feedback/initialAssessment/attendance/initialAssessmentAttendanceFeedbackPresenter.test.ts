@@ -18,7 +18,6 @@ describe(InitialAssessmentAttendanceFeedbackPresenter, () => {
         title: 'Record appointment attendance',
         subTitle: 'The date and time of the appointment are a permanent record of where this person was.',
         attendanceQuestion: 'Did Alex River come to the appointment?',
-        attendanceQuestionHint: 'Select one option',
         additionalAttendanceInformationLabel: "Add additional information about Alex's attendance:",
       })
     })

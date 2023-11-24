@@ -498,9 +498,11 @@ describe('viewing supplier assessment feedback', () => {
           appointmentTime: '2021-02-01T13:00:00Z',
           appointmentFeedback: {
             attendanceFeedback: {
+              didSessionHappen: true,
               attended: 'yes',
             },
             sessionFeedback: {
+              late: false,
               sessionSummary: 'stub session summary',
               sessionResponse: 'stub session response',
               notifyProbationPractitioner: false,
@@ -521,8 +523,8 @@ describe('viewing supplier assessment feedback', () => {
           .expect(200)
           .expect(res => {
             expect(res.text).toContain('Appointment feedback')
-            expect(res.text).toContain('Did Alex River come to the appointment?')
-            expect(res.text).toContain('Yes, they were on time')
+            expect(res.text).toContain('Did Alex River attend the appointment?')
+            expect(res.text).toContain('Yes')
             expect(res.text).toContain('What did you do in the appointment?')
             expect(res.text).toContain('stub session summary')
             expect(res.text).toContain('How did Alex River respond to the appointment?')
@@ -910,6 +912,7 @@ describe('Adding supplier assessment feedback', () => {
           ...appointment,
           appointmentFeedback: {
             attendanceFeedback: {
+              didSessionHappen: true,
               attended: 'yes',
             },
           },
@@ -926,6 +929,7 @@ describe('Adding supplier assessment feedback', () => {
           .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
           .type('form')
           .send({
+            'did-session-happen': 'yes',
             attended: 'yes',
           })
           .expect(302)
@@ -944,8 +948,8 @@ describe('Adding supplier assessment feedback', () => {
           ...appointment,
           appointmentFeedback: {
             attendanceFeedback: {
+              didSessionHappen: false,
               attended: 'no',
-              attendanceFailureInformation: 'failed to attend',
             },
           },
         })
@@ -953,19 +957,20 @@ describe('Adding supplier assessment feedback', () => {
           appointments: [appointment],
           currentAppointmentId: appointment.id,
         })
+
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
         interventionsService.recordSupplierAssessmentAppointmentAttendance.mockResolvedValue(updatedAppointment)
         await request(app)
           .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/attendance`)
           .type('form')
           .send({
+            'did-session-happen': 'no',
             attended: 'no',
-            'attendance-failure-information': 'failed to attend',
           })
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
+            `/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/no-session`
           )
       })
     })
@@ -1058,6 +1063,7 @@ describe('Adding supplier assessment feedback', () => {
           ...appointment,
           appointmentFeedback: {
             sessionFeedback: {
+              late: false,
               sessionSummary: 'summary',
               sessionResponse: 'response',
             },
@@ -1071,10 +1077,12 @@ describe('Adding supplier assessment feedback', () => {
         ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
         interventionsService.recordSupplierAssessmentAppointmentSessionFeedback.mockResolvedValue(updatedAppointment)
+
         await request(app)
           .post(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
           .type('form')
           .send({
+            late: 'no',
             'session-summary': 'summary',
             'session-response': 'response',
             'notify-probation-practitioner': 'no',
@@ -1117,9 +1125,11 @@ describe('Adding supplier assessment feedback', () => {
         appointmentTime: '2021-02-01T13:00:00Z',
         appointmentFeedback: {
           attendanceFeedback: {
+            didSessionHappen: true,
             attended: 'yes',
           },
           sessionFeedback: {
+            late: false,
             sessionSummary: 'stub session summary',
             sessionResponse: 'stub session response',
             notifyProbationPractitioner: false,
@@ -1151,8 +1161,8 @@ describe('Adding supplier assessment feedback', () => {
           expect(res.text).toContain('appointment feedback')
           expect(res.text).toContain('In-person meeting (probation office)')
           expect(res.text).toContain('Confirm appointment feedback')
-          expect(res.text).toContain('Did Alex River come to the appointment?')
-          expect(res.text).toContain('Yes, they were on time')
+          expect(res.text).toContain('Did Alex River attend the appointment?')
+          expect(res.text).toContain('Yes')
           expect(res.text).toContain('What did you do in the appointment?')
           expect(res.text).toContain('stub session summary')
           expect(res.text).toContain('How did Alex River respond to the appointment?')
@@ -1317,10 +1327,11 @@ describe('Adding supplier assessment feedback', () => {
         appointmentTime: '2021-02-01T13:00:00Z',
         appointmentFeedback: {
           attendanceFeedback: {
+            didSessionHappen: true,
             attended: 'yes',
-            additionalAttendanceInformation: 'He was punctual',
           },
           sessionFeedback: {
+            late: false,
             sessionSummary: 'stub session summary',
             sessionResponse: 'stub session response',
           },
@@ -1340,8 +1351,8 @@ describe('Adding supplier assessment feedback', () => {
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('Appointment feedback')
-          expect(res.text).toContain('Did Alex River come to the appointment?')
-          expect(res.text).toContain('Yes, they were on time')
+          expect(res.text).toContain('Did Alex River attend the appointment?')
+          expect(res.text).toContain('Yes')
           expect(res.text).toContain('What did you do in the appointment?')
           expect(res.text).toContain('stub session summary')
           expect(res.text).toContain('How did Alex River respond to the appointment?')
@@ -1375,8 +1386,8 @@ describe('Adding supplier assessment feedback', () => {
         appointmentTime: '2021-02-01T13:00:00Z',
         appointmentFeedback: {
           attendanceFeedback: {
+            didSessionHappen: false,
             attended: 'no',
-            attendanceFailureInformation: 'They missed the bus',
           },
           submitted: true,
         },
@@ -1395,9 +1406,8 @@ describe('Adding supplier assessment feedback', () => {
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('Appointment feedback')
-          expect(res.text).toContain('Did Alex River come to the appointment?')
+          expect(res.text).toContain('Did Alex River attend the appointment?')
           expect(res.text).toContain('No')
-          expect(res.text).toContain('They missed the bus')
         })
     })
 
@@ -1535,12 +1545,21 @@ describe('Adding post delivery session feedback', () => {
           sessionNumber: 1,
           appointmentFeedback: {
             attendanceFeedback: {
+              didSessionHappen: true,
               attended: 'yes',
             },
           },
         })
 
         const actionPlan = actionPlanFactory.build()
+        const appointment = actionPlanAppointmentFactory.build({
+          appointmentTime: '2021-02-01T13:00:00Z',
+          durationInMinutes: 60,
+          appointmentDeliveryType: 'PHONE_CALL',
+        })
+
+        interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+        interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
 
         interventionsService.recordActionPlanAppointmentAttendance.mockResolvedValue(updatedAppointment)
 
@@ -1550,6 +1569,7 @@ describe('Adding post delivery session feedback', () => {
           )
           .type('form')
           .send({
+            'did-session-happen': 'yes',
             attended: 'yes',
           })
           .expect(302)
@@ -1566,13 +1586,21 @@ describe('Adding post delivery session feedback', () => {
           sessionNumber: 1,
           appointmentFeedback: {
             attendanceFeedback: {
+              didSessionHappen: false,
               attended: 'no',
             },
           },
         })
 
         const actionPlan = actionPlanFactory.build()
+        const appointment = actionPlanAppointmentFactory.build({
+          appointmentTime: '2021-02-01T13:00:00Z',
+          durationInMinutes: 60,
+          appointmentDeliveryType: 'PHONE_CALL',
+        })
 
+        interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+        interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
         interventionsService.recordActionPlanAppointmentAttendance.mockResolvedValue(updatedAppointment)
 
         await request(app)
@@ -1581,13 +1609,13 @@ describe('Adding post delivery session feedback', () => {
           )
           .type('form')
           .send({
+            'did-session-happen': 'no',
             attended: 'no',
-            'attendance-failure-information': 'failed to attend',
           })
           .expect(302)
           .expect(
             'Location',
-            `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback/check-your-answers`
+            `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback/no-session`
           )
       })
     })
@@ -1601,6 +1629,7 @@ describe('Adding post delivery session feedback', () => {
             sessionNumber: 1,
             appointmentFeedback: {
               attendanceFeedback: {
+                didSessionHappen: true,
                 attended: 'yes',
               },
             },
@@ -1623,6 +1652,7 @@ describe('Adding post delivery session feedback', () => {
             )
             .type('form')
             .send({
+              'did-session-happen': 'yes',
               attended: 'yes',
             })
             .expect(302)
@@ -1634,11 +1664,12 @@ describe('Adding post delivery session feedback', () => {
       })
 
       describe('when the Service Provider marks the Service user as not having attended the session', () => {
-        it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the check-your-answers page', async () => {
+        it('makes a request to the interventions service to record the Service user‘s attendance and redirects to the no session feedback page', async () => {
           const updatedAppointment = actionPlanAppointmentFactory.build({
             sessionNumber: 1,
             appointmentFeedback: {
               attendanceFeedback: {
+                didSessionHappen: false,
                 attended: 'no',
               },
             },
@@ -1663,13 +1694,13 @@ describe('Adding post delivery session feedback', () => {
             )
             .type('form')
             .send({
+              'did-session-happen': 'no',
               attended: 'no',
-              'attendance-failure-information': 'failed to attend',
             })
             .expect(302)
             .expect(
               'Location',
-              `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback/edit/${draftAppointmentResult.id}/check-your-answers`
+              `/service-provider/action-plan/${actionPlan.id}/appointment/${updatedAppointment.sessionNumber}/post-session-feedback/edit/${draftAppointmentResult.id}/no-session`
             )
         })
       })
@@ -1681,6 +1712,7 @@ describe('Adding post delivery session feedback', () => {
           sessionNumber: 1,
           appointmentFeedback: {
             attendanceFeedback: {
+              didSessionHappen: true,
               attended: 'yes',
             },
           },
@@ -1703,8 +1735,8 @@ describe('Adding post delivery session feedback', () => {
           )
           .type('form')
           .send({
+            'did-session-happen': 'yes',
             attended: 'yes',
-            'additional-attendance-information': 'Alex made the session on time',
           })
           .expect(410)
           .expect(res => {
@@ -1826,10 +1858,16 @@ describe('Adding post delivery session feedback', () => {
         sessionNumber: 1,
         appointmentFeedback: {
           sessionFeedback: {
+            late: false,
             sessionSummary: 'stub session summary',
             sessionResponse: 'stub session response',
           },
         },
+      })
+      const appointment = actionPlanAppointmentFactory.build({
+        appointmentTime: '2021-02-01T13:00:00Z',
+        durationInMinutes: 60,
+        appointmentDeliveryType: 'PHONE_CALL',
       })
 
       const actionPlan = actionPlanFactory.build()
@@ -1838,6 +1876,7 @@ describe('Adding post delivery session feedback', () => {
       interventionsService.getActionPlan.mockResolvedValue(submittedActionPlan)
       interventionsService.getSentReferral.mockResolvedValue(referral)
       interventionsService.recordActionPlanAppointmentSessionFeedback.mockResolvedValue(updatedAppointment)
+      interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
 
       await request(app)
         .post(
@@ -1845,6 +1884,7 @@ describe('Adding post delivery session feedback', () => {
         )
         .type('form')
         .send({
+          late: 'no',
           'session-summary': 'stub session summary',
           'session-response': 'stub session response',
           'notify-probation-practitioner': 'no',
@@ -1890,6 +1930,7 @@ describe('Adding post delivery session feedback', () => {
           )
           .type('form')
           .send({
+            late: 'no',
             'session-summary': 'summary',
             'session-response': 'response',
             'notify-probation-practitioner': 'no',
@@ -1934,6 +1975,7 @@ describe('Adding post delivery session feedback', () => {
           )
           .type('form')
           .send({
+            late: 'yes',
             'session-summary': 'stub session summary',
             'session-response': 'stub session response',
             'notify-probation-practitioner': 'no',
@@ -1942,7 +1984,7 @@ describe('Adding post delivery session feedback', () => {
           .expect(res => {
             expect(res.text).toContain('This page is no longer available')
             expect(res.text).toContain(
-              `You can <a href="/service-provider/referrals/${actionPlan.referralId}/progress" class="govuk-link">book or change the appointment`
+              `You can <a href="/service-provider/referrals/${referral.id}/progress" class="govuk-link">book or change the appointment`
             )
           })
       })
@@ -1991,7 +2033,9 @@ describe('Adding post delivery session feedback', () => {
           appointmentDeliveryType: 'PHONE_CALL',
         })
 
-        const draftAppointment: DraftAppointment = draftAppointmentFactory.withBehaviourFeedback().build()
+        const draftAppointment: DraftAppointment = draftAppointmentFactory
+          .withBehaviourFeedback('yes', true, false, null, 'aaa', 'aaa', false, null)
+          .build()
 
         const draftAppointmentResult = draftAppointmentBookingFactory.build({
           data: draftAppointment,
@@ -2085,8 +2129,8 @@ describe('Adding post delivery session feedback', () => {
 
       expect(interventionsService.submitActionPlanSessionFeedback).toHaveBeenCalledWith(
         'token',
-        actionPlanId,
-        sessionNumber
+        referral.id,
+        appointment.appointmentId
       )
     })
   })
@@ -2169,44 +2213,7 @@ describe('Adding post delivery session feedback', () => {
           }
         )
       })
-      it("updates the appointment without any session feedback when attended is set to 'no'", async () => {
-        const sessionNumber = 2
 
-        const draftAppointment: DraftAppointment = draftAppointmentFactory.withSubmittedFeedback('no').build()
-
-        const draftAppointmentResult = draftAppointmentBookingFactory.build({
-          data: draftAppointment,
-        })
-        draftsService.fetchDraft.mockResolvedValue(draftAppointmentResult)
-        const actionPlan = actionPlanFactory.build()
-        interventionsService.getActionPlan.mockResolvedValue(actionPlan)
-
-        await request(app)
-          .post(
-            `/service-provider/action-plan/${actionPlan.id}/appointment/${sessionNumber}/post-session-feedback/edit/${draftAppointmentResult.id}/submit`
-          )
-          .expect(302)
-          .expect(
-            'Location',
-            `/service-provider/referrals/81d754aa-d868-4347-9c0f-50690773014e/progress?showFeedbackBanner=true&notifyPP=false&dna=true&saa=false`
-          )
-
-        expect(interventionsService.updateActionPlanAppointment).toHaveBeenCalledWith(
-          'token',
-          actionPlan.id,
-          sessionNumber,
-          {
-            appointmentTime: draftAppointment!.appointmentTime,
-            durationInMinutes: draftAppointment!.durationInMinutes,
-            appointmentDeliveryType: draftAppointment!.appointmentDeliveryType,
-            sessionType: draftAppointment!.sessionType,
-            appointmentDeliveryAddress: draftAppointment!.appointmentDeliveryAddress,
-            npsOfficeCode: draftAppointment!.npsOfficeCode,
-            attendanceFeedback: { ...draftAppointment!.session!.attendanceFeedback },
-            sessionFeedback: null,
-          }
-        )
-      })
       it('marks the appointment as submitted and redirects to the progress page with the request params to show the confirmation banner', async () => {
         const sessionNumber = 2
 
@@ -2319,10 +2326,11 @@ describe('Adding post delivery session feedback', () => {
             sessionNumber: 1,
             appointmentFeedback: {
               attendanceFeedback: {
+                didSessionHappen: true,
                 attended: 'yes',
-                additionalAttendanceInformation: 'They were early to the session',
               },
               sessionFeedback: {
+                late: false,
                 sessionSummary: 'stub session summary',
                 sessionResponse: 'stub session response',
                 notifyProbationPractitioner: false,
@@ -2343,8 +2351,8 @@ describe('Adding post delivery session feedback', () => {
             .expect(200)
             .expect(res => {
               expect(res.text).toContain('Session feedback')
-              expect(res.text).toContain('Did Alex River come to the session?')
-              expect(res.text).toContain('Yes, they were on time')
+              expect(res.text).toContain('Did Alex River attend the session?')
+              expect(res.text).toContain('Yes')
               expect(res.text).toContain('What did you do in the session?')
               expect(res.text).toContain('stub session summary')
               expect(res.text).toContain('How did Alex River respond to the session?')
@@ -2375,9 +2383,11 @@ describe('Adding post delivery session feedback', () => {
             sessionNumber: 1,
             appointmentFeedback: {
               attendanceFeedback: {
+                didSessionHappen: true,
                 attended: 'yes',
               },
               sessionFeedback: {
+                late: false,
                 sessionSummary: 'stub session summary',
                 sessionResponse: 'stub session response',
                 notifyProbationPractitioner: false,
@@ -2407,8 +2417,9 @@ describe('Adding post delivery session feedback', () => {
             .expect(res => {
               expect(res.text).toContain('Session feedback')
               expect(res.text).toContain('caseworkerFirstName caseworkerLastName')
-              expect(res.text).toContain('Did Alex River come to the session?')
-              expect(res.text).toContain('Yes, they were on time')
+              expect(res.text).toContain('Did the session happen?')
+              expect(res.text).toContain('Did Alex River attend the session?')
+              expect(res.text).toContain('Yes')
               expect(res.text).toContain('What did you do in the session?')
               expect(res.text).toContain('stub session summary')
               expect(res.text).toContain('How did Alex River respond to the session?')
@@ -2439,9 +2450,11 @@ describe('Adding post delivery session feedback', () => {
             sessionNumber: 1,
             appointmentFeedback: {
               attendanceFeedback: {
+                didSessionHappen: true,
                 attended: 'yes',
               },
               sessionFeedback: {
+                late: false,
                 sessionSummary: 'stub session summary',
                 sessionResponse: 'stub session response',
                 notifyProbationPractitioner: false,
@@ -2470,8 +2483,8 @@ describe('Adding post delivery session feedback', () => {
             .expect(res => {
               expect(res.text).toContain('Session feedback')
               expect(res.text).toContain('caseworkerFirstName caseworkerLastName')
-              expect(res.text).toContain('Did Alex River come to the session?')
-              expect(res.text).toContain('Yes, they were on time')
+              expect(res.text).toContain('Did Alex River attend the session?')
+              expect(res.text).toContain('Yes')
               expect(res.text).toContain('What did you do in the session?')
               expect(res.text).toContain('stub session summary')
               expect(res.text).toContain('How did Alex River respond to the session?')

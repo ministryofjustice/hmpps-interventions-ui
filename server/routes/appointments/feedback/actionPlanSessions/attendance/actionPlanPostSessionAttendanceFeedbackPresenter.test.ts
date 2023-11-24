@@ -17,8 +17,7 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
       expect(presenter.text).toMatchObject({
         title: 'Record session attendance',
         subTitle: 'The date and time of the session are a permanent record of where this person was.',
-        attendanceQuestion: 'Did Alex attend this session?',
-        attendanceQuestionHint: 'Select one option',
+        attendanceQuestion: 'Did Alex River attend the session?',
         additionalAttendanceInformationLabel: "Add additional information about Alex's attendance:",
       })
     })
@@ -32,7 +31,7 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
           serviceUser,
           new AppointmentSummary(appointment)
         )
-        expect(presenter.text.attendanceQuestion).toEqual('Did Alex join this phone call?')
+        expect(presenter.text.attendanceQuestion).toEqual('Did Alex River attend the session?')
       })
     })
 
@@ -45,7 +44,7 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
           serviceUser,
           new AppointmentSummary(appointment)
         )
-        expect(presenter.text.attendanceQuestion).toEqual('Did Alex join this video call?')
+        expect(presenter.text.attendanceQuestion).toEqual('Did Alex River attend the session?')
       })
     })
 
@@ -58,7 +57,7 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
           serviceUser,
           new AppointmentSummary(appointment)
         )
-        expect(presenter.text.attendanceQuestion).toEqual('Did Alex attend this in-person meeting?')
+        expect(presenter.text.attendanceQuestion).toEqual('Did Alex River attend the session?')
       })
     })
 
@@ -73,7 +72,7 @@ describe(ActionPlanPostSessionAttendanceFeedbackPresenter, () => {
           serviceUser,
           new AppointmentSummary(appointment)
         )
-        expect(presenter.text.attendanceQuestion).toEqual('Did Alex attend this in-person meeting?')
+        expect(presenter.text.attendanceQuestion).toEqual('Did Alex River attend the session?')
       })
     })
   })

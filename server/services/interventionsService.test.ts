@@ -3314,7 +3314,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   //   })
   // })
 
-  describe('recordActionPlanAppointmentSessoinFeedback', () => {
+  describe('recordActionPlanAppointmentSessionFeedback', () => {
     const appointmentTime = new Date()
     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
@@ -3328,6 +3328,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           method: 'POST',
           path: '/action-plan/81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d/appointment/1/record-session-feedback',
           body: {
+            late: false,
             sessionSummary: 'Discussed accommodation',
             sessionResponse: 'Engaged well',
             notifyProbationPractitioner: false,
@@ -3342,9 +3343,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             durationInMinutes: 120,
             appointmentFeedback: {
               attendanceFeedback: {
-                attended: 'late',
+                didSessionHappen: true,
+                attended: 'yes',
               },
               sessionFeedback: {
+                late: false,
                 sessionSummary: 'Discussed accommodation',
                 sessionResponse: 'Engaged well',
                 notifyProbationPractitioner: false,
@@ -3364,6 +3367,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         '81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
         '1',
         {
+          late: false,
           sessionSummary: 'Discussed accommodation',
           sessionResponse: 'Engaged well',
           notifyProbationPractitioner: false,

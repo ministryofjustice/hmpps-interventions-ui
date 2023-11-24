@@ -86,7 +86,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
             )
 
             expect(presenter.backLinkHref).toEqual(
-              '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/edit/draftId/behaviour'
+              '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/edit/draftId/no-session'
             )
           })
         })
@@ -109,7 +109,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
           )
 
           expect(presenter.backLinkHref).toEqual(
-            '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/edit/draftId/attendance'
+            '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/edit/draftId/no-session'
           )
         })
       })
@@ -134,7 +134,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
             )
 
             expect(presenter.backLinkHref).toEqual(
-              '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/behaviour'
+              '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/no-session'
             )
           })
         })
@@ -156,7 +156,7 @@ describe('ActionPlanPostSessionFeedbackCheckAnswersPresenter', () => {
           )
 
           expect(presenter.backLinkHref).toEqual(
-            '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/attendance'
+            '/service-provider/action-plan/77f0d8fc-9443-492c-b352-4cab66acbf3c/appointment/1/post-session-feedback/no-session'
           )
         })
       })

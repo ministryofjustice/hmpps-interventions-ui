@@ -611,7 +611,6 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
 
     return (await restClient.put({
-      // path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/record-session-feedback`,
       path: `/referral/${referralId}/delivery-session-appointments/${appointmentId}/session-feedback`,
       headers: { Accept: 'application/json' },
       data: sessionFeedbackUpdate,

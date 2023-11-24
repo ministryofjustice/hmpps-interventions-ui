@@ -93,15 +93,15 @@ describe(AttendanceFeedbackPresenter, () => {
       expect(presenter.attendanceResponses).toEqual({
         yes: {
           value: 'yes',
-          text: 'Yes, they were on time',
-        },
-        late: {
-          value: 'late',
-          text: 'They were late',
+          text: 'Yes',
         },
         no: {
           value: 'no',
           text: 'No',
+        },
+        dontKnow: {
+          value: 'do_not_know',
+          text: 'I do not know',
         },
       })
     })

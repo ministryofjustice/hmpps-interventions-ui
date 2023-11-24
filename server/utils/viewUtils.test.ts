@@ -192,6 +192,9 @@ describe('ViewUtils', () => {
           title: {
             text: 'Personal Details',
           },
+          actions: {
+            items: [null],
+          },
         },
         classes: undefined,
         rows: [
