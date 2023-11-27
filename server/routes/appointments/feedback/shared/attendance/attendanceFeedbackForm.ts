@@ -38,7 +38,7 @@ export default class AttendanceFeedbackForm {
       body('did-session-happen').isIn(['yes', 'no']).withMessage(errorMessages.didSessionHappen.empty),
       body('attended')
         .if(body('did-session-happen').equals('no'))
-        .isIn(['yes', 'no', 'do_not_know'])
+        .isIn(['yes', 'no'])
         .withMessage(errorMessages.attendedAppointment.empty),
     ]
   }

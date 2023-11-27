@@ -24,7 +24,7 @@ export default {
         if (sessionFeedbackAttendance.attended === 'no') {
           return SessionStatus.didNotAttend
         }
-        if (sessionFeedbackAttendance.attended === 'yes' || sessionFeedbackAttendance.attended === 'do_not_know') {
+        if (sessionFeedbackAttendance.attended === 'yes') {
           return SessionStatus.didNotHappen
         }
       }

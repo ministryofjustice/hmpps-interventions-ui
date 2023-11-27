@@ -99,10 +99,6 @@ describe(AttendanceFeedbackPresenter, () => {
           value: 'no',
           text: 'No',
         },
-        dontKnow: {
-          value: 'do_not_know',
-          text: 'I do not know',
-        },
       })
     })
   })

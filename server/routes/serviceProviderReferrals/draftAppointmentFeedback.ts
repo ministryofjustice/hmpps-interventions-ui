@@ -7,7 +7,7 @@ import { NoSessionReasonType } from '../../models/sessionFeedback'
 export interface DraftAppointmentFeedbackDetails {
   attendanceFeedback: {
     didSessionHappen: boolean | null
-    attended: 'yes' | 'no' | 'do_not_know' | null
+    attended: 'yes' | 'no' | null
     attendanceFailureInformation: string | null
   }
   sessionFeedback: {

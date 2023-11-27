@@ -225,6 +225,18 @@ export default {
   lateReason: {
     empty: 'Add anything you know about the lateness',
   },
+  noReasonType: {
+    empty: 'Select why the session did not happen',
+    popAcceptable: {
+      empty: 'Enter what happened and who was involved',
+    },
+    popUnacceptable: {
+      empty: 'Enter details about why they were not able to take part',
+    },
+    logistics: {
+      empty: 'Enter details about the service provider or logistics issue',
+    },
+  },
   noAttendanceInformation: {
     empty: 'Add anything you know about them not attending',
   },

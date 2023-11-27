@@ -76,14 +76,14 @@ export default class SessionFeedbackInputsPresenter {
     noSessionReasonPopAcceptable: {
       value: new PresenterUtils(this.userInputData).stringValue(
         this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonPopAcceptable || null,
-        'no-session-reason-pop'
+        'no-session-reason-pop-acceptable'
       ),
       errorMessage: this.errorMessageForField('no-session-reason-pop-acceptable'),
     },
-    noSessionReasonPopUnAcceptable: {
+    noSessionReasonPopUnacceptable: {
       value: new PresenterUtils(this.userInputData).stringValue(
         this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonPopUnacceptable || null,
-        'no-session-reason-pop'
+        'no-session-reason-pop-unacceptable'
       ),
       errorMessage: this.errorMessageForField('no-session-reason-pop-unacceptable'),
     },

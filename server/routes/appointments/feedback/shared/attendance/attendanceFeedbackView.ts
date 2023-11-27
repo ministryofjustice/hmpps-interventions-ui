@@ -1,4 +1,4 @@
-import { BackLinkArgs, TextareaArgs } from '../../../../../utils/govukFrontendTypes'
+import { BackLinkArgs } from '../../../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../../../utils/viewUtils'
 import AttendanceFeedbackPresenter from './attendanceFeedbackPresenter'
 
@@ -6,6 +6,7 @@ export default class AttendanceFeedbackView {
   constructor(private readonly presenter: AttendanceFeedbackPresenter) {}
 
   private readonly summaryListArgs = ViewUtils.summaryListArgs(this.presenter.appointmentSummary.appointmentSummaryList)
+
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   private get backLinkArgs(): BackLinkArgs | null {
@@ -77,11 +78,6 @@ export default class AttendanceFeedbackView {
           value: this.presenter.attendanceResponses.no.value,
           text: this.presenter.attendanceResponses.no.text,
           checked: this.presenter.fields.attended.value === this.presenter.attendanceResponses.no.value,
-        },
-        {
-          value: this.presenter.attendanceResponses.dontKnow.value,
-          text: this.presenter.attendanceResponses.dontKnow.text,
-          checked: this.presenter.fields.attended.value === this.presenter.attendanceResponses.dontKnow.value,
         },
       ],
     }

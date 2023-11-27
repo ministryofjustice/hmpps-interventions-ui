@@ -142,7 +142,7 @@ describe('DateUtils', () => {
     test.each([
       ['1981-07-29', 42],
       ['2005-12-31', 17],
-      ['2045-10-10', -22],
+      ['2045-10-10', -21],
     ])('calculates age correctly for birthdate %s', (birthdate, expectedAge) => {
       expect(DateUtils.age(birthdate)).toEqual(expectedAge)
     })

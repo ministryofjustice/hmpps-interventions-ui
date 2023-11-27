@@ -112,7 +112,7 @@ export interface CreateCaseNoteParams {
 export type CreateAppointmentSchedulingAndFeedback = AppointmentSchedulingDetails & {
   attendanceFeedback: {
     didSessionHappen: boolean | null
-    attended: 'yes' | 'no' | 'do_not_know' | null
+    attended: 'yes' | 'no' | null
     attendanceFailureInformation: string | null
   }
   sessionFeedback: {
@@ -625,7 +625,6 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
 
     return (await restClient.post({
-      // path: `/action-plan/${actionPlanId}/appointment/${sessionNumber}/submit`,
       path: `/referral/${referralId}/delivery-session-appointments/${appointmentId}/submit-feedback`,
       headers: { Accept: 'application/json' },
     })) as ActionPlanAppointment

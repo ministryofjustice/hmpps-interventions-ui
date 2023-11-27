@@ -1,4 +1,4 @@
-export type Attended = 'yes' | 'no' | 'do_not_know' | null
+export type Attended = 'yes' | 'no' | null
 
 export default interface AppointmentAttendance {
   didSessionHappen: boolean | null

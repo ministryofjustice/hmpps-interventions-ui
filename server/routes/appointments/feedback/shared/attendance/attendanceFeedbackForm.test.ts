@@ -4,7 +4,7 @@ import AttendanceFeedbackForm from './attendanceFeedbackForm'
 describe(AttendanceFeedbackForm, () => {
   describe('data', () => {
     describe('with valid data and attendance', () => {
-      const validAttendedValues = ['yes', 'no', 'do_not_know']
+      const validAttendedValues = ['yes', 'no']
 
       validAttendedValues.forEach(validAttendedValue => {
         it('returns a paramsForUpdate with the attended property and optional further information', async () => {

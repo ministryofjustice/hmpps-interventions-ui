@@ -48,10 +48,6 @@ export default class FeedbackAnswersPresenter {
         text: 'Yes',
       },
       {
-        value: 'do_not_know',
-        text: `I don't know`,
-      },
-      {
         value: 'no',
         text: 'No',
       },

@@ -1,7 +1,6 @@
 import { BackLinkArgs, ErrorSummaryArgs, TextareaArgs } from '../../../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../../../utils/viewUtils'
 import SessionFeedbackInputsPresenter from './sessionFeedbackInputsPresenter'
-import { SessionFeedbackPresenter } from './sessionFeedbackPresenter'
 import ActionPlanNoSessionFeedbackPresenter from '../../actionPlanSessions/sessionFeedback/actionPlanNoSessionFeedbackPresenter'
 
 export default class NoSessionFeedbackView {
@@ -102,14 +101,6 @@ export default class NoSessionFeedbackView {
             html: logisticsHtml,
           },
         },
-        // {
-        //   value: this.presenter.fieldText.other.value,
-        //   text: this.presenter.fieldText.other.text,
-        //   checked: this.inputsPresenter.fields.noSessionReasonType.value === 'OTHER',
-        //   conditional: {
-        //     html: otherHtml,
-        //   },
-        // },
       ],
     }
   }
@@ -138,7 +129,9 @@ export default class NoSessionFeedbackView {
         isPageHeading: false,
       },
       value: this.inputsPresenter.fields.noSessionReasonPopAcceptable.value,
-      errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.noSessionReasonPopAcceptable.errorMessage),
+      errorMessage: ViewUtils.govukErrorMessage(
+        this.inputsPresenter.fields.noSessionReasonPopUnacceptable.errorMessage
+      ),
     }
   }
 
@@ -234,10 +227,7 @@ export default class NoSessionFeedbackView {
     if (this.presenter.attended === 'yes') {
       return this.sessionAttendedArgs
     }
-    if (this.presenter.attended === 'no') {
-      return this.sessionNotAttendedArgs
-    }
-    return this.sessionIdkAttendedArgs
+    return this.sessionNotAttendedArgs
   }
 
   get sessionAttendedArgs(): [string, Record<string, unknown>] {
@@ -267,20 +257,6 @@ export default class NoSessionFeedbackView {
         radioButtonArgs: this.notifyPPRadioButtonArgs.bind(this),
         sessionConcernsTextAreaArgs: this.sessionConcernsTextAreaArgs,
         noAttendanceInformationTextAreaArgs: this.noAttendanceInformationTextAreaArgs,
-        rescheduleSessionRadioArgs: this.rescheduleSessionRadioArgs,
-        errorSummaryArgs: this.errorSummaryArgs,
-        backLinkArgs: this.backLinkArgs,
-      },
-    ]
-  }
-
-  get sessionIdkAttendedArgs(): [string, Record<string, unknown>] {
-    return [
-      'appointments/feedback/shared/postSessionFeedbackNoSessionIdkAttended',
-      {
-        presenter: this.presenter,
-        radioButtonArgs: this.notifyPPRadioButtonArgs.bind(this),
-        sessionConcernsTextAreaArgs: this.sessionConcernsTextAreaArgs,
         rescheduleSessionRadioArgs: this.rescheduleSessionRadioArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         backLinkArgs: this.backLinkArgs,

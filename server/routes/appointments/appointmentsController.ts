@@ -56,7 +56,6 @@ import NoSessionYesAttendedFeedbackForm from './feedback/shared/sessionFeedback/
 import { Attended } from '../../models/appointmentAttendance'
 import AppointmentSession from '../../models/sessionFeedback'
 import NoSessionNoAttendedFeedbackForm from './feedback/shared/sessionFeedback/forms/noSessionNoAttendedFeedbackForm'
-import NoSessionIdkAttendedFeedbackForm from './feedback/shared/sessionFeedback/forms/noSessionIdkAttendedFeedbackForm'
 
 export default class AppointmentsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -667,8 +666,6 @@ export default class AppointmentsController {
         data = await new NoSessionYesAttendedFeedbackForm(req).data()
       } else if (attended === 'no') {
         data = await new NoSessionNoAttendedFeedbackForm(req).data()
-      } else if (attended === 'do_not_know') {
-        data = await new NoSessionIdkAttendedFeedbackForm(req).data()
       } else {
         throw new Error('Draft appointment data is missing.')
       }
@@ -1163,8 +1160,6 @@ export default class AppointmentsController {
         data = await new NoSessionYesAttendedFeedbackForm(req).data()
       } else if (attended === 'no') {
         data = await new NoSessionNoAttendedFeedbackForm(req).data()
-      } else if (attended === 'do_not_know') {
-        data = await new NoSessionIdkAttendedFeedbackForm(req).data()
       } else {
         throw new Error('Draft appointment data is missing.')
       }
@@ -1262,12 +1257,6 @@ export default class AppointmentsController {
       }
       if (attended === 'no') {
         draftAppointment.session.sessionFeedback.noAttendanceInformation = paramsForUpdate.noAttendanceInformation!
-        draftAppointment.session.sessionFeedback.notifyProbationPractitioner =
-          paramsForUpdate.notifyProbationPractitioner!
-        draftAppointment.session.sessionFeedback.sessionConcerns =
-          paramsForUpdate.notifyProbationPractitioner === true ? paramsForUpdate.sessionConcerns! : null
-      }
-      if (attended === 'do_not_know') {
         draftAppointment.session.sessionFeedback.notifyProbationPractitioner =
           paramsForUpdate.notifyProbationPractitioner!
         draftAppointment.session.sessionFeedback.sessionConcerns =

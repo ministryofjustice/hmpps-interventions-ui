@@ -54,23 +54,19 @@ export default class NoSessionYesAttendedFeedbackForm {
     return [
       body('no-session-reason-type')
         .isIn(['POP_ACCEPTABLE', 'POP_UNACCEPTABLE', 'LOGISTICS', 'OTHER'])
-        .withMessage('jashdahds'),
+        .withMessage(errorMessages.noReasonType.empty),
       body('no-session-reason-pop-acceptable')
         .if(body('no-session-reason-type').equals('POP_ACCEPTABLE'))
         .notEmpty({ ignore_whitespace: true })
-        .withMessage('abc'),
+        .withMessage(errorMessages.noReasonType.popAcceptable.empty),
       body('no-session-reason-pop-unacceptable')
         .if(body('no-session-reason-type').equals('POP_UNACCEPTABLE'))
         .notEmpty({ ignore_whitespace: true })
-        .withMessage('abc'),
+        .withMessage(errorMessages.noReasonType.popUnacceptable.empty),
       body('no-session-reason-logistics')
         .if(body('no-session-reason-type').equals('LOGISTICS'))
         .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.lateReason.empty),
-      // body('no-session-reason-other')
-      //   .if(body('no-session-reason-type').equals('OTHER'))
-      //   .notEmpty({ ignore_whitespace: true })
-      //   .withMessage(errorMessages.lateReason.empty),
+        .withMessage(errorMessages.noReasonType.logistics.empty),
       body('notify-probation-practitioner')
         .isIn(['yes', 'no'])
         .withMessage(errorMessages.sessionConcerns.notifyProbationPractitionerNotSelected),
@@ -78,9 +74,6 @@ export default class NoSessionYesAttendedFeedbackForm {
         .if(body('notify-probation-practitioner').equals('yes'))
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.sessionConcerns.empty),
-      // body('reschedule-session')
-      //   .isIn(['Yes', 'No'])
-      //   .withMessage(errorMessages.sessionConcerns.notifyProbationPractitionerNotSelected),
     ]
   }
 
@@ -100,30 +93,5 @@ export default class NoSessionYesAttendedFeedbackForm {
 
   private get notifyProbationPractitioner(): boolean {
     return this.request.body['notify-probation-practitioner'] === 'yes'
-  }
-
-  private get late(): boolean {
-    return this.request.body.late === 'yes'
-  }
-
-  private attendedNoParams(): FormData<Partial<AppointmentSession>> {
-    return {
-      paramsForUpdate: {
-        noAttendanceInformation: this.request.body['no-attendance-information'],
-        notifyProbationPractitioner: this.notifyProbationPractitioner,
-        sessionConcerns: this.request.body['session-concerns'],
-      },
-      error: null,
-    }
-  }
-
-  private attendedIdkParams(): FormData<Partial<AppointmentSession>> {
-    return {
-      paramsForUpdate: {
-        notifyProbationPractitioner: this.notifyProbationPractitioner,
-        sessionConcerns: this.request.body['session-concerns'],
-      },
-      error: null,
-    }
   }
 }
