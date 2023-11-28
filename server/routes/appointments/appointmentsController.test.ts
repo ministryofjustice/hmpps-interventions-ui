@@ -1725,8 +1725,6 @@ describe('Adding post delivery session feedback', () => {
           data: draftAppointment,
         })
         draftsService.fetchDraft.mockResolvedValue(null)
-
-        interventionsService.recordActionPlanAppointmentAttendance.mockResolvedValue(updatedAppointment)
         interventionsService.getActionPlan.mockResolvedValue(actionPlan)
 
         await request(app)

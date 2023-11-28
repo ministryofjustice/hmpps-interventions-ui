@@ -879,7 +879,7 @@ export default class AppointmentsController {
 
     const data = await new AttendanceFeedbackForm(req).data()
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
-    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res, actionPlan.referralId)
+    // const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res, actionPlan.referralId)
 
     if (req.method === 'POST') {
       if (data.error) {
@@ -914,6 +914,7 @@ export default class AppointmentsController {
           redirectPath =
             draftAppointment.session!.attendanceFeedback.didSessionHappen === false ? 'no-session' : 'behaviour'
         } else {
+          const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res, actionPlan.referralId)
           const updatedAppointment = await this.interventionsService.recordActionPlanAppointmentAttendance(
             accessToken,
             actionPlan.referralId,
@@ -930,7 +931,7 @@ export default class AppointmentsController {
         return
       }
     }
-
+    const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res, actionPlan.referralId)
     const referral = await this.interventionsService.getSentReferral(accessToken, actionPlan.referralId)
 
     // return because draft service already renders page.
