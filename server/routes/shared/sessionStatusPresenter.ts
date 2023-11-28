@@ -1,4 +1,4 @@
-import {SessionStatus} from '../../utils/sessionStatus'
+import { SessionStatus } from '../../utils/sessionStatus'
 
 export default class SessionStatusPresenter {
   constructor(private readonly status: SessionStatus) {}

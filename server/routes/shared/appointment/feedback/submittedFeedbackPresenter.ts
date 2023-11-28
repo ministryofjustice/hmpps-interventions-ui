@@ -2,7 +2,7 @@ import DeliusServiceUser from '../../../../models/delius/deliusServiceUser'
 import FeedbackAnswersPresenter from '../../../appointments/feedback/shared/viewFeedback/feedbackAnswersPresenter'
 import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../../models/appointment'
 import AppointmentSummary from '../../../appointments/appointmentSummary'
-import {SummaryListItem} from "../../../../utils/summaryList";
+import { SummaryListItem } from '../../../../utils/summaryList'
 
 export default class SubmittedFeedbackPresenter {
   readonly feedbackAnswersPresenter: FeedbackAnswersPresenter

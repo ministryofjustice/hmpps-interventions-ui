@@ -25,7 +25,7 @@ export default class ActionPlanPostSessionAttendanceFeedbackPresenter extends At
       new AttendanceFeedbackQuestionnaire(actionPlanAppointment, serviceUser),
       appointmentSummary,
       error,
-      userInputData,
+      userInputData
     )
   }
 

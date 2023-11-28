@@ -123,10 +123,10 @@ export default class SessionFeedbackQuestionnaire {
     }
   }
 
-  get rescheduleSessionQuestion(): { text: string, hint: string } {
+  get rescheduleSessionQuestion(): { text: string; hint: string } {
     return {
       text: `Would you like to reschedule this session now?`,
-      hint: `If you select no, you’ll still be able to reschedule it later.`
+      hint: `If you select no, you’ll still be able to reschedule it later.`,
     }
   }
 }

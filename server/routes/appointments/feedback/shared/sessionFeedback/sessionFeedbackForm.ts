@@ -90,6 +90,6 @@ export default class SessionFeedbackForm {
   }
 
   private get late(): boolean {
-    return this.request.body['late'] === 'yes'
+    return this.request.body.late === 'yes'
   }
 }

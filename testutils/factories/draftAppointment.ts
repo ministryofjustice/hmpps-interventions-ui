@@ -5,7 +5,7 @@ import { SessionType } from '../../server/models/sessionType'
 import { Attended } from '../../server/models/appointmentAttendance'
 import userDetailsFactory from './userDetails'
 import User from '../../server/models/hmppsAuth/user'
-import {NoSessionReasonType} from "../../server/models/sessionFeedback";
+import { NoSessionReasonType } from '../../server/models/sessionFeedback'
 
 class DraftAppointmentFactory extends Factory<DraftAppointment> {
   withAttendanceFeedback(attended: Attended = 'yes') {

@@ -9,7 +9,6 @@ import ComplexityLevel from '../models/complexityLevel'
 import { TagArgs } from './govukFrontendTypes'
 import { AppointmentDeliveryType } from '../models/appointmentDeliveryType'
 import Address from '../models/address'
-import {NoSessionReasonType} from "../models/sessionFeedback";
 
 interface DateTimeComponentInputPresenter {
   value: string

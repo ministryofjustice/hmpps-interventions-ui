@@ -1,6 +1,6 @@
 import { Request } from 'express'
 import { body, Result, ValidationChain, ValidationError } from 'express-validator'
-import AppointmentSession, { NoSessionReasonType } from '../../../../../../models/sessionFeedback'
+import AppointmentSession from '../../../../../../models/sessionFeedback'
 import FormUtils from '../../../../../../utils/formUtils'
 import { FormValidationError } from '../../../../../../utils/formValidationError'
 import { FormData } from '../../../../../../utils/forms/formData'
