@@ -11,7 +11,6 @@ export default interface SessionFeedback {
   noSessionReasonPopAcceptable: string | null
   noSessionReasonPopUnacceptable: string | null
   noSessionReasonLogistics: string | null
-  // noSessionReasonOther: string | null
   noAttendanceInformation: string | null
 }
 
@@ -19,5 +18,4 @@ export enum NoSessionReasonType {
   POP_ACCEPTABLE = 'POP_ACCEPTABLE',
   POP_UNACCEPTABLE = 'POP_UNACCEPTABLE',
   LOGISTICS = 'LOGISTICS',
-  // OTHER = 'OTHER',
 }
