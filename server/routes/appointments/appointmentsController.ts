@@ -56,6 +56,7 @@ import NoSessionYesAttendedFeedbackForm from './feedback/shared/sessionFeedback/
 import { Attended } from '../../models/appointmentAttendance'
 import AppointmentSession from '../../models/sessionFeedback'
 import NoSessionNoAttendedFeedbackForm from './feedback/shared/sessionFeedback/forms/noSessionNoAttendedFeedbackForm'
+import InitialAssessmentNoSessionFeedbackPresenter from './feedback/initialAssessment/initialAssessmentNoSessionFeedbackPresenter'
 
 export default class AppointmentsController {
   private readonly deliusOfficeLocationFilter: DeliusOfficeLocationFilter
@@ -709,7 +710,7 @@ export default class AppointmentsController {
       }
     }
 
-    const presenter = new InitialAssessmentSessionFeedbackPresenter(
+    const presenter = new InitialAssessmentNoSessionFeedbackPresenter(
       appointment,
       serviceUser,
       referralId,
@@ -717,7 +718,7 @@ export default class AppointmentsController {
       formError,
       userInputData
     )
-    const view = new SessionFeedbackView(presenter)
+    const view = new NoSessionFeedbackView(presenter)
     ControllerUtils.renderWithLayout(res, view, serviceUser)
   }
 
@@ -879,7 +880,6 @@ export default class AppointmentsController {
 
     const data = await new AttendanceFeedbackForm(req).data()
     const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
-    // const appointment = await this.getActionPlanAppointmentFromDraftOrService(req, res, actionPlan.referralId)
 
     if (req.method === 'POST') {
       if (data.error) {

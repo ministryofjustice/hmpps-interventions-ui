@@ -2,11 +2,14 @@ import { BackLinkArgs, ErrorSummaryArgs, TextareaArgs } from '../../../../../uti
 import ViewUtils from '../../../../../utils/viewUtils'
 import SessionFeedbackInputsPresenter from './sessionFeedbackInputsPresenter'
 import ActionPlanNoSessionFeedbackPresenter from '../../actionPlanSessions/sessionFeedback/actionPlanNoSessionFeedbackPresenter'
+import InitialAssessmentNoSessionFeedbackPresenter from '../../initialAssessment/initialAssessmentNoSessionFeedbackPresenter'
 
 export default class NoSessionFeedbackView {
   inputsPresenter: SessionFeedbackInputsPresenter
 
-  constructor(private readonly presenter: ActionPlanNoSessionFeedbackPresenter) {
+  constructor(
+    private readonly presenter: ActionPlanNoSessionFeedbackPresenter | InitialAssessmentNoSessionFeedbackPresenter
+  ) {
     this.inputsPresenter = this.presenter.inputsPresenter
   }
 
@@ -31,6 +34,7 @@ export default class NoSessionFeedbackView {
       },
       items: [
         {
+          id: 'yesNotifyPPRadio',
           value: 'yes',
           text: 'Yes',
           checked: this.inputsPresenter.fields.notifyProbationPractitioner.value === true,
@@ -39,6 +43,7 @@ export default class NoSessionFeedbackView {
           },
         },
         {
+          id: 'noNotifyPPRadio',
           value: 'no',
           text: 'No',
           checked: this.inputsPresenter.fields.notifyProbationPractitioner.value === false,

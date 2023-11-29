@@ -23,14 +23,14 @@ export default class InitialAssessmentFeedbackCheckAnswersPresenter extends Chec
     : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/submit`
 
   get backLinkHref(): string {
-    if (this.draftId) {
-      return this.appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
-        ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/edit/${this.draftId}/attendance`
-        : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/edit/${this.draftId}/behaviour`
+    if (this.appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === true) {
+      return this.draftId
+        ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/edit/${this.draftId}/behaviour`
+        : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/behaviour`
     }
-    return this.appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
-      ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/attendance`
-      : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/behaviour`
+    return this.draftId
+      ? `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/edit/${this.draftId}/no-session`
+      : `/service-provider/referrals/${this.referralId}/supplier-assessment/post-assessment-feedback/no-session`
   }
 
   get attendanceFeedbackChangeLink(): string {

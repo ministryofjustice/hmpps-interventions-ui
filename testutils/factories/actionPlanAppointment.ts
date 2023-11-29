@@ -30,4 +30,5 @@ export default ActionPlanAppointmentFactory.define(() => ({
   appointmentDeliveryAddress: null,
   appointmentFeedback: initialAssessmentAppointmentFactory.newlyBooked().build().appointmentFeedback,
   npsOfficeCode: null,
+  appointmentId: '1',
 }))

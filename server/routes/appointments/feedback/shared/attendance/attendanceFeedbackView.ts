@@ -38,11 +38,13 @@ export default class AttendanceFeedbackView {
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.didSessionHappen.errorMessage),
       items: [
         {
+          id: 'didSessionHappenYesRadio',
           value: this.presenter.didSessionHappenResponses.yes.value,
           text: this.presenter.didSessionHappenResponses.yes.text,
           checked: this.presenter.fields.didSessionHappen.value === true,
         },
         {
+          id: 'didSessionHappenNoRadio',
           value: this.presenter.didSessionHappenResponses.no.value,
           text: this.presenter.didSessionHappenResponses.no.text,
           checked: this.presenter.fields.didSessionHappen.value === false,
@@ -70,11 +72,13 @@ export default class AttendanceFeedbackView {
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.attended.errorMessage),
       items: [
         {
+          id: 'attendedYesRadio',
           value: this.presenter.attendanceResponses.yes.value,
           text: this.presenter.attendanceResponses.yes.text,
           checked: this.presenter.fields.attended.value === this.presenter.attendanceResponses.yes.value,
         },
         {
+          id: 'attendedNoRadio',
           value: this.presenter.attendanceResponses.no.value,
           text: this.presenter.attendanceResponses.no.text,
           checked: this.presenter.fields.attended.value === this.presenter.attendanceResponses.no.value,

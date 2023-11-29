@@ -110,6 +110,7 @@ export default class SessionFeedbackView {
       },
       items: [
         {
+          id: 'yesNotifyPPRadio',
           value: 'yes',
           text: 'Yes',
           checked: this.inputsPresenter.fields.notifyProbationPractitioner.value === true,
@@ -118,6 +119,7 @@ export default class SessionFeedbackView {
           },
         },
         {
+          id: 'noNotifyPPRadio',
           value: 'no',
           text: 'No',
           checked: this.inputsPresenter.fields.notifyProbationPractitioner.value === false,
@@ -156,16 +158,18 @@ export default class SessionFeedbackView {
       errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.late.errorMessage),
       items: [
         {
+          id: 'wasLateYesRadio',
           value: 'yes',
-          text: 'yes',
+          text: 'Yes',
           checked: this.inputsPresenter.fields.late.value === true,
           conditional: {
             html: lateReasonHtml,
           },
         },
         {
+          id: 'wasLateNoRadio',
           value: 'no',
-          text: 'no',
+          text: 'No',
           checked: this.inputsPresenter.fields.late.value === false,
         },
       ],
