@@ -1,5 +1,7 @@
 import { Router } from 'express'
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+import cookieParser from 'cookie-parser'
 import loginRedirectMiddleware from '../middleware/loginRedirectMiddleware'
 import tokenVerificationMiddleware from '../middleware/tokenVerificationMiddleware'
 import tokenVerifier from '../data/tokenVerification'
@@ -8,6 +10,7 @@ import authorisationMiddleware from '../middleware/authorisationMiddleware'
 export default function standardRouter(authorisedRoles: string[] = []): Router {
   const router = Router({ mergeParams: true })
 
+  router.use(cookieParser())
   router.use(loginRedirectMiddleware())
   router.use(tokenVerificationMiddleware(tokenVerifier))
   router.use(authorisationMiddleware(authorisedRoles))

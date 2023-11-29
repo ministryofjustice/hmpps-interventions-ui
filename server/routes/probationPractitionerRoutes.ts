@@ -202,5 +202,7 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     amendAReferralController.updateInterpreterNeeds(req, res)
   )
 
+  get(router, '/whats-new', (req, res) => probationPractitionerReferralsController.showWhatsNew(req, res))
+
   return router
 }

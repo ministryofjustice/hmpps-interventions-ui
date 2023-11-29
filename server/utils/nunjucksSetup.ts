@@ -3,7 +3,7 @@ import express from 'express'
 import * as pathModule from 'path'
 
 export default function nunjucksSetup(app: express.Application, path: pathModule.PlatformPath): void {
-  nunjucks.configure(
+  const njkEnv = nunjucks.configure(
     [
       path.join(__dirname, '../../server/views'),
       'node_modules/govuk-frontend/',
@@ -16,4 +16,12 @@ export default function nunjucksSetup(app: express.Application, path: pathModule
       express: app,
     }
   )
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires,global-require
+  const getMojFilters = require('@ministryofjustice/frontend/moj/filters/all')
+
+  const mojFilters = getMojFilters()
+  Object.keys(mojFilters).forEach(filterName => {
+    njkEnv.addFilter(filterName, mojFilters[filterName])
+  })
 }

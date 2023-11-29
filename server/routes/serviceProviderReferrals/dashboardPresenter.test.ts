@@ -53,7 +53,7 @@ describe(DashboardPresenter, () => {
         loggedInUser,
         'tableId',
         'sentAt,DESC',
-        true,
+        false,
         'abc',
         prisons
       )
@@ -79,7 +79,7 @@ describe(DashboardPresenter, () => {
           loggedInUser,
           'tableId',
           'sentAt,DESC',
-          true,
+          false,
           'abc',
           prisons
         )
@@ -142,7 +142,7 @@ describe(DashboardPresenter, () => {
             loggedInUser,
             'tableId',
             'sentAt,DESC',
-            true,
+            false,
             'abc',
             prisons
           )
@@ -222,7 +222,7 @@ describe(DashboardPresenter, () => {
           loggedInUser,
           'tableId',
           'sentAt,DESC',
-          true,
+          false,
           'abc',
           prisons
         )

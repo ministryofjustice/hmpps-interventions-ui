@@ -49,7 +49,7 @@ describe('DashboardPresenter', () => {
         'Open cases',
         'ppOpenCases',
         'sentAt,ASC',
-        true,
+        false,
         'abc'
       )
 

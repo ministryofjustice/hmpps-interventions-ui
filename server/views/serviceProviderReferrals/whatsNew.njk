@@ -1,0 +1,53 @@
+{% extends "../partials/layout.njk" %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "moj/components/timeline/macro.njk" import mojTimeline %}
+
+{% set pageTitle = "What's new" %}
+
+{% block pageContent %}
+  {{ govukBackLink(backButtonArgs) }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">What's new</h1>
+      <p>Find out about recent changes to Refer and monitor an intervention.</p>
+
+      {% set whatsNewVersion1Html %}
+            <h3 class="govuk-heading-s">New functionality</h3>
+            <p>
+              Following our improvements to community referrals in June, we have released new functionality for the remaining referral types:
+            </p>
+            <ul class="govuk-list govuk-list--bullet">
+              <li>pre-release referrals with an allocated COM</li>
+              <li>pre-release referrals without an allocated COM (includes referrals from PRTs)</li>
+              <li>prison to prison referrals without an allocated COM</li>
+            </ul>
+            <p>This ensures that the most appropriate information is passed onto service providers for each referral type.</p>
+
+            <h3 class="govuk-heading-s">Contact details for unallocated referrals</h3>
+            <p>Referrers are now asked to provide a main point of contact when there is no allocated COM. This will enable service providers to contact the right person about the referral and reduce time spent finding someone to contact.</p>
+
+            <h3 class="govuk-heading-s">Full contact details for service providers</h3>
+            <p>We are now providing service providers with a fuller range of contact details for the referral. When making a referral, referrers are asked to review and confirm/update these contact details so they are correct.</p>
+
+            <h3 class="govuk-heading-s">Improved service provider caselist dashboard</h3>
+            <p>Service providers now have better at-a-glance information for expected release date, location and CRN on their caselist dashboard.</p>
+          {% endset %}
+
+          {{ mojTimeline({
+                  items: [
+                    {
+                      label: {
+                        text: "Changes to making a referral"
+                      },
+                      html: whatsNewVersion1Html,
+                      datetime: {
+                        timestamp: "2023-10-16",
+                        type: "date"
+                      }
+                    }
+                  ]
+                })
+              }}
+    </div>
+  </div>
+{% endblock %}

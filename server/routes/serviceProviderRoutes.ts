@@ -348,6 +348,8 @@ export default function serviceProviderRoutes(
     caseNotesController.addCaseNoteConfirmation(req, res, 'service-provider')
   )
 
+  get(router, '/whats-new', (req, res) => serviceProviderReferralsController.showWhatsNew(req, res))
+
   if (config.features.serviceProviderReporting) {
     const reportingController = new ReportingController(services.interventionsService)
 

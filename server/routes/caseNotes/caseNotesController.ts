@@ -76,7 +76,7 @@ export default class CaseNotesController {
       req.session.dashboardOriginPage
     )
     const view = new CaseNotesView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, loggedInUserType)
   }
 
   async startAddCaseNote(
@@ -130,7 +130,7 @@ export default class CaseNotesController {
 
     const presenter = new AddCaseNotePresenter(referralId, loggedInUserType, draftCaseNote.data, error, userInputData)
     const view = new AddCaseNoteView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, loggedInUserType)
   }
 
   async viewCaseNote(
@@ -155,7 +155,7 @@ export default class CaseNotesController {
     const sentByUserName = sentByUserDetails.name
     const presenter = new CaseNotePresenter(caseNote, sentByUserName, loggedInUserType, backlinkPageNumber)
     const view = new CaseNoteView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, loggedInUserType)
   }
 
   async checkCaseNoteAnswers(
@@ -188,7 +188,7 @@ export default class CaseNotesController {
       draft.data
     )
     const view = new CheckAddCaseNoteAnswersView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, loggedInUserType)
   }
 
   async submitCaseNote(
@@ -228,7 +228,7 @@ export default class CaseNotesController {
     )
     const presenter = new AddCaseNoteConfirmationPresenter(sentReferral, intervention, loggedInUserType)
     const view = new AddCaseNoteConfirmationView(presenter)
-    ControllerUtils.renderWithLayout(res, view, null)
+    await ControllerUtils.renderWithLayout(req, res, view, null, loggedInUserType)
   }
 
   private async fetchDraftCaseNoteOrRenderMessage(
@@ -240,7 +240,7 @@ export default class CaseNotesController {
       target: `/${loggedInUserType}/referrals/${req.params.id}/case-notes`,
       message: 'go to case notes',
     }
-    return ControllerUtils.fetchDraftOrRenderMessage<DraftCaseNote>(req, res, this.draftsService, {
+    return ControllerUtils.fetchDraftOrRenderMessage<DraftCaseNote>(req, res, this.draftsService, loggedInUserType, {
       idParamName: 'draftCaseNoteId',
       notFoundUserMessage:
         'You have not sent this case note. This is because too much time has passed since you started it.',

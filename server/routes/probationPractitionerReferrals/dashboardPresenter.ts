@@ -37,6 +37,10 @@ export default class DashboardPresenter {
     return `${this.dashboardOrigin}?dismissDowntimeBanner=true`
   }
 
+  get closeWhatsNewBannerHref(): string {
+    return `${this.dashboardOrigin}?dismissWhatsNewBanner=true`
+  }
+
   // this maps the column headings in the table to the database field used
   // for sorting in the backend. it feels strange that the presenter class owns
   // this information, since it's used in the controller to make the API call

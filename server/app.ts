@@ -275,7 +275,7 @@ export default function createApp(
   // final regular middleware is for handling 404s
   app.use((req, res, next) => {
     res.status(404)
-    return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/notFound', {}] }, null)
+    return ControllerUtils.renderWithLayout(req, res, { renderArgs: ['errors/notFound', {}] }, null, null)
   })
 
   // The Sentry error handler must be before any other error middleware and after all controllers

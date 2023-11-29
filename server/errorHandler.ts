@@ -6,7 +6,7 @@ import config from './config'
 import errorMessages from './utils/errorMessages'
 
 export default function createErrorHandler(production: boolean) {
-  return (err: Error, req: Request, res: Response, next: NextFunction): void => {
+  return async (err: Error, req: Request, res: Response, next: NextFunction): Promise<void> => {
     if (res.headersSent) {
       return next(err)
     }
@@ -50,7 +50,7 @@ export default function createErrorHandler(production: boolean) {
           userMessage,
         }
 
-        return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/authError', args] }, null)
+        return ControllerUtils.renderWithLayout(req, res, { renderArgs: ['errors/authError', args] }, null, null)
       }
 
       // do not propagate external error codes by default (e.g. 404s from interventions service)
@@ -76,6 +76,6 @@ export default function createErrorHandler(production: boolean) {
       args.err = { message: err.message, stack: err.stack, response: (err as HttpError).response?.text }
     }
 
-    return ControllerUtils.renderWithLayout(res, { renderArgs: ['errors/unhandledError', args] }, null)
+    return ControllerUtils.renderWithLayout(req, res, { renderArgs: ['errors/unhandledError', args] }, null, null)
   }
 }

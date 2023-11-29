@@ -41,6 +41,9 @@
   {% if broadcastMessage %}
     {% include "./broadcastMessage.njk" %}
   {% endif %}
+  {% if showWhatsNewBanner == true %}
+    {{ govukNotificationBanner(whatsNewBannerArgs) }}
+  {% endif %}
   {% block pageContent %}
   {% endblock %}
 {% endblock %}
