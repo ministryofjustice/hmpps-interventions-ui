@@ -355,7 +355,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             actionPlan,
             [],
-            [actionPlanAppointmentFactory.attended('no').build({ appointmentId: '1' })],
+            [actionPlanAppointmentFactory.attended('no', false).build({ appointmentId: '1' })],
             supplierAssessmentFactory.build(),
             serviceUser,
             null
@@ -1024,7 +1024,7 @@ describe(InterventionProgressPresenter, () => {
         describe('when the missed appointment is the current appointment', () => {
           it('returns a link to a page to schedule a new appointment and a link to view feedback', () => {
             const referral = sentReferralFactory.build()
-            const appointment = initialAssessmentAppointmentFactory.attended('no').build()
+            const appointment = initialAssessmentAppointmentFactory.attended('no', false).build()
 
             const presenter = new InterventionProgressPresenter(
               referral,
@@ -1053,7 +1053,7 @@ describe(InterventionProgressPresenter, () => {
         describe('when the missed appointment is an old appointment', () => {
           it('returns a link to view the feedback page', () => {
             const referral = sentReferralFactory.build()
-            const appointment = initialAssessmentAppointmentFactory.attended('no').build()
+            const appointment = initialAssessmentAppointmentFactory.attended('no', false).build()
 
             const presenter = new InterventionProgressPresenter(
               referral,

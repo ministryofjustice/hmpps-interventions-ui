@@ -71,7 +71,7 @@ describe(InterventionProgressPresenter, () => {
                 appointmentTime: '3020-12-07T12:00:00.000000Z',
                 durationInMinutes: 120,
               }),
-              actionPlanAppointmentFactory.attended('no').build({
+              actionPlanAppointmentFactory.attended('no', false).build({
                 appointmentId: '2',
                 sessionNumber: 1,
                 appointmentTime: '3020-12-07T12:00:00.000000Z',
@@ -204,7 +204,7 @@ describe(InterventionProgressPresenter, () => {
           const presenter = new InterventionProgressPresenter(
             referral,
             intervention,
-            [actionPlanAppointmentFactory.attended('no').build({ appointmentId: '1' })],
+            [actionPlanAppointmentFactory.attended('no', false).build({ appointmentId: '1' })],
             null,
             [],
             supplierAssessment,

@@ -9,12 +9,12 @@ class InitialAssessmentAppointmentFactory extends Factory<InitialAssessmentAppoi
     return this.params({})
   }
 
-  attended(attendance: Attended) {
+  attended(attendance: Attended, didSessionHappen = true) {
     return this.params({
       appointmentFeedback: {
         attendanceFeedback: {
           attended: attendance,
-          didSessionHappen: true,
+          didSessionHappen,
         },
         sessionFeedback: {
           sessionSummary: '',
