@@ -14,7 +14,7 @@ class InitialAssessmentAppointmentFactory extends Factory<InitialAssessmentAppoi
       appointmentFeedback: {
         attendanceFeedback: {
           attended: attendance,
-          additionalAttendanceInformation: '',
+          didSessionHappen: true,
         },
         sessionFeedback: {
           sessionSummary: '',

@@ -1591,6 +1591,8 @@ describe('Service provider referrals dashboard', () => {
         appointmentWithAttendanceRecorded
       )
 
+      cy.stubGetActionPlanAppointment(actionPlan.id, 1, appointmentWithAttendanceRecorded)
+
       cy.contains('Save and continue').click()
 
       cy.contains('Add session feedback')
@@ -1903,26 +1905,26 @@ describe('Service provider referrals dashboard', () => {
       cy.get('[data-cy=session-table]')
         .getTable()
         .should(result => {
-          expect(result).to.have.length(5)
+          expect(result).to.have.length(3)
           expect(result[0]).to.deep.include({
             'Session details': 'Session 1',
             'Time and date': '9:02am on 24 Mar 2021',
             Status: 'needs feedback',
           })
           expect(result[0]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
-          expect(result[1]).to.contains(/^Session 1 history/gi)
-          expect(result[2]).to.deep.include({
+          expect(result[0]).to.contains(/^Session 1 history/gi)
+          expect(result[1]).to.deep.include({
             'Session details': 'Session 2',
             'Time and date': '10:02am on 31 Aug 2021',
             Status: 'needs feedback',
           })
-          expect(result[2]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
-          expect(result[3]).to.contains(/^Session 2 history/gi)
-          expect(result[4]).to.deep.include({
+          expect(result[1]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
+          expect(result[1]).to.contains(/^Session 2 history/gi)
+          expect(result[2]).to.deep.include({
             'Session details': 'Session 3',
             Status: 'scheduled',
           })
-          expect(result[4]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
+          expect(result[2]).to.contains(/^Reschedule session[\n|\n]*Give feedback$/)
         })
     })
   })
@@ -2408,6 +2410,7 @@ describe('Service provider referrals dashboard', () => {
               },
             },
           })
+
           supplierAssessment = supplierAssessmentFactory.build({
             appointments: [appointmentWithAttendanceFeedback],
             currentAppointmentId: appointmentWithAttendanceFeedback.id,
@@ -2468,6 +2471,7 @@ describe('Service provider referrals dashboard', () => {
             appointmentFeedback: {
               attendanceFeedback: {
                 attended: 'yes',
+                didSessionHappen: true,
               },
               sessionFeedback: {
                 sessionSummary: 'Discussed accommodation',
@@ -2631,13 +2635,14 @@ describe('Service provider referrals dashboard', () => {
             appointmentTime: '2021-03-24T09:02:02Z',
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
-            sessionFeedback: {
-              attendance: {
+            appointmentFeedback: {
+              attendanceFeedback: {
                 attended: 'yes',
                 didSessionHappen: true,
               },
             },
           })
+
           supplierAssessment = supplierAssessmentFactory.build({
             appointments: [appointmentWithAttendanceFeedback],
             currentAppointmentId: appointmentWithAttendanceFeedback.id,
@@ -2704,6 +2709,7 @@ describe('Service provider referrals dashboard', () => {
             appointmentFeedback: {
               attendanceFeedback: {
                 attended: 'yes',
+                didSessionHappen: true,
               },
               sessionFeedback: {
                 sessionSummary: 'Discussed accommodation',

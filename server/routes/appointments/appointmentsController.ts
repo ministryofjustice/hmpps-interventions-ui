@@ -571,12 +571,13 @@ export default class AppointmentsController {
     }
 
     // Can be removed 2 weeks after iteration 2 version 4 changes to session feedback
-    await this.redirectIfSupplierAssessmentDidSessionHappenIsNull(
-      res,
-      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen,
-      referralId,
-      draftBookingId
-    )
+    if (
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === null ||
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === undefined
+    ) {
+      await this.redirectIfSupplierAssessmentDidSessionHappenIsNull(res, referralId, draftBookingId)
+      return
+    }
 
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
@@ -667,13 +668,14 @@ export default class AppointmentsController {
       throw new Error('Attempting to add initial assessment session feedback without a current appointment')
     }
 
-    // Can be removed 2 weeks after iteration 2 version 4 changes to session feedback
-    await this.redirectIfSupplierAssessmentDidSessionHappenIsNull(
-      res,
-      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen,
-      referralId,
-      draftBookingId
-    )
+    // Can be removed 2 weeks after iteration 2 version 4 goes live
+    if (
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === null ||
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === undefined
+    ) {
+      await this.redirectIfSupplierAssessmentDidSessionHappenIsNull(res, referralId, draftBookingId)
+      return
+    }
 
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
@@ -766,12 +768,13 @@ export default class AppointmentsController {
     }
 
     // Can be removed 2 weeks after iteration 2 version 4 changes to session feedback
-    await this.redirectIfSupplierAssessmentDidSessionHappenIsNull(
-      res,
-      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen,
-      referralId,
-      draftBookingId
-    )
+    if (
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === null ||
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === undefined
+    ) {
+      await this.redirectIfSupplierAssessmentDidSessionHappenIsNull(res, referralId, draftBookingId)
+      return
+    }
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
@@ -811,12 +814,13 @@ export default class AppointmentsController {
     }
 
     // Can be removed 2 weeks after iteration 2 version 4 changes to session feedback
-    await this.redirectIfSupplierAssessmentDidSessionHappenIsNull(
-      res,
-      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen,
-      referralId,
-      draftBookingId
-    )
+    if (
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === null ||
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === undefined
+    ) {
+      await this.redirectIfSupplierAssessmentDidSessionHappenIsNull(res, referralId, draftBookingId)
+      return
+    }
 
     if (draftBookingId) {
       const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, 'service-provider')
@@ -1006,13 +1010,13 @@ export default class AppointmentsController {
     }
 
     // To be removed 2 weeks after deploying Iteration 2 version 4
-    await this.redirectIfDeliverySessionDidSessionHappenIsNull(
-      res,
-      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen,
-      actionPlanId,
-      sessionNumber,
-      draftBookingId
-    )
+    if (
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === null ||
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === undefined
+    ) {
+      await this.redirectIfDeliverySessionDidSessionHappenIsNull(res, actionPlanId, sessionNumber, draftBookingId)
+      return
+    }
 
     if (req.method === 'POST') {
       const data = await new SessionFeedbackForm(req, serviceUser, false).data()
@@ -1086,38 +1090,32 @@ export default class AppointmentsController {
   // To be removed 2 weeks after deploying Iteration 2 version 4
   private async redirectIfDeliverySessionDidSessionHappenIsNull(
     res: Response,
-    didSessionHappen: boolean | null | undefined,
     actionPlanId: string,
     sessionNumber: string,
     draftBookingId: string | null | undefined
-  ) {
-    if (didSessionHappen === null || didSessionHappen === undefined) {
-      if (draftBookingId) {
-        res.redirect(
-          `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draftBookingId}/attendance`
-        )
-      }
+  ): Promise<void> {
+    if (draftBookingId) {
       res.redirect(
-        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/attendance`
+        `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/edit/${draftBookingId}/attendance`
       )
     }
+    res.redirect(
+      `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/attendance`
+    )
   }
 
   // To be removed 2 weeks after deploying Iteration 2 version 4
   private async redirectIfSupplierAssessmentDidSessionHappenIsNull(
     res: Response,
-    didSessionHappen: boolean | null | undefined,
     referralId: string,
     draftBookingId: string | null | undefined
-  ) {
-    if (didSessionHappen === null || didSessionHappen === undefined) {
-      if (draftBookingId) {
-        res.redirect(
-          `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/edit/${draftBookingId}/attendance`
-        )
-      }
-      res.redirect(`/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/attendance`)
+  ): Promise<void> {
+    if (draftBookingId) {
+      res.redirect(
+        `/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/edit/${draftBookingId}/attendance`
+      )
     }
+    res.redirect(`/service-provider/referrals/${referralId}/supplier-assessment/post-assessment-feedback/attendance`)
   }
 
   async checkActionPlanSessionFeedbackAnswers(req: Request, res: Response): Promise<void> {
@@ -1135,13 +1133,13 @@ export default class AppointmentsController {
     }
 
     // To be removed 2 weeks after deploying Iteration 2 version 4
-    await this.redirectIfDeliverySessionDidSessionHappenIsNull(
-      res,
-      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen,
-      actionPlanId,
-      sessionNumber,
-      draftBookingId
-    )
+    if (
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === null ||
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === undefined
+    ) {
+      await this.redirectIfDeliverySessionDidSessionHappenIsNull(res, actionPlanId, sessionNumber, draftBookingId)
+      return
+    }
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
     const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
@@ -1173,13 +1171,13 @@ export default class AppointmentsController {
     }
 
     // To be removed 2 weeks after deploying Iteration 2 version 4
-    await this.redirectIfDeliverySessionDidSessionHappenIsNull(
-      res,
-      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen,
-      actionPlanId,
-      sessionNumber,
-      draftBookingId
-    )
+    if (
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === null ||
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === undefined
+    ) {
+      await this.redirectIfDeliverySessionDidSessionHappenIsNull(res, actionPlanId, sessionNumber, draftBookingId)
+      return
+    }
 
     if (draftBookingId) {
       const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(
@@ -1251,13 +1249,13 @@ export default class AppointmentsController {
     }
 
     // To be removed 2 weeks after deploying Iteration 2 version 4
-    await this.redirectIfDeliverySessionDidSessionHappenIsNull(
-      res,
-      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen,
-      actionPlanId,
-      sessionNumber,
-      draftBookingId
-    )
+    if (
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === null ||
+      appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === undefined
+    ) {
+      await this.redirectIfDeliverySessionDidSessionHappenIsNull(res, actionPlanId, sessionNumber, draftBookingId)
+      return
+    }
 
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
