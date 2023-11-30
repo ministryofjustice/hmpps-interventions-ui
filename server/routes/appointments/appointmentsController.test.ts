@@ -1002,6 +1002,12 @@ describe('Adding supplier assessment feedback', () => {
       const referral = sentReferralFactory.assigned().build()
       const appointment = initialAssessmentAppointmentFactory.build({
         appointmentTime: '2021-02-01T13:00:00Z',
+        appointmentFeedback: {
+          attendanceFeedback: {
+            attended: 'yes',
+            didSessionHappen: true,
+          },
+        },
       })
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [appointment],
@@ -1057,11 +1063,22 @@ describe('Adding supplier assessment feedback', () => {
     describe('when the Service Provider records behaviour for the supplier assessment', () => {
       it('makes a request to the interventions service to record the Service user‘s session feedback and redirects to the check-your-answers page', async () => {
         const referral = sentReferralFactory.assigned().build()
-        const appointment = initialAssessmentAppointmentFactory.build()
+        const appointment = initialAssessmentAppointmentFactory.build({
+          appointmentFeedback: {
+            attendanceFeedback: {
+              attended: 'yes',
+              didSessionHappen: true,
+            },
+          },
+        })
         const deliusServiceUser = deliusServiceUserFactory.build()
         const updatedAppointment = initialAssessmentAppointmentFactory.build({
           ...appointment,
           appointmentFeedback: {
+            attendanceFeedback: {
+              attended: 'yes',
+              didSessionHappen: true,
+            },
             sessionFeedback: {
               late: false,
               sessionSummary: 'summary',
@@ -1202,6 +1219,7 @@ describe('Adding supplier assessment feedback', () => {
           appointmentFeedback: {
             attendanceFeedback: {
               attended: 'yes',
+              didSessionHappen: true,
             },
             sessionFeedback: {
               sessionSummary: 'stub session summary',
@@ -1239,6 +1257,7 @@ describe('Adding supplier assessment feedback', () => {
           appointmentFeedback: {
             attendanceFeedback: {
               attended: 'yes',
+              didSessionHappen: true,
             },
             sessionFeedback: {
               sessionSummary: 'stub session summary',
@@ -1276,6 +1295,7 @@ describe('Adding supplier assessment feedback', () => {
           appointmentFeedback: {
             attendanceFeedback: {
               attended: 'no',
+              didSessionHappen: true,
             },
             submitted: false,
           },
@@ -1755,6 +1775,12 @@ describe('Adding post delivery session feedback', () => {
       const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
       const appointment = actionPlanAppointmentFactory.build({
         appointmentTime: '2021-02-01T13:00:00Z',
+        appointmentFeedback: {
+          attendanceFeedback: {
+            attended: 'yes',
+            didSessionHappen: true,
+          },
+        },
       })
 
       ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
@@ -1783,6 +1809,12 @@ describe('Adding post delivery session feedback', () => {
         const submittedActionPlan = actionPlanFactory.submitted().build({ referralId: referral.id })
         const appointment = actionPlanAppointmentFactory.build({
           appointmentTime: '2021-02-01T13:00:00Z',
+          appointmentFeedback: {
+            attendanceFeedback: {
+              attended: 'yes',
+              didSessionHappen: true,
+            },
+          },
         })
 
         const draftAppointment: DraftAppointment = draftAppointmentFactory.withAttendanceFeedback().build()
@@ -1866,6 +1898,12 @@ describe('Adding post delivery session feedback', () => {
         appointmentTime: '2021-02-01T13:00:00Z',
         durationInMinutes: 60,
         appointmentDeliveryType: 'PHONE_CALL',
+        appointmentFeedback: {
+          attendanceFeedback: {
+            attended: 'yes',
+            didSessionHappen: true,
+          },
+        },
       })
 
       const actionPlan = actionPlanFactory.build()
@@ -1999,6 +2037,12 @@ describe('Adding post delivery session feedback', () => {
         appointmentTime: '2021-02-01T13:00:00Z',
         durationInMinutes: 60,
         appointmentDeliveryType: 'PHONE_CALL',
+        appointmentFeedback: {
+          attendanceFeedback: {
+            attended: 'yes',
+            didSessionHappen: true,
+          },
+        },
       })
 
       ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
@@ -2104,6 +2148,10 @@ describe('Adding post delivery session feedback', () => {
       const submittedActionPlan = actionPlanFactory.submitted().build({ id: actionPlanId, referralId: referral.id })
       const appointment = actionPlanAppointmentFactory.build({
         appointmentFeedback: {
+          attendanceFeedback: {
+            attended: 'yes',
+            didSessionHappen: true,
+          },
           sessionFeedback: {
             sessionSummary: 'stub session summary',
             sessionResponse: 'stub session response',

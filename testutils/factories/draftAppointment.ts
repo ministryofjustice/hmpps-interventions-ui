@@ -13,6 +13,7 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
       session: {
         attendanceFeedback: {
           attended,
+          didSessionHappen: true,
         },
         sessionFeedback: {
           sessionSummary: null,
@@ -111,7 +112,7 @@ export default DraftAppointmentFactory.define(() => ({
   sessionFeedback: {
     attendanceFeedback: {
       attended: null,
-      attendanceFailureInformation: null,
+      didSessionHappen: null,
     },
     sessionFeedback: {
       behaviourDescription: null,

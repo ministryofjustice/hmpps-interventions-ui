@@ -107,7 +107,6 @@ export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
       noSessionReasonPopAcceptable: null,
       noSessionReasonPopUnacceptable: null,
       noSessionReasonLogistics: null,
-      noSessionReasonOther: null,
       noAttendanceInformation: null,
     },
     submitted: false,
