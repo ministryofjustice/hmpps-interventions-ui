@@ -7,16 +7,16 @@ describe('WhatsNew cookie', () => {
   let req: Request
 
   const id = '123'
-  const hashedId = md5(id)
+  const hashedKey = md5(`whats-new-banner-${id}`)
 
   beforeEach(() => {
     res = { cookie: jest.fn() } as unknown as Response
-    req = { cookies: { [`whats-new-banner-${hashedId}`]: 1 } } as unknown as Request
+    req = { cookies: { [hashedKey]: 1 } } as unknown as Request
   })
 
   it('should store cookie correctly', () => {
     WhatsNewCookieService.persistDismissedVersion(res, id, 1)
-    expect(res.cookie).toHaveBeenCalledWith(`whats-new-banner-${hashedId}`, 1, {
+    expect(res.cookie).toHaveBeenCalledWith(hashedKey, 1, {
       httpOnly: true,
       maxAge: 4492800000,
     })
