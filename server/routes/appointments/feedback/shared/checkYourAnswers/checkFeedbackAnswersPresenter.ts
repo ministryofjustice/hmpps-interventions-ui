@@ -106,12 +106,12 @@ export default abstract class CheckFeedbackAnswersPresenter {
         lines: [this.feedbackAnswersPresenter.behaviourDescriptionAnswers.answer],
       })
     }
-    // if (this.feedbackAnswersPresenter.futureSessionPlans) {
-    //   sessionFeedbackDetails.push({
-    //     key: this.feedbackAnswersPresenter.futureSessionPlans.question,
-    //     lines: [this.feedbackAnswersPresenter.futureSessionPlans.answer],
-    //   })
-    // }
+    if (this.feedbackAnswersPresenter.futureSessionPlans) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.futureSessionPlans.question,
+        lines: [this.feedbackAnswersPresenter.futureSessionPlans.answer],
+      })
+    }
     return sessionFeedbackDetails
   }
 }
