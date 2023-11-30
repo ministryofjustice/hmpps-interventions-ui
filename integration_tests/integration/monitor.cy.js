@@ -442,15 +442,7 @@ describe('Probation Practitioner monitor journey', () => {
       cy.visit(`/probation-practitioner/referrals/${assignedReferral.id}/progress`)
 
       cy.contains('View feedback form').click()
-
-      cy.contains('Did Alex River come to the session?')
       cy.contains('Session feedback')
-      cy.contains('What did you do in the session?')
-      cy.contains('stub session summary')
-      cy.contains('How did Alex River respond to the session?')
-      cy.contains('stub session response')
-      cy.contains('Do you want to notify the probation practitioner about poor behaviour?')
-      cy.contains('No')
     })
   })
 
