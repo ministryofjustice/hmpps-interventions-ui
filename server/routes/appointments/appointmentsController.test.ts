@@ -529,7 +529,7 @@ describe('viewing supplier assessment feedback', () => {
             expect(res.text).toContain('stub session summary')
             expect(res.text).toContain('How did Alex River respond to the appointment?')
             expect(res.text).toContain('stub session response')
-            expect(res.text).toContain('Do you want to notify the probation practitioner about poor behaviour?')
+            expect(res.text).toContain('Did anything concern you about Alex River?')
             expect(res.text).toContain('No')
           })
       })
@@ -1024,7 +1024,7 @@ describe('Adding supplier assessment feedback', () => {
           expect(res.text).toContain(
             'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support them.'
           )
-          expect(res.text).toContain('Do you want to notify the probation practitioner about poor behaviour?')
+          expect(res.text).toContain('Did anything concern you about Alex River?')
           expect(res.text).toContain(
             'If you select yes, the probation practitioner will get an email about your concerns.'
           )
@@ -1167,7 +1167,7 @@ describe('Adding supplier assessment feedback', () => {
           expect(res.text).toContain('stub session summary')
           expect(res.text).toContain('How did Alex River respond to the appointment?')
           expect(res.text).toContain('stub session response')
-          expect(res.text).toContain('Do you want to notify the probation practitioner about poor behaviour?')
+          expect(res.text).toContain('Did anything concern you about Alex River?')
           expect(res.text).toContain('No')
         })
     })
@@ -2355,7 +2355,7 @@ describe('Adding post delivery session feedback', () => {
               expect(res.text).toContain('stub session summary')
               expect(res.text).toContain('How did Alex River respond to the session?')
               expect(res.text).toContain('stub session response')
-              expect(res.text).toContain('Do you want to notify the probation practitioner about poor behaviour?')
+              expect(res.text).toContain('Did anything concern you about Alex River?')
               expect(res.text).toContain('No')
             })
         })
@@ -2422,7 +2422,7 @@ describe('Adding post delivery session feedback', () => {
               expect(res.text).toContain('stub session summary')
               expect(res.text).toContain('How did Alex River respond to the session?')
               expect(res.text).toContain('stub session response')
-              expect(res.text).toContain('Do you want to notify the probation practitioner about poor behaviour?')
+              expect(res.text).toContain('Did anything concern you about Alex River?')
               expect(res.text).toContain('No')
             })
         })
@@ -2487,7 +2487,7 @@ describe('Adding post delivery session feedback', () => {
               expect(res.text).toContain('stub session summary')
               expect(res.text).toContain('How did Alex River respond to the session?')
               expect(res.text).toContain('stub session response')
-              expect(res.text).toContain('Do you want to notify the probation practitioner about poor behaviour?')
+              expect(res.text).toContain('Did anything concern you about Alex River?')
               expect(res.text).toContain('No')
             })
         })

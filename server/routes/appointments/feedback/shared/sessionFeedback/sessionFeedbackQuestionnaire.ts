@@ -104,7 +104,7 @@ export default class SessionFeedbackQuestionnaire {
 
   get notifyProbationPractitionerQuestion(): { text: string; hint: string; explanation: string } {
     return {
-      text: `Do you want to notify the probation practitioner about poor behaviour?`,
+      text: `Did anything concern you about ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}?`,
       explanation: 'If you select yes, the probation practitioner will get an email about your concerns.',
       hint: 'Select one option',
     }
