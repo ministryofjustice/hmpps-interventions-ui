@@ -677,7 +677,7 @@ export default class AppointmentsController {
       } else {
         let redirectUrl
         if (draftBookingId) {
-          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res)
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, 'service-provider')
           if (fetchResult.rendered) {
             return
           }
@@ -719,7 +719,7 @@ export default class AppointmentsController {
       userInputData
     )
     const view = new NoSessionFeedbackView(presenter)
-    ControllerUtils.renderWithLayout(res, view, serviceUser)
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   async checkSupplierAssessmentFeedbackAnswers(req: Request, res: Response): Promise<void> {
@@ -890,7 +890,6 @@ export default class AppointmentsController {
         let basePath
         let redirectPath
         if (draftBookingId) {
-          const actionPlan = await this.interventionsService.getActionPlan(accessToken, actionPlanId)
           const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(
             req,
             res,
@@ -1179,7 +1178,12 @@ export default class AppointmentsController {
           )
           redirectUrl = `/service-provider/action-plan/${actionPlanId}/appointment/${sessionNumber}/post-session-feedback/check-your-answers`
         } else {
-          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(req, res, 'service-provider', actionPlan.referralId)
+          const fetchResult = await this.fetchDraftAppointmentOrRenderMessage(
+            req,
+            res,
+            'service-provider',
+            actionPlan.referralId
+          )
           if (fetchResult.rendered) {
             return
           }
@@ -1216,7 +1220,7 @@ export default class AppointmentsController {
     const view = new NoSessionFeedbackView(presenter)
 
     res.status(formError === null ? 200 : 400)
-    ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
   private async getCaseWorker(accessToken: string, username: string): Promise<AuthUserDetails | string> {
