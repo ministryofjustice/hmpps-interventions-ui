@@ -42,11 +42,7 @@
     {% include "./broadcastMessage.njk" %}
   {% endif %}
   {% if showWhatsNewBanner == true %}
-  <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
     {{ govukNotificationBanner(whatsNewBannerArgs) }}
-      </div>
-  </div>
   {% endif %}
   {% block pageContent %}
   {% endblock %}
