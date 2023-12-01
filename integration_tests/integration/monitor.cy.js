@@ -167,7 +167,7 @@ describe('Probation Practitioner monitor journey', () => {
           appointmentTime: '2021-03-24T09:02:02Z',
           durationInMinutes: 75,
         }),
-        actionPlanAppointmentFactory.attended('no').build({
+        actionPlanAppointmentFactory.attended('no', false).build({
           sessionNumber: 2,
           appointmentTime: '2021-04-30T09:02:02Z',
           durationInMinutes: 75,
@@ -275,12 +275,12 @@ describe('Probation Practitioner monitor journey', () => {
           appointmentTime: '2021-08-24T09:02:02Z',
           durationInMinutes: 75,
         }),
-        actionPlanAppointmentFactory.attended('no').build({
+        actionPlanAppointmentFactory.attended('no', false).build({
           sessionNumber: 1,
           appointmentTime: '2021-05-30T09:02:02Z',
           durationInMinutes: 75,
         }),
-        actionPlanAppointmentFactory.attended('no').build({
+        actionPlanAppointmentFactory.attended('no', false).build({
           sessionNumber: 1,
           appointmentTime: '2021-06-20T09:02:02Z',
           durationInMinutes: 75,
@@ -290,7 +290,7 @@ describe('Probation Practitioner monitor journey', () => {
           appointmentTime: '2021-07-31T09:02:02Z',
           durationInMinutes: 75,
         }),
-        actionPlanAppointmentFactory.attended('no').build({
+        actionPlanAppointmentFactory.attended('no', false).build({
           sessionNumber: 3,
           appointmentTime: '2021-08-31T09:02:02Z',
           durationInMinutes: 75,
