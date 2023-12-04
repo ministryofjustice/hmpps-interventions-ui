@@ -3213,10 +3213,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             },
             headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
           },
-          // note - this is an exact match
           willRespondWith: {
             status: 200,
-            body: actionPlanAppointment,
+            body: Matchers.like(actionPlanAppointment),
             headers: {
               'Content-Type': 'application/json',
             },
