@@ -154,20 +154,6 @@ export default class NoSessionFeedbackView {
     }
   }
 
-  // private get otherAdditionalInformationTextAreaArgs(): TextareaArgs {
-  //   return {
-  //     name: 'no-session-reason-other',
-  //     id: 'no-session-reason-other',
-  //     label: {
-  //       text: this.presenter.questionnaire.noSessionReasonAdditionalInformationOtherQuestion.text,
-  //       classes: 'govuk-body govuk-!-margin-bottom-4',
-  //       isPageHeading: false,
-  //     },
-  //     value: this.inputsPresenter.fields.noSessionReasonOther.value,
-  //     errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.noSessionReasonOther.errorMessage),
-  //   }
-  // }
-
   private get rescheduleSessionRadioArgs(): Record<string, unknown> {
     return {
       classes: 'govuk-radios',
@@ -246,7 +232,6 @@ export default class NoSessionFeedbackView {
         popAcceptableAdditionalInformationTextAreaArgs: this.popAcceptableAdditionalInformationTextAreaArgs,
         popUnacceptableAdditionalInformationTextAreaArgs: this.popUnacceptableAdditionalInformationTextAreaArgs,
         logisticsAdditionalInformationTextAreaArgs: this.logisticsAdditionalInformationTextAreaArgs,
-        // otherAdditionalInformationTextAreaArgs: this.otherAdditionalInformationTextAreaArgs,
         rescheduleSessionRadioArgs: this.rescheduleSessionRadioArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         backLinkArgs: this.backLinkArgs,
