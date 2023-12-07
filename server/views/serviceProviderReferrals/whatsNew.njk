@@ -11,6 +11,15 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
+      {% set whatsNewVersion2Html %}
+      <p>When you create a case note you now need to choose whether the probation practitioner needs an email with a link to it. They’re still able to read all case notes in the service. </p>
+      <p>This is to help reduce the amount of case note emails we send to probation practitioners.</p>
+      <p>You may choose not to send an email about case notes of email threads, or session reminders you’ve sent to people on probation. This is to help probation practitioners identify what’s important or urgent.</p>
+
+      <h3 class="govuk-heading-s">Why we’ve made the change</h2>
+      <p>This is in response to your feedback. It’s so that you’re only emailed about things which are important or urgent. Please <a href="https://eu.surveymonkey.com/r/H6K5JG3">share your feedback in this survey</a>.</p>
+      {% endset %}
+
       {% set whatsNewVersion1Html %}
             <h3 class="govuk-heading-s">New functionality</h3>
             <p>
@@ -38,6 +47,16 @@
 
           {{ mojTimeline({
                   items: [
+                    {
+                      label: {
+                        text: "Helping to reduce emails to probation practitioners"
+                      },
+                      html: whatsNewVersion2Html,
+                      datetime: {
+                        timestamp: "2023-12-07",
+                        type: "date"
+                      }
+                    },
                     {
                       label: {
                         text: "Changes to making a referral"
