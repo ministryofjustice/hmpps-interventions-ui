@@ -36,9 +36,9 @@ export default class ControllerUtils {
   ): Promise<void> {
     let whatsNewBanner
     let showWhatsNewBanner = false
-    const { userId } = res.locals.user
+    const { userId } = res.locals.user || {}
 
-    if (userType) {
+    if (userType && userId) {
       whatsNewBanner = await ReferenceDataService.getWhatsNewBanner(userType, req.originalUrl)
       showWhatsNewBanner = whatsNewBanner?.version !== WhatsNewCookieService.getDismissedVersion(req, userId)
 
