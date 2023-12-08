@@ -13,4 +13,5 @@ export default Factory.define<CaseNote>(({ sequence }) => ({
     authSource: 'delius',
   },
   sentAt: '2021-01-01T09:45:21.986389Z',
+  sendEmail: false,
 }))

@@ -46,6 +46,37 @@ export default class AddCaseNoteView {
     }
   }
 
+  private get sendEmailRadioButtonArgs(): Record<string, unknown> {
+    return {
+      classes: 'govuk-radios',
+      idPrefix: 'send-case-note-email',
+      name: 'send-case-note-email',
+      fieldset: {
+        legend: {
+          html: `<legend class=govuk-fieldset__legend--m> ${ViewUtils.escape(
+            'Would you like the probation practitioner to get an email about this case note?'
+          )}</legend><p class=govuk-hint>${ViewUtils.escape(
+            "If you select yes, they'll get an email with a link to this case note."
+          )}</p>`,
+          isPageHeading: false,
+        },
+      },
+      items: [
+        {
+          value: true,
+          text: 'Yes',
+          checked: false,
+        },
+        {
+          value: false,
+          text: 'No',
+          checked: true,
+        },
+      ],
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.sendCaseNoteEmail.errorMessage),
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'caseNotes/addNewCaseNote',
@@ -55,6 +86,7 @@ export default class AddCaseNoteView {
         subjectInputArgs: this.subjectInputArgs,
         bodyInputArgs: this.bodyInputArgs,
         detailsArgs: this.detailsArgs,
+        sendEmailRadioButtonArgs: this.sendEmailRadioButtonArgs,
       },
     ]
   }
