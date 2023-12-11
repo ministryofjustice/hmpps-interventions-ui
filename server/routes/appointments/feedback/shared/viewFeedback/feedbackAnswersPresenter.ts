@@ -190,6 +190,17 @@ export default class FeedbackAnswersPresenter {
     }
   }
 
+  get lateReasonAnswers(): { question: string; answer: string } | null {
+    if (this.appointment.appointmentFeedback.sessionFeedback.lateReason == null) {
+      return null
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.lateReasonQuestion.text,
+      answer: this.appointment.appointmentFeedback.sessionFeedback.lateReason,
+    }
+  }
+
   get futureSessionPlans(): { question: string; answer: string } | null {
     if (!this.appointment.appointmentFeedback.sessionFeedback.futureSessionPlans) {
       return null

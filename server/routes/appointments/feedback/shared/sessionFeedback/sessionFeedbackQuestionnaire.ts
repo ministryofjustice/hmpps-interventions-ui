@@ -83,12 +83,6 @@ export default class SessionFeedbackQuestionnaire {
     }
   }
 
-  // get noSessionReasonAdditionalInformationOtherQuestion(): { text: string } {
-  //   return {
-  //     text: `Explain what happened and who was involved.`,
-  //   }
-  // }
-
   get behaviourQuestion(): { text: string; hint: string } {
     if (this.appointmentDecorator.isInitialAssessmentAppointment) {
       return {

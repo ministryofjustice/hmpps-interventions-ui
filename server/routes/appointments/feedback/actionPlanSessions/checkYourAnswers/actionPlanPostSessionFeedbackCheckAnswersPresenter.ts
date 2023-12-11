@@ -23,7 +23,7 @@ export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends 
     : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/submit`
 
   get backLinkHref(): string {
-    if (this.actionPlanAppointment.appointmentFeedback.attendanceFeedback.didSessionHappen === true) {
+    if (this.actionPlanAppointment.appointmentFeedback.attendanceFeedback.didSessionHappen) {
       return this.draftId
         ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/behaviour`
         : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/behaviour`
@@ -40,7 +40,7 @@ export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends 
   }
 
   get sessionFeedbackChangeLink(): string {
-    if (this.actionPlanAppointment.appointmentFeedback.attendanceFeedback.didSessionHappen === true) {
+    if (this.actionPlanAppointment.appointmentFeedback.attendanceFeedback.didSessionHappen) {
       return this.draftId
         ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/behaviour`
         : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/behaviour`
