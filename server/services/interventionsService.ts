@@ -376,19 +376,6 @@ export default class InterventionsService {
     })) as Page<SentReferralSummaries>
   }
 
-  async getServiceProviderSentReferralsSummaryForUserToken(
-    token: string,
-    dashboardType?: SPDashboardType
-  ): Promise<ServiceProviderSentReferralSummary[]> {
-    const restClient = this.createRestClient(token)
-    const query = dashboardType ? { dashboardType } : undefined
-    return (await restClient.get({
-      path: `/sent-referrals/summary/service-provider`,
-      query,
-      headers: { Accept: 'application/json' },
-    })) as ServiceProviderSentReferralSummary[]
-  }
-
   async getServiceProviderSentReferralsSummaryForUserTokenWithSearchText(
     token: string,
     searchText: string,

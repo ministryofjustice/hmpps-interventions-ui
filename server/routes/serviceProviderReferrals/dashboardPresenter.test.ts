@@ -58,9 +58,9 @@ describe(DashboardPresenter, () => {
         prisons
       )
       expect(presenter.tableHeadings.map(headers => headers.persistentId)).toEqual([
-        'serviceUserData.lastName',
+        'serviceUserLastName',
         'referenceNumber',
-        'intervention.title',
+        'interventionTitle',
         'sentAt',
       ])
     })
