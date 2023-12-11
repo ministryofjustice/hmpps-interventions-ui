@@ -101,7 +101,7 @@ export default class ProbationPractitionerReferralsController {
       config.userData.ppDashboardSortOrder.storageDurationInSeconds,
       tablePersistentId,
       DashboardPresenter.headingsAndSortFields.map(it => it.sortField).filter(it => it) as string[],
-      'serviceUserData.lastName,ASC',
+      'serviceUserLastName,ASC',
       'sentAt,ASC'
     )
 

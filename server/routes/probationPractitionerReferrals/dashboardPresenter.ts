@@ -58,19 +58,19 @@ export default class DashboardPresenter {
     },
     {
       columnName: 'Person',
-      sortField: 'serviceUserData.lastName',
+      sortField: 'serviceUserLastName',
     },
     {
       columnName: 'Intervention type',
-      sortField: 'intervention.title',
+      sortField: 'interventionTitle',
     },
     {
       columnName: 'Provider',
-      sortField: 'intervention.dynamicFrameworkContract.primeProvider.name',
+      sortField: 'serviceProviderName',
     },
     {
       columnName: 'Caseworker',
-      sortField: 'assignments.assignedTo.userName',
+      sortField: 'assignedUserName',
     },
     {
       columnName: 'Action',
