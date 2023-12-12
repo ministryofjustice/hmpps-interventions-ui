@@ -272,9 +272,6 @@ export default {
     body: {
       empty: 'Enter some details about your case note',
     },
-    sendCaseNoteEmail: {
-      empty: 'Select yes if you want the probation practitioner to get an email about this case note',
-    },
   },
   oasysRiskInformation: {
     edit: {

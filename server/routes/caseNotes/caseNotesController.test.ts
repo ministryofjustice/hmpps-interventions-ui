@@ -232,7 +232,7 @@ describe.each([
         await request(app)
           .post(`/${user.userType}/referrals/${sentReferral.id}/add-case-note/${draftCaseNote.id}/details`)
           .type('form')
-          .send({ 'case-note-subject': 'subject', 'case-note-body': 'body', 'send-case-note-email': false })
+          .send({ 'case-note-subject': 'subject', 'case-note-body': 'body' })
           .expect(302)
           .expect(
             'Location',

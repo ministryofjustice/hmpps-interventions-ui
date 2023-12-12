@@ -31,8 +31,5 @@ export default class AddCaseNotePresenter {
       ),
       errorMessage: PresenterUtils.errorMessage(this.error, AddNewCaseNoteForm.caseNoteBodyFormId),
     },
-    sendCaseNoteEmail: {
-      errorMessage: PresenterUtils.errorMessage(this.error, AddNewCaseNoteForm.sendCaseNoteEmailId),
-    },
   }
 }
