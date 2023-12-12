@@ -66,13 +66,13 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             [
               actionPlanAppointmentFactory.build({
-                id: '1',
+                appointmentId: '1',
                 sessionNumber: 1,
                 appointmentTime: '3020-12-07T12:00:00.000000Z',
                 durationInMinutes: 120,
               }),
-              actionPlanAppointmentFactory.attended('no').build({
-                id: '2',
+              actionPlanAppointmentFactory.attended('no', false).build({
+                appointmentId: '2',
                 sessionNumber: 1,
                 appointmentTime: '3020-12-07T12:00:00.000000Z',
                 durationInMinutes: 120,
@@ -157,8 +157,8 @@ describe(InterventionProgressPresenter, () => {
             referral,
             intervention,
             [
-              actionPlanAppointmentFactory.attended('yes').build({ id: '1', sessionNumber: 1 }),
-              actionPlanAppointmentFactory.attended('late').build({ id: '2', sessionNumber: 2 }),
+              actionPlanAppointmentFactory.attended('yes').build({ appointmentId: '1', sessionNumber: 1 }),
+              actionPlanAppointmentFactory.attended('yes').build({ appointmentId: '2', sessionNumber: 2 }),
             ],
             null,
             [],
@@ -204,7 +204,7 @@ describe(InterventionProgressPresenter, () => {
           const presenter = new InterventionProgressPresenter(
             referral,
             intervention,
-            [actionPlanAppointmentFactory.attended('no').build({ id: '1' })],
+            [actionPlanAppointmentFactory.attended('no', false).build({ appointmentId: '1' })],
             null,
             [],
             supplierAssessment,

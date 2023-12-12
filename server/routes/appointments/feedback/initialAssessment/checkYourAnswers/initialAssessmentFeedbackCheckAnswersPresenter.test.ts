@@ -28,10 +28,10 @@ describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
       it('includes the referal id and link to the behaviour feedback page', () => {
         const attendedAppointments = [
           initialAssessmentAppointmentFactory.build({
-            appointmentFeedback: { attendanceFeedback: { attended: 'yes' } },
+            appointmentFeedback: { attendanceFeedback: { didSessionHappen: true, attended: 'yes' } },
           }),
           initialAssessmentAppointmentFactory.build({
-            appointmentFeedback: { attendanceFeedback: { attended: 'late' } },
+            appointmentFeedback: { attendanceFeedback: { didSessionHappen: true, attended: 'yes' } },
           }),
         ]
 
@@ -56,7 +56,7 @@ describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
     describe('when the appointment was not attended', () => {
       it('includes the referal id and link to the attendance feedback page', () => {
         const appointment = initialAssessmentAppointmentFactory.build({
-          appointmentFeedback: { attendanceFeedback: { attended: 'no' } },
+          appointmentFeedback: { attendanceFeedback: { didSessionHappen: false, attended: 'no' } },
         })
         const serviceUser = deliusServiceUserFactory.build()
         const referralId = '77f0d8fc-9443-492c-b352-4cab66acbf3c'
@@ -69,7 +69,7 @@ describe(InitialAssessmentFeedbackCheckAnswersPresenter, () => {
         )
 
         expect(presenter.backLinkHref).toEqual(
-          '/service-provider/referrals/77f0d8fc-9443-492c-b352-4cab66acbf3c/supplier-assessment/post-assessment-feedback/attendance'
+          '/service-provider/referrals/77f0d8fc-9443-492c-b352-4cab66acbf3c/supplier-assessment/post-assessment-feedback/no-session'
         )
       })
     })

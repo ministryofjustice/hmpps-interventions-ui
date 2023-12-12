@@ -34,6 +34,13 @@ export default class SessionFeedbackInputsPresenter {
       ),
       errorMessage: this.errorMessageForField('session-response'),
     },
+    futureSessionPlans: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.futureSessionPlans || null,
+        'future-session-plans'
+      ),
+      errorMessage: this.errorMessageForField('future-session-plans'),
+    },
     sessionConcerns: {
       value: new PresenterUtils(this.userInputData).stringValue(
         this.appointment.appointmentFeedback?.sessionFeedback?.sessionConcerns || null,
@@ -47,6 +54,66 @@ export default class SessionFeedbackInputsPresenter {
         'notify-probation-practitioner'
       ),
       errorMessage: this.errorMessageForField('notify-probation-practitioner'),
+    },
+    late: {
+      value: this.utils.booleanValue(this.appointment.appointmentFeedback?.sessionFeedback?.late ?? null, 'late'),
+      errorMessage: this.errorMessageForField('late'),
+    },
+    lateReason: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.lateReason || null,
+        'late-reason'
+      ),
+      errorMessage: this.errorMessageForField('late-reason'),
+    },
+    noSessionReasonType: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonType || null,
+        'no-session-reason-type'
+      ),
+      errorMessage: this.errorMessageForField('no-session-reason-type'),
+    },
+    noSessionReasonPopAcceptable: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonPopAcceptable || null,
+        'no-session-reason-pop-acceptable'
+      ),
+      errorMessage: this.errorMessageForField('no-session-reason-pop-acceptable'),
+    },
+    noSessionReasonPopUnacceptable: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonPopUnacceptable || null,
+        'no-session-reason-pop-unacceptable'
+      ),
+      errorMessage: this.errorMessageForField('no-session-reason-pop-unacceptable'),
+    },
+    noSessionReasonLogistics: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonLogistics || null,
+        'no-session-reason-logistics'
+      ),
+      errorMessage: this.errorMessageForField('no-session-reason-logistics'),
+    },
+    // noSessionReasonOther: {
+    //   value: new PresenterUtils(this.userInputData).stringValue(
+    //     this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonOther || null,
+    //     'no-session-reason-other'
+    //   ),
+    //   errorMessage: this.errorMessageForField('no-session-reason-other'),
+    // },
+    noAttendanceInformation: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.noAttendanceInformation || null,
+        'no-attendance-information'
+      ),
+      errorMessage: this.errorMessageForField('no-attendance-information'),
+    },
+    rescheduleSession: {
+      // value: new PresenterUtils(this.userInputData).stringValue(
+      //     this.appointment.appointmentFeedback?.sessionFeedback?.noSessionReasonOther || null,
+      // 'reschedule-session'
+      // ),
+      errorMessage: this.errorMessageForField('reschedule-session'),
     },
   }
 }

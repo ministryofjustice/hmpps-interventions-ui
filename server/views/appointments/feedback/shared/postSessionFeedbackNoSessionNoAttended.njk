@@ -1,4 +1,3 @@
-
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
@@ -12,17 +11,15 @@
 {% endset -%}
 
 {% block formSection %}
-    <h2 class="govuk-heading-m">{{presenter.text.heading}}</h2>
-  {{ govukSummaryList(summaryListArgs) }}
-
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
-    {% set noSessionHtml %}
-        {{ govukRadios(attendanceRadioButtonArgs) }}
+    {% set hasConcernsHtml %}
+        {{ govukTextarea(sessionConcernsTextAreaArgs) }}
     {% endset -%}
 
-    {{ govukRadios(didSessionHappenRadioButtonArgs(noSessionHtml)) }}
+    {{ govukTextarea(noAttendanceInformationTextAreaArgs) }}
+    {{ govukRadios(radioButtonArgs(hasConcernsHtml)) }}
 
     {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
   </form>

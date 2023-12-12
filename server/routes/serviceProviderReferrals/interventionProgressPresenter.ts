@@ -140,7 +140,11 @@ export default class InterventionProgressPresenter {
       .sort((a, b) => {
         return a.sessionNumber - b.sessionNumber
       })
-      .filter(x => x.isParent || (!x.isParent && x.statusPresenter.text === 'did not attend'))
+      .filter(
+        x =>
+          x.isParent ||
+          (!x.isParent && (x.statusPresenter.text === 'did not attend' || x.statusPresenter.text === 'did not happen'))
+      )
   }
 
   private sessionTableParams(
@@ -155,7 +159,7 @@ export default class InterventionProgressPresenter {
 
     const viewHref = `/service-provider/action-plan/${this.actionPlan!.id}/session/${
       appointment.sessionNumber
-    }/appointment/${appointment.id}/post-session-feedback`
+    }/appointment/${appointment.appointmentId}/post-session-feedback`
     const editHref = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${
       appointment.sessionNumber
     }/edit/start`
@@ -165,6 +169,7 @@ export default class InterventionProgressPresenter {
 
     switch (status) {
       case SessionStatus.didNotAttend:
+      case SessionStatus.didNotHappen:
         if (isParent) {
           links = [
             {
@@ -301,6 +306,7 @@ export default class InterventionProgressPresenter {
       case SessionStatus.awaitingFeedback:
       case SessionStatus.scheduled:
       case SessionStatus.didNotAttend:
+      case SessionStatus.didNotHappen:
         return 'Feedback needs to be added on the same day the assessment is delivered.'
       case SessionStatus.completed:
         return 'The initial assessment has been delivered and feedback added.'
@@ -341,6 +347,7 @@ export default class InterventionProgressPresenter {
           },
         ]
       case SessionStatus.didNotAttend:
+      case SessionStatus.didNotHappen:
         return isCurrentAppointment
           ? [
               {

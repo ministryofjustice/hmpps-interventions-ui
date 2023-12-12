@@ -12,14 +12,17 @@ export default class AttendanceFeedbackQuestionnaire {
     this.appointmentDecorator = new AppointmentDecorator(appointment)
   }
 
-  get attendanceQuestion(): { text: string; hint: string } {
+  get attendanceQuestion(): { text: string; hint: string | null } {
     if (this.appointmentDecorator.isInitialAssessmentAppointment) {
       return {
         text: `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} come to the appointment?`,
         hint: 'Select one option',
       }
     }
-    return { text: this.methodSpecificAttendanceQuestion, hint: 'Select one option' }
+    return {
+      text: `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} attend the session?`,
+      hint: null,
+    }
   }
 
   get additionalAttendanceInformationQuestion(): string {
@@ -28,6 +31,13 @@ export default class AttendanceFeedbackQuestionnaire {
 
   get attendanceFailureInformationQuestion(): string {
     return `Add how you tried to contact ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} and anything you know about why they did not attend.`
+  }
+
+  get sessionHappenQuestion(): { text: string; hint: string } {
+    return {
+      text: `Did the session happen?`,
+      hint: `The session happened if something was delivered.`,
+    }
   }
 
   private get methodSpecificAttendanceQuestion(): string {

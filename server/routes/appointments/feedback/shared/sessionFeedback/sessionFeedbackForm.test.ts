@@ -8,6 +8,7 @@ describe(SessionFeedbackForm, () => {
     describe('with valid data', () => {
       it('returns a paramsForUpdate with boolean value for whether to notify the PP', async () => {
         const request = TestUtils.createRequest({
+          late: 'no',
           'session-summary': 'summary',
           'session-response': 'response',
           'notify-probation-practitioner': 'no',
@@ -70,6 +71,7 @@ describe(SessionFeedbackForm, () => {
 
       it('returns the error when yes is selected for notify probation practitioner but session concerns is empty', async () => {
         const request = TestUtils.createRequest({
+          late: 'no',
           'session-summary': 'summary',
           'session-response': 'response',
           'session-concerns': '',
@@ -89,6 +91,7 @@ describe(SessionFeedbackForm, () => {
 
       it('returns the error when notify probation practitioner value is missing', async () => {
         const request = TestUtils.createRequest({
+          late: 'no',
           'session-summary': 'summary',
           'session-response': 'response',
         })

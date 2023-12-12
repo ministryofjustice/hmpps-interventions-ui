@@ -275,8 +275,8 @@ describe(InterventionProgressPresenter, () => {
             actionPlan,
             [],
             [
-              actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1, id: '1' }),
-              actionPlanAppointmentFactory.attended('late').build({ sessionNumber: 2, id: '2' }),
+              actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 1, appointmentId: '1' }),
+              actionPlanAppointmentFactory.attended('yes').build({ sessionNumber: 2, appointmentId: '2' }),
             ],
             supplierAssessmentFactory.build(),
             serviceUser,
@@ -320,8 +320,8 @@ describe(InterventionProgressPresenter, () => {
             actionPlan,
             [],
             [
-              actionPlanAppointmentFactory.attended('yes').build({ id: '1', sessionNumber: 1 }),
-              actionPlanAppointmentFactory.attended('late').build({ id: '2', sessionNumber: 1 }),
+              actionPlanAppointmentFactory.attended('yes').build({ appointmentId: '1', sessionNumber: 1 }),
+              actionPlanAppointmentFactory.attended('yes').build({ appointmentId: '2', sessionNumber: 1 }),
             ],
             supplierAssessmentFactory.build(),
             serviceUser,
@@ -355,7 +355,7 @@ describe(InterventionProgressPresenter, () => {
             intervention,
             actionPlan,
             [],
-            [actionPlanAppointmentFactory.attended('no').build({ id: '1' })],
+            [actionPlanAppointmentFactory.attended('no', false).build({ appointmentId: '1' })],
             supplierAssessmentFactory.build(),
             serviceUser,
             null
@@ -1024,7 +1024,7 @@ describe(InterventionProgressPresenter, () => {
         describe('when the missed appointment is the current appointment', () => {
           it('returns a link to a page to schedule a new appointment and a link to view feedback', () => {
             const referral = sentReferralFactory.build()
-            const appointment = initialAssessmentAppointmentFactory.attended('no').build()
+            const appointment = initialAssessmentAppointmentFactory.attended('no', false).build()
 
             const presenter = new InterventionProgressPresenter(
               referral,
@@ -1053,7 +1053,7 @@ describe(InterventionProgressPresenter, () => {
         describe('when the missed appointment is an old appointment', () => {
           it('returns a link to view the feedback page', () => {
             const referral = sentReferralFactory.build()
-            const appointment = initialAssessmentAppointmentFactory.attended('no').build()
+            const appointment = initialAssessmentAppointmentFactory.attended('no', false).build()
 
             const presenter = new InterventionProgressPresenter(
               referral,

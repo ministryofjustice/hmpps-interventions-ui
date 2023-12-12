@@ -1281,7 +1281,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       appointmentDeliveryType: 'PHONE_CALL',
       appointmentDeliveryAddress: null,
       oldAppointments: [
-        actionPlanAppointmentFactory.attended('no').build({
+        actionPlanAppointmentFactory.attended('no', false).build({
           sessionNumber: 1,
           appointmentTime: `Thu Jun 17 2022 17:20`,
           durationInMinutes: 1,
@@ -1289,7 +1289,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
           appointmentDeliveryType: 'PHONE_CALL',
           appointmentDeliveryAddress: null,
         }),
-        actionPlanAppointmentFactory.attended('no').build({
+        actionPlanAppointmentFactory.attended('no', false).build({
           sessionNumber: 1,
           appointmentTime: `Thu Jun 16 2022 17:20`,
           durationInMinutes: 1,
@@ -1308,7 +1308,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       appointmentDeliveryType: 'PHONE_CALL',
       appointmentDeliveryAddress: null,
       oldAppointments: [
-        actionPlanAppointmentFactory.attended('no').build({
+        actionPlanAppointmentFactory.attended('no', false).build({
           sessionNumber: 2,
           appointmentTime: `Thu Jun 20 2022 17:20`,
           durationInMinutes: 1,

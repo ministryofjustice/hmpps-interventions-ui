@@ -18,12 +18,12 @@ class SupplierAssessmentFactory extends Factory<SupplierAssessment> {
   }
 
   get withAttendedAppointment() {
-    const appointment = initialAssessmentAppointmentFactory.attended('yes').build()
+    const appointment = initialAssessmentAppointmentFactory.attended('yes', true).build()
     return this.params({ appointments: [appointment], currentAppointmentId: appointment.id })
   }
 
   get withNonAttendedAppointment() {
-    const appointment = initialAssessmentAppointmentFactory.attended('no').build()
+    const appointment = initialAssessmentAppointmentFactory.attended('no', false).build()
     return this.params({ appointments: [appointment], currentAppointmentId: appointment.id })
   }
 }

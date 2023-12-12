@@ -21,7 +21,7 @@ describe(AttendanceFeedbackQuestionnaire, () => {
           actionPlanAppointment.build({ appointmentDeliveryType: 'PHONE_CALL' }),
           deliusServiceUser.build()
         )
-        expect(questionnaire.attendanceQuestion.text).toEqual('Did Alex join this phone call?')
+        expect(questionnaire.attendanceQuestion.text).toEqual('Did Alex River attend the session?')
       })
     })
   })

@@ -62,6 +62,37 @@ export default class SessionFeedbackView {
     }
   }
 
+  private get futureSessionPlansTextAreaArgs(): TextareaArgs {
+    return {
+      name: 'future-session-plans',
+      id: 'future-session-plans',
+      label: {
+        text: this.presenter.questionnaire.futureSessionPlansQuestion.text,
+        classes: 'govuk-label--m govuk-!-margin-bottom-4',
+        isPageHeading: false,
+      },
+      hint: {
+        text: this.presenter.questionnaire.futureSessionPlansQuestion.hint,
+      },
+      value: this.inputsPresenter.fields.futureSessionPlans.value,
+      errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.futureSessionPlans.errorMessage),
+    }
+  }
+
+  private get lateReasonTextAreaArgs(): TextareaArgs {
+    return {
+      name: 'late-reason',
+      id: 'late-reason',
+      label: {
+        text: this.presenter.questionnaire.lateReasonQuestion.text,
+        classes: 'govuk-body govuk-!-margin-bottom-4',
+        isPageHeading: false,
+      },
+      value: this.inputsPresenter.fields.lateReason.value,
+      errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.lateReason.errorMessage),
+    }
+  }
+
   private radioButtonArgs(yesHtml: string): Record<string, unknown> {
     return {
       classes: 'govuk-radios',
@@ -79,6 +110,7 @@ export default class SessionFeedbackView {
       },
       items: [
         {
+          id: 'yesNotifyPPRadio',
           value: 'yes',
           text: 'Yes',
           checked: this.inputsPresenter.fields.notifyProbationPractitioner.value === true,
@@ -87,6 +119,7 @@ export default class SessionFeedbackView {
           },
         },
         {
+          id: 'noNotifyPPRadio',
           value: 'no',
           text: 'No',
           checked: this.inputsPresenter.fields.notifyProbationPractitioner.value === false,
@@ -106,6 +139,43 @@ export default class SessionFeedbackView {
     }
   }
 
+  private wasLateRadioButtonArgs(lateReasonHtml: string): Record<string, unknown> {
+    return {
+      classes: 'govuk-radios',
+      idPrefix: 'late',
+      name: 'late',
+      attributes: { 'data-cy': 'late-radios' },
+      fieldset: {
+        legend: {
+          text: this.presenter.questionnaire.lateQuestion.text,
+          isPageHeading: false,
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      hint: {
+        text: this.presenter.questionnaire.lateQuestion.hint,
+      },
+      errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.late.errorMessage),
+      items: [
+        {
+          id: 'wasLateYesRadio',
+          value: 'yes',
+          text: 'Yes',
+          checked: this.inputsPresenter.fields.late.value === true,
+          conditional: {
+            html: lateReasonHtml,
+          },
+        },
+        {
+          id: 'wasLateNoRadio',
+          value: 'no',
+          text: 'No',
+          checked: this.inputsPresenter.fields.late.value === false,
+        },
+      ],
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'appointments/feedback/shared/postSessionFeedback',
@@ -117,6 +187,9 @@ export default class SessionFeedbackView {
         radioButtonArgs: this.radioButtonArgs.bind(this),
         errorSummaryArgs: this.errorSummaryArgs,
         backLinkArgs: this.backLinkArgs,
+        wasLateRadioButtonArgs: this.wasLateRadioButtonArgs.bind(this),
+        lateReasonTextAreaArgs: this.lateReasonTextAreaArgs,
+        futureSessionPlansTextAreaArgs: this.futureSessionPlansTextAreaArgs,
       },
     ]
   }

@@ -24,8 +24,8 @@ describe(FeedbackAnswersPresenter, () => {
       const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
       expect(presenter.attendedAnswers).toEqual({
-        question: 'Did Alex River come to the session?',
-        answer: 'Yes, they were on time',
+        question: 'Did Alex River attend the session?',
+        answer: 'Yes',
       })
     })
 
@@ -58,7 +58,7 @@ describe(FeedbackAnswersPresenter, () => {
         const appointment = actionPlanAppointmentFactory.build({
           appointmentFeedback: {
             attendanceFeedback: {
-              attended: 'late',
+              attended: 'yes',
               additionalAttendanceInformation: 'Alex missed the bus',
             },
             sessionFeedback: {
@@ -85,7 +85,7 @@ describe(FeedbackAnswersPresenter, () => {
         const appointment = actionPlanAppointmentFactory.build({
           appointmentFeedback: {
             attendanceFeedback: {
-              attended: 'late',
+              attended: 'yes',
               additionalAttendanceInformation: null,
             },
             sessionFeedback: {
@@ -120,7 +120,7 @@ describe(FeedbackAnswersPresenter, () => {
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
-          question: 'Do you want to notify the probation practitioner about poor behaviour?',
+          question: 'Did anything concern you about Alex River?',
           answer: 'Yes',
         })
       })
@@ -141,7 +141,7 @@ describe(FeedbackAnswersPresenter, () => {
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
         expect(presenter.notifyProbationPractitionerAnswers).toEqual({
-          question: 'Do you want to notify the probation practitioner about poor behaviour?',
+          question: 'Did anything concern you about Alex River?',
           answer: 'No',
         })
       })

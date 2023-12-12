@@ -198,6 +198,9 @@ export default {
     supplierAssessmentAppointmentIncomplete:
       'You cannot submit an action plan yet. First you need to hold the supplier assessment appointment and then give feedback on it.',
   },
+  didSessionHappen: {
+    empty: 'Select whether the session happened',
+  },
   attendedAppointment: {
     empty: 'Select whether they attended or not',
   },
@@ -215,6 +218,27 @@ export default {
   sessionConcerns: {
     empty: 'Enter a description of what concerned you',
     notifyProbationPractitionerNotSelected: 'Select whether to notify the probation practitioner or not',
+  },
+  late: {
+    optionNotSelected: 'Select whether Alex River was late',
+  },
+  lateReason: {
+    empty: 'Add anything you know about the lateness',
+  },
+  noReasonType: {
+    empty: 'Select why the session did not happen',
+    popAcceptable: {
+      empty: 'Enter what happened and who was involved',
+    },
+    popUnacceptable: {
+      empty: 'Enter details about why they were not able to take part',
+    },
+    logistics: {
+      empty: 'Enter details about the service provider or logistics issue',
+    },
+  },
+  noAttendanceInformation: {
+    empty: 'Add anything you know about them not attending',
   },
   scheduleAppointment: {
     time: {

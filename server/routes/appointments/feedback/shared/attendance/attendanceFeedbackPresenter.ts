@@ -10,9 +10,10 @@ interface AttendanceFeedbackFormText {
   heading: string
   pageSubTitle: string
   attendanceQuestion: string
-  attendanceQuestionHint: string
   additionalAttendanceInformationLabel: string
   attendanceFailureInformationQuestion: string
+  didSessionHappenQuestion: string
+  didSessionHappenQuestionHint: string
 }
 
 export default abstract class AttendanceFeedbackPresenter {
@@ -35,9 +36,10 @@ export default abstract class AttendanceFeedbackPresenter {
       heading,
       pageSubTitle,
       attendanceQuestion: attendanceFeedbackQuestionnaire.attendanceQuestion.text,
-      attendanceQuestionHint: attendanceFeedbackQuestionnaire.attendanceQuestion.hint,
       additionalAttendanceInformationLabel: attendanceFeedbackQuestionnaire.additionalAttendanceInformationQuestion,
       attendanceFailureInformationQuestion: attendanceFeedbackQuestionnaire.attendanceFailureInformationQuestion,
+      didSessionHappenQuestion: attendanceFeedbackQuestionnaire.sessionHappenQuestion.text,
+      didSessionHappenQuestionHint: attendanceFeedbackQuestionnaire.sessionHappenQuestion.hint,
     }
   }
 
@@ -46,6 +48,13 @@ export default abstract class AttendanceFeedbackPresenter {
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   readonly fields = {
+    didSessionHappen: {
+      value: new PresenterUtils(this.userInputData).booleanValue(
+        this.appointment.appointmentFeedback?.attendanceFeedback.didSessionHappen ?? null,
+        'did-session-happen'
+      ),
+      errorMessage: PresenterUtils.errorMessage(this.error, 'did-session-happen'),
+    },
     attended: {
       value: new PresenterUtils(this.userInputData).stringValue(
         this.appointment.appointmentFeedback?.attendanceFeedback?.attended ?? null,
@@ -53,23 +62,23 @@ export default abstract class AttendanceFeedbackPresenter {
       ),
       errorMessage: PresenterUtils.errorMessage(this.error, 'attended'),
     },
-    attendanceFailureInformation: {
-      value: new PresenterUtils(this.userInputData).stringValue(
-        this.appointment.appointmentFeedback?.attendanceFeedback?.attendanceFailureInformation ?? null,
-        'attendance-failure-information'
-      ),
-      errorMessage: PresenterUtils.errorMessage(this.error, 'attendance-failure-information'),
+  }
+
+  readonly didSessionHappenResponses = {
+    yes: {
+      value: 'yes',
+      text: 'Yes',
+    },
+    no: {
+      value: 'no',
+      text: 'No',
     },
   }
 
   readonly attendanceResponses = {
     yes: {
       value: 'yes',
-      text: 'Yes, they were on time',
-    },
-    late: {
-      value: 'late',
-      text: 'They were late',
+      text: 'Yes',
     },
     no: {
       value: 'no',

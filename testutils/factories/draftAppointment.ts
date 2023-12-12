@@ -5,6 +5,7 @@ import { SessionType } from '../../server/models/sessionType'
 import { Attended } from '../../server/models/appointmentAttendance'
 import userDetailsFactory from './userDetails'
 import User from '../../server/models/hmppsAuth/user'
+import { NoSessionReasonType } from '../../server/models/sessionFeedback'
 
 class DraftAppointmentFactory extends Factory<DraftAppointment> {
   withAttendanceFeedback(attended: Attended = 'yes') {
@@ -12,6 +13,7 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
       session: {
         attendanceFeedback: {
           attended,
+          didSessionHappen: true,
         },
         sessionFeedback: {
           sessionSummary: null,
@@ -25,17 +27,39 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
     })
   }
 
-  withBehaviourFeedback(attended: Attended = 'yes') {
+  withBehaviourFeedback(
+    attended: Attended = 'yes',
+    didSessionHappen = true,
+    late: boolean | null = false,
+    lateReason: string | null = null,
+    sessionSummary: string | null = null,
+    sessionResponse: string | null = null,
+    notifyProbationPractitioner: boolean | null = null,
+    sessionConcerns: string | null = null,
+    noSessionReasonType: NoSessionReasonType | null = null,
+    noSessionReasonPopAcceptable: string | null = null,
+    noSessionReasonPopUnacceptable: string | null = null,
+    noSessionReasonLogistics: string | null = null,
+    noAttendanceInformation: string | null = null
+  ) {
     return this.params({
       session: {
         attendanceFeedback: {
           attended,
+          didSessionHappen,
         },
         sessionFeedback: {
-          sessionSummary: null,
-          sessionResponse: null,
-          notifyProbationPractitioner: null,
-          sessionConcerns: null,
+          late,
+          lateReason,
+          sessionSummary,
+          sessionResponse,
+          notifyProbationPractitioner,
+          sessionConcerns,
+          noSessionReasonType,
+          noSessionReasonPopAcceptable,
+          noSessionReasonPopUnacceptable,
+          noSessionReasonLogistics,
+          noAttendanceInformation,
         },
         submitted: false,
         submittedBy: null,
@@ -45,6 +69,9 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
 
   withSubmittedFeedback(
     attended: Attended = 'yes',
+    didSessionHappen = true,
+    late = false,
+    lateReason = null,
     sessionSummary = 'stub session summary',
     sessionResponse = 'stub session summary',
     notifyProbationPractitioner = false,
@@ -54,9 +81,12 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
     return this.params({
       session: {
         attendanceFeedback: {
+          didSessionHappen,
           attended,
         },
         sessionFeedback: {
+          late,
+          lateReason,
           sessionSummary,
           sessionResponse,
           notifyProbationPractitioner,
@@ -82,7 +112,7 @@ export default DraftAppointmentFactory.define(() => ({
   sessionFeedback: {
     attendanceFeedback: {
       attended: null,
-      attendanceFailureInformation: null,
+      didSessionHappen: null,
     },
     sessionFeedback: {
       behaviourDescription: null,

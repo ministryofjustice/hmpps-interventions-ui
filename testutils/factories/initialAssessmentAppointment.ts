@@ -9,12 +9,12 @@ class InitialAssessmentAppointmentFactory extends Factory<InitialAssessmentAppoi
     return this.params({})
   }
 
-  attended(attendance: Attended) {
+  attended(attendance: Attended, didSessionHappen = true) {
     return this.params({
       appointmentFeedback: {
         attendanceFeedback: {
           attended: attendance,
-          additionalAttendanceInformation: '',
+          didSessionHappen,
         },
         sessionFeedback: {
           sessionSummary: '',
@@ -90,15 +90,24 @@ export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
   npsOfficeCode: null,
   appointmentFeedback: {
     attendanceFeedback: {
+      didSessionHappen: null,
       attended: null,
       additionalAttendanceInformation: null,
       attendanceFailureInformation: null,
     },
     sessionFeedback: {
+      late: null,
+      lateReason: null,
       notifyProbationPractitioner: null,
       sessionSummary: null,
       sessionResponse: null,
       sessionConcerns: null,
+      futureSessionPlans: null,
+      noSessionReasonType: null,
+      noSessionReasonPopAcceptable: null,
+      noSessionReasonPopUnacceptable: null,
+      noSessionReasonLogistics: null,
+      noAttendanceInformation: null,
     },
     submitted: false,
     submittedBy: null,

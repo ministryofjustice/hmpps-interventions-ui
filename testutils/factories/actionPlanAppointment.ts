@@ -14,9 +14,10 @@ class ActionPlanAppointmentFactory extends Factory<ActionPlanAppointment> {
     })
   }
 
-  attended(attendance: Attended) {
+  attended(attendance: Attended, didSessionHappen = true) {
     return this.params({
-      appointmentFeedback: initialAssessmentAppointmentFactory.attended(attendance).build().appointmentFeedback,
+      appointmentFeedback: initialAssessmentAppointmentFactory.attended(attendance, didSessionHappen).build()
+        .appointmentFeedback,
     })
   }
 }
@@ -30,4 +31,5 @@ export default ActionPlanAppointmentFactory.define(() => ({
   appointmentDeliveryAddress: null,
   appointmentFeedback: initialAssessmentAppointmentFactory.newlyBooked().build().appointmentFeedback,
   npsOfficeCode: null,
+  appointmentId: '1',
 }))

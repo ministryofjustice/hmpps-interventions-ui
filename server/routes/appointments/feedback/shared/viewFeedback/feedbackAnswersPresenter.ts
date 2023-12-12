@@ -2,6 +2,7 @@ import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../../..
 import AttendanceFeedbackQuestionnaire from '../attendance/attendanceFeedbackQuestionnaire'
 import SessionFeedbackQuestionnaire from '../sessionFeedback/sessionFeedbackQuestionnaire'
 import DeliusServiceUser from '../../../../../models/delius/deliusServiceUser'
+import { NoSessionReasonType } from '../../../../../models/sessionFeedback'
 
 export default class FeedbackAnswersPresenter {
   private readonly attendanceFeedbackQuestionnaire: AttendanceFeedbackQuestionnaire
@@ -34,7 +35,7 @@ export default class FeedbackAnswersPresenter {
     }
     return {
       question:
-        `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} come to the ` +
+        `Did ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} attend the ` +
         `${this.isSupplierAssessmentAppointment ? 'appointment' : 'session'}?`,
       answer: selected.text,
     }
@@ -44,11 +45,7 @@ export default class FeedbackAnswersPresenter {
     return [
       {
         value: 'yes',
-        text: 'Yes, they were on time',
-      },
-      {
-        value: 'late',
-        text: 'They were late',
+        text: 'Yes',
       },
       {
         value: 'no',
@@ -65,6 +62,23 @@ export default class FeedbackAnswersPresenter {
     return {
       question: this.attendanceFeedbackQuestionnaire.additionalAttendanceInformationQuestion,
       answer: this.appointment.appointmentFeedback.attendanceFeedback.additionalAttendanceInformation || 'None',
+    }
+  }
+
+  get sessionHappenAnswers(): { question: string; answer: string } | null {
+    if (this.appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === null) {
+      return null
+    }
+
+    if (this.appointment.appointmentFeedback.attendanceFeedback.didSessionHappen) {
+      return {
+        question: this.attendanceFeedbackQuestionnaire.sessionHappenQuestion.text,
+        answer: this.appointment.appointmentFeedback.attendanceFeedback.didSessionHappen ? 'Yes' : 'No',
+      }
+    }
+    return {
+      question: this.attendanceFeedbackQuestionnaire.sessionHappenQuestion.text,
+      answer: this.appointment.appointmentFeedback.attendanceFeedback.didSessionHappen ? 'Yes' : 'No',
     }
   }
 
@@ -123,6 +137,32 @@ export default class FeedbackAnswersPresenter {
     }
   }
 
+  get noSessionReasonTypeAnswers(): { question: string; answerType: string; answerReasoning: string } | null {
+    if (this.appointment.appointmentFeedback.sessionFeedback.noSessionReasonType === null) {
+      return null
+    }
+
+    const reasonType = this.appointment.appointmentFeedback.sessionFeedback.noSessionReasonType
+    let answerType
+    let answerReasoning
+    if (reasonType === NoSessionReasonType.POP_ACCEPTABLE) {
+      answerType = `The person could not take part, for example because of illness or a crisis`
+      answerReasoning = this.appointment.appointmentFeedback.sessionFeedback.noSessionReasonPopAcceptable!
+    } else if (reasonType === NoSessionReasonType.POP_UNACCEPTABLE) {
+      answerType = `The person did not comply, for example they were disruptive or disengaged`
+      answerReasoning = this.appointment.appointmentFeedback.sessionFeedback.noSessionReasonPopUnacceptable!
+    } else {
+      answerType = `Something to do with the service provider or logistics, for example a room booking or fire alarm`
+      answerReasoning = this.appointment.appointmentFeedback.sessionFeedback.noSessionReasonLogistics!
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.noSessionReasonQuestion.text,
+      answerType,
+      answerReasoning,
+    }
+  }
+
   get sessionConcernsAnswers(): { question: string; answer: string } | null {
     const notifyPP = this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner ? 'Yes' : 'No'
 
@@ -136,6 +176,50 @@ export default class FeedbackAnswersPresenter {
     return {
       question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerQuestion.text,
       answer: `${notifyPP}`,
+    }
+  }
+
+  get lateAnswers(): { question: string; answer: string } | null {
+    if (this.appointment.appointmentFeedback.sessionFeedback.late == null) {
+      return null
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.lateQuestion.text,
+      answer: this.appointment.appointmentFeedback.sessionFeedback.late ? 'Yes' : 'No',
+    }
+  }
+
+  get lateReasonAnswers(): { question: string; answer: string } | null {
+    if (this.appointment.appointmentFeedback.sessionFeedback.lateReason == null) {
+      return null
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.lateReasonQuestion.text,
+      answer: this.appointment.appointmentFeedback.sessionFeedback.lateReason,
+    }
+  }
+
+  get futureSessionPlans(): { question: string; answer: string } | null {
+    if (!this.appointment.appointmentFeedback.sessionFeedback.futureSessionPlans) {
+      return null
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.futureSessionPlansQuestion.text,
+      answer: this.appointment.appointmentFeedback.sessionFeedback.futureSessionPlans,
+    }
+  }
+
+  get noAttendanceInformationAnswers(): { question: string; answer: string } | null {
+    if (this.appointment.appointmentFeedback.sessionFeedback.noAttendanceInformation === null) {
+      return null
+    }
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.noAttendanceInformationQuestion.text,
+      answer: this.appointment.appointmentFeedback.sessionFeedback.noAttendanceInformation,
     }
   }
 }

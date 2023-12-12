@@ -127,7 +127,9 @@ export default class InterventionProgressPresenter {
       .sort((a, b) => {
         return a.sessionNumber - b.sessionNumber
       })
-      .filter(x => x.isParent || (!x.isParent && x.tagArgs.text === 'did not attend'))
+      .filter(
+        x => x.isParent || (!x.isParent && (x.tagArgs.text === 'did not attend' || x.tagArgs.text === 'did not happen'))
+      )
   }
 
   readonly hrefBackLink = this.dashboardOriginPage || '/probation-practioner/dashboard'
@@ -142,12 +144,13 @@ export default class InterventionProgressPresenter {
 
     switch (status) {
       case SessionStatus.didNotAttend:
+      case SessionStatus.didNotHappen:
         return {
           text: presenter.text,
           tagClass: presenter.tagClass,
           link: {
             text: 'View feedback form',
-            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.id}/post-session-feedback`,
+            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.appointmentId}/post-session-feedback`,
           },
         }
       case SessionStatus.completed:
@@ -156,7 +159,7 @@ export default class InterventionProgressPresenter {
           tagClass: presenter.tagClass,
           link: {
             text: 'View feedback form',
-            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.id}/post-session-feedback`,
+            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.appointmentId}/post-session-feedback`,
           },
         }
       case SessionStatus.awaitingFeedback:
@@ -215,6 +218,7 @@ export default class InterventionProgressPresenter {
       case SessionStatus.awaitingFeedback:
         return SupplierAssessmentStatus.scheduled
       case SessionStatus.didNotAttend:
+      case SessionStatus.didNotHappen:
       case SessionStatus.completed:
         return SupplierAssessmentStatus.delivered
       case SessionStatus.notScheduled:
@@ -253,6 +257,7 @@ export default class InterventionProgressPresenter {
         }
       case SessionStatus.completed:
       case SessionStatus.didNotAttend:
+      case SessionStatus.didNotHappen:
         return {
           text: 'View feedback',
           href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback`,

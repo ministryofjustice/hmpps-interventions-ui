@@ -23,13 +23,30 @@ export default class ActionPlanPostSessionFeedbackCheckAnswersPresenter extends 
     : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/submit`
 
   get backLinkHref(): string {
-    if (this.draftId) {
-      return this.actionPlanAppointment.appointmentFeedback.attendanceFeedback.attended === 'no'
-        ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/attendance`
-        : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/behaviour`
+    if (this.actionPlanAppointment.appointmentFeedback.attendanceFeedback.didSessionHappen) {
+      return this.draftId
+        ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/behaviour`
+        : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/behaviour`
     }
-    return this.actionPlanAppointment.appointmentFeedback.attendanceFeedback.attended === 'no'
-      ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/attendance`
-      : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/behaviour`
+    return this.draftId
+      ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/no-session`
+      : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/no-session`
+  }
+
+  get attendanceFeedbackChangeLink(): string {
+    return this.draftId
+      ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/attendance`
+      : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/attendance`
+  }
+
+  get sessionFeedbackChangeLink(): string {
+    if (this.actionPlanAppointment.appointmentFeedback.attendanceFeedback.didSessionHappen) {
+      return this.draftId
+        ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/behaviour`
+        : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/behaviour`
+    }
+    return this.draftId
+      ? `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/edit/${this.draftId}/no-session`
+      : `/service-provider/action-plan/${this.actionPlanId}/appointment/${this.actionPlanAppointment.sessionNumber}/post-session-feedback/no-session`
   }
 }

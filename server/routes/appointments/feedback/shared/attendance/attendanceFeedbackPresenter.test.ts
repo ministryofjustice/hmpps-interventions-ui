@@ -93,34 +93,12 @@ describe(AttendanceFeedbackPresenter, () => {
       expect(presenter.attendanceResponses).toEqual({
         yes: {
           value: 'yes',
-          text: 'Yes, they were on time',
-        },
-        late: {
-          value: 'late',
-          text: 'They were late',
+          text: 'Yes',
         },
         no: {
           value: 'no',
           text: 'No',
         },
-      })
-    })
-  })
-
-  describe('fields.additionalAttendanceInformationValue', () => {
-    describe('when there is user input data', () => {
-      it('uses the user input data as the value attribute', () => {
-        const appointment = initialAssessmentAppointmentFactory.build({
-          appointmentFeedback: {
-            attendanceFeedback: { attended: 'late', additionalAttendanceInformation: 'Alex missed the bus' },
-          },
-        })
-        const presenter = new ExtendedAttendanceFeedbackPresenter(appointment, null, {
-          attended: 'no',
-          'additional-attendance-information': "Alex's car broke down en route",
-        })
-
-        expect(presenter.fields.attended.value).toEqual('no')
       })
     })
   })

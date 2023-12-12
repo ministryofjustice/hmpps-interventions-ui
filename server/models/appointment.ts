@@ -13,7 +13,7 @@ export interface ActionPlanAppointment extends Appointment {
 }
 
 interface Appointment extends AppointmentSchedulingDetails {
-  id?: string
+  appointmentId?: string
   appointmentFeedback: AppointmentFeedback
 }
 

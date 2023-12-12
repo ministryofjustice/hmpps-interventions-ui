@@ -13,6 +13,40 @@ export default class CheckFeedbackAnswersView {
     }
   }
 
+  private get sessionDetailsSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.appointmentSummary.appointmentSummaryList,
+      this.presenter.sessionDetailsHeading,
+      { showBorders: true, showTitle: true }
+    )
+  }
+
+  private get sessionAttendanceSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.sessionAttendanceSummaryListArgs,
+      this.presenter.sessionAttendanceHeading,
+      { showBorders: true, showTitle: true },
+      {
+        href: this.presenter.attendanceFeedbackChangeLink,
+        text: 'Change',
+        visuallyHiddenText: 'Change session attendance details',
+      }
+    )
+  }
+
+  private get sessionFeedbackSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(
+      this.presenter.sessionFeedbackSummaryListArgs,
+      this.presenter.sessionFeedbackHeading,
+      { showBorders: true, showTitle: true },
+      {
+        href: this.presenter.sessionFeedbackChangeLink,
+        text: 'Change',
+        visuallyHiddenText: 'Change session feedback details',
+      }
+    )
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'appointments/feedback/shared/postSessionFeedbackCheckAnswers',
@@ -21,6 +55,9 @@ export default class CheckFeedbackAnswersView {
         feedbackAnswersPresenter: this.presenter.feedbackAnswersPresenter,
         summaryListArgs: this.summaryListArgs,
         backLinkArgs: this.backLinkArgs,
+        sessionDetailsSummaryListArgs: this.sessionDetailsSummaryListArgs,
+        sessionAttendanceSummaryListArgs: this.sessionAttendanceSummaryListArgs,
+        sessionFeedbackSummaryListArgs: this.sessionFeedbackSummaryListArgs,
       },
     ]
   }
