@@ -27,19 +27,17 @@ describe('AddCaseNotePresenter', () => {
         expect(presenter.fields).toEqual({
           subject: { errorMessage: null, value: '' },
           body: { errorMessage: null, value: '' },
-          sendCaseNoteEmail: { errorMessage: null },
         })
       })
     })
 
     describe('when a case note draft has been provided', () => {
       it('should show case note values for case note fields', () => {
-        const caseNote = caseNoteFactory.build({ subject: 'subject', body: 'body', sendEmail: false })
+        const caseNote = caseNoteFactory.build({ subject: 'subject', body: 'body' })
         const presenter = new AddCaseNotePresenter(referralId, 'service-provider', caseNote)
         expect(presenter.fields).toEqual({
           subject: { errorMessage: null, value: 'subject' },
           body: { errorMessage: null, value: 'body' },
-          sendCaseNoteEmail: { errorMessage: null },
         })
       })
     })
@@ -54,18 +52,12 @@ describe('AddCaseNotePresenter', () => {
               message: 'subject error',
             },
             { formFields: ['case-note-body'], errorSummaryLinkedField: 'case-note-body', message: 'body error' },
-            {
-              formFields: ['send-case-note-email'],
-              errorSummaryLinkedField: 'send-case-note-email',
-              message: 'send case note email error',
-            },
           ],
         }
         const presenter = new AddCaseNotePresenter(referralId, 'service-provider', null, error)
         expect(presenter.fields).toEqual({
           subject: { errorMessage: 'subject error', value: '' },
           body: { errorMessage: 'body error', value: '' },
-          sendCaseNoteEmail: { errorMessage: 'send case note email error' },
         })
       })
     })

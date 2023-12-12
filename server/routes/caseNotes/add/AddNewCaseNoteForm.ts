@@ -7,21 +7,16 @@ import { FormData } from '../../../utils/forms/formData'
 import { CaseNote } from '../../../models/caseNote'
 
 export default class AddNewCaseNoteForm {
-  constructor(
-    private readonly request: Request,
-    private readonly loggedInUserType: 'service-provider' | 'probation-practitioner'
-  ) {}
+  constructor(private readonly request: Request) {}
 
   static readonly caseNoteSubjectFormId = 'case-note-subject'
 
   static readonly caseNoteBodyFormId = 'case-note-body'
 
-  static readonly sendCaseNoteEmailId = 'send-case-note-email'
-
   async data(referralId: string): Promise<FormData<Partial<CaseNote>>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: AddNewCaseNoteForm.validations(this.loggedInUserType),
+      validations: AddNewCaseNoteForm.validations,
     })
 
     const error = this.error(validationResult)
@@ -37,14 +32,13 @@ export default class AddNewCaseNoteForm {
         referralId,
         subject: this.request.body[AddNewCaseNoteForm.caseNoteSubjectFormId],
         body: this.request.body[AddNewCaseNoteForm.caseNoteBodyFormId],
-        sendEmail: this.request.body[AddNewCaseNoteForm.sendCaseNoteEmailId],
       },
       error: null,
     }
   }
 
-  private static validations(loggedInUserType: string): ValidationChain[] {
-    const validationChain = [
+  static get validations(): ValidationChain[] {
+    return [
       body(AddNewCaseNoteForm.caseNoteSubjectFormId)
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.caseNote.subject.empty),
@@ -52,12 +46,6 @@ export default class AddNewCaseNoteForm {
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.caseNote.body.empty),
     ]
-
-    const sendCaseNoteEmailValidation = body(AddNewCaseNoteForm.sendCaseNoteEmailId)
-      .notEmpty({ ignore_whitespace: true })
-      .withMessage(errorMessages.caseNote.sendCaseNoteEmail.empty)
-
-    return loggedInUserType === 'service-provider' ? [...validationChain, sendCaseNoteEmailValidation] : validationChain
   }
 
   get isValid(): boolean {
