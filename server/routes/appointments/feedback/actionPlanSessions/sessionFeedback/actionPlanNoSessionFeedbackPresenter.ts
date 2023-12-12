@@ -15,8 +15,10 @@ export default class ActionPlanNoSessionFeedbackPresenter {
   ) {}
 
   readonly text = {
-    title: `Add session feedback`,
-    subTitle: `This helps the probation practitioner to support the person on probation.`,
+    title:
+      this.appointment.appointmentFeedback.attendanceFeedback.attended === 'yes'
+        ? `You told us that the person attended`
+        : `You told us that the person did not attend`,
   }
 
   readonly questionnaire = new SessionFeedbackQuestionnaire(this.appointment, this.serviceUser)

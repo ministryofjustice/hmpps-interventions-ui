@@ -1795,7 +1795,7 @@ describe('Adding post delivery session feedback', () => {
         )
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Add session feedback')
+          expect(res.text).toContain('You told us that the session happened')
         })
     })
   })
@@ -1836,7 +1836,7 @@ describe('Adding post delivery session feedback', () => {
           )
           .expect(200)
           .expect(res => {
-            expect(res.text).toContain('Add session feedback')
+            expect(res.text).toContain('You told us that the session happened')
           })
       })
     })

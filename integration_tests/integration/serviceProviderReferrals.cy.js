@@ -1595,7 +1595,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Save and continue').click()
 
-      cy.contains('Add session feedback')
+      cy.contains('You told us that the session happened')
 
       cy.get('[id=wasLateNoRadio]').click()
       cy.contains('What did you do in the session?').type('Discussed accommodation')

@@ -17,8 +17,7 @@ export default class InitialAssessmentNoSessionFeedbackPresenter {
   readonly questionnaire = new SessionFeedbackQuestionnaire(this.appointment, this.serviceUser)
 
   readonly text = {
-    title: `Add session feedback`,
-    subTitle: `This helps the probation practitioner to support the person on probation.`,
+    title: `You told us that the session happened`,
     pageSubTitle: 'Add session feedback',
   }
 
