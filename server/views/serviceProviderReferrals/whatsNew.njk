@@ -11,7 +11,24 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
-      {% set whatsNewVersion1Html %}
+        {% set whatsNewVersion2Html %}
+            <h3 class="govuk-heading-s">New functionality</h3>
+            <p>
+              We’ve made some changes to enable you to give better session feedback in Refer and monitor an intervention. You now need to:
+            </p>
+            <ul class="govuk-list govuk-list--bullet">
+              <li>indicate if a session happened or not</li>
+              <li>feed back on sessions where the person attended, but the session did not happen</li>
+              <li>share details about lateness, such as how late someone was and any reason they gave</li>
+              <li>reschedule a session whilst you’re giving feedback, to save you time</li>
+            </ul>
+            <p>You also have the option to outline what you have planned for the next session.</p>
+
+            <h3 class="govuk-heading-s">Give feedback on the changes</h2>
+            <p>We’d like to know what you think. Please <a href="https://eu.surveymonkey.com/r/H6K5JG3">complete this short survey</a>.</p>
+        {% endset %}
+
+         {% set whatsNewVersion1Html %}
             <h3 class="govuk-heading-s">New functionality</h3>
             <p>
               Following our improvements to community referrals in June, we have released new functionality for the remaining referral types:
@@ -34,10 +51,20 @@
 
             <h3 class="govuk-heading-s">Give feedback on the changes</h2>
             <p>We’d like to know what you think. Please <a href="https://eu.surveymonkey.com/r/H6K5JG3">complete this short survey</a>.</p>
-          {% endset %}
+        {% endset %}
 
           {{ mojTimeline({
                   items: [
+                    {
+                      label: {
+                        text: "Sharing better information about session delivery"
+                      },
+                      html: whatsNewVersion2Html,
+                      datetime: {
+                        timestamp: "2023-12-14",
+                        type: "date"
+                      }
+                    },
                     {
                       label: {
                         text: "Changes to making a referral"
