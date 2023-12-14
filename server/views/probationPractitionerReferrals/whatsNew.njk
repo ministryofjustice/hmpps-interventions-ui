@@ -11,6 +11,23 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
+    {% set whatsNewVersion2Html %}
+        <h3 class="govuk-heading-s">New functionality</h3>
+        <p>
+          We’ve made some changes to help you get better information about sessions in Refer and monitor an intervention. You’ll now be able to find out:
+        </p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>if a session happened or not</li>
+          <li>about sessions which did not happen but the person on probation attended, for example because the caseworker was absent</li>
+          <li>if it’s not known if the person attended, for example it was a phone call and the service provider caseworker could not attend</li>
+          <li>details about lateness, such as how late someone was and any reason they gave</li>
+        </ul>
+        <p>The service provider also has the option to outline what’s planned for the next session.</p>
+
+        <h3 class="govuk-heading-s">Give feedback on the changes</h2>
+        <p>We’d like to know what you think. Please <a href="https://eu.surveymonkey.com/r/H6K5JG3">complete this short survey</a>.</p>
+    {% endset %}
+
     {% set whatsNewVersion1Html %}
       <h3 class="govuk-heading-s">New functionality</h3>
       <p>
@@ -44,6 +61,16 @@
 
       {{ mojTimeline({
         items: [
+          {
+            label: {
+              text: "Get better information about sessions"
+            },
+            html: whatsNewVersion2Html,
+            datetime: {
+              timestamp: "2023-12-14",
+              type: "date"
+            }
+          },
           {
             label: {
               text: "Changes to making a referral"
