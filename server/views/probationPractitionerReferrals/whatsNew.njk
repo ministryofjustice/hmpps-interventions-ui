@@ -11,7 +11,7 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
-    {% set whatsNewVersion2Html %}
+    {% set whatsNewVersion3Html %}
         <h3 class="govuk-heading-s">New functionality</h3>
         <p>
           We’ve made some changes to help you get better information about sessions in Refer and monitor an intervention. You’ll now be able to find out:
@@ -26,6 +26,17 @@
 
         <h3 class="govuk-heading-s">Give feedback on the changes</h2>
         <p>We’d like to know what you think. Please <a href="https://eu.surveymonkey.com/r/H6K5JG3">complete this short survey</a>.</p>
+    {% endset %}
+
+    {% set whatsNewVersion2Html %}
+      <p>From 1 January 2024, referrals for ETE (education, training and employment) can only be made in Greater Manchester.</p>
+
+      <p>ETE interventions in areas outside Greater Manchester must be completed by 31 March 2024. The completion date for these interventions cannot be extended beyond this date.</p>
+
+      <p>Otherwise, the interventions will continue as usual.</p>
+
+      <h3 class="govuk-heading-s">Give feedback on the changes</h2>
+      <p>We’d like to know what you think. Please <a href="https://eu.surveymonkey.com/r/H6K5JG3">complete this short survey</a>.</p>
     {% endset %}
 
     {% set whatsNewVersion1Html %}
@@ -65,9 +76,19 @@
             label: {
               text: "Get better information about sessions"
             },
+            html: whatsNewVersion3Html,
+            datetime: {
+              timestamp: "2024-01-04",
+              type: "date"
+            }
+          },
+          {
+            label: {
+              text: "Changes to ETE interventions"
+            },
             html: whatsNewVersion2Html,
             datetime: {
-              timestamp: "2023-12-14",
+              timestamp: "2023-12-15",
               type: "date"
             }
           },
