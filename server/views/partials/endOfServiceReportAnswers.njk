@@ -9,10 +9,10 @@
 
   <div class="govuk-inset-text">{{ outcome.subtitle }}</div>
 
-  <p class="govuk-body"><strong>Do you have any further comments about their progression on this outcome?</strong></p>
+  <p class="govuk-body"><strong>Describe their progress on this outcome.</strong></p>
   <p class="govuk-body">{{ outcome.progressionComments | escape | nl2br }}</p>
 
-  <p class="govuk-body"><strong>Is there anything else that needs doing to achieve this outcome?</strong></p>
+  <p class="govuk-body"><strong>Enter if anything else needs to be done (optional).</strong></p>
   <p class="govuk-body">{{ outcome.additionalTaskComments | escape | nl2br }}</p>
 
   {% if endOfServiceReportAnswersPresenter.allowChange %}
