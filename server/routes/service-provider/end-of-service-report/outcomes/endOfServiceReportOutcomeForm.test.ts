@@ -10,6 +10,7 @@ describe(EndOfServiceReportOutcomeForm, () => {
       it('returns an error', async () => {
         const body = {
           'achievement-level': '',
+          'progression-comments': 'some progression comments',
         }
         const data = await new EndOfServiceReportOutcomeForm(
           TestUtils.createRequest(body),
@@ -24,7 +25,7 @@ describe(EndOfServiceReportOutcomeForm, () => {
               {
                 errorSummaryLinkedField: 'achievement-level',
                 formFields: ['achievement-level'],
-                message: 'Select whether Alex achieved the desired outcome',
+                message: 'Select whether Alex River achieved the desired outcome',
               },
             ],
           },
@@ -64,7 +65,7 @@ describe(EndOfServiceReportOutcomeForm, () => {
         it('returns params for updating the outcome', async () => {
           const body = {
             'achievement-level': 'ACHIEVED',
-            'progression-comments': '',
+            'progression-comments': 'Some other progression comments',
             'additional-task-comments': '',
           }
           const data = await new EndOfServiceReportOutcomeForm(
@@ -79,7 +80,7 @@ describe(EndOfServiceReportOutcomeForm, () => {
               outcome: {
                 desiredOutcomeId: 'abc123',
                 achievementLevel: 'ACHIEVED',
-                progressionComments: '',
+                progressionComments: 'Some other progression comments',
                 additionalTaskComments: '',
               },
             },

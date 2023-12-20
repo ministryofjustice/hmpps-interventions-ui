@@ -2548,7 +2548,7 @@ describe('POST /service-provider/end-of-service-report/:id/outcomes/:number', ()
         .send({})
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('Select whether Alex achieved the desired outcome')
+          expect(res.text).toContain('Select whether Alex River achieved the desired outcome')
         })
 
       expect(interventionsService.updateDraftEndOfServiceReport).not.toHaveBeenCalled()

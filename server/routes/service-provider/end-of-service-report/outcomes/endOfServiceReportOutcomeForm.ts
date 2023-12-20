@@ -38,7 +38,14 @@ export default class EndOfServiceReportOutcomeForm {
     return [
       ExpressValidator.body('achievement-level')
         .notEmpty()
-        .withMessage(errorMessages.endOfServiceReportOutcome.achievementLevel.empty(this.serviceUser.firstName ?? '')),
+        .withMessage(
+          errorMessages.endOfServiceReportOutcome.achievementLevel.empty(
+            `${this.serviceUser.firstName ?? ''} ${this.serviceUser.lastName ?? ''}`
+          )
+        ),
+      ExpressValidator.body('progression-comments')
+        .notEmpty()
+        .withMessage(errorMessages.endOfServiceReportOutcome.progressionComments.empty()),
     ]
   }
 }

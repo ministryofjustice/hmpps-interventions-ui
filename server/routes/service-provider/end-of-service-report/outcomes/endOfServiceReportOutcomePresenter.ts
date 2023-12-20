@@ -24,7 +24,9 @@ export default class EndOfServiceReportOutcomePresenter {
     desiredOutcomeNumberDescription: `Desired outcome ${this.desiredOutcomeNumber}`,
     desiredOutcomeDescription: this.desiredOutcome.description,
     achievementLevel: {
-      label: `Overall, did ${this.referral.referral.serviceUser.firstName} achieve desired outcome ${this.desiredOutcomeNumber}?`,
+      label: `Overall, did ${this.referral.referral.serviceUser.firstName ?? ''} achieve desired outcome ${
+        this.desiredOutcomeNumber
+      }?`,
     },
   }
 
@@ -48,6 +50,7 @@ export default class EndOfServiceReportOutcomePresenter {
       })),
     },
     progressionComments: {
+      errorMessage: PresenterUtils.errorMessage(this.error, 'progression-comments'),
       value: this.utils.stringValue(this.outcome?.progressionComments ?? null, 'progression-comments'),
     },
     additionalTaskComments: {

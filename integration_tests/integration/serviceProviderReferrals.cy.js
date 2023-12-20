@@ -2180,10 +2180,8 @@ describe('Service provider referrals dashboard', () => {
       cy.withinFieldsetThatContains('Overall, did Alex achieve desired outcome 1?', () => {
         cy.contains('Achieved').click()
       })
-      cy.contains('Do you have any further comments about their progression on this outcome?').type(
-        'They have done very well'
-      )
-      cy.contains('Is there anything else that needs doing to achieve this outcome?').type('They could still do x')
+      cy.contains('Describe their progress on this outcome').type('They have done very well')
+      cy.contains('Enter if anything else needs to be done (optional)').type('They could still do x')
 
       const endOfServiceReportWithFirstOutcome = {
         ...draftEndOfServiceReport,
@@ -2208,12 +2206,8 @@ describe('Service provider referrals dashboard', () => {
       cy.withinFieldsetThatContains('Overall, did Alex achieve desired outcome 2?', () => {
         cy.contains('Partially achieved').click()
       })
-      cy.contains('Do you have any further comments about their progression on this outcome?').type(
-        'They have done fairly well'
-      )
-      cy.contains('Is there anything else that needs doing to achieve this outcome?').type(
-        'They could still do x, y, and z'
-      )
+      cy.contains('Describe their progress on this outcome').type('They have done very well')
+      cy.contains('Enter if anything else needs to be done (optional)').type('They could still do x, y, and z')
 
       const endOfServiceReportWithSecondOutcome = {
         ...draftEndOfServiceReport,
@@ -2256,9 +2250,9 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Review the end of service report')
 
       cy.get('#change-outcome-2').click()
-      cy.contains('Do you have any further comments about their progression on this outcome?').next().type(`
-        'I think that overall it’s gone well but they could make some changes'
-      `)
+      cy.contains('Describe their progress on this outcome')
+        .type('{selectall}{backspace}')
+        .type('I think that overall it’s gone well but they could make some changes')
 
       cy.contains('Save and continue').click()
 
