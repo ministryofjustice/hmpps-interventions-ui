@@ -13,11 +13,13 @@
 
       {{ govukSummaryList(summaryListArgs) }}
 
+      <h2 class="govuk-heading-m">What happens next</h2>
+
       <p class="govuk-body">
         {{ presenter.text.whatHappensNext }}
       </p>
 
-      <a href="{{ presenter.caseNotesHref }}" class="govuk-button">Return to intervention</a>
+      <a href="{{ presenter.caseNotesHref }}" class="govuk-link govuk-body">Return to intervention</a>
     </div>
   </div>
 {% endblock %}
