@@ -14,7 +14,7 @@ export default class AddCaseNoteConfirmationPresenter {
   caseNotesHref = `/${this.loggedInUserType}/referrals/${this.referral.id}/case-notes`
 
   text = {
-    whatHappensNext: `The ${this.targetUserType} will now be able to view the case note.`,
+    whatHappensNext: `The ${this.targetUserType} can now view this case note in the service.`,
   }
 
   readonly serviceUserSummary: SummaryListItem[] = [
