@@ -848,6 +848,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    ramDeliusApiService.getUserByUserId.mockResolvedValue(ramDeliusUser)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
     ramDeliusApiService.getConvictionByCrnAndId.mockResolvedValue(conviction)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
@@ -878,6 +879,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    ramDeliusApiService.getUserByUserId.mockResolvedValue(ramDeliusUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
@@ -923,6 +925,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    ramDeliusApiService.getUserByUserId.mockResolvedValue(ramDeliusUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
@@ -972,6 +975,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    ramDeliusApiService.getUserByUserId.mockResolvedValue(ramDeliusUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
@@ -1025,6 +1029,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    ramDeliusApiService.getUserByUserId.mockResolvedValue(ramDeliusUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
@@ -1077,6 +1082,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     ramDeliusApiService.getUserByUsername.mockResolvedValue(ramDeliusUser)
+    ramDeliusApiService.getUserByUserId.mockResolvedValue(ramDeliusUser)
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
