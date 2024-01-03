@@ -243,7 +243,7 @@ export default class ProbationPractitionerReferralsController {
       deliusResponsibleOfficer,
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
-      this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
+      this.ramDeliusApiService.getUserByUserId(sentReferral.sentBy.userId),
       this.ramDeliusApiService.getConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId),
       this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
       this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
