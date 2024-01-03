@@ -462,6 +462,8 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Expected release date')
       .should('contain', moment().add(1, 'days').format('D MMM YYYY'))
 
+    const yearsElapsed = moment().diff('1980-01-01', 'years')
+
     cy.contains(`Jenny Jones's personal details`)
       .parent()
       .parent()
@@ -472,7 +474,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'English')
       .should('contain', 'Male')
       .should('contain', 'Agnostic')
-      .should('contain', '1 Jan 1980 (44 years old)')
+      .should('contain', `1 Jan 1980 (${yearsElapsed} years old)`)
 
     cy.contains(`Jenny Jones's address and contact details`)
       .parent()
@@ -687,6 +689,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Location at time of referral')
       .should('contain', 'Community')
 
+    const yearsElapsed = moment().diff('1980-01-01', 'years')
     cy.contains(`Jenny Jones's personal details`)
       .parent()
       .parent()
@@ -697,7 +700,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'English')
       .should('contain', 'Male')
       .should('contain', 'Agnostic')
-      .should('contain', '1 Jan 1980 (44 years old)')
+      .should('contain', `1 Jan 1980 (${yearsElapsed} years old)`)
 
     cy.contains(`Jenny Jones's address and contact details`)
       .parent()
