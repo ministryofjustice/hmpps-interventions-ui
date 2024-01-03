@@ -1375,7 +1375,7 @@ describe(ShowReferralPresenter, () => {
       expect(presenter.personalDetailSummary).toEqual([
         { key: 'First name', lines: ['Jenny'] },
         { key: 'Last name(s)', lines: ['Jones'] },
-        { key: 'Date of birth', lines: ['1 Jan 1980 (43 years old)'] },
+        { key: 'Date of birth', lines: ['1 Jan 1980 (44 years old)'] },
         { key: 'Gender', lines: ['Male'] },
         { key: 'Ethnicity', lines: ['British'] },
         { key: 'Preferred language', lines: ['English'] },

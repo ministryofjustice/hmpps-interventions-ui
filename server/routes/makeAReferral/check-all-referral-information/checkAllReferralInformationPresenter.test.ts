@@ -58,7 +58,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         expect(presenter.serviceUserDetailsSection.summary).toEqual([
           { key: 'First name', lines: ['Alex'] },
           { key: 'Last name(s)', lines: ['River'] },
-          { key: 'Date of birth', lines: ['1 Jan 1980 (43 years old)'] },
+          { key: 'Date of birth', lines: ['1 Jan 1980 (44 years old)'] },
           { key: 'Gender', lines: ['Male'] },
           {
             key: 'Address',

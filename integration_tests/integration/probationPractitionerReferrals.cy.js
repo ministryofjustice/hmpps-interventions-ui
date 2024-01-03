@@ -472,7 +472,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'English')
       .should('contain', 'Male')
       .should('contain', 'Agnostic')
-      .should('contain', '1 Jan 1980 (43 years old)')
+      .should('contain', '1 Jan 1980 (44 years old)')
 
     cy.contains(`Jenny Jones's address and contact details`)
       .parent()
@@ -697,7 +697,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'English')
       .should('contain', 'Male')
       .should('contain', 'Agnostic')
-      .should('contain', '1 Jan 1980 (43 years old)')
+      .should('contain', '1 Jan 1980 (44 years old)')
 
     cy.contains(`Jenny Jones's address and contact details`)
       .parent()

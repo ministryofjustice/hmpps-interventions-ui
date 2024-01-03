@@ -97,7 +97,7 @@ describe(ServiceUserDetailsPresenter, () => {
         { key: 'Title', lines: ['Mr'] },
         { key: 'First name', lines: ['Alex'] },
         { key: 'Last name', lines: ['River'] },
-        { key: 'Date of birth', lines: ['1 January 1980 (43 years old)'] },
+        { key: 'Date of birth', lines: ['1 January 1980 (44 years old)'] },
         {
           key: 'Address',
           lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
@@ -188,7 +188,7 @@ describe(ServiceUserDetailsPresenter, () => {
       expect(presenter.personalDetailsSummary).toEqual([
         { key: 'First name', lines: ['Alex'] },
         { key: 'Last name(s)', lines: ['River'] },
-        { key: 'Date of birth', lines: ['1 Jan 1980 (43 years old)'] },
+        { key: 'Date of birth', lines: ['1 Jan 1980 (44 years old)'] },
         { key: 'Gender', lines: ['Male'] },
         { key: 'Ethnicity', lines: ['British'] },
         { key: 'Preferred language', lines: ['English'] },
