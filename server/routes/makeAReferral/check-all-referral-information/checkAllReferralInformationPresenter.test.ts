@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import CheckAllReferralInformationPresenter from './checkAllReferralInformationPresenter'
 import draftReferralFactory from '../../../../testutils/factories/draftReferral'
 import serviceCategoryFactory from '../../../../testutils/factories/serviceCategory'
@@ -55,10 +56,12 @@ describe(CheckAllReferralInformationPresenter, () => {
 
     describe('summary', () => {
       it('returns the service user’s details', () => {
+        const yearsElapsed = moment().diff('1980-01-01', 'years')
+
         expect(presenter.serviceUserDetailsSection.summary).toEqual([
           { key: 'First name', lines: ['Alex'] },
           { key: 'Last name(s)', lines: ['River'] },
-          { key: 'Date of birth', lines: ['1 Jan 1980 (43 years old)'] },
+          { key: 'Date of birth', lines: [`1 Jan 1980 (${yearsElapsed} years old)`] },
           { key: 'Gender', lines: ['Male'] },
           {
             key: 'Address',

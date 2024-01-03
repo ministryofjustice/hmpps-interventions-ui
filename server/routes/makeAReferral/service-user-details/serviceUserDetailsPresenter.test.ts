@@ -92,12 +92,14 @@ describe(ServiceUserDetailsPresenter, () => {
         tomorrow.format('YYYY-MM-DD')
       )
 
+      const yearsElapsed = moment().diff('1980-01-01', 'years')
+
       expect(presenter.summary).toEqual([
         { key: 'CRN', lines: ['X862134'] },
         { key: 'Title', lines: ['Mr'] },
         { key: 'First name', lines: ['Alex'] },
         { key: 'Last name', lines: ['River'] },
-        { key: 'Date of birth', lines: ['1 January 1980 (43 years old)'] },
+        { key: 'Date of birth', lines: [`1 January 1980 (${yearsElapsed} years old)`] },
         {
           key: 'Address',
           lines: ['Flat 10 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
@@ -185,10 +187,12 @@ describe(ServiceUserDetailsPresenter, () => {
         tomorrow.format('YYYY-MM-DD')
       )
 
+      const yearsElapsed = moment().diff('1980-01-01', 'years')
+
       expect(presenter.personalDetailsSummary).toEqual([
         { key: 'First name', lines: ['Alex'] },
         { key: 'Last name(s)', lines: ['River'] },
-        { key: 'Date of birth', lines: ['1 Jan 1980 (43 years old)'] },
+        { key: 'Date of birth', lines: [`1 Jan 1980 (${yearsElapsed} years old)`] },
         { key: 'Gender', lines: ['Male'] },
         { key: 'Ethnicity', lines: ['British'] },
         { key: 'Preferred language', lines: ['English'] },
