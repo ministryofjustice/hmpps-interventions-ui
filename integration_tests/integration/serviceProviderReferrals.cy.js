@@ -914,13 +914,15 @@ describe('Service provider referrals dashboard', () => {
         activities: [activity],
       })
 
-      cy.contains('First activity version 1').clear().type('First activity version 2')
+      cy.contains('First activity version 1').clear()
+      cy.contains('First activity version 1').type('First activity version 2')
       cy.stubUpdateActionPlanActivity(submittedActionPlan.id, activity.id, actionPlanWithUpdatedActivities)
       cy.contains('Save and add activity 1').click()
 
       cy.contains('Continue without adding other activities').click()
 
-      cy.get('#number-of-sessions').clear().type('5')
+      cy.get('#number-of-sessions').clear()
+      cy.get('#number-of-sessions').type('5')
 
       const actionPlanWithUpdatedSessions = actionPlanFactory.build({
         ...actionPlanWithUpdatedActivities,
@@ -999,13 +1001,15 @@ describe('Service provider referrals dashboard', () => {
         activities: [activity],
       })
 
-      cy.contains('First activity version 1').clear().type('First activity version 2')
+      cy.contains('First activity version 1').clear()
+      cy.contains('First activity version 1').type('First activity version 2')
       cy.stubUpdateActionPlanActivity(newActionPlanVersion.id, activity.id, actionPlanWithUpdatedActivities)
       cy.contains('Save and add activity 1').click()
 
       cy.contains('Continue without adding other activities').click()
 
-      cy.get('#number-of-sessions').clear().type('5')
+      cy.get('#number-of-sessions').clear()
+      cy.get('#number-of-sessions').type('5')
 
       const actionPlanWithUpdatedSessions = actionPlanFactory.build({
         ...actionPlanWithUpdatedActivities,
@@ -1200,9 +1204,12 @@ describe('Service provider referrals dashboard', () => {
             cy.get('#method-other-location-address-county').should('have.value', 'Lancashire')
             cy.get('#method-other-location-address-postcode').should('have.value', 'SY4 0RE')
 
-            cy.get('#date-day').clear().type(rescheduledDate.format('D'))
-            cy.get('#date-month').clear().type(rescheduledDate.format('M'))
-            cy.get('#date-year').clear().type(rescheduledDate.format('YYYY'))
+            cy.get('#date-day').clear()
+            cy.get('#date-day').type(rescheduledDate.format('D'))
+            cy.get('#date-month').clear()
+            cy.get('#date-month').type(rescheduledDate.format('M'))
+            cy.get('#date-year').clear()
+            cy.get('#date-year').type(rescheduledDate.format('YYYY'))
 
             cy.contains('Save and continue').click()
 
@@ -2223,9 +2230,9 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Review the end of service report')
 
       cy.get('#change-outcome-2').click()
-      cy.contains('Do you have any further comments about their progression on this outcome?')
-        .type('{selectall}{backspace}')
-        .type('I think that overall it’s gone well but they could make some changes')
+      cy.contains('Do you have any further comments about their progression on this outcome?').next().type(`
+        'I think that overall it’s gone well but they could make some changes'
+      `)
 
       cy.contains('Save and continue').click()
 
@@ -2233,9 +2240,8 @@ describe('Service provider referrals dashboard', () => {
       cy.contains(
         'Provide any further information that you believe is important for the probation practitioner to know.'
       )
-        .type('{selectall}{backspace}')
+        .next()
         .type('It’s important that you know p and q')
-
       cy.contains('Save and continue').click()
 
       cy.contains('Review the end of service report')
@@ -2569,14 +2575,20 @@ describe('Service provider referrals dashboard', () => {
             new RegExp(`/service-provider/referrals/${sentReferral.id}/supplier-assessment/schedule/[a-z0-9-]+/details`)
           )
 
-          cy.get('#date-day').clear().type('10')
-          cy.get('#date-month').clear().type('3')
-          cy.get('#date-year').clear().type('2022')
-          cy.get('#time-hour').clear().type('4')
-          cy.get('#time-minute').clear().type('15')
+          cy.get('#date-day').clear()
+          cy.get('#date-day').type('10')
+          cy.get('#date-month').clear()
+          cy.get('#date-month').type('3')
+          cy.get('#date-year').clear()
+          cy.get('#date-year').type('2022')
+          cy.get('#time-hour').clear()
+          cy.get('#time-hour').type('4')
+          cy.get('#time-minute').clear()
+          cy.get('#time-minute').type('15')
           cy.get('#time-part-of-day').select('PM')
           cy.get('#duration-hours').clear()
-          cy.get('#duration-minutes').clear().type('45')
+          cy.get('#duration-minutes').clear()
+          cy.get('#duration-minutes').type('45')
           cy.contains('Video call').click()
 
           cy.contains('Save and continue').click()
@@ -2780,12 +2792,18 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Reporting').click()
       cy.contains('Reporting')
 
-      cy.get('#from-date-day').clear().type('10')
-      cy.get('#from-date-month').clear().type('6')
-      cy.get('#from-date-year').clear().type('2021')
-      cy.get('#to-date-day').clear().type('27')
-      cy.get('#to-date-month').clear().type('6')
-      cy.get('#to-date-year').clear().type('2021')
+      cy.get('#from-date-day').clear()
+      cy.get('#from-date-day').type('10')
+      cy.get('#from-date-month').clear()
+      cy.get('#from-date-month').type('6')
+      cy.get('#from-date-year').clear()
+      cy.get('#from-date-year').type('2021')
+      cy.get('#to-date-day').clear()
+      cy.get('#to-date-day').type('27')
+      cy.get('#to-date-month').clear()
+      cy.get('#to-date-month').type('6')
+      cy.get('#to-date-year').clear()
+      cy.get('#to-date-year').type('2021')
 
       cy.contains('Request data').click()
 
