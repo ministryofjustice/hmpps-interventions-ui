@@ -24,10 +24,9 @@ services:
     environment:
       - SERVER_PORT=8090
       - SPRING_PROFILES_ACTIVE=dev,delius,local-postgres
-      - SPRING_JPA_PROPERTIES_HIBERNATE_SHOW_SQL=false
-      - SPRING_H2_CONSOLE_SETTINGS_WEBALLOWOTHERS=true
-      - DELIUS_ENDPOINT_URL=http://community-api:8080
+      - DELIUS_ENDPOINT_URL=http://wiremock:8080/delius
       - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/auth-db
+      - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
 
   hmpps-manage-users:
     image: quay.io/hmpps/hmpps-manage-users-api:latest
@@ -50,6 +49,7 @@ services:
       - EXTERNAL_USERS_ENDPOINT_URL=http://hmpps-external-users-api:8098
       - NOMIS_ENDPOINT_URL=http://nomis-user-roles-api:8097
       - DELIUS_ENDPOINT_URL=http://community-api:8080
+      - AUTHORIZATION_SERVER_TOKEN_ENDPOINT_URL=http://hmpps-auth:8090/auth/oauth/token
 
   nomis-user-roles-api:
     image: quay.io/hmpps/nomis-user-roles-api:latest

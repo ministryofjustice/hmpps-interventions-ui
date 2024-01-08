@@ -1,0 +1,71 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "urlPattern": "/delius/user/bernard.beaks",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "userId": 2500099998,
+          "username": "bernard.beaks",
+          "firstName": "Bernard",
+          "surname": "Beaks",
+          "email": "bernard.beaks@digital.justice.gov.uk",
+          "enabled": true,
+          "roles": []
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/delius/authenticate",
+        "method": "POST",
+        "bodyPatterns": [
+          {
+            "equalToJson": "{\"username\":\"BERNARD.BEAKS\",\"password\":\"secret\"}"
+          }
+        ]
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/delius/user?email=.*",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": [
+          {
+            "userId": 1234567890,
+            "username": "deliususer",
+            "firstName": "Delius",
+            "surname": "User",
+            "email": "delius.user@example.com",
+            "enabled": true,
+            "roles": []
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "urlPattern": "/delius/health.*",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200
+      }
+    }
+  ]
+}
