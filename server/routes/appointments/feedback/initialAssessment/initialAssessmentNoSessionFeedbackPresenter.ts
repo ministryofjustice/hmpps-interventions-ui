@@ -17,7 +17,10 @@ export default class InitialAssessmentNoSessionFeedbackPresenter {
   readonly questionnaire = new SessionFeedbackQuestionnaire(this.appointment, this.serviceUser)
 
   readonly text = {
-    title: `You told us that the session happened`,
+    title:
+      this.appointment.appointmentFeedback.attendanceFeedback.attended === 'yes'
+        ? `You told us that the person attended`
+        : `You told us that the person did not attend`,
     pageSubTitle: 'Add session feedback',
   }
 

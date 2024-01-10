@@ -2467,7 +2467,7 @@ describe('Service provider referrals dashboard', () => {
             'equal',
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
-          cy.contains('Confirm appointment feedback')
+          cy.contains('Check your answers')
           cy.contains('Session details')
           cy.contains('Session attendance')
           cy.contains('Session feedback')
@@ -2711,7 +2711,7 @@ describe('Service provider referrals dashboard', () => {
             'equal',
             `/service-provider/referrals/${sentReferral.id}/supplier-assessment/post-assessment-feedback/check-your-answers`
           )
-          cy.contains('Confirm appointment feedback')
+          cy.contains('Check your answers')
           cy.contains('Session details')
           cy.contains('Session attendance')
           cy.contains('Session feedback')

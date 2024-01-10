@@ -523,8 +523,6 @@ describe('viewing supplier assessment feedback', () => {
           .expect(200)
           .expect(res => {
             expect(res.text).toContain('Appointment feedback')
-            expect(res.text).toContain('Did Alex River attend the appointment?')
-            expect(res.text).toContain('Yes')
             expect(res.text).toContain('What did you do in the appointment?')
             expect(res.text).toContain('stub session summary')
             expect(res.text).toContain('How did Alex River respond to the appointment?')
@@ -1021,7 +1019,7 @@ describe('Adding supplier assessment feedback', () => {
         .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Add appointment feedback')
+          expect(res.text).toContain('You told us that the session happened')
           expect(res.text).toContain('What did you do in the appointment?')
           expect(res.text).toContain(
             'Add details about what you did, anything that was achieved and what came out of the appointment.'
@@ -1175,11 +1173,8 @@ describe('Adding supplier assessment feedback', () => {
         )
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('appointment feedback')
           expect(res.text).toContain('In-person meeting (probation office)')
-          expect(res.text).toContain('Confirm appointment feedback')
-          expect(res.text).toContain('Did Alex River attend the appointment?')
-          expect(res.text).toContain('Yes')
+          expect(res.text).toContain('Check your answers')
           expect(res.text).toContain('What did you do in the appointment?')
           expect(res.text).toContain('stub session summary')
           expect(res.text).toContain('How did Alex River respond to the appointment?')
@@ -1371,8 +1366,6 @@ describe('Adding supplier assessment feedback', () => {
         .expect(200)
         .expect(res => {
           expect(res.text).toContain('Appointment feedback')
-          expect(res.text).toContain('Did Alex River attend the appointment?')
-          expect(res.text).toContain('Yes')
           expect(res.text).toContain('What did you do in the appointment?')
           expect(res.text).toContain('stub session summary')
           expect(res.text).toContain('How did Alex River respond to the appointment?')
@@ -2397,8 +2390,6 @@ describe('Adding post delivery session feedback', () => {
             .expect(200)
             .expect(res => {
               expect(res.text).toContain('Session feedback')
-              expect(res.text).toContain('Did Alex River attend the session?')
-              expect(res.text).toContain('Yes')
               expect(res.text).toContain('What did you do in the session?')
               expect(res.text).toContain('stub session summary')
               expect(res.text).toContain('How did Alex River respond to the session?')
@@ -2464,8 +2455,6 @@ describe('Adding post delivery session feedback', () => {
               expect(res.text).toContain('Session feedback')
               expect(res.text).toContain('caseworkerFirstName caseworkerLastName')
               expect(res.text).toContain('Did the session happen?')
-              expect(res.text).toContain('Did Alex River attend the session?')
-              expect(res.text).toContain('Yes')
               expect(res.text).toContain('What did you do in the session?')
               expect(res.text).toContain('stub session summary')
               expect(res.text).toContain('How did Alex River respond to the session?')
@@ -2529,7 +2518,6 @@ describe('Adding post delivery session feedback', () => {
             .expect(res => {
               expect(res.text).toContain('Session feedback')
               expect(res.text).toContain('caseworkerFirstName caseworkerLastName')
-              expect(res.text).toContain('Did Alex River attend the session?')
               expect(res.text).toContain('Yes')
               expect(res.text).toContain('What did you do in the session?')
               expect(res.text).toContain('stub session summary')
