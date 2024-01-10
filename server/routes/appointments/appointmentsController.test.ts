@@ -1021,7 +1021,7 @@ describe('Adding supplier assessment feedback', () => {
         .get(`/service-provider/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/behaviour`)
         .expect(200)
         .expect(res => {
-          expect(res.text).toContain('Add appointment feedback')
+          expect(res.text).toContain('You told us that the session happened')
           expect(res.text).toContain('What did you do in the appointment?')
           expect(res.text).toContain(
             'Add details about what you did, anything that was achieved and what came out of the appointment.'

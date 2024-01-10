@@ -24,7 +24,10 @@ export default class FeedbackAnswersPresenter {
   }
 
   get attendedAnswers(): { question: string; answer: string } | null {
-    if (this.appointment.appointmentFeedback.attendanceFeedback.attended === null) {
+    if (
+      this.appointment.appointmentFeedback.attendanceFeedback.attended === null ||
+      this.appointment.appointmentFeedback.attendanceFeedback.didSessionHappen === true
+    ) {
       return null
     }
     const selected = this.possibleAttendanceAnswers.find(
@@ -191,7 +194,10 @@ export default class FeedbackAnswersPresenter {
   }
 
   get lateReasonAnswers(): { question: string; answer: string } | null {
-    if (this.appointment.appointmentFeedback.sessionFeedback.lateReason == null) {
+    if (
+      this.appointment.appointmentFeedback.sessionFeedback.lateReason == null ||
+      this.appointment.appointmentFeedback.sessionFeedback.late === false
+    ) {
       return null
     }
 
