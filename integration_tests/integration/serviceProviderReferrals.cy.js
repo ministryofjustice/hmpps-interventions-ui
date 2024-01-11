@@ -2250,9 +2250,9 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Review the end of service report')
 
       cy.get('#change-outcome-2').click()
-      cy.contains('Describe their progress on this outcome')
-        .type('{selectall}{backspace}')
-        .type('I think that overall it’s gone well but they could make some changes')
+      cy.contains('Describe their progress on this outcome').type(
+        '{selectall}{backspace}I think that overall it’s gone well but they could make some changes'
+      )
 
       cy.contains('Save and continue').click()
 
