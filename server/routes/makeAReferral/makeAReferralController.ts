@@ -82,6 +82,9 @@ import OasysRiskSummaryView from './risk-information/oasys/oasysRiskSummaryView'
 import CommunityAllocatedPresenter from './community-allocated-form/communityAllocatedPresenter'
 import CommunityAllocatedView from './community-allocated-form/communityAllocatedView'
 import CommunityAllocatedForm from './community-allocated-form/communityAllocatedForm'
+import UpdateProbationPractitionerView from './update/probation-practitioner-name/updateProbationPractitionerView'
+import UpdateProbationPractitionerPresenter from './update/probation-practitioner-name/updateProbationPractitionerPresenter'
+import UpdateProbationPractitionerForm from './update/probation-practitioner-name/updateProbationPractitionerForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -885,7 +888,7 @@ export default class MakeAReferralController {
         await this.interventionsService.patchDraftReferral(
           res.locals.user.token.accessToken,
           req.params.id,
-          form.paramsForUpdate
+          form.paramsForUpdate(referral)
         )
       } catch (e) {
         const interventionsServiceError = e as InterventionsServiceError
@@ -912,6 +915,65 @@ export default class MakeAReferralController {
         req.body
       )
       const view = new ConfirmProbationPractitionerDetailsView(presenter)
+
+      res.status(400)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
+  }
+
+  async viewUpdateProbationPractitionerName(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new UpdateProbationPractitionerPresenter(
+      referral.id,
+      referral.serviceUser.crn,
+      referral.ndeliusPPName,
+      referral.serviceUser.firstName,
+      referral.serviceUser.lastName
+    )
+    const view = new UpdateProbationPractitionerView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async updateProbationPractitionerName(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const form = await new UpdateProbationPractitionerForm(req).data()
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/confirm-probation-practitioner-details`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new UpdateProbationPractitionerPresenter(
+        referral.id,
+        referral.serviceUser.crn,
+        form.paramsForUpdate?.ndeliusPPName,
+        referral.serviceUser.firstName,
+        referral.serviceUser.lastName,
+        error,
+        req.body
+      )
+      const view = new UpdateProbationPractitionerView(presenter)
 
       res.status(400)
       await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')

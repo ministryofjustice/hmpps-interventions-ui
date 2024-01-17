@@ -31,6 +31,8 @@ export interface ReferralFields {
   ndeliusPPName: string | null
   ndeliusPPEmailAddress: string | null
   ndeliusPDU: string | null
+  ndeliusPhoneNumber: string | null
+  ndeliusTeamPhoneNumber: string | null
   ppName: string | null
   ppEmailAddress: string | null
   ppPdu: string | null

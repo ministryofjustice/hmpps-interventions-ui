@@ -5,6 +5,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -25,47 +26,17 @@
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
       <p class="govuk-body">{{ presenter.text.description }} </p>
 
+      {{ govukInsetText({
+          text: "You should update any information that is incorrect or missing. Name and PDU (Probation Delivery Unit) are mandatory."
+        }) 
+      }}      
+
       {{ govukSummaryList(summaryListArgs) }}
 
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        {% set noConfirmCorrectDetailsSelectionHTML %}
-        <p class="govuk-body">{{ presenter.text.confirmCorrectDetailsFormDescription }}</p>
-        {{ govukInput(probationPractitionerNameInputArgs) }}
-        {{ govukInput(probationPractitionerEmailInputArgs) }}
-        {{ govukSelect(probationPractitionerPduSelectArgs) }}
-          <script src="/assets/accessible-autocomplete.min.js"></script>
-          <script>
-              accessibleAutocomplete.enhanceSelectElement({
-                defaultValue: '',
-                selectElement: document.querySelector('#probation-practitioner-pdu')
-              })
-          </script>
-        {% endset -%}
-        {{ govukRadios(confirmCorrectDetailsRadiosArgs(noConfirmCorrectDetailsSelectionHTML)) }}
-        {{ govukSelect(probationPractitionerOfficeSelectArgs) }}
-        <br>
         {{ govukButton({ classes: "confirm-pp-details", text: "Save and continue", preventDoubleClick: true }) }}
       </form>
     </div>
   </div>
-  <script src="/assets/accessible-autocomplete.min.js"></script>
-  <script>
-    accessibleAutocomplete.enhanceSelectElement({
-      defaultValue: '',
-       selectElement: document.querySelector('#probation-practitioner-office')
-     })
-    $(function () {
-      $('.confirm-pp-details').on('click', function () {
-        if (!$.trim($('#probation-practitioner-pdu').val()).length) {
-          $('.confirm-pdu').val('')
-          $('.confirm-pdu').selected = false
-        }
-        if (!$.trim($('#probation-practitioner-office').val()).length) {
-          $('.confirm-probation-office').val('')
-          $('.confirm-probation-office').selected = false
-        }
-    })
-  })     
-  </script>
 {% endblock %}
