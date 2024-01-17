@@ -1558,6 +1558,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ndeliusPPName: 'Bob',
       ndeliusPPEmailAddress: 'bob@example.com',
       ndeliusPDU: 'Hackney and City',
+      ndeliusPhoneNumber: '073232324232',
+      ndeliusTeamPhoneNumber: '020-32352323213',
       ppName: 'Alice',
       ppEmailAddress: 'alice@example.com',
       ppProbationOffice: 'London',

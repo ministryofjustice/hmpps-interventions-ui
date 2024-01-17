@@ -144,6 +144,9 @@ export default {
     emptyPdu: `Enter PDU (Probation Delivery Unit)`,
     invalidEmail: `Enter an email address in the correct format`,
   },
+  updateProbationPractitionerDetails: {
+    emptyName: `Enter name of probation practitioner`,
+  },
   confirmMainPointOfContactDetails: {
     emptyRadio: 'Select establishment or probation office',
     emptyName: `Enter name of main point of contact`,

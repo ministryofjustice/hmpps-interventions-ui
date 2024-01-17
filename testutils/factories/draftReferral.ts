@@ -247,6 +247,8 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   ndeliusPPName: null,
   ndeliusPPEmailAddress: null,
   ndeliusPDU: null,
+  ndeliusPhoneNumber: null,
+  ndeliusTeamPhoneNumber: null,
   ppName: null,
   ppEmailAddress: null,
   ppPdu: null,

@@ -1,6 +1,6 @@
 import ViewUtils from '../../../utils/viewUtils'
 import ConfirmProbationPractitionerDetailsPresenter from './confirmProbationPractitionerDetailsPresenter'
-import { InputArgs, RadiosArgs, SelectArgs, SelectArgsItem } from '../../../utils/govukFrontendTypes'
+import { InputArgs, SelectArgs, SelectArgsItem } from '../../../utils/govukFrontendTypes'
 
 export default class ConfirmProbationPractitionerDetailsView {
   constructor(private readonly presenter: ConfirmProbationPractitionerDetailsPresenter) {}
@@ -10,29 +10,6 @@ export default class ConfirmProbationPractitionerDetailsView {
   }
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
-
-  private confirmCorrectDetailsRadiosArgs(noConfirmCorrectDetailsSelectionHTML: string): RadiosArgs {
-    return {
-      idPrefix: 'confirm-details',
-      name: 'confirm-details',
-      items: [
-        {
-          value: 'yes',
-          text: 'Yes',
-          checked: this.presenter.fields.hasValidDeliusPPDetails === true,
-        },
-        {
-          value: 'no',
-          text: 'No',
-          checked: this.presenter.fields.hasValidDeliusPPDetails === false,
-          conditional: {
-            html: noConfirmCorrectDetailsSelectionHTML,
-          },
-        },
-      ],
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.confirmDetails.errorMessage),
-    }
-  }
 
   private get probationPractitionerNameInputArgs(): InputArgs {
     return {
@@ -131,7 +108,6 @@ export default class ConfirmProbationPractitionerDetailsView {
         summaryListArgs: this.summaryListArgs,
         errorSummaryArgs: this.errorSummaryArgs,
         backLinkArgs: { href: this.presenter.backLinkUrl },
-        confirmCorrectDetailsRadiosArgs: this.confirmCorrectDetailsRadiosArgs.bind(this),
         probationPractitionerNameInputArgs: this.probationPractitionerNameInputArgs,
         probationPractitionerEmailInputArgs: this.probationPractitionerEmailInputArgs,
         probationPractitionerPduSelectArgs: this.probationPractitionerPduSelectArgs,
