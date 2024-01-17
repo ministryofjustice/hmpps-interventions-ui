@@ -1,6 +1,13 @@
 import * as nunjucks from 'nunjucks'
 import { ListStyle, SummaryListItem, SummaryListItemContent } from './summaryList'
-import { ErrorSummaryArgs, SummaryListArgs, TableArgs, TableArgsHeadElement, TagArgs } from './govukFrontendTypes'
+import {
+  ErrorSummaryArgs,
+  SummaryListArgs,
+  SummaryListArgsRowActionsItem,
+  TableArgs,
+  TableArgsHeadElement,
+  TagArgs,
+} from './govukFrontendTypes'
 import SessionStatusPresenter from '../routes/shared/sessionStatusPresenter'
 import { PrimaryNavBarItem } from '../routes/shared/primaryNavBar/primaryNavBarPresenter'
 import AuthUserDetails from '../models/hmppsAuth/authUserDetails'
@@ -93,20 +100,26 @@ export default class ViewUtils {
               .join('\n')
             return { html }
           })(),
-          actions: (() => {
-            if (item.changeLink) {
-              return {
-                items: [
-                  {
-                    href: item.changeLink,
-                    text: 'Change',
-                    attributes: { id: `change-link-${index}` },
-                  },
-                ],
+          actions: {
+            items: (() => {
+              const items: SummaryListArgsRowActionsItem[] = []
+              if (item.deleteLink) {
+                items.push({
+                  href: item.deleteLink,
+                  text: 'Delete',
+                  attributes: { id: `delete-link-${index}` },
+                })
               }
-            }
-            return null
-          })(),
+              if (item.changeLink) {
+                items.push({
+                  href: item.changeLink,
+                  text: 'Change',
+                  attributes: { id: `change-link-${index}` },
+                })
+              }
+              return items
+            })(),
+          },
         }
       }),
     }
