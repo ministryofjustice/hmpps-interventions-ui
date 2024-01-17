@@ -12,4 +12,5 @@ export interface SummaryListItem {
   lines: SummaryListItemContent[]
   listStyle?: ListStyle
   changeLink?: string
+  deleteLink?: string
 }
