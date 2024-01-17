@@ -236,7 +236,7 @@ describe('Referral form', () => {
       cy.contains('Name, email address and location').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
-      cy.contains('Yes').click()
+      cy.contains(`Confirm probation practitioner details`)
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
       cy.contains('Save and continue').click()
 
@@ -860,7 +860,6 @@ describe('Referral form', () => {
       cy.contains('Name, email address and location').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
-      cy.contains('Yes').click()
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
       cy.contains('Save and continue').click()
 

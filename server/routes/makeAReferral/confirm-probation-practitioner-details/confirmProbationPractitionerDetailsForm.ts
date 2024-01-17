@@ -1,8 +1,7 @@
 import { Request } from 'express'
-import { body, Result, ValidationChain, ValidationError } from 'express-validator'
+import { Result, ValidationError } from 'express-validator'
 import DraftReferral from '../../../models/draftReferral'
 import FormUtils from '../../../utils/formUtils'
-import errorMessages from '../../../utils/errorMessages'
 import { FormValidationError } from '../../../utils/formValidationError'
 import { DeliusResponsibleOfficer } from '../../../models/delius/deliusResponsibleOfficer'
 
@@ -21,51 +20,28 @@ export default class ConfirmProbationPractitionerDetailsForm {
   ): Promise<ConfirmProbationPractitionerDetailsForm> {
     return new ConfirmProbationPractitionerDetailsForm(
       request,
-      await FormUtils.runValidations({ request, validations: this.validations() }),
+      await FormUtils.runValidations({ request, validations: [] }),
       referral,
       deliusResponsibleOfficer
     )
-  }
-
-  static validations(): ValidationChain[] {
-    return [
-      body('confirm-details')
-        .isIn(['yes', 'no'])
-        .withMessage(errorMessages.confirmProbationPractitionerDetails.emptyRadio),
-      body('probation-practitioner-name')
-        .if(body('confirm-details').equals('no'))
-        .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.confirmProbationPractitionerDetails.emptyName),
-      body('probation-practitioner-email')
-        .if(body('probation-practitioner-email').notEmpty({ ignore_whitespace: true }))
-        .isEmail()
-        .withMessage(errorMessages.confirmProbationPractitionerDetails.invalidEmail),
-      body('probation-practitioner-pdu')
-        .if(body('confirm-details').equals('no'))
-        .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.confirmProbationPractitionerDetails.emptyPdu),
-    ]
   }
 
   get isValid(): boolean {
     return this.error == null
   }
 
-  private get hasValidDeliusPPDetails(): boolean | null {
-    if (this.request.body['confirm-details'] === null) return null
-    return this.request.body['confirm-details'] === 'yes'
-  }
-
-  get paramsForUpdate(): Partial<DraftReferral> {
+  public paramsForUpdate(referral: DraftReferral): Partial<DraftReferral> {
+    const deliusResponsibleOfficerFullName = `${this.deliusResponsibleOfficer?.communityManager?.name.forename} ${this.deliusResponsibleOfficer?.communityManager.name?.surname}`
+    const nDeliusPPName =
+      deliusResponsibleOfficerFullName === referral.ndeliusPPName
+        ? deliusResponsibleOfficerFullName
+        : referral.ndeliusPPName
     return {
-      ndeliusPPName: `${this.deliusResponsibleOfficer?.communityManager?.name.forename} ${this.deliusResponsibleOfficer?.communityManager.name?.surname}`,
+      ndeliusPPName: nDeliusPPName,
       ndeliusPPEmailAddress: `${this.deliusResponsibleOfficer?.communityManager.email}`,
       ndeliusPDU: `${this.deliusResponsibleOfficer?.communityManager.pdu.description}`,
-      ppName: this.hasValidDeliusPPDetails ? '' : this.request.body['probation-practitioner-name'],
-      ppEmailAddress: this.hasValidDeliusPPDetails ? '' : this.request.body['probation-practitioner-email'],
-      ppProbationOffice: this.request.body['probation-practitioner-office'],
-      ppPdu: this.hasValidDeliusPPDetails ? '' : this.request.body['probation-practitioner-pdu'],
-      hasValidDeliusPPDetails: this.hasValidDeliusPPDetails,
+      ndeliusPhoneNumber: this.deliusResponsibleOfficer?.communityManager.telephoneNumber,
+      ndeliusTeamPhoneNumber: this.deliusResponsibleOfficer?.communityManager.team.telephoneNumber,
     }
   }
 

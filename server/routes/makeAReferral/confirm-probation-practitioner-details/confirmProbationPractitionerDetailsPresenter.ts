@@ -25,15 +25,23 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       {
         key: 'Name',
         lines: [
-          `${this.deliusResponsibleOfficer?.communityManager.name.forename || ''} ${
-            this.deliusResponsibleOfficer?.communityManager.name.surname || ''
-          }`.trim() || 'Not found',
+          this.referral.ndeliusPPName ||
+            `${this.deliusResponsibleOfficer?.communityManager.name.forename || ''} ${
+              this.deliusResponsibleOfficer?.communityManager.name.surname || ''
+            }`.trim() ||
+            'Not found',
         ],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-name`,
       },
       { key: 'Email address', lines: [this.deliusResponsibleOfficer?.communityManager.email || 'Not found'] },
+      { key: 'Phone number', lines: [this.deliusResponsibleOfficer?.communityManager.telephoneNumber || 'Not found'] },
       {
         key: 'PDU (Probation Delivery Unit)',
         lines: [this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found'],
+      },
+      {
+        key: 'Team Phone number',
+        lines: [this.deliusResponsibleOfficer?.communityManager.team.telephoneNumber || 'Not found'],
       },
     ]
     return summary
@@ -80,10 +88,17 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
     probationPractitionerName: this.utils.stringValue(this.referral.ppName, 'probation-practitioner-name'),
     probationPractitionerEmail: this.utils.stringValue(this.referral.ppEmailAddress, 'probation-practitioner-email'),
     probationPractitionerPdu: this.utils.stringValue(this.referral.ppPdu, 'probation-practitioner-pdu'),
+    probationPractitionerTelephoneNumber: this.utils.stringValue(
+      this.referral.ndeliusPhoneNumber,
+      'probation-practitioner-telephone-number'
+    ),
+    probationPractitionerTeamTelephoneNumber: this.utils.stringValue(
+      this.referral.ndeliusTeamPhoneNumber,
+      'probation-practitioner-team-telephone-number'
+    ),
     probationPractitionerOffice: this.utils.stringValue(
       this.referral.ppProbationOffice,
       'probation-practitioner-office'
     ),
-    hasValidDeliusPPDetails: this.utils.booleanValue(this.referral.hasValidDeliusPPDetails, 'confirm-details'),
   }
 }
