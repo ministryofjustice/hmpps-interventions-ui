@@ -1979,9 +1979,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           headers: { 'Content-Type': 'application/json' },
         },
       })
-      const summaryResult = await interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-        spUserWithAccess
-      )
+      const summaryResult =
+        await interventionsService.getServiceProviderSentReferralsSummaryForUserToken(spUserWithAccess)
       expect(summaryResult.length).toEqual(1)
       expect(summaryResult[0].referralId).toEqual(sentReferralSummary.referralId)
       expect(summaryResult[0].referenceNumber).toEqual(sentReferralSummary.referenceNumber)
