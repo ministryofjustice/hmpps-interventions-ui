@@ -66,6 +66,12 @@ export default class SubmittedFeedbackPresenter {
         lines: [this.feedbackAnswersPresenter.lateAnswers.answer],
       })
     }
+    if (this.feedbackAnswersPresenter.lateReasonAnswers) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.lateReasonAnswers.question,
+        lines: [this.feedbackAnswersPresenter.lateReasonAnswers.answer],
+      })
+    }
     if (this.feedbackAnswersPresenter.sessionSummaryAnswers) {
       sessionFeedbackDetails.push({
         key: this.feedbackAnswersPresenter.sessionSummaryAnswers.question,
