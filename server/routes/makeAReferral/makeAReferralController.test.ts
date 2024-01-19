@@ -1253,7 +1253,6 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
         .expect(res => {
           expect(res.text).toContain(`Enter name of probation practitioner`)
         })
-
       expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
     })
   })
