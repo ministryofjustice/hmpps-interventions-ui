@@ -9,6 +9,7 @@ import DraftSoftDeletedView from '../routes/shared/draftSoftDeletedView'
 import UserDataService from '../services/userDataService'
 import ReferenceDataService from '../services/referenceDataService'
 import WhatsNewCookieService from '../services/whatsNewCookieService'
+import log from '../../log'
 
 export interface DraftFetchSuccessResult<T> {
   rendered: false
@@ -148,7 +149,9 @@ export default class ControllerUtils {
         primarySort = defaultPrimarySort
       }
     } else {
+      log.info('retrieving from the redis')
       const storedSort = await userDataService.retrieve(userId, `sortOrder:${tablePersistentId}`)
+      log.info('stored Sort= ', storedSort)
       primarySort = storedSort ?? defaultPrimarySort
     }
 
@@ -161,6 +164,7 @@ export default class ControllerUtils {
       }
     }
 
+    log.info('sortedList= ', sortList)
     return Promise.resolve(sortList)
   }
 }
