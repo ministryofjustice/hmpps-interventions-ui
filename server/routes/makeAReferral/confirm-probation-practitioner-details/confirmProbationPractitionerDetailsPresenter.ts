@@ -40,6 +40,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determineEmail() !== 'Not found'
             ? `/referrals/${this.referral.id}/update-probation-practitioner-email-address`
             : undefined,
+        deleteLink: `/referrals/${this.referral.id}/delete-probation-practitioner-email`,
         valueLink:
           this.determineEmail() === 'Not found'
             ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address</a>`
