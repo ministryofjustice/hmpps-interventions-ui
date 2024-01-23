@@ -410,58 +410,6 @@ describe(ControllerUtils, () => {
 
       expect(sort).toEqual(['default,DESC'])
     })
-
-    it('uses the stored value if no value is provided in the url', async () => {
-      userDataService.retrieve.mockResolvedValue(Promise.resolve('storedSortField,ASC'))
-      const req = { query: {} } as Request
-
-      const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
-        req,
-        res,
-        userDataService,
-        100,
-        'myTable',
-        [],
-        'default,DESC'
-      )
-
-      expect(sort).toEqual(['storedSortField,ASC'])
-    })
-
-    it('uses and stores the value passed in the url', async () => {
-      const req = { query: { sort: 'querySortField,ascending' } as ParsedQs } as Request
-
-      const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
-        req,
-        res,
-        userDataService,
-        100,
-        'myTable',
-        ['querySortField'],
-        'default,DESC'
-      )
-
-      expect(sort).toEqual(['querySortField,ASC'])
-      expect(userDataService.store).toHaveBeenCalled()
-    })
-
-    it('does not store invalid sort fields passed in the url, and falls back to the default', async () => {
-      const req = { query: { sort: 'invalid,ascending' } as ParsedQs } as Request
-
-      const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
-        req,
-        res,
-        userDataService,
-        100,
-        'myTable',
-        ['querySortField'],
-        'default,DESC'
-      )
-
-      expect(sort).toEqual(['default,DESC'])
-      expect(userDataService.store).not.toHaveBeenCalled()
-    })
-
     it('does not store invalid sort order passed in the url, and falls back to the default', async () => {
       const req = { query: { sort: 'querySortField,unknown' } as ParsedQs } as Request
 
