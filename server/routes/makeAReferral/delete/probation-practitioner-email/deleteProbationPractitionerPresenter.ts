@@ -17,7 +17,7 @@ export default class DeleteProbationPractitionerPresenter {
   readonly text = {
     title: 'Are you sure you want to delete the probation practitioner email address?',
     label: `${this.firstName} ${this.lastName} (CRN: ${this.crn})`,
-    inputHeading: 'Full name',
+    inputHeading: 'Email Address',
   }
 
   private readonly utils = new PresenterUtils(this.userInputData)
