@@ -41,9 +41,9 @@ export default class NoSessionNoAttendedFeedbackForm {
         .withMessage(errorMessages.noAttendanceInformation.empty),
       body('notify-probation-practitioner')
         .isIn(['yes', 'no'])
-        .withMessage(errorMessages.sessionConcerns.notifyProbationPractitionerNotSelected),
+        .withMessage(errorMessages.notifyProbationPractitioner.notSelected),
       body('session-concerns')
-        .if(body('notify-probation-practitioner').equals('yes'))
+        .if(body('notify-probation-practitioner-of-concerns').notEmpty())
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.sessionConcerns.empty),
     ]

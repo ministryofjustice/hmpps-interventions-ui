@@ -26,9 +26,7 @@ export default class NoSessionFeedbackView {
         legend: {
           html: `<label class=govuk-fieldset__legend--m> ${ViewUtils.escape(
             this.presenter.questionnaire.notifyProbationPractitionerQuestion.text
-          )}</label><p class="govuk-inset-text">${ViewUtils.escape(
-            this.presenter.questionnaire.notifyProbationPractitionerQuestion.explanation
-          )}</p>`,
+          )}</label>`,
           isPageHeading: false,
         },
       },

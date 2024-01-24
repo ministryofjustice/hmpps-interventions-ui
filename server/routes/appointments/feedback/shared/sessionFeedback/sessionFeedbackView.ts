@@ -62,6 +62,20 @@ export default class SessionFeedbackView {
     }
   }
 
+  private get sessionBehaviourTextAreaArgs(): TextareaArgs {
+    return {
+      name: 'session-behaviour',
+      id: 'session-behaviour',
+      label: {
+        text: this.presenter.questionnaire.sessionBehaviourQuestion.text,
+        classes: 'govuk-body govuk-!-margin-bottom-4',
+        isPageHeading: false,
+      },
+      value: this.inputsPresenter.fields.sessionBehaviour.value,
+      errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.sessionBehaviour.errorMessage),
+    }
+  }
+
   private get futureSessionPlansTextAreaArgs(): TextareaArgs {
     return {
       name: 'future-session-plans',
@@ -93,39 +107,51 @@ export default class SessionFeedbackView {
     }
   }
 
-  private radioButtonArgs(yesHtml: string): Record<string, unknown> {
+  private checkboxArgs(sessionConcernsTextAreaHtml: string, sessionBehaviourTextAreaHtml: string) {
     return {
-      classes: 'govuk-radios',
       idPrefix: 'notify-probation-practitioner',
       name: 'notify-probation-practitioner',
       fieldset: {
         legend: {
-          html: `<label class=govuk-fieldset__legend--m> ${ViewUtils.escape(
+          html: `<label class='govuk-label govuk-label--m govuk-!-margin-bottom-4'> ${ViewUtils.escape(
             this.presenter.questionnaire.notifyProbationPractitionerQuestion.text
-          )}</label><p class="govuk-inset-text">${ViewUtils.escape(
-            this.presenter.questionnaire.notifyProbationPractitionerQuestion.explanation
-          )}</p>`,
+          )}</label>`,
           isPageHeading: false,
         },
       },
+      errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.notifyProbationPractitioner.errorMessage),
+      hint: {
+        text: 'Select all that apply.',
+      },
       items: [
         {
-          id: 'yesNotifyPPRadio',
-          value: 'yes',
-          text: 'Yes',
-          checked: this.inputsPresenter.fields.notifyProbationPractitioner.value === true,
+          id: 'notify-probation-practitioner-of-behaviour',
+          value: 'behaviour',
+          text: this.presenter.questionnaire.poorBehaviourCheckboxOptionText.text,
+          checked: this.inputsPresenter.fields.notifyProbationPractitionerOfBehaviour.value === true,
           conditional: {
-            html: yesHtml,
+            html: sessionBehaviourTextAreaHtml,
           },
         },
         {
-          id: 'noNotifyPPRadio',
+          id: 'notify-probation-practitioner-of-concerns',
+          value: 'concerns',
+          text: this.presenter.questionnaire.concerningBehaviourCheckboxOptionText.text,
+          checked: this.inputsPresenter.fields.notifyProbationPractitionerOfConcerns.value === true,
+          conditional: {
+            html: sessionConcernsTextAreaHtml,
+          },
+        },
+        {
+          divider: 'or',
+        },
+        {
+          id: 'noNotifyPPCheckbox',
           value: 'no',
           text: 'No',
-          checked: this.inputsPresenter.fields.notifyProbationPractitioner.value === false,
+          behaviour: 'exclusive',
         },
       ],
-      errorMessage: ViewUtils.govukErrorMessage(this.inputsPresenter.fields.notifyProbationPractitioner.errorMessage),
     }
   }
 
@@ -184,7 +210,8 @@ export default class SessionFeedbackView {
         sessionSummaryTextAreaArgs: this.sessionSummaryTextAreaArgs,
         sessionResponseTextAreaArgs: this.sessionResponseTextAreaArgs,
         sessionConcernsTextAreaArgs: this.sessionConcernsTextAreaArgs,
-        radioButtonArgs: this.radioButtonArgs.bind(this),
+        sessionBehaviourTextAreaArgs: this.sessionBehaviourTextAreaArgs,
+        checkboxArgs: this.checkboxArgs.bind(this),
         errorSummaryArgs: this.errorSummaryArgs,
         backLinkArgs: this.backLinkArgs,
         wasLateRadioButtonArgs: this.wasLateRadioButtonArgs.bind(this),

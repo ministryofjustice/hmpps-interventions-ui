@@ -48,12 +48,33 @@ export default class SessionFeedbackInputsPresenter {
       ),
       errorMessage: this.errorMessageForField('session-concerns'),
     },
+    sessionBehaviour: {
+      value: new PresenterUtils(this.userInputData).stringValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.sessionBehaviour || null,
+        'session-behaviour'
+      ),
+      errorMessage: this.errorMessageForField('session-behaviour'),
+    },
     notifyProbationPractitioner: {
       value: this.utils.booleanValue(
         this.appointment.appointmentFeedback?.sessionFeedback?.notifyProbationPractitioner ?? null,
         'notify-probation-practitioner'
       ),
       errorMessage: this.errorMessageForField('notify-probation-practitioner'),
+    },
+    notifyProbationPractitionerOfBehaviour: {
+      value: this.utils.booleanValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.notifyProbationPractitionerOfBehaviour ?? null,
+        'notify-probation-practitioner-of-behaviour'
+      ),
+      errorMessage: this.errorMessageForField('notify-probation-practitioner-of-behaviour'),
+    },
+    notifyProbationPractitionerOfConcerns: {
+      value: this.utils.booleanValue(
+        this.appointment.appointmentFeedback?.sessionFeedback?.notifyProbationPractitionerOfConcerns ?? null,
+        'notify-probation-practitioner-of-concerns'
+      ),
+      errorMessage: this.errorMessageForField('notify-probation-practitioner-of-concerns'),
     },
     late: {
       value: this.utils.booleanValue(this.appointment.appointmentFeedback?.sessionFeedback?.late ?? null, 'late'),

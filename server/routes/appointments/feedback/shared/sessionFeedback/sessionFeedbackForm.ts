@@ -37,7 +37,9 @@ export default class SessionFeedbackForm {
         sessionSummary: this.request.body['session-summary'],
         sessionResponse: this.request.body['session-response'],
         sessionConcerns: this.request.body['session-concerns'],
-        notifyProbationPractitioner: this.notifyProbationPractitioner,
+        sessionBehaviour: this.request.body['session-behaviour'],
+        notifyProbationPractitionerOfBehaviour: this.notifyProbationPractitionerOfBehaviour,
+        notifyProbationPractitionerOfConcerns: this.notifyProbationPractitionerOfConcerns,
         futureSessionPlans: this.request.body['future-session-plans'],
       },
       error: null,
@@ -57,10 +59,14 @@ export default class SessionFeedbackForm {
         .bail()
         .trim(),
       body('notify-probation-practitioner')
-        .isIn(['yes', 'no'])
-        .withMessage(errorMessages.sessionConcerns.notifyProbationPractitionerNotSelected),
+        .notEmpty()
+        .withMessage(errorMessages.notifyProbationPractitioner.notSelected),
+      body('session-behaviour')
+        .if(body('notify-probation-practitioner').contains('behaviour'))
+        .notEmpty({ ignore_whitespace: true })
+        .withMessage(errorMessages.sessionBehaviour.empty(serviceUserName)),
       body('session-concerns')
-        .if(body('notify-probation-practitioner').equals('yes'))
+        .if(body('notify-probation-practitioner').contains('concerns'))
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.sessionConcerns.empty),
       body('late').isIn(['yes', 'no']).withMessage(errorMessages.late.optionNotSelected(serviceUserName)),
@@ -85,8 +91,12 @@ export default class SessionFeedbackForm {
     }
   }
 
-  private get notifyProbationPractitioner(): boolean {
-    return this.request.body['notify-probation-practitioner'] === 'yes'
+  private get notifyProbationPractitionerOfBehaviour(): boolean {
+    return this.request.body['notify-probation-practitioner'] === 'behaviour'
+  }
+
+  private get notifyProbationPractitionerOfConcerns(): boolean {
+    return this.request.body['notify-probation-practitioner'] === 'concerns'
   }
 
   private get late(): boolean {

@@ -1049,10 +1049,18 @@ export default class AppointmentsController {
           if (draftAppointment && draftAppointment.session) {
             draftAppointment.session.sessionFeedback.sessionSummary = data.paramsForUpdate.sessionSummary!
             draftAppointment.session.sessionFeedback.sessionResponse = data.paramsForUpdate.sessionResponse!
-            draftAppointment.session.sessionFeedback.notifyProbationPractitioner =
-              data.paramsForUpdate.notifyProbationPractitioner!
+            draftAppointment.session.sessionFeedback.notifyProbationPractitionerOfBehaviour =
+              data.paramsForUpdate.notifyProbationPractitionerOfBehaviour!
+            draftAppointment.session.sessionFeedback.notifyProbationPractitionerOfConcerns =
+              data.paramsForUpdate.notifyProbationPractitionerOfConcerns!
+            draftAppointment.session.sessionFeedback.sessionBehaviour =
+              data.paramsForUpdate.notifyProbationPractitionerOfBehaviour === true
+                ? data.paramsForUpdate.sessionBehaviour!
+                : null
             draftAppointment.session.sessionFeedback.sessionConcerns =
-              data.paramsForUpdate.notifyProbationPractitioner === true ? data.paramsForUpdate.sessionConcerns! : null
+              data.paramsForUpdate.notifyProbationPractitionerOfConcerns === true
+                ? data.paramsForUpdate.sessionConcerns!
+                : null
             draftAppointment.session.sessionFeedback.late = data.paramsForUpdate.late!
             draftAppointment.session.sessionFeedback.lateReason =
               data.paramsForUpdate.late === true ? data.paramsForUpdate.lateReason! : null
@@ -1575,9 +1583,12 @@ export default class AppointmentsController {
             late: null,
             lateReason: null,
             notifyProbationPractitioner: null,
+            notifyProbationPractitionerOfBehaviour: null,
+            notifyProbationPractitionerOfConcerns: null,
             sessionSummary: null,
             sessionResponse: null,
             sessionConcerns: null,
+            sessionBehaviour: null,
             futureSessionPlans: null,
             noSessionReasonType: null,
             noSessionReasonPopAcceptable: null,
@@ -1646,9 +1657,12 @@ export default class AppointmentsController {
             late: null,
             lateReason: null,
             notifyProbationPractitioner: null,
+            notifyProbationPractitionerOfBehaviour: null,
+            notifyProbationPractitionerOfConcerns: null,
             sessionSummary: null,
             sessionResponse: null,
             sessionConcerns: null,
+            sessionBehaviour: null,
             futureSessionPlans: null,
             noSessionReasonType: null,
             noSessionReasonPopAcceptable: null,
@@ -1707,9 +1721,12 @@ export default class AppointmentsController {
             late: null,
             lateReason: null,
             notifyProbationPractitioner: null,
+            notifyProbationPractitionerOfBehaviour: null,
+            notifyProbationPractitionerOfConcerns: null,
             sessionSummary: null,
             sessionResponse: null,
             sessionConcerns: null,
+            sessionBehaviour: null,
             futureSessionPlans: null,
             noSessionReasonType: null,
             noSessionReasonPopAcceptable: null,
@@ -1740,9 +1757,12 @@ export default class AppointmentsController {
             late: null,
             lateReason: null,
             notifyProbationPractitioner: null,
+            notifyProbationPractitionerOfBehaviour: null,
+            notifyProbationPractitionerOfConcerns: null,
             sessionSummary: null,
             sessionResponse: null,
             sessionConcerns: null,
+            sessionBehaviour: null,
             futureSessionPlans: null,
             noSessionReasonType: null,
             noSessionReasonPopAcceptable: null,
