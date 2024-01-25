@@ -146,6 +146,8 @@ export default {
   },
   updateProbationPractitionerDetails: {
     emptyName: `Enter name of probation practitioner`,
+    emptyEmail: `Enter email address`,
+    invalidEmail: `Enter an email address in the correct format`,
   },
   confirmMainPointOfContactDetails: {
     emptyRadio: 'Select establishment or probation office',

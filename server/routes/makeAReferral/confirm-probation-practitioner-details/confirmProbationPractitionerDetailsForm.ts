@@ -31,14 +31,9 @@ export default class ConfirmProbationPractitionerDetailsForm {
   }
 
   public paramsForUpdate(referral: DraftReferral): Partial<DraftReferral> {
-    const deliusResponsibleOfficerFullName = `${this.deliusResponsibleOfficer?.communityManager?.name.forename} ${this.deliusResponsibleOfficer?.communityManager.name?.surname}`
-    const nDeliusPPName =
-      deliusResponsibleOfficerFullName === referral.ndeliusPPName
-        ? deliusResponsibleOfficerFullName
-        : referral.ndeliusPPName
     return {
-      ndeliusPPName: nDeliusPPName,
-      ndeliusPPEmailAddress: `${this.deliusResponsibleOfficer?.communityManager.email}`,
+      ndeliusPPName: this.determinePPName(referral.ndeliusPPName),
+      ndeliusPPEmailAddress: this.determinePPEmailAddress(referral.ndeliusPPEmailAddress),
       ndeliusPDU: `${this.deliusResponsibleOfficer?.communityManager.pdu.description}`,
       ndeliusPhoneNumber: this.deliusResponsibleOfficer?.communityManager.telephoneNumber,
       ndeliusTeamPhoneNumber: this.deliusResponsibleOfficer?.communityManager.team.telephoneNumber,
@@ -57,5 +52,23 @@ export default class ConfirmProbationPractitionerDetailsForm {
         message: validationError.msg,
       })),
     }
+  }
+
+  private determinePPName(ppName: string | null) {
+    const deliusResponsibleOfficerFullName = `${this.deliusResponsibleOfficer?.communityManager?.name.forename} ${this.deliusResponsibleOfficer?.communityManager.name?.surname}`
+
+    if (ppName == null) {
+      return deliusResponsibleOfficerFullName
+    }
+    return deliusResponsibleOfficerFullName === ppName ? deliusResponsibleOfficerFullName : ppName
+  }
+
+  private determinePPEmailAddress(ppEmailAddress: string | null) {
+    const deliusResponsibleEmailAddress = `${this.deliusResponsibleOfficer?.communityManager.email}`
+
+    if (ppEmailAddress == null) {
+      return deliusResponsibleEmailAddress
+    }
+    return deliusResponsibleEmailAddress === ppEmailAddress ? deliusResponsibleEmailAddress : ppEmailAddress
   }
 }
