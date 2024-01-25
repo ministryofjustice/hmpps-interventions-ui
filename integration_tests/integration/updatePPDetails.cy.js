@@ -542,7 +542,6 @@ describe('Referral form', () => {
       cy.contains('Autism')
       cy.contains('alex.river@example.com')
 
-
       // Alex's personal information
       cy.contains('Probation practitioner details')
         .parent()
