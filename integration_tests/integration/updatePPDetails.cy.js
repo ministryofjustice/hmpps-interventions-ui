@@ -542,6 +542,7 @@ describe('Referral form', () => {
       cy.contains('Autism')
       cy.contains('alex.river@example.com')
 
+
       // Alex's personal information
       cy.contains('Probation practitioner details')
         .parent()
@@ -568,7 +569,6 @@ describe('Referral form', () => {
         'href',
         `/referrals/${draftReferral.id}/update-probation-practitioner-email-address?amendPPDetails=true`
       )
-
       cy.contains('Probation practitioner details')
         .parent()
         .next()
@@ -581,6 +581,7 @@ describe('Referral form', () => {
         'href',
         `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
       )
+
       // Alex's risk information
       cy.contains('Additional information')
         .next()
