@@ -516,20 +516,22 @@ describe('Referral form', () => {
         .should(
           'have.attr',
           'href',
-          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
+          `/referrals/${draftReferral.id}/update-probation-practitioner-name?amendPPDetails=true`
         )
 
       cy.contains('Probation practitioner details')
         .parent()
         .next()
-        .should('contain', 'Email')
+        .children()
+        .should('contain', 'Email address')
         .should('contain', 'bobalice@example.com')
         .contains('Change')
-        .should(
-          'have.attr',
-          'href',
-          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
-        )
+
+      cy.get('#change-link-1').should(
+        'have.attr',
+        'href',
+        `/referrals/${draftReferral.id}/update-probation-practitioner-email-address?amendPPDetails=true`
+      )
 
       cy.contains('Probation practitioner details')
         .parent()
@@ -537,11 +539,12 @@ describe('Referral form', () => {
         .should('contain', 'PDU (Probation Delivery Unit)')
         .should('contain', '97 Hackney and City')
         .contains('Change')
-        .should(
-          'have.attr',
-          'href',
-          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
-        )
+
+      cy.get('#change-link-2').should(
+        'have.attr',
+        'href',
+        `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
+      )
 
       //
       // Alex's risk information

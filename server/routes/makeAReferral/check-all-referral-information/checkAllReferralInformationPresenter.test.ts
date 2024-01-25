@@ -139,12 +139,12 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'Name',
               lines: ['Victor Drake'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
             },
             {
               key: 'Email address',
               lines: ['a.b@xyz.com'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
             },
             {
               key: 'PDU (Probation Delivery Unit)',
@@ -192,13 +192,13 @@ describe(CheckAllReferralInformationPresenter, () => {
           expect(presenter.probationPractitionerDetailSection?.summary).toEqual([
             {
               key: 'Name',
-              lines: ['Victor Shelby'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              lines: ['Victor Drake'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
             },
             {
               key: 'Email address',
               lines: ['a.c@abc.com'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
             },
             {
               key: 'PDU (Probation Delivery Unit)',
@@ -247,12 +247,12 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'Name',
               lines: ['Victor Drake'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
             },
             {
               key: 'Email address',
               lines: ['Not found'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
             },
             {
               key: 'PDU (Probation Delivery Unit)',

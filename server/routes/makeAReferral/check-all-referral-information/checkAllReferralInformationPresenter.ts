@@ -74,13 +74,13 @@ export default class CheckAllReferralInformationPresenter {
       summary: [
         {
           key: 'Name',
-          lines: [this.referral.ppName || this.referral.ndeliusPPName || 'Not found'],
-          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+          lines: [this.referral.ndeliusPPName || 'Not found'],
+          changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
         },
         {
           key: 'Email address',
           lines: [this.deriveEmailAddress],
-          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+          changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
         },
         {
           key: 'PDU (Probation Delivery Unit)',
