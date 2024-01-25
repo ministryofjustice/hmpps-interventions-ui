@@ -33,7 +33,13 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
         ],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-name`,
       },
-      { key: 'Email address', lines: [this.deliusResponsibleOfficer?.communityManager.email || 'Not found'] },
+      {
+        key: 'Email address',
+        lines: [
+          this.referral.ndeliusPPEmailAddress || this.deliusResponsibleOfficer?.communityManager.email || 'Not found',
+        ],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-email-address`,
+      },
       { key: 'Phone number', lines: [this.deliusResponsibleOfficer?.communityManager.telephoneNumber || 'Not found'] },
       {
         key: 'PDU (Probation Delivery Unit)',
