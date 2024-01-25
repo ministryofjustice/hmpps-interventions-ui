@@ -266,6 +266,7 @@ describe('Referral form', () => {
         'equal',
         `/referrals/${draftReferral.id}/update-probation-practitioner-email-address`
       )
+      cy.get('#delius-probation-practitioner-email-address').clear()
       cy.get('#delius-probation-practitioner-email-address').type('a.b@xyz.com')
       cy.stubGetDraftReferral(draftReferral.id, updatedPPDetails)
       cy.contains('Save and continue').click()
