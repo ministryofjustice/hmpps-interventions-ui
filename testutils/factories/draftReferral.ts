@@ -133,12 +133,14 @@ class DraftReferralFactory extends Factory<DraftReferral> {
   filledFormUptoPPDetails(
     ndeliusPPName = 'Bob Alice',
     ndeliusPPEmailAddress = 'bobalice@example.com',
+    ndeliusPhoneNumber = '073232323232',
     ndeliusPDU = '97 Hackney and City'
   ) {
     return this.filledPersonalCurrentLocationType().params({
       ndeliusPPName,
       ndeliusPPEmailAddress,
       ndeliusPDU,
+      ndeliusPhoneNumber,
     })
   }
 

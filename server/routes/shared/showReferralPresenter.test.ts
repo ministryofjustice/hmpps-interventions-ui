@@ -256,7 +256,7 @@ describe(ShowReferralPresenter, () => {
       expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
-        { key: 'Phone number', lines: ['98454243243'] },
+        { key: 'Phone number', lines: ['072121212124'] },
         { key: 'Probation Office', lines: ['London'] },
         { key: 'Team phone number', lines: ['044-2545453442'] },
       ])

@@ -6,13 +6,13 @@ import FormUtils from '../../../../utils/formUtils'
 import { FormValidationError } from '../../../../utils/formValidationError'
 import { FormData } from '../../../../utils/forms/formData'
 
-export default class UpdateProbationPractitionerEmailAddressForm {
+export default class UpdateProbationPractitionerPhoneNumberForm {
   constructor(private readonly request: Request) {}
 
   async data(): Promise<FormData<Partial<DraftReferral>>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: UpdateProbationPractitionerEmailAddressForm.validations,
+      validations: UpdateProbationPractitionerPhoneNumberForm.validations,
     })
 
     const error = this.error(validationResult)
@@ -26,7 +26,7 @@ export default class UpdateProbationPractitionerEmailAddressForm {
 
     return {
       paramsForUpdate: {
-        ndeliusPPEmailAddress: this.request.body['delius-probation-practitioner-email-address'],
+        ndeliusPhoneNumber: this.request.body['delius-probation-practitioner-phone-number'],
       },
       error: null,
     }
@@ -34,10 +34,10 @@ export default class UpdateProbationPractitionerEmailAddressForm {
 
   static get validations(): ValidationChain[] {
     return [
-      body('delius-probation-practitioner-email-address')
-        .if(body('delius-probation-practitioner-email-address').notEmpty({ ignore_whitespace: true }))
-        .isEmail()
-        .withMessage(errorMessages.updateProbationPractitionerDetails.invalidEmail),
+      body('delius-probation-practitioner-phone-number')
+        .if(body('delius-probation-practitioner-phone-number').notEmpty({ ignore_whitespace: true }))
+        .isNumeric()
+        .withMessage(errorMessages.updateProbationPractitionerDetails.invalidPhoneNumber),
     ]
   }
 

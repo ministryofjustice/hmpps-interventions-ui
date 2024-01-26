@@ -94,6 +94,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         ndeliusPPName: 'Victor Drake',
         ndeliusPPEmailAddress: 'a.b@xyz.com',
         ndeliusPDU: 'London',
+        ndeliusPhoneNumber: '075950243221',
         ppName: null,
         ppEmailAddress: null,
         ppPdu: null,
@@ -128,6 +129,11 @@ describe(CheckAllReferralInformationPresenter, () => {
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
             },
             {
+              key: 'Phone Number',
+              lines: ['075950243221'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
+            },
+            {
               key: 'PDU (Probation Delivery Unit)',
               lines: ['London'],
               changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
@@ -148,6 +154,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         ndeliusPPName: 'Victor Drake',
         ndeliusPPEmailAddress: 'a.b@xyz.com',
         ndeliusPDU: 'London',
+        ndeliusPhoneNumber: '075950243221',
         ppName: 'Victor Shelby',
         ppEmailAddress: 'a.c@abc.com',
         ppPdu: 'Nottingham',
@@ -182,6 +189,11 @@ describe(CheckAllReferralInformationPresenter, () => {
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
             },
             {
+              key: 'Phone Number',
+              lines: ['075950243221'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
+            },
+            {
               key: 'PDU (Probation Delivery Unit)',
               lines: ['Nottingham'],
               changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
@@ -202,6 +214,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         ndeliusPPName: 'Victor Drake',
         ndeliusPPEmailAddress: 'undefined',
         ndeliusPDU: 'London',
+        ndeliusPhoneNumber: '075950243221',
         ppName: null,
         ppEmailAddress: null,
         ppPdu: null,
@@ -234,6 +247,11 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Email address',
               lines: ['Not found'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
+            },
+            {
+              key: 'Phone Number',
+              lines: ['075950243221'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
             },
             {
               key: 'PDU (Probation Delivery Unit)',

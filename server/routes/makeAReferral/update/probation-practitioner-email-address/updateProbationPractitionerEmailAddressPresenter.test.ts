@@ -62,7 +62,7 @@ describe(UpdateProbationPractitionerEmailAddressPresenter, () => {
         const presenter = new UpdateProbationPractitionerEmailAddressPresenter(
           '1',
           'crn',
-          'Alex River',
+          'a.z@xyz.com',
           'David',
           'Blake'
         )
@@ -76,7 +76,7 @@ describe(UpdateProbationPractitionerEmailAddressPresenter, () => {
         const presenter = new UpdateProbationPractitionerEmailAddressPresenter(
           '1',
           'crn',
-          'Alex River',
+          'a.zxyz.com',
           'David',
           'Blake',
           {
@@ -134,11 +134,11 @@ describe(UpdateProbationPractitionerEmailAddressPresenter, () => {
             'Blake',
             null,
             {
-              'delius-probation-practitioner-email-address': 'a.z@xyz.com',
+              'delius-probation-practitioner-email-address': 'a.z@abc.com',
             }
           )
 
-          expect(presenter.fields.ndeliusPPEmailAddress).toEqual('a.z@xyz.com')
+          expect(presenter.fields.ndeliusPPEmailAddress).toEqual('a.z@abc.com')
         })
       })
     })
