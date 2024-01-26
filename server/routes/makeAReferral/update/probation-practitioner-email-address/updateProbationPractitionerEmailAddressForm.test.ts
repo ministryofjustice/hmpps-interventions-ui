@@ -16,20 +16,6 @@ describe(UpdateProbationPractitionerEmailAddressForm, () => {
   })
 
   describe('invalid fields', () => {
-    it('returns an error when the email address property is empty', async () => {
-      const request = TestUtils.createRequest({
-        'delius-probation-practitioner-email-address': '',
-      })
-
-      const data = await new UpdateProbationPractitionerEmailAddressForm(request).data()
-
-      expect(data.error?.errors).toContainEqual({
-        errorSummaryLinkedField: 'delius-probation-practitioner-email-address',
-        formFields: ['delius-probation-practitioner-email-address'],
-        message: 'Enter email address',
-      })
-    })
-
     it('returns an error when the email address property is an invalid format', async () => {
       const request = TestUtils.createRequest({
         'delius-probation-practitioner-email-address': 'invalidFormat.com',

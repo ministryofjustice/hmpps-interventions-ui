@@ -40,7 +40,15 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
         ],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-email-address`,
       },
-      { key: 'Phone number', lines: [this.deliusResponsibleOfficer?.communityManager.telephoneNumber || 'Not found'] },
+      {
+        key: 'Phone number',
+        lines: [
+          this.referral.ndeliusPhoneNumber ||
+            this.deliusResponsibleOfficer?.communityManager.telephoneNumber ||
+            'Not found',
+        ],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-phone-number`,
+      },
       {
         key: 'PDU (Probation Delivery Unit)',
         lines: [this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found'],
