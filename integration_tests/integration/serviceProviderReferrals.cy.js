@@ -227,7 +227,7 @@ describe('Service provider referrals dashboard', () => {
       .should('contain', 'Name')
       .should('contain', 'Bob Alice')
       .should('contain', 'Phone')
-      .should('contain', '98454243243')
+      .should('contain', '072121212124')
       .should('contain', 'Email address')
       .should('contain', 'b.a@xyz.com')
       .should('contain', 'Probation Office')

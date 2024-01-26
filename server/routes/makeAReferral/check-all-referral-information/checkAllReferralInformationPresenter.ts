@@ -83,6 +83,11 @@ export default class CheckAllReferralInformationPresenter {
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
         },
         {
+          key: 'Phone number',
+          lines: [this.referral.ndeliusPhoneNumber || ''],
+          changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
+        },
+        {
           key: 'PDU (Probation Delivery Unit)',
           lines: [this.referral.ppPdu || this.referral.ndeliusPDU || ''],
           changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,

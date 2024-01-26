@@ -102,6 +102,7 @@ describe('Referral form', () => {
         id: draftReferral.id,
         ndeliusPPName: 'Bob Marley',
         ndeliusPPEmailAddress: 'a.b@xyz.com',
+        ndeliusPhoneNumber: '07434332323',
         serviceCategoryIds: [accommodationServiceCategory.id],
         serviceProvider: {
           name: 'Harmony Living',
@@ -273,6 +274,20 @@ describe('Referral form', () => {
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains('a.b@xyz.com')
+
+      cy.get('#change-link-2').click()
+      cy.location('pathname').should(
+        'equal',
+        `/referrals/${draftReferral.id}/update-probation-practitioner-phone-number`
+      )
+      cy.get('#delius-probation-practitioner-phone-number').clear()
+      cy.get('#delius-probation-practitioner-phone-number').type('07434332323')
+      cy.stubGetDraftReferral(draftReferral.id, updatedPPDetails)
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+      cy.contains('07434332323')
+
       cy.stubGetDraftReferral(draftReferral.id, updatedPPDetails)
       cy.contains('Save and continue').click()
 
@@ -579,7 +594,7 @@ describe('Referral form', () => {
       cy.get('#change-link-2').should(
         'have.attr',
         'href',
-        `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
+        `/referrals/${draftReferral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`
       )
       // Alex's risk information
       cy.contains('Additional information')

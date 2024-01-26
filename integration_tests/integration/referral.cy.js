@@ -506,7 +506,7 @@ describe('Referral form', () => {
       cy.contains('Autism')
       cy.contains('alex.river@example.com')
 
-      // Alex's risk information
+      // Alex's personal information
       cy.contains('Probation practitioner details')
         .parent()
         .next()
@@ -532,6 +532,18 @@ describe('Referral form', () => {
         'href',
         `/referrals/${draftReferral.id}/update-probation-practitioner-email-address?amendPPDetails=true`
       )
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .should('contain', 'Phone number')
+        .should('contain', '073232323232')
+        .contains('Change')
+
+      cy.get('#change-link-2').should(
+        'have.attr',
+        'href',
+        `/referrals/${draftReferral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`
+      )
 
       cy.contains('Probation practitioner details')
         .parent()
@@ -539,12 +551,6 @@ describe('Referral form', () => {
         .should('contain', 'PDU (Probation Delivery Unit)')
         .should('contain', '97 Hackney and City')
         .contains('Change')
-
-      cy.get('#change-link-2').should(
-        'have.attr',
-        'href',
-        `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
-      )
 
       //
       // Alex's risk information
