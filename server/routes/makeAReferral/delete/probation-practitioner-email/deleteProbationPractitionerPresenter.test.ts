@@ -21,7 +21,7 @@ describe(DeleteProbationPractitionerPresenter, () => {
         })
       })
 
-      describe('when the referral already has nDelius probation practitioner name is set and there is no user input data', () => {
+      describe('when the referral already has nDelius probation practitioner email is set and there is no user input data', () => {
         it('uses that value as the field value', () => {
           const presenter = new DeleteProbationPractitionerPresenter('1', 'crn', 'Sample@nowhere.com', 'David', 'Blake')
 

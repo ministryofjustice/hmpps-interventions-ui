@@ -35,12 +35,13 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       },
       {
         key: 'Email address',
-        lines: [this.determineEmail()],
-        changeLink:
-          this.determineEmail() !== 'Not found'
-            ? `/referrals/${this.referral.id}/update-probation-practitioner-email-address`
-            : undefined,
-        deleteLink: `/referrals/${this.referral.id}/delete-probation-practitioner-email`,
+        lines: [
+          this.referral.ndeliusPPEmailAddress === null
+            ? this.deliusResponsibleOfficer?.communityManager.email || 'Not found'
+            : this.referral.ndeliusPPEmailAddress,
+        ],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-email-address`,
+        deleteLink: `/referrals/${this.referral.id}/delete-probation-practitioner-email-address`,
         valueLink:
           this.determineEmail() === 'Not found'
             ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address</a>`
