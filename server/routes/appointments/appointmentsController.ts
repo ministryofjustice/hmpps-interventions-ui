@@ -1443,8 +1443,7 @@ export default class AppointmentsController {
       sessionNumber: currentAppointment.sessionNumber,
       id: appointmentId,
       oldAppointments: [],
-      ...(currentAppointment.oldAppointments?.filter(x => x.appointmentId && x.appointmentId === appointmentId)[0] ??
-        currentAppointment),
+      ...(currentAppointment.oldAppointments?.filter(x => x.id && x.id === appointmentId)[0] ?? currentAppointment),
     } as ActionPlanAppointment
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
