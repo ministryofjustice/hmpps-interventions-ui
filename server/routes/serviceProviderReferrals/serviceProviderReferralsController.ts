@@ -381,6 +381,7 @@ export default class ServiceProviderReferralsController {
                 ? x.oldAppointments!.map(y => {
                     const actionPlanAppointment: ActionPlanAppointment = {
                       sessionNumber: x.sessionNumber,
+                      appointmentId: y.id,
                       ...y,
                     }
                     return actionPlanAppointment

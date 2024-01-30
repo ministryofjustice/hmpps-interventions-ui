@@ -34,7 +34,7 @@ export default {
         return SessionStatus.didNotAttend
       }
 
-      if (sessionFeedbackAttendance.attended === 'yes') {
+      if (sessionFeedbackAttendance.attended === 'yes' || sessionFeedbackAttendance.attended === 'late') {
         return SessionStatus.completed
       }
     }
