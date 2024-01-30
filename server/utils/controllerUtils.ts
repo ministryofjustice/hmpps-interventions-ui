@@ -127,6 +127,9 @@ export default class ControllerUtils {
     defaultPrimarySort: string,
     secondarySort: string | null = null
   ): Promise<string[]> {
+    const { userId } = res.locals.user
+    const userSortKey = `sortOrder:${tablePersistentId}`
+
     const { sort: sortQueryParam } = req.query
 
     let primarySort: string
@@ -141,14 +144,15 @@ export default class ControllerUtils {
       // only use the URL params if the sort field _and_ order are valid
       if (validSortFields.includes(sortFieldQueryParam) && sortOrder !== undefined) {
         primarySort = `${sortFieldQueryParam},${sortOrder}`
-        // await userDataService.store(userId, userSortKey, primarySort, storageDuration)
+        await userDataService.store(userId, userSortKey, primarySort, storageDuration)
       } else {
         primarySort = defaultPrimarySort
       }
     } else {
       log.info('retrieving from the redis')
-      // const storedSort = await userDataService.retrieve(userId, `sortOrder:${tablePersistentId}`)
-      primarySort = defaultPrimarySort
+      const storedSort = await userDataService.retrieve(userId, `sortOrder:${tablePersistentId}`)
+      log.info('stored Sort= ', storedSort)
+      primarySort = storedSort ?? defaultPrimarySort
     }
 
     const sortList = [primarySort]
