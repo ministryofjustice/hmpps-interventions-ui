@@ -129,7 +129,7 @@ describe(CheckAllReferralInformationPresenter, () => {
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
             },
             {
-              key: 'Phone Number',
+              key: 'Phone number',
               lines: ['075950243221'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
             },
@@ -189,7 +189,7 @@ describe(CheckAllReferralInformationPresenter, () => {
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
             },
             {
-              key: 'Phone Number',
+              key: 'Phone number',
               lines: ['075950243221'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
             },
@@ -249,7 +249,7 @@ describe(CheckAllReferralInformationPresenter, () => {
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
             },
             {
-              key: 'Phone Number',
+              key: 'Phone number',
               lines: ['075950243221'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
             },
