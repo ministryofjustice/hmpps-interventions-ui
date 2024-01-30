@@ -91,6 +91,9 @@ import UpdateProbationPractitionerEmailAddressView from './update/probation-prac
 import UpdateProbationPractitionerPhoneNumberPresenter from './update/probation-practitioner-phone-number/updateProbationPractitionerPhoneNumberPresenter'
 import UpdateProbationPractitionerPhoneNumberView from './update/probation-practitioner-phone-number/updateProbationPractitionerPhoneNumberView'
 import UpdateProbationPractitionerPhoneNumberForm from './update/probation-practitioner-phone-number/updateProbationPractitionerPhoneNumberForm'
+import UpdateProbationPractitionerPduPresenter from './update/probation-practitioner-pdu/updateProbationPractitionerPduPresenter'
+import UpdateProbationPractitionerPduForm from './update/probation-practitioner-pdu/updateProbationPractitionerPduForm'
+import UpdateProbationPractitionerPduView from './update/probation-practitioner-pdu/updateProbationPractitionerPduView'
 
 export default class MakeAReferralController {
   constructor(
@@ -1140,6 +1143,77 @@ export default class MakeAReferralController {
         req.body
       )
       const view = new UpdateProbationPractitionerPhoneNumberView(presenter)
+
+      res.status(400)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
+  }
+
+  async viewUpdateProbationPractitionerPdu(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new UpdateProbationPractitionerPduPresenter(
+      referral.id,
+      referral.serviceUser.crn,
+      referral.ndeliusPhoneNumber,
+      referral.serviceUser.firstName,
+      referral.serviceUser.lastName,
+      null,
+      null,
+      deliusDeliveryUnits
+    )
+    const view = new UpdateProbationPractitionerPduView(presenter, deliusDeliveryUnits)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async updateProbationPractitionerPdu(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
+    const form = await new UpdateProbationPractitionerPduForm(req).data()
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      if (form.paramsForUpdate.ndeliusPDU !== '') {
+        try {
+          await this.interventionsService.patchDraftReferral(
+            res.locals.user.token.accessToken,
+            req.params.id,
+            form.paramsForUpdate
+          )
+        } catch (e) {
+          const interventionsServiceError = e as InterventionsServiceError
+          error = createFormValidationErrorOrRethrow(interventionsServiceError)
+        }
+      }
+    } else {
+      error = form.error
+    }
+
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null && !amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/confirm-probation-practitioner-details`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new UpdateProbationPractitionerPduPresenter(
+        referral.id,
+        referral.serviceUser.crn,
+        form.paramsForUpdate?.ndeliusPhoneNumber,
+        referral.serviceUser.firstName,
+        referral.serviceUser.lastName,
+        error,
+        req.body,
+        deliusDeliveryUnits
+      )
+      const view = new UpdateProbationPractitionerPduView(presenter, deliusDeliveryUnits)
 
       res.status(400)
       await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')

@@ -103,6 +103,7 @@ describe('Referral form', () => {
         ndeliusPPName: 'Bob Marley',
         ndeliusPPEmailAddress: 'a.b@xyz.com',
         ndeliusPhoneNumber: '07434332323',
+        ndeliusPDU: '97 Hackney and City',
         serviceCategoryIds: [accommodationServiceCategory.id],
         serviceProvider: {
           name: 'Harmony Living',
@@ -287,6 +288,16 @@ describe('Referral form', () => {
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains('07434332323')
+
+      cy.get('#change-link-3').click()
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/update-probation-practitioner-pdu`)
+      cy.get('#delius-probation-practitioner-pdu').clear()
+      cy.get('#delius-probation-practitioner-pdu').type('97 Hackney and City')
+      cy.stubGetDraftReferral(draftReferral.id, updatedPPDetails)
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+      cy.contains('97 Hackney and City')
 
       cy.stubGetDraftReferral(draftReferral.id, updatedPPDetails)
       cy.contains('Save and continue').click()

@@ -199,7 +199,12 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   post(router, '/referrals/:id/update-probation-practitioner-phone-number', (req, res) =>
     makeAReferralController.updateProbationPractitionerPhoneNumber(req, res)
   )
-
+  get(router, '/referrals/:id/update-probation-practitioner-pdu', (req, res) =>
+    makeAReferralController.viewUpdateProbationPractitionerPdu(req, res)
+  )
+  post(router, '/referrals/:id/update-probation-practitioner-pdu', (req, res) =>
+    makeAReferralController.updateProbationPractitionerPdu(req, res)
+  )
   get(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.viewRiskInformation(req, res))
   post(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.updateRiskInformation(req, res))
 
