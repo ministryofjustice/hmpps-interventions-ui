@@ -220,7 +220,7 @@ export default {
     notifyProbationPractitionerNotSelected: 'Select whether to notify the probation practitioner or not',
   },
   late: {
-    optionNotSelected: 'Select whether Alex River was late',
+    optionNotSelected: (name: string) => `Select whether ${name} was late`,
   },
   lateReason: {
     empty: 'Add anything you know about the lateness',
