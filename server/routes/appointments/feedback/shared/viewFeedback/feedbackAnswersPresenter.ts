@@ -54,6 +54,10 @@ export default class FeedbackAnswersPresenter {
         value: 'no',
         text: 'No',
       },
+      {
+        value: 'late',
+        text: 'They were late',
+      },
     ]
   }
 
