@@ -136,7 +136,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'PDU (Probation Delivery Unit)',
               lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
             },
             {
               key: 'Probation office',
@@ -155,7 +155,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         ndeliusPPEmailAddress: 'a.b@xyz.com',
         ndeliusPDU: 'London',
         ndeliusPhoneNumber: '075950243221',
-        ppName: 'Victor Shelby',
+        ppName: null,
         ppEmailAddress: 'a.c@abc.com',
         ppPdu: 'Nottingham',
         ppProbationOffice: 'London',
@@ -196,7 +196,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'PDU (Probation Delivery Unit)',
               lines: ['Nottingham'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
             },
             {
               key: 'Probation office',
@@ -256,7 +256,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'PDU (Probation Delivery Unit)',
               lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
             },
             {
               key: 'Probation office',

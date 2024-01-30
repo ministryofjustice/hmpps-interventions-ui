@@ -75,7 +75,7 @@ export default class CheckAllReferralInformationPresenter {
       summary: [
         {
           key: 'Name',
-          lines: [this.referral.ndeliusPPName || 'Not found'],
+          lines: [this.referral.ppName || this.referral.ndeliusPPName || 'Not found'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
         },
         {
@@ -91,7 +91,7 @@ export default class CheckAllReferralInformationPresenter {
         {
           key: 'PDU (Probation Delivery Unit)',
           lines: [this.referral.ppPdu || this.referral.ndeliusPDU || ''],
-          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+          changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
         },
         {
           key: 'Probation office',

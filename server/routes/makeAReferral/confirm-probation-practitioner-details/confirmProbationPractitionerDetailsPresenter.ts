@@ -51,7 +51,10 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       },
       {
         key: 'PDU (Probation Delivery Unit)',
-        lines: [this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found'],
+        lines: [
+          this.referral.ndeliusPDU || this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found',
+        ],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu`,
       },
       {
         key: 'Team Phone number',
