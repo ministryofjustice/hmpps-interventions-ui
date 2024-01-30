@@ -55,6 +55,12 @@ export default class SubmittedFeedbackPresenter {
         lines: [this.feedbackAnswersPresenter.additionalAttendanceAnswers.answer],
       })
     }
+    if (this.feedbackAnswersPresenter.attendanceFailureInformationAnswers) {
+      sessionAttendanceDetails.push({
+        key: this.feedbackAnswersPresenter.attendanceFailureInformationAnswers.question,
+        lines: [this.feedbackAnswersPresenter.attendanceFailureInformationAnswers.answer],
+      })
+    }
     return sessionAttendanceDetails
   }
 
