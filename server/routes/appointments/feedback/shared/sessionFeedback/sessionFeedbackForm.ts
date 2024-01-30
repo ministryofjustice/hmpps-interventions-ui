@@ -63,7 +63,7 @@ export default class SessionFeedbackForm {
         .if(body('notify-probation-practitioner').equals('yes'))
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.sessionConcerns.empty),
-      body('late').isIn(['yes', 'no']).withMessage(errorMessages.late.optionNotSelected),
+      body('late').isIn(['yes', 'no']).withMessage(errorMessages.late.optionNotSelected(serviceUserName)),
       body('late-reason')
         .if(body('late').equals('yes'))
         .notEmpty({ ignore_whitespace: true })
