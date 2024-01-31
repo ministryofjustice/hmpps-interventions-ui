@@ -1230,7 +1230,7 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
       {
         ndeliusPPName: 'John Alice',
         ndeliusPPEmailAddress: 'john@example.com',
-        ndeliusPDU: 'Hackney and City',
+        ndeliusPDU: 'Sheffield',
         ndeliusPhoneNumber: '98454243243',
         ndeliusTeamPhoneNumber: '044-2545453442',
       },
