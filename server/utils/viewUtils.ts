@@ -94,7 +94,10 @@ export default class ViewUtils {
                 .join('\n')}</ul>`
               return { html }
             }
-
+            if (item.valueLink) {
+              const html = item.valueLink
+              return { html }
+            }
             const html = item.lines
               .map(line => `<p class="govuk-body">${ViewUtils.nl2br(ViewUtils.summaryListItemLine(line))}</p>`)
               .join('\n')
