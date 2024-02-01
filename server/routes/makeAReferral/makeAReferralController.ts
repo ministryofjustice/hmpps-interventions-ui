@@ -94,6 +94,9 @@ import UpdateProbationPractitionerPhoneNumberForm from './update/probation-pract
 import UpdateProbationPractitionerPduPresenter from './update/probation-practitioner-pdu/updateProbationPractitionerPduPresenter'
 import UpdateProbationPractitionerPduForm from './update/probation-practitioner-pdu/updateProbationPractitionerPduForm'
 import UpdateProbationPractitionerPduView from './update/probation-practitioner-pdu/updateProbationPractitionerPduView'
+import DeleteProbationPractitionerPhoneNumberPresenter from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberPresenter'
+import DeleteProbationPractitionerPhoneNumberView from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberView'
+import DeleteProbationPractitionerPhoneNumberForm from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -1144,6 +1147,35 @@ export default class MakeAReferralController {
       res.status(400)
       await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
+  }
+
+  async viewDeleteProbationPractitionerPhoneNumber(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new DeleteProbationPractitionerPhoneNumberPresenter(
+      referral.id,
+      referral.serviceUser.crn,
+      referral.ndeliusPhoneNumber,
+      referral.serviceUser.firstName,
+      referral.serviceUser.lastName
+    )
+    const view = new DeleteProbationPractitionerPhoneNumberView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async deleteProbationPractitionerPhoneNumber(req: Request, res: Response): Promise<void> {
+    const form = await new DeleteProbationPractitionerPhoneNumberForm(req)
+
+    // do the delete
+    await this.interventionsService.patchDraftReferral(
+      res.locals.user.token.accessToken,
+      req.params.id,
+      form.paramsForUpdate
+    )
+    res.redirect(`/referrals/${req.params.id}/confirm-probation-practitioner-details`)
   }
 
   async viewUpdateProbationPractitionerPdu(req: Request, res: Response): Promise<void> {

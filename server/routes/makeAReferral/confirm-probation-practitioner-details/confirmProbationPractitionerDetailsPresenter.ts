@@ -56,6 +56,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determinePhoneNumber() === 'Not found'
             ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number</a>`
             : undefined,
+        deleteLink: `/referrals/${this.referral.id}/delete-probation-practitioner-phone-number`,
       },
       {
         key: 'PDU (Probation Delivery Unit)',
@@ -93,9 +94,10 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
   }
 
   private determinePhoneNumber(): SummaryListItemContent {
-    return (
-      this.referral.ndeliusPhoneNumber || this.deliusResponsibleOfficer?.communityManager.telephoneNumber || 'Not found'
-    )
+    if (this.referral.ndeliusPhoneNumber != null) {
+      return this.referral.ndeliusPhoneNumber
+    }
+    return this.deliusResponsibleOfficer?.communityManager.telephoneNumber || 'Not found'
   }
 
   private determineEmail(): SummaryListItemContent {

@@ -145,6 +145,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           key: 'Phone number',
           lines: ['07503434343'],
           changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number`,
+          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner-phone-number`,
           valueLink: undefined,
         },
         {
@@ -208,6 +209,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           key: 'Phone number',
           lines: [`Not found`],
           changeLink: undefined,
+          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner-phone-number`,
           valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number</a>`,
         },
         {
