@@ -20,11 +20,4 @@ export default class DeleteProbationPractitionerPhoneNumberPresenter {
   }
 
   private readonly utils = new PresenterUtils(this.userInputData)
-
-  readonly fields = {
-    ndeliusPPPhoneNumber: this.utils.stringValue(
-      this.ndeliusPPPhoneNumber!,
-      'delius-probation-practitioner-phone-number'
-    ),
-  }
 }
