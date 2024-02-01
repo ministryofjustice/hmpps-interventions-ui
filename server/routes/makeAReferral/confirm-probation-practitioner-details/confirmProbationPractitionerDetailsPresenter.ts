@@ -1,7 +1,7 @@
 import DraftReferral from '../../../models/draftReferral'
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
-import { SummaryListItem } from '../../../utils/summaryList'
+import { SummaryListItem, SummaryListItemContent } from '../../../utils/summaryList'
 import DeliusOfficeLocation from '../../../models/deliusOfficeLocation'
 import DeliusDeliveryUnit from '../../../models/deliusDeliveryUnit'
 import { DeliusResponsibleOfficer } from '../../../models/delius/deliusResponsibleOfficer'
@@ -35,27 +35,46 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       },
       {
         key: 'Email address',
-        lines: [
-          this.referral.ndeliusPPEmailAddress || this.deliusResponsibleOfficer?.communityManager.email || 'Not found',
-        ],
-        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-email-address`,
+        lines: [this.determineEmail()],
+        changeLink:
+          this.determineEmail() !== 'Not found'
+            ? `/referrals/${this.referral.id}/update-probation-practitioner-email-address`
+            : undefined,
+        valueLink:
+          this.determineEmail() === 'Not found'
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address</a>`
+            : undefined,
       },
       {
         key: 'Phone number',
-        lines: [
-          this.referral.ndeliusPhoneNumber ||
-            this.deliusResponsibleOfficer?.communityManager.telephoneNumber ||
-            'Not found',
-        ],
-        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-phone-number`,
+        lines: [this.determinePhoneNumber()],
+        changeLink:
+          this.determinePhoneNumber() !== 'Not found'
+            ? `/referrals/${this.referral.id}/update-probation-practitioner-phone-number`
+            : undefined,
+        valueLink:
+          this.determinePhoneNumber() === 'Not found'
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number</a>`
+            : undefined,
       },
       {
         key: 'PDU (Probation Delivery Unit)',
-        lines: [this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found'],
+        lines: [
+          this.referral.ndeliusPDU || this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found',
+        ],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu`,
       },
       {
         key: 'Team Phone number',
-        lines: [this.deliusResponsibleOfficer?.communityManager.team.telephoneNumber || 'Not found'],
+        lines: [this.determineTeamPhoneNumber()],
+        changeLink:
+          this.determineTeamPhoneNumber() !== 'Not found'
+            ? `/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number`
+            : undefined,
+        valueLink:
+          this.determineTeamPhoneNumber() === 'Not found'
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number" class="govuk-link">Enter team phone number</a>`
+            : undefined,
       },
     ]
     return summary
@@ -64,6 +83,24 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
   readonly errorSummary = PresenterUtils.errorSummary(this.error, {
     fieldOrder: ['probation-practitioner-name'],
   })
+
+  private determineTeamPhoneNumber(): SummaryListItemContent {
+    return (
+      this.referral.ndeliusTeamPhoneNumber ||
+      this.deliusResponsibleOfficer?.communityManager.team.telephoneNumber ||
+      'Not found'
+    )
+  }
+
+  private determinePhoneNumber(): SummaryListItemContent {
+    return (
+      this.referral.ndeliusPhoneNumber || this.deliusResponsibleOfficer?.communityManager.telephoneNumber || 'Not found'
+    )
+  }
+
+  private determineEmail(): SummaryListItemContent {
+    return this.referral.ndeliusPPEmailAddress || this.deliusResponsibleOfficer?.communityManager.email || 'Not found'
+  }
 
   private errorMessageForField(field: string): string | null {
     return PresenterUtils.errorMessage(this.error, field)
