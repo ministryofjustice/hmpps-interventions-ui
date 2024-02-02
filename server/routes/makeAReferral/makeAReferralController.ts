@@ -1160,7 +1160,6 @@ export default class MakeAReferralController {
     const presenter = new DeleteProbationPractitionerPhoneNumberPresenter(
       referral.id,
       referral.serviceUser.crn,
-      referral.ndeliusPhoneNumber,
       referral.serviceUser.firstName,
       referral.serviceUser.lastName
     )
@@ -1170,7 +1169,7 @@ export default class MakeAReferralController {
   }
 
   async deleteProbationPractitionerPhoneNumber(req: Request, res: Response): Promise<void> {
-    const form = await new DeleteProbationPractitionerPhoneNumberForm(req)
+    const form = await new DeleteProbationPractitionerPhoneNumberForm()
 
     // do the delete
     await this.interventionsService.patchDraftReferral(
