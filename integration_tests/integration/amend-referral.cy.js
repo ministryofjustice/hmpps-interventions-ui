@@ -7,6 +7,7 @@ import riskSummary from '../../testutils/factories/riskSummary'
 import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 import caseConvictionFactory from '../../testutils/factories/caseConviction'
+import secureChildAgency from '../../testutils/factories/secureChildAgency'
 
 context('Amend a referral', () => {
   beforeEach(() => {
@@ -37,6 +38,7 @@ context('Amend a referral', () => {
       cy.stubGetRiskSummary(crn, riskSummary.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildAgency.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -127,6 +129,7 @@ context('Amend a referral', () => {
       cy.stubGetRiskSummary(crn, riskSummary.build())
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+      cy.stubGetSecuredChildAgencies(secureChildAgency.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -228,6 +231,7 @@ context('Amend a referral', () => {
       cy.stubGetRiskSummary(crn, riskSummary.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildAgency.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -361,6 +365,7 @@ context('Amend a referral', () => {
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetSecuredChildAgencies(secureChildAgency.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -602,6 +607,7 @@ context('Amend a referral', () => {
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetSecuredChildAgencies(secureChildAgency.build())
     }
 
     describe('as a probation practitioner', () => {

@@ -64,13 +64,13 @@ describe(ServiceUserDetailsPresenter, () => {
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
     it("returns a title for the page with the service user's name", () => {
-      const presenter = new ServiceUserDetailsPresenter(serviceUser, deliusServiceUser, prisonList)
+      const presenter = new ServiceUserDetailsPresenter(serviceUser, deliusServiceUser)
 
       expect(presenter.title).toEqual("Review Alex River's information")
     })
 
     it("falls back to an empty string if the service user's name is null", () => {
-      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser, prisonList)
+      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser)
 
       expect(presenter.title).toEqual("Review The person on probation's information")
     })
@@ -85,7 +85,6 @@ describe(ServiceUserDetailsPresenter, () => {
       const presenter = new ServiceUserDetailsPresenter(
         serviceUser,
         deliusServiceUser,
-        prisonList,
         '1',
         CurrentLocationType.custody,
         'aaa',
@@ -116,7 +115,7 @@ describe(ServiceUserDetailsPresenter, () => {
     })
 
     it('returns an empty values in lines for nullable fields on the Service user', () => {
-      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser, prisonList)
+      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser)
 
       expect(presenter.summary).toEqual([
         { key: 'CRN', lines: ['X862134'] },
@@ -144,11 +143,7 @@ describe(ServiceUserDetailsPresenter, () => {
         const nullNumberDeliusServiceUser = expandedDeliusServiceUserFactory.build({
           contactDetails: { emailAddress: undefined, telephoneNumber: undefined, mobileNumber: undefined },
         })
-        const presenter = new ServiceUserDetailsPresenter(
-          nullFieldsServiceUser,
-          nullNumberDeliusServiceUser,
-          prisonList
-        )
+        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullNumberDeliusServiceUser)
 
         expect(presenter.summary).toContainEqual({ key: 'Phone number', lines: [], listStyle: ListStyle.noMarkers })
       })
@@ -160,7 +155,7 @@ describe(ServiceUserDetailsPresenter, () => {
             mobileNumber: '987654321',
           },
         })
-        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user, prisonList)
+        const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, user)
 
         expect(presenter.summary).toContainEqual({
           key: 'Phone numbers',
@@ -180,7 +175,6 @@ describe(ServiceUserDetailsPresenter, () => {
       const presenter = new ServiceUserDetailsPresenter(
         serviceUser,
         deliusServiceUser,
-        prisonList,
         '1',
         CurrentLocationType.custody,
         'aaa',
@@ -202,7 +196,7 @@ describe(ServiceUserDetailsPresenter, () => {
     })
 
     it('returns an empty values in lines for nullable fields on the Service user', () => {
-      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser, prisonList)
+      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser)
 
       expect(presenter.personalDetailsSummary).toEqual([
         { key: 'First name', lines: [''] },
@@ -226,7 +220,6 @@ describe(ServiceUserDetailsPresenter, () => {
       const presenter = new ServiceUserDetailsPresenter(
         serviceUser,
         deliusServiceUser,
-        prisonList,
         '1',
         CurrentLocationType.custody,
         'aaa',
@@ -245,7 +238,7 @@ describe(ServiceUserDetailsPresenter, () => {
     })
 
     it('returns an empty values in lines for nullable fields on the Service user', () => {
-      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser, prisonList)
+      const presenter = new ServiceUserDetailsPresenter(nullFieldsServiceUser, nullFieldsDeliusServiceUser)
 
       expect(presenter.contactDetailsSummary).toEqual([
         {

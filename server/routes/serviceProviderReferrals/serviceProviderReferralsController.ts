@@ -66,6 +66,7 @@ import PrisonRegisterService from '../../services/prisonRegisterService'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
 import sessionStatus, { SessionStatus } from '../../utils/sessionStatus'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
+import PrisonAndSecureChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 
 export interface DraftAssignmentData {
   email: string | null
@@ -84,6 +85,7 @@ export default class ServiceProviderReferralsController {
     private readonly referenceDataService: ReferenceDataService,
     private readonly userDataService: UserDataService,
     private readonly prisonRegisterService: PrisonRegisterService,
+    private readonly prisonAndSecureChildAgencyService: PrisonAndSecureChildAgencyService,
     private readonly ramDeliusApiService: RamDeliusApiService
   ) {
     this.deliusOfficeLocationFilter = new DeliusOfficeLocationFilter(referenceDataService)
@@ -241,7 +243,9 @@ export default class ServiceProviderReferralsController {
       ? req.session.disableDowntimeBanner
       : false
 
-    const prisons = await Promise.resolve(this.prisonRegisterService.getPrisons())
+    const prisonAndSecureChildAgencyService = await Promise.resolve(
+      this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(res.locals.user.token.accessToken)
+    )
 
     const presenter = new DashboardPresenter(
       cases,
@@ -251,7 +255,7 @@ export default class ServiceProviderReferralsController {
       sort[0],
       disablePlannedDowntimeNotification,
       req.session.dashboardOriginPage,
-      prisons,
+      prisonAndSecureChildAgencyService,
       getSentReferralsFilterParams.search
     )
     const view = new DashboardView(presenter)
@@ -285,16 +289,23 @@ export default class ServiceProviderReferralsController {
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
 
     const { crn } = sentReferral.referral.serviceUser
-    const [intervention, sentBy, caseConviction, riskInformation, riskSummary, prisons, deliusResponsibleOfficer] =
-      await Promise.all([
-        this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
-        this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
-        this.ramDeliusApiService.getConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId),
-        this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
-        this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
-        this.prisonRegisterService.getPrisons(),
-        this.ramDeliusApiService.getResponsibleOfficer(sentReferral.referral.serviceUser.crn),
-      ])
+    const [
+      intervention,
+      sentBy,
+      caseConviction,
+      riskInformation,
+      riskSummary,
+      prisonsAndChildSecureAgencies,
+      deliusResponsibleOfficer,
+    ] = await Promise.all([
+      this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
+      this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
+      this.ramDeliusApiService.getConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId),
+      this.assessRisksAndNeedsService.getSupplementaryRiskInformation(sentReferral.supplementaryRiskId, accessToken),
+      this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
+      this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(accessToken),
+      this.ramDeliusApiService.getResponsibleOfficer(sentReferral.referral.serviceUser.crn),
+    ])
 
     const assignee =
       sentReferral.assignedTo === null
@@ -321,7 +332,7 @@ export default class ServiceProviderReferralsController {
       caseConviction.conviction,
       riskInformation,
       sentBy,
-      prisons,
+      prisonsAndChildSecureAgencies,
       assignee,
       formError,
       'service-provider',

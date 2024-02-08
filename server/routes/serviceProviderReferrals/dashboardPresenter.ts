@@ -10,7 +10,7 @@ import ControllerUtils from '../../utils/controllerUtils'
 import SentReferralSummaries from '../../models/sentReferralSummaries'
 import PresenterUtils from '../../utils/presenterUtils'
 import DashboardDetails from '../../models/dashboardDetails'
-import Prison from '../../models/prisonRegister/prison'
+import PrisonAndSecuredChildAgency from '../../models/prisonAndSecureChildAgency'
 
 export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
 const dashboardDetails: Record<DashboardType, DashboardDetails> = {
@@ -59,7 +59,7 @@ export default class DashboardPresenter {
     private readonly requestedSort: string,
     readonly disableDowntimeBanner: boolean,
     readonly dashboardOrigin: string,
-    private prisons: Prison[],
+    private prisonAndSecuredChildAgency: PrisonAndSecuredChildAgency[],
     readonly searchText: string | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {
@@ -214,7 +214,9 @@ export default class DashboardPresenter {
 
   private getLocation(referralSummary: SentReferralSummaries) {
     if (this.showReleaseDateAndLocationColumn && referralSummary.locationType === 'CUSTODY') {
-      return this.prisons.find(prison => prison.prisonId === referralSummary.location)?.prisonName
+      return this.prisonAndSecuredChildAgency.find(
+        prisonAndSecuredChildAgency => prisonAndSecuredChildAgency.id === referralSummary.location
+      )?.description
     }
     return referralSummary.location
   }

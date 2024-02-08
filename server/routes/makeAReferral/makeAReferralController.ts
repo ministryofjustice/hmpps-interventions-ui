@@ -59,7 +59,6 @@ import EditOasysRiskInformationForm from './risk-information/oasys/edit/editOasy
 import { DraftOasysRiskInformation } from '../../models/draftOasysRiskInformation'
 import CurrentLocationPresenter from './current-location/currentLocationPresenter'
 import CurrentLocationView from './current-location/currentLocationView'
-import PrisonRegisterService from '../../services/prisonRegisterService'
 import CurrentLocationForm from './current-location/currentLocationForm'
 import ReferralTypeForm from './referral-type-form/referralTypeForm'
 import ExpectedReleaseDateForm from './expected-release-date/expectedReleaseDateForm'
@@ -82,13 +81,14 @@ import OasysRiskSummaryView from './risk-information/oasys/oasysRiskSummaryView'
 import CommunityAllocatedPresenter from './community-allocated-form/communityAllocatedPresenter'
 import CommunityAllocatedView from './community-allocated-form/communityAllocatedView'
 import CommunityAllocatedForm from './community-allocated-form/communityAllocatedForm'
+import PrisonAndSecureChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 
 export default class MakeAReferralController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly ramDeliusApiService: RamDeliusApiService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
-    private readonly prisonRegisterService: PrisonRegisterService,
+    private readonly prisonAndSecureChildAgencyService: PrisonAndSecureChildAgencyService,
     private readonly referenceDataService: ReferenceDataService
   ) {}
 
@@ -169,9 +169,8 @@ export default class MakeAReferralController {
   async viewServiceUserDetails(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
-    const prisons = await this.prisonRegisterService.getPrisons()
 
-    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser, prisons, referral.id)
+    const presenter = new ServiceUserDetailsPresenter(referral.serviceUser, serviceUser, referral.id)
     const view = new ServiceUserDetailsView(presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
@@ -640,11 +639,13 @@ export default class MakeAReferralController {
   }
 
   async editCurrentLocation(req: Request, res: Response): Promise<void> {
-    const prisons = await this.prisonRegisterService.getPrisons()
+    const prisonAndSecureChildAgency = await this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(
+      res.locals.user.token.accessToken
+    )
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-    const presenter = new CurrentLocationPresenter(referral, prisons, null, req.body)
+    const presenter = new CurrentLocationPresenter(referral, prisonAndSecureChildAgency, null, req.body)
     const view = new CurrentLocationView(presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
@@ -755,7 +756,9 @@ export default class MakeAReferralController {
   }
 
   async submitCurrentLocation(req: Request, res: Response): Promise<void> {
-    const prisons = await this.prisonRegisterService.getPrisons()
+    const prisonAndSecureChildAgency = await this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(
+      res.locals.user.token.accessToken
+    )
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const form = await CurrentLocationForm.createForm(req, referral)
 
@@ -796,7 +799,7 @@ export default class MakeAReferralController {
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-      const presenter = new CurrentLocationPresenter(referral, prisons, error, req.body)
+      const presenter = new CurrentLocationPresenter(referral, prisonAndSecureChildAgency, error, req.body)
       const view = new CurrentLocationView(presenter)
 
       res.status(400)
@@ -923,13 +926,15 @@ export default class MakeAReferralController {
     const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
     const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
     const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
-    const prisons = await this.prisonRegisterService.getPrisons()
+    const prisonAndSecureChildAgency = await this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(
+      res.locals.user.token.accessToken
+    )
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
     const presenter = new ConfirmMainPointOfContactDetailsPresenter(
       referral,
-      prisons,
+      prisonAndSecureChildAgency,
       deliusOfficeLocations,
       deliusDeliveryUnits,
       deliusResponsibleOfficer
@@ -944,7 +949,9 @@ export default class MakeAReferralController {
     const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
     const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
     const deliusDeliveryUnits = await this.referenceDataService.getProbationDeliveryUnits()
-    const prisons = await this.prisonRegisterService.getPrisons()
+    const prisonAndSecureChildAgency = await this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(
+      res.locals.user.token.accessToken
+    )
     const form = await ConfirmMainPointOfContactDetailsForm.createForm(req, referral, deliusResponsibleOfficer)
 
     let error: FormValidationError | null = null
@@ -974,7 +981,7 @@ export default class MakeAReferralController {
 
       const presenter = new ConfirmMainPointOfContactDetailsPresenter(
         referral,
-        prisons,
+        prisonAndSecureChildAgency,
         deliusOfficeLocations,
         deliusDeliveryUnits,
         deliusResponsibleOfficer,
@@ -1245,7 +1252,9 @@ export default class MakeAReferralController {
   async checkAllReferralInformation(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const referral = await this.interventionsService.getDraftReferral(accessToken, req.params.id)
-    const prisons = await this.prisonRegisterService.getPrisons()
+    const prisonAndSecureChildAgency = await this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(
+      res.locals.user.token.accessToken
+    )
     if (referral.serviceCategoryIds === null) {
       throw new Error('Attempting to check answers without service categories selected')
     }
@@ -1266,7 +1275,7 @@ export default class MakeAReferralController {
       intervention,
       caseConviction.conviction,
       caseConviction.caseDetail,
-      prisons,
+      prisonAndSecureChildAgency,
       editedOasysRiskInformation
     )
     const view = new CheckAllReferralInformationView(presenter)

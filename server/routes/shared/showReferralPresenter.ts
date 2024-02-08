@@ -18,7 +18,7 @@ import SentencePresenter from '../makeAReferral/relevant-sentence/sentencePresen
 import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import RoshPanelPresenter from './roshPanelPresenter'
-import Prison from '../../models/prisonRegister/prison'
+import PrisonAndSecuredChildAgency from '../../models/prisonAndSecureChildAgency'
 import ArnRiskSummaryView from '../makeAReferral/risk-information/oasys/arnRiskSummaryView'
 import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
@@ -37,7 +37,7 @@ export default class ShowReferralPresenter {
     private readonly conviction: DeliusConviction,
     readonly riskInformation: SupplementaryRiskInformation,
     private readonly sentBy: RamDeliusUser,
-    private readonly prisons: Prison[],
+    private readonly prisonAndSecuredChildAgency: PrisonAndSecuredChildAgency[],
     private readonly assignee: AuthUserDetails | null,
     private readonly assignEmailError: FormValidationError | null,
     readonly userType: 'service-provider' | 'probation-practitioner',
@@ -501,7 +501,6 @@ export default class ShowReferralPresenter {
     return new ServiceUserDetailsPresenter(
       this.sentReferral.referral.serviceUser,
       this.deliusServiceUser,
-      this.prisons,
       this.sentReferral.id,
       this.sentReferral.referral.personCurrentLocationType,
       this.sentReferral.referral.personCustodyPrisonId,
@@ -608,7 +607,10 @@ export default class ShowReferralPresenter {
   }
 
   private getPrisonName(prisonId: string | null): string {
-    return this.prisons.find(prison => prison.prisonId === prisonId)?.prisonName || ''
+    return (
+      this.prisonAndSecuredChildAgency.find(prisonAndSecuredChildAgency => prisonAndSecuredChildAgency.id === prisonId)
+        ?.description || ''
+    )
   }
 
   get isRoAndSenderNotTheSamePerson(): boolean {

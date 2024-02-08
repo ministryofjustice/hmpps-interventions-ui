@@ -1,14 +1,14 @@
 import DraftReferral from '../../../models/draftReferral'
+import PrisonAndSecuredChildAgency from '../../../models/prisonAndSecureChildAgency'
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
-import Prison from '../../../models/prisonRegister/prison'
 
 export default class CurrentLocationPresenter {
   readonly backLinkUrl: string
 
   constructor(
     readonly referral: DraftReferral,
-    readonly prisons: Prison[],
+    readonly prisonAndSecureChildAgency: PrisonAndSecuredChildAgency[],
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {

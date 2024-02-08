@@ -24,16 +24,20 @@ import expandedDeliusServiceUserFactory from '../../../testutils/factories/expan
 import draftOasysRiskInformation from '../../../testutils/factories/draftOasysRiskInformation'
 import referralDetailsFactory from '../../../testutils/factories/referralDetails'
 import PrisonRegisterService from '../../services/prisonRegisterService'
+import PrisonApiService from '../../services/prisonApiService'
 import ReferenceDataService from '../../services/referenceDataService'
 import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
 import { CurrentLocationType } from '../../models/draftReferral'
+import secureChildAgency from '../../../testutils/factories/secureChildAgency'
+import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/ramDeliusApiService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/prisonRegisterService')
 jest.mock('../../services/referenceDataService')
+jest.mock('../../services/prisonApiService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
@@ -41,7 +45,12 @@ const interventionsService = new InterventionsService(
 const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
 const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
+const prisonApiService = new PrisonApiService() as jest.Mocked<PrisonApiService>
 const referenceDataService = new ReferenceDataService() as jest.Mocked<ReferenceDataService>
+const prisonAndSecuredChildAgencyService = new PrisonAndSecuredChildAgencyService(
+  prisonRegisterService,
+  prisonApiService
+)
 
 const serviceUser = {
   crn: 'X123456',
@@ -65,7 +74,9 @@ beforeEach(() => {
       ramDeliusApiService,
       assessRisksAndNeedsService,
       prisonRegisterService,
+      prisonApiService,
       referenceDataService,
+      prisonAndSecuredChildAgencyService,
     },
     userType: AppSetupUserType.probationPractitioner,
   })
@@ -1036,9 +1047,8 @@ describe('GET /referrals/:id/submit-current-location', () => {
       .serviceUserSelected()
       .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-
-    const prisonList = prisonFactory.build()
-    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
   })
 
   it('renders a form page', async () => {
@@ -1071,6 +1081,7 @@ describe('POST /referrals/:id/submit-current-location', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
   })
 
   it('updates the referral on the backend and redirects to the expected release date page', async () => {
@@ -1146,6 +1157,8 @@ describe('GET /referrals/:id/confirm-probation-practitioner-details', () => {
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+
     const officeList = deliusOfficeLocationFactory.officeList()
     referenceDataService.getProbationOffices.mockResolvedValue(officeList)
 
@@ -1186,6 +1199,8 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
 
     const officeList = deliusOfficeLocationFactory.officeList()
     referenceDataService.getProbationOffices.mockResolvedValue(officeList)
@@ -1288,6 +1303,8 @@ describe('GET /referrals/:id/confirm-main-point-of-contact', () => {
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
 
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+
     const officeList = deliusOfficeLocationFactory.officeList()
     referenceDataService.getProbationOffices.mockResolvedValue(officeList)
 
@@ -1328,6 +1345,8 @@ describe('POST /referrals/:id/confirm-main-point-of-contact', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
 
     const officeList = deliusOfficeLocationFactory.officeList()
     referenceDataService.getProbationOffices.mockResolvedValue(officeList)
@@ -2243,6 +2262,7 @@ describe('GET /referrals/:id/check-all-referral-information', () => {
     ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(expandedDeliusServiceUserFactory.build())
     ramDeliusApiService.getConvictionByCrnAndId.mockResolvedValue(conviction)
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
   })
 
   it('displays a summary of the draft referral', async () => {

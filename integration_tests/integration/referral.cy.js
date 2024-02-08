@@ -12,6 +12,8 @@ import pageFactory from '../../testutils/factories/page'
 import { CurrentLocationType } from '../../server/models/draftReferral'
 import caseConvictionsFactory from '../../testutils/factories/caseConvictions'
 import caseConvictionFactory from '../../testutils/factories/caseConviction'
+import prisonFactory from '../../testutils/factories/prison'
+import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
 
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build()
@@ -164,6 +166,8 @@ describe('Referral form', () => {
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
       cy.stubGetResponsibleOfficer(draftReferral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
 
@@ -798,6 +802,8 @@ describe('Referral form', () => {
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
       cy.stubGetResponsibleOfficer(draftReferral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
 

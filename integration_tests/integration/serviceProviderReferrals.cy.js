@@ -17,6 +17,8 @@ import actionPlanActivityFactory from '../../testutils/factories/actionPlanActiv
 import pageFactory from '../../testutils/factories/page'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 import caseConvictionFactory from '../../testutils/factories/caseConviction'
+import prisonFactory from '../../testutils/factories/prison'
+import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
 
 describe('Service provider referrals dashboard', () => {
   beforeEach(() => {
@@ -152,6 +154,8 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetConvictionByCrnAndId(referralToSelect.referral.serviceUser.crn, conviction.conviction.id, conviction)
     cy.stubGetSupplementaryRiskInformation(referralToSelect.supplementaryRiskId, supplementaryRiskInformation)
     cy.stubGetResponsibleOfficer(referralToSelect.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
+    cy.stubGetPrisons(prisonFactory.build())
+    cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
     cy.login()
 
@@ -344,6 +348,8 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
       cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
 
@@ -438,6 +444,8 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
 
@@ -553,6 +561,8 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetActionPlanAppointments(draftActionPlan.id, actionPlanAppointments)
     cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
     cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [])
+    cy.stubGetPrisons(prisonFactory.build())
+    cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
     cy.login()
 
@@ -708,6 +718,8 @@ describe('Service provider referrals dashboard', () => {
     cy.stubGetActionPlanAppointments(draftActionPlan.id, actionPlanAppointments)
     cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.withAttendedAppointment.build())
     cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [])
+    cy.stubGetPrisons(prisonFactory.build())
+    cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
     cy.login()
 
@@ -848,6 +860,8 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGetAuthUserByUsername(hmppsAuthUser.username, hmppsAuthUser)
       cy.stubGetSupplierAssessment(assignedReferral.id, supplierAssessmentFactory.build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
       cy.login()
     })
 
@@ -1073,6 +1087,8 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
       cy.login()
     })
 
@@ -1585,6 +1601,8 @@ describe('Service provider referrals dashboard', () => {
           submitted: true,
         },
       })
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
 
@@ -1758,6 +1776,8 @@ describe('Service provider referrals dashboard', () => {
           submitted: true,
         },
       }
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
 
@@ -1908,6 +1928,8 @@ describe('Service provider referrals dashboard', () => {
         { id: actionPlan.id, submittedAt: actionPlan.submittedAt, approvedAt: actionPlan.approvedAt },
       ])
       cy.stubGetActionPlanAppointments(actionPlan.id, appointments)
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
       cy.visit(`/service-provider/referrals/${assignedReferral.id}/progress`)
@@ -1998,6 +2020,8 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser)
       cy.stubGetSupplierAssessment(referralParams.id, supplierAssessmentFactory.build())
       cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
     })
 
     it('allows users to know if, when and why an intervention was cancelled', () => {
@@ -2125,6 +2149,8 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetSupplierAssessment(referral.id, supplierAssessmentFactory.build())
       cy.stubGetActionPlanAppointments(actionPlan.id, [])
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
     })
 
     it('User fills in, reviews, changes, and submits an end of service report', () => {
@@ -2288,7 +2314,8 @@ describe('Service provider referrals dashboard', () => {
       referral.endOfServiceReport = submittedEndOfServiceReport
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetEndOfServiceReport(submittedEndOfServiceReport.id, submittedEndOfServiceReport)
-
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
       cy.login()
 
       cy.visit(`/service-provider/referrals/${referral.id}/progress`)
@@ -2335,6 +2362,8 @@ describe('Service provider referrals dashboard', () => {
         cy.stubGetUserByUsername(probationPractitioner.username, probationPractitioner)
         cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
         cy.stubGetApprovedActionPlanSummaries(referral.id, [])
+        cy.stubGetPrisons(prisonFactory.build())
+        cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
         cy.login()
       })
     })
@@ -2375,6 +2404,8 @@ describe('Service provider referrals dashboard', () => {
         cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser)
         cy.stubGetAuthUserByUsername(serviceProvider.username, serviceProvider)
         cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+        cy.stubGetPrisons(prisonFactory.build())
+        cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
       })
 
       describe('when user records the attendance as not attended', () => {
@@ -2786,6 +2817,8 @@ describe('Service provider referrals dashboard', () => {
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
       cy.stubGenerateServiceProviderPerformanceReport()
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
 
@@ -2968,6 +3001,8 @@ describe('Service provider referrals dashboard', () => {
         cy.stubGetResponsibleOfficer(referralToSelect.referral.serviceUser.crn, [responsibleOfficer])
         cy.stubGetSupplierAssessment(referralToSelect.id, supplierAssessmentFactory.build())
         cy.stubGetApprovedActionPlanSummaries(referralToSelect.id, [])
+        cy.stubGetPrisons(prisonFactory.build())
+        cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
         cy.login()
 
         cy.get('a').contains(table.dashboardType).click()

@@ -39,6 +39,7 @@ import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
 import { ActionPlanAppointment } from '../../models/appointment'
 import approvedActionPlanSummary from '../../../testutils/factories/approvedActionPlanSummary'
 import PrisonRegisterService from '../../services/prisonRegisterService'
+import PrisonApiService from '../../services/prisonApiService'
 import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
 import deliusResponsibleOfficerFactory from '../../../testutils/factories/deliusResponsibleOfficer'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
@@ -46,12 +47,15 @@ import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 import ramDeliusUserFactory from '../../../testutils/factories/ramDeliusUser'
 import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import { CurrentLocationType } from '../../models/draftReferral'
+import secureChildAgency from '../../../testutils/factories/secureChildAgency'
+import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/draftsService')
 jest.mock('../../services/prisonRegisterService')
 jest.mock('../../services/ramDeliusApiService')
+jest.mock('../../services/prisonApiService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
@@ -64,6 +68,13 @@ const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthSe
 const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 
 const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
+
+const prisonApiService = new PrisonApiService() as jest.Mocked<PrisonApiService>
+
+const prisonAndSecuredChildAgencyService = new PrisonAndSecuredChildAgencyService(
+  prisonRegisterService,
+  prisonApiService
+)
 
 const draftsService = {
   createDraft: jest.fn(),
@@ -89,6 +100,8 @@ beforeEach(() => {
       userDataService,
       prisonRegisterService,
       ramDeliusApiService,
+      prisonApiService,
+      prisonAndSecuredChildAgencyService,
     },
     userType: AppSetupUserType.serviceProvider,
   })
@@ -503,6 +516,8 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
 
     await request(app)
       .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
@@ -543,6 +558,8 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
 
     await request(app)
       .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
@@ -566,6 +583,9 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
       sentReferral = sentReferralFactory.assigned().build()
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
+      prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+      prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+
       await request(app)
         .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
         .expect(200)

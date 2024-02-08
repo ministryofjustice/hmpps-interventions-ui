@@ -8,12 +8,12 @@ export default class CurrentLocationView {
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   private get prisonSelectArgs(): SelectArgs {
-    const prisonItems = this.presenter.prisons.map(prison => {
+    const prisonItems = this.presenter.prisonAndSecureChildAgency.map(prisonAndSecureChildAgency => {
       return {
-        text: prison.prisonName,
-        value: prison.prisonId,
+        text: prisonAndSecureChildAgency.description,
+        value: prisonAndSecureChildAgency.id,
         selected: this.presenter.referral.personCustodyPrisonId
-          ? this.presenter.referral.personCustodyPrisonId === prison.prisonId
+          ? this.presenter.referral.personCustodyPrisonId === prisonAndSecureChildAgency.id
           : false,
       }
     })
