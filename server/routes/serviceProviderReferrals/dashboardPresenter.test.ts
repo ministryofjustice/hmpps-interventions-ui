@@ -5,6 +5,8 @@ import { Page } from '../../models/pagination'
 import SentReferralSummariesFactory from '../../../testutils/factories/sentReferralSummaries'
 import SentReferralSummaries from '../../models/sentReferralSummaries'
 import prisonFactory from '../../../testutils/factories/prison'
+import prisonAndSecuredChildFactory from '../../../testutils/factories/secureChildAgency'
+import PrisonAndSecuredChildAgency from '../../models/prisonAndSecureChildAgency'
 
 describe(DashboardPresenter, () => {
   const loggedInUser = loggedInUserFactory.crsServiceProviderUser().build()
@@ -43,10 +45,23 @@ describe(DashboardPresenter, () => {
     }),
   ]
 
+  const prisonList = prisonFactory.build()
+  const prisonAndSecuredChildAgencyList = prisonAndSecuredChildFactory.build()
+  const prisonsAndSecuredChildAgencies: PrisonAndSecuredChildAgency[] = []
+
+  prisonList.forEach(prison =>
+    prisonsAndSecuredChildAgencies.push({ id: prison.prisonId, description: prison.prisonName })
+  )
+  prisonAndSecuredChildAgencyList.forEach(securedChildAgency =>
+    prisonsAndSecuredChildAgencies.push({
+      id: securedChildAgency.agencyId,
+      description: securedChildAgency.description,
+    })
+  )
+
   describe('tableHeadings', () => {
     it('persistentId is the database sort field', () => {
       const page = pageFactory.pageContent([]).build() as Page<SentReferralSummaries>
-      const prisons = prisonFactory.build()
       const presenter = new DashboardPresenter(
         page,
         'My cases',
@@ -55,7 +70,7 @@ describe(DashboardPresenter, () => {
         'sentAt,DESC',
         false,
         'abc',
-        prisons
+        prisonsAndSecuredChildAgencies
       )
       expect(presenter.tableHeadings.map(headers => headers.persistentId)).toEqual([
         'serviceUserData.lastName',
@@ -71,8 +86,6 @@ describe(DashboardPresenter, () => {
     describe.each(displayCaseworkerDashboardTypes)('with %s dashboard type', dashboardType => {
       it('returns the table’s rows', () => {
         const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
-        const prisons = prisonFactory.build()
-
         const presenter = new DashboardPresenter(
           page,
           dashboardType,
@@ -81,7 +94,7 @@ describe(DashboardPresenter, () => {
           'sentAt,DESC',
           false,
           'abc',
-          prisons
+          prisonsAndSecuredChildAgencies
         )
 
         expect(presenter.tableRows).toEqual([
@@ -135,7 +148,6 @@ describe(DashboardPresenter, () => {
       describe('when a referral has been assigned to a caseworker', () => {
         it('includes the caseworker’s username', () => {
           const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
-          const prisons = prisonFactory.build()
           const presenter = new DashboardPresenter(
             page,
             dashboardType,
@@ -144,7 +156,7 @@ describe(DashboardPresenter, () => {
             'sentAt,DESC',
             false,
             'abc',
-            prisons
+            prisonsAndSecuredChildAgencies
           )
 
           expect(presenter.tableRows[0][3]).toMatchObject({ text: 'UserABC' })
@@ -215,7 +227,6 @@ describe(DashboardPresenter, () => {
           }),
         ]
         const page = pageFactory.pageContent(referralsWithUnAllocatedCOM).build() as Page<SentReferralSummaries>
-        const prisons = prisonFactory.build()
         const presenter = new DashboardPresenter(
           page,
           dashboardType,
@@ -224,7 +235,7 @@ describe(DashboardPresenter, () => {
           'sentAt,DESC',
           false,
           'abc',
-          prisons
+          prisonsAndSecuredChildAgencies
         )
 
         if (dashboardType === 'Unassigned cases') {

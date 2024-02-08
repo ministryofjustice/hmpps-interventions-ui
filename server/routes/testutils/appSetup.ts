@@ -21,6 +21,8 @@ import DraftsService from '../../services/draftsService'
 import ReferenceDataService from '../../services/referenceDataService'
 import UserDataService from '../../services/userDataService'
 import PrisonRegisterService from '../../services/prisonRegisterService'
+import PrisonApiService from '../../services/prisonApiService'
+import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 import MockRamDeliusApiService from './mocks/mockRamDeliusApiService'
 
 export enum AppSetupUserType {
@@ -119,6 +121,8 @@ export default function appWithAllRoutes({
     referenceDataService: {} as ReferenceDataService,
     userDataService: {} as UserDataService,
     prisonRegisterService: {} as PrisonRegisterService,
+    prisonApiService: {} as PrisonApiService,
+    prisonAndSecuredChildAgencyService: {} as PrisonAndSecuredChildAgencyService,
     ...overrides,
   }
 

@@ -2,6 +2,7 @@ import sentReferralSummaries from '../../testutils/factories/sentReferralSummari
 import interventionFactory from '../../testutils/factories/intervention'
 import pageFactory from '../../testutils/factories/page'
 import prisonFactory from '../../testutils/factories/prison'
+import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
 
 describe('Dashboards', () => {
   beforeEach(() => {
@@ -268,6 +269,8 @@ describe('Dashboards', () => {
       cy.stubGetIntervention(womensServicesIntervention.id, womensServicesIntervention)
 
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
     })
 
     describe('SP logs in and accesses "My cases"', () => {
@@ -480,6 +483,7 @@ describe('Dashboards', () => {
         })
         it('should filter unassigned cases by PoP name - When unallocated COM referral is present ', () => {
           cy.stubGetPrisons(prisonFactory.build())
+          cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
           cy.stubGetSentReferralsForUserTokenPaged(
             pageFactory.pageContent(unassignedReferralsWithUnAllocatedCOM).build()
           )
@@ -504,6 +508,7 @@ describe('Dashboards', () => {
         })
         it('should filter unassigned cases by PoP name - When expected release date is not present ', () => {
           cy.stubGetPrisons(prisonFactory.build())
+          cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
           cy.stubGetSentReferralsForUserTokenPaged(
             pageFactory.pageContent(unassignedReferralsWithNoExpectedReleaseDate).build()
           )

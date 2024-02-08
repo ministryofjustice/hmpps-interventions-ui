@@ -1,4 +1,6 @@
 import pageFactory from '../../testutils/factories/page'
+import prisonFactory from '../../testutils/factories/prison'
+import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
 
 const AuthLoginPage = require('../pages/authLogin')
 
@@ -62,6 +64,8 @@ context('Login', () => {
       cy.task('stubServiceProviderAuthUser')
       cy.stubGetSentReferralsForUserToken([])
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
       cy.login()
     })
 

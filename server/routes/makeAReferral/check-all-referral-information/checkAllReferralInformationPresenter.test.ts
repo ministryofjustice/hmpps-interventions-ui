@@ -5,13 +5,18 @@ import serviceCategoryFactory from '../../../../testutils/factories/serviceCateg
 import interventionFactory from '../../../../testutils/factories/intervention'
 import caseConvictionFactory from '../../../../testutils/factories/caseConviction'
 import prisonFactory from '../../../../testutils/factories/prison'
+import prisonAndSecuredChildFactory from '../../../../testutils/factories/secureChildAgency'
 import { ListStyle } from '../../../utils/summaryList'
 import { CurrentLocationType } from '../../../models/draftReferral'
 import PrisonRegisterService from '../../../services/prisonRegisterService'
+import PrisonAndSecuredChildAgency from '../../../models/prisonAndSecureChildAgency'
+import PrisonApiService from '../../../services/prisonApiService'
 
 jest.mock('../../../services/prisonRegisterService')
+jest.mock('../../../services/prisonApiService')
 
 const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
+const prisonApiService = new PrisonApiService() as jest.Mocked<PrisonApiService>
 
 describe(CheckAllReferralInformationPresenter, () => {
   const parameterisedDraftReferralFactory = draftReferralFactory.params({
@@ -34,7 +39,21 @@ describe(CheckAllReferralInformationPresenter, () => {
   const { conviction } = caseConviction
   const deliusServiceUser = caseConviction.caseDetail
   const prisonList = prisonFactory.build()
+  const prisonAndSecuredChildAgencyList = prisonAndSecuredChildFactory.build()
   prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+  prisonApiService.getSecureChildrenAgencies.mockResolvedValue(prisonAndSecuredChildAgencyList)
+
+  const prisonsAndSecuredChildAgencies: PrisonAndSecuredChildAgency[] = []
+
+  prisonList.forEach(prison =>
+    prisonsAndSecuredChildAgencies.push({ id: prison.prisonId, description: prison.prisonName })
+  )
+  prisonAndSecuredChildAgencyList.forEach(securedChildAgency =>
+    prisonsAndSecuredChildAgencies.push({
+      id: securedChildAgency.agencyId,
+      description: securedChildAgency.description,
+    })
+  )
 
   describe('serviceUserDetailsSection', () => {
     const referral = parameterisedDraftReferralFactory.build({
@@ -45,7 +64,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       interventionFactory.build({ serviceCategories }),
       conviction,
       deliusServiceUser,
-      prisonList
+      prisonsAndSecuredChildAgencies
     )
 
     describe('title', () => {
@@ -105,7 +124,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         interventionFactory.build({ serviceCategories }),
         conviction,
         deliusServiceUser,
-        prisonList
+        prisonsAndSecuredChildAgencies
       )
 
       describe('title', () => {
@@ -159,7 +178,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         interventionFactory.build({ serviceCategories }),
         conviction,
         deliusServiceUser,
-        prisonList
+        prisonsAndSecuredChildAgencies
       )
 
       describe('title', () => {
@@ -213,7 +232,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         interventionFactory.build({ serviceCategories }),
         conviction,
         deliusServiceUser,
-        prisonList
+        prisonsAndSecuredChildAgencies
       )
 
       describe('title', () => {
@@ -261,7 +280,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       interventionFactory.build({ serviceCategories }),
       conviction,
       deliusServiceUser,
-      prisonList
+      prisonsAndSecuredChildAgencies
     )
 
     describe('title', () => {
@@ -289,7 +308,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         interventionFactory.build({ serviceCategories }),
         conviction,
         deliusServiceUser,
-        prisonList
+        prisonsAndSecuredChildAgencies
       )
 
       it('returns the section title', () => {
@@ -308,7 +327,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           interventionFactory.build({ serviceCategories }),
           conviction,
           deliusServiceUser,
-          prisonList
+          prisonsAndSecuredChildAgencies
         )
 
         it('returns the value from the referral', () => {
@@ -330,7 +349,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           interventionFactory.build({ serviceCategories }),
           conviction,
           deliusServiceUser,
-          prisonList
+          prisonsAndSecuredChildAgencies
         )
 
         it('returns the value from the referral', () => {
@@ -353,7 +372,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             interventionFactory.build({ serviceCategories }),
             conviction,
             deliusServiceUser,
-            prisonList
+            prisonsAndSecuredChildAgencies
           )
 
           expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
@@ -374,7 +393,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             interventionFactory.build({ serviceCategories }),
             conviction,
             deliusServiceUser,
-            prisonList
+            prisonsAndSecuredChildAgencies
           )
 
           it('also includes the language', () => {
@@ -398,7 +417,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             interventionFactory.build({ serviceCategories }),
             conviction,
             deliusServiceUser,
-            prisonList
+            prisonsAndSecuredChildAgencies
           )
 
           expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
@@ -419,7 +438,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             interventionFactory.build({ serviceCategories }),
             conviction,
             deliusServiceUser,
-            prisonList
+            prisonsAndSecuredChildAgencies
           )
 
           it('includes information about when they’re unavailable', () => {
@@ -480,12 +499,13 @@ describe(CheckAllReferralInformationPresenter, () => {
     const intervention = interventionFactory.build({
       serviceCategories: [accommodationServiceCategory, eteServiceCategory, serviceCategoryFactory.build()],
     })
+
     const presenter = new CheckAllReferralInformationPresenter(
       referral,
       intervention,
       conviction,
       deliusServiceUser,
-      prisonList
+      prisonsAndSecuredChildAgencies
     )
 
     it('contains a section for each service category in the referral', () => {
@@ -550,7 +570,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           intervention,
           conviction,
           deliusServiceUser,
-          prisonList
+          prisonsAndSecuredChildAgencies
         )
 
         expect(presenter.serviceCategoriesSummary).toBeNull()
@@ -574,7 +594,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             intervention,
             conviction,
             deliusServiceUser,
-            prisonList
+            prisonsAndSecuredChildAgencies
           )
           expect(presenter.serviceCategoriesSummary).toEqual({
             title: 'Service categories',
@@ -602,7 +622,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             intervention,
             conviction,
             deliusServiceUser,
-            prisonList
+            prisonsAndSecuredChildAgencies
           )
           expect(presenter.serviceCategoriesSummary).toEqual({
             title: 'Service categories',
@@ -647,7 +667,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         intervention,
         assaultConviction.conviction,
         assaultConviction.caseDetail,
-        prisonList
+        prisonsAndSecuredChildAgencies
       )
 
       expect(presenter.sentenceInformationSummary).toEqual({

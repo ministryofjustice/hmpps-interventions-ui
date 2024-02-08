@@ -14,7 +14,7 @@ import SentencePresenter from '../relevant-sentence/sentencePresenter'
 import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 import DateUtils from '../../../utils/dateUtils'
 import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
-import Prison from '../../../models/prisonRegister/prison'
+import PrisonAndSecuredChildAgency from '../../../models/prisonAndSecureChildAgency'
 
 export default class CheckAllReferralInformationPresenter {
   readonly backLinkUrl: string
@@ -24,7 +24,7 @@ export default class CheckAllReferralInformationPresenter {
     private readonly intervention: Intervention,
     private readonly conviction: DeliusConviction,
     private readonly deliusServiceUser: DeliusServiceUser,
-    private readonly prisons: Prison[],
+    private readonly prisonAndSecureChildAgency: PrisonAndSecuredChildAgency[],
     private readonly editedOasysRiskInformation: DraftOasysRiskInformation | null = null
   ) {
     this.backLinkUrl = `/referrals/${this.referral.id}/form`
@@ -36,7 +36,6 @@ export default class CheckAllReferralInformationPresenter {
       summary: new ServiceUserDetailsPresenter(
         this.referral.serviceUser,
         this.deliusServiceUser,
-        this.prisons,
         this.referral.id,
         this.referral?.personCurrentLocationType,
         this.referral?.personCustodyPrisonId,
@@ -192,8 +191,8 @@ export default class CheckAllReferralInformationPresenter {
       return ''
     }
 
-    const matchedPerson = this.prisons.find(prison => prison.prisonId === prisonId)
-    return matchedPerson ? matchedPerson.prisonName : ''
+    const matchedPerson = this.prisonAndSecureChildAgency.find(prison => prison.id === prisonId)
+    return matchedPerson ? matchedPerson.description : ''
   }
 
   get deriveEmailAddress(): string {

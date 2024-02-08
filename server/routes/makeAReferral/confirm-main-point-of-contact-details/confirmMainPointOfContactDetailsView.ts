@@ -115,12 +115,12 @@ export default class ConfirmMainPointOfContactDetailsView {
   }
 
   private get prisonSelectArgs(): SelectArgs {
-    const prisonItems = this.presenter.prisons.map(prison => {
+    const prisonItems = this.presenter.prisonAndSecureChildAgency.map(prisonAndSecureChildAgency => {
       return {
-        text: prison.prisonName,
-        value: prison.prisonId,
+        text: prisonAndSecureChildAgency.description,
+        value: prisonAndSecureChildAgency.id,
         selected: this.presenter.referral.ppEstablishment
-          ? this.presenter.referral.ppEstablishment === prison.prisonId
+          ? this.presenter.referral.ppEstablishment === prisonAndSecureChildAgency.id
           : false,
       }
     })

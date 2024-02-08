@@ -12,6 +12,8 @@ import pageFactory from '../../testutils/factories/page'
 import { CurrentLocationType } from '../../server/models/draftReferral'
 import caseConvictionsFactory from '../../testutils/factories/caseConvictions'
 import caseConvictionFactory from '../../testutils/factories/caseConviction'
+import prisonFactory from '../../testutils/factories/prison'
+import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
 
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build()
@@ -192,7 +194,8 @@ describe('Referral form', () => {
           },
         })
       )
-
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
       cy.login()
 
       const randomInterventionId = '99ee16d3-130a-4d8f-97c5-f1a42119a382'
@@ -789,7 +792,8 @@ describe('Referral form', () => {
           },
         })
       )
-
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
       cy.login()
 
       const randomInterventionId = '99ee16d3-130a-4d8f-97c5-f1a42119a382'
@@ -1442,7 +1446,8 @@ describe('Referral form', () => {
           },
         })
       )
-
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
       cy.login()
 
       const randomInterventionId = '99ee16d3-130a-4d8f-97c5-f1a42119a382'

@@ -12,6 +12,7 @@ import initialAssessmentAppointmentFactory from '../../testutils/factories/initi
 import hmppsAuthUserFactory from '../../testutils/factories/hmppsAuthUser'
 import pageFactory from '../../testutils/factories/page'
 import prisonFactory from '../../testutils/factories/prison'
+import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 import { CurrentLocationType } from '../../server/models/draftReferral'
 import caseConvictionFactory from '../../testutils/factories/caseConviction'
@@ -391,6 +392,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetApprovedActionPlanSummaries(referral.id, [])
     cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
     cy.stubGetPrisons(prisonFactory.build())
+    cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
     cy.login()
 
@@ -615,6 +617,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetApprovedActionPlanSummaries(referral.id, [])
     cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
     cy.stubGetPrisons(prisons)
+    cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
     cy.login()
 
@@ -828,6 +831,8 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
 
@@ -926,6 +931,8 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
 
@@ -1105,6 +1112,8 @@ describe('Probation practitioner referrals dashboard', () => {
         cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
         cy.stubGetUserByUsername(deliusUser.username, deliusUser)
         cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
+        cy.stubGetPrisons(prisonFactory.build())
+        cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
         cy.login()
 

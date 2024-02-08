@@ -5,7 +5,6 @@ import ExpandedDeliusServiceUserDecorator from '../../../decorators/expandedDeli
 import DateUtils from '../../../utils/dateUtils'
 import { CurrentLocationType } from '../../../models/draftReferral'
 import utils from '../../../utils/utils'
-import Prison from '../../../models/prisonRegister/prison'
 
 export default class ServiceUserDetailsPresenter {
   readonly backLinkUrl: string
@@ -13,7 +12,6 @@ export default class ServiceUserDetailsPresenter {
   constructor(
     private readonly serviceUser: ServiceUser,
     private readonly deliusServiceUserDetails: DeliusServiceUser,
-    private readonly prisons: Prison[],
     private readonly referralId: string | null = null,
     private readonly personCurrentLocationType: CurrentLocationType | null = null,
     private readonly personCustodyPrisonId: string | null = null,

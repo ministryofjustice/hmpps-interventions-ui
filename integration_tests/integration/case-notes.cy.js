@@ -3,6 +3,8 @@ import interventionFactory from '../../testutils/factories/intervention'
 import deliusServiceUserFactory from '../../testutils/factories/deliusServiceUser'
 import caseNoteFactory from '../../testutils/factories/caseNote'
 import pageFactory from '../../testutils/factories/page'
+import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
+import prisonFactory from '../../testutils/factories/prison'
 
 context('Case notes', () => {
   beforeEach(() => {
@@ -17,6 +19,8 @@ context('Case notes', () => {
       it('should display "Probation Practitioner" as the user type', () => {
         const sentReferral = sentReferralFactory.build()
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+        cy.stubGetPrisons(prisonFactory.build())
+        cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
         cy.login()
 
         const ppCaseNote = caseNoteFactory.build({
@@ -46,6 +50,8 @@ context('Case notes', () => {
         const sentReferral = sentReferralFactory.build()
         cy.stubGetSentReferralsForUserToken([])
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+        cy.stubGetPrisons(prisonFactory.build())
+        cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
         cy.login()
 
         const ppCaseNote = caseNoteFactory.build({

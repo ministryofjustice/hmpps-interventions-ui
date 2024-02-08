@@ -160,6 +160,14 @@ export default {
       },
       agent: new AgentConfig(),
     },
+    prisonApi: {
+      url: get('PRISON_API_URL', 'http://localhost:9092', requiredInProduction),
+      timeout: {
+        response: Number(get('PRISON_API_URL_TIMEOUT_RESPONSE', 5000)),
+        deadline: Number(get('PRISON_API_URL_TIMEOUT_DEADLINE', 5000)),
+      },
+      agent: new AgentConfig(),
+    },
   },
   dashboards: {
     probationPractitioner: {

@@ -48,12 +48,16 @@ import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 import ramDeliusUserFactory from '../../../testutils/factories/ramDeliusUser'
 import caseConvictionFactory from '../../../testutils/factories/caseConviction'
 import { CurrentLocationType } from '../../models/draftReferral'
+import PrisonApiService from '../../services/prisonApiService'
+import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
+import secureChildAgency from '../../../testutils/factories/secureChildAgency'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/hmppsAuthService')
 jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/draftsService')
 jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/prisonApiService')
 jest.mock('../../services/ramDeliusApiService')
 
 const draftAssignmentFactory = createDraftFactory<DraftAssignmentData>({ email: null })
@@ -71,6 +75,13 @@ const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthSe
 const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
 
 const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
+
+const prisonApiService = new PrisonApiService() as jest.Mocked<PrisonApiService>
+
+const prisonAndSecuredChildAgencyService = new PrisonAndSecuredChildAgencyService(
+  prisonRegisterService,
+  prisonApiService
+)
 
 const userDataService = {
   store: jest.fn(),
@@ -97,6 +108,8 @@ beforeEach(() => {
       userDataService,
       prisonRegisterService,
       ramDeliusApiService,
+      prisonApiService,
+      prisonAndSecuredChildAgencyService,
     },
     userType: AppSetupUserType.serviceProvider,
   })
@@ -110,6 +123,8 @@ afterEach(() => {
 describe('GET /service-provider/dashboard', () => {
   it('displays a list of my cases', async () => {
     const referrals = [sentReferralSummariesFactory.build()]
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
     await request(app)
@@ -182,6 +197,8 @@ describe('GET /service-provider/dashboard/my-cases', () => {
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
     await request(app)
       .get('/service-provider/dashboard/my-cases')
       .expect(200)
@@ -258,6 +275,9 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+
     await request(app)
       .get('/service-provider/dashboard/all-open-cases')
       .expect(200)
@@ -274,6 +294,9 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+
     await request(app)
       .get('/service-provider/dashboard/all-open-cases')
       .expect(200)
@@ -302,6 +325,8 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
     })
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .get('/service-provider/dashboard/all-open-cases')
@@ -327,6 +352,8 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
     })
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .post(`/service-provider/dashboard/all-open-cases`)
@@ -346,6 +373,8 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
     })
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .post(`/service-provider/dashboard/all-open-cases`)
@@ -372,6 +401,8 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
     })
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .post(`/service-provider/dashboard/all-open-cases`)
@@ -405,6 +436,8 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
       .build({ totalPages: 2, totalElements: 2 }) as Page<SentReferralSummaries>
 
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .get('/service-provider/dashboard/all-open-cases?page=-200')
@@ -452,6 +485,8 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .get('/service-provider/dashboard/all-open-cases?page=2')
@@ -478,6 +513,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
     await request(app)
       .get('/service-provider/dashboard/unassigned-cases')
@@ -508,6 +544,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
     ]
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
     })
@@ -534,6 +571,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
     ]
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
     })
@@ -555,6 +593,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
 
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
     })
@@ -582,7 +621,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
     const searchText = ''
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
-
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
     })
@@ -662,6 +701,9 @@ describe('GET /service-provider/dashboard/completed-cases', () => {
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
 
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+
     await request(app)
       .get('/service-provider/dashboard/completed-cases')
       .expect(200)
@@ -691,6 +733,8 @@ describe('GET /service-provider/dashboard/completed-cases', () => {
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
     })
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .get('/service-provider/dashboard/completed-cases')
@@ -716,6 +760,8 @@ describe('GET /service-provider/dashboard/completed-cases', () => {
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>)
     })
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .post(`/service-provider/dashboard/completed-cases`)
@@ -735,6 +781,8 @@ describe('GET /service-provider/dashboard/completed-cases', () => {
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
     })
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .post(`/service-provider/dashboard/completed-cases`)
@@ -761,6 +809,8 @@ describe('GET /service-provider/dashboard/completed-cases', () => {
     interventionsService.getSentReferralsForUserTokenPaged.mockImplementation(() => {
       return Promise.resolve(pageFactory.pageContent([]).build() as Page<SentReferralSummaries>)
     })
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .post(`/service-provider/dashboard/completed-cases`)
@@ -881,6 +931,8 @@ describe('GET /service-provider/referrals/:id/details', () => {
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -926,6 +978,8 @@ describe('GET /service-provider/referrals/:id/details', () => {
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -975,6 +1029,8 @@ describe('GET /service-provider/referrals/:id/details', () => {
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -1028,6 +1084,8 @@ describe('GET /service-provider/referrals/:id/details', () => {
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -1080,6 +1138,8 @@ describe('GET /service-provider/referrals/:id/details', () => {
     assessRisksAndNeedsService.getSupplementaryRiskInformation.mockResolvedValue(supplementaryRiskInformation)
     assessRisksAndNeedsService.getRiskSummary.mockResolvedValue(riskSummary)
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -1104,6 +1164,8 @@ describe('GET /service-provider/referrals/:id/details', () => {
 
   describe('when the referral has been assigned to a caseworker', () => {
     it('mentions the assigned caseworker', async () => {
+      prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+      prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
       sentReferral = sentReferralFactory.assigned().build()
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
       await request(app)
