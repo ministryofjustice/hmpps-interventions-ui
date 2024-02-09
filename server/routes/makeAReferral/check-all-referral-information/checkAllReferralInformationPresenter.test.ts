@@ -160,7 +160,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'Probation office',
               lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
             },
           ])
         })
@@ -220,7 +220,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'Probation office',
               lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
             },
           ])
         })
@@ -280,7 +280,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'Probation office',
               lines: ['Not provided'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
             },
           ])
         })

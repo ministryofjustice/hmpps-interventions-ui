@@ -106,7 +106,7 @@ describe(UpdateProbationPractitionerPduPresenter, () => {
         })
       })
 
-      describe('when there is a user input data then the already set ndelius pp name is changed', () => {
+      describe('when there is a user input data then the already set ndelius pp pdu is changed', () => {
         it('uses that value as the field value', () => {
           const presenter = new UpdateProbationPractitionerPduPresenter(
             '1',

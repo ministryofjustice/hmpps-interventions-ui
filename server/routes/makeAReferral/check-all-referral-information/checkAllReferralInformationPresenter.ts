@@ -95,7 +95,7 @@ export default class CheckAllReferralInformationPresenter {
         {
           key: 'Probation office',
           lines: [this.referral.ppProbationOffice || 'Not provided'],
-          changeLink: `/referrals/${this.referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+          changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
         },
       ],
     }

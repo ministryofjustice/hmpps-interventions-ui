@@ -3,8 +3,8 @@ import UpdateProbationPractitionerPduForm from './updateProbationPractitionerPdu
 
 describe(UpdateProbationPractitionerPduForm, () => {
   describe('data', () => {
-    describe('when a valid probation Practitioner name is passed', () => {
-      it('returns a paramsForUpdate with the nDeliusPPName property', async () => {
+    describe('when a valid probation Practitioner pdu is passed', () => {
+      it('returns a paramsForUpdate with the ndeliusPDU property', async () => {
         const request = TestUtils.createRequest({
           'delius-probation-practitioner-pdu': 'Norfolk',
         })

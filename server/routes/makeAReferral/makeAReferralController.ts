@@ -97,6 +97,9 @@ import UpdateProbationPractitionerPduView from './update/probation-practitioner-
 import DeleteProbationPractitionerPhoneNumberPresenter from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberPresenter'
 import DeleteProbationPractitionerPhoneNumberView from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberView'
 import DeleteProbationPractitionerPhoneNumberForm from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberForm'
+import UpdateProbationPractitionerOfficePresenter from './update/probation-practitioner-probation-office/updateProbationPractitionerOfficePresenter'
+import UpdateProbationPractitionerOfficeView from './update/probation-practitioner-probation-office/updateProbationPractitionerOfficeView'
+import UpdateProbationPractitionerOfficeForm from './update/probation-practitioner-probation-office/updateProbationPractitionerOfficeForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -870,7 +873,7 @@ export default class MakeAReferralController {
     }
   }
 
-  async confirmProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
+  async viewConfirmProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
     const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
@@ -879,10 +882,10 @@ export default class MakeAReferralController {
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
     // save the initial delius data
-    await this.saveResponsibleOfficer(referral, res, req, deliusResponsibleOfficer)
+    const savedDraftReferral = await this.saveResponsibleOfficer(referral, res, req, deliusResponsibleOfficer)
 
     const presenter = new ConfirmProbationPractitionerDetailsPresenter(
-      referral,
+      savedDraftReferral,
       deliusOfficeLocations,
       deliusDeliveryUnits,
       deliusResponsibleOfficer
@@ -900,7 +903,7 @@ export default class MakeAReferralController {
   ) {
     if (referral.ndeliusPPName === null) {
       try {
-        await this.interventionsService.patchDraftReferral(res.locals.user.token.accessToken, req.params.id, {
+        return await this.interventionsService.patchDraftReferral(res.locals.user.token.accessToken, req.params.id, {
           ndeliusPPName: `${deliusResponsibleOfficer?.communityManager.name.forename} ${deliusResponsibleOfficer?.communityManager.name.surname}`,
           ndeliusPPEmailAddress: deliusResponsibleOfficer?.communityManager.email,
           ndeliusPDU: `${deliusResponsibleOfficer?.communityManager.pdu.description}`,
@@ -911,6 +914,7 @@ export default class MakeAReferralController {
         // ignore the error if it is happening while saving
       }
     }
+    return referral
   }
 
   async updateProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
@@ -1189,7 +1193,7 @@ export default class MakeAReferralController {
     const presenter = new UpdateProbationPractitionerPduPresenter(
       referral.id,
       referral.serviceUser.crn,
-      referral.ndeliusPhoneNumber,
+      referral.ndeliusPDU,
       referral.serviceUser.firstName,
       referral.serviceUser.lastName,
       null,
@@ -1237,7 +1241,7 @@ export default class MakeAReferralController {
       const presenter = new UpdateProbationPractitionerPduPresenter(
         referral.id,
         referral.serviceUser.crn,
-        form.paramsForUpdate?.ndeliusPhoneNumber,
+        form.paramsForUpdate?.ndeliusPDU,
         referral.serviceUser.firstName,
         referral.serviceUser.lastName,
         error,
@@ -1245,6 +1249,77 @@ export default class MakeAReferralController {
         deliusDeliveryUnits
       )
       const view = new UpdateProbationPractitionerPduView(presenter, deliusDeliveryUnits)
+
+      res.status(400)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
+  }
+
+  async viewUpdateProbationPractitionerOffice(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusOfficeLocation = await this.referenceDataService.getProbationOffices()
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new UpdateProbationPractitionerOfficePresenter(
+      referral.id,
+      referral.serviceUser.crn,
+      referral.ppProbationOffice,
+      referral.serviceUser.firstName,
+      referral.serviceUser.lastName,
+      null,
+      null,
+      deliusOfficeLocation
+    )
+    const view = new UpdateProbationPractitionerOfficeView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async updateProbationPractitionerOffice(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusOfficeLocation = await this.referenceDataService.getProbationOffices()
+    const form = await new UpdateProbationPractitionerOfficeForm(req).data()
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      if (form.paramsForUpdate.ppProbationOffice !== '') {
+        try {
+          await this.interventionsService.patchDraftReferral(
+            res.locals.user.token.accessToken,
+            req.params.id,
+            form.paramsForUpdate
+          )
+        } catch (e) {
+          const interventionsServiceError = e as InterventionsServiceError
+          error = createFormValidationErrorOrRethrow(interventionsServiceError)
+        }
+      }
+    } else {
+      error = form.error
+    }
+
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null && !amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/confirm-probation-practitioner-details`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new UpdateProbationPractitionerOfficePresenter(
+        referral.id,
+        referral.serviceUser.crn,
+        form.paramsForUpdate?.ppProbationOffice,
+        referral.serviceUser.firstName,
+        referral.serviceUser.lastName,
+        error,
+        req.body,
+        deliusOfficeLocation
+      )
+      const view = new UpdateProbationPractitionerOfficeView(presenter)
 
       res.status(400)
       await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
