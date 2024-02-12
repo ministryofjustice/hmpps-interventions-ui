@@ -3,8 +3,8 @@ import UpdateProbationPractitionerPhoneNumberForm from './updateProbationPractit
 
 describe(UpdateProbationPractitionerPhoneNumberForm, () => {
   describe('data', () => {
-    describe('when a valid probation Practitioner email address is passed', () => {
-      it('returns a paramsForUpdate with the nDeliusPPEmailAddress property', async () => {
+    describe('when a valid probation Practitioner phone number is passed', () => {
+      it('returns a paramsForUpdate with the nDeliusPPPhoneNumber property', async () => {
         const request = TestUtils.createRequest({
           'delius-probation-practitioner-phone-number': '07594343232',
         })
@@ -16,7 +16,7 @@ describe(UpdateProbationPractitionerPhoneNumberForm, () => {
   })
 
   describe('invalid fields', () => {
-    it('returns an error when the email address property is an invalid format', async () => {
+    it('returns an error when the phone number property is an invalid format', async () => {
       const request = TestUtils.createRequest({
         'delius-probation-practitioner-phone-number': 'invalidFormat.com',
       })

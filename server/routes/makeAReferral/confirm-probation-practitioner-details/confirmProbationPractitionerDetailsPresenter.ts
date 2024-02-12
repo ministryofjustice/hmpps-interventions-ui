@@ -56,7 +56,10 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determinePhoneNumber() === 'Not found'
             ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number</a>`
             : undefined,
-        deleteLink: `/referrals/${this.referral.id}/delete-probation-practitioner-phone-number`,
+        deleteLink:
+          this.determinePhoneNumber() !== 'Not found'
+            ? `/referrals/${this.referral.id}/delete-probation-practitioner-phone-number`
+            : undefined,
       },
       {
         key: 'PDU (Probation Delivery Unit)',
@@ -64,6 +67,23 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.referral.ndeliusPDU || this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found',
         ],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu`,
+      },
+      {
+        key: 'Probation office',
+        lines: [this.determineProbationOffice()],
+        valueLink:
+          this.determineProbationOffice() === 'Not found'
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-office" class="govuk-link">Enter probation office</a>`
+            : undefined,
+
+        changeLink:
+          this.determineProbationOffice() !== 'Not found'
+            ? `/referrals/${this.referral.id}/update-probation-practitioner-office`
+            : undefined,
+        deleteLink:
+          this.determineProbationOffice() !== 'Not found'
+            ? `/referrals/${this.referral.id}/delete-probation-practitioner-office`
+            : undefined,
       },
       {
         key: 'Team Phone number',
@@ -94,10 +114,11 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
   }
 
   private determinePhoneNumber(): SummaryListItemContent {
-    if (this.referral.ndeliusPhoneNumber != null) {
-      return this.referral.ndeliusPhoneNumber
-    }
-    return this.deliusResponsibleOfficer?.communityManager.telephoneNumber || 'Not found'
+    return this.referral.ndeliusPhoneNumber || 'Not found'
+  }
+
+  private determineProbationOffice(): SummaryListItemContent {
+    return this.referral.ppProbationOffice || 'Not found'
   }
 
   private determineEmail(): SummaryListItemContent {

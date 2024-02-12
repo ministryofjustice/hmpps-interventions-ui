@@ -12,6 +12,8 @@ import pageFactory from '../../testutils/factories/page'
 import { CurrentLocationType } from '../../server/models/draftReferral'
 import caseConvictionsFactory from '../../testutils/factories/caseConvictions'
 import caseConvictionFactory from '../../testutils/factories/caseConviction'
+import prisonFactory from '../../testutils/factories/prison'
+import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
 
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build()
@@ -116,7 +118,22 @@ describe('Referral form', () => {
         ndeliusPPName: 'Bob Marley',
         ndeliusPPEmailAddress: 'a.b@xyz.com',
         ndeliusPhoneNumber: '',
+        ppProbationOffice: '',
         ndeliusPDU: '97 Hackney and City',
+        serviceCategoryIds: [accommodationServiceCategory.id],
+        serviceProvider: {
+          name: 'Harmony Living',
+        },
+        interventionId: draftReferral.interventionId,
+      })
+
+      const updatedProbationOfficeDetails = draftReferralFactory.filledFormUptoPPDetails('Bob Marley').build({
+        id: draftReferral.id,
+        ndeliusPPName: 'Bob Marley',
+        ndeliusPPEmailAddress: 'a.b@xyz.com',
+        ndeliusPhoneNumber: '07434332323',
+        ndeliusPDU: '97 Hackney and City',
+        ppProbationOffice: 'Lincolnshire: Skegness Probation Office',
         serviceCategoryIds: [accommodationServiceCategory.id],
         serviceProvider: {
           name: 'Harmony Living',
@@ -190,6 +207,8 @@ describe('Referral form', () => {
       cy.stubSetComplexityLevelForServiceCategory(draftReferral.id, draftReferral)
       cy.stubGetRiskSummary(draftReferral.serviceUser.crn, riskSummaryFactory.build())
       cy.stubGetResponsibleOfficer(draftReferral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
+      cy.stubGetPrisons(prisonFactory.build())
+      cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
 
       cy.login()
 
@@ -324,6 +343,17 @@ describe('Referral form', () => {
       cy.contains('97 Hackney and City')
 
       cy.stubGetDraftReferral(draftReferral.id, updatedPPDetails)
+
+      cy.contains('Enter probation office').click()
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/update-probation-practitioner-office`)
+      cy.get('#delius-probation-practitioner-office').clear()
+      cy.get('#delius-probation-practitioner-office').type('Lincolnshire: Skegness Probation Office')
+      cy.stubGetDraftReferral(draftReferral.id, updatedProbationOfficeDetails)
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+      cy.contains('Lincolnshire: Skegness Probation Office')
+
       cy.contains('Save and continue').click()
 
       ReferralSectionVerifier.verifySection

@@ -176,7 +176,7 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
     makeAReferralController.updateExpectedReleaseDate(req, res)
   )
   get(router, '/referrals/:id/confirm-probation-practitioner-details', (req, res) =>
-    makeAReferralController.confirmProbationPractitionerDetails(req, res)
+    makeAReferralController.viewConfirmProbationPractitionerDetails(req, res)
   )
   post(router, '/referrals/:id/confirm-probation-practitioner-details', (req, res) =>
     makeAReferralController.updateProbationPractitionerDetails(req, res)
@@ -204,6 +204,12 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   )
   post(router, '/referrals/:id/update-probation-practitioner-pdu', (req, res) =>
     makeAReferralController.updateProbationPractitionerPdu(req, res)
+  )
+  get(router, '/referrals/:id/update-probation-practitioner-office', (req, res) =>
+    makeAReferralController.viewUpdateProbationPractitionerOffice(req, res)
+  )
+  post(router, '/referrals/:id/update-probation-practitioner-office', (req, res) =>
+    makeAReferralController.updateProbationPractitionerOffice(req, res)
   )
   get(router, '/referrals/:id/delete-probation-practitioner-phone-number', (req, res) =>
     makeAReferralController.viewDeleteProbationPractitionerPhoneNumber(req, res)

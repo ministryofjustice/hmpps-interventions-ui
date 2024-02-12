@@ -1153,6 +1153,7 @@ describe('GET /referrals/:id/confirm-probation-practitioner-details', () => {
       .serviceUserSelected()
       .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.patchDraftReferral.mockResolvedValue(referral)
 
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)

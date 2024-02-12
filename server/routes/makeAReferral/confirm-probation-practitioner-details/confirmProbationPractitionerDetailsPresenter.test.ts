@@ -125,6 +125,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           ndeliusPDU: 'London',
           ndeliusPhoneNumber: '07503434343',
           ndeliusTeamPhoneNumber: '020-2323232322',
+          ppProbationOffice: 'Sheffield',
           serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' },
         })
       const presenter = new ConfirmProbationPractitionerDetailsPresenter(referral, [], [], deliusResponsibleOfficer)
@@ -152,6 +153,13 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           key: 'PDU (Probation Delivery Unit)',
           lines: ['London'],
           changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu`,
+        },
+        {
+          key: 'Probation office',
+          lines: ['Sheffield'],
+          changeLink: `/referrals/${referral.id}/update-probation-practitioner-office`,
+          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner-office`,
+          valueLink: undefined,
         },
         {
           key: 'Team Phone number',
@@ -184,6 +192,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           ndeliusPDU: 'London',
           ndeliusPhoneNumber: null,
           ndeliusTeamPhoneNumber: null,
+          ppProbationOffice: null,
           serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' },
         })
       const presenter = new ConfirmProbationPractitionerDetailsPresenter(
@@ -209,13 +218,20 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           key: 'Phone number',
           lines: [`Not found`],
           changeLink: undefined,
-          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner-phone-number`,
+          deleteLink: undefined,
           valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number</a>`,
         },
         {
           key: 'PDU (Probation Delivery Unit)',
           lines: ['London'],
           changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu`,
+        },
+        {
+          key: 'Probation office',
+          lines: [`Not found`],
+          changeLink: undefined,
+          deleteLink: undefined,
+          valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-office" class="govuk-link">Enter probation office</a>`,
         },
         {
           key: 'Team Phone number',
