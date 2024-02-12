@@ -58,7 +58,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             : undefined,
         deleteLink:
           this.determinePhoneNumber() !== 'Not found'
-            ? `/referrals/${this.referral.id}/delete-probation-practitioner-phone-number`
+            ? `/referrals/${this.referral.id}/delete-probation-practitioner/phone-number`
             : undefined,
       },
       {
@@ -82,7 +82,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             : undefined,
         deleteLink:
           this.determineProbationOffice() !== 'Not found'
-            ? `/referrals/${this.referral.id}/delete-probation-practitioner-office`
+            ? `/referrals/${this.referral.id}/delete-probation-practitioner/probation-office`
             : undefined,
       },
       {

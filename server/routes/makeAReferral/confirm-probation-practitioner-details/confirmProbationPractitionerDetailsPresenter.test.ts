@@ -146,7 +146,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           key: 'Phone number',
           lines: ['07503434343'],
           changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number`,
-          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner-phone-number`,
+          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner/phone-number`,
           valueLink: undefined,
         },
         {
@@ -158,7 +158,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           key: 'Probation office',
           lines: ['Sheffield'],
           changeLink: `/referrals/${referral.id}/update-probation-practitioner-office`,
-          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner-office`,
+          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner/probation-office`,
           valueLink: undefined,
         },
         {
