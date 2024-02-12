@@ -94,9 +94,9 @@ import UpdateProbationPractitionerPhoneNumberForm from './update/probation-pract
 import UpdateProbationPractitionerPduPresenter from './update/probation-practitioner-pdu/updateProbationPractitionerPduPresenter'
 import UpdateProbationPractitionerPduForm from './update/probation-practitioner-pdu/updateProbationPractitionerPduForm'
 import UpdateProbationPractitionerPduView from './update/probation-practitioner-pdu/updateProbationPractitionerPduView'
-import DeleteProbationPractitionerPhoneNumberPresenter from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberPresenter'
-import DeleteProbationPractitionerPhoneNumberView from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberView'
-import DeleteProbationPractitionerPhoneNumberForm from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberForm'
+import DeleteProbationPractitionerFieldsPresenter from './delete/deleteProbationPractitionerFieldsPresenter'
+import DeleteProbationPractitionerPhoneNumberView from './delete/deleteProbationPractitionerFieldsView'
+import DeleteProbationPractitionerFieldsForm from './delete/deleteProbationPractitionerFieldsForm'
 import UpdateProbationPractitionerOfficePresenter from './update/probation-practitioner-probation-office/updateProbationPractitionerOfficePresenter'
 import UpdateProbationPractitionerOfficeView from './update/probation-practitioner-probation-office/updateProbationPractitionerOfficeView'
 import UpdateProbationPractitionerOfficeForm from './update/probation-practitioner-probation-office/updateProbationPractitionerOfficeForm'
@@ -1156,14 +1156,16 @@ export default class MakeAReferralController {
     }
   }
 
-  async viewDeleteProbationPractitionerPhoneNumber(req: Request, res: Response): Promise<void> {
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+  async viewDeleteProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
+    const { fieldName } = req.params
 
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-    const presenter = new DeleteProbationPractitionerPhoneNumberPresenter(
+    const presenter = new DeleteProbationPractitionerFieldsPresenter(
       referral.id,
       referral.serviceUser.crn,
+      fieldName,
       referral.serviceUser.firstName,
       referral.serviceUser.lastName
     )
@@ -1172,14 +1174,15 @@ export default class MakeAReferralController {
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
-  async deleteProbationPractitionerPhoneNumber(req: Request, res: Response): Promise<void> {
-    const form = await new DeleteProbationPractitionerPhoneNumberForm()
+  async deleteProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
+    const { fieldName } = req.params
+    const form = await new DeleteProbationPractitionerFieldsForm(fieldName)
 
     // do the delete
     await this.interventionsService.patchDraftReferral(
       res.locals.user.token.accessToken,
       req.params.id,
-      form.paramsForUpdate
+      form.paramsForUpdate!
     )
     res.redirect(`/referrals/${req.params.id}/confirm-probation-practitioner-details`)
   }

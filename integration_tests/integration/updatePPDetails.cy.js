@@ -324,7 +324,7 @@ describe('Referral form', () => {
       cy.get('#delete-link-2').click()
       cy.location('pathname').should(
         'equal',
-        `/referrals/${draftReferral.id}/delete-probation-practitioner-phone-number`
+        `/referrals/${draftReferral.id}/delete-probation-practitioner/phone-number`
       )
       cy.stubGetDraftReferral(draftReferral.id, deletedPPDetails)
       cy.contains('Confirm and delete').click()
@@ -353,6 +353,17 @@ describe('Referral form', () => {
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains('Lincolnshire: Skegness Probation Office')
+      cy.get('#delete-link-4').click()
+      cy.location('pathname').should(
+        'equal',
+        `/referrals/${draftReferral.id}/delete-probation-practitioner/probation-office`
+      )
+      cy.stubGetDraftReferral(draftReferral.id, deletedPPDetails)
+      cy.contains('Confirm and delete').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+      cy.contains('Lincolnshire: Skegness Probation Office').should('not.exist')
+      cy.contains('Enter probation office')
 
       cy.contains('Save and continue').click()
 
