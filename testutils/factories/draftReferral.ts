@@ -134,13 +134,15 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     ndeliusPPName = 'Bob Alice',
     ndeliusPPEmailAddress = 'bobalice@example.com',
     ndeliusPhoneNumber = '073232323232',
-    ndeliusPDU = '97 Hackney and City'
+    ndeliusPDU = '97 Hackney and City',
+    ndeliusTeamPhoneNumber = '020343434343'
   ) {
     return this.filledPersonalCurrentLocationType().params({
       ndeliusPPName,
       ndeliusPPEmailAddress,
       ndeliusPDU,
       ndeliusPhoneNumber,
+      ndeliusTeamPhoneNumber,
     })
   }
 

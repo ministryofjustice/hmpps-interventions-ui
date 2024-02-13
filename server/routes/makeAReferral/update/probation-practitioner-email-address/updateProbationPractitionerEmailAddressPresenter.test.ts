@@ -40,6 +40,7 @@ describe(UpdateProbationPractitionerEmailAddressPresenter, () => {
           'a.z@xyz.com',
           'David',
           'Blake',
+          false,
           {
             errors: [
               {
@@ -79,6 +80,7 @@ describe(UpdateProbationPractitionerEmailAddressPresenter, () => {
           'a.zxyz.com',
           'David',
           'Blake',
+          false,
           {
             errors: [
               {
@@ -132,6 +134,7 @@ describe(UpdateProbationPractitionerEmailAddressPresenter, () => {
             'a.z@xyz.com',
             'David',
             'Blake',
+            false,
             null,
             {
               'delius-probation-practitioner-email-address': 'a.z@abc.com',

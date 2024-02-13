@@ -1,9 +1,9 @@
 import { InputArgs } from '../../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../../utils/viewUtils'
-import UpdateProbationPractitionerPresenter from './updateProbationPractitionerPresenter'
+import UpdateProbationPractitionerNamePresenter from './updateProbationPractitionerNamePresenter'
 
 export default class UpdateProbationPractitionerView {
-  constructor(private readonly presenter: UpdateProbationPractitionerPresenter) {}
+  constructor(private readonly presenter: UpdateProbationPractitionerNamePresenter) {}
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 

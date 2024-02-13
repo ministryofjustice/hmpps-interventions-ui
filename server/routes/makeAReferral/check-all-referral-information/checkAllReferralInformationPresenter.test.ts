@@ -114,6 +114,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         ndeliusPPEmailAddress: 'a.b@xyz.com',
         ndeliusPDU: 'London',
         ndeliusPhoneNumber: '075950243221',
+        ndeliusTeamPhoneNumber: '020456734343',
         ppName: null,
         ppEmailAddress: null,
         ppPdu: null,
@@ -162,6 +163,11 @@ describe(CheckAllReferralInformationPresenter, () => {
               lines: ['London'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
             },
+            {
+              key: 'Team phone number',
+              lines: ['020456734343'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
+            },
           ])
         })
       })
@@ -174,6 +180,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         ndeliusPPEmailAddress: 'a.b@xyz.com',
         ndeliusPDU: 'London',
         ndeliusPhoneNumber: '075950243221',
+        ndeliusTeamPhoneNumber: '020456734343',
         ppName: null,
         ppEmailAddress: 'a.c@abc.com',
         ppPdu: 'Nottingham',
@@ -222,12 +229,17 @@ describe(CheckAllReferralInformationPresenter, () => {
               lines: ['London'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
             },
+            {
+              key: 'Team phone number',
+              lines: ['020456734343'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
+            },
           ])
         })
       })
     })
 
-    describe('probationPractitionerDetails with undefined email and probation office ', () => {
+    describe('probationPractitionerDetails with undefined email, probation office and team phone number ', () => {
       const referral = parameterisedDraftReferralFactory.build({
         personCurrentLocationType: CurrentLocationType.community,
         ndeliusPPName: 'Victor Drake',
@@ -281,6 +293,11 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Probation office',
               lines: ['Not provided'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+            },
+            {
+              key: 'Team phone number',
+              lines: ['Not provided'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
             },
           ])
         })

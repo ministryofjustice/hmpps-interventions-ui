@@ -6,7 +6,15 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
   const referral = draftReferralFactory
     .serviceCategorySelected()
     .serviceUserSelected()
-    .build({ serviceUser: { firstName: 'Bob' }, ndeliusPPName: 'Bob Alice' })
+    .build({
+      serviceUser: { firstName: 'Bob' },
+      ndeliusPPName: 'Bob Alice',
+      ndeliusPPEmailAddress: 'a.b@xyz.com',
+      ndeliusPDU: 'London',
+      ndeliusPhoneNumber: '0759434343',
+      ndeliusTeamPhoneNumber: '020334343435',
+      ppProbationOffice: 'Sheffield',
+    })
 
   const deliusResponsibleOfficer = {
     communityManager: {
@@ -59,11 +67,12 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
       )
 
       expect(form.paramsForUpdate(referral)).toEqual({
-        ndeliusPPName: 'Bob Alice',
-        ndeliusPPEmailAddress: `${deliusResponsibleOfficer?.communityManager.email}`,
-        ndeliusPDU: `${deliusResponsibleOfficer?.communityManager.pdu.description}`,
-        ndeliusPhoneNumber: `${deliusResponsibleOfficer?.communityManager.telephoneNumber}`,
-        ndeliusTeamPhoneNumber: `${deliusResponsibleOfficer?.communityManager.team.telephoneNumber}`,
+        ndeliusPPName: `${referral.ndeliusPPName}`,
+        ndeliusPPEmailAddress: `${referral.ndeliusPPEmailAddress}`,
+        ndeliusPDU: `${referral.ndeliusPDU}`,
+        ndeliusPhoneNumber: `${referral.ndeliusPhoneNumber}`,
+        ndeliusTeamPhoneNumber: `${referral.ndeliusTeamPhoneNumber}`,
+        ppProbationOffice: `${referral.ppProbationOffice}`,
       })
     })
   })

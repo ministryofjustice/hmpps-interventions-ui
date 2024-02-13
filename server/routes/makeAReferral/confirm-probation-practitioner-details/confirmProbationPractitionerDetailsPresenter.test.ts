@@ -165,6 +165,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           key: 'Team Phone number',
           lines: ['020-2323232322'],
           changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number`,
+          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner/team-phone-number`,
           valueLink: undefined,
         },
       ])

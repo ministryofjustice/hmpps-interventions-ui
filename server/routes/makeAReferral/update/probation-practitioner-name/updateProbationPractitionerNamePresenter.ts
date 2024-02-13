@@ -1,20 +1,18 @@
-import DeliusOfficeLocation from '../../../../models/deliusOfficeLocation'
 import { FormValidationError } from '../../../../utils/formValidationError'
 import PresenterUtils from '../../../../utils/presenterUtils'
 
-export default class UpdateProbationPractitionerOfficePresenter {
+export default class UpdateProbationPractitionerNamePresenter {
   backLinkUrl: string
 
   constructor(
     private readonly id: string,
     private readonly crn: string,
-    private readonly ppProbationOffice: string | null | undefined,
+    private readonly ndeliusPPName: string | null | undefined,
     private readonly firstName: string | null = null,
     private readonly lastName: string | null = null,
     private readonly amendPPDetails: boolean = false,
     private readonly error: FormValidationError | null = null,
-    private readonly userInputData: Record<string, string> | null = null,
-    readonly deliusOfficeLocations: DeliusOfficeLocation[]
+    private readonly userInputData: Record<string, string> | null = null
   ) {
     this.backLinkUrl = amendPPDetails
       ? `/referrals/${id}/check-all-referral-information`
@@ -22,19 +20,18 @@ export default class UpdateProbationPractitionerOfficePresenter {
   }
 
   readonly text = {
-    title: 'Update probation office',
+    title: 'Update probation practitioner name',
     label: `${this.firstName} ${this.lastName} (CRN: ${this.crn})`,
-    inputHeading: 'Probation office (if known)',
-    hint: `Start typing then choose probation office from the list`,
+    inputHeading: 'Full name',
   }
 
-  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'delius-probation-practitioner-office')
+  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'delius-probation-practitioner-name')
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    ppProbationOffice: this.utils.stringValue(this.ppProbationOffice!, 'delius-probation-practitioner-office'),
+    ndeliusPPName: this.utils.stringValue(this.ndeliusPPName!, 'delius-probation-practitioner-name'),
   }
 }

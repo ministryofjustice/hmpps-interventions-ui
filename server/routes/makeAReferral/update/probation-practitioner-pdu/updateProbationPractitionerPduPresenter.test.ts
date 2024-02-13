@@ -9,6 +9,7 @@ describe(UpdateProbationPractitionerPduPresenter, () => {
         'Norfolk',
         'David',
         'Blake',
+        false,
         null,
         null,
         [
@@ -35,6 +36,7 @@ describe(UpdateProbationPractitionerPduPresenter, () => {
           'Alex River',
           'David',
           'Blake',
+          false,
           null,
           null,
           []
@@ -54,6 +56,7 @@ describe(UpdateProbationPractitionerPduPresenter, () => {
           'Alex River',
           'David',
           'Blake',
+          false,
           null,
           null,
           []
@@ -74,6 +77,7 @@ describe(UpdateProbationPractitionerPduPresenter, () => {
             '',
             'David',
             'Blake',
+            false,
             null,
             null,
             []
@@ -91,6 +95,7 @@ describe(UpdateProbationPractitionerPduPresenter, () => {
             'Norfolk',
             'David',
             'Blake',
+            false,
             null,
             null,
             [
@@ -114,6 +119,7 @@ describe(UpdateProbationPractitionerPduPresenter, () => {
             'Norfolk',
             'David',
             'Blake',
+            false,
             null,
             {
               'delius-probation-practitioner-pdu': 'London',
