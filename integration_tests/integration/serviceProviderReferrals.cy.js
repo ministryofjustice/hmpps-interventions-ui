@@ -233,7 +233,7 @@ describe('Service provider referrals dashboard', () => {
       .should('contain', 'Probation Office')
       .should('contain', 'London')
       .should('contain', 'Team phone')
-      .should('contain', '044-2545453442')
+      .should('contain', '020343434343')
 
     cy.contains(`Back-up contact for the referral`)
       .parent()

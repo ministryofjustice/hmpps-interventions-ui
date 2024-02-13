@@ -274,7 +274,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
         { key: 'Phone number', lines: ['072121212124'] },
         { key: 'Probation Office', lines: ['London'] },
-        { key: 'Team phone number', lines: ['044-2545453442'] },
+        { key: 'Team phone number', lines: ['020343434343'] },
       ])
     })
     it('returns a summary list of probation practitioner details for probation practitioner', () => {
@@ -339,7 +339,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'Email address', lines: ['bobalice@example.com'] },
         { key: 'Phone number', lines: ['98454243243'] },
         { key: 'PDU (Probation Delivery Unit)', lines: ['97 Hackney and City'] },
-        { key: 'Team phone number', lines: ['044-2545453442'] },
+        { key: 'Team phone number', lines: ['020343434343'] },
       ])
     })
     it('returns a summary list of probation practitioner details from ndelius for probation practitioner', () => {

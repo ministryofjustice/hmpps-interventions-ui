@@ -36,7 +36,7 @@ export default class ConfirmProbationPractitionerDetailsForm {
       ndeliusPPEmailAddress: this.determinePPEmailAddress(referral.ndeliusPPEmailAddress),
       ndeliusPDU: this.determinePPPdu(referral.ndeliusPDU),
       ndeliusPhoneNumber: this.determinePPPhoneNumber(referral.ndeliusPhoneNumber),
-      ndeliusTeamPhoneNumber: this.deliusResponsibleOfficer?.communityManager.team.telephoneNumber,
+      ndeliusTeamPhoneNumber: this.determinePPTeamPhoneNumber(referral.ndeliusTeamPhoneNumber),
     }
   }
 
@@ -88,5 +88,16 @@ export default class ConfirmProbationPractitionerDetailsForm {
       return deliusResponsiblePdu?.description
     }
     return deliusResponsiblePdu?.description === ppPdu ? deliusResponsiblePdu.description : ppPdu
+  }
+
+  private determinePPTeamPhoneNumber(ppTeamPhoneNumber: string | null) {
+    const deliusResponsibleTeamTelephoneNumber = this.deliusResponsibleOfficer?.communityManager.team.telephoneNumber
+
+    if (ppTeamPhoneNumber == null) {
+      return deliusResponsibleTeamTelephoneNumber
+    }
+    return deliusResponsibleTeamTelephoneNumber === ppTeamPhoneNumber
+      ? deliusResponsibleTeamTelephoneNumber
+      : ppTeamPhoneNumber
   }
 }

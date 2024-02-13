@@ -97,6 +97,11 @@ export default class CheckAllReferralInformationPresenter {
           lines: [this.referral.ppProbationOffice || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
         },
+        {
+          key: 'Team phone number',
+          lines: [this.referral.ndeliusTeamPhoneNumber || ''],
+          changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
+        },
       ],
     }
   }

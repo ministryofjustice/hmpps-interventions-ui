@@ -96,6 +96,10 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determineTeamPhoneNumber() === 'Not found'
             ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number" class="govuk-link">Enter team phone number</a>`
             : undefined,
+        deleteLink:
+          this.determineTeamPhoneNumber() !== 'Not found'
+            ? `/referrals/${this.referral.id}/delete-probation-practitioner/team-phone-number`
+            : undefined,
       },
     ]
     return summary
@@ -106,11 +110,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
   })
 
   private determineTeamPhoneNumber(): SummaryListItemContent {
-    return (
-      this.referral.ndeliusTeamPhoneNumber ||
-      this.deliusResponsibleOfficer?.communityManager.team.telephoneNumber ||
-      'Not found'
-    )
+    return this.referral.ndeliusTeamPhoneNumber || 'Not found'
   }
 
   private determinePhoneNumber(): SummaryListItemContent {

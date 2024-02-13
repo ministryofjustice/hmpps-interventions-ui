@@ -552,6 +552,19 @@ describe('Referral form', () => {
         .should('contain', '97 Hackney and City')
         .contains('Change')
 
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .should('contain', 'Team phone number')
+        .should('contain', '020343434343')
+        .contains('Change')
+
+      cy.get('#change-link-5').should(
+        'have.attr',
+        'href',
+        `/referrals/${draftReferral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`
+      )
+
       //
       // Alex's risk information
       cy.contains('Additional information')
