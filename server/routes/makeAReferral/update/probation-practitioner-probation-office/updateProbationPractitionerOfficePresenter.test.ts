@@ -9,6 +9,7 @@ describe(UpdateProbationPractitionerOfficePresenter, () => {
         'Norfolk',
         'David',
         'Blake',
+        false,
         null,
         null,
         [
@@ -39,6 +40,7 @@ describe(UpdateProbationPractitionerOfficePresenter, () => {
           'Alex River',
           'David',
           'Blake',
+          false,
           null,
           null,
           []
@@ -58,6 +60,7 @@ describe(UpdateProbationPractitionerOfficePresenter, () => {
           'Alex River',
           'David',
           'Blake',
+          false,
           null,
           null,
           []
@@ -78,6 +81,7 @@ describe(UpdateProbationPractitionerOfficePresenter, () => {
             '',
             'David',
             'Blake',
+            false,
             null,
             null,
             []
@@ -95,6 +99,7 @@ describe(UpdateProbationPractitionerOfficePresenter, () => {
             'Norfolk',
             'David',
             'Blake',
+            false,
             null,
             null,
             [
@@ -121,6 +126,7 @@ describe(UpdateProbationPractitionerOfficePresenter, () => {
             'Norfolk',
             'David',
             'Blake',
+            false,
             null,
             {
               'delius-probation-practitioner-office': 'London',

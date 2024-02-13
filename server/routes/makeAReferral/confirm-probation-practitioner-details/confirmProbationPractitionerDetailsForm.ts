@@ -33,10 +33,11 @@ export default class ConfirmProbationPractitionerDetailsForm {
   public paramsForUpdate(referral: DraftReferral): Partial<DraftReferral> {
     return {
       ndeliusPPName: this.determinePPName(referral.ndeliusPPName),
-      ndeliusPPEmailAddress: this.determinePPEmailAddress(referral.ndeliusPPEmailAddress),
+      ndeliusPPEmailAddress: referral.ndeliusPPEmailAddress,
       ndeliusPDU: this.determinePPPdu(referral.ndeliusPDU),
-      ndeliusPhoneNumber: this.determinePPPhoneNumber(referral.ndeliusPhoneNumber),
-      ndeliusTeamPhoneNumber: this.determinePPTeamPhoneNumber(referral.ndeliusTeamPhoneNumber),
+      ndeliusPhoneNumber: referral.ndeliusPhoneNumber,
+      ndeliusTeamPhoneNumber: referral.ndeliusTeamPhoneNumber,
+      ppProbationOffice: referral.ppProbationOffice,
     }
   }
 

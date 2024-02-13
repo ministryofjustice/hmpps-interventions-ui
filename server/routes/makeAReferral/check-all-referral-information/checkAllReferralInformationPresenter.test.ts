@@ -296,7 +296,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             },
             {
               key: 'Team phone number',
-              lines: [''],
+              lines: ['Not provided'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
             },
           ])

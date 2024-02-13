@@ -84,7 +84,7 @@ export default class CheckAllReferralInformationPresenter {
         },
         {
           key: 'Phone number',
-          lines: [this.referral.ndeliusPhoneNumber || ''],
+          lines: [this.referral.ndeliusPhoneNumber || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
         },
         {
@@ -99,7 +99,7 @@ export default class CheckAllReferralInformationPresenter {
         },
         {
           key: 'Team phone number',
-          lines: [this.referral.ndeliusTeamPhoneNumber || ''],
+          lines: [this.referral.ndeliusTeamPhoneNumber || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
         },
       ],

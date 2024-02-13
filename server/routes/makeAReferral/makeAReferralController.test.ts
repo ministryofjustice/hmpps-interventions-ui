@@ -1249,6 +1249,7 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
         ndeliusPDU: 'Sheffield',
         ndeliusPhoneNumber: '98454243243',
         ndeliusTeamPhoneNumber: '044-2545453442',
+        ppProbationOffice: 'London',
       },
     ])
   })

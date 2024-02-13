@@ -11,11 +11,14 @@ export default class UpdateProbationPractitionerOfficePresenter {
     private readonly ppProbationOffice: string | null | undefined,
     private readonly firstName: string | null = null,
     private readonly lastName: string | null = null,
+    private readonly amendPPDetails: boolean = false,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null,
     readonly deliusOfficeLocations: DeliusOfficeLocation[]
   ) {
-    this.backLinkUrl = `/referrals/${id}/confirm-probation-practitioner-details`
+    this.backLinkUrl = amendPPDetails
+      ? `/referrals/${id}/check-all-referral-information`
+      : `/referrals/${id}/confirm-probation-practitioner-details`
   }
 
   readonly text = {

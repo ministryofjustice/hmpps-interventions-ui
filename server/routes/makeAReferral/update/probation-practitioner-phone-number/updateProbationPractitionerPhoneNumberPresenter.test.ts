@@ -34,15 +34,23 @@ describe(UpdateProbationPractitionerPhoneNumberPresenter, () => {
 
     describe('when an error is passed in', () => {
       it('returns an error message', () => {
-        const presenter = new UpdateProbationPractitionerPhoneNumberPresenter('1', 'crn', 'azss', 'David', 'Blake', {
-          errors: [
-            {
-              formFields: ['delius-probation-practitioner-phone-number'],
-              errorSummaryLinkedField: 'delius-probation-practitioner-phone-number',
-              message: 'Enter numbers only',
-            },
-          ],
-        })
+        const presenter = new UpdateProbationPractitionerPhoneNumberPresenter(
+          '1',
+          'crn',
+          'azss',
+          'David',
+          'Blake',
+          false,
+          {
+            errors: [
+              {
+                formFields: ['delius-probation-practitioner-phone-number'],
+                errorSummaryLinkedField: 'delius-probation-practitioner-phone-number',
+                message: 'Enter numbers only',
+              },
+            ],
+          }
+        )
 
         expect(presenter.errorMessage).toEqual('Enter numbers only')
       })
@@ -72,6 +80,7 @@ describe(UpdateProbationPractitionerPhoneNumberPresenter, () => {
           '074343434334',
           'David',
           'Blake',
+          false,
           {
             errors: [
               {
@@ -124,6 +133,7 @@ describe(UpdateProbationPractitionerPhoneNumberPresenter, () => {
             '0734334433',
             'David',
             'Blake',
+            false,
             null,
             {
               'delius-probation-practitioner-phone-number': '0753423223',

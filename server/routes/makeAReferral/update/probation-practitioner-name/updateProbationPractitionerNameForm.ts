@@ -6,13 +6,13 @@ import FormUtils from '../../../../utils/formUtils'
 import { FormValidationError } from '../../../../utils/formValidationError'
 import { FormData } from '../../../../utils/forms/formData'
 
-export default class UpdateProbationPractitionerForm {
+export default class UpdateProbationPractitionerNameForm {
   constructor(private readonly request: Request) {}
 
   async data(): Promise<FormData<Partial<DraftReferral>>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: UpdateProbationPractitionerForm.validations,
+      validations: UpdateProbationPractitionerNameForm.validations,
     })
 
     const error = this.error(validationResult)
