@@ -5,8 +5,8 @@ import deliusServiceUserFactory from '../../../../../../testutils/factories/deli
 describe(SessionFeedbackForm, () => {
   describe('data', () => {
     const serviceUser = deliusServiceUserFactory.build()
-    describe('with valid data', () => {
-      it('returns a paramsForUpdate with boolean value for whether to notify the PP', async () => {
+    describe('when submitting feedback with notify the probation practitioner checkbox options', () => {
+      it('returns a paramsForUpdate with notifyProbationPractitionerOfBehaviour and notifyProbationPractitionerOfConcerns set to false when no is selected', async () => {
         const request = TestUtils.createRequest({
           late: 'no',
           'session-summary': 'summary',
@@ -16,7 +16,107 @@ describe(SessionFeedbackForm, () => {
 
         const data = await new SessionFeedbackForm(request, serviceUser, false).data()
 
-        expect(data.paramsForUpdate?.notifyProbationPractitioner).toEqual(false)
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfBehaviour).toEqual(false)
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfConcerns).toEqual(false)
+      })
+
+      it('returns a paramsForUpdate with notifyProbationPractitionerOfBehaviour set to true with sessionBehaviour value when poor behaviour is selected and session behaviour field is not empty', async () => {
+        const request = TestUtils.createRequest({
+          late: 'no',
+          'session-summary': 'summary',
+          'session-response': 'response',
+          'notify-probation-practitioner-of-behaviour': 'yes',
+          'session-behaviour': 'stub session behaviour information',
+        })
+
+        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
+
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfBehaviour).toEqual(true)
+        expect(data.paramsForUpdate?.sessionBehaviour).toEqual('stub session behaviour information')
+      })
+
+      it('returns an error when poor behaviour is selected and session behaviour field is empty', async () => {
+        const request = TestUtils.createRequest({
+          late: 'no',
+          'session-summary': 'summary',
+          'session-response': 'response',
+          'notify-probation-practitioner-of-behaviour': 'yes',
+        })
+
+        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
+
+        expect(data.error?.errors).toContainEqual({
+          errorSummaryLinkedField: 'session-behaviour',
+          formFields: ['session-behaviour'],
+          message: "Enter details about Alex River's poor behaviour",
+        })
+      })
+
+      it('returns a paramsForUpdate with notifyProbationPractitionerOfConcerns set to true with sessionConcerns value when concerns is selected and session concerns field is not empty', async () => {
+        const request = TestUtils.createRequest({
+          late: 'no',
+          'session-summary': 'summary',
+          'session-response': 'response',
+          'notify-probation-practitioner-of-concerns': 'yes',
+          'session-concerns': 'stub session concerns information',
+        })
+
+        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
+
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfConcerns).toEqual(true)
+        expect(data.paramsForUpdate?.sessionConcerns).toEqual('stub session concerns information')
+      })
+
+      it('returns an error when poor concerns is selected and session concerns field is empty', async () => {
+        const request = TestUtils.createRequest({
+          late: 'no',
+          'session-summary': 'summary',
+          'session-response': 'response',
+          'notify-probation-practitioner-of-concerns': 'yes',
+        })
+
+        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
+
+        expect(data.error?.errors).toContainEqual({
+          errorSummaryLinkedField: 'session-concerns',
+          formFields: ['session-concerns'],
+          message: 'Enter a description of what concerned you',
+        })
+      })
+
+      it('returns a paramsForUpdate with both session behaviour and concerns values when both checkboxes selected', async () => {
+        const request = TestUtils.createRequest({
+          late: 'no',
+          'session-summary': 'summary',
+          'session-response': 'response',
+          'notify-probation-practitioner-of-behaviour': 'yes',
+          'notify-probation-practitioner-of-concerns': 'yes',
+          'session-behaviour': 'stub session behaviour information',
+          'session-concerns': 'stub session concerns information',
+        })
+
+        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
+
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfBehaviour).toEqual(true)
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfConcerns).toEqual(true)
+        expect(data.paramsForUpdate?.sessionBehaviour).toEqual('stub session behaviour information')
+        expect(data.paramsForUpdate?.sessionConcerns).toEqual('stub session concerns information')
+      })
+
+      it('returns an error when no checkboxes are selected', async () => {
+        const request = TestUtils.createRequest({
+          late: 'no',
+          'session-summary': 'summary',
+          'session-response': 'response',
+        })
+
+        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
+
+        expect(data.error?.errors).toContainEqual({
+          errorSummaryLinkedField: 'notify-probation-practitioner',
+          formFields: ['notify-probation-practitioner'],
+          message: "Select 'no' if the probation practitioner does not need to be notified",
+        })
       })
     })
 
@@ -30,7 +130,7 @@ describe(SessionFeedbackForm, () => {
           expect(data.error?.errors).toContainEqual({
             errorSummaryLinkedField: 'notify-probation-practitioner',
             formFields: ['notify-probation-practitioner'],
-            message: 'Select whether to notify the probation practitioner or not',
+            message: "Select 'no' if the probation practitioner does not need to be notified",
           })
           expect(data.error?.errors).toContainEqual({
             errorSummaryLinkedField: 'session-summary',
@@ -54,7 +154,7 @@ describe(SessionFeedbackForm, () => {
           expect(data.error?.errors).toContainEqual({
             errorSummaryLinkedField: 'notify-probation-practitioner',
             formFields: ['notify-probation-practitioner'],
-            message: 'Select whether to notify the probation practitioner or not',
+            message: "Select 'no' if the probation practitioner does not need to be notified",
           })
           expect(data.error?.errors).toContainEqual({
             errorSummaryLinkedField: 'session-summary',
@@ -67,44 +167,6 @@ describe(SessionFeedbackForm, () => {
             message: 'Enter how Alex River responded to the session',
           })
         })
-      })
-
-      it('returns the error when yes is selected for notify probation practitioner but session concerns is empty', async () => {
-        const request = TestUtils.createRequest({
-          late: 'no',
-          'session-summary': 'summary',
-          'session-response': 'response',
-          'session-concerns': '',
-          'notify-probation-practitioner': 'yes',
-        })
-
-        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
-
-        expect(data.error?.errors).toEqual([
-          {
-            errorSummaryLinkedField: 'session-concerns',
-            formFields: ['session-concerns'],
-            message: 'Enter a description of what concerned you',
-          },
-        ])
-      })
-
-      it('returns the error when notify probation practitioner value is missing', async () => {
-        const request = TestUtils.createRequest({
-          late: 'no',
-          'session-summary': 'summary',
-          'session-response': 'response',
-        })
-
-        const data = await new SessionFeedbackForm(request, serviceUser, false).data()
-
-        expect(data.error?.errors).toEqual([
-          {
-            errorSummaryLinkedField: 'notify-probation-practitioner',
-            formFields: ['notify-probation-practitioner'],
-            message: 'Select whether to notify the probation practitioner or not',
-          },
-        ])
       })
     })
   })

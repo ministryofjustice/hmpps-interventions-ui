@@ -170,19 +170,31 @@ export default class FeedbackAnswersPresenter {
     }
   }
 
-  get sessionConcernsAnswers(): { question: string; answer: string } | null {
-    const notifyPP = this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner ? 'Yes' : 'No'
-
-    if (notifyPP === 'Yes' && this.appointment.appointmentFeedback.sessionFeedback.sessionConcerns) {
-      return {
-        question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerQuestion.text,
-        answer: `${notifyPP} - ${this.appointment.appointmentFeedback.sessionFeedback.sessionConcerns}`,
-      }
-    }
+  get notifyProbationPractitionerOfBehaviourAnswers(): { question: string; answer: string } | null {
+    const notifyPP = this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfBehaviour
+      ? 'Yes'
+      : 'No'
 
     return {
-      question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerQuestion.text,
-      answer: `${notifyPP}`,
+      question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerOfBehaviourQuestion.text,
+      answer:
+        notifyPP === 'Yes' && this.appointment.appointmentFeedback.sessionFeedback.sessionBehaviour
+          ? `${notifyPP} - ${this.appointment.appointmentFeedback.sessionFeedback.sessionBehaviour}`
+          : `${notifyPP}`,
+    }
+  }
+
+  get notifyProbationPractitionerOfConcernsAnswers(): { question: string; answer: string } | null {
+    const notifyPP = this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfConcerns
+      ? 'Yes'
+      : 'No'
+
+    return {
+      question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerOfConcernsQuestion.text,
+      answer:
+        notifyPP === 'Yes' && this.appointment.appointmentFeedback.sessionFeedback.sessionConcerns
+          ? `${notifyPP} - ${this.appointment.appointmentFeedback.sessionFeedback.sessionConcerns}`
+          : `${notifyPP}`,
     }
   }
 

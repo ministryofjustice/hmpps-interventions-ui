@@ -1028,11 +1028,7 @@ describe('Adding supplier assessment feedback', () => {
           expect(res.text).toContain(
             'Add whether Alex River seemed engaged, including any progress or positive changes. This helps the probation practitioner to support them.'
           )
-          expect(res.text).toContain('Did anything concern you about Alex River?')
-          expect(res.text).toContain(
-            'If you select yes, the probation practitioner will get an email about your concerns.'
-          )
-          expect(res.text).toContain('Add enough detail to help the probation practitioner to know what happened.')
+          expect(res.text).toContain('Does the probation practitioner need to be notified about any issues?')
         })
     })
 
@@ -1147,7 +1143,7 @@ describe('Adding supplier assessment feedback', () => {
             late: false,
             sessionSummary: 'stub session summary',
             sessionResponse: 'stub session response',
-            notifyProbationPractitioner: false,
+            notifyProbationPractitionerOfBehaviour: false,
           },
           submitted: false,
         },
@@ -1179,7 +1175,7 @@ describe('Adding supplier assessment feedback', () => {
           expect(res.text).toContain('stub session summary')
           expect(res.text).toContain('How did Alex River respond to the appointment?')
           expect(res.text).toContain('stub session response')
-          expect(res.text).toContain('Did anything concern you about Alex River?')
+          expect(res.text).toContain('Does the probation practitioner need to be notified about poor behaviour?')
           expect(res.text).toContain('No')
         })
     })
@@ -1219,7 +1215,7 @@ describe('Adding supplier assessment feedback', () => {
             sessionFeedback: {
               sessionSummary: 'stub session summary',
               sessionResponse: 'stub session response',
-              notifyProbationPractitioner: false,
+              notifyProbationPractitionerOfBehaviour: false,
             },
             submitted: false,
           },
@@ -1257,7 +1253,7 @@ describe('Adding supplier assessment feedback', () => {
             sessionFeedback: {
               sessionSummary: 'stub session summary',
               sessionResponse: 'stub session response',
-              notifyProbationPractitioner: true,
+              notifyProbationPractitionerOfBehaviour: true,
             },
             submitted: false,
           },
@@ -2148,7 +2144,7 @@ describe('Adding post delivery session feedback', () => {
           sessionFeedback: {
             sessionSummary: 'stub session summary',
             sessionResponse: 'stub session response',
-            notifyProbationPractitioner: false,
+            notifyProbationPractitionerOfBehaviour: false,
           },
         },
       })

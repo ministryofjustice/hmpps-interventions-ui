@@ -39,7 +39,7 @@ export default class NoSessionYesAttendedFeedbackForm {
           this.request.body['no-session-reason-type'] === NoSessionReasonType.LOGISTICS
             ? this.request.body['no-session-reason-logistics']
             : null,
-        notifyProbationPractitioner: this.notifyProbationPractitioner,
+        notifyProbationPractitionerOfConcerns: this.notifyProbationPractitioner,
         sessionConcerns: this.request.body['session-concerns'],
       },
       error: null,

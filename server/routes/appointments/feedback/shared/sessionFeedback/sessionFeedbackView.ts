@@ -114,7 +114,7 @@ export default class SessionFeedbackView {
       fieldset: {
         legend: {
           html: `<label class='govuk-label govuk-label--m govuk-!-margin-bottom-4'> ${ViewUtils.escape(
-            this.presenter.questionnaire.notifyProbationPractitionerQuestion.text
+            this.presenter.questionnaire.notifyProbationPractitionerCheckboxQuestion.text
           )}</label>`,
           isPageHeading: false,
         },
@@ -126,7 +126,8 @@ export default class SessionFeedbackView {
       items: [
         {
           id: 'notify-probation-practitioner-of-behaviour',
-          value: 'behaviour',
+          name: 'notify-probation-practitioner-of-behaviour',
+          value: 'yes',
           text: this.presenter.questionnaire.poorBehaviourCheckboxOptionText.text,
           checked: this.inputsPresenter.fields.notifyProbationPractitionerOfBehaviour.value === true,
           conditional: {
@@ -135,7 +136,8 @@ export default class SessionFeedbackView {
         },
         {
           id: 'notify-probation-practitioner-of-concerns',
-          value: 'concerns',
+          name: 'notify-probation-practitioner-of-concerns',
+          value: 'yes',
           text: this.presenter.questionnaire.concerningBehaviourCheckboxOptionText.text,
           checked: this.inputsPresenter.fields.notifyProbationPractitionerOfConcerns.value === true,
           conditional: {

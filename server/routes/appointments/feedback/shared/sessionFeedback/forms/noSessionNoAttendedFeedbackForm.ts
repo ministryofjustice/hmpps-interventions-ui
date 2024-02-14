@@ -27,7 +27,7 @@ export default class NoSessionNoAttendedFeedbackForm {
     return {
       paramsForUpdate: {
         noAttendanceInformation: this.request.body['no-attendance-information'],
-        notifyProbationPractitioner: this.notifyProbationPractitioner,
+        notifyProbationPractitionerOfConcerns: this.notifyProbationPractitioner,
         sessionConcerns: this.request.body['session-concerns'],
       },
       error: null,
@@ -43,7 +43,7 @@ export default class NoSessionNoAttendedFeedbackForm {
         .isIn(['yes', 'no'])
         .withMessage(errorMessages.notifyProbationPractitioner.notSelected),
       body('session-concerns')
-        .if(body('notify-probation-practitioner-of-concerns').notEmpty())
+        .if(body('notify-probation-practitioner').equals('yes'))
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.sessionConcerns.empty),
     ]

@@ -94,16 +94,16 @@ export default abstract class CheckFeedbackAnswersPresenter {
         lines: [this.feedbackAnswersPresenter.noAttendanceInformationAnswers.answer],
       })
     }
-    // if (this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers) {
-    //   sessionFeedbackDetails.push({
-    //     key: this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers.question,
-    //     lines: [this.feedbackAnswersPresenter.notifyProbationPractitionerAnswers.answer],
-    //   })
-    // }
-    if (this.feedbackAnswersPresenter.sessionConcernsAnswers) {
+    if (this.feedbackAnswersPresenter.notifyProbationPractitionerOfBehaviourAnswers) {
       sessionFeedbackDetails.push({
-        key: this.feedbackAnswersPresenter.sessionConcernsAnswers.question,
-        lines: [this.feedbackAnswersPresenter.sessionConcernsAnswers.answer],
+        key: this.feedbackAnswersPresenter.notifyProbationPractitionerOfBehaviourAnswers.question,
+        lines: [this.feedbackAnswersPresenter.notifyProbationPractitionerOfBehaviourAnswers.answer],
+      })
+    }
+    if (this.feedbackAnswersPresenter.notifyProbationPractitionerOfConcernsAnswers) {
+      sessionFeedbackDetails.push({
+        key: this.feedbackAnswersPresenter.notifyProbationPractitionerOfConcernsAnswers.question,
+        lines: [this.feedbackAnswersPresenter.notifyProbationPractitionerOfConcernsAnswers.answer],
       })
     }
     if (this.feedbackAnswersPresenter.behaviourDescriptionAnswers) {

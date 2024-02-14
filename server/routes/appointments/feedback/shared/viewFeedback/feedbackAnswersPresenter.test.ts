@@ -164,4 +164,147 @@ describe(FeedbackAnswersPresenter, () => {
       })
     })
   })
+
+  describe('notifyProbationPractitionerOfBehaviourAnswers', () => {
+    describe('if notify probation practitioner of behaviour checkbox was checked and session behaviour information given', () => {
+      it('returns an object with the question and answer given, converting the boolean value into a "yes" followed by session behaviour', () => {
+        const appointment = actionPlanAppointmentFactory.build({
+          appointmentFeedback: {
+            sessionFeedback: {
+              notifyProbationPractitionerOfBehaviour: true,
+              sessionBehaviour: 'stub session behaviour information',
+            },
+          },
+        })
+
+        const serviceUser = deliusServiceUserFactory.build({ name: { forename: 'Alex' } })
+
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
+
+        expect(presenter.notifyProbationPractitionerOfBehaviourAnswers).toEqual({
+          question: 'Does the probation practitioner need to be notified about poor behaviour?',
+          answer: 'Yes - stub session behaviour information',
+        })
+      })
+    })
+
+    describe('if notify probation practitioner of behaviour checkbox was not checked', () => {
+      it('returns an object with the question and answer given, converting the boolean value into a "no"', () => {
+        const appointment = actionPlanAppointmentFactory.build({
+          appointmentFeedback: {
+            sessionFeedback: {
+              notifyProbationPractitionerOfBehaviour: false,
+            },
+          },
+        })
+
+        const serviceUser = deliusServiceUserFactory.build()
+
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
+
+        expect(presenter.notifyProbationPractitionerOfBehaviourAnswers).toEqual({
+          question: 'Does the probation practitioner need to be notified about poor behaviour?',
+          answer: 'No',
+        })
+      })
+    })
+  })
+
+  describe('notifyProbationPractitionerOfConcernsAnswers', () => {
+    describe('if notify probation practitioner of concerns checkbox was checked and session concerns information given', () => {
+      it('returns an object with the question and answer given, converting the boolean value into a "yes" followed by session concerns', () => {
+        const appointment = actionPlanAppointmentFactory.build({
+          appointmentFeedback: {
+            sessionFeedback: {
+              notifyProbationPractitionerOfConcerns: true,
+              sessionConcerns: 'stub session concerns information',
+            },
+          },
+        })
+
+        const serviceUser = deliusServiceUserFactory.build({ name: { forename: 'Alex' } })
+
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
+
+        expect(presenter.notifyProbationPractitionerOfConcernsAnswers).toEqual({
+          question: `Does the probation practitioner need to be notified about any concerns?`,
+          answer: 'Yes - stub session concerns information',
+        })
+      })
+    })
+
+    describe('if notify probation practitioner of concerns checkbox was not checked', () => {
+      it('returns an object with the question and answer given, converting the boolean value into a "no"', () => {
+        const appointment = actionPlanAppointmentFactory.build({
+          appointmentFeedback: {
+            sessionFeedback: {
+              notifyProbationPractitionerOfConcerns: false,
+            },
+          },
+        })
+
+        const serviceUser = deliusServiceUserFactory.build()
+
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
+
+        expect(presenter.notifyProbationPractitionerOfConcernsAnswers).toEqual({
+          question: `Does the probation practitioner need to be notified about any concerns?`,
+          answer: 'No',
+        })
+      })
+    })
+  })
+
+  describe('notify probation practitioner of behaviour and concerns checkbox', () => {
+    describe('if both of the notify probation practitioner checkboxes were checked', () => {
+      it('returns null', () => {
+        const appointment = actionPlanAppointmentFactory.build({
+          appointmentFeedback: {
+            sessionFeedback: {
+              notifyProbationPractitionerOfBehaviour: true,
+              sessionBehaviour: 'stub session behaviour information',
+              notifyProbationPractitionerOfConcerns: true,
+              sessionConcerns: 'stub session concerns information',
+            },
+          },
+        })
+        const serviceUser = deliusServiceUserFactory.build()
+
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
+
+        expect(presenter.notifyProbationPractitionerOfBehaviourAnswers).toEqual({
+          question: `Does the probation practitioner need to be notified about poor behaviour?`,
+          answer: 'Yes - stub session behaviour information',
+        })
+        expect(presenter.notifyProbationPractitionerOfConcernsAnswers).toEqual({
+          question: `Does the probation practitioner need to be notified about any concerns?`,
+          answer: 'Yes - stub session concerns information',
+        })
+      })
+    })
+    describe('if none of the notify probation practitioner checkboxes were checked', () => {
+      it('returns null', () => {
+        const appointment = actionPlanAppointmentFactory.build({
+          appointmentFeedback: {
+            sessionFeedback: {
+              notifyProbationPractitionerOfBehaviour: null,
+              notifyProbationPractitionerOfConcerns: null,
+            },
+          },
+        })
+        const serviceUser = deliusServiceUserFactory.build()
+
+        const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
+
+        expect(presenter.notifyProbationPractitionerOfBehaviourAnswers).toEqual({
+          question: `Does the probation practitioner need to be notified about poor behaviour?`,
+          answer: 'No',
+        })
+        expect(presenter.notifyProbationPractitionerOfConcernsAnswers).toEqual({
+          question: `Does the probation practitioner need to be notified about any concerns?`,
+          answer: 'No',
+        })
+      })
+    })
+  })
 })

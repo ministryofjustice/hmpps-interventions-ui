@@ -599,10 +599,18 @@ export default class AppointmentsController {
           if (draftAppointment && draftAppointment.session) {
             draftAppointment.session.sessionFeedback.sessionSummary = data.paramsForUpdate.sessionSummary!
             draftAppointment.session.sessionFeedback.sessionResponse = data.paramsForUpdate.sessionResponse!
-            draftAppointment.session.sessionFeedback.notifyProbationPractitioner =
-              data.paramsForUpdate.notifyProbationPractitioner!
+            draftAppointment.session.sessionFeedback.notifyProbationPractitionerOfBehaviour =
+              data.paramsForUpdate.notifyProbationPractitionerOfBehaviour!
+            draftAppointment.session.sessionFeedback.notifyProbationPractitionerOfConcerns =
+              data.paramsForUpdate.notifyProbationPractitionerOfConcerns!
+            draftAppointment.session.sessionFeedback.sessionBehaviour =
+              data.paramsForUpdate.notifyProbationPractitionerOfBehaviour === true
+                ? data.paramsForUpdate.sessionBehaviour!
+                : null
             draftAppointment.session.sessionFeedback.sessionConcerns =
-              data.paramsForUpdate.notifyProbationPractitioner === true ? data.paramsForUpdate.sessionConcerns! : null
+              data.paramsForUpdate.notifyProbationPractitionerOfConcerns === true
+                ? data.paramsForUpdate.sessionConcerns!
+                : null
             draftAppointment.session.sessionFeedback.late = data.paramsForUpdate.late!
             draftAppointment.session.sessionFeedback.lateReason =
               data.paramsForUpdate.late === true ? data.paramsForUpdate.lateReason! : null
@@ -852,7 +860,9 @@ export default class AppointmentsController {
     } else {
       await this.interventionsService.submitSupplierAssessmentAppointmentFeedback(accessToken, referralId)
     }
-    const notifyPP = appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner
+    const notifyPP =
+      appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfBehaviour ||
+      appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfBehaviour
     const didNotAttend = appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
 
     res.redirect(
@@ -1235,7 +1245,9 @@ export default class AppointmentsController {
         appointment.appointmentId!
       )
     }
-    const notifyPP = appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner
+    const notifyPP =
+      !!appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfBehaviour ||
+      !!appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfConcerns
     const didNotAttend = appointment.appointmentFeedback.attendanceFeedback.attended === 'no'
 
     res.redirect(
@@ -1367,13 +1379,10 @@ export default class AppointmentsController {
         draftAppointment.session.sessionFeedback.noSessionReasonLogistics = paramsForUpdate.noSessionReasonLogistics
           ? paramsForUpdate.noSessionReasonLogistics
           : null
-        // draftAppointment.session.sessionFeedback.noSessionReasonOther = paramsForUpdate.noSessionReasonOther
-        //   ? paramsForUpdate.noSessionReasonOther
-        //   : null
-        draftAppointment.session.sessionFeedback.notifyProbationPractitioner =
-          paramsForUpdate.notifyProbationPractitioner!
+        draftAppointment.session.sessionFeedback.notifyProbationPractitionerOfConcerns =
+          paramsForUpdate.notifyProbationPractitionerOfConcerns!
         draftAppointment.session.sessionFeedback.sessionConcerns =
-          paramsForUpdate.notifyProbationPractitioner === true ? paramsForUpdate.sessionConcerns! : null
+          paramsForUpdate.notifyProbationPractitionerOfConcerns === true ? paramsForUpdate.sessionConcerns! : null
       }
       if (attended === 'no') {
         draftAppointment.session.sessionFeedback.noAttendanceInformation = paramsForUpdate.noAttendanceInformation!
@@ -1594,7 +1603,6 @@ export default class AppointmentsController {
             noSessionReasonPopAcceptable: null,
             noSessionReasonPopUnacceptable: null,
             noSessionReasonLogistics: null,
-            // noSessionReasonOther: null,
             noAttendanceInformation: null,
           },
           submitted: false,
@@ -1668,7 +1676,6 @@ export default class AppointmentsController {
             noSessionReasonPopAcceptable: null,
             noSessionReasonPopUnacceptable: null,
             noSessionReasonLogistics: null,
-            // noSessionReasonOther: null,
             noAttendanceInformation: null,
           },
           submitted: false,
@@ -1732,7 +1739,6 @@ export default class AppointmentsController {
             noSessionReasonPopAcceptable: null,
             noSessionReasonPopUnacceptable: null,
             noSessionReasonLogistics: null,
-            // noSessionReasonOther: null,
             noAttendanceInformation: null,
           }
           draftAppointment.session.attendanceFeedback.didSessionHappen = false
@@ -1768,7 +1774,6 @@ export default class AppointmentsController {
             noSessionReasonPopAcceptable: null,
             noSessionReasonPopUnacceptable: null,
             noSessionReasonLogistics: null,
-            // noSessionReasonOther: null,
             noAttendanceInformation: null,
           },
           submitted: false,

@@ -216,7 +216,7 @@ export default {
       `Enter how ${name} responded to the ${isInitialAppointment ? 'appointment' : 'session'}`,
   },
   sessionConcerns: {
-    empty: "Select the issues the probation practitioner needs to be notified about, or select 'No'",
+    empty: 'Enter a description of what concerned you',
   },
   sessionBehaviour: {
     empty: (name: string) => `Enter details about ${name}'s poor behaviour`,

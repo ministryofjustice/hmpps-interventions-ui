@@ -104,7 +104,25 @@ export default class SessionFeedbackQuestionnaire {
 
   get notifyProbationPractitionerQuestion(): { text: string } {
     return {
+      text: `Did anything concern you about ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}?`,
+    }
+  }
+
+  get notifyProbationPractitionerCheckboxQuestion(): { text: string } {
+    return {
       text: `Does the probation practitioner need to be notified about any issues?`,
+    }
+  }
+
+  get notifyProbationPractitionerOfBehaviourQuestion(): { text: string } {
+    return {
+      text: `Does the probation practitioner need to be notified about poor behaviour?`,
+    }
+  }
+
+  get notifyProbationPractitionerOfConcernsQuestion(): { text: string } {
+    return {
+      text: `Does the probation practitioner need to be notified about any concerns?`,
     }
   }
 

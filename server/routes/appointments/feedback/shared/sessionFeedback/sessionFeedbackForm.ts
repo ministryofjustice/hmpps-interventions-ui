@@ -32,14 +32,15 @@ export default class SessionFeedbackForm {
 
     return {
       paramsForUpdate: {
-        late: this.late,
+        late: this.request.body.late === 'yes',
         lateReason: this.request.body['late-reason'],
         sessionSummary: this.request.body['session-summary'],
         sessionResponse: this.request.body['session-response'],
         sessionConcerns: this.request.body['session-concerns'],
         sessionBehaviour: this.request.body['session-behaviour'],
-        notifyProbationPractitionerOfBehaviour: this.notifyProbationPractitionerOfBehaviour,
-        notifyProbationPractitionerOfConcerns: this.notifyProbationPractitionerOfConcerns,
+        notifyProbationPractitionerOfBehaviour:
+          this.request.body['notify-probation-practitioner-of-behaviour'] === 'yes',
+        notifyProbationPractitionerOfConcerns: this.request.body['notify-probation-practitioner-of-concerns'] === 'yes',
         futureSessionPlans: this.request.body['future-session-plans'],
       },
       error: null,
@@ -59,14 +60,20 @@ export default class SessionFeedbackForm {
         .bail()
         .trim(),
       body('notify-probation-practitioner')
-        .notEmpty()
+        .custom((value, { req }) => {
+          return (
+            req.body['notify-probation-practitioner-of-behaviour'] === 'yes' ||
+            req.body['notify-probation-practitioner-of-concerns'] === 'yes' ||
+            req.body['notify-probation-practitioner'] === 'no'
+          )
+        })
         .withMessage(errorMessages.notifyProbationPractitioner.notSelected),
       body('session-behaviour')
-        .if(body('notify-probation-practitioner').contains('behaviour'))
+        .if(body('notify-probation-practitioner-of-behaviour').equals('yes'))
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.sessionBehaviour.empty(serviceUserName)),
       body('session-concerns')
-        .if(body('notify-probation-practitioner').contains('concerns'))
+        .if(body('notify-probation-practitioner-of-concerns').equals('yes'))
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.sessionConcerns.empty),
       body('late').isIn(['yes', 'no']).withMessage(errorMessages.late.optionNotSelected(serviceUserName)),
@@ -89,17 +96,5 @@ export default class SessionFeedbackForm {
         message: validationError.msg,
       })),
     }
-  }
-
-  private get notifyProbationPractitionerOfBehaviour(): boolean {
-    return this.request.body['notify-probation-practitioner'] === 'behaviour'
-  }
-
-  private get notifyProbationPractitionerOfConcerns(): boolean {
-    return this.request.body['notify-probation-practitioner'] === 'concerns'
-  }
-
-  private get late(): boolean {
-    return this.request.body.late === 'yes'
   }
 }

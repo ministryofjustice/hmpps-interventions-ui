@@ -1124,7 +1124,7 @@ describe(InterventionProgressPresenter, () => {
         )
 
         expect(presenter.sessionFeedbackAddedNotificationBannerText).toEqual(
-          'The probation practitioner has been emailed about your concerns. They’ll also be able to view the feedback in the service.'
+          'The probation practitioner has been emailed. They’ll also be able to view the feedback in the service.'
         )
       })
     })
