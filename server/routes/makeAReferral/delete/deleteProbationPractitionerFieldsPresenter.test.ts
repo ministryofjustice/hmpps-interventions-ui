@@ -5,6 +5,7 @@ describe(DeleteProbationPractitionerFieldsPresenter, () => {
     it.each([
       ['phone-number', 'probation practitioner phone number'],
       ['probation-office', 'probation office'],
+      ['team-phone-number', 'team phone number'],
     ])("when the url param has '%s'", (input, expected) => {
       const presenter = new DeleteProbationPractitionerFieldsPresenter('1', 'crn', input, 'David', 'Blake')
 
