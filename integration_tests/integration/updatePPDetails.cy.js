@@ -121,7 +121,7 @@ describe('Referral form', () => {
         ndeliusPhoneNumber: '',
         ppProbationOffice: '',
         ndeliusPDU: '97 Hackney and City',
-        ndeliusTeamPhoneNumber: '020879656565',
+        ndeliusTeamPhoneNumber: '',
         serviceCategoryIds: [accommodationServiceCategory.id],
         serviceProvider: {
           name: 'Harmony Living',
@@ -367,7 +367,7 @@ describe('Referral form', () => {
       cy.contains('Lincolnshire: Skegness Probation Office').should('not.exist')
       cy.contains('Enter probation office')
 
-      cy.get('#change-link-5').click()
+      cy.contains('Enter team phone number').click()
       cy.location('pathname').should(
         'equal',
         `/referrals/${draftReferral.id}/update-probation-practitioner-team-phone-number`
@@ -379,6 +379,18 @@ describe('Referral form', () => {
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains('020346865656')
+
+      cy.get('#delete-link-5').click()
+      cy.location('pathname').should(
+        'equal',
+        `/referrals/${draftReferral.id}/delete-probation-practitioner/team-phone-number`
+      )
+      cy.stubGetDraftReferral(draftReferral.id, deletedPPDetails)
+      cy.contains('Confirm and delete').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+      cy.contains('020346865656').should('not.exist')
+      cy.contains('Enter team phone number')
 
       cy.contains('Save and continue').click()
 

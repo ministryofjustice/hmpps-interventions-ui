@@ -31,6 +31,9 @@ export default class DeleteProbationPractitionerFieldsPresenter {
     if (this.paramName === FieldTypes.probationOffice) {
       return 'probation office'
     }
+    if (this.paramName === FieldTypes.teamPhoneNumber) {
+      return 'team phone number'
+    }
     return ''
   }
 }
