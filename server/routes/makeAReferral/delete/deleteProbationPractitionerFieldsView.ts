@@ -1,6 +1,6 @@
 import DeleteProbationPractitionerFieldsPresenter from './deleteProbationPractitionerFieldsPresenter'
 
-export default class DeleteProbationPractitionerPhoneNumberView {
+export default class DeleteProbationPractitionerDetailsView {
   constructor(private readonly presenter: DeleteProbationPractitionerFieldsPresenter) {}
 
   get renderArgs(): [string, Record<string, unknown>] {

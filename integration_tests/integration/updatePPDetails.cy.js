@@ -129,6 +129,21 @@ describe('Referral form', () => {
         interventionId: draftReferral.interventionId,
       })
 
+      const deletedPPEmailDetails = draftReferralFactory.filledFormUptoPPDetails('Bob Marley').build({
+        id: draftReferral.id,
+        ndeliusPPName: 'Bob Marley',
+        ndeliusPPEmailAddress: '',
+        ndeliusPhoneNumber: '',
+        ppProbationOffice: '',
+        ndeliusPDU: '97 Hackney and City',
+        ndeliusTeamPhoneNumber: '',
+        serviceCategoryIds: [accommodationServiceCategory.id],
+        serviceProvider: {
+          name: 'Harmony Living',
+        },
+        interventionId: draftReferral.interventionId,
+      })
+
       const updatedProbationOfficeDetails = draftReferralFactory.filledFormUptoPPDetails('Bob Marley').build({
         id: draftReferral.id,
         ndeliusPPName: 'Bob Marley',
@@ -333,6 +348,17 @@ describe('Referral form', () => {
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains('07434332323').should('not.exist')
+
+      cy.get('#delete-link-1').click()
+      cy.location('pathname').should(
+        'equal',
+        `/referrals/${draftReferral.id}/delete-probation-practitioner/email-address`
+      )
+      cy.stubGetDraftReferral(draftReferral.id, deletedPPEmailDetails)
+      cy.contains('Confirm and delete').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
+      cy.contains('a.b@xyz.com').should('not.exist')
 
       cy.get('#change-link-3').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/update-probation-practitioner-pdu`)

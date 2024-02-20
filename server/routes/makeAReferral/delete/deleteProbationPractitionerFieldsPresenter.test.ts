@@ -6,6 +6,7 @@ describe(DeleteProbationPractitionerFieldsPresenter, () => {
       ['phone-number', 'probation practitioner phone number'],
       ['probation-office', 'probation office'],
       ['team-phone-number', 'team phone number'],
+      ['email-address', 'probation practitioner email address'],
     ])("when the url param has '%s'", (input, expected) => {
       const presenter = new DeleteProbationPractitionerFieldsPresenter('1', 'crn', input, 'David', 'Blake')
 
