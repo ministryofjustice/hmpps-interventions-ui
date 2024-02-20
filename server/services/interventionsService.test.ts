@@ -3832,8 +3832,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           sessionFeedback: {
             sessionSummary: 'Discussed accommodation',
             sessionResponse: 'Engaged well',
+            sessionBehaviour: null,
             sessionConcerns: null,
-            notifyProbationPractitioner: false,
+            notifyProbationPractitionerOfBehaviour: false,
+            notifyProbationPractitionerOfConcerns: false,
           },
           submitted: false,
           submittedBy: null,
@@ -3875,7 +3877,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       )
       expect(result.appointmentFeedback!.sessionFeedback!.sessionSummary).toEqual('Discussed accommodation')
       expect(result.appointmentFeedback!.sessionFeedback!.sessionResponse).toEqual('Engaged well')
-      expect(result.appointmentFeedback!.sessionFeedback!.notifyProbationPractitioner).toEqual(false)
+      expect(result.appointmentFeedback!.sessionFeedback!.notifyProbationPractitionerOfBehaviour).toEqual(false)
+      expect(result.appointmentFeedback!.sessionFeedback!.notifyProbationPractitionerOfConcerns).toEqual(false)
     })
   })
 
