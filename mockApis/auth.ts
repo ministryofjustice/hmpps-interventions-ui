@@ -139,6 +139,26 @@ export default class AuthServiceMocks {
     })
   }
 
+  private stubUserEmail = async (): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/hmpps-manage-users/users/me/email',
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json;charset=UTF-8',
+        },
+        jsonBody: {
+          username: 'USER1',
+          email: 'a.b@xyz.com',
+          verified: true,
+        },
+      },
+    })
+  }
+
   private stubUserRoles = async (): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
@@ -209,7 +229,7 @@ export default class AuthServiceMocks {
   }
 
   private stubUserAndRoles = async (authSource: string): Promise<unknown> => {
-    return Promise.all([this.stubUser(authSource), this.stubUserRoles()])
+    return Promise.all([this.stubUser(authSource), this.stubUserRoles(), this.stubUserEmail()])
   }
 
   stubPing = async (): Promise<unknown> => {

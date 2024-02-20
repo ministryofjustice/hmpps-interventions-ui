@@ -15,6 +15,7 @@ import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 import DateUtils from '../../../utils/dateUtils'
 import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
 import PrisonAndSecuredChildAgency from '../../../models/prisonAndSecureChildAgency'
+import LoggedInUser from '../../../models/loggedInUser'
 
 export default class CheckAllReferralInformationPresenter {
   readonly backLinkUrl: string
@@ -22,6 +23,7 @@ export default class CheckAllReferralInformationPresenter {
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
+    private readonly loggedInUser: LoggedInUser,
     private readonly conviction: DeliusConviction,
     private readonly deliusServiceUser: DeliusServiceUser,
     private readonly prisonAndSecureChildAgency: PrisonAndSecuredChildAgency[],
@@ -87,22 +89,28 @@ export default class CheckAllReferralInformationPresenter {
           lines: [this.referral.ndeliusPhoneNumber || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
         },
-        {
-          key: 'PDU (Probation Delivery Unit)',
-          lines: [this.referral.ppPdu || this.referral.ndeliusPDU || ''],
-          changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
-        },
-        {
-          key: 'Probation office',
-          lines: [this.referral.ppProbationOffice || 'Not provided'],
-          changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
-        },
+        this.derivePduOrProbationOffice,
         {
           key: 'Team phone number',
           lines: [this.referral.ndeliusTeamPhoneNumber || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
         },
       ],
+    }
+  }
+
+  private get derivePduOrProbationOffice(): SummaryListItem {
+    if (this.referral.ppProbationOffice) {
+      return {
+        key: 'Probation office',
+        lines: [this.referral.ppProbationOffice || 'Not provided'],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+      }
+    }
+    return {
+      key: 'PDU (Probation Delivery Unit)',
+      lines: [this.referral.ppPdu || this.referral.ndeliusPDU || ''],
+      changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
     }
   }
 
@@ -130,6 +138,25 @@ export default class CheckAllReferralInformationPresenter {
         },
         this.establishmentOrProbationOffice,
       ],
+    }
+  }
+
+  get backupContactDetails(): { title: string; summary: SummaryListItem[] } | null {
+    if (this.loggedInUser.username.toUpperCase() === this.referral.ndeliusPPName?.toUpperCase()) return null
+
+    const backupContactDetails: SummaryListItem[] = []
+    backupContactDetails.push({
+      key: 'Referring officer name',
+      lines: [this.loggedInUser.username || 'Not found'],
+    })
+    backupContactDetails.push({
+      key: 'Email address',
+      lines: [this.loggedInUser.email || 'Not found'],
+    })
+
+    return {
+      title: `Back-up contact for the referral`,
+      summary: backupContactDetails,
     }
   }
 

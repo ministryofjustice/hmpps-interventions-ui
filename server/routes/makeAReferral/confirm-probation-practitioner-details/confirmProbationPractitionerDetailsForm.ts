@@ -1,9 +1,10 @@
 import { Request } from 'express'
-import { Result, ValidationError } from 'express-validator'
+import { Result, ValidationChain, ValidationError, body } from 'express-validator'
 import DraftReferral from '../../../models/draftReferral'
 import FormUtils from '../../../utils/formUtils'
 import { FormValidationError } from '../../../utils/formValidationError'
 import { DeliusResponsibleOfficer } from '../../../models/delius/deliusResponsibleOfficer'
+import errorMessages from '../../../utils/errorMessages'
 
 export default class ConfirmProbationPractitionerDetailsForm {
   private constructor(
@@ -20,10 +21,25 @@ export default class ConfirmProbationPractitionerDetailsForm {
   ): Promise<ConfirmProbationPractitionerDetailsForm> {
     return new ConfirmProbationPractitionerDetailsForm(
       request,
-      await FormUtils.runValidations({ request, validations: [] }),
+      await FormUtils.runValidations({ request, validations: this.validations(referral) }),
       referral,
       deliusResponsibleOfficer
     )
+  }
+
+  static validations(referral: DraftReferral): ValidationChain[] {
+    return [
+      body()
+        .custom(() => {
+          return referral.ndeliusPPName !== null
+        })
+        .withMessage(errorMessages.confirmProbationPractitionerDetails.emptyName),
+      body()
+        .custom(() => {
+          return referral.ndeliusPDU !== null
+        })
+        .withMessage(errorMessages.confirmProbationPractitionerDetails.emptyPdu),
+    ]
   }
 
   get isValid(): boolean {

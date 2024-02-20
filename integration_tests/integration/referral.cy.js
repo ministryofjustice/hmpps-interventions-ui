@@ -559,13 +559,25 @@ describe('Referral form', () => {
         .should('contain', '020343434343')
         .contains('Change')
 
-      cy.get('#change-link-5').should(
+      cy.get('#change-link-4').should(
         'have.attr',
         'href',
         `/referrals/${draftReferral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`
       )
 
-      //
+      // Back up contact for the referral
+      cy.contains('Back-up contact for the referral')
+        .parent()
+        .next()
+        .should('contain', 'Referring officer name')
+        .should('contain', 'USER1')
+
+      cy.contains('Back-up contact for the referral')
+        .parent()
+        .next()
+        .should('contain', 'Email address')
+        .should('contain', 'a.b@xyz.com')
+
       // Alex's risk information
       cy.contains('Additional information')
         .next()

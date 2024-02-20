@@ -26,7 +26,7 @@ describe(UpdateProbationPractitionerEmailAddressForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'delius-probation-practitioner-email-address',
         formFields: ['delius-probation-practitioner-email-address'],
-        message: 'Enter an email address in the correct format',
+        message: 'Enter email address in the correct format',
       })
     })
   })

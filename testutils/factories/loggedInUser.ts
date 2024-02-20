@@ -28,5 +28,6 @@ export default LoggedInUserFactory.define(() => ({
   },
   authSource: 'nomis',
   userId: '123',
+  email: 'a.b@xyz.com',
   organizations: [],
 }))

@@ -1255,19 +1255,23 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
   })
 
   it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: { firstName: 'Geoffrey' },
+      ndeliusPPName: 'John Alice',
+      ndeliusPPEmailAddress: 'john@example.com',
+      ndeliusPDU: 'Sheffield',
+      ndeliusPhoneNumber: '98454243243',
+      ndeliusTeamPhoneNumber: '044-2545453442',
+      ppProbationOffice: 'London',
+    })
+    interventionsService.getDraftReferral.mockResolvedValue(updatedReferral)
     interventionsService.patchDraftReferral.mockRejectedValue({
       message: 'Some backend error message',
     })
     await request(app)
       .post('/referrals/1/confirm-probation-practitioner-details')
       .type('form')
-      .send({
-        'confirm-details': 'no',
-        'probation-practitioner-name': 'John',
-        'probation-practitioner-email': 'john@example.com',
-        'probation-practitioner-office': 'undefined',
-        'probation-practitioner-pdu': 'East Sussex',
-      })
+      .send()
       .expect(500)
       .expect(res => {
         expect(res.text).toContain('Some backend error message')

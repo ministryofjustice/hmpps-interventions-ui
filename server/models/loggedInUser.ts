@@ -6,4 +6,5 @@ export default interface LoggedInUser extends User {
   name: string
   organizations: ServiceProviderOrganization[]
   token: Token
+  email: string
 }

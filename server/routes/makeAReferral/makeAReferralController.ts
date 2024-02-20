@@ -1767,6 +1767,7 @@ export default class MakeAReferralController {
     const presenter = new CheckAllReferralInformationPresenter(
       referral,
       intervention,
+      res.locals.user,
       caseConviction.conviction,
       caseConviction.caseDetail,
       prisonAndSecureChildAgency,
