@@ -36,9 +36,10 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       {
         key: 'Email address',
         lines: [this.determineEmail()],
-        changeLink:
-          this.determineEmail() !== 'Not found'
-            ? `/referrals/${this.referral.id}/update-probation-practitioner-email-address`
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-email-address`,
+        deleteLink:
+          this.determineEmail() !== 'Not found' && this.determineEmail() !== ''
+            ? `/referrals/${this.referral.id}/delete-probation-practitioner/email-address`
             : undefined,
         valueLink:
           this.determineEmail() === 'Not found'
@@ -122,7 +123,16 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
   }
 
   private determineEmail(): SummaryListItemContent {
-    return this.referral.ndeliusPPEmailAddress || this.deliusResponsibleOfficer?.communityManager.email || 'Not found'
+    if (this.referral.ndeliusPPEmailAddress && this.referral.ndeliusPPEmailAddress !== '') {
+      return this.referral.ndeliusPPEmailAddress
+    }
+    if (this.referral.ndeliusPPEmailAddress === '') {
+      return 'Not found'
+    }
+    if (this.deliusResponsibleOfficer?.communityManager.email) {
+      return this.deliusResponsibleOfficer?.communityManager.email
+    }
+    return 'Not found'
   }
 
   private errorMessageForField(field: string): string | null {

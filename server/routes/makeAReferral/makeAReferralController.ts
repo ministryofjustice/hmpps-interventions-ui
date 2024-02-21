@@ -95,7 +95,7 @@ import UpdateProbationPractitionerPduPresenter from './update/probation-practiti
 import UpdateProbationPractitionerPduForm from './update/probation-practitioner-pdu/updateProbationPractitionerPduForm'
 import UpdateProbationPractitionerPduView from './update/probation-practitioner-pdu/updateProbationPractitionerPduView'
 import DeleteProbationPractitionerFieldsPresenter from './delete/deleteProbationPractitionerFieldsPresenter'
-import DeleteProbationPractitionerPhoneNumberView from './delete/deleteProbationPractitionerFieldsView'
+import DeleteProbationPractitionerFieldsView from './delete/deleteProbationPractitionerFieldsView'
 import DeleteProbationPractitionerFieldsForm from './delete/deleteProbationPractitionerFieldsForm'
 import UpdateProbationPractitionerOfficePresenter from './update/probation-practitioner-probation-office/updateProbationPractitionerOfficePresenter'
 import UpdateProbationPractitionerOfficeView from './update/probation-practitioner-probation-office/updateProbationPractitionerOfficeView'
@@ -103,6 +103,12 @@ import UpdateProbationPractitionerOfficeForm from './update/probation-practition
 import UpdateProbationPractitionerTeamPhoneNumberPresenter from './update/probation-practitioner-team-phone-number/updateProbationPractitionerTeamPhoneNumberPresenter'
 import UpdateProbationPractitionerTeamPhoneNumberView from './update/probation-practitioner-team-phone-number/updateProbationPractitionerTeamPhoneNumberView'
 import UpdateProbationPractitionerTeamPhoneNumberForm from './update/probation-practitioner-team-phone-number/updateProbationPractitionerTeamPhoneNumberForm'
+// import DeleteProbationPractitionerPhoneNumberPresenter from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberPresenter'
+// import DeleteProbationPractitionerPhoneNumberView from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberView'
+// import DeleteProbationPractitionerPhoneNumberForm from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberForm'
+// import DeleteProbationPractitionerView from './delete/probation-practitioner-email/deleteProbationPractitionerView'
+// import DeleteProbationPractitionerPresenter from './delete/probation-practitioner-email/deleteProbationPractitionerPresenter'
+// import DeleteProbationPractitionerForm from './delete/probation-practitioner-email/deleteProbationPractitionerForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -1181,7 +1187,7 @@ export default class MakeAReferralController {
       referral.serviceUser.firstName,
       referral.serviceUser.lastName
     )
-    const view = new DeleteProbationPractitionerPhoneNumberView(presenter)
+    const view = new DeleteProbationPractitionerFieldsView(presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }

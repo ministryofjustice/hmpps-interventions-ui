@@ -20,6 +20,11 @@ export default class DeleteProbationPractitionerFieldsForm {
         ndeliusTeamPhoneNumber: '',
       }
     }
+    if (this.fieldType === FieldTypes.emailAddress) {
+      return {
+        ndeliusPPEmailAddress: '',
+      }
+    }
     return undefined
   }
 }
