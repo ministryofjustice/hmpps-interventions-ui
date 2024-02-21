@@ -58,6 +58,8 @@ const exampleReferralFields = () => {
     ndeliusPPName: 'John Davies',
     ndeliusPPEmailAddress: 'john@example.com',
     ndeliusPDU: 'Sheffield',
+    ndeliusPhoneNumber: '072121212124',
+    ndeliusTeamPhoneNumber: '020343434343',
     ppName: 'Bob Alice',
     ppEmailAddress: 'b.a@xyz.com',
     ppProbationOffice: 'London',

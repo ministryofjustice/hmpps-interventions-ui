@@ -139,10 +139,14 @@ export default {
     emptyRadio: 'Select yes or no',
   },
   confirmProbationPractitionerDetails: {
-    emptyRadio: 'Select yes or no',
+    emptyName: `Add probation practitioner name - this is a mandatory field`,
+    emptyPdu: `Add PDU (Probation Delivery Unit) - this is a mandatory field`,
+  },
+  updateProbationPractitionerDetails: {
     emptyName: `Enter name of probation practitioner`,
-    emptyPdu: `Enter PDU (Probation Delivery Unit)`,
-    invalidEmail: `Enter an email address in the correct format`,
+    emptyEmail: `Enter email address`,
+    invalidEmail: `Enter email address in the correct format`,
+    invalidPhoneNumber: 'Enter numbers only',
   },
   confirmMainPointOfContactDetails: {
     emptyRadio: 'Select establishment or probation office',

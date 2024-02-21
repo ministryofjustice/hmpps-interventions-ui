@@ -6,6 +6,7 @@ import interventionFactory from '../../../../testutils/factories/intervention'
 import caseConvictionFactory from '../../../../testutils/factories/caseConviction'
 import prisonFactory from '../../../../testutils/factories/prison'
 import prisonAndSecuredChildFactory from '../../../../testutils/factories/secureChildAgency'
+import loggedInUserFactory from '../../../../testutils/factories/loggedInUser'
 import { ListStyle } from '../../../utils/summaryList'
 import { CurrentLocationType } from '../../../models/draftReferral'
 import PrisonRegisterService from '../../../services/prisonRegisterService'
@@ -40,6 +41,7 @@ describe(CheckAllReferralInformationPresenter, () => {
   const deliusServiceUser = caseConviction.caseDetail
   const prisonList = prisonFactory.build()
   const prisonAndSecuredChildAgencyList = prisonAndSecuredChildFactory.build()
+  const loggedInUser = loggedInUserFactory.build()
   prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   prisonApiService.getSecureChildrenAgencies.mockResolvedValue(prisonAndSecuredChildAgencyList)
 
@@ -62,6 +64,7 @@ describe(CheckAllReferralInformationPresenter, () => {
     const presenter = new CheckAllReferralInformationPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
+      loggedInUser,
       conviction,
       deliusServiceUser,
       prisonsAndSecuredChildAgencies
@@ -113,6 +116,8 @@ describe(CheckAllReferralInformationPresenter, () => {
         ndeliusPPName: 'Victor Drake',
         ndeliusPPEmailAddress: 'a.b@xyz.com',
         ndeliusPDU: 'London',
+        ndeliusPhoneNumber: '075950243221',
+        ndeliusTeamPhoneNumber: '020456734343',
         ppName: null,
         ppEmailAddress: null,
         ppPdu: null,
@@ -122,6 +127,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       const presenter = new CheckAllReferralInformationPresenter(
         referral,
         interventionFactory.build({ serviceCategories }),
+        loggedInUser,
         conviction,
         deliusServiceUser,
         prisonsAndSecuredChildAgencies
@@ -139,22 +145,78 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'Name',
               lines: ['Victor Drake'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
             },
             {
               key: 'Email address',
               lines: ['a.b@xyz.com'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
             },
             {
-              key: 'PDU (Probation Delivery Unit)',
-              lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              key: 'Phone number',
+              lines: ['075950243221'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
             },
             {
               key: 'Probation office',
               lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+            },
+            {
+              key: 'Team phone number',
+              lines: ['020456734343'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
+            },
+          ])
+        })
+        it('returns the probation practitioner PDU details when probation office is not there', () => {
+          const referralWithOutProbationOffice = parameterisedDraftReferralFactory.build({
+            personCurrentLocationType: CurrentLocationType.community,
+            ndeliusPPName: 'Victor Drake',
+            ndeliusPPEmailAddress: 'a.b@xyz.com',
+            ndeliusPDU: 'London',
+            ndeliusPhoneNumber: '075950243221',
+            ndeliusTeamPhoneNumber: '020456734343',
+            ppName: null,
+            ppEmailAddress: null,
+            ppPdu: null,
+            ppProbationOffice: null,
+            hasValidDeliusPPDetails: null,
+          })
+          const checkAllReferralInformationPresenter = new CheckAllReferralInformationPresenter(
+            referralWithOutProbationOffice,
+            interventionFactory.build({ serviceCategories }),
+            loggedInUser,
+            conviction,
+            deliusServiceUser,
+            prisonsAndSecuredChildAgencies
+          )
+
+          expect(checkAllReferralInformationPresenter.probationPractitionerDetailSection?.summary).toEqual([
+            {
+              key: 'Name',
+              lines: ['Victor Drake'],
+              changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-name?amendPPDetails=true`,
+            },
+            {
+              key: 'Email address',
+              lines: ['a.b@xyz.com'],
+              changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
+            },
+            {
+              key: 'Phone number',
+              lines: ['075950243221'],
+              changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
+            },
+            {
+              key: 'PDU (Probation Delivery Unit)',
+              lines: ['London'],
+              changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
+            },
+            {
+              key: 'Team phone number',
+              lines: ['020456734343'],
+              changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
             },
           ])
         })
@@ -167,7 +229,9 @@ describe(CheckAllReferralInformationPresenter, () => {
         ndeliusPPName: 'Victor Drake',
         ndeliusPPEmailAddress: 'a.b@xyz.com',
         ndeliusPDU: 'London',
-        ppName: 'Victor Shelby',
+        ndeliusPhoneNumber: '075950243221',
+        ndeliusTeamPhoneNumber: '020456734343',
+        ppName: null,
         ppEmailAddress: 'a.c@abc.com',
         ppPdu: 'Nottingham',
         ppProbationOffice: 'London',
@@ -176,60 +240,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       const presenter = new CheckAllReferralInformationPresenter(
         referral,
         interventionFactory.build({ serviceCategories }),
-        conviction,
-        deliusServiceUser,
-        prisonsAndSecuredChildAgencies
-      )
-
-      describe('title', () => {
-        it('returns the probation practitioner details title', () => {
-          expect(presenter.probationPractitionerDetailSection?.title).toEqual('Probation practitioner details')
-        })
-      })
-
-      describe('summary', () => {
-        it('returns the probation practitioner details', () => {
-          expect(presenter.probationPractitionerDetailSection?.summary).toEqual([
-            {
-              key: 'Name',
-              lines: ['Victor Shelby'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'Email address',
-              lines: ['a.c@abc.com'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'PDU (Probation Delivery Unit)',
-              lines: ['Nottingham'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-            {
-              key: 'Probation office',
-              lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
-            },
-          ])
-        })
-      })
-    })
-
-    describe('probationPractitionerDetails with undefined email and probation office ', () => {
-      const referral = parameterisedDraftReferralFactory.build({
-        personCurrentLocationType: CurrentLocationType.community,
-        ndeliusPPName: 'Victor Drake',
-        ndeliusPPEmailAddress: 'undefined',
-        ndeliusPDU: 'London',
-        ppName: null,
-        ppEmailAddress: null,
-        ppPdu: null,
-        ppProbationOffice: null,
-        hasValidDeliusPPDetails: null,
-      })
-      const presenter = new CheckAllReferralInformationPresenter(
-        referral,
-        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
         conviction,
         deliusServiceUser,
         prisonsAndSecuredChildAgencies
@@ -247,22 +258,88 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'Name',
               lines: ['Victor Drake'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
+            },
+            {
+              key: 'Email address',
+              lines: ['a.c@abc.com'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
+            },
+            {
+              key: 'Phone number',
+              lines: ['075950243221'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
+            },
+            {
+              key: 'Probation office',
+              lines: ['London'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+            },
+            {
+              key: 'Team phone number',
+              lines: ['020456734343'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
+            },
+          ])
+        })
+      })
+    })
+
+    describe('probationPractitionerDetails with undefined email, probation office and team phone number ', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.community,
+        ndeliusPPName: 'Victor Drake',
+        ndeliusPPEmailAddress: 'undefined',
+        ndeliusPDU: 'London',
+        ndeliusPhoneNumber: '075950243221',
+        ppName: null,
+        ppEmailAddress: null,
+        ppPdu: null,
+        ppProbationOffice: null,
+        hasValidDeliusPPDetails: null,
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
+        conviction,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies
+      )
+
+      describe('title', () => {
+        it('returns the probation practitioner details title', () => {
+          expect(presenter.probationPractitionerDetailSection?.title).toEqual('Probation practitioner details')
+        })
+      })
+
+      describe('summary', () => {
+        it('returns the probation practitioner details', () => {
+          expect(presenter.probationPractitionerDetailSection?.summary).toEqual([
+            {
+              key: 'Name',
+              lines: ['Victor Drake'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
             },
             {
               key: 'Email address',
               lines: ['Not found'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
+            },
+            {
+              key: 'Phone number',
+              lines: ['075950243221'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
             },
             {
               key: 'PDU (Probation Delivery Unit)',
               lines: ['London'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
             },
             {
-              key: 'Probation office',
+              key: 'Team phone number',
               lines: ['Not provided'],
-              changeLink: `/referrals/${referral.id}/confirm-probation-practitioner-details?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
             },
           ])
         })
@@ -278,6 +355,7 @@ describe(CheckAllReferralInformationPresenter, () => {
     const presenter = new CheckAllReferralInformationPresenter(
       referral,
       interventionFactory.build({ serviceCategories }),
+      loggedInUser,
       conviction,
       deliusServiceUser,
       prisonsAndSecuredChildAgencies
@@ -306,6 +384,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       const presenter = new CheckAllReferralInformationPresenter(
         referral,
         interventionFactory.build({ serviceCategories }),
+        loggedInUser,
         conviction,
         deliusServiceUser,
         prisonsAndSecuredChildAgencies
@@ -325,6 +404,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         const presenter = new CheckAllReferralInformationPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
+          loggedInUser,
           conviction,
           deliusServiceUser,
           prisonsAndSecuredChildAgencies
@@ -347,6 +427,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         const presenter = new CheckAllReferralInformationPresenter(
           referral,
           interventionFactory.build({ serviceCategories }),
+          loggedInUser,
           conviction,
           deliusServiceUser,
           prisonsAndSecuredChildAgencies
@@ -370,6 +451,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           const presenter = new CheckAllReferralInformationPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
+            loggedInUser,
             conviction,
             deliusServiceUser,
             prisonsAndSecuredChildAgencies
@@ -391,6 +473,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           const presenter = new CheckAllReferralInformationPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
+            loggedInUser,
             conviction,
             deliusServiceUser,
             prisonsAndSecuredChildAgencies
@@ -415,6 +498,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           const presenter = new CheckAllReferralInformationPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
+            loggedInUser,
             conviction,
             deliusServiceUser,
             prisonsAndSecuredChildAgencies
@@ -436,6 +520,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           const presenter = new CheckAllReferralInformationPresenter(
             referral,
             interventionFactory.build({ serviceCategories }),
+            loggedInUser,
             conviction,
             deliusServiceUser,
             prisonsAndSecuredChildAgencies
@@ -503,6 +588,7 @@ describe(CheckAllReferralInformationPresenter, () => {
     const presenter = new CheckAllReferralInformationPresenter(
       referral,
       intervention,
+      loggedInUser,
       conviction,
       deliusServiceUser,
       prisonsAndSecuredChildAgencies
@@ -568,6 +654,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         const presenter = new CheckAllReferralInformationPresenter(
           referral,
           intervention,
+          loggedInUser,
           conviction,
           deliusServiceUser,
           prisonsAndSecuredChildAgencies
@@ -592,6 +679,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           const presenter = new CheckAllReferralInformationPresenter(
             referral,
             intervention,
+            loggedInUser,
             conviction,
             deliusServiceUser,
             prisonsAndSecuredChildAgencies
@@ -620,6 +708,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           const presenter = new CheckAllReferralInformationPresenter(
             referral,
             intervention,
+            loggedInUser,
             conviction,
             deliusServiceUser,
             prisonsAndSecuredChildAgencies
@@ -665,6 +754,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       const presenter = new CheckAllReferralInformationPresenter(
         referral,
         intervention,
+        loggedInUser,
         assaultConviction.conviction,
         assaultConviction.caseDetail,
         prisonsAndSecuredChildAgencies

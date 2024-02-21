@@ -236,7 +236,7 @@ describe('Referral form', () => {
       cy.contains('Name, email address and location').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
-      cy.contains('Yes').click()
+      cy.contains(`Confirm probation practitioner details`)
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
       cy.contains('Save and continue').click()
 
@@ -506,7 +506,7 @@ describe('Referral form', () => {
       cy.contains('Autism')
       cy.contains('alex.river@example.com')
 
-      // Alex's risk information
+      // Alex's personal information
       cy.contains('Probation practitioner details')
         .parent()
         .next()
@@ -516,20 +516,34 @@ describe('Referral form', () => {
         .should(
           'have.attr',
           'href',
-          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
+          `/referrals/${draftReferral.id}/update-probation-practitioner-name?amendPPDetails=true`
         )
 
       cy.contains('Probation practitioner details')
         .parent()
         .next()
-        .should('contain', 'Email')
+        .children()
+        .should('contain', 'Email address')
         .should('contain', 'bobalice@example.com')
         .contains('Change')
-        .should(
-          'have.attr',
-          'href',
-          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
-        )
+
+      cy.get('#change-link-1').should(
+        'have.attr',
+        'href',
+        `/referrals/${draftReferral.id}/update-probation-practitioner-email-address?amendPPDetails=true`
+      )
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .should('contain', 'Phone number')
+        .should('contain', '073232323232')
+        .contains('Change')
+
+      cy.get('#change-link-2').should(
+        'have.attr',
+        'href',
+        `/referrals/${draftReferral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`
+      )
 
       cy.contains('Probation practitioner details')
         .parent()
@@ -537,13 +551,33 @@ describe('Referral form', () => {
         .should('contain', 'PDU (Probation Delivery Unit)')
         .should('contain', '97 Hackney and City')
         .contains('Change')
-        .should(
-          'have.attr',
-          'href',
-          `/referrals/${draftReferral.id}/confirm-probation-practitioner-details?amendPPDetails=true`
-        )
 
-      //
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .should('contain', 'Team phone number')
+        .should('contain', '020343434343')
+        .contains('Change')
+
+      cy.get('#change-link-4').should(
+        'have.attr',
+        'href',
+        `/referrals/${draftReferral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`
+      )
+
+      // Back up contact for the referral
+      cy.contains('Back-up contact for the referral')
+        .parent()
+        .next()
+        .should('contain', 'Referring officer name')
+        .should('contain', 'USER1')
+
+      cy.contains('Back-up contact for the referral')
+        .parent()
+        .next()
+        .should('contain', 'Email address')
+        .should('contain', 'a.b@xyz.com')
+
       // Alex's risk information
       cy.contains('Additional information')
         .next()
@@ -860,7 +894,6 @@ describe('Referral form', () => {
       cy.contains('Name, email address and location').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
       cy.contains(`Alex River (CRN: ${completedPersonCurrentLocationType.serviceUser.crn})`)
-      cy.contains('Yes').click()
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
       cy.contains('Save and continue').click()
 

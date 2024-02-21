@@ -113,4 +113,136 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
       })
     })
   })
+
+  describe('summary list items', () => {
+    it('returns summary list items when all the optional elements are returned with value', () => {
+      const referral = draftReferralFactory
+        .serviceCategorySelected()
+        .serviceUserSelected()
+        .build({
+          ndeliusPPName: 'Alex River',
+          ndeliusPPEmailAddress: 'a.z@xyz.com',
+          ndeliusPDU: 'London',
+          ndeliusPhoneNumber: '07503434343',
+          ndeliusTeamPhoneNumber: '020-2323232322',
+          ppProbationOffice: 'Sheffield',
+          serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' },
+        })
+      const presenter = new ConfirmProbationPractitionerDetailsPresenter(referral, [], [], deliusResponsibleOfficer)
+
+      expect(presenter.summary).toEqual([
+        {
+          key: 'Name',
+          lines: ['Alex River'],
+          changeLink: `/referrals/${referral.id}/update-probation-practitioner-name`,
+        },
+        {
+          key: 'Email address',
+          lines: ['a.z@xyz.com'],
+          changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address`,
+          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner/email-address`,
+          valueLink: undefined,
+        },
+        {
+          key: 'Phone number',
+          lines: ['07503434343'],
+          changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number`,
+          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner/phone-number`,
+          valueLink: undefined,
+        },
+        {
+          key: 'PDU (Probation Delivery Unit)',
+          lines: ['London'],
+          changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu`,
+        },
+        {
+          key: 'Probation office',
+          lines: ['Sheffield'],
+          changeLink: `/referrals/${referral.id}/update-probation-practitioner-office`,
+          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner/probation-office`,
+          valueLink: undefined,
+        },
+        {
+          key: 'Team Phone number',
+          lines: ['020-2323232322'],
+          changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number`,
+          deleteLink: `/referrals/${referral.id}/delete-probation-practitioner/team-phone-number`,
+          valueLink: undefined,
+        },
+      ])
+    })
+    it('returns summary list items when not all the optional elements are returned with value', () => {
+      const deliusResponsibleOfficerWithOptionalValuesNotPresent = {
+        communityManager: {
+          code: 'aaa',
+          name: { forename: 'Bob', surname: 'Alice' },
+          username: 'bobalice',
+          email: null,
+          telephoneNumber: null,
+          responsibleOfficer: true,
+          pdu: { code: 'L', description: 'London' },
+          team: { code: 'R and M', description: 'R and M team', telephoneNumber: null, email: 'a.b@xyz.com' },
+          unallocated: false,
+        },
+      }
+      const referral = draftReferralFactory
+        .serviceCategorySelected()
+        .serviceUserSelected()
+        .build({
+          ndeliusPPName: 'Alex River',
+          ndeliusPPEmailAddress: null,
+          ndeliusPDU: 'London',
+          ndeliusPhoneNumber: null,
+          ndeliusTeamPhoneNumber: null,
+          ppProbationOffice: null,
+          serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' },
+        })
+      const presenter = new ConfirmProbationPractitionerDetailsPresenter(
+        referral,
+        [],
+        [],
+        deliusResponsibleOfficerWithOptionalValuesNotPresent
+      )
+
+      expect(presenter.summary).toEqual([
+        {
+          key: 'Name',
+          lines: ['Alex River'],
+          changeLink: `/referrals/${referral.id}/update-probation-practitioner-name`,
+        },
+        {
+          key: 'Email address',
+          lines: [`Not found`],
+          changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address`,
+          deleteLink: undefined,
+          valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address</a>`,
+        },
+        {
+          key: 'Phone number',
+          lines: [`Not found`],
+          changeLink: undefined,
+          deleteLink: undefined,
+          valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number</a>`,
+        },
+        {
+          key: 'PDU (Probation Delivery Unit)',
+          lines: ['London'],
+          changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu`,
+        },
+        {
+          key: 'Probation office',
+          lines: [`Not found`],
+          changeLink: undefined,
+          deleteLink: undefined,
+          valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-office" class="govuk-link">Enter probation office</a>`,
+        },
+        {
+          key: 'Team Phone number',
+          lines: [`Not found`],
+          changeLink: undefined,
+          valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-team-phone-number" class="govuk-link">Enter team phone number</a>`,
+        },
+      ])
+    })
+  })
 })

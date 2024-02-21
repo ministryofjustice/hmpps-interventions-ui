@@ -11,6 +11,7 @@ import UserGroup from '../models/hmppsAuth/group'
 import ServiceProviderOrganization from '../models/hmppsAuth/serviceProviderOrganization'
 import User from '../models/hmppsAuth/user'
 import generateOauthClientBaiscAuthHeader from '../authentication/clientCredentials'
+import UserEmail from '../models/hmppsAuth/userEmail'
 
 const redisClient = redis.createClient({
   legacyMode: true, // connect-redis only supports legacy mode for redis v4
@@ -43,6 +44,11 @@ export default class HmppsAuthService {
   async getUserDetails(userToken: string): Promise<UserDetails> {
     logger.info(`Getting current user details: calling HMPPS Auth`)
     return (await this.manageUsersRestClient(userToken).get({ path: '/users/me' })) as UserDetails
+  }
+
+  async getUserEmail(userToken: string): Promise<UserEmail> {
+    logger.info(`Getting current user details: calling HMPPS Auth`)
+    return (await this.manageUsersRestClient(userToken).get({ path: '/users/me/email' })) as UserEmail
   }
 
   async getUserDetailsByUsername(userToken: string, username: string): Promise<UserDetails> {

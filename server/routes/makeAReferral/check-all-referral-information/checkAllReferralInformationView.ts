@@ -18,6 +18,13 @@ export default class CheckAllReferralInformationView {
       )
     : null
 
+  private readonly backUpContactDetailsSummaryListArgs = this.presenter.backupContactDetails
+    ? ViewUtils.summaryListArgsWithSummaryCard(
+        this.presenter.backupContactDetails.summary,
+        this.presenter.backupContactDetails.title
+      )
+    : null
+
   private readonly expectedReleaseDateDetailsSummaryListArgs = this.presenter.expectedReleaseDateSection
     ? ViewUtils.summaryListArgsWithSummaryCard(
         this.presenter.expectedReleaseDateSection.summary,
@@ -73,6 +80,7 @@ export default class CheckAllReferralInformationView {
         mainPointOfContactDetailsSummaryListArgs: this.mainPointOfContactDetailsSummaryListArgs,
         expectedReleaseDateDetailsSummaryListArgs: this.expectedReleaseDateDetailsSummaryListArgs,
         locationDetailsSummaryListArgs: this.locationDetailsSummaryListArgs,
+        backUpContactDetailsSummaryListArgs: this.backUpContactDetailsSummaryListArgs,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
         needsAndRequirementsSummaryListArgs: this.needsAndRequirementsSummaryListArgs,
         referralDetailsSections: this.referralDetailsSections,

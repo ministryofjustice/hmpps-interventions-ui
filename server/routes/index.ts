@@ -176,10 +176,52 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
     makeAReferralController.updateExpectedReleaseDate(req, res)
   )
   get(router, '/referrals/:id/confirm-probation-practitioner-details', (req, res) =>
-    makeAReferralController.confirmProbationPractitionerDetails(req, res)
+    makeAReferralController.viewConfirmProbationPractitionerDetails(req, res)
   )
   post(router, '/referrals/:id/confirm-probation-practitioner-details', (req, res) =>
     makeAReferralController.updateProbationPractitionerDetails(req, res)
+  )
+  get(router, '/referrals/:id/update-probation-practitioner-name', (req, res) =>
+    makeAReferralController.viewUpdateProbationPractitionerName(req, res)
+  )
+  post(router, '/referrals/:id/update-probation-practitioner-name', (req, res) =>
+    makeAReferralController.updateProbationPractitionerName(req, res)
+  )
+  get(router, '/referrals/:id/update-probation-practitioner-email-address', (req, res) =>
+    makeAReferralController.viewUpdateProbationPractitionerEmailAddress(req, res)
+  )
+  post(router, '/referrals/:id/update-probation-practitioner-email-address', (req, res) =>
+    makeAReferralController.updateProbationPractitionerEmailAddress(req, res)
+  )
+  get(router, '/referrals/:id/update-probation-practitioner-phone-number', (req, res) =>
+    makeAReferralController.viewUpdateProbationPractitionerPhoneNumber(req, res)
+  )
+  post(router, '/referrals/:id/update-probation-practitioner-phone-number', (req, res) =>
+    makeAReferralController.updateProbationPractitionerPhoneNumber(req, res)
+  )
+  get(router, '/referrals/:id/update-probation-practitioner-pdu', (req, res) =>
+    makeAReferralController.viewUpdateProbationPractitionerPdu(req, res)
+  )
+  post(router, '/referrals/:id/update-probation-practitioner-pdu', (req, res) =>
+    makeAReferralController.updateProbationPractitionerPdu(req, res)
+  )
+  get(router, '/referrals/:id/update-probation-practitioner-office', (req, res) =>
+    makeAReferralController.viewUpdateProbationPractitionerOffice(req, res)
+  )
+  post(router, '/referrals/:id/update-probation-practitioner-office', (req, res) =>
+    makeAReferralController.updateProbationPractitionerOffice(req, res)
+  )
+  get(router, '/referrals/:id/update-probation-practitioner-team-phone-number', (req, res) =>
+    makeAReferralController.viewUpdateProbationPractitionerTeamPhoneNumber(req, res)
+  )
+  post(router, '/referrals/:id/update-probation-practitioner-team-phone-number', (req, res) =>
+    makeAReferralController.updateProbationPractitionerTeamPhoneNumber(req, res)
+  )
+  get(router, '/referrals/:id/delete-probation-practitioner/:fieldName', (req, res) =>
+    makeAReferralController.viewDeleteProbationPractitionerDetails(req, res)
+  )
+  post(router, '/referrals/:id/delete-probation-practitioner/:fieldName', (req, res) =>
+    makeAReferralController.deleteProbationPractitionerDetails(req, res)
   )
   get(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.viewRiskInformation(req, res))
   post(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.updateRiskInformation(req, res))

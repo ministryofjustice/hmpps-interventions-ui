@@ -6,7 +6,15 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
   const referral = draftReferralFactory
     .serviceCategorySelected()
     .serviceUserSelected()
-    .build({ serviceUser: { firstName: 'Bob' } })
+    .build({
+      serviceUser: { firstName: 'Bob' },
+      ndeliusPPName: 'Bob Alice',
+      ndeliusPPEmailAddress: 'a.b@xyz.com',
+      ndeliusPDU: 'London',
+      ndeliusPhoneNumber: '0759434343',
+      ndeliusTeamPhoneNumber: '020334343435',
+      ppProbationOffice: 'Sheffield',
+    })
 
   const deliusResponsibleOfficer = {
     communityManager: {
@@ -26,13 +34,7 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
     it('returns no error when all fields correctly populated', async () => {
       const form = await ConfirmProbationPractitionerDetailsForm.createForm(
         {
-          body: {
-            'confirm-details': 'no',
-            'probation-practitioner-name': 'Bob',
-            'probation-practitioner-email': 'bob@example.com',
-            'probation-practitioner-office': 'London',
-            'probation-practitioner-pdu': 'London',
-          },
+          body: {},
         } as Request,
         referral,
         deliusResponsibleOfficer
@@ -40,103 +42,64 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
 
       expect(form.error).toBeNull()
     })
-
-    it('returns an error when neither yes or no radio buttons to confirm the correct details are selected', async () => {
+    it('returns an error when the probation practitioner name is empty', async () => {
+      const referralWithOutName = draftReferralFactory
+        .serviceCategorySelected()
+        .serviceUserSelected()
+        .build({
+          serviceUser: { firstName: 'Bob' },
+          ndeliusPPName: null,
+          ndeliusPPEmailAddress: 'a.b@xyz.com',
+          ndeliusPDU: 'London',
+          ndeliusPhoneNumber: '0759434343',
+          ndeliusTeamPhoneNumber: '020334343435',
+          ppProbationOffice: 'Sheffield',
+        })
       const form = await ConfirmProbationPractitionerDetailsForm.createForm(
         {
-          body: {
-            'confirm-details': '',
-            'probation-practitioner-name': 'Bob',
-            'probation-practitioner-office': 'London',
-            'probation-practitioner-pdu': 'London',
-          },
+          body: {},
         } as Request,
-        referral,
+        referralWithOutName,
         deliusResponsibleOfficer
       )
 
       expect(form.error).toEqual({
         errors: [
           {
-            formFields: ['confirm-details'],
-            errorSummaryLinkedField: 'confirm-details',
-            message: 'Select yes or no',
+            formFields: [''],
+            errorSummaryLinkedField: '',
+            message: 'Add probation practitioner name - this is a mandatory field',
           },
         ],
       })
     })
-
-    it('returns an error when the probation practitioner name is empty after selecting no', async () => {
+    it('returns an error when the probation practitioner pdu is empty', async () => {
+      const referralWithOutPdu = draftReferralFactory
+        .serviceCategorySelected()
+        .serviceUserSelected()
+        .build({
+          serviceUser: { firstName: 'Bob' },
+          ndeliusPPName: 'Bob Willis',
+          ndeliusPPEmailAddress: 'a.b@xyz.com',
+          ndeliusPDU: null,
+          ndeliusPhoneNumber: '0759434343',
+          ndeliusTeamPhoneNumber: '020334343435',
+          ppProbationOffice: 'Sheffield',
+        })
       const form = await ConfirmProbationPractitionerDetailsForm.createForm(
         {
-          body: {
-            'confirm-details': 'no',
-            'probation-practitioner-name': '',
-            'probation-practitioner-office': 'London',
-            'probation-practitioner-pdu': 'London',
-          },
+          body: {},
         } as Request,
-        referral,
+        referralWithOutPdu,
         deliusResponsibleOfficer
       )
 
       expect(form.error).toEqual({
         errors: [
           {
-            formFields: ['probation-practitioner-name'],
-            errorSummaryLinkedField: 'probation-practitioner-name',
-            message: 'Enter name of probation practitioner',
-          },
-        ],
-      })
-    })
-
-    it('returns an error when the probation practitioner pdu is empty after selecting no', async () => {
-      const form = await ConfirmProbationPractitionerDetailsForm.createForm(
-        {
-          body: {
-            'confirm-details': 'no',
-            'probation-practitioner-name': 'Bob',
-            'probation-practitioner-office': 'London',
-            'probation-practitioner-pdu': '',
-          },
-        } as Request,
-        referral,
-        deliusResponsibleOfficer
-      )
-
-      expect(form.error).toEqual({
-        errors: [
-          {
-            formFields: ['probation-practitioner-pdu'],
-            errorSummaryLinkedField: 'probation-practitioner-pdu',
-            message: 'Enter PDU (Probation Delivery Unit)',
-          },
-        ],
-      })
-    })
-
-    it('returns an error when the probation practitioner email is invalid', async () => {
-      const form = await ConfirmProbationPractitionerDetailsForm.createForm(
-        {
-          body: {
-            'confirm-details': 'no',
-            'probation-practitioner-name': 'Bob',
-            'probation-practitioner-email': 'incorrectlyformattedemail.com',
-            'probation-practitioner-office': 'London',
-            'probation-practitioner-pdu': 'London',
-          },
-        } as Request,
-        referral,
-        deliusResponsibleOfficer
-      )
-
-      expect(form.error).toEqual({
-        errors: [
-          {
-            formFields: ['probation-practitioner-email'],
-            errorSummaryLinkedField: 'probation-practitioner-email',
-            message: 'Enter an email address in the correct format',
+            formFields: [''],
+            errorSummaryLinkedField: '',
+            message: 'Add PDU (Probation Delivery Unit) - this is a mandatory field',
           },
         ],
       })
@@ -159,15 +122,13 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
         deliusResponsibleOfficer
       )
 
-      expect(form.paramsForUpdate).toEqual({
-        ndeliusPPName: `${deliusResponsibleOfficer?.communityManager?.name.forename} ${deliusResponsibleOfficer?.communityManager.name?.surname}`,
-        ndeliusPPEmailAddress: `${deliusResponsibleOfficer?.communityManager.email}`,
-        ndeliusPDU: `${deliusResponsibleOfficer?.communityManager.pdu.description}`,
-        ppName: 'Bob',
-        ppEmailAddress: 'bob@example.com',
-        ppProbationOffice: 'London',
-        ppPdu: 'London',
-        hasValidDeliusPPDetails: false,
+      expect(form.paramsForUpdate(referral)).toEqual({
+        ndeliusPPName: `${referral.ndeliusPPName}`,
+        ndeliusPPEmailAddress: `${referral.ndeliusPPEmailAddress}`,
+        ndeliusPDU: `${referral.ndeliusPDU}`,
+        ndeliusPhoneNumber: `${referral.ndeliusPhoneNumber}`,
+        ndeliusTeamPhoneNumber: `${referral.ndeliusTeamPhoneNumber}`,
+        ppProbationOffice: `${referral.ppProbationOffice}`,
       })
     })
   })

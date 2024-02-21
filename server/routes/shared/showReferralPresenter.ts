@@ -182,7 +182,7 @@ export default class ShowReferralPresenter {
       if (this.userType === 'service-provider') {
         probationPractitionerDetails.push({
           key: 'Phone number',
-          lines: [officer?.telephoneNumber || 'Not found'],
+          lines: [this.sentReferral.referral.ndeliusPhoneNumber || officer?.telephoneNumber || 'Not found'],
         })
       }
       probationPractitionerDetails.push({
@@ -199,7 +199,7 @@ export default class ShowReferralPresenter {
       if (this.userType === 'service-provider') {
         probationPractitionerDetails.push({
           key: 'Team phone number',
-          lines: [officer?.team?.telephoneNumber || 'Not found'],
+          lines: [this.sentReferral.referral.ndeliusTeamPhoneNumber || officer?.team?.telephoneNumber || 'Not found'],
         })
       }
 
@@ -225,7 +225,7 @@ export default class ShowReferralPresenter {
     if (this.userType === 'service-provider') {
       probationPractitionerDetails.push({
         key: 'Team phone number',
-        lines: [officer?.team?.telephoneNumber || 'Not found'],
+        lines: [this.sentReferral.referral.ndeliusTeamPhoneNumber || officer?.team?.telephoneNumber || 'Not found'],
       })
     }
     return probationPractitionerDetails

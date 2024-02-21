@@ -1,7 +1,7 @@
 import DraftReferral from '../../../models/draftReferral'
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
-import { SummaryListItem } from '../../../utils/summaryList'
+import { SummaryListItem, SummaryListItemContent } from '../../../utils/summaryList'
 import DeliusOfficeLocation from '../../../models/deliusOfficeLocation'
 import DeliusDeliveryUnit from '../../../models/deliusDeliveryUnit'
 import { DeliusResponsibleOfficer } from '../../../models/delius/deliusResponsibleOfficer'
@@ -25,15 +25,82 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       {
         key: 'Name',
         lines: [
-          `${this.deliusResponsibleOfficer?.communityManager.name.forename || ''} ${
-            this.deliusResponsibleOfficer?.communityManager.name.surname || ''
-          }`.trim() || 'Not found',
+          this.referral.ndeliusPPName ||
+            `${this.deliusResponsibleOfficer?.communityManager.name.forename || ''} ${
+              this.deliusResponsibleOfficer?.communityManager.name.surname || ''
+            }`.trim() ||
+            'Not found',
         ],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-name`,
       },
-      { key: 'Email address', lines: [this.deliusResponsibleOfficer?.communityManager.email || 'Not found'] },
+      {
+        key: 'Email address',
+        lines: [this.determineEmail()],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-email-address`,
+        deleteLink:
+          this.determineEmail() !== 'Not found' && this.determineEmail() !== ''
+            ? `/referrals/${this.referral.id}/delete-probation-practitioner/email-address`
+            : undefined,
+        valueLink:
+          this.determineEmail() === 'Not found'
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address</a>`
+            : undefined,
+      },
+      {
+        key: 'Phone number',
+        lines: [this.determinePhoneNumber()],
+        changeLink:
+          this.determinePhoneNumber() !== 'Not found'
+            ? `/referrals/${this.referral.id}/update-probation-practitioner-phone-number`
+            : undefined,
+        valueLink:
+          this.determinePhoneNumber() === 'Not found'
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number</a>`
+            : undefined,
+        deleteLink:
+          this.determinePhoneNumber() !== 'Not found'
+            ? `/referrals/${this.referral.id}/delete-probation-practitioner/phone-number`
+            : undefined,
+      },
       {
         key: 'PDU (Probation Delivery Unit)',
-        lines: [this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found'],
+        lines: [
+          this.referral.ndeliusPDU || this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found',
+        ],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu`,
+      },
+      {
+        key: 'Probation office',
+        lines: [this.determineProbationOffice()],
+        valueLink:
+          this.determineProbationOffice() === 'Not found'
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-office" class="govuk-link">Enter probation office</a>`
+            : undefined,
+
+        changeLink:
+          this.determineProbationOffice() !== 'Not found'
+            ? `/referrals/${this.referral.id}/update-probation-practitioner-office`
+            : undefined,
+        deleteLink:
+          this.determineProbationOffice() !== 'Not found'
+            ? `/referrals/${this.referral.id}/delete-probation-practitioner/probation-office`
+            : undefined,
+      },
+      {
+        key: 'Team Phone number',
+        lines: [this.determineTeamPhoneNumber()],
+        changeLink:
+          this.determineTeamPhoneNumber() !== 'Not found'
+            ? `/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number`
+            : undefined,
+        valueLink:
+          this.determineTeamPhoneNumber() === 'Not found'
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number" class="govuk-link">Enter team phone number</a>`
+            : undefined,
+        deleteLink:
+          this.determineTeamPhoneNumber() !== 'Not found'
+            ? `/referrals/${this.referral.id}/delete-probation-practitioner/team-phone-number`
+            : undefined,
       },
     ]
     return summary
@@ -42,6 +109,31 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
   readonly errorSummary = PresenterUtils.errorSummary(this.error, {
     fieldOrder: ['probation-practitioner-name'],
   })
+
+  private determineTeamPhoneNumber(): SummaryListItemContent {
+    return this.referral.ndeliusTeamPhoneNumber || 'Not found'
+  }
+
+  private determinePhoneNumber(): SummaryListItemContent {
+    return this.referral.ndeliusPhoneNumber || 'Not found'
+  }
+
+  private determineProbationOffice(): SummaryListItemContent {
+    return this.referral.ppProbationOffice || 'Not found'
+  }
+
+  private determineEmail(): SummaryListItemContent {
+    if (this.referral.ndeliusPPEmailAddress && this.referral.ndeliusPPEmailAddress !== '') {
+      return this.referral.ndeliusPPEmailAddress
+    }
+    if (this.referral.ndeliusPPEmailAddress === '') {
+      return 'Not found'
+    }
+    if (this.deliusResponsibleOfficer?.communityManager.email) {
+      return this.deliusResponsibleOfficer?.communityManager.email
+    }
+    return 'Not found'
+  }
 
   private errorMessageForField(field: string): string | null {
     return PresenterUtils.errorMessage(this.error, field)
@@ -80,10 +172,17 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
     probationPractitionerName: this.utils.stringValue(this.referral.ppName, 'probation-practitioner-name'),
     probationPractitionerEmail: this.utils.stringValue(this.referral.ppEmailAddress, 'probation-practitioner-email'),
     probationPractitionerPdu: this.utils.stringValue(this.referral.ppPdu, 'probation-practitioner-pdu'),
+    probationPractitionerTelephoneNumber: this.utils.stringValue(
+      this.referral.ndeliusPhoneNumber,
+      'probation-practitioner-telephone-number'
+    ),
+    probationPractitionerTeamTelephoneNumber: this.utils.stringValue(
+      this.referral.ndeliusTeamPhoneNumber,
+      'probation-practitioner-team-telephone-number'
+    ),
     probationPractitionerOffice: this.utils.stringValue(
       this.referral.ppProbationOffice,
       'probation-practitioner-office'
     ),
-    hasValidDeliusPPDetails: this.utils.booleanValue(this.referral.hasValidDeliusPPDetails, 'confirm-details'),
   }
 }

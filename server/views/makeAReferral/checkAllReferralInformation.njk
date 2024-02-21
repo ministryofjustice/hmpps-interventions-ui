@@ -22,6 +22,10 @@
         {{ govukSummaryList(probationPractitionerDetailsSummaryListArgs) }}
       {% endif %}
 
+      {% if backUpContactDetailsSummaryListArgs and (not presenter.checkIfUnAllocatedCOM) %}
+        {{ govukSummaryList(backUpContactDetailsSummaryListArgs) }}
+      {% endif %}
+
       {% if mainPointOfContactDetailsSummaryListArgs and (presenter.checkIfUnAllocatedCOM) %}
         {{ govukSummaryList(mainPointOfContactDetailsSummaryListArgs) }}
       {% endif %}

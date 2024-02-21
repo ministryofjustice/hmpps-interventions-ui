@@ -1153,6 +1153,7 @@ describe('GET /referrals/:id/confirm-probation-practitioner-details', () => {
       .serviceUserSelected()
       .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.patchDraftReferral.mockResolvedValue(referral)
 
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
@@ -1215,15 +1216,15 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
   it('updates the referral on the backend and redirects to the form page', async () => {
     const updatedReferral = draftReferralFactory.serviceUserSelected().build({
       serviceUser: { firstName: 'Geoffrey' },
-      ndeliusPPName: 'John',
+      ndeliusPPName: 'John Alice',
       ndeliusPPEmailAddress: 'john@example.com',
       ndeliusPDU: 'Sheffield',
-      ppName: 'Bob',
-      ppEmailAddress: 'null',
+      ndeliusPhoneNumber: '98454243243',
+      ndeliusTeamPhoneNumber: '044-2545453442',
       ppProbationOffice: 'London',
-      ppPdu: 'London',
     })
 
+    interventionsService.getDraftReferral.mockResolvedValue(updatedReferral)
     interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
 
     await request(app)
@@ -1243,49 +1244,34 @@ describe('POST /referrals/:id/confirm-probation-practitioner-details', () => {
       'token',
       '1',
       {
-        ndeliusPPName: 'Bob Alice',
-        ndeliusPPEmailAddress: 'bobalice@example.com',
-        ndeliusPDU: 'Hackney and City',
-        ppName: 'John',
-        ppEmailAddress: 'john@example.com',
-        ppProbationOffice: undefined,
-        ppPdu: 'East Sussex',
-        hasValidDeliusPPDetails: false,
+        ndeliusPPName: 'John Alice',
+        ndeliusPPEmailAddress: 'john@example.com',
+        ndeliusPDU: 'Sheffield',
+        ndeliusPhoneNumber: '98454243243',
+        ndeliusTeamPhoneNumber: '044-2545453442',
+        ppProbationOffice: 'London',
       },
     ])
   })
 
-  describe('when the user enters invalid data', () => {
-    it('does not update the referral on the backend and returns a 400 with an error message', async () => {
-      await request(app)
-        .post('/referrals/1/confirm-probation-practitioner-details')
-        .type('form')
-        .send({
-          'confirm-details': 'no',
-          'probation-practitioner-name': '',
-        })
-        .expect(400)
-        .expect(res => {
-          expect(res.text).toContain(`Enter name of probation practitioner`)
-        })
-      expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
-    })
-  })
-
   it('updates the referral on the backend and returns a 500 if the API call fails with a non-validation error', async () => {
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: { firstName: 'Geoffrey' },
+      ndeliusPPName: 'John Alice',
+      ndeliusPPEmailAddress: 'john@example.com',
+      ndeliusPDU: 'Sheffield',
+      ndeliusPhoneNumber: '98454243243',
+      ndeliusTeamPhoneNumber: '044-2545453442',
+      ppProbationOffice: 'London',
+    })
+    interventionsService.getDraftReferral.mockResolvedValue(updatedReferral)
     interventionsService.patchDraftReferral.mockRejectedValue({
       message: 'Some backend error message',
     })
     await request(app)
       .post('/referrals/1/confirm-probation-practitioner-details')
       .type('form')
-      .send({
-        'confirm-details': 'no',
-        'probation-practitioner-name': 'John',
-        'probation-practitioner-email': 'john@example.com',
-        'probation-practitioner-office': 'undefined',
-        'probation-practitioner-pdu': 'East Sussex',
-      })
+      .send()
       .expect(500)
       .expect(res => {
         expect(res.text).toContain('Some backend error message')
