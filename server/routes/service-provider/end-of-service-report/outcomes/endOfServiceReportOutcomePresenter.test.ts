@@ -67,7 +67,7 @@ describe(EndOfServiceReportOutcomePresenter, () => {
             ],
           },
           additionalTaskComments: { value: '' },
-          progressionComments: { value: '' },
+          progressionComments: { errorMessage: null, value: '' },
         })
       })
     })
@@ -113,7 +113,7 @@ describe(EndOfServiceReportOutcomePresenter, () => {
               ],
             },
             additionalTaskComments: { value: 'Some task comments' },
-            progressionComments: { value: 'Some progression comments' },
+            progressionComments: { errorMessage: null, value: 'Some progression comments' },
           })
         })
       })
@@ -164,7 +164,7 @@ describe(EndOfServiceReportOutcomePresenter, () => {
               ],
             },
             additionalTaskComments: { value: 'Some other task comments' },
-            progressionComments: { value: 'Some other progression comments' },
+            progressionComments: { errorMessage: null, value: 'Some other progression comments' },
           })
         })
       })
@@ -210,7 +210,7 @@ describe(EndOfServiceReportOutcomePresenter, () => {
             ],
           },
           additionalTaskComments: { value: 'Some other task comments' },
-          progressionComments: { value: 'Some other progression comments' },
+          progressionComments: { errorMessage: null, value: 'Some other progression comments' },
         })
       })
     })

@@ -27,8 +27,9 @@ export default class EndOfServiceReportOutcomeView {
     name: 'progression-comments',
     value: this.presenter.fields.progressionComments.value,
     label: {
-      text: 'Do you have any further comments about their progression on this outcome?',
+      text: 'Describe their progress on this outcome.',
     },
+    errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.progressionComments.errorMessage),
   }
 
   private readonly additionalTaskCommentsTextareaArgs: TextareaArgs = {
@@ -36,7 +37,7 @@ export default class EndOfServiceReportOutcomeView {
     name: 'additional-task-comments',
     value: this.presenter.fields.additionalTaskComments.value,
     label: {
-      text: 'Is there anything else that needs doing to achieve this outcome?',
+      text: 'Enter if anything else needs to be done (optional)',
     },
   }
 

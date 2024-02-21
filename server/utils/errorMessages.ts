@@ -283,6 +283,9 @@ export default {
     achievementLevel: {
       empty: (name: string) => `Select whether ${name} achieved the desired outcome`,
     },
+    progressionComments: {
+      empty: () => `Add what progress they made`,
+    },
   },
   cancelReferral: {
     cancellationReason: {
