@@ -16,7 +16,7 @@ describe(NoSessionYesAttendedFeedbackForm, () => {
 
         expect(data.paramsForUpdate?.noSessionReasonType).toEqual(NoSessionReasonType.POP_ACCEPTABLE)
         expect(data.paramsForUpdate?.noSessionReasonPopAcceptable).toEqual('some info')
-        expect(data.paramsForUpdate?.notifyProbationPractitioner).toEqual(false)
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfConcerns).toEqual(false)
       })
 
       it('returns a paramsForUpdate for pop unacceptable', async () => {
@@ -30,7 +30,7 @@ describe(NoSessionYesAttendedFeedbackForm, () => {
 
         expect(data.paramsForUpdate?.noSessionReasonType).toEqual(NoSessionReasonType.POP_UNACCEPTABLE)
         expect(data.paramsForUpdate?.noSessionReasonPopUnacceptable).toEqual('some info')
-        expect(data.paramsForUpdate?.notifyProbationPractitioner).toEqual(false)
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfConcerns).toEqual(false)
       })
 
       it('returns a paramsForUpdate for sp logistics', async () => {
@@ -44,7 +44,7 @@ describe(NoSessionYesAttendedFeedbackForm, () => {
 
         expect(data.paramsForUpdate?.noSessionReasonType).toEqual(NoSessionReasonType.LOGISTICS)
         expect(data.paramsForUpdate?.noSessionReasonLogistics).toEqual('some info')
-        expect(data.paramsForUpdate?.notifyProbationPractitioner).toEqual(false)
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfConcerns).toEqual(false)
       })
 
       it('returns a paramsForUpdate and notify pp gets set to true', async () => {
@@ -59,7 +59,7 @@ describe(NoSessionYesAttendedFeedbackForm, () => {
 
         expect(data.paramsForUpdate?.noSessionReasonType).toEqual(NoSessionReasonType.LOGISTICS)
         expect(data.paramsForUpdate?.noSessionReasonLogistics).toEqual('some info')
-        expect(data.paramsForUpdate?.notifyProbationPractitioner).toEqual(true)
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfConcerns).toEqual(true)
         expect(data.paramsForUpdate?.sessionConcerns).toEqual('some concerns')
       })
     })
@@ -124,7 +124,7 @@ describe(NoSessionYesAttendedFeedbackForm, () => {
           expect(data.error?.errors).toContainEqual({
             errorSummaryLinkedField: 'notify-probation-practitioner',
             formFields: ['notify-probation-practitioner'],
-            message: 'Select whether to notify the probation practitioner or not',
+            message: "Select 'no' if the probation practitioner does not need to be notified",
           })
         })
 
@@ -160,7 +160,7 @@ describe(NoSessionYesAttendedFeedbackForm, () => {
             {
               errorSummaryLinkedField: 'notify-probation-practitioner',
               formFields: ['notify-probation-practitioner'],
-              message: 'Select whether to notify the probation practitioner or not',
+              message: "Select 'no' if the probation practitioner does not need to be notified",
             },
           ])
         })

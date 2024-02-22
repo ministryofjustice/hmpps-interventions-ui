@@ -34,9 +34,14 @@ describe(SessionFeedbackInputsPresenter, () => {
               message: 'concerns error msg',
             },
             {
-              formFields: ['notify-probation-practitioner'],
-              errorSummaryLinkedField: 'notify-probation-practitioner',
-              message: 'notify pp msg',
+              formFields: ['notify-probation-practitioner-of-behaviour'],
+              errorSummaryLinkedField: 'notify-probation-practitioner-of-behaviour',
+              message: 'notify pp of poor behaviour msg',
+            },
+            {
+              formFields: ['notify-probation-practitioner-of-concerns'],
+              errorSummaryLinkedField: 'notify-probation-practitioner-of-concerns',
+              message: 'notify pp of concerns msg',
             },
           ],
         })
@@ -45,7 +50,8 @@ describe(SessionFeedbackInputsPresenter, () => {
           { field: 'session-summary', message: 'summary error msg' },
           { field: 'session-response', message: 'response error msg' },
           { field: 'session-concerns', message: 'concerns error msg' },
-          { field: 'notify-probation-practitioner', message: 'notify pp msg' },
+          { field: 'notify-probation-practitioner-of-behaviour', message: 'notify pp of poor behaviour msg' },
+          { field: 'notify-probation-practitioner-of-concerns', message: 'notify pp of concerns msg' },
         ])
       })
     })
@@ -101,33 +107,33 @@ describe(SessionFeedbackInputsPresenter, () => {
       })
     })
 
-    describe('notifyProbationPractitioner', () => {
+    describe('notifyProbationPractitionerOfBehaviour', () => {
       describe('when there is no user input data', () => {
-        describe('when the appointment already has a value selected for notifying the probation practitioner', () => {
+        describe('when the appointment already has a value selected for notifying the probation practitioner of behaviour', () => {
           it('uses the pre-selected value', () => {
             const appointment = actionPlanAppointmentFactory.build({
               appointmentFeedback: {
                 sessionFeedback: {
                   sessionSummary: 'Summary of the session',
                   sessionResponse: 'Alex was well behaved',
-                  notifyProbationPractitioner: false,
+                  notifyProbationPractitionerOfBehaviour: false,
                 },
               },
             })
 
             const presenter = new SessionFeedbackInputsPresenter(appointment)
 
-            expect(presenter.fields.notifyProbationPractitioner.value).toEqual(false)
+            expect(presenter.fields.notifyProbationPractitionerOfBehaviour.value).toEqual(false)
           })
         })
 
-        describe('when the appointment has no value for notifyProbationPractitioner', () => {
+        describe('when the appointment has no value for notifyProbationPractitionerOfBehaviour', () => {
           it('sets the value to null', () => {
             const appointment = actionPlanAppointmentFactory.build()
 
             const presenter = new SessionFeedbackInputsPresenter(appointment)
 
-            expect(presenter.fields.notifyProbationPractitioner.value).toEqual(null)
+            expect(presenter.fields.notifyProbationPractitionerOfBehaviour.value).toEqual(null)
           })
         })
       })
@@ -139,19 +145,74 @@ describe(SessionFeedbackInputsPresenter, () => {
               sessionFeedback: {
                 sessionSummary: 'Discussed accommodation',
                 sessionResponse: 'Engaged well',
-                notifyProbationPractitioner: false,
+                notifyProbationPractitionerOfBehaviour: false,
               },
             },
           })
           const presenter = new SessionFeedbackInputsPresenter(appointment, null, {
             'session-summary': 'Discussed accommodation',
             'session-response': 'Engaged well',
-            'notify-probation-practitioner': 'yes',
+            'notify-probation-practitioner-of-behaviour': 'yes',
           })
 
           expect(presenter.fields.sessionSummary.value).toEqual('Discussed accommodation')
           expect(presenter.fields.sessionResponse.value).toEqual('Engaged well')
-          expect(presenter.fields.notifyProbationPractitioner.value).toEqual(true)
+          expect(presenter.fields.notifyProbationPractitionerOfBehaviour.value).toEqual(true)
+        })
+      })
+    })
+
+    describe('notifyProbationPractitionerOfConcerns', () => {
+      describe('when there is no user input data', () => {
+        describe('when the appointment already has a value selected for notifying the probation practitioner of concerns', () => {
+          it('uses the pre-selected value', () => {
+            const appointment = actionPlanAppointmentFactory.build({
+              appointmentFeedback: {
+                sessionFeedback: {
+                  sessionSummary: 'Summary of the session',
+                  sessionResponse: 'Alex was well behaved',
+                  notifyProbationPractitionerOfConcerns: false,
+                },
+              },
+            })
+
+            const presenter = new SessionFeedbackInputsPresenter(appointment)
+
+            expect(presenter.fields.notifyProbationPractitionerOfConcerns.value).toEqual(false)
+          })
+        })
+
+        describe('when the appointment has no value for notifyProbationPractitionerOfConcerns', () => {
+          it('sets the value to null', () => {
+            const appointment = actionPlanAppointmentFactory.build()
+
+            const presenter = new SessionFeedbackInputsPresenter(appointment)
+
+            expect(presenter.fields.notifyProbationPractitionerOfConcerns.value).toEqual(null)
+          })
+        })
+      })
+
+      describe('when there is user input data', () => {
+        it('uses the user input data as the value attribute', () => {
+          const appointment = actionPlanAppointmentFactory.build({
+            appointmentFeedback: {
+              sessionFeedback: {
+                sessionSummary: 'Discussed accommodation',
+                sessionResponse: 'Engaged well',
+                notifyProbationPractitionerOfConcerns: false,
+              },
+            },
+          })
+          const presenter = new SessionFeedbackInputsPresenter(appointment, null, {
+            'session-summary': 'Discussed accommodation',
+            'session-response': 'Engaged well',
+            'notify-probation-practitioner-of-concerns': 'yes',
+          })
+
+          expect(presenter.fields.sessionSummary.value).toEqual('Discussed accommodation')
+          expect(presenter.fields.sessionResponse.value).toEqual('Engaged well')
+          expect(presenter.fields.notifyProbationPractitionerOfConcerns.value).toEqual(true)
         })
       })
     })
@@ -177,9 +238,14 @@ describe(SessionFeedbackInputsPresenter, () => {
               message: 'concerns error msg',
             },
             {
-              formFields: ['notify-probation-practitioner'],
-              errorSummaryLinkedField: 'notify-probation-practitioner',
-              message: 'notify pp msg',
+              formFields: ['notify-probation-practitioner-of-behaviour'],
+              errorSummaryLinkedField: 'notify-probation-practitioner-of-behaviour',
+              message: 'notify pp of poor behaviour msg',
+            },
+            {
+              formFields: ['notify-probation-practitioner-of-concerns'],
+              errorSummaryLinkedField: 'notify-probation-practitioner-of-concerns',
+              message: 'notify pp of concerns msg',
             },
           ],
         })
@@ -187,7 +253,10 @@ describe(SessionFeedbackInputsPresenter, () => {
         expect(presenter.fields.sessionSummary.errorMessage).toEqual('summary error msg')
         expect(presenter.fields.sessionResponse.errorMessage).toEqual('response error msg')
         expect(presenter.fields.sessionConcerns.errorMessage).toEqual('concerns error msg')
-        expect(presenter.fields.notifyProbationPractitioner.errorMessage).toEqual('notify pp msg')
+        expect(presenter.fields.notifyProbationPractitionerOfBehaviour.errorMessage).toEqual(
+          'notify pp of poor behaviour msg'
+        )
+        expect(presenter.fields.notifyProbationPractitionerOfConcerns.errorMessage).toEqual('notify pp of concerns msg')
       })
     })
   })

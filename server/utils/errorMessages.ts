@@ -221,7 +221,12 @@ export default {
   },
   sessionConcerns: {
     empty: 'Enter a description of what concerned you',
-    notifyProbationPractitionerNotSelected: 'Select whether to notify the probation practitioner or not',
+  },
+  sessionBehaviour: {
+    empty: (name: string) => `Enter details about ${name}'s poor behaviour`,
+  },
+  notifyProbationPractitioner: {
+    notSelected: "Select 'no' if the probation practitioner does not need to be notified",
   },
   late: {
     optionNotSelected: (name: string) => `Select whether ${name} was late`,

@@ -1805,7 +1805,7 @@ describe('Service provider referrals dashboard', () => {
       cy.contains('Add anything you know about why they did not attend and how you tried to contact them').type(
         'They did not attend and I phoned them.'
       )
-      cy.contains('Did anything concern you about Alex River?')
+      cy.contains('Does the probation practitioner need to be notified about any issues?')
       cy.get('[id=noNotifyPPRadio]').click()
 
       cy.stubRecordActionPlanAppointmentSessionFeedback(
@@ -2460,7 +2460,7 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Add anything you know about why they did not attend and how you tried to contact them').type(
             'They did not attend and I phoned them.'
           )
-          cy.contains('Did anything concern you about Alex River?')
+          cy.contains('Does the probation practitioner need to be notified about any issues?')
           cy.get('[id=noNotifyPPRadio]').click()
 
           const appointmentWithSessionFeedback = initialAssessmentAppointmentFactory.build({
@@ -2699,11 +2699,9 @@ describe('Service provider referrals dashboard', () => {
           cy.get('[id=wasLateNoRadio]').click()
           cy.contains('What did you do in the appointment?').type('Discussed his mental health')
           cy.contains('How did Alex River respond to the appointment?').type("Wasn't engaged")
-          cy.contains('Did anything concern you about Alex River?')
-          cy.get('[id=yesNotifyPPRadio]').click()
-          cy.contains('Add enough detail to help the probation practitioner to know what happened.').type(
-            'Alex was acting very suspicious.'
-          )
+          cy.contains('Does the probation practitioner need to be notified about any issues?')
+          cy.get('[id=notify-probation-practitioner-of-concerns]').click()
+          cy.contains('Add details about your concerns.').type('Alex was acting very suspicious.')
 
           const appointmentWithSessionFeedback = initialAssessmentAppointmentFactory.build({
             appointmentTime: '2021-03-24T09:02:02Z',

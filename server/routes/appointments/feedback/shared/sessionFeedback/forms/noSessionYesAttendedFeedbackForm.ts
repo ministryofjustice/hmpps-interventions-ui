@@ -39,7 +39,7 @@ export default class NoSessionYesAttendedFeedbackForm {
           this.request.body['no-session-reason-type'] === NoSessionReasonType.LOGISTICS
             ? this.request.body['no-session-reason-logistics']
             : null,
-        notifyProbationPractitioner: this.notifyProbationPractitioner,
+        notifyProbationPractitionerOfConcerns: this.notifyProbationPractitioner,
         sessionConcerns: this.request.body['session-concerns'],
       },
       error: null,
@@ -65,7 +65,7 @@ export default class NoSessionYesAttendedFeedbackForm {
         .withMessage(errorMessages.noReasonType.logistics.empty),
       body('notify-probation-practitioner')
         .isIn(['yes', 'no'])
-        .withMessage(errorMessages.sessionConcerns.notifyProbationPractitionerNotSelected),
+        .withMessage(errorMessages.notifyProbationPractitioner.notSelected),
       body('session-concerns')
         .if(body('notify-probation-practitioner').equals('yes'))
         .notEmpty({ ignore_whitespace: true })

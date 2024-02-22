@@ -1,5 +1,6 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 
@@ -14,8 +15,12 @@
   <form method="post">
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
-    {% set hasConcernsHtml %}
+    {% set sessionConcernsTextAreaHtml %}
         {{ govukTextarea(sessionConcernsTextAreaArgs) }}
+    {% endset -%}
+
+    {% set sessionBehaviourTextAreaHtml %}
+        {{ govukTextarea(sessionBehaviourTextAreaArgs) }}
     {% endset -%}
 
     {% set lateReasonHtml %}
@@ -25,7 +30,7 @@
     {{ govukRadios(wasLateRadioButtonArgs(lateReasonHtml)) }}
     {{ govukTextarea(sessionSummaryTextAreaArgs) }}
     {{ govukTextarea(sessionResponseTextAreaArgs) }}
-    {{ govukRadios(radioButtonArgs(hasConcernsHtml)) }}
+    {{ govukCheckboxes(checkboxArgs(sessionConcernsTextAreaHtml, sessionBehaviourTextAreaHtml)) }}
     {{ govukTextarea(futureSessionPlansTextAreaArgs) }}
 
     {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}

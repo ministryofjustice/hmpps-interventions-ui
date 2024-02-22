@@ -13,7 +13,7 @@ describe(NoSessionNoAttendedFeedbackForm, () => {
         const data = await new NoSessionNoAttendedFeedbackForm(request).data()
 
         expect(data.paramsForUpdate?.noAttendanceInformation).toEqual('they did not attend')
-        expect(data.paramsForUpdate?.notifyProbationPractitioner).toEqual(false)
+        expect(data.paramsForUpdate?.notifyProbationPractitionerOfConcerns).toEqual(false)
       })
     })
 
@@ -26,7 +26,7 @@ describe(NoSessionNoAttendedFeedbackForm, () => {
         expect(data.error?.errors).toContainEqual({
           errorSummaryLinkedField: 'notify-probation-practitioner',
           formFields: ['notify-probation-practitioner'],
-          message: 'Select whether to notify the probation practitioner or not',
+          message: "Select 'no' if the probation practitioner does not need to be notified",
         })
         expect(data.error?.errors).toContainEqual({
           errorSummaryLinkedField: 'no-attendance-information',
@@ -65,7 +65,7 @@ describe(NoSessionNoAttendedFeedbackForm, () => {
           {
             errorSummaryLinkedField: 'notify-probation-practitioner',
             formFields: ['notify-probation-practitioner'],
-            message: 'Select whether to notify the probation practitioner or not',
+            message: "Select 'no' if the probation practitioner does not need to be notified",
           },
         ])
       })

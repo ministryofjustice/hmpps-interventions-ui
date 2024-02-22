@@ -1,9 +1,12 @@
 export default interface SessionFeedback {
   notifyProbationPractitioner: boolean | null
+  notifyProbationPractitionerOfBehaviour: boolean | null
+  notifyProbationPractitionerOfConcerns: boolean | null
   sessionSummary: string | null
   sessionResponse: string | null
   futureSessionPlans: string | null
   sessionConcerns: string | null
+  sessionBehaviour: string | null
   behaviourDescription?: string | null
   late: boolean | null
   lateReason: string | null

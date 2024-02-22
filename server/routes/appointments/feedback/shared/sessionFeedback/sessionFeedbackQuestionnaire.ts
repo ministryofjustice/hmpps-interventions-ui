@@ -49,6 +49,12 @@ export default class SessionFeedbackQuestionnaire {
 
   get sessionConcernsQuestion(): { text: string } {
     return {
+      text: `Add details about your concerns.`,
+    }
+  }
+
+  get sessionBehaviourQuestion(): { text: string } {
+    return {
       text: `Add enough detail to help the probation practitioner to know what happened.`,
     }
   }
@@ -96,11 +102,27 @@ export default class SessionFeedbackQuestionnaire {
     }
   }
 
-  get notifyProbationPractitionerQuestion(): { text: string; hint: string; explanation: string } {
+  get notifyProbationPractitionerQuestion(): { text: string } {
     return {
       text: `Did anything concern you about ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}?`,
-      explanation: 'If you select yes, the probation practitioner will get an email about your concerns.',
-      hint: 'Select one option',
+    }
+  }
+
+  get notifyProbationPractitionerCheckboxQuestion(): { text: string } {
+    return {
+      text: `Does the probation practitioner need to be notified about any issues?`,
+    }
+  }
+
+  get notifyProbationPractitionerOfBehaviourQuestion(): { text: string } {
+    return {
+      text: `Does the probation practitioner need to be notified about poor behaviour?`,
+    }
+  }
+
+  get notifyProbationPractitionerOfConcernsQuestion(): { text: string } {
+    return {
+      text: `Does the probation practitioner need to be notified about any concerns?`,
     }
   }
 
@@ -121,6 +143,18 @@ export default class SessionFeedbackQuestionnaire {
     return {
       text: `Would you like to reschedule this session now?`,
       hint: `If you select no, you’ll still be able to reschedule it later.`,
+    }
+  }
+
+  get poorBehaviourCheckboxOptionText(): { text: string } {
+    return {
+      text: `Yes, ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} behaved poorly`,
+    }
+  }
+
+  get concerningBehaviourCheckboxOptionText(): { text: string } {
+    return {
+      text: `Yes, something concerned me about ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}`,
     }
   }
 }

@@ -74,7 +74,7 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
     lateReason = null,
     sessionSummary = 'stub session summary',
     sessionResponse = 'stub session summary',
-    notifyProbationPractitioner = false,
+    notifyProbationPractitionerOfBehaviour = false,
     submitted = true,
     submittedBy: User = userDetailsFactory.build()
   ) {
@@ -89,7 +89,7 @@ class DraftAppointmentFactory extends Factory<DraftAppointment> {
           lateReason,
           sessionSummary,
           sessionResponse,
-          notifyProbationPractitioner,
+          notifyProbationPractitionerOfBehaviour,
           sessionConcerns: null,
         },
         submitted,

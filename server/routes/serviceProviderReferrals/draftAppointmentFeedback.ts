@@ -14,9 +14,12 @@ export interface DraftAppointmentFeedbackDetails {
     late: boolean | null
     lateReason: string | null
     notifyProbationPractitioner: boolean | null
+    notifyProbationPractitionerOfBehaviour: boolean | null
+    notifyProbationPractitionerOfConcerns: boolean | null
     sessionSummary: string | null
     sessionResponse: string | null
     sessionConcerns: string | null
+    sessionBehaviour: string | null
     futureSessionPlans: string | null
     noSessionReasonType: NoSessionReasonType | null
     noSessionReasonPopAcceptable: string | null

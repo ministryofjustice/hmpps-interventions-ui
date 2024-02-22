@@ -384,7 +384,7 @@ export default class InterventionProgressPresenter {
       return `The probation practitioner will get an email about ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} not attending. They’ll also be able to view the feedback in the service.`
     }
     return this.notifyPP === true
-      ? 'The probation practitioner has been emailed about your concerns. They’ll also be able to view the feedback in the service.'
+      ? 'The probation practitioner has been emailed. They’ll also be able to view the feedback in the service.'
       : 'The probation practitioner will be able to view the feedback in the service.'
   }
 
