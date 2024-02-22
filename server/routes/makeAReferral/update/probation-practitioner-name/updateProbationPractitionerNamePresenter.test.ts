@@ -90,7 +90,7 @@ describe(UpdateProbationPractitionerNamePresenter, () => {
         it('uses an empty string value as the field value', () => {
           const presenter = new UpdateProbationPractitionerNamePresenter('1', 'crn', '', 'David', 'Blake')
 
-          expect(presenter.fields.ndeliusPPName).toEqual('')
+          expect(presenter.fields.ppName).toEqual('')
         })
       })
 
@@ -98,7 +98,7 @@ describe(UpdateProbationPractitionerNamePresenter, () => {
         it('uses that value as the field value', () => {
           const presenter = new UpdateProbationPractitionerNamePresenter('1', 'crn', 'Alex River', 'David', 'Blake')
 
-          expect(presenter.fields.ndeliusPPName).toEqual('Alex River')
+          expect(presenter.fields.ppName).toEqual('Alex River')
         })
       })
 
@@ -117,7 +117,7 @@ describe(UpdateProbationPractitionerNamePresenter, () => {
             }
           )
 
-          expect(presenter.fields.ndeliusPPName).toEqual('David Boon')
+          expect(presenter.fields.ppName).toEqual('David Boon')
         })
       })
     })

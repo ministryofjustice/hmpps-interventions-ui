@@ -10,7 +10,7 @@ describe(UpdateProbationPractitionerTeamPhoneNumberForm, () => {
         })
         const data = await new UpdateProbationPractitionerTeamPhoneNumberForm(request).data()
 
-        expect(data.paramsForUpdate?.ndeliusTeamPhoneNumber).toEqual('07594343232')
+        expect(data.paramsForUpdate?.ppTeamPhoneNumber).toEqual('07594343232')
       })
     })
   })

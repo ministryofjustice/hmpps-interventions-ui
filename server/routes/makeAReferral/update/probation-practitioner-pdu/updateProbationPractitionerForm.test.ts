@@ -10,7 +10,7 @@ describe(UpdateProbationPractitionerPduForm, () => {
         })
         const data = await new UpdateProbationPractitionerPduForm(request).data()
 
-        expect(data.paramsForUpdate?.ndeliusPDU).toEqual('Norfolk')
+        expect(data.paramsForUpdate?.ppPdu).toEqual('Norfolk')
       })
     })
   })

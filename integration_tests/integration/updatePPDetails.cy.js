@@ -89,6 +89,7 @@ describe('Referral form', () => {
             name: 'Harmony Living',
           },
           interventionId: draftReferral.interventionId,
+          allocatedCommunityPP: true,
         })
 
       const completedPPDetails = draftReferralFactory.filledFormUptoPPDetails().build({
@@ -98,6 +99,7 @@ describe('Referral form', () => {
           name: 'Harmony Living',
         },
         interventionId: draftReferral.interventionId,
+        allocatedCommunityPP: true,
       })
 
       const updatedPPDetails = draftReferralFactory.filledFormUptoPPDetails('Bob Marley').build({
@@ -112,6 +114,7 @@ describe('Referral form', () => {
           name: 'Harmony Living',
         },
         interventionId: draftReferral.interventionId,
+        allocatedCommunityPP: true,
       })
 
       const deletedPPDetails = draftReferralFactory.filledFormUptoPPDetails('Bob Marley').build({
@@ -127,6 +130,7 @@ describe('Referral form', () => {
           name: 'Harmony Living',
         },
         interventionId: draftReferral.interventionId,
+        allocatedCommunityPP: true,
       })
 
       const deletedPPEmailDetails = draftReferralFactory.filledFormUptoPPDetails('Bob Marley').build({
@@ -142,6 +146,7 @@ describe('Referral form', () => {
           name: 'Harmony Living',
         },
         interventionId: draftReferral.interventionId,
+        allocatedCommunityPP: true,
       })
 
       const updatedProbationOfficeDetails = draftReferralFactory.filledFormUptoPPDetails('Bob Marley').build({
@@ -156,6 +161,7 @@ describe('Referral form', () => {
           name: 'Harmony Living',
         },
         interventionId: draftReferral.interventionId,
+        allocatedCommunityPP: true,
       })
 
       const completedNeedsAndRequirementsDraftReferral = draftReferralFactory

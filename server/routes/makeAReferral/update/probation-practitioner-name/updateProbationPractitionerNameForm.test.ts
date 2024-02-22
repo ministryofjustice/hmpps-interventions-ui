@@ -10,7 +10,7 @@ describe(UpdateProbationPractitionerNameForm, () => {
         })
         const data = await new UpdateProbationPractitionerNameForm(request).data()
 
-        expect(data.paramsForUpdate?.ndeliusPPName).toEqual('David Blake')
+        expect(data.paramsForUpdate?.ppName).toEqual('David Blake')
       })
     })
   })

@@ -25,7 +25,8 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       {
         key: 'Name',
         lines: [
-          this.referral.ndeliusPPName ||
+          this.referral.ppName ||
+            this.referral.ndeliusPPName ||
             `${this.deliusResponsibleOfficer?.communityManager.name.forename || ''} ${
               this.deliusResponsibleOfficer?.communityManager.name.surname || ''
             }`.trim() ||
@@ -36,7 +37,10 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       {
         key: 'Email address',
         lines: [this.determineEmail()],
-        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-email-address`,
+        changeLink:
+          this.determineEmail() !== 'Not found'
+            ? `/referrals/${this.referral.id}/update-probation-practitioner-email-address`
+            : undefined,
         deleteLink:
           this.determineEmail() !== 'Not found' && this.determineEmail() !== ''
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/email-address`
@@ -64,9 +68,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
       },
       {
         key: 'PDU (Probation Delivery Unit)',
-        lines: [
-          this.referral.ndeliusPDU || this.deliusResponsibleOfficer?.communityManager.pdu.description || 'Not found',
-        ],
+        lines: [this.referral.ppPdu || this.referral.ndeliusPDU || 'Not found'],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu`,
       },
       {
@@ -111,11 +113,11 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
   })
 
   private determineTeamPhoneNumber(): SummaryListItemContent {
-    return this.referral.ndeliusTeamPhoneNumber || 'Not found'
+    return this.referral.ppTeamPhoneNumber || this.referral.ndeliusTeamPhoneNumber || 'Not found'
   }
 
   private determinePhoneNumber(): SummaryListItemContent {
-    return this.referral.ndeliusPhoneNumber || 'Not found'
+    return this.referral.ppPhoneNumber || this.referral.ndeliusPhoneNumber || 'Not found'
   }
 
   private determineProbationOffice(): SummaryListItemContent {
@@ -123,16 +125,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
   }
 
   private determineEmail(): SummaryListItemContent {
-    if (this.referral.ndeliusPPEmailAddress && this.referral.ndeliusPPEmailAddress !== '') {
-      return this.referral.ndeliusPPEmailAddress
-    }
-    if (this.referral.ndeliusPPEmailAddress === '') {
-      return 'Not found'
-    }
-    if (this.deliusResponsibleOfficer?.communityManager.email) {
-      return this.deliusResponsibleOfficer?.communityManager.email
-    }
-    return 'Not found'
+    return this.referral.ppEmailAddress || this.referral.ndeliusPPEmailAddress || 'Not found'
   }
 
   private errorMessageForField(field: string): string | null {

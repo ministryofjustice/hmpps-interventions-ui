@@ -65,6 +65,8 @@ const exampleReferralFields = () => {
     ppProbationOffice: 'London',
     ppPdu: 'London',
     ppEstablishment: 'aaa',
+    ppPhoneNumber: '072121212125',
+    ppTeamPhoneNumber: '020343434565',
     hasValidDeliusPPDetails: false,
     isReferralReleasingIn12Weeks: false,
     roleOrJobTitle: 'Probabation Practitioner',

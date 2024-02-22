@@ -108,7 +108,7 @@ describe(UpdateProbationPractitionerEmailAddressPresenter, () => {
         it('uses an empty string value as the field value', () => {
           const presenter = new UpdateProbationPractitionerEmailAddressPresenter('1', 'crn', '', 'David', 'Blake')
 
-          expect(presenter.fields.ndeliusPPEmailAddress).toEqual('')
+          expect(presenter.fields.ppEmailAddress).toEqual('')
         })
       })
 
@@ -122,7 +122,7 @@ describe(UpdateProbationPractitionerEmailAddressPresenter, () => {
             'Blake'
           )
 
-          expect(presenter.fields.ndeliusPPEmailAddress).toEqual('a.z@xyz.com')
+          expect(presenter.fields.ppEmailAddress).toEqual('a.z@xyz.com')
         })
       })
 
@@ -141,7 +141,7 @@ describe(UpdateProbationPractitionerEmailAddressPresenter, () => {
             }
           )
 
-          expect(presenter.fields.ndeliusPPEmailAddress).toEqual('a.z@abc.com')
+          expect(presenter.fields.ppEmailAddress).toEqual('a.z@abc.com')
         })
       })
     })

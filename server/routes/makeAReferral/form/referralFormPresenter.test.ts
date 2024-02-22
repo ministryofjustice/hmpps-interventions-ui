@@ -23,6 +23,7 @@ describe('ReferralFormPresenter', () => {
                 lastName: 'Wills',
               },
               personCurrentLocationType: CurrentLocationType.custody,
+              allocatedCommunityPP: true,
             })
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
@@ -67,6 +68,7 @@ describe('ReferralFormPresenter', () => {
                 lastName: 'Wills',
               },
               personCurrentLocationType: CurrentLocationType.community,
+              allocatedCommunityPP: true,
             })
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
@@ -192,6 +194,7 @@ describe('ReferralFormPresenter', () => {
               serviceCategoryIds: [serviceCategory.id],
               ndeliusPPName: 'Bob Wills',
               personCurrentLocationType: CurrentLocationType.custody,
+              allocatedCommunityPP: true,
             })
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
@@ -234,6 +237,7 @@ describe('ReferralFormPresenter', () => {
                 ndeliusPPName: 'Bob Wills',
                 personCustodyPrisonId: 'aaa',
                 personCurrentLocationType: CurrentLocationType.custody,
+                allocatedCommunityPP: true,
               })
               const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
               const expected = [
@@ -279,6 +283,7 @@ describe('ReferralFormPresenter', () => {
                 personCustodyPrisonId: 'aaa',
                 expectedReleaseDate: '2023-10-10',
                 personCurrentLocationType: CurrentLocationType.custody,
+                allocatedCommunityPP: true,
               })
               const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
               const expected = [
@@ -379,6 +384,7 @@ describe('ReferralFormPresenter', () => {
                 expectedReleaseDate: '2023-10-10',
                 additionalRiskInformation: 'risk info',
                 personCurrentLocationType: CurrentLocationType.custody,
+                allocatedCommunityPP: true,
               })
               const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
               const expected = [
@@ -441,6 +447,7 @@ describe('ReferralFormPresenter', () => {
                 needsInterpreter: false,
                 hasAdditionalResponsibilities: false,
                 personCurrentLocationType: CurrentLocationType.custody,
+                allocatedCommunityPP: true,
               })
               const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
               const expected = [

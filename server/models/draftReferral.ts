@@ -38,6 +38,8 @@ export interface ReferralFields {
   ppPdu: string | null
   ppProbationOffice: string | null
   ppEstablishment: string | null
+  ppPhoneNumber: string | null
+  ppTeamPhoneNumber: string | null
   hasValidDeliusPPDetails: boolean | null
   isReferralReleasingIn12Weeks: boolean | null
   roleOrJobTitle: string | null

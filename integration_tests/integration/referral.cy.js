@@ -89,6 +89,7 @@ describe('Referral form', () => {
             name: 'Harmony Living',
           },
           interventionId: draftReferral.interventionId,
+          allocatedCommunityPP: true,
         })
 
       const completedPPDetails = draftReferralFactory.filledFormUptoPPDetails().build({
@@ -98,6 +99,7 @@ describe('Referral form', () => {
           name: 'Harmony Living',
         },
         interventionId: draftReferral.interventionId,
+        allocatedCommunityPP: true,
       })
 
       const completedNeedsAndRequirementsDraftReferral = draftReferralFactory
@@ -744,6 +746,7 @@ describe('Referral form', () => {
             name: 'Harmony Living',
           },
           interventionId: draftReferral.interventionId,
+          allocatedCommunityPP: true,
         })
 
       const completedPPDetails = draftReferralFactory.filledFormUptoPPDetails().build({
@@ -753,6 +756,7 @@ describe('Referral form', () => {
           name: 'Harmony Living',
         },
         interventionId: draftReferral.interventionId,
+        allocatedCommunityPP: true,
       })
 
       const completedNeedsAndRequirementsDraftReferral = draftReferralFactory

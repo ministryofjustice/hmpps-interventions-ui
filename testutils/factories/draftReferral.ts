@@ -90,6 +90,7 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     return this.filledFormUptoPPDetails().params({
       personCurrentLocationType: currentLocationType,
       personCustodyPrisonId: currentLocationType === CurrentLocationType.custody ? 'abc' : null,
+      allocatedCommunityPP: true,
     })
   }
 
@@ -258,6 +259,8 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   ppPdu: null,
   ppEstablishment: null,
   ppProbationOffice: null,
+  ppPhoneNumber: null,
+  ppTeamPhoneNumber: null,
   hasValidDeliusPPDetails: null,
   isReferralReleasingIn12Weeks: null,
   roleOrJobTitle: null,

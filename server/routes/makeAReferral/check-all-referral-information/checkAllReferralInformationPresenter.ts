@@ -86,13 +86,13 @@ export default class CheckAllReferralInformationPresenter {
         },
         {
           key: 'Phone number',
-          lines: [this.referral.ndeliusPhoneNumber || 'Not provided'],
+          lines: [this.referral.ppPhoneNumber || this.referral.ndeliusPhoneNumber || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
         },
         this.derivePduOrProbationOffice,
         {
           key: 'Team phone number',
-          lines: [this.referral.ndeliusTeamPhoneNumber || 'Not provided'],
+          lines: [this.referral.ppTeamPhoneNumber || this.referral.ndeliusTeamPhoneNumber || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
         },
       ],
