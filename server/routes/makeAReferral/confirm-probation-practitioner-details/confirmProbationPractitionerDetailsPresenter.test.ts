@@ -213,7 +213,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
         {
           key: 'Email address',
           lines: [`Not found`],
-          changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address`,
+          changeLink: undefined,
           deleteLink: undefined,
           valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address</a>`,
         },
@@ -241,6 +241,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           lines: [`Not found`],
           changeLink: undefined,
           valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-team-phone-number" class="govuk-link">Enter team phone number</a>`,
+          deleteLink: undefined,
         },
       ])
     })

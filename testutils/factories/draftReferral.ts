@@ -90,6 +90,7 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     return this.filledFormUptoPPDetails().params({
       personCurrentLocationType: currentLocationType,
       personCustodyPrisonId: currentLocationType === CurrentLocationType.custody ? 'abc' : null,
+      allocatedCommunityPP: true,
     })
   }
 
