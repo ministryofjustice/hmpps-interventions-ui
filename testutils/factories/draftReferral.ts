@@ -258,6 +258,8 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   ppPdu: null,
   ppEstablishment: null,
   ppProbationOffice: null,
+  ppPhoneNumber: null,
+  ppTeamPhoneNumber: null,
   hasValidDeliusPPDetails: null,
   isReferralReleasingIn12Weeks: null,
   roleOrJobTitle: null,

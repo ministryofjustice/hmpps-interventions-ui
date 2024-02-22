@@ -26,7 +26,7 @@ export default class UpdateProbationPractitionerNameForm {
 
     return {
       paramsForUpdate: {
-        ndeliusPPName: this.request.body['delius-probation-practitioner-name'],
+        ppName: this.request.body['delius-probation-practitioner-name'],
       },
       error: null,
     }

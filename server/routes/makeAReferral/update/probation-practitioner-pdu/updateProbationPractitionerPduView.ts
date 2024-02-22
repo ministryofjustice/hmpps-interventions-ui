@@ -15,7 +15,7 @@ export default class UpdateProbationPractitionerPduView {
     const pduItems: SelectArgsItem[] = this.presenter.deliusDeliveryUnits.map(deliveryUnit => ({
       text: deliveryUnit.name,
       value: deliveryUnit.name.toString(),
-      selected: this.presenter.fields.ndeliusPdu ? this.presenter.fields.ndeliusPdu === deliveryUnit.name : false,
+      selected: this.presenter.fields.ppPdu ? this.presenter.fields.ppPdu === deliveryUnit.name : false,
     }))
 
     const items: SelectArgsItem[] = [

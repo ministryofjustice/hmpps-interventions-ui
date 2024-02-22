@@ -144,22 +144,19 @@ class FormSectionBuilder {
   private buildConfirmProbationPractitionerDetailsSection(): ReferralFormSingleListSectionPresenter {
     return {
       type: 'single',
-      title:
-        this.referral.isReferralReleasingIn12Weeks === null
-          ? 'Confirm probation practitioner details'
-          : 'Confirm main point of contact details',
+      title: this.referral.allocatedCommunityPP
+        ? 'Confirm probation practitioner details'
+        : 'Confirm main point of contact details',
       number: '1',
       tasks: [
         {
           title: 'Name, email address and location',
-          url:
-            this.referral.isReferralReleasingIn12Weeks === null
-              ? 'confirm-probation-practitioner-details'
-              : 'confirm-main-point-of-contact',
-          status:
-            this.referral.isReferralReleasingIn12Weeks === null
-              ? this.calculateStatus(this.sectionValues.reviewProbationPractitionerInformation)
-              : this.calculateStatus(this.sectionValues.reviewMainPointOfContactDetails),
+          url: this.referral.allocatedCommunityPP
+            ? 'confirm-probation-practitioner-details'
+            : 'confirm-main-point-of-contact',
+          status: this.referral.allocatedCommunityPP
+            ? this.calculateStatus(this.sectionValues.reviewProbationPractitionerInformation)
+            : this.calculateStatus(this.sectionValues.reviewMainPointOfContactDetails),
         },
       ],
     }

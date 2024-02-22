@@ -26,7 +26,7 @@ export default class UpdateProbationPractitionerEmailAddressForm {
 
     return {
       paramsForUpdate: {
-        ndeliusPPEmailAddress: this.request.body['delius-probation-practitioner-email-address'],
+        ppEmailAddress: this.request.body['delius-probation-practitioner-email-address'],
       },
       error: null,
     }

@@ -83,7 +83,7 @@ describe(UpdateProbationPractitionerPduPresenter, () => {
             []
           )
 
-          expect(presenter.fields.ndeliusPdu).toEqual('')
+          expect(presenter.fields.ppPdu).toEqual('')
         })
       })
 
@@ -107,7 +107,7 @@ describe(UpdateProbationPractitionerPduPresenter, () => {
             ]
           )
 
-          expect(presenter.fields.ndeliusPdu).toEqual('Norfolk')
+          expect(presenter.fields.ppPdu).toEqual('Norfolk')
         })
       })
 
@@ -127,7 +127,7 @@ describe(UpdateProbationPractitionerPduPresenter, () => {
             []
           )
 
-          expect(presenter.fields.ndeliusPdu).toEqual('London')
+          expect(presenter.fields.ppPdu).toEqual('London')
         })
       })
     })

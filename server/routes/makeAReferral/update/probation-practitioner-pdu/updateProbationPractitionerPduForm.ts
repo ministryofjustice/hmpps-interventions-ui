@@ -8,7 +8,7 @@ export default class UpdateProbationPractitionerPduForm {
   async data(): Promise<FormData<Partial<DraftReferral>>> {
     return {
       paramsForUpdate: {
-        ndeliusPDU: this.request.body['delius-probation-practitioner-pdu'],
+        ppPdu: this.request.body['delius-probation-practitioner-pdu'],
       },
       error: null,
     }

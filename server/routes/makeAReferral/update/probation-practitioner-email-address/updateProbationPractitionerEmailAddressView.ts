@@ -17,7 +17,7 @@ export default class UpdateProbationPractitionerEmailAddressView {
         classes: 'govuk-label',
       },
 
-      value: this.presenter.fields.ndeliusPPEmailAddress,
+      value: this.presenter.fields.ppEmailAddress,
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
     }
   }

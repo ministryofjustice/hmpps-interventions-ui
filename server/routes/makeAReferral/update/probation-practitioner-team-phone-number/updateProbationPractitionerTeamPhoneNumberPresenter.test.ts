@@ -107,7 +107,7 @@ describe(UpdateProbationPractitionerTeamPhoneNumberPresenter, () => {
       describe('when no probation practitioner phone number have been set', () => {
         it('uses an empty string value as the field value', () => {
           const presenter = new UpdateProbationPractitionerTeamPhoneNumberPresenter('1', 'crn', '', 'David', 'Blake')
-          expect(presenter.fields.ndeliusTeamPhoneNumber).toEqual('')
+          expect(presenter.fields.ppTeamPhoneNumber).toEqual('')
         })
       })
 
@@ -121,7 +121,7 @@ describe(UpdateProbationPractitionerTeamPhoneNumberPresenter, () => {
             'Blake'
           )
 
-          expect(presenter.fields.ndeliusTeamPhoneNumber).toEqual('0753434233')
+          expect(presenter.fields.ppTeamPhoneNumber).toEqual('0753434233')
         })
       })
 
@@ -140,7 +140,7 @@ describe(UpdateProbationPractitionerTeamPhoneNumberPresenter, () => {
             }
           )
 
-          expect(presenter.fields.ndeliusTeamPhoneNumber).toEqual('0753423223')
+          expect(presenter.fields.ppTeamPhoneNumber).toEqual('0753423223')
         })
       })
     })

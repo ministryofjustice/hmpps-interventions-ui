@@ -26,7 +26,7 @@ export default class UpdateProbationPractitionerTeamPhoneNumberForm {
 
     return {
       paramsForUpdate: {
-        ndeliusTeamPhoneNumber: this.request.body['delius-probation-practitioner-team-phone-number'],
+        ppTeamPhoneNumber: this.request.body['delius-probation-practitioner-team-phone-number'],
       },
       error: null,
     }

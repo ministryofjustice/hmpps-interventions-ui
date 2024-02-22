@@ -7,7 +7,7 @@ export default class UpdateProbationPractitionerPhoneNumberPresenter {
   constructor(
     private readonly id: string,
     private readonly crn: string,
-    private readonly ndeliusTelephoneNumber: string | null | undefined,
+    private readonly ppTelephoneNumber: string | null | undefined,
     private readonly firstName: string | null = null,
     private readonly lastName: string | null = null,
     private readonly amendPPDetails: boolean = false,
@@ -32,9 +32,6 @@ export default class UpdateProbationPractitionerPhoneNumberPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    ndeliusTelephoneNumber: this.utils.stringValue(
-      this.ndeliusTelephoneNumber!,
-      'delius-probation-practitioner-phone-number'
-    ),
+    ppTelephoneNumber: this.utils.stringValue(this.ppTelephoneNumber!, 'delius-probation-practitioner-phone-number'),
   }
 }

@@ -17,7 +17,7 @@ export default class UpdateProbationPractitionerTeamPhoneNumberView {
         classes: 'govuk-label',
       },
 
-      value: this.presenter.fields.ndeliusTeamPhoneNumber,
+      value: this.presenter.fields.ppTeamPhoneNumber,
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
     }
   }

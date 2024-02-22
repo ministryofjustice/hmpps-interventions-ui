@@ -17,7 +17,7 @@ export default class UpdateProbationPractitionerView {
         classes: 'govuk-label',
       },
 
-      value: this.presenter.fields.ndeliusPPName,
+      value: this.presenter.fields.ppName,
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
     }
   }

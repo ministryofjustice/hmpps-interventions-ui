@@ -10,7 +10,7 @@ describe(UpdateProbationPractitionerEmailAddressForm, () => {
         })
         const data = await new UpdateProbationPractitionerEmailAddressForm(request).data()
 
-        expect(data.paramsForUpdate?.ndeliusPPEmailAddress).toEqual('a.z@xyz.com')
+        expect(data.paramsForUpdate?.ppEmailAddress).toEqual('a.z@xyz.com')
       })
     })
   })

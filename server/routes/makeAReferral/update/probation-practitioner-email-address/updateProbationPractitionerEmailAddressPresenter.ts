@@ -7,7 +7,7 @@ export default class UpdateProbationPractitionerEmailAddressPresenter {
   constructor(
     private readonly id: string,
     private readonly crn: string,
-    private readonly ndeliusPPEmailAddress: string | null | undefined,
+    private readonly ppEmailAddress: string | null | undefined,
     private readonly firstName: string | null = null,
     private readonly lastName: string | null = null,
     private readonly amendPPDetails: boolean = false,
@@ -32,9 +32,6 @@ export default class UpdateProbationPractitionerEmailAddressPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    ndeliusPPEmailAddress: this.utils.stringValue(
-      this.ndeliusPPEmailAddress!,
-      'delius-probation-practitioner-email-address'
-    ),
+    ppEmailAddress: this.utils.stringValue(this.ppEmailAddress!, 'delius-probation-practitioner-email-address'),
   }
 }

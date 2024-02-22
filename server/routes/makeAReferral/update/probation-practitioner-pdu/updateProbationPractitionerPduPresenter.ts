@@ -8,7 +8,7 @@ export default class UpdateProbationPractitionerPduPresenter {
   constructor(
     private readonly id: string,
     private readonly crn: string,
-    private readonly ndeliusPdu: string | null | undefined,
+    private readonly ppPdu: string | null | undefined,
     private readonly firstName: string | null = null,
     private readonly lastName: string | null = null,
     private readonly amendPPDetails: boolean = false,
@@ -35,6 +35,6 @@ export default class UpdateProbationPractitionerPduPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
 
   readonly fields = {
-    ndeliusPdu: this.utils.stringValue(this.ndeliusPdu!, 'delius-probation-practitioner-pdu'),
+    ppPdu: this.utils.stringValue(this.ppPdu!, 'delius-probation-practitioner-pdu'),
   }
 }

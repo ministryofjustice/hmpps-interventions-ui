@@ -1565,6 +1565,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ppProbationOffice: 'London',
       ppPdu: 'East Sussex',
       ppEstablishment: 'aaa',
+      ppPhoneNumber: '093232324232',
+      ppTeamPhoneNumber: '08023232323',
       hasValidDeliusPPDetails: false,
       isReferralReleasingIn12Weeks: false,
       roleOrJobTitle: 'Probation Practitioner',

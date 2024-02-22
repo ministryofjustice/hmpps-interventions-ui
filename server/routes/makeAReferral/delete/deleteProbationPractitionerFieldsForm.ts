@@ -7,6 +7,7 @@ export default class DeleteProbationPractitionerFieldsForm {
   public get paramsForUpdate(): Partial<DraftReferral> | undefined {
     if (this.fieldType === FieldTypes.phoneNumber) {
       return {
+        ppPhoneNumber: '',
         ndeliusPhoneNumber: '',
       }
     }
@@ -17,11 +18,13 @@ export default class DeleteProbationPractitionerFieldsForm {
     }
     if (this.fieldType === FieldTypes.teamPhoneNumber) {
       return {
+        ppTeamPhoneNumber: '',
         ndeliusTeamPhoneNumber: '',
       }
     }
     if (this.fieldType === FieldTypes.emailAddress) {
       return {
+        ppEmailAddress: '',
         ndeliusPPEmailAddress: '',
       }
     }
