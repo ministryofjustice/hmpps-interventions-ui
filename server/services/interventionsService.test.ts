@@ -1572,7 +1572,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       roleOrJobTitle: 'Probation Practitioner',
       hasMainPointOfContactDetails: false,
       ppLocationType: null,
-      allocatedCommunityPP: null,
+      allocatedCommunityPP: true,
     },
   }
 

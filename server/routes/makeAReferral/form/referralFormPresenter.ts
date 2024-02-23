@@ -62,12 +62,17 @@ class FormSectionBuilder {
     const referralFormSections: ReferralFormSectionPresenter[] = []
     referralFormSections.push(probationPractitionerDetailSection)
 
-    if (this.referral.isReferralReleasingIn12Weeks) {
+    if (
+      (this.referral.allocatedCommunityPP && this.referral.personCurrentLocationType === CurrentLocationType.custody) ||
+      this.referral.isReferralReleasingIn12Weeks
+    ) {
       referralFormSections.push(this.buildCurrentLocationAndExpectedReleaseDateSection())
-    } else if (this.referral.isReferralReleasingIn12Weeks !== null && !this.referral.isReferralReleasingIn12Weeks) {
+    } else if (
+      (this.referral.allocatedCommunityPP &&
+        this.referral.personCurrentLocationType === CurrentLocationType.community) ||
+      !this.referral.isReferralReleasingIn12Weeks
+    ) {
       referralFormSections.push(this.buildCurrentLocationSection())
-    } else if (this.referral.personCurrentLocationType === CurrentLocationType.custody) {
-      referralFormSections.push(this.buildCurrentLocationAndExpectedReleaseDateSection())
     }
     referralFormSections.push(reviewServiceUserInformationSection)
     referralFormSections.push(referralDetailsSection)
@@ -86,13 +91,17 @@ class FormSectionBuilder {
     )
     const referralFormSections: ReferralFormSectionPresenter[] = []
     referralFormSections.push(probationPractitionerDetailSection)
-    if (this.referral.isReferralReleasingIn12Weeks) {
+    if (
+      (this.referral.allocatedCommunityPP && this.referral.personCurrentLocationType === CurrentLocationType.custody) ||
+      this.referral.isReferralReleasingIn12Weeks
+    ) {
       referralFormSections.push(this.buildCurrentLocationAndExpectedReleaseDateSection())
-    }
-    if (this.referral.isReferralReleasingIn12Weeks !== null && !this.referral.isReferralReleasingIn12Weeks) {
+    } else if (
+      (this.referral.allocatedCommunityPP &&
+        this.referral.personCurrentLocationType === CurrentLocationType.community) ||
+      !this.referral.isReferralReleasingIn12Weeks
+    ) {
       referralFormSections.push(this.buildCurrentLocationSection())
-    } else if (this.referral.personCurrentLocationType === CurrentLocationType.custody) {
-      referralFormSections.push(this.buildCurrentLocationAndExpectedReleaseDateSection())
     }
     referralFormSections.push(reviewServiceUserInformationSection)
     referralFormSections.push(selectServiceCategoriesSection)

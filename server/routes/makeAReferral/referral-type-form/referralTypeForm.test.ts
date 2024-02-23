@@ -57,6 +57,7 @@ describe('ReferralTypeForm', () => {
 
       expect(form.paramsForUpdate).toEqual({
         personCurrentLocationType: 'CUSTODY',
+        isReferralReleasingIn12Weeks: null,
       })
     })
 
@@ -72,6 +73,7 @@ describe('ReferralTypeForm', () => {
 
       expect(form.paramsForUpdate).toEqual({
         personCurrentLocationType: 'COMMUNITY',
+        isReferralReleasingIn12Weeks: null,
       })
     })
   })
