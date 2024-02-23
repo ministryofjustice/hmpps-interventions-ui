@@ -69,6 +69,7 @@ describe('ReferralFormPresenter', () => {
               },
               personCurrentLocationType: CurrentLocationType.community,
               allocatedCommunityPP: true,
+              isReferralReleasingIn12Weeks: null,
             })
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
             const expected = [
@@ -76,6 +77,13 @@ describe('ReferralFormPresenter', () => {
                 .confirmProbationPractitionerDetails(
                   ReferralFormStatus.NotStarted,
                   'confirm-probation-practitioner-details'
+                )
+                .build(),
+              referralFormSectionFactory
+                .confirmCurrentLocation(
+                  ReferralFormStatus.NotStarted,
+                  referral.serviceUser.firstName,
+                  referral.serviceUser.lastName
                 )
                 .build(),
               referralFormSectionFactory
@@ -97,7 +105,7 @@ describe('ReferralFormPresenter', () => {
           })
         })
         describe('when the referral is an unallocated and the referrer does not know the releasing date', () => {
-          it('The current location and expected date is not available for community referrals', () => {
+          it('The expected date is not available for community referrals', () => {
             const referral = draftReferralFactory.unfilled().build({
               serviceCategoryIds: [serviceCategory.id],
               serviceUser: {

@@ -33,6 +33,7 @@ export default class ReferralTypeForm {
   get paramsForUpdate(): Partial<DraftReferral> {
     return {
       personCurrentLocationType: this.request.body['current-location'],
+      isReferralReleasingIn12Weeks: null,
     }
   }
 
