@@ -116,6 +116,8 @@ context('Case notes', () => {
         const sentReferral = sentReferralFactory.build()
         cy.stubGetSentReferralsForUserToken([])
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+        cy.stubGetPrisons(prisonFactory.build())
+        cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
         cy.login()
 
         const ppCaseNote = caseNoteFactory.build({
