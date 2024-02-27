@@ -7,5 +7,5 @@ export interface CaseNote {
   body: string
   sentBy: User
   sentAt: string
-  sendEmail: string
+  sendEmail: boolean
 }
