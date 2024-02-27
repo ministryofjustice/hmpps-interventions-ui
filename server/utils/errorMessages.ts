@@ -301,6 +301,10 @@ export default {
       empty: 'Select a reason for cancelling the referral',
     },
   },
+  reasonForReferral: {
+    empty: 'Enter reason for the referral and any further information',
+  },
+
   caseNote: {
     subject: {
       empty: 'Enter a subject for your case note',

@@ -114,10 +114,10 @@ class _ReferralSectionChecker {
       .contains(activeLinks.enforceableDaysStatus, { matchCase: false })
 
     cy.get('[data-cy=url]')
-      .contains('Further information for service provider')
+      .contains('Reason for referral and further information for service provider')
       .should(hrefAttrChainer(activeLinks.furtherInformation), 'href')
     cy.get('[data-cy=url]')
-      .contains('Further information for service provider')
+      .contains('Reason for referral and further information for service provider')
       .next()
       .contains(activeLinks.furtherInformationStatus, { matchCase: false })
 
@@ -205,10 +205,10 @@ class _ReferralSectionChecker {
       .contains(activeLinks.enforceableDaysStatus, { matchCase: false })
 
     cy.get('[data-cy=url]')
-      .contains('Further information for service provider')
+      .contains('Reason for referral and further information for service provider')
       .should(hrefAttrChainer(activeLinks.furtherInformation), 'href')
     cy.get('[data-cy=url]')
-      .contains('Further information for service provider')
+      .contains('Reason for referral and further information for service provider')
       .next()
       .contains(activeLinks.furtherInformationStatus, { matchCase: false })
     return this

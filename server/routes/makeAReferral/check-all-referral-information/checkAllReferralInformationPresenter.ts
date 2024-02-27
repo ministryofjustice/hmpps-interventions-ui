@@ -442,10 +442,20 @@ export default class CheckAllReferralInformationPresenter {
         },
         {
           key: 'Further information for the service provider',
-          lines: [this.referral.furtherInformation?.length ? this.referral.furtherInformation! : 'None'],
-          changeLink: `/referrals/${this.referral.id}/further-information`,
+          lines: [determineFurtherInformation(this.referral)],
+          changeLink: `/referrals/${this.referral.id}/reason-for-referral`,
         },
       ],
+    }
+
+    function determineFurtherInformation(referral: DraftReferral) {
+      if (referral.reasonForReferral?.length) {
+        return referral.reasonForReferral!
+      }
+      if (referral.furtherInformation?.length) {
+        return referral.furtherInformation!
+      }
+      return 'None'
     }
   }
 

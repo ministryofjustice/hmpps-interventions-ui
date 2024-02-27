@@ -103,6 +103,9 @@ import UpdateProbationPractitionerOfficeForm from './update/probation-practition
 import UpdateProbationPractitionerTeamPhoneNumberPresenter from './update/probation-practitioner-team-phone-number/updateProbationPractitionerTeamPhoneNumberPresenter'
 import UpdateProbationPractitionerTeamPhoneNumberView from './update/probation-practitioner-team-phone-number/updateProbationPractitionerTeamPhoneNumberView'
 import UpdateProbationPractitionerTeamPhoneNumberForm from './update/probation-practitioner-team-phone-number/updateProbationPractitionerTeamPhoneNumberForm'
+import ReasonForReferralPresenter from './reason-for-referral/reasonForReferralPresenter'
+import ReasonForReferralView from './reason-for-referral/reasonForReferralView'
+import ReasonForReferralForm from './reason-for-referral/reasonForReferralForm'
 // import DeleteProbationPractitionerPhoneNumberPresenter from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberPresenter'
 // import DeleteProbationPractitionerPhoneNumberView from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberView'
 // import DeleteProbationPractitionerPhoneNumberForm from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberForm'
@@ -466,7 +469,7 @@ export default class MakeAReferralController {
     }
 
     if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/further-information`)
+      res.redirect(`/referrals/${req.params.id}/reason-for-referral`)
     } else {
       const { interventionId, serviceUser, completionDeadline } = await this.getCompletionDeadlinePresenterParams(
         isSentReferral,
@@ -1415,6 +1418,51 @@ export default class MakeAReferralController {
         req.body
       )
       const view = new UpdateProbationPractitionerTeamPhoneNumberView(presenter)
+
+      res.status(400)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
+  }
+
+  async viewReasonForReferral(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new ReasonForReferralPresenter(referral)
+    const view = new ReasonForReferralView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async submitReasonForReferral(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const form = await new ReasonForReferralForm(req).data()
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new ReasonForReferralPresenter(referral, error)
+      const view = new ReasonForReferralView(presenter)
 
       res.status(400)
       await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')

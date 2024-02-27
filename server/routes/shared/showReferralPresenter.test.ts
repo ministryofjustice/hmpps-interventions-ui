@@ -980,7 +980,7 @@ describe(ShowReferralPresenter, () => {
           { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
           {
             key: 'Further information for the provider',
-            lines: ['Some information about the service user'],
+            lines: ['For crs'],
           },
         ])
       })
@@ -999,6 +999,7 @@ describe(ShowReferralPresenter, () => {
             { serviceCategoryId: serviceCategory.id, complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
           ],
           furtherInformation: '',
+          reasonForReferral: '',
           desiredOutcomes: [
             {
               serviceCategoryId: serviceCategory.id,

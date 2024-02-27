@@ -792,7 +792,7 @@ describe('ReferralFormPresenter', () => {
                     `service-category/${referral.serviceCategoryIds![0]}/complexity-level`,
                     'enforceable-days',
                     'completion-deadline',
-                    'further-information'
+                    'reason-for-referral'
                   )
                   .build(),
                 referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.NotStarted).build(),
@@ -850,7 +850,7 @@ describe('ReferralFormPresenter', () => {
                     `service-category/${referral.serviceCategoryIds![0]}/complexity-level`,
                     'enforceable-days',
                     'completion-deadline',
-                    'further-information'
+                    'reason-for-referral'
                   )
                   .build(),
                 referralFormSectionFactory
@@ -1595,7 +1595,7 @@ describe('ReferralFormPresenter', () => {
                 ReferralFormStatus.Completed,
                 'completion-deadline',
                 ReferralFormStatus.Completed,
-                'further-information',
+                'reason-for-referral',
                 ReferralFormStatus.NotStarted
               )
               .build(),
@@ -1671,7 +1671,7 @@ describe('ReferralFormPresenter', () => {
                 ReferralFormStatus.Completed,
                 'completion-deadline',
                 ReferralFormStatus.Completed,
-                'further-information',
+                'reason-for-referral',
                 ReferralFormStatus.Completed
               )
               .build(),

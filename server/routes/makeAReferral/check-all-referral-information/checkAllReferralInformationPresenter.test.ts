@@ -749,7 +749,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
         completionDeadline: '2021-10-24',
         maximumEnforceableDays: 15,
-        furtherInformation: 'Some further information',
+        reasonForReferral: 'Some reason',
       })
       const presenter = new CheckAllReferralInformationPresenter(
         referral,
@@ -790,8 +790,8 @@ describe(CheckAllReferralInformationPresenter, () => {
           },
           {
             key: 'Further information for the service provider',
-            lines: ['Some further information'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/further-information',
+            lines: ['Some reason'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/reason-for-referral',
           },
         ],
       })

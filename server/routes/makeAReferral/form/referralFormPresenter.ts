@@ -301,10 +301,10 @@ class FormSectionBuilder {
           ),
         },
         {
-          title: 'Further information for service provider',
-          url: this.calculateTaskUrl('further-information', this.taskValues.completionDeadline),
+          title: 'Reason for referral and further information for service provider',
+          url: this.calculateTaskUrl('reason-for-referral', this.taskValues.completionDeadline),
           status: this.calculateTaskStatus(
-            this.taskValues.furtherInformation,
+            this.taskValues.reasonForReferral,
             this.buildReviewServiceUserInformationSection().tasks.flatMap(it => it.status!)
           ),
         },
@@ -414,10 +414,10 @@ class FormSectionBuilder {
                 ),
               },
               {
-                title: 'Further information for service provider',
-                url: this.calculateTaskUrl('further-information', this.taskValues.completionDeadline),
+                title: 'Reason for referral and further information for service provider',
+                url: this.calculateTaskUrl('reason-for-referral', this.taskValues.completionDeadline),
                 status: this.calculateTaskStatus(
-                  this.taskValues.furtherInformation,
+                  this.taskValues.reasonForReferral,
                   this.buildReviewServiceUserInformationSection().tasks.flatMap(it => it.status!)
                 ),
               },
@@ -438,7 +438,7 @@ class FormSectionBuilder {
       tasks: [
         {
           title: 'Check referral information',
-          url: this.calculateTaskUrl('check-all-referral-information', this.taskValues.furtherInformation),
+          url: this.calculateTaskUrl('check-all-referral-information', this.taskValues.reasonForReferral),
           status: this.calculateTaskStatus(
             this.sectionValues.checkAllReferralInformation,
             this.retrieveStatus(isCohort)
@@ -675,6 +675,10 @@ class TaskValues {
 
   get furtherInformation(): DraftReferralValues {
     return [this.referral.furtherInformation]
+  }
+
+  get reasonForReferral(): DraftReferralValues {
+    return [this.referral.reasonForReferral]
   }
 
   // null is used to ensure that section is never in a `completed` status. This is because there are no fields to confirm a user has checked the answers.

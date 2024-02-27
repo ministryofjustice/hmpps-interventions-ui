@@ -46,6 +46,7 @@ export interface ReferralFields {
   hasMainPointOfContactDetails: boolean | null
   ppLocationType: string | null
   allocatedCommunityPP: boolean | null
+  reasonForReferral: string | null
 }
 
 export enum CurrentLocationType {

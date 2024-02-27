@@ -439,10 +439,8 @@ describe('Referral form', () => {
       cy.contains('Year').type('2021')
 
       cy.contains('Save and continue').click()
-      cy.visit(`/referrals/${draftReferral.id}/further-information`)
-      cy.get('h1').contains(
-        'Do you have further information for the Accommodation referral service provider? (optional)'
-      )
+      cy.visit(`/referrals/${draftReferral.id}/reason-for-referral`)
+      cy.get('h1').contains('Provide the reason for this referral and further information for the service provider')
       cy.get('textarea').type('Some information about Alex')
 
       // stub completed draft referral to mark section as completed
@@ -653,7 +651,7 @@ describe('Referral form', () => {
         .should('contain', 'Some information about Alex')
         .next()
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/further-information`)
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral`)
 
       // Accommodation referral details
       cy.contains('Accommodation referral details')
@@ -1125,10 +1123,8 @@ describe('Referral form', () => {
 
       cy.contains('Save and continue').click()
 
-      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/further-information`)
-      cy.get('h1').contains(
-        "Do you have further information for the Women's services referral service provider? (optional)"
-      )
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/reason-for-referral`)
+      cy.get('h1').contains('Provide the reason for this referral and further information for the service provider')
       cy.get('textarea').type('Some information about Alex')
 
       // stub completed draft referral to mark section as completed
