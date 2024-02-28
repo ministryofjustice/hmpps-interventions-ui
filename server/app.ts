@@ -68,6 +68,9 @@ export default function createApp(
   // View Engine Configuration
   app.set('view engine', 'njk')
 
+  // Application Insights
+  app.locals.applicationInsightsConnectionString = config.applicationInsights.connectionString
+  app.locals.applicationInsightsRoleName = config.applicationInsights.cloudRoleName
   nunjucksSetup(app, path)
 
   // Server Configuration
