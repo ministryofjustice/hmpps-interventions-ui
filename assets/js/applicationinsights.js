@@ -1,5 +1,3 @@
-import * as Microsoft from '@microsoft/applicationinsights-web'
-
 window.applicationInsights = (function () {
   let appInsights
 
