@@ -298,7 +298,9 @@ describe(ShowReferralPresenter, () => {
       expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        { key: 'Phone number', lines: ['072121212125'] },
         { key: 'Probation Office', lines: ['London'] },
+        { key: 'Team phone number', lines: ['020343434565'] },
       ])
     })
     it('returns a summary list of probation practitioner details from ndelius for service provider', () => {

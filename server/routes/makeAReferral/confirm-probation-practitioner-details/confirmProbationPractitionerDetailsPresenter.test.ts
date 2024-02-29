@@ -63,7 +63,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
       expect(presenter.backLinkUrl).toBe(`/referrals/${referral.id}/form`)
       expect(presenter.text).toEqual({
         title: 'Confirm probation practitioner details',
-        description: 'These contact details will be sent to the service provider for the referral. Are they correct?',
+        description: 'These contact details will be sent to the service provider for the referral.',
         confirmCorrectDetailsFormDescription: 'Enter the correct contact details to be sent to the service provider.',
         confirmDetails: {
           errorMessage: null,
@@ -163,7 +163,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           valueLink: undefined,
         },
         {
-          key: 'Team Phone number',
+          key: 'Team phone number',
           lines: ['020-2323232322'],
           changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number`,
           deleteLink: `/referrals/${referral.id}/delete-probation-practitioner/team-phone-number`,
@@ -237,7 +237,7 @@ describe('ConfirmProbationPractitionerDetailsPresenter', () => {
           valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-office" class="govuk-link">Enter probation office</a>`,
         },
         {
-          key: 'Team Phone number',
+          key: 'Team phone number',
           lines: [`Not found`],
           changeLink: undefined,
           valueLink: `<a href="/referrals/${referral.id}/update-probation-practitioner-team-phone-number" class="govuk-link">Enter team phone number</a>`,

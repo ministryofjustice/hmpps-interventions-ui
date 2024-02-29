@@ -323,7 +323,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             },
             {
               key: 'Email address',
-              lines: ['Not found'],
+              lines: ['Not provided'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
             },
             {

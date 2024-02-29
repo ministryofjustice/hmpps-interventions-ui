@@ -30,7 +30,7 @@ export default class UpdateProbationPractitionerOfficeView {
       classes: 'confirm-probation-office',
       items,
       label: {
-        text: this.presenter.text.label,
+        text: this.presenter.text.inputHeading,
       },
       hint: {
         text: this.presenter.text.hint,

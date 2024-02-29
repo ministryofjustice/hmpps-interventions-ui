@@ -20,9 +20,9 @@ export default class UpdateProbationPractitionerTeamPhoneNumberPresenter {
   }
 
   readonly text = {
-    title: 'Update probation practitioner team phone number',
+    title: 'Update team phone number',
     label: `${this.firstName} ${this.lastName} (CRN: ${this.crn})`,
-    inputHeading: 'Team phone number(if known)',
+    inputHeading: 'Team phone number (if known)',
   }
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'delius-probation-practitioner-team-phone-number')

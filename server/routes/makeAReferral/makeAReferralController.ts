@@ -982,7 +982,7 @@ export default class MakeAReferralController {
     const presenter = new UpdateProbationPractitionerNamePresenter(
       referral.id,
       referral.serviceUser.crn,
-      referral.ndeliusPPName,
+      referral.ppName || referral.ndeliusPPName,
       referral.serviceUser.firstName,
       referral.serviceUser.lastName,
       amendPPDetails
@@ -1047,7 +1047,7 @@ export default class MakeAReferralController {
     const presenter = new UpdateProbationPractitionerEmailAddressPresenter(
       referral.id,
       referral.serviceUser.crn,
-      referral.ndeliusPPEmailAddress,
+      referral.ppEmailAddress || referral.ndeliusPPEmailAddress,
       referral.serviceUser.firstName,
       referral.serviceUser.lastName,
       amendPPDetails
@@ -1115,7 +1115,7 @@ export default class MakeAReferralController {
     const presenter = new UpdateProbationPractitionerPhoneNumberPresenter(
       referral.id,
       referral.serviceUser.crn,
-      referral.ndeliusPhoneNumber,
+      referral.ppPhoneNumber || referral.ndeliusPhoneNumber,
       referral.serviceUser.firstName,
       referral.serviceUser.lastName,
       amendPPDetails
@@ -1215,7 +1215,7 @@ export default class MakeAReferralController {
     const presenter = new UpdateProbationPractitionerPduPresenter(
       referral.id,
       referral.serviceUser.crn,
-      referral.ndeliusPDU,
+      referral.ppPdu || referral.ndeliusPDU,
       referral.serviceUser.firstName,
       referral.serviceUser.lastName,
       amendPPDetails,
@@ -1362,7 +1362,7 @@ export default class MakeAReferralController {
     const presenter = new UpdateProbationPractitionerTeamPhoneNumberPresenter(
       referral.id,
       referral.serviceUser.crn,
-      referral.ndeliusTeamPhoneNumber,
+      referral.ppTeamPhoneNumber || referral.ndeliusTeamPhoneNumber,
       referral.serviceUser.firstName,
       referral.serviceUser.lastName,
       amendPPDetails

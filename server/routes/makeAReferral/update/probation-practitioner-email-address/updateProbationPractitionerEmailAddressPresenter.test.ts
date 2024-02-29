@@ -13,7 +13,7 @@ describe(UpdateProbationPractitionerEmailAddressPresenter, () => {
 
       expect(presenter.text.title).toEqual('Update probation practitioner email address')
       expect(presenter.text.label).toEqual('David Blake (CRN: crn)')
-      expect(presenter.text.inputHeading).toEqual('Email address(if known)')
+      expect(presenter.text.inputHeading).toEqual('Email address (if known)')
     })
   })
 

@@ -89,7 +89,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             : undefined,
       },
       {
-        key: 'Team Phone number',
+        key: 'Team phone number',
         lines: [this.determineTeamPhoneNumber()],
         changeLink:
           this.determineTeamPhoneNumber() !== 'Not found'
@@ -135,7 +135,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
   readonly text = {
     title: 'Confirm probation practitioner details',
     label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
-    description: 'These contact details will be sent to the service provider for the referral. Are they correct?',
+    description: 'These contact details will be sent to the service provider for the referral.',
     confirmCorrectDetailsFormDescription: 'Enter the correct contact details to be sent to the service provider.',
     confirmDetails: {
       errorMessage: this.errorMessageForField('confirm-details'),
