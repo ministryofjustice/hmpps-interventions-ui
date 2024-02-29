@@ -216,6 +216,7 @@ export default function createApp(
     '/node_modules/@ministryofjustice/frontend',
     '/node_modules/jquery/dist',
     '/node_modules/accessible-autocomplete/dist',
+    '/node_modules/@microsoft/applicationinsights-web/dist/es5',
   ].forEach(dir => {
     app.use('/assets', express.static(path.join(process.cwd(), dir), cacheControl))
   })
