@@ -3,6 +3,7 @@
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -26,6 +27,9 @@
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukInput(subjectInputArgs) }}
         {{ govukTextarea(bodyInputArgs) }}
+        {% if presenter.loggedInUserType == 'service-provider' %}
+            {{ govukRadios(sendEmailRadioButtonArgs) }}
+        {% endif %}
         {{ govukButton({ text: "Continue" , preventDoubleClick: true}) }}
       </form>
     </div>

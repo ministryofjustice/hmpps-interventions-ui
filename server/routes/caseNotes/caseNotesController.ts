@@ -110,7 +110,7 @@ export default class CaseNotesController {
     let error: FormValidationError | null = null
     let userInputData: Record<string, string> | null = null
     if (req.method === 'POST') {
-      const data = await new AddNewCaseNoteForm(req).data(referralId)
+      const data = await new AddNewCaseNoteForm(req, loggedInUserType).data(referralId)
       if (!data.error) {
         try {
           await this.draftsService.updateDraft(draftCaseNote.id, data.paramsForUpdate, {

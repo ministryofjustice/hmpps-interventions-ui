@@ -8,6 +8,7 @@ interface CaseNotesSummary {
   time: string
   from: string
   body: string
+  sendEmail: string
 }
 
 export default class AddCaseNoteCheckAnswersPresenter {
@@ -19,6 +20,8 @@ export default class AddCaseNoteCheckAnswersPresenter {
     private caseNote: CaseNote
   ) {}
 
+  readonly caseNoteDetailsHeading = 'Case note details'
+
   backLinkHref = `/${this.loggedInUserType}/referrals/${this.referralId}/add-case-note/${this.draftId}/details`
 
   submitHref = `/${this.loggedInUserType}/referrals/${this.referralId}/add-case-note/${this.draftId}/submit`
@@ -29,5 +32,6 @@ export default class AddCaseNoteCheckAnswersPresenter {
     time: DateUtils.formattedTime(new Date()),
     from: this.loggedInUser.name,
     body: this.caseNote.body,
+    sendEmail: this.caseNote.sendEmail ? 'Yes' : 'No',
   }
 }

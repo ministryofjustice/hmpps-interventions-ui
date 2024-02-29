@@ -11,14 +11,23 @@ export default class AddCaseNoteCheckAnswersView {
   }
 
   private get caseNoteSummaryListArgs(): SummaryListArgs {
-    return ViewUtils.summaryListArgs(
+    return ViewUtils.summaryListArgsWithSummaryCard(
       [
         { key: 'Subject', lines: [this.presenter.caseNoteSummary.subject] },
         { key: 'Date', lines: [this.presenter.caseNoteSummary.date] },
         { key: 'Time', lines: [this.presenter.caseNoteSummary.time] },
         { key: 'From', lines: [this.presenter.caseNoteSummary.from] },
+        {
+          key: 'Notes about the intervention or the person on probation',
+          lines: [this.presenter.caseNoteSummary.body],
+        },
+        {
+          key: 'Would you like the probation practitioner to get an email about this case note?',
+          lines: [this.presenter.caseNoteSummary.sendEmail],
+        },
       ],
-      { showBorders: false }
+      this.presenter.caseNoteDetailsHeading,
+      { showBorders: true, showTitle: true }
     )
   }
 
@@ -29,7 +38,6 @@ export default class AddCaseNoteCheckAnswersView {
         presenter: this.presenter,
         backLinkArgs: this.backLinkArgs,
         caseNoteSummaryListArgs: this.caseNoteSummaryListArgs,
-        caseNoteBody: this.presenter.caseNoteSummary.body,
       },
     ]
   }

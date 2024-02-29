@@ -31,7 +31,7 @@ describe('AddCaseNotePresenter', () => {
         'service-provider'
       )
       expect(presenter.text.whatHappensNext).toEqual(
-        'The probation practitioner will now be able to view the case note.'
+        'The probation practitioner can now view this case note in the service.'
       )
     })
 
@@ -41,7 +41,7 @@ describe('AddCaseNotePresenter', () => {
         interventionFactory.build(),
         'probation-practitioner'
       )
-      expect(presenter.text.whatHappensNext).toEqual('The service provider will now be able to view the case note.')
+      expect(presenter.text.whatHappensNext).toEqual('The service provider can now view this case note in the service.')
     })
   })
 })

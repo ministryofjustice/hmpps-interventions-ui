@@ -11,6 +11,13 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
+    {% set whatsNewVersion4Html %}
+        <p>When service providers create a case note on Refer and monitor an intervention, they’re now asked if you need an email about it.</p>
+
+        <h3 class="govuk-heading-s">Why we’ve made the change</h2>
+        <p>This is in response to your feedback. It’s so that you’re only emailed about things which are important or urgent. Please <a href="https://eu.surveymonkey.com/r/H6K5JG3">share your feedback in this survey</a>.</p>
+    {% endset %}
+
     {% set whatsNewVersion3Html %}
         <h3 class="govuk-heading-s">New functionality</h3>
         <p>
@@ -72,6 +79,16 @@
 
       {{ mojTimeline({
         items: [
+          {
+            label: {
+                text: "Helping to reduce your emails"
+            },
+            html: whatsNewVersion4Html,
+            datetime: {
+              timestamp: "2023-02-27",
+              type: "date"
+            }
+          },
           {
             label: {
               text: "Get better information about sessions"
