@@ -239,7 +239,7 @@ export default class CheckAllReferralInformationPresenter {
     if (this.referral.ndeliusPPEmailAddress && this.referral.ndeliusPPEmailAddress.toLowerCase() !== 'undefined') {
       return this.referral.ndeliusPPEmailAddress
     }
-    return 'Not found'
+    return 'Not provided'
   }
 
   get riskSection(): { title: string; summary: SummaryListItem[] } {

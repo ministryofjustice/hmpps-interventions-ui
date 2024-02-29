@@ -179,17 +179,12 @@ export default class ShowReferralPresenter {
         },
         { key: 'Email address', lines: [this.deriveEmailAddress] }
       )
-      if (this.userType === 'service-provider') {
-        probationPractitionerDetails.push({
-          key: 'Phone number',
-          lines: [
-            this.sentReferral.referral.ppPhoneNumber ||
-              this.sentReferral.referral.ndeliusPhoneNumber ||
-              officer?.telephoneNumber ||
-              'Not found',
-          ],
-        })
-      }
+      probationPractitionerDetails.push({
+        key: 'Phone number',
+        lines: [
+          this.sentReferral.referral.ppPhoneNumber || this.sentReferral.referral.ndeliusPhoneNumber || 'Not provided',
+        ],
+      })
       probationPractitionerDetails.push({
         key:
           this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
@@ -201,18 +196,14 @@ export default class ShowReferralPresenter {
             : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '',
         ],
       })
-      if (this.userType === 'service-provider') {
-        probationPractitionerDetails.push({
-          key: 'Team phone number',
-          lines: [
-            this.sentReferral.referral.ppTeamPhoneNumber ||
-              this.sentReferral.referral.ndeliusTeamPhoneNumber ||
-              officer?.team?.telephoneNumber ||
-              'Not found',
-          ],
-        })
-      }
-
+      probationPractitionerDetails.push({
+        key: 'Team phone number',
+        lines: [
+          this.sentReferral.referral.ppTeamPhoneNumber ||
+            this.sentReferral.referral.ndeliusTeamPhoneNumber ||
+            'Not provided',
+        ],
+      })
       return probationPractitionerDetails
     }
     probationPractitionerDetails.push(
@@ -225,17 +216,17 @@ export default class ShowReferralPresenter {
     if (this.userType === 'service-provider') {
       probationPractitionerDetails.push({
         key: 'Phone number',
-        lines: [officer?.telephoneNumber || 'Not found'],
+        lines: [officer?.telephoneNumber || 'Not provided'],
       })
     }
     probationPractitionerDetails.push({
       key: 'PDU (Probation Delivery Unit)',
-      lines: [`${officer?.pdu.code || ''} ${officer?.pdu.description || ''}`.trim() || 'Not found'],
+      lines: [`${officer?.pdu.code || ''} ${officer?.pdu.description || ''}`.trim() || 'Not provided'],
     })
     if (this.userType === 'service-provider') {
       probationPractitionerDetails.push({
         key: 'Team phone number',
-        lines: [this.sentReferral.referral.ndeliusTeamPhoneNumber || officer?.team?.telephoneNumber || 'Not found'],
+        lines: [this.sentReferral.referral.ndeliusTeamPhoneNumber || officer?.team?.telephoneNumber || 'Not provided'],
       })
     }
     return probationPractitionerDetails
@@ -287,7 +278,7 @@ export default class ShowReferralPresenter {
     ) {
       return this.sentReferral.referral.ndeliusPPEmailAddress
     }
-    return 'Not found'
+    return 'Not provided'
   }
 
   get deliusResponsibleOfficersDetails(): SummaryListItem[] {

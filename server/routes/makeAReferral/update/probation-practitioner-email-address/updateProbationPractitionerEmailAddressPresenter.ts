@@ -22,7 +22,7 @@ export default class UpdateProbationPractitionerEmailAddressPresenter {
   readonly text = {
     title: 'Update probation practitioner email address',
     label: `${this.firstName} ${this.lastName} (CRN: ${this.crn})`,
-    inputHeading: 'Email address(if known)',
+    inputHeading: 'Email address (if known)',
   }
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'delius-probation-practitioner-email-address')

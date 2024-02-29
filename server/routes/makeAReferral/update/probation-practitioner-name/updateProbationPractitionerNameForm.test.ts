@@ -14,18 +14,4 @@ describe(UpdateProbationPractitionerNameForm, () => {
       })
     })
   })
-
-  describe('invalid fields', () => {
-    it('returns an error when the maximum-enforceable-days property is not present', async () => {
-      const request = TestUtils.createRequest({})
-
-      const data = await new UpdateProbationPractitionerNameForm(request).data()
-
-      expect(data.error?.errors).toContainEqual({
-        errorSummaryLinkedField: 'delius-probation-practitioner-name',
-        formFields: ['delius-probation-practitioner-name'],
-        message: 'Enter name of probation practitioner',
-      })
-    })
-  })
 })

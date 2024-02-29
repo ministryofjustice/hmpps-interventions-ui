@@ -11,9 +11,9 @@ describe(UpdateProbationPractitionerTeamPhoneNumberPresenter, () => {
         'Blake'
       )
 
-      expect(presenter.text.title).toEqual('Update probation practitioner team phone number')
+      expect(presenter.text.title).toEqual('Update team phone number')
       expect(presenter.text.label).toEqual('David Blake (CRN: crn)')
-      expect(presenter.text.inputHeading).toEqual('Team phone number(if known)')
+      expect(presenter.text.inputHeading).toEqual('Team phone number (if known)')
     })
   })
 
