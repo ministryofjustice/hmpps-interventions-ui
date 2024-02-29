@@ -17,6 +17,11 @@
       window.gaConfig = {};
       window.gaConfig.uaId = "{{ googleAnalyticsTrackingId }}";
   </script>
+  <script src="/assets/applicationinsights-web.min.js"></script>
+  <script src="/assets/applicationinsights.js"></script>
+  <script nonce="{{ cspNonce }}">
+    window.applicationInsights.init('{{ applicationInsightsConnectionString }}', '{{ applicationInsightsRoleName }}', '{{ user.username }}');
+  </script>
   <script src="/assets/googleAnalytics.js"></script>
   <script src="/assets/js/jquery.min.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
