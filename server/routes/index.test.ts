@@ -63,7 +63,7 @@ describe('check response headers are set correctly', () => {
         "style-src 'self' code.jquery.com",
         "font-src 'self'",
         "img-src 'self' https://www.google-analytics.com",
-        "connect-src 'self' https://www.google-analytics.com *.applicationinsights.azure.com",
+        "connect-src 'self' https://www.google-analytics.com *.google-analytics.com *.analytics.google.com *.applicationinsights.azure.com",
         "base-uri 'self'",
         "form-action 'self'",
         "frame-ancestors 'self'",
