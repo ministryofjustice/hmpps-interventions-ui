@@ -1386,10 +1386,10 @@ export default class AppointmentsController {
       }
       if (attended === 'no') {
         draftAppointment.session.sessionFeedback.noAttendanceInformation = paramsForUpdate.noAttendanceInformation!
-        draftAppointment.session.sessionFeedback.notifyProbationPractitioner =
-          paramsForUpdate.notifyProbationPractitioner!
+        draftAppointment.session.sessionFeedback.notifyProbationPractitionerOfConcerns =
+          paramsForUpdate.notifyProbationPractitionerOfConcerns!
         draftAppointment.session.sessionFeedback.sessionConcerns =
-          paramsForUpdate.notifyProbationPractitioner === true ? paramsForUpdate.sessionConcerns! : null
+          paramsForUpdate.notifyProbationPractitionerOfConcerns === true ? paramsForUpdate.sessionConcerns! : null
       }
     } else {
       throw new Error('Draft appointment data is missing.')
