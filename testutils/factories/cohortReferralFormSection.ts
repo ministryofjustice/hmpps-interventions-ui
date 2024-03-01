@@ -23,8 +23,8 @@ class CohortReferralFormSectionFactory extends Factory<ReferralFormMultiListSect
     enforceableDaysReferralFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
     completionDateUrl: string | null = null,
     completionDateFormStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet,
-    furtherInformationUrl: string | null = null,
-    furtherInformationStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet
+    reasonForReferralUrl: string | null = null,
+    reasonForReferralStatus: ReferralFormStatus = ReferralFormStatus.CannotStartYet
   ) {
     return this.params({
       type: 'multi',
@@ -76,9 +76,9 @@ class CohortReferralFormSectionFactory extends Factory<ReferralFormMultiListSect
                 status: completionDateFormStatus,
               },
               {
-                title: 'Further information for service provider',
-                url: furtherInformationUrl,
-                status: furtherInformationStatus,
+                title: 'Reason for referral and further information for service provider',
+                url: reasonForReferralUrl,
+                status: reasonForReferralStatus,
               },
             ],
           },

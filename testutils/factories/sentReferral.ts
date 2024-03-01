@@ -73,6 +73,7 @@ const exampleReferralFields = () => {
     hasMainPointOfContactDetails: false,
     ppLocationType: null,
     allocatedCommunityPP: true,
+    reasonForReferral: 'For crs',
   }
 }
 

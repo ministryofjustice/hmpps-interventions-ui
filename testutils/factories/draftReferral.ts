@@ -199,10 +199,10 @@ class DraftReferralFactory extends Factory<DraftReferral> {
 
   filledFormUpToFurtherInformation(
     serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()],
-    furtherInformation = ''
+    reasonForReferral = 'Some reason'
   ) {
     return this.filledFormUpToCompletionDate(serviceCategories).params({
-      furtherInformation,
+      reasonForReferral,
     })
   }
 }
@@ -267,4 +267,5 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   hasMainPointOfContactDetails: null,
   ppLocationType: null,
   allocatedCommunityPP: null,
+  reasonForReferral: null,
 }))

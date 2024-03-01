@@ -1490,7 +1490,7 @@ describe('POST /referrals/:id/completion-deadline', () => {
         .type('form')
         .send({ 'completion-deadline-day': '15', 'completion-deadline-month': '9', 'completion-deadline-year': '2021' })
         .expect(302)
-        .expect('Location', '/referrals/1/further-information')
+        .expect('Location', '/referrals/1/reason-for-referral')
     })
 
     it('successfully calls the backend and redirects if the sent referral is being amended ', async () => {

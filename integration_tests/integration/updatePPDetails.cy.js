@@ -198,7 +198,7 @@ describe('Referral form', () => {
         })
 
       const completedDraftReferral = draftReferralFactory
-        .filledFormUpToFurtherInformation([accommodationServiceCategory], 'Some information about Alex')
+        .filledFormUpToFurtherInformation([accommodationServiceCategory], 'Some reason')
         .build({
           id: draftReferral.id,
           serviceCategoryIds: [accommodationServiceCategory.id],
@@ -623,10 +623,8 @@ describe('Referral form', () => {
       cy.contains('Year').type('2021')
 
       cy.contains('Save and continue').click()
-      cy.visit(`/referrals/${draftReferral.id}/further-information`)
-      cy.get('h1').contains(
-        'Do you have further information for the Accommodation referral service provider? (optional)'
-      )
+      cy.visit(`/referrals/${draftReferral.id}/reason-for-referral`)
+      cy.get('h1').contains('Provide the reason for this referral and further information for the service provider')
       cy.get('textarea').type('Some information about Alex')
 
       // stub completed draft referral to mark section as completed
@@ -801,10 +799,10 @@ describe('Referral form', () => {
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/completion-deadline`)
       cy.contains('Further information for the service provider')
         .next()
-        .should('contain', 'Some information about Alex')
+        .should('contain', 'Some reason')
         .next()
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/further-information`)
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral`)
 
       // Accommodation referral details
       cy.contains('Accommodation referral details')

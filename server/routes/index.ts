@@ -111,6 +111,12 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   post(router, '/referrals/:id/community-allocated-form', (req, res) =>
     makeAReferralController.submitCommunityAllocatedForm(req, res)
   )
+  get(router, '/referrals/:id/reason-for-referral', (req, res) =>
+    makeAReferralController.viewReasonForReferral(req, res)
+  )
+  post(router, '/referrals/:id/reason-for-referral', (req, res) =>
+    makeAReferralController.submitReasonForReferral(req, res)
+  )
   get(router, '/referrals/:id/confirm-main-point-of-contact', (req, res) =>
     makeAReferralController.confirmMainPointOfContactDetails(req, res)
   )

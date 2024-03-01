@@ -474,7 +474,7 @@ export default class ShowReferralPresenter {
       },
       {
         key: 'Further information for the provider',
-        lines: [this.sentReferral.referral.furtherInformation || 'N/A'],
+        lines: [this.sentReferral.referral.reasonForReferral || this.sentReferral.referral.furtherInformation || 'N/A'],
       },
     ]
   }

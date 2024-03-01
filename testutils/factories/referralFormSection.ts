@@ -110,7 +110,7 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
     complexityLevelUrl: string | null = null,
     enforceableDaysUrl: string | null = null,
     completionDateUrl: string | null = null,
-    furtherInformationUrl: string | null = null
+    reasonForReferralUrl: string | null = null
   ) {
     return this.params({
       type: 'single',
@@ -134,7 +134,11 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
           url: completionDateUrl,
           status: relevantCompletionDeadLineFormStatus,
         },
-        { title: 'Further information for service provider', url: furtherInformationUrl, status: referralFormStatus },
+        {
+          title: 'Reason for referral and further information for service provider',
+          url: reasonForReferralUrl,
+          status: referralFormStatus,
+        },
       ],
     })
   }
