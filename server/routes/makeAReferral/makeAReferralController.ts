@@ -999,15 +999,17 @@ export default class MakeAReferralController {
     let error: FormValidationError | null = null
 
     if (!form.error) {
-      try {
-        await this.interventionsService.patchDraftReferral(
-          res.locals.user.token.accessToken,
-          req.params.id,
-          form.paramsForUpdate
-        )
-      } catch (e) {
-        const interventionsServiceError = e as InterventionsServiceError
-        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      if (form.paramsForUpdate.ppName !== '') {
+        try {
+          await this.interventionsService.patchDraftReferral(
+            res.locals.user.token.accessToken,
+            req.params.id,
+            form.paramsForUpdate
+          )
+        } catch (e) {
+          const interventionsServiceError = e as InterventionsServiceError
+          error = createFormValidationErrorOrRethrow(interventionsServiceError)
+        }
       }
     } else {
       error = form.error
@@ -1064,7 +1066,7 @@ export default class MakeAReferralController {
     let error: FormValidationError | null = null
 
     if (!form.error) {
-      if (form.paramsForUpdate.ndeliusPPEmailAddress !== '') {
+      if (form.paramsForUpdate.ppEmailAddress !== '') {
         try {
           await this.interventionsService.patchDraftReferral(
             res.locals.user.token.accessToken,
@@ -1132,7 +1134,7 @@ export default class MakeAReferralController {
     let error: FormValidationError | null = null
 
     if (!form.error) {
-      if (form.paramsForUpdate.ndeliusPhoneNumber !== '') {
+      if (form.paramsForUpdate.ppPhoneNumber !== '') {
         try {
           await this.interventionsService.patchDraftReferral(
             res.locals.user.token.accessToken,
@@ -1236,7 +1238,7 @@ export default class MakeAReferralController {
     let error: FormValidationError | null = null
 
     if (!form.error) {
-      if (form.paramsForUpdate.ndeliusPDU !== '') {
+      if (form.paramsForUpdate.ppPdu !== '') {
         try {
           await this.interventionsService.patchDraftReferral(
             res.locals.user.token.accessToken,
@@ -1379,7 +1381,7 @@ export default class MakeAReferralController {
     let error: FormValidationError | null = null
 
     if (!form.error) {
-      if (form.paramsForUpdate.ndeliusTeamPhoneNumber !== '') {
+      if (form.paramsForUpdate.ppTeamPhoneNumber !== '') {
         try {
           await this.interventionsService.patchDraftReferral(
             res.locals.user.token.accessToken,
