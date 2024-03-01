@@ -122,7 +122,7 @@ export default function createApp(
           styleSrc: ["'self'", 'code.jquery.com'],
           fontSrc: ["'self'"],
           imgSrc: ["'self'", 'https://www.google-analytics.com'],
-          connectSrc: ["'self'", 'https://www.google-analytics.com'],
+          connectSrc: ["'self'", 'https://www.google-analytics.com', '*.applicationinsights.azure.com'],
         },
       },
       crossOriginEmbedderPolicy: false,
