@@ -222,7 +222,7 @@ class FormSectionBuilder {
     return {
       type: 'single',
       title: 'Choose service types',
-      number: '4',
+      number: this.referral.personCurrentLocationType === CurrentLocationType.custody ? '4' : '3',
       tasks: [
         {
           title: `Select service types for the ${utils.convertToProperCase(
@@ -317,7 +317,7 @@ class FormSectionBuilder {
       return {
         type: 'single',
         title: `Add ${utils.convertToProperCase(this.intervention.contractType.name)} referral details`,
-        number: '5',
+        number: this.referral.personCurrentLocationType === CurrentLocationType.custody ? '5' : '4',
         tasks: [
           {
             title: 'Details of this part will depend on the services you choose',
@@ -330,7 +330,7 @@ class FormSectionBuilder {
     return {
       type: 'multi',
       title: `Add ${utils.convertToProperCase(this.intervention.contractType.name)} referral details`,
-      number: '5',
+      number: this.referral.personCurrentLocationType === CurrentLocationType.custody ? '5' : '4',
       taskListSections: [
         {
           tasks: [
