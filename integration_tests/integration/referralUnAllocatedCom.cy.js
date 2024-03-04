@@ -686,6 +686,7 @@ describe('Referral form', () => {
       })
 
       const completedWhetherReferralReleasingIn12Weeks = draftReferralFactory
+        .filledPersonalCurrentLocationType(CurrentLocationType.custody)
         .filledWhetherReferralReleaseWithIn12Weeks(false)
         .build({
           id: draftReferral.id,
@@ -696,16 +697,20 @@ describe('Referral form', () => {
           interventionId: draftReferral.interventionId,
         })
 
-      const completedPPDetails = draftReferralFactory.filledMainPointOfContactDetails(false).build({
-        id: draftReferral.id,
-        serviceCategoryIds: [accommodationServiceCategory.id],
-        serviceProvider: {
-          name: 'Harmony Living',
-        },
-        interventionId: draftReferral.interventionId,
-      })
+      const completedPPDetails = draftReferralFactory
+        .filledPersonalCurrentLocationType(CurrentLocationType.custody)
+        .filledMainPointOfContactDetails(false)
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: [accommodationServiceCategory.id],
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          interventionId: draftReferral.interventionId,
+        })
 
       const completedNeedsAndRequirementsDraftReferral = draftReferralFactory
+        .filledPersonalCurrentLocationType(CurrentLocationType.custody)
         .filledMainPointOfContactDetails(false)
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory])
         .build({
@@ -719,6 +724,7 @@ describe('Referral form', () => {
         })
 
       const completedEstablishmentDraftReferral = draftReferralFactory
+        .filledPersonalCurrentLocationType(CurrentLocationType.custody)
         .filledMainPointOfContactDetails(false)
         .filledFormUpToCurrentLocationForUnallocatedCOM(false)
         .build({
@@ -731,6 +737,7 @@ describe('Referral form', () => {
         })
 
       const completedDraftReferral = draftReferralFactory
+        .filledPersonalCurrentLocationType(CurrentLocationType.custody)
         .filledMainPointOfContactDetails(false)
         .filledFormUpToFurtherInformation([accommodationServiceCategory], 'Some information about Alex')
         .build({

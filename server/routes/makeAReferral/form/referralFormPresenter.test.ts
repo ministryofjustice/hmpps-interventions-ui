@@ -80,58 +80,6 @@ describe('ReferralFormPresenter', () => {
                 )
                 .build(),
               referralFormSectionFactory
-                .confirmCurrentLocation(
-                  ReferralFormStatus.NotStarted,
-                  referral.serviceUser.firstName,
-                  referral.serviceUser.lastName
-                )
-                .build(),
-              referralFormSectionFactory
-                .reviewServiceUser(
-                  ReferralFormStatus.NotStarted,
-                  ReferralFormStatus.NotStarted,
-                  ReferralFormStatus.NotStarted,
-                  referral.serviceUser.firstName,
-                  referral.serviceUser.lastName,
-                  '2'
-                )
-                .build(),
-              referralFormSectionFactory
-                .interventionDetails('accommodation', '3', ReferralFormStatus.CannotStartYet)
-                .build(),
-              referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet, '4').build(),
-            ]
-            expect(presenter.sections).toEqual(expected)
-          })
-        })
-        describe('when the referral is an unallocated and the referrer does not know the releasing date', () => {
-          it('The expected date is not available for community referrals', () => {
-            const referral = draftReferralFactory.unfilled().build({
-              serviceCategoryIds: [serviceCategory.id],
-              serviceUser: {
-                firstName: 'Bob',
-                lastName: 'Wills',
-              },
-              personCurrentLocationType: CurrentLocationType.community,
-              isReferralReleasingIn12Weeks: false,
-            })
-            const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
-            const expected = [
-              referralFormSectionFactory
-                .confirmProbationPractitionerDetails(
-                  ReferralFormStatus.NotStarted,
-                  'confirm-main-point-of-contact',
-                  'Confirm main point of contact details'
-                )
-                .build(),
-              referralFormSectionFactory
-                .confirmCurrentLocation(
-                  ReferralFormStatus.NotStarted,
-                  referral.serviceUser.firstName,
-                  referral.serviceUser.lastName
-                )
-                .build(),
-              referralFormSectionFactory
                 .reviewServiceUser(
                   ReferralFormStatus.NotStarted,
                   ReferralFormStatus.NotStarted,
