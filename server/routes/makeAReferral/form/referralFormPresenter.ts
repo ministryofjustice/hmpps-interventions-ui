@@ -96,9 +96,8 @@ class FormSectionBuilder {
     ) {
       referralFormSections.push(this.buildCurrentLocationAndExpectedReleaseDateSection())
     } else if (
-      (this.referral.allocatedCommunityPP &&
-        this.referral.personCurrentLocationType === CurrentLocationType.community) ||
-      !this.referral.isReferralReleasingIn12Weeks
+      !this.referral.isReferralReleasingIn12Weeks &&
+      this.referral.personCurrentLocationType === CurrentLocationType.custody
     ) {
       referralFormSections.push(this.buildCurrentLocationSection())
     }
