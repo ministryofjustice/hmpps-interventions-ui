@@ -185,9 +185,11 @@ export default class FeedbackAnswersPresenter {
   }
 
   get notifyProbationPractitionerOfConcernsAnswers(): { question: string; answer: string } | null {
-    const notifyPP = this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfConcerns
-      ? 'Yes'
-      : 'No'
+    const notifyPP =
+      this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfConcerns ||
+      this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner
+        ? 'Yes'
+        : 'No'
 
     return {
       question: this.behaviourFeedbackQuestionnaire.notifyProbationPractitionerOfConcernsQuestion.text,
