@@ -37,6 +37,7 @@ import { NeedsAndRequirementsType } from '../models/needsAndRequirementsType'
 import ChangelogDetail from '../models/changelogDetail'
 import { AmendOtherNeeds } from '../models/OtherNeeds'
 import SessionFeedback, { NoSessionReasonType } from '../models/sessionFeedback'
+import Prisoner from '../models/prisonerOffenderSearch/prisoner'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -461,6 +462,15 @@ export default class InterventionsService {
       path: `/pcc-regions`,
       headers: { Accept: 'application/json' },
     })) as PCCRegion[]
+  }
+
+  async getPrisonerDetails(token: string, crn: string): Promise<Prisoner> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/prisoner/details/${crn}`,
+      headers: { Accept: 'application/json' },
+    })) as Prisoner
   }
 
   async createDraftActionPlan(

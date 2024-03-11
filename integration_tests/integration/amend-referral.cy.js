@@ -8,6 +8,7 @@ import serviceCategoryFactory from '../../testutils/factories/serviceCategory'
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 import caseConvictionFactory from '../../testutils/factories/caseConviction'
 import secureChildAgency from '../../testutils/factories/secureChildAgency'
+import prisoner from '../../testutils/factories/prisoner'
 
 context('Amend a referral', () => {
   beforeEach(() => {
@@ -39,6 +40,7 @@ context('Amend a referral', () => {
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
+      cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -130,6 +132,7 @@ context('Amend a referral', () => {
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
+      cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -232,6 +235,7 @@ context('Amend a referral', () => {
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
+      cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -366,6 +370,7 @@ context('Amend a referral', () => {
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
+      cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -376,7 +381,7 @@ context('Amend a referral', () => {
 
       it('takes the pp to the amend outcomes page when clicking the change link in the details page', () => {
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
-        cy.contains('Accommodation service')
+        cy.contains('Accommodation intervention')
           .parent()
           .parent()
           .children()
@@ -384,7 +389,7 @@ context('Amend a referral', () => {
           .children()
           .should('contain', 'Desired outcomes')
           .contains('Change')
-        cy.get('#change-link-1').click()
+        cy.get('#change-link-2').click()
 
         cy.location('pathname').should(
           'equal',
@@ -397,7 +402,7 @@ context('Amend a referral', () => {
       it('displays list with currently selected outcomes', () => {
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
 
-        cy.contains('Accommodation service')
+        cy.contains('Accommodation intervention')
           .parent()
           .parent()
           .children()
@@ -407,7 +412,7 @@ context('Amend a referral', () => {
           .should('contain', 'Desired outcomes')
           .contains('Change')
 
-        cy.get('#change-link-1').click()
+        cy.get('#change-link-2').click()
 
         cy.location('pathname').should(
           'equal',
@@ -608,6 +613,7 @@ context('Amend a referral', () => {
       cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
       cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
+      cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -620,7 +626,7 @@ context('Amend a referral', () => {
         cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
 
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
-        cy.contains('Accommodation service')
+        cy.contains('Accommodation intervention')
           .parent()
           .parent()
           .children()
@@ -628,7 +634,8 @@ context('Amend a referral', () => {
           .children()
           .should('contain', 'Complexity level')
           .contains('Change')
-          .click()
+
+        cy.get('#change-link-1').click()
         cy.contains(`What's the new complexity level for ${accommodationServiceCategory.name}?`)
       })
 

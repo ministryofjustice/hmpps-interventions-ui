@@ -242,6 +242,7 @@ export default class ProbationPractitionerReferralsController {
       approvedActionPlanSummaries,
       prisonAndSecureChildAgency,
       deliusResponsibleOfficer,
+      prisonerDetails,
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
       this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
@@ -251,6 +252,7 @@ export default class ProbationPractitionerReferralsController {
       this.interventionsService.getApprovedActionPlanSummaries(accessToken, req.params.id),
       this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(accessToken),
       this.ramDeliusApiService.getResponsibleOfficer(sentReferral.referral.serviceUser.crn),
+      this.interventionsService.getPrisonerDetails(accessToken, crn),
     ])
 
     const assignee =
@@ -276,6 +278,7 @@ export default class ProbationPractitionerReferralsController {
       caseConviction.caseDetail,
       riskSummary,
       deliusResponsibleOfficer,
+      prisonerDetails,
       req.query.detailsUpdated === 'true',
       req.session.dashboardOriginPage,
       !!approvedActionPlanSummaries.length

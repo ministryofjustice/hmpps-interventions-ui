@@ -66,6 +66,17 @@ export default class ServiceUserDetailsPresenter {
     return summary
   }
 
+  get personalDetailsForReferralDetailsSummary(): SummaryListItem[] {
+    const summary: SummaryListItem[] = [
+      { key: 'Gender', lines: [this.serviceUser.gender ?? ''] },
+      { key: 'Ethnicity', lines: [this.serviceUser.ethnicity ?? ''] },
+      { key: 'Preferred language', lines: [this.serviceUser.preferredLanguage ?? ''] },
+      { key: 'Disabilities', lines: this.serviceUser.disabilities ?? [], listStyle: ListStyle.noMarkers },
+      { key: 'Religion or belief', lines: [this.serviceUser.religionOrBelief ?? ''] },
+    ]
+    return summary
+  }
+
   get contactDetailsSummary(): SummaryListItem[] {
     const phoneNumbers = this.findUniqueNumbers()
     const { address, email } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
@@ -75,6 +86,31 @@ export default class ServiceUserDetailsPresenter {
     return [
       {
         key: 'Address',
+        lines: address || ['Not found'],
+        listStyle: ListStyle.noMarkers,
+      },
+      {
+        key: phoneNumbers.length > 1 ? 'Phone numbers' : 'Phone number',
+        lines: phoneNumbers,
+        listStyle: ListStyle.noMarkers,
+      },
+      {
+        key: 'Email address',
+        lines: email || [],
+        listStyle: ListStyle.noMarkers,
+      },
+    ]
+  }
+
+  get contactDetailsForReferralDetailsSummary(): SummaryListItem[] {
+    const phoneNumbers = this.findUniqueNumbers()
+    const { address, email } = new ExpandedDeliusServiceUserDecorator(this.deliusServiceUserDetails)
+    // const matchedPerson = this.prisons.find(prison => prison.prisonId === this.personCustodyPrisonId)
+    // const prisonName = matchedPerson ? matchedPerson.prisonName : ''
+    // ]
+    return [
+      {
+        key: 'Last known address',
         lines: address || ['Not found'],
         listStyle: ListStyle.noMarkers,
       },

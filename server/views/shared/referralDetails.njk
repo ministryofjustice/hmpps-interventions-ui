@@ -29,6 +29,12 @@
         <p class="govuk-body">{{ presenter.text.noCaseworkerAssigned }}</p>
       {% endif %}
 
+      {{ govukSummaryList(identityDetailsSummaryListArgs) }}
+
+      {% if (presenter.checkIfReferralTypeIsSet) %}
+        {{ govukSummaryList(serviceUserLocationDetailsSummaryListArgs) }}
+      {% endif %}  
+
       {{ govukSummaryList(interventionDetailsSummaryListArgs) }}
 
       {%  for section in serviceCategorySections %}
@@ -46,17 +52,17 @@
       {% endif %} 
 
 
-      {%  if (presenter.isRoAndSenderNotTheSamePerson) and (presenter.isServiceProvider) %}
+      {%  if (presenter.isRoAndSenderNotTheSamePerson) %}
         {{ govukSummaryList(backupContactSummaryListArgs) }}
       {% endif %}
 
-      {% if (presenter.checkIfReferralTypeIsSet) %}
-        {{ govukSummaryList(serviceUserLocationDetailsSummaryListArgs) }}
-      {% endif %}  
+      {{ govukSummaryList(contactDetailsSummaryListArgs) }}
 
       {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
 
-      {{ govukSummaryList(contactDetailsSummaryListArgs) }}
+      
+
+      {{ govukSummaryList(serviceUserNeedsSummaryListArgs) }}
 
       {% if presenter.roshPanelPresenter.riskInformationAvailable %}
         {{govukSummaryList(roshInformationArgs)}}
@@ -67,7 +73,5 @@
       {% else %}
         {{ govukSummaryList(serviceUserRisksSummaryListArgs) }}
       {% endif %}
-
-      {{ govukSummaryList(serviceUserNeedsSummaryListArgs) }}
 
 {% endblock %}

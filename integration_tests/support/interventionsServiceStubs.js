@@ -2,6 +2,10 @@ Cypress.Commands.add('stubGetDraftReferral', (id, responseJson) => {
   cy.task('stubGetDraftReferral', { id, responseJson })
 })
 
+Cypress.Commands.add('stubGetPrisonerDetails', (crn, responseJson) => {
+  cy.task('stubGetPrisonerDetails', { crn, responseJson })
+})
+
 Cypress.Commands.add('stubCreateDraftReferral', responseJson => {
   cy.task('stubCreateDraftReferral', { responseJson })
 })

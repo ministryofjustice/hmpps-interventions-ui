@@ -19,6 +19,13 @@ export default class ShowReferralView {
 
   private readonly roshPanelView = new RoshPanelView(this.presenter.roshPanelPresenter, this.presenter.userType)
 
+  private get identityDetailsSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(this.presenter.identityDetails, 'Identity details', {
+      showBorders: true,
+      showTitle: true,
+    })
+  }
+
   private get probationPractitionerSummaryListArgs() {
     return ViewUtils.summaryListArgsWithSummaryCard(
       this.presenter.probationPractitionerDetailsForCommunity,
@@ -127,7 +134,7 @@ export default class ShowReferralView {
         summaryListArgs: (tagMacro: (args: TagArgs) => string) => {
           return ViewUtils.summaryListArgsWithSummaryCard(
             this.presenter.serviceCategorySection(serviceCategory, tagMacro),
-            `${utils.convertToProperCase(serviceCategory.name)} service`,
+            `${utils.convertToProperCase(serviceCategory.name)} intervention`,
             { showBorders: true, showTitle: true }
           )
         },
@@ -173,6 +180,7 @@ export default class ShowReferralView {
       {
         presenter: this.presenter,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
+        identityDetailsSummaryListArgs: this.identityDetailsSummaryListArgs,
         probationPractitionerSummaryListArgs: this.probationPractitionerSummaryListArgs,
         mainPointOfContactSummaryListArgs: this.mainPointOfContactSummaryListArgs,
         backupContactSummaryListArgs: this.backupContactSummaryListArgs,
