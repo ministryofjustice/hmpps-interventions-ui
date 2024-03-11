@@ -254,6 +254,22 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubGetPrisonerDetails = async (crn: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/prisoner/details/${crn}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubGetPccRegions = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {

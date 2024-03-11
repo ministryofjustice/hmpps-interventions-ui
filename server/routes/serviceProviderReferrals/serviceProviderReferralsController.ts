@@ -297,6 +297,7 @@ export default class ServiceProviderReferralsController {
       riskSummary,
       prisonsAndChildSecureAgencies,
       deliusResponsibleOfficer,
+      prisonerDetails,
     ] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, sentReferral.referral.interventionId),
       this.ramDeliusApiService.getUserByUsername(sentReferral.sentBy.username),
@@ -305,6 +306,7 @@ export default class ServiceProviderReferralsController {
       this.assessRisksAndNeedsService.getRiskSummary(crn, accessToken),
       this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(accessToken),
       this.ramDeliusApiService.getResponsibleOfficer(sentReferral.referral.serviceUser.crn),
+      this.interventionsService.getPrisonerDetails(accessToken, crn),
     ])
 
     const assignee =
@@ -340,6 +342,7 @@ export default class ServiceProviderReferralsController {
       caseConviction.caseDetail,
       riskSummary,
       deliusResponsibleOfficer,
+      prisonerDetails,
       false,
       req.session.dashboardOriginPage
     )

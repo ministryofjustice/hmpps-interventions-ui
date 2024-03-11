@@ -71,6 +71,10 @@ export default on => {
       return interventionsService.stubGetDraftReferral(arg.id, arg.responseJson)
     },
 
+    stubGetPrisonerDetails: arg => {
+      return interventionsService.stubGetPrisonerDetails(arg.crn, arg.responseJson)
+    },
+
     stubCreateDraftReferral: arg => {
       return interventionsService.stubCreateDraftReferral(arg.responseJson)
     },

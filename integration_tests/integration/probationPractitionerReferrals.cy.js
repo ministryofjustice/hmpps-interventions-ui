@@ -16,6 +16,7 @@ import secureChildrenAgenciesFactory from '../../testutils/factories/secureChild
 import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusResponsibleOfficer'
 import { CurrentLocationType } from '../../server/models/draftReferral'
 import caseConvictionFactory from '../../testutils/factories/caseConviction'
+import prisoner from '../../testutils/factories/prisoner'
 
 describe('Probation practitioner referrals dashboard', () => {
   beforeEach(() => {
@@ -393,6 +394,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
     cy.stubGetPrisons(prisonFactory.build())
     cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
+    cy.stubGetPrisonerDetails(referral.referral.serviceUser.crn, prisoner.build())
 
     cy.login()
 
@@ -414,8 +416,20 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.contains('Burglary')
     cy.contains('Theft act, 1968')
     cy.contains('15 Nov 2025')
+    const yearsElapsed = moment().diff('1980-01-01', 'years')
 
-    cy.contains('Accommodation service')
+    cy.contains(`Identity details`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Jenny')
+      .should('contain', 'Jones')
+      .should('contain', `1 Jan 1980 (${yearsElapsed} years old)`)
+      .should('contain', 'X123456')
+
+    cy.contains('Accommodation intervention')
       .parent()
       .parent()
       .children()
@@ -428,7 +442,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'All barriers, as identified in the Service user action plan')
       .should('contain', 'Service user makes progress in obtaining accommodation')
 
-    cy.contains('Social inclusion service')
+    cy.contains('Social inclusion intervention')
       .parent()
       .parent()
       .children()
@@ -454,7 +468,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Probation Office')
       .should('contain', 'London')
 
-    cy.contains(`Jenny Jones's location and expected release date`)
+    cy.contains(`Jenny Jones's current location and expected release details`)
       .parent()
       .parent()
       .children()
@@ -464,21 +478,17 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Expected release date')
       .should('contain', moment().add(1, 'days').format('D MMM YYYY'))
 
-    const yearsElapsed = moment().diff('1980-01-01', 'years')
-
     cy.contains(`Jenny Jones's personal details`)
       .parent()
       .parent()
       .children()
       .last()
       .children()
-      .should('contain', 'Jenny')
       .should('contain', 'English')
       .should('contain', 'Male')
       .should('contain', 'Agnostic')
-      .should('contain', `1 Jan 1980 (${yearsElapsed} years old)`)
 
-    cy.contains(`Jenny Jones's address and contact details`)
+    cy.contains(`Jenny Jones's last known address and contact details`)
       .parent()
       .parent()
       .children()
@@ -618,6 +628,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
     cy.stubGetPrisons(prisons)
     cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
+    cy.stubGetPrisonerDetails(referral.referral.serviceUser.crn, prisoner.build())
 
     cy.login()
 
@@ -640,7 +651,20 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.contains('Theft act, 1968')
     cy.contains('15 Nov 2025')
 
-    cy.contains('Accommodation service')
+    const yearsElapsed = moment().diff('1980-01-01', 'years')
+
+    cy.contains(`Identity details`)
+      .parent()
+      .parent()
+      .children()
+      .last()
+      .children()
+      .should('contain', 'Jenny')
+      .should('contain', 'Jones')
+      .should('contain', `1 Jan 1980 (${yearsElapsed} years old)`)
+      .should('contain', 'X123456')
+
+    cy.contains('Accommodation intervention')
       .parent()
       .parent()
       .children()
@@ -653,7 +677,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'All barriers, as identified in the Service user action plan')
       .should('contain', 'Service user makes progress in obtaining accommodation')
 
-    cy.contains('Social inclusion service')
+    cy.contains('Social inclusion intervention')
       .parent()
       .parent()
       .children()
@@ -683,7 +707,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.contains(`Jenny Jones's location and expected release date`).should('not.exist')
 
-    cy.contains(`Jenny Jones's location`)
+    cy.contains(`Jenny Jones's current location and release details`)
       .parent()
       .parent()
       .children()
@@ -691,21 +715,21 @@ describe('Probation practitioner referrals dashboard', () => {
       .children()
       .should('contain', 'Location at time of referral')
       .should('contain', 'Community')
+      .should('contain', 'London')
+      .should('contain', 'Release date')
+      .should('contain', '2 May 2023')
 
-    const yearsElapsed = moment().diff('1980-01-01', 'years')
     cy.contains(`Jenny Jones's personal details`)
       .parent()
       .parent()
       .children()
       .last()
       .children()
-      .should('contain', 'Jenny')
       .should('contain', 'English')
       .should('contain', 'Male')
       .should('contain', 'Agnostic')
-      .should('contain', `1 Jan 1980 (${yearsElapsed} years old)`)
 
-    cy.contains(`Jenny Jones's address and contact details`)
+    cy.contains(`Jenny Jones's last known address and contact details`)
       .parent()
       .parent()
       .children()
@@ -833,6 +857,7 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetPrisons(prisonFactory.build())
       cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
+      cy.stubGetPrisonerDetails(referral.referral.serviceUser.crn, prisoner.build())
 
       cy.login()
 
@@ -933,12 +958,13 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetPrisons(prisonFactory.build())
       cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
+      cy.stubGetPrisonerDetails(referral.referral.serviceUser.crn, prisoner.build())
 
       cy.login()
 
       cy.visit(`/probation-practitioner/referrals/${referral.id}/details`)
 
-      cy.contains('Accommodation service')
+      cy.contains('Accommodation intervention')
         .parent()
         .parent()
         .children()
@@ -948,7 +974,7 @@ describe('Probation practitioner referrals dashboard', () => {
         .should('contain', 'Desired outcomes')
         .contains('Change')
 
-      cy.get('#change-link-1').click()
+      cy.get('#change-link-2').click()
 
       cy.location('pathname').should(
         'equal',
@@ -1114,6 +1140,7 @@ describe('Probation practitioner referrals dashboard', () => {
         cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
         cy.stubGetPrisons(prisonFactory.build())
         cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
+        cy.stubGetPrisonerDetails(referral.referral.serviceUser.crn, prisoner.build())
 
         cy.login()
 

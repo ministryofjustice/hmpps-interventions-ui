@@ -51,6 +51,7 @@ import { CurrentLocationType } from '../../models/draftReferral'
 import PrisonApiService from '../../services/prisonApiService'
 import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 import secureChildAgency from '../../../testutils/factories/secureChildAgency'
+import prisoner from '../../../testutils/factories/prisoner'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/hmppsAuthService')
@@ -933,6 +934,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
     prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)

@@ -9,6 +9,7 @@ import { TagArgs } from '../../utils/govukFrontendTypes'
 import caseConvictionFactory from '../../../testutils/factories/caseConviction'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import riskSummaryFactory from '../../../testutils/factories/riskSummary'
+import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
 import prisonFactory from '../../../testutils/factories/prison'
 import securedChildAgency from '../../../testutils/factories/secureChildAgency'
 import { CurrentLocationType } from '../../models/draftReferral'
@@ -17,6 +18,7 @@ import PrisonApiService from '../../services/prisonApiService'
 import deliusResponsibleOfficerFactory from '../../../testutils/factories/deliusResponsibleOfficer'
 import { RamDeliusUser } from '../../models/delius/deliusUser'
 import PrisonAndSecuredChildAgency from '../../models/prisonAndSecureChildAgency'
+import prisoner from '../../../testutils/factories/prisoner'
 
 jest.mock('../../services/prisonRegisterService')
 jest.mock('../../services/prisonApiService')
@@ -77,6 +79,7 @@ describe(ShowReferralPresenter, () => {
   prisonAndSecuredChildAgencyList.forEach(sca =>
     prisonsAndSecuredChildAgencies.push({ id: sca.agencyId, description: sca.description })
   )
+  const prisonerDetails = prisoner.build()
 
   describe('canShowFullSupplementaryRiskInformation', () => {
     // TODO: describe what we expect to show instead
@@ -96,7 +99,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
       expect(presenter.canShowFullSupplementaryRiskInformation).toBeFalsy()
     })
@@ -116,7 +120,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
       expect(presenter.canShowFullSupplementaryRiskInformation).toBeTruthy()
     })
@@ -139,7 +144,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.assignmentFormAction).toEqual(`/service-provider/referrals/${referral.id}/assignment/start`)
@@ -165,7 +171,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusRoOfficer
+          deliusRoOfficer,
+          prisonerDetails
         )
 
         expect(presenter.assignedCaseworkerFullName).toEqual(null)
@@ -190,7 +197,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusRoOfficer
+          deliusRoOfficer,
+          prisonerDetails
         )
 
         expect(presenter.assignedCaseworkerFullName).toEqual('Liam Johnson')
@@ -217,7 +225,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusRoOfficer
+          deliusRoOfficer,
+          prisonerDetails
         )
 
         expect(presenter.assignedCaseworkerFullName).toEqual(null)
@@ -242,7 +251,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusRoOfficer
+          deliusRoOfficer,
+          prisonerDetails
         )
 
         expect(presenter.assignedCaseworkerEmail).toEqual('liam.johnson@justice.gov.uk')
@@ -266,7 +276,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
@@ -292,7 +303,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
@@ -333,7 +345,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
@@ -374,7 +387,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
@@ -413,7 +427,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.mainPointOfContactDetailsSummary).toEqual([
@@ -451,7 +466,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.mainPointOfContactDetailsSummary).toEqual([
@@ -478,11 +494,14 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.serviceUserLocationDetails).toEqual([
         { key: 'Location at time of referral', lines: ['Community'] },
+        { key: 'Probation Office', lines: ['London'] },
+        { key: 'Release date', lines: ['2 May 2023'] },
       ])
     })
 
@@ -496,6 +515,7 @@ describe(ShowReferralPresenter, () => {
           ppName: 'Bernard Beaks',
           ppEmailAddress: 'bernard.beaks@justice.gov.uk',
           roleOrJobTitle: 'PP',
+          isReferralReleasingIn12Weeks: false,
         },
       }
       const sentReferral = sentReferralFactory.build(referralParamsForSummary)
@@ -512,10 +532,15 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
-      expect(presenter.serviceUserLocationDetails).toEqual([{ key: 'Location at time of referral', lines: ['London'] }])
+      expect(presenter.serviceUserLocationDetails).toEqual([
+        { key: 'Location at time of referral', lines: ['London'] },
+        { key: 'Probation Office', lines: ['London'] },
+        { key: 'Expected release date', lines: ['---'] },
+      ])
     })
 
     it('returns a summary list for a referral custody location', () => {
@@ -543,10 +568,12 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
       expect(presenter.serviceUserLocationDetails).toEqual([
         { key: 'Location at time of referral', lines: ['London'] },
+        { key: 'Probation Office', lines: ['London'] },
         {
           key: 'Expected release date',
           lines: [moment.tz('Europe/London').add(2, 'days').format('D MMM YYYY')],
@@ -578,11 +605,13 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.serviceUserLocationDetails).toEqual([
         { key: 'Location at time of referral', lines: ['London'] },
+        { key: 'Probation Office', lines: ['London'] },
         {
           key: 'Expected release date',
           lines: [moment().add(2, 'days').format('D MMM YYYY')],
@@ -631,7 +660,8 @@ describe(ShowReferralPresenter, () => {
               },
               unallocated: false,
             },
-          })
+          }),
+          prisonerDetails
         )
 
         expect(presenter.deliusResponsibleOfficersDetails).toEqual([
@@ -702,7 +732,8 @@ describe(ShowReferralPresenter, () => {
               },
               unallocated: false,
             },
-          })
+          }),
+          prisonerDetails
         )
 
         expect(presenter.deliusResponsibleOfficersDetails).toEqual([
@@ -754,7 +785,8 @@ describe(ShowReferralPresenter, () => {
               },
               unallocated: false,
             },
-          })
+          }),
+          prisonerDetails
         )
 
         expect(presenter.deliusResponsibleOfficersDetails).toEqual([
@@ -786,7 +818,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          null
+          null,
+          prisonerDetails
         )
 
         expect(presenter.deliusResponsibleOfficersDetails).toEqual([])
@@ -838,7 +871,8 @@ describe(ShowReferralPresenter, () => {
               },
               unallocated: false,
             },
-          })
+          }),
+          prisonerDetails
         )
 
         expect(presenter.backupContactDetails).toEqual([
@@ -891,7 +925,8 @@ describe(ShowReferralPresenter, () => {
               },
               unallocated: false,
             },
-          })
+          }),
+          prisonerDetails
         )
 
         expect(presenter.backupContactDetails).toEqual([])
@@ -967,11 +1002,12 @@ describe(ShowReferralPresenter, () => {
           true,
           burglaryConviction.caseDetail,
           riskSummary,
-          deliusRoOfficer
+          deliusRoOfficer,
+          prisonerDetails
         )
 
         expect(presenter.interventionDetails).toEqual([
-          { key: 'Service type', lines: ['Accommodation'] },
+          { key: 'Intervention type', lines: ['Accommodation'] },
           { key: 'Sentence', lines: ['Burglary'] },
           { key: 'Subcategory', lines: ['Theft act, 1968'] },
           { key: 'End of sentence date', lines: ['15 Nov 2025'] },
@@ -979,11 +1015,8 @@ describe(ShowReferralPresenter, () => {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
           },
+          { key: 'Date referral submitted', lines: ['1 Jan 2022'] },
           { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
-          {
-            key: 'Further information for the provider',
-            lines: ['For crs'],
-          },
         ])
       })
     })
@@ -1056,11 +1089,12 @@ describe(ShowReferralPresenter, () => {
           true,
           burglaryConviction.caseDetail,
           riskSummary,
-          deliusRoOfficer
+          deliusRoOfficer,
+          prisonerDetails
         )
 
         expect(presenter.interventionDetails).toEqual([
-          { key: 'Service type', lines: ['Accommodation'] },
+          { key: 'Intervention type', lines: ['Accommodation'] },
           { key: 'Sentence', lines: ['Burglary'] },
           { key: 'Subcategory', lines: ['Theft act, 1968'] },
           { key: 'End of sentence date', lines: ['15 Nov 2025'] },
@@ -1068,11 +1102,184 @@ describe(ShowReferralPresenter, () => {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
           },
+          { key: 'Date referral submitted', lines: ['1 Jan 2022'] },
           { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
-          {
-            key: 'Further information for the provider',
-            lines: ['N/A'],
+        ])
+      })
+    })
+
+    describe('when a referral is cancelled', () => {
+      const referralWithAllOptionalFields = sentReferralFactory.build({
+        concludedAt: '2024-02-07T20:45:21.986389Z',
+        referral: {
+          createdAt: '2020-12-07T20:45:21.986389Z',
+          completionDeadline: '2021-04-01',
+          serviceProvider: {
+            name: 'Harmony Living',
           },
+          serviceCategoryIds: [serviceCategory.id],
+          complexityLevels: [
+            { serviceCategoryId: serviceCategory.id, complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
+          ],
+          furtherInformation: 'Some information about the service user',
+          desiredOutcomes: [
+            {
+              serviceCategoryId: serviceCategory.id,
+              desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+            },
+          ],
+          additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+          accessibilityNeeds: 'She uses a wheelchair',
+          needsInterpreter: true,
+          interpreterLanguage: 'Spanish',
+          hasAdditionalResponsibilities: true,
+          whenUnavailable: 'She works Mondays 9am - midday',
+          serviceUser: {
+            crn: 'X123456',
+            title: 'Mr',
+            firstName: 'Alex',
+            lastName: 'River',
+            dateOfBirth: '1980-01-01',
+            gender: 'Male',
+            ethnicity: 'British',
+            preferredLanguage: 'English',
+            religionOrBelief: 'Agnostic',
+            disabilities: ['Autism spectrum condition', 'sciatica'],
+          },
+          maximumEnforceableDays: 10,
+        },
+      })
+
+      const burglaryConviction = caseConvictionFactory.build({
+        conviction: {
+          mainOffence: {
+            category: 'Burglary',
+            subCategory: 'Theft act, 1968',
+          },
+          sentence: {
+            expectedEndDate: '2025-11-15',
+          },
+        },
+      })
+
+      it('returns a summary list of intervention details with cancelled date', () => {
+        const presenter = new ShowReferralPresenter(
+          referralWithAllOptionalFields,
+          intervention,
+          burglaryConviction.conviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          prisonsAndSecuredChildAgencies,
+          null,
+          null,
+          'service-provider',
+          true,
+          burglaryConviction.caseDetail,
+          riskSummary,
+          deliusRoOfficer,
+          prisonerDetails
+        )
+
+        expect(presenter.interventionDetails).toEqual([
+          { key: 'Intervention type', lines: ['Accommodation'] },
+          { key: 'Sentence', lines: ['Burglary'] },
+          { key: 'Subcategory', lines: ['Theft act, 1968'] },
+          { key: 'End of sentence date', lines: ['15 Nov 2025'] },
+          {
+            key: 'Maximum number of enforceable days',
+            lines: ['10'],
+          },
+          { key: 'Date referral submitted', lines: ['1 Jan 2022'] },
+          { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
+          { key: 'Date intervention cancelled', lines: ['7 Feb 2024'] },
+        ])
+      })
+    })
+    describe('when a referral is completed', () => {
+      const referralWithAllOptionalFields = sentReferralFactory.build({
+        concludedAt: '2024-02-07T20:45:21.986389Z',
+        endOfServiceReport: endOfServiceReportFactory.build(),
+        referral: {
+          createdAt: '2020-12-07T20:45:21.986389Z',
+          completionDeadline: '2021-04-01',
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          serviceCategoryIds: [serviceCategory.id],
+          complexityLevels: [
+            { serviceCategoryId: serviceCategory.id, complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
+          ],
+          furtherInformation: 'Some information about the service user',
+          desiredOutcomes: [
+            {
+              serviceCategoryId: serviceCategory.id,
+              desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+            },
+          ],
+          additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+          accessibilityNeeds: 'She uses a wheelchair',
+          needsInterpreter: true,
+          interpreterLanguage: 'Spanish',
+          hasAdditionalResponsibilities: true,
+          whenUnavailable: 'She works Mondays 9am - midday',
+          serviceUser: {
+            crn: 'X123456',
+            title: 'Mr',
+            firstName: 'Alex',
+            lastName: 'River',
+            dateOfBirth: '1980-01-01',
+            gender: 'Male',
+            ethnicity: 'British',
+            preferredLanguage: 'English',
+            religionOrBelief: 'Agnostic',
+            disabilities: ['Autism spectrum condition', 'sciatica'],
+          },
+          maximumEnforceableDays: 10,
+        },
+      })
+
+      const burglaryConviction = caseConvictionFactory.build({
+        conviction: {
+          mainOffence: {
+            category: 'Burglary',
+            subCategory: 'Theft act, 1968',
+          },
+          sentence: {
+            expectedEndDate: '2025-11-15',
+          },
+        },
+      })
+
+      it('returns a summary list of intervention details with cancelled date', () => {
+        const presenter = new ShowReferralPresenter(
+          referralWithAllOptionalFields,
+          intervention,
+          burglaryConviction.conviction,
+          supplementaryRiskInformation,
+          deliusUser,
+          prisonsAndSecuredChildAgencies,
+          null,
+          null,
+          'service-provider',
+          true,
+          burglaryConviction.caseDetail,
+          riskSummary,
+          deliusRoOfficer,
+          prisonerDetails
+        )
+
+        expect(presenter.interventionDetails).toEqual([
+          { key: 'Intervention type', lines: ['Accommodation'] },
+          { key: 'Sentence', lines: ['Burglary'] },
+          { key: 'Subcategory', lines: ['Theft act, 1968'] },
+          { key: 'End of sentence date', lines: ['15 Nov 2025'] },
+          {
+            key: 'Maximum number of enforceable days',
+            lines: ['10'],
+          },
+          { key: 'Date referral submitted', lines: ['1 Jan 2022'] },
+          { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
+          { key: 'Date intervention completed', lines: ['7 Feb 2024'] },
         ])
       })
     })
@@ -1113,13 +1320,19 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
       expect(
         presenter.serviceCategorySection(cohortServiceCategories[0], (args: TagArgs): string => {
           return args.text!
         })
       ).toEqual([
+        {
+          key: 'Reason for the referral and further information for the service provider',
+          lines: ['For crs'],
+          changeLink: undefined,
+        },
         {
           key: 'Complexity level',
           lines: [
@@ -1153,6 +1366,7 @@ describe(ShowReferralPresenter, () => {
           deliusServiceUser,
           riskSummary,
           deliusRoOfficer,
+          prisonerDetails,
           true,
           'dashboardOriginPage',
           false
@@ -1162,13 +1376,18 @@ describe(ShowReferralPresenter, () => {
             return args.text!
           })
         ).toEqual([
+          {
+            key: 'Reason for the referral and further information for the service provider',
+            lines: ['For crs'],
+            changeLink: `/referrals/${referral.id}/reason-for-referral`,
+          },
           expect.objectContaining({
             key: 'Complexity level',
           }),
           {
             key: 'Desired outcomes',
             lines: expect.any(Array),
-            changeLink: '/probation-practitioner/referrals/3/2/update-desired-outcomes',
+            changeLink: `/probation-practitioner/referrals/${referral.id}/2/update-desired-outcomes`,
           },
         ])
       })
@@ -1188,6 +1407,7 @@ describe(ShowReferralPresenter, () => {
           deliusServiceUser,
           riskSummary,
           deliusRoOfficer,
+          prisonerDetails,
           true,
           'dashboardOriginPage',
           true
@@ -1197,6 +1417,11 @@ describe(ShowReferralPresenter, () => {
             return args.text!
           })
         ).toEqual([
+          {
+            key: 'Reason for the referral and further information for the service provider',
+            lines: ['For crs'],
+            changeLink: `/referrals/${referral.id}/reason-for-referral`,
+          },
           expect.objectContaining({
             key: 'Complexity level',
           }),
@@ -1223,6 +1448,7 @@ describe(ShowReferralPresenter, () => {
           deliusServiceUser,
           riskSummary,
           deliusRoOfficer,
+          prisonerDetails,
           true,
           'dashboardOriginPage',
           false
@@ -1232,6 +1458,10 @@ describe(ShowReferralPresenter, () => {
             return args.text!
           })
         ).toEqual([
+          {
+            key: 'Reason for the referral and further information for the service provider',
+            lines: ['For crs'],
+          },
           expect.objectContaining({
             key: 'Complexity level',
           }),
@@ -1260,6 +1490,7 @@ describe(ShowReferralPresenter, () => {
           deliusServiceUser,
           riskSummary,
           deliusRoOfficer,
+          prisonerDetails,
           false,
           undefined,
           false
@@ -1270,6 +1501,11 @@ describe(ShowReferralPresenter, () => {
             return args.text!
           })
         ).toEqual([
+          {
+            key: 'Reason for the referral and further information for the service provider',
+            lines: ['For crs'],
+            changeLink: `/referrals/${referral.id}/reason-for-referral`,
+          },
           {
             key: 'Complexity level',
             lines: [
@@ -1299,6 +1535,7 @@ describe(ShowReferralPresenter, () => {
           deliusServiceUser,
           riskSummary,
           deliusRoOfficer,
+          prisonerDetails,
           false,
           undefined,
           true
@@ -1309,6 +1546,11 @@ describe(ShowReferralPresenter, () => {
             return args.text!
           })
         ).toEqual([
+          {
+            key: 'Reason for the referral and further information for the service provider',
+            lines: ['For crs'],
+            changeLink: `/referrals/${referral.id}/reason-for-referral`,
+          },
           {
             key: 'Complexity level',
             lines: [
@@ -1342,6 +1584,7 @@ describe(ShowReferralPresenter, () => {
           deliusServiceUser,
           riskSummary,
           deliusRoOfficer,
+          prisonerDetails,
           false,
           undefined,
           false
@@ -1352,6 +1595,10 @@ describe(ShowReferralPresenter, () => {
             return args.text!
           })
         ).toEqual([
+          {
+            key: 'Reason for the referral and further information for the service provider',
+            lines: ['For crs'],
+          },
           {
             key: 'Complexity level',
             lines: [
@@ -1388,15 +1635,11 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
-      const yearsElapsed = moment().diff('1980-01-01', 'years')
-
       expect(presenter.personalDetailSummary).toEqual([
-        { key: 'First name', lines: ['Jenny'] },
-        { key: 'Last name(s)', lines: ['Jones'] },
-        { key: 'Date of birth', lines: [`1 Jan 1980 (${yearsElapsed} years old)`] },
         { key: 'Gender', lines: ['Male'] },
         { key: 'Ethnicity', lines: ['British'] },
         { key: 'Preferred language', lines: ['English'] },
@@ -1422,12 +1665,13 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.contactDetailsSummary).toEqual([
         {
-          key: 'Address',
+          key: 'Last known address',
           lines: ['Flat 2 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],
           listStyle: ListStyle.noMarkers,
         },
@@ -1456,7 +1700,8 @@ describe(ShowReferralPresenter, () => {
         true,
         deliusServiceUser,
         riskSummary,
-        deliusRoOfficer
+        deliusRoOfficer,
+        prisonerDetails
       )
 
       expect(presenter.serviceUserRisks).toEqual([
@@ -1524,7 +1769,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusRoOfficer
+          deliusRoOfficer,
+          prisonerDetails
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
@@ -1612,7 +1858,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusRoOfficer
+          deliusRoOfficer,
+          prisonerDetails
         )
 
         expect(presenter.serviceUserNeeds).toEqual([
@@ -1668,7 +1915,8 @@ describe(ShowReferralPresenter, () => {
           true,
           deliusServiceUser,
           riskSummary,
-          deliusRoOfficer
+          deliusRoOfficer,
+          prisonerDetails
         )
 
         expect(presenter.text).toMatchObject({

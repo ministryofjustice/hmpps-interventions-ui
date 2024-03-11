@@ -49,6 +49,7 @@ import DeliusServiceUser from '../../models/delius/deliusServiceUser'
 import { CurrentLocationType } from '../../models/draftReferral'
 import secureChildAgency from '../../../testutils/factories/secureChildAgency'
 import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
+import prisoner from '../../../testutils/factories/prisoner'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/assessRisksAndNeedsService')
@@ -518,6 +519,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
     prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
     prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
 
     await request(app)
       .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
