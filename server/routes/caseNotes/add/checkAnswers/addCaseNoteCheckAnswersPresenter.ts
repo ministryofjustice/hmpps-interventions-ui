@@ -32,6 +32,6 @@ export default class AddCaseNoteCheckAnswersPresenter {
     time: DateUtils.formattedTime(new Date()),
     from: this.loggedInUser.name,
     body: this.caseNote.body,
-    sendEmail: this.caseNote.sendEmail ? 'Yes' : 'No',
+    sendEmail: String(this.caseNote.sendEmail) === 'true' ? 'Yes' : 'No',
   }
 }
