@@ -47,11 +47,33 @@ describe('AddCaseNoteCheckAnswersPresenter', () => {
         draftId,
         'service-provider',
         userDetailsFactory.build({ name: 'firstName lastName' }),
-        caseNoteFactory.build({ subject: 'subject', body: 'body' })
+        caseNoteFactory.build({ subject: 'subject', body: 'body', sendEmail: true })
       )
       expect(presenter.caseNoteSummary.body).toEqual('body')
       expect(presenter.caseNoteSummary.subject).toEqual('subject')
       expect(presenter.caseNoteSummary.from).toEqual('firstName lastName')
+    })
+
+    it('Case note with sendEmail set to true should evaluate to Yes', () => {
+      const presenter = new AddCaseNoteCheckAnswersPresenter(
+        referralId,
+        draftId,
+        'service-provider',
+        userDetailsFactory.build({ name: 'firstName lastName' }),
+        caseNoteFactory.build({ sendEmail: true })
+      )
+      expect(presenter.caseNoteSummary.sendEmail).toEqual('Yes')
+    })
+
+    it('Case note with sendEmail set to false should evaluate to No', () => {
+      const presenter = new AddCaseNoteCheckAnswersPresenter(
+        referralId,
+        draftId,
+        'service-provider',
+        userDetailsFactory.build({ name: 'firstName lastName' }),
+        caseNoteFactory.build({ sendEmail: false })
+      )
+      expect(presenter.caseNoteSummary.sendEmail).toEqual('No')
     })
   })
 })
