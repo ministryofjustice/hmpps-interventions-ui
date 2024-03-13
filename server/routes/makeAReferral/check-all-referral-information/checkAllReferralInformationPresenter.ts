@@ -146,7 +146,7 @@ export default class CheckAllReferralInformationPresenter {
 
     const backupContactDetails: SummaryListItem[] = []
     backupContactDetails.push({
-      key: 'Referring officer name',
+      key: 'Referring officer',
       lines: [this.loggedInUser.username || 'Not found'],
     })
     backupContactDetails.push({
@@ -155,7 +155,7 @@ export default class CheckAllReferralInformationPresenter {
     })
 
     return {
-      title: `Back-up contact for the referral`,
+      title: `Back up contact for the referral`,
       summary: backupContactDetails,
     }
   }

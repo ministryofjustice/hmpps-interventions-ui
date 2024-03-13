@@ -566,13 +566,13 @@ describe('Referral form', () => {
       )
 
       // Back up contact for the referral
-      cy.contains('Back-up contact for the referral')
+      cy.contains('Back up contact for the referral')
         .parent()
         .next()
-        .should('contain', 'Referring officer name')
+        .should('contain', 'Referring officer')
         .should('contain', 'USER1')
 
-      cy.contains('Back-up contact for the referral')
+      cy.contains('Back up contact for the referral')
         .parent()
         .next()
         .should('contain', 'Email address')

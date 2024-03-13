@@ -876,7 +876,7 @@ describe(ShowReferralPresenter, () => {
         )
 
         expect(presenter.backupContactDetails).toEqual([
-          { key: 'Referring officer name', lines: ['Bernard Beaks'] },
+          { key: 'Referring officer', lines: ['Bernard Beaks'] },
           { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
         ])
       })

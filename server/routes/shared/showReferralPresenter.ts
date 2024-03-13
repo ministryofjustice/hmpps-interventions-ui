@@ -114,7 +114,7 @@ export default class ShowReferralPresenter {
   }
 
   get backupContactDetailsHeading(): string {
-    return `Back-up contact for the referral`
+    return `Back up contact for the referral`
   }
 
   get riskInformationHeading(): string {
@@ -341,7 +341,7 @@ export default class ShowReferralPresenter {
     const backupContactDetails: SummaryListItem[] = []
     const backupUser = this.sentBy
     backupContactDetails.push({
-      key: 'Referring officer name',
+      key: 'Referring officer',
       lines: [`${backupUser?.name.forename || ''} ${backupUser?.name.surname || ''}`.trim() || 'Not found'],
     })
     backupContactDetails.push({
