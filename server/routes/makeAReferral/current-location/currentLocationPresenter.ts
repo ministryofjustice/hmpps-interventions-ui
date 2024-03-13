@@ -9,6 +9,7 @@ export default class CurrentLocationPresenter {
   constructor(
     readonly referral: DraftReferral,
     readonly prisonAndSecureChildAgency: PrisonAndSecuredChildAgency[],
+    private readonly prisonName: string,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
@@ -21,6 +22,7 @@ export default class CurrentLocationPresenter {
 
   readonly text = {
     title: `Confirm ${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName}’s current location`,
+    subTitle: `Is ${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} in ${this.prisonName}?`,
     label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
     submitLocationInput: {
       label: `Which establishment is ${this.referral.serviceUser?.firstName} in?`,
@@ -38,5 +40,6 @@ export default class CurrentLocationPresenter {
 
   readonly fields = {
     prisonId: this.utils.stringValue(this.referral.personCustodyPrisonId, 'prison-id'),
+    alreadyKnowPrisonName: this.referral.alreadyKnowPrisonName,
   }
 }

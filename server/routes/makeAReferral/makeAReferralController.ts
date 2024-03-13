@@ -674,8 +674,14 @@ export default class MakeAReferralController {
     )
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+    const prisonerDetails = await this.interventionsService.getPrisonerDetails(
+      res.locals.user.token.accessToken,
+      referral.serviceUser.crn
+    )
+    const matchedPerson = prisonAndSecureChildAgency.find(prison => prison.id === prisonerDetails.prisonId)
+    const prisonName = matchedPerson ? matchedPerson.description : ''
 
-    const presenter = new CurrentLocationPresenter(referral, prisonAndSecureChildAgency, null, req.body)
+    const presenter = new CurrentLocationPresenter(referral, prisonAndSecureChildAgency, prisonName, null, req.body)
     const view = new CurrentLocationView(presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
@@ -789,9 +795,16 @@ export default class MakeAReferralController {
     const prisonAndSecureChildAgency = await this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(
       res.locals.user.token.accessToken
     )
-    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
-    const form = await CurrentLocationForm.createForm(req, referral)
 
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const prisonerDetails = await this.interventionsService.getPrisonerDetails(
+      res.locals.user.token.accessToken,
+      referral.serviceUser.crn
+    )
+    const matchedPerson = prisonAndSecureChildAgency.find(prison => prison.id === prisonerDetails.prisonId)
+    const prisonName = matchedPerson ? matchedPerson.description : ''
+
+    const form = await CurrentLocationForm.createForm(req, referral, prisonerDetails.prisonId)
     let error: FormValidationError | null = null
 
     if (form.isValid) {
@@ -829,7 +842,7 @@ export default class MakeAReferralController {
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-      const presenter = new CurrentLocationPresenter(referral, prisonAndSecureChildAgency, error, req.body)
+      const presenter = new CurrentLocationPresenter(referral, prisonAndSecureChildAgency, prisonName, error, req.body)
       const view = new CurrentLocationView(presenter)
 
       res.status(400)
