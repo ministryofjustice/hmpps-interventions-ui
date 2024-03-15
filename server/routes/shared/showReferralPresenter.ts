@@ -365,7 +365,7 @@ export default class ShowReferralPresenter {
       lines: [this.sentReferral.referral.reasonForReferral || this.sentReferral.referral.furtherInformation || 'N/A'],
       changeLink:
         this.userType === 'probation-practitioner'
-          ? `/referrals/${this.sentReferral.id}/reason-for-referral`
+          ? `/referrals/${this.sentReferral.id}/reason-for-referral?amendRefDetails=true`
           : undefined,
     })
     const complexityLevel = this.getReferralComplexityLevelForServiceCategory(serviceCategory)

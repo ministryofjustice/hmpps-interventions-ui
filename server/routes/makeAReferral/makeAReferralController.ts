@@ -106,12 +106,6 @@ import UpdateProbationPractitionerTeamPhoneNumberForm from './update/probation-p
 import ReasonForReferralPresenter from './reason-for-referral/reasonForReferralPresenter'
 import ReasonForReferralView from './reason-for-referral/reasonForReferralView'
 import ReasonForReferralForm from './reason-for-referral/reasonForReferralForm'
-// import DeleteProbationPractitionerPhoneNumberPresenter from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberPresenter'
-// import DeleteProbationPractitionerPhoneNumberView from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberView'
-// import DeleteProbationPractitionerPhoneNumberForm from './delete/probation-practioner-phone-number/deleteProbationPractitionerPhoneNumberForm'
-// import DeleteProbationPractitionerView from './delete/probation-practitioner-email/deleteProbationPractitionerView'
-// import DeleteProbationPractitionerPresenter from './delete/probation-practitioner-email/deleteProbationPractitionerPresenter'
-// import DeleteProbationPractitionerForm from './delete/probation-practitioner-email/deleteProbationPractitionerForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -1431,7 +1425,10 @@ export default class MakeAReferralController {
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-    const presenter = new ReasonForReferralPresenter(referral)
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+    const amendReferralDetails = req.query.amendRefDetails === 'true'
+
+    const presenter = new ReasonForReferralPresenter(referral, amendPPDetails, amendReferralDetails)
     const view = new ReasonForReferralView(presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
@@ -1458,12 +1455,19 @@ export default class MakeAReferralController {
       error = form.error
     }
 
-    if (error === null) {
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+    const amendReferralDetails = req.query.amendRefDetails === 'true'
+
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null && amendReferralDetails) {
+      res.redirect(`/probation-practitioner/referrals/${req.params.id}/details`)
+    } else if (error === null) {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-      const presenter = new ReasonForReferralPresenter(referral, error)
+      const presenter = new ReasonForReferralPresenter(referral, amendPPDetails, amendReferralDetails, error)
       const view = new ReasonForReferralView(presenter)
 
       res.status(400)

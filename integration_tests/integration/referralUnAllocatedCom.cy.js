@@ -643,7 +643,7 @@ describe('Referral form', () => {
         .should('contain', 'Some information about Alex')
         .next()
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral`)
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral?amendPPDetails=true`)
 
       // Accommodation referral details
       cy.contains('Accommodation referral details')
@@ -1224,7 +1224,7 @@ describe('Referral form', () => {
         .should('contain', 'Some information about Alex')
         .next()
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral`)
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral?amendPPDetails=true`)
 
       // Accommodation referral details
       cy.contains('Accommodation referral details')

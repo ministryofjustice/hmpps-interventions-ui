@@ -802,7 +802,7 @@ describe('Referral form', () => {
         .should('contain', 'Some reason')
         .next()
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral`)
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral?amendPPDetails=true`)
 
       // Accommodation referral details
       cy.contains('Accommodation referral details')
