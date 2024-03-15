@@ -1552,6 +1552,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       maximumEnforceableDays: 10,
       personCurrentLocationType: CurrentLocationType.custody,
       personCustodyPrisonId: 'aaa',
+      alreadyKnowPrisonName: false,
       expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
       expectedReleaseDateMissingReason: null,
       hasExpectedReleaseDate: null,

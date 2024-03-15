@@ -25,6 +25,7 @@ export interface ReferralFields {
   maximumEnforceableDays: number
   personCurrentLocationType: CurrentLocationType | null
   personCustodyPrisonId: string | null
+  alreadyKnowPrisonName: boolean | null
   hasExpectedReleaseDate: boolean | null
   expectedReleaseDate: string | null
   expectedReleaseDateMissingReason: string | null

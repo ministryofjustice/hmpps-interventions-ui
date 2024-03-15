@@ -9,26 +9,67 @@ describe('CurrentLocationForm', () => {
     .build({ serviceUser: { firstName: 'Alex' } })
 
   describe('errors', () => {
-    it('returns no error with all fields populated for custody', async () => {
+    it('returns no error when user selects yes after they are ok with already set location', async () => {
       const form = await CurrentLocationForm.createForm(
         {
           body: {
             'prison-select': 'aaa',
+            'already-know-prison-name': 'yes',
           },
         } as Request,
-        referral
+        referral,
+        'london'
       )
 
       expect(form.error).toBeNull()
     })
-    it('returns an error when the prison is empty after selecting custody', async () => {
+    it('returns no error when user selects no and inputs the location', async () => {
+      const form = await CurrentLocationForm.createForm(
+        {
+          body: {
+            'prison-select': 'aaa',
+            'already-know-prison-name': 'no',
+          },
+        } as Request,
+        referral,
+        null
+      )
+
+      expect(form.error).toBeNull()
+    })
+
+    it('returns an error when the prison is empty after selecting yes', async () => {
       const form = await CurrentLocationForm.createForm(
         {
           body: {
             'prison-select': '',
+            'already-know-prison-name': '',
           },
         } as Request,
-        referral
+        referral,
+        null
+      )
+
+      expect(form.error).toEqual({
+        errors: [
+          {
+            formFields: ['already-know-prison-name'],
+            errorSummaryLinkedField: 'already-know-prison-name',
+            message: 'Select yes or no',
+          },
+        ],
+      })
+    })
+    it('returns an error when the prison is empty after selecting no', async () => {
+      const form = await CurrentLocationForm.createForm(
+        {
+          body: {
+            'prison-select': '',
+            'already-know-prison-name': 'no',
+          },
+        } as Request,
+        referral,
+        null
       )
 
       expect(form.error).toEqual({
@@ -36,7 +77,7 @@ describe('CurrentLocationForm', () => {
           {
             formFields: ['prison-select'],
             errorSummaryLinkedField: 'prison-select',
-            message: 'You must enter the establishment Alex is currently in',
+            message: 'Select a prison establishment from the list',
           },
         ],
       })
@@ -44,18 +85,39 @@ describe('CurrentLocationForm', () => {
   })
 
   describe('paramsForUpdate', () => {
-    it('returns an object to be used for updating the draft referral via the interventions service custody and prison are chosen', async () => {
+    it('returns an object when the user knows the prison already set is good', async () => {
+      const form = await CurrentLocationForm.createForm(
+        {
+          body: {
+            'prison-select': '',
+            'already-know-prison-name': 'yes',
+          },
+        } as Request,
+        referral,
+        'MDI'
+      )
+
+      expect(form.paramsForUpdate).toEqual({
+        personCustodyPrisonId: 'MDI',
+        alreadyKnowPrisonName: true,
+      })
+    })
+
+    it('returns an object when the user knows the prison set is not right and the user inputs the data', async () => {
       const form = await CurrentLocationForm.createForm(
         {
           body: {
             'prison-select': 'aaa',
+            'already-know-prison-name': 'no',
           },
         } as Request,
-        referral
+        referral,
+        'MDI'
       )
 
       expect(form.paramsForUpdate).toEqual({
         personCustodyPrisonId: 'aaa',
+        alreadyKnowPrisonName: false,
       })
     })
   })

@@ -1,11 +1,33 @@
 import ViewUtils from '../../../utils/viewUtils'
-import { SelectArgs, SelectArgsItem } from '../../../utils/govukFrontendTypes'
+import { RadiosArgs, SelectArgs, SelectArgsItem } from '../../../utils/govukFrontendTypes'
 import CurrentLocationPresenter from './currentLocationPresenter'
 
 export default class CurrentLocationView {
   constructor(private readonly presenter: CurrentLocationPresenter) {}
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
+
+  private currentLocationRadioArgs(noHtml: string): RadiosArgs {
+    return {
+      idPrefix: 'already-know-prison-name',
+      name: 'already-know-prison-name',
+      items: [
+        {
+          value: 'yes',
+          text: 'Yes',
+          checked: this.presenter.fields.alreadyKnowPrisonName === true,
+        },
+        {
+          value: 'no',
+          text: 'No',
+          checked: this.presenter.fields.alreadyKnowPrisonName === false,
+          conditional: {
+            html: noHtml,
+          },
+        },
+      ],
+    }
+  }
 
   private get prisonSelectArgs(): SelectArgs {
     const prisonItems = this.presenter.prisonAndSecureChildAgency.map(prisonAndSecureChildAgency => {
@@ -47,6 +69,7 @@ export default class CurrentLocationView {
       {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,
+        currentLocationRadioArgs: this.currentLocationRadioArgs.bind(this),
         warningText: this.presenter.text.warningText,
         prisonSelectArgs: this.prisonSelectArgs,
         backLinkArgs: { href: this.presenter.backLinkUrl },
