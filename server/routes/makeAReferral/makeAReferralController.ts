@@ -672,8 +672,10 @@ export default class MakeAReferralController {
       res.locals.user.token.accessToken,
       referral.serviceUser.crn
     )
+    logger.debug('The prisoner details data for crn is =', prisonerDetails.prisonId)
     const matchedPerson = prisonAndSecureChildAgency.find(prison => prison.id === prisonerDetails.prisonId)
     const prisonName = matchedPerson ? matchedPerson.description : ''
+    logger.debug('The matching prison name for crn is =', prisonName)
 
     const presenter = new CurrentLocationPresenter(referral, prisonAndSecureChildAgency, prisonName, null, req.body)
     const view = new CurrentLocationView(presenter)
