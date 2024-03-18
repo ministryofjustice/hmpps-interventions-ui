@@ -38,7 +38,7 @@ describe('ReasonForReferralPresenter', () => {
 
     describe('when an error is passed in', () => {
       it('returns an error message', () => {
-        const presenter = new ReasonForReferralPresenter(referral, {
+        const presenter = new ReasonForReferralPresenter(referral, false, false, {
           errors: [
             {
               formFields: ['reason-for-referral'],
@@ -64,7 +64,7 @@ describe('ReasonForReferralPresenter', () => {
 
     describe('when an error is passed in', () => {
       it('returns error information', () => {
-        const presenter = new ReasonForReferralPresenter(referral, {
+        const presenter = new ReasonForReferralPresenter(referral, false, false, {
           errors: [
             {
               formFields: ['reason-for-referral'],
@@ -110,11 +110,27 @@ describe('ReasonForReferralPresenter', () => {
 
       describe('when there is a user input data then the already set ndelius pp name is changed', () => {
         it('uses that value as the field value', () => {
-          const presenter = new ReasonForReferralPresenter(referral, null, {
+          const presenter = new ReasonForReferralPresenter(referral, false, false, null, {
             'reason-for-referral': 'To allocating the referral through CRS',
           })
 
           expect(presenter.fields.reasonForReferral).toEqual('To allocating the referral through CRS')
+        })
+      })
+      describe('when the reason for referral is called from check all referral information page', () => {
+        it('uses that value as the field value', () => {
+          const presenter = new ReasonForReferralPresenter(referral, true, false, null, {
+            'reason-for-referral': 'To allocating the referral through CRS',
+          })
+          expect(presenter.backLinkUrl).toEqual(`/referrals/${referral.id}/check-all-referral-information`)
+        })
+      })
+      describe('when the reason for referral is called from referral details page', () => {
+        it('uses that value as the field value', () => {
+          const presenter = new ReasonForReferralPresenter(referral, false, true, null, {
+            'reason-for-referral': 'To allocating the referral through CRS',
+          })
+          expect(presenter.backLinkUrl).toEqual(`/probation-practitioner/referrals/${referral.id}/details`)
         })
       })
     })

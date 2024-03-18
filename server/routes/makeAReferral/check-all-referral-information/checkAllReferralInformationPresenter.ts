@@ -443,7 +443,7 @@ export default class CheckAllReferralInformationPresenter {
         {
           key: 'Further information for the service provider',
           lines: [determineFurtherInformation(this.referral)],
-          changeLink: `/referrals/${this.referral.id}/reason-for-referral`,
+          changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
         },
       ],
     }

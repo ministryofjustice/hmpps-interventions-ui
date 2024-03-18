@@ -7,10 +7,12 @@ export default class ReasonForReferralPresenter {
 
   constructor(
     readonly referral: DraftReferral,
+    private readonly amendPPDetails: boolean = false,
+    private readonly amendReferralDetails: boolean = false,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
-    this.backLinkUrl = `/referrals/${referral.id}/form`
+    this.backLinkUrl = this.determinBackUpLink
   }
 
   readonly text = {
@@ -28,5 +30,15 @@ export default class ReasonForReferralPresenter {
 
   readonly fields = {
     reasonForReferral: this.utils.stringValue(this.referral.reasonForReferral, 'reason-for-referral'),
+  }
+
+  private get determinBackUpLink(): string {
+    if (this.amendPPDetails) {
+      return `/referrals/${this.referral.id}/check-all-referral-information`
+    }
+    if (this.amendReferralDetails) {
+      return `/probation-practitioner/referrals/${this.referral.id}/details`
+    }
+    return `/referrals/${this.referral.id}/form`
   }
 }
