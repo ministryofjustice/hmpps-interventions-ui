@@ -109,7 +109,7 @@ export default async function setUpMocks(): Promise<void> {
     interventionsMocks.stubGetIntervention(draftReferral.interventionId, intervention),
     interventionsMocks.stubGetDraftReferral(draftReferral.id, draftReferral),
     ['CRN24', 'X320741', 'X123456'].forEach(crn =>
-      interventionsMocks.stubGetPrisonerDetails(crn, prisonerFactory.build())
+      interventionsMocks.stubGetPrisonerDetails(crn, prisonFactory.build())
     ),
 
     [accommodationServiceCategory, socialInclusionServiceCategory].forEach(async serviceCategory => {

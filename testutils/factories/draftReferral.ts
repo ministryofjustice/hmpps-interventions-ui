@@ -249,7 +249,6 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   contractTypeName: interventionFactory.build().contractType.name,
   personCurrentLocationType: null,
   personCustodyPrisonId: null,
-  alreadyKnowPrisonName: null,
   ndeliusPPName: null,
   ndeliusPPEmailAddress: null,
   ndeliusPDU: null,

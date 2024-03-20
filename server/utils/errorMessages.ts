@@ -128,10 +128,6 @@ export default {
   interpreterLanguage: {
     empty: (name: string) => `Enter the language for which ${name} needs an interpreter`,
   },
-  currentLocation: {
-    emptyRadio: 'Select yes or no',
-    empty: `Select a prison establishment from the list`,
-  },
   custodyLocation: {
     emptyRadio: 'Select custody or community',
     empty: (name: string) => `You must enter the establishment ${name} is currently in`,
