@@ -52,7 +52,6 @@ const exampleReferralFields = () => {
     maximumEnforceableDays: 10,
     personCurrentLocationType: CurrentLocationType.custody,
     personCustodyPrisonId: 'aaa',
-    alreadyKnowPrisonName: null,
     expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
     expectedReleaseDateMissingReason: null,
     hasExpectedReleaseDate: null,

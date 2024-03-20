@@ -9,41 +9,33 @@ export default class CurrentLocationForm {
   private constructor(
     private readonly request: Request,
     private readonly result: Result<ValidationError>,
-    private readonly referral: DraftReferral,
-    private readonly prisonId: string | null
+    private readonly referral: DraftReferral
   ) {}
 
-  static async createForm(
-    request: Request,
-    referral: DraftReferral,
-    prisonId: string | null
-  ): Promise<CurrentLocationForm> {
+  static async createForm(request: Request, referral: DraftReferral): Promise<CurrentLocationForm> {
     return new CurrentLocationForm(
       request,
-      await FormUtils.runValidations({ request, validations: this.validations() }),
-      referral,
-      prisonId
+      await FormUtils.runValidations({ request, validations: this.validations(referral) }),
+      referral
     )
   }
 
-  static validations(): ValidationChain[] {
+  static validations(referral: DraftReferral): ValidationChain[] {
+    const firstName = referral.serviceUser?.firstName ?? ''
     return [
-      body('already-know-prison-name').isIn(['yes', 'no']).withMessage(errorMessages.prisonRelease.emptyRadio),
       body('prison-select')
-        .if(body('already-know-prison-name').equals('no'))
         .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.currentLocation.empty),
+        .withMessage(errorMessages.custodyLocation.empty(firstName)),
     ]
   }
 
   get isValid(): boolean {
-    return this.error === null
+    return this.error == null
   }
 
   get paramsForUpdate(): Partial<DraftReferral> {
     return {
-      alreadyKnowPrisonName: this.alreadyKnowPrisonName,
-      personCustodyPrisonId: this.alreadyKnowPrisonName ? this.prisonId : this.request.body['prison-select'],
+      personCustodyPrisonId: this.request.body['prison-select'],
     }
   }
 
@@ -59,9 +51,5 @@ export default class CurrentLocationForm {
         message: validationError.msg,
       })),
     }
-  }
-
-  private get alreadyKnowPrisonName(): boolean {
-    return this.request.body['already-know-prison-name'] === 'yes'
   }
 }
