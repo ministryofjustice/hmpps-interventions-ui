@@ -26,15 +26,26 @@
 
       <p class="govuk-caption-xl">{{ presenter.text.label }} </p>
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+      {% if presenter.isPrisonDetailsPresent %}
+        <h2 class="govuk-heading-l">{{ presenter.text.subTitle }}</h2>
+      {% endif %}
 
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
-        {{ govukSelect(prisonSelectArgs) }}
+        {% if presenter.isPrisonDetailsPresent %}
+          {% set notTheRightPrisonHtml %}
+            {{ govukSelect(prisonSelectArgs) }}
+          {% endset -%}
+        {{ govukRadios(currentLocationRadioArgs(notTheRightPrisonHtml)) }}
+        {% else %}
+          {{ govukSelect(prisonSelectArgs) }}  
+        {% endif %}
 
         {{ govukWarningText({
           text: warningText,
           iconFallbackText: "Warning"
-        }) }}
+          })
+        }}
 
         {{ govukButton({ classes: "confirm-location", text: "Save and continue", preventDoubleClick: true }) }}
       </form>

@@ -468,7 +468,7 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
 
     return (await restClient.get({
-      path: `/prisoner/details/${crn}`,
+      path: `/intervention/prisoner/details/${crn}`,
       headers: { Accept: 'application/json' },
     })) as Prisoner
   }
