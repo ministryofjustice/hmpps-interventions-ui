@@ -14,6 +14,7 @@ import caseConvictionsFactory from '../../testutils/factories/caseConvictions'
 import caseConvictionFactory from '../../testutils/factories/caseConviction'
 import prisonFactory from '../../testutils/factories/prison'
 import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
+import prisoner from '../../testutils/factories/prisoner'
 
 describe('Referral form', () => {
   const deliusServiceUser = deliusServiceUserFactory.build()
@@ -232,6 +233,7 @@ describe('Referral form', () => {
       cy.stubGetResponsibleOfficer(draftReferral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetPrisons(prisonFactory.build())
       cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
+      cy.stubGetPrisonerDetails(draftReferral.serviceUser.crn, prisoner.build())
 
       cy.login()
 
@@ -443,6 +445,8 @@ describe('Referral form', () => {
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
       cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
       cy.get('h1').contains('Confirm Alex River’s current location')
+      cy.get('h2').contains('Is Alex River in Moorland (HMP & YOI)')
+      cy.contains('No').click()
 
       cy.contains('Which establishment is Alex in?')
       cy.contains('Start typing prison name, then choose from the list.')

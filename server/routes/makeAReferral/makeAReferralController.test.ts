@@ -31,6 +31,7 @@ import RamDeliusApiService from '../../services/ramDeliusApiService'
 import { CurrentLocationType } from '../../models/draftReferral'
 import secureChildAgency from '../../../testutils/factories/secureChildAgency'
 import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
+import prisoner from '../../../testutils/factories/prisoner'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/ramDeliusApiService')
@@ -1049,6 +1050,7 @@ describe('GET /referrals/:id/submit-current-location', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
     prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
     prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
   })
 
   it('renders a form page', async () => {
@@ -1082,6 +1084,7 @@ describe('POST /referrals/:id/submit-current-location', () => {
     const prisonList = prisonFactory.build()
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
     prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
   })
 
   it('updates the referral on the backend and redirects to the expected release date page', async () => {
@@ -1096,8 +1099,8 @@ describe('POST /referrals/:id/submit-current-location', () => {
       .post('/referrals/1/submit-current-location')
       .type('form')
       .send({
-        'current-location': 'CUSTODY',
         'prison-select': 'abc',
+        'already-know-prison-name': 'no',
       })
       .expect(302)
       .expect('Location', '/referrals/1/expected-release-date')
@@ -1107,6 +1110,7 @@ describe('POST /referrals/:id/submit-current-location', () => {
       '1',
       {
         personCustodyPrisonId: 'abc',
+        alreadyKnowPrisonName: false,
       },
     ])
   })
@@ -1117,12 +1121,12 @@ describe('POST /referrals/:id/submit-current-location', () => {
         .post('/referrals/1/submit-current-location')
         .type('form')
         .send({
-          'current-location': 'CUSTODY',
           'prison-select': '',
+          'already-know-prison-name': 'no',
         })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain(`You must enter the establishment `)
+          expect(res.text).toContain(`Select a prison establishment from the list`)
         })
 
       expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
@@ -1137,8 +1141,8 @@ describe('POST /referrals/:id/submit-current-location', () => {
       .post('/referrals/1/submit-current-location')
       .type('form')
       .send({
-        'current-location': 'CUSTODY',
         'prison-select': 'abc',
+        'already-know-prison-name': 'no',
       })
       .expect(500)
       .expect(res => {
