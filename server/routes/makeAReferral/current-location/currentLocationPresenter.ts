@@ -42,4 +42,8 @@ export default class CurrentLocationPresenter {
     prisonId: this.utils.stringValue(this.referral.personCustodyPrisonId, 'prison-id'),
     alreadyKnowPrisonName: this.referral.alreadyKnowPrisonName,
   }
+
+  get isPrisonDetailsPresent(): boolean {
+    return this.prisonName !== ''
+  }
 }

@@ -4,6 +4,7 @@ import DraftReferral from '../../../models/draftReferral'
 import errorMessages from '../../../utils/errorMessages'
 import FormUtils from '../../../utils/formUtils'
 import { FormValidationError } from '../../../utils/formValidationError'
+import Prisoner from '../../../models/prisonerOffenderSearch/prisoner'
 
 export default class CurrentLocationForm {
   private constructor(
@@ -16,23 +17,35 @@ export default class CurrentLocationForm {
   static async createForm(
     request: Request,
     referral: DraftReferral,
-    prisonId: string | null
+    prisonerDetails: Prisoner | null
   ): Promise<CurrentLocationForm> {
     return new CurrentLocationForm(
       request,
-      await FormUtils.runValidations({ request, validations: this.validations() }),
+      await FormUtils.runValidations({
+        request,
+        validations:
+          prisonerDetails !== null
+            ? this.validationsWhenPrisonNameIsPresent()
+            : this.validationsWhenPrisonNameIsNotPresent(),
+      }),
       referral,
-      prisonId
+      prisonerDetails !== null ? prisonerDetails.prisonId : null
     )
   }
 
-  static validations(): ValidationChain[] {
+  static validationsWhenPrisonNameIsPresent(): ValidationChain[] {
     return [
       body('already-know-prison-name').isIn(['yes', 'no']).withMessage(errorMessages.prisonRelease.emptyRadio),
       body('prison-select')
         .if(body('already-know-prison-name').equals('no'))
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.currentLocation.empty),
+    ]
+  }
+
+  static validationsWhenPrisonNameIsNotPresent(): ValidationChain[] {
+    return [
+      body('prison-select').notEmpty({ ignore_whitespace: true }).withMessage(errorMessages.currentLocation.empty),
     ]
   }
 

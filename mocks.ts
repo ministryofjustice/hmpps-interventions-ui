@@ -111,7 +111,6 @@ export default async function setUpMocks(): Promise<void> {
     ['CRN24', 'X320741', 'X123456'].forEach(crn =>
       interventionsMocks.stubGetPrisonerDetails(crn, prisonerFactory.build())
     ),
-
     [accommodationServiceCategory, socialInclusionServiceCategory].forEach(async serviceCategory => {
       await interventionsMocks.stubGetServiceCategory(serviceCategory.id, serviceCategory)
       await interventionsMocks.stubSetDesiredOutcomesForServiceCategory(draftReferral.id, {
@@ -126,7 +125,7 @@ export default async function setUpMocks(): Promise<void> {
     prisonerOffenderSearchMocks.stubGetPrisonerById(prisonerFactory.build()),
     referAndMonitorAndDeliusMocks.stubSentReferral(),
     referAndMonitorAndDeliusMocks.stubGetCrnUserAccess(deliusUserAccess.build()),
-    ['CRN24', 'X320741', 'CRN23'].forEach(crn =>
+    ['CRN24', 'X320741', 'CRN23', 'X123456'].forEach(crn =>
       referAndMonitorAndDeliusMocks.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
     ),
     referAndMonitorAndDeliusMocks.stubGetUserByUsername('bernard.beaks', deliusUser.build()),

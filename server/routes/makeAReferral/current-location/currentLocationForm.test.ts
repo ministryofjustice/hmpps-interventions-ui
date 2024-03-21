@@ -1,12 +1,15 @@
 import { Request } from 'express'
 import draftReferralFactory from '../../../../testutils/factories/draftReferral'
 import CurrentLocationForm from './currentLocationForm'
+import prisoner from '../../../../testutils/factories/prisoner'
 
 describe('CurrentLocationForm', () => {
   const referral = draftReferralFactory
     .serviceCategorySelected()
     .serviceUserSelected()
     .build({ serviceUser: { firstName: 'Alex' } })
+
+  const prisonerDetails = prisoner.build()
 
   describe('errors', () => {
     it('returns no error when user selects yes after they are ok with already set location', async () => {
@@ -18,7 +21,7 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        'london'
+        prisonerDetails
       )
 
       expect(form.error).toBeNull()
@@ -47,7 +50,7 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        null
+        prisonerDetails
       )
 
       expect(form.error).toEqual({
@@ -82,6 +85,28 @@ describe('CurrentLocationForm', () => {
         ],
       })
     })
+    it('returns an error when the prison is empty after no prisoner details is returned', async () => {
+      const form = await CurrentLocationForm.createForm(
+        {
+          body: {
+            'prison-select': '',
+            'already-know-prison-name': 'no',
+          },
+        } as Request,
+        referral,
+        null
+      )
+
+      expect(form.error).toEqual({
+        errors: [
+          {
+            formFields: ['prison-select'],
+            errorSummaryLinkedField: 'prison-select',
+            message: 'Select a prison establishment from the list',
+          },
+        ],
+      })
+    })
   })
 
   describe('paramsForUpdate', () => {
@@ -94,7 +119,7 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        'MDI'
+        prisonerDetails
       )
 
       expect(form.paramsForUpdate).toEqual({
@@ -112,7 +137,7 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        'MDI'
+        prisonerDetails
       )
 
       expect(form.paramsForUpdate).toEqual({
