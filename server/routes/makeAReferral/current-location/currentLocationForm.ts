@@ -24,7 +24,7 @@ export default class CurrentLocationForm {
       await FormUtils.runValidations({
         request,
         validations:
-          prisonerDetails !== null
+          prisonerDetails !== null && prisonerDetails.prisonId
             ? this.validationsWhenPrisonNameIsPresent()
             : this.validationsWhenPrisonNameIsNotPresent(),
       }),
