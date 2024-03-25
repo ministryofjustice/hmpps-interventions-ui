@@ -457,7 +457,9 @@ describe('Referral form', () => {
       // Submit expected release date
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-release-date`)
       cy.get('h1').contains(`Confirm Alex River's expected release date`)
-      cy.contains('Yes').click()
+      cy.contains('Choose a different date').click()
+      cy.contains('Save and continue').click()
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/change-expected-release-date`)
       const tomorrow = moment().add(1, 'days')
       cy.contains('Day').type(tomorrow.format('DD'))
       cy.contains('Month').type(tomorrow.format('MM'))
