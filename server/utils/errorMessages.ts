@@ -168,6 +168,9 @@ export default {
     empty: `Select yes if there is a need for an interpreter`,
     noChanges: 'You have no changes to whether an interpreter is needed.',
   },
+  expectedReleaseDate: {
+    empty: 'Select the expected release date or choose a different date',
+  },
   releaseDateUnknownReason: {
     empty: `You must enter why the expected release date is not known`,
   },

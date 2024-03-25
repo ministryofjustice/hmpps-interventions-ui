@@ -178,8 +178,23 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   get(router, '/referrals/:id/expected-release-date', (req, res) =>
     makeAReferralController.viewExpectedReleaseDate(req, res)
   )
-  post(router, '/referrals/:id/expected-release-date', (req, res) =>
-    makeAReferralController.updateExpectedReleaseDate(req, res)
+  post(router, '/referrals/:id/expected-release-date/submit', (req, res) =>
+    makeAReferralController.submitExpectedReleaseDate(req, res)
+  )
+  post(router, '/referrals/:id/select-expected-release-date/submit', (req, res) =>
+    makeAReferralController.submitSelectExpectedReleaseDate(req, res)
+  )
+  get(router, '/referrals/:id/change-expected-release-date', (req, res) =>
+    makeAReferralController.viewChangeExpectedReleaseDate(req, res)
+  )
+  post(router, '/referrals/:id/change-expected-release-date', (req, res) =>
+    makeAReferralController.submitChangeExpectedReleaseDate(req, res)
+  )
+  get(router, '/referrals/:id/expected-release-date-unknown', (req, res) =>
+    makeAReferralController.viewExpectedReleaseDateUnknown(req, res)
+  )
+  post(router, '/referrals/:id/expected-release-date-unknown', (req, res) =>
+    makeAReferralController.submitExpectedReleaseDateUnknown(req, res)
   )
   get(router, '/referrals/:id/confirm-probation-practitioner-details', (req, res) =>
     makeAReferralController.viewConfirmProbationPractitionerDetails(req, res)
