@@ -25,8 +25,8 @@ export default class CurrentLocationPresenter {
     subTitle: `Is ${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} in ${this.prisonName}?`,
     label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,
     submitLocationInput: {
-      label: `Which establishment is ${this.referral.serviceUser?.firstName} in?`,
-      hint: `Start typing prison name, then choose from the list.`,
+      label: `Which prison establishment is ${this.referral.serviceUser?.firstName} in?`,
+      hint: `Start typing then choose prison name from the list.`,
       errorMessage: this.errorMessageForField('prison-select'),
     },
     warningText: `If ${this.referral.serviceUser?.firstName}'s location changes, you will need to make direct contact with the service provider.`,
