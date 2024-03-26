@@ -1,5 +1,5 @@
 import SelectExpectedReleaseDateForm from './selectExpectedReleaseDateForm'
-import TestUtils from '../../../../testutils/testUtils'
+import TestUtils from '../../../../../testutils/testUtils'
 
 describe(SelectExpectedReleaseDateForm, () => {
   describe('data', () => {

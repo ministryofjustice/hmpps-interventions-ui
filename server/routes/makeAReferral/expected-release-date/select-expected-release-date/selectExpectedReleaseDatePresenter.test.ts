@@ -1,5 +1,5 @@
 import SelectExpectedReleaseDatePresenter from './selectExpectedReleaseDatePresenter'
-import draftReferralFactory from '../../../../testutils/factories/draftReferral'
+import draftReferralFactory from '../../../../../testutils/factories/draftReferral'
 
 describe('SelectExpectedReleaseDatePresenter', () => {
   const releaseDate = '01-01-2025'

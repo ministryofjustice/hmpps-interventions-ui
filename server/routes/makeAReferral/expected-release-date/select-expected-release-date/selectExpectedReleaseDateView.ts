@@ -1,6 +1,6 @@
 import SelectExpectedReleaseDatePresenter from './selectExpectedReleaseDatePresenter'
-import ViewUtils from '../../../utils/viewUtils'
-import { RadiosArgs } from '../../../utils/govukFrontendTypes'
+import ViewUtils from '../../../../utils/viewUtils'
+import { RadiosArgs } from '../../../../utils/govukFrontendTypes'
 
 export default class SelectExpectedReleaseDateView {
   constructor(private readonly presenter: SelectExpectedReleaseDatePresenter) {}

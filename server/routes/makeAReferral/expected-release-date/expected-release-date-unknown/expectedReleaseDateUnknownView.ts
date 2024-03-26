@@ -1,5 +1,5 @@
-import ViewUtils from '../../../utils/viewUtils'
-import { TextareaArgs } from '../../../utils/govukFrontendTypes'
+import ViewUtils from '../../../../utils/viewUtils'
+import { TextareaArgs } from '../../../../utils/govukFrontendTypes'
 import ExpectedReleaseDateUnknownPresenter from './expectedReleaseDateUnknownPresenter'
 
 export default class ExpectedReleaseDateUnknownView {
