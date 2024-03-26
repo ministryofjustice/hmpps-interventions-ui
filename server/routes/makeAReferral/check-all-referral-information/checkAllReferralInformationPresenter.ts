@@ -182,28 +182,39 @@ export default class CheckAllReferralInformationPresenter {
     }
   }
 
-  get expectedReleaseDateSection(): { title: string; summary: SummaryListItem[] } | null {
+  get currentLocationAndReleaseDetailsSection(): { title: string; summary: SummaryListItem[] } | null {
     if (this.referral.personCurrentLocationType !== CurrentLocationType.custody) {
       return null
     }
     const expectedReleaseInfo: string =
       this.referral.expectedReleaseDate !== null
-        ? moment(this.referral.expectedReleaseDate!).format('D MMM YYYY')
-        : this.referral.expectedReleaseDateMissingReason!
+        ? moment(this.referral.expectedReleaseDate!).format('D MMM YYYY [(]ddd[)]')
+        : 'Not known'
+
+    const currentLocationAndReleaseDetails: SummaryListItem[] = [
+      {
+        key: 'Location at time of referral',
+        lines: [this.prisonName(this.referral.personCustodyPrisonId)],
+        changeLink: `/referrals/${this.referral.id}/submit-current-location?amendPPDetails=true`,
+      },
+      {
+        key: 'Expected release date',
+        lines: [expectedReleaseInfo],
+        changeLink: `/referrals/${this.referral.id}/expected-release-date?amendPPDetails=true`,
+      },
+    ]
+
+    if (this.referral.expectedReleaseDateMissingReason) {
+      currentLocationAndReleaseDetails.push({
+        key: 'Expected release date unknown reason',
+        lines: [this.referral.expectedReleaseDateMissingReason],
+        changeLink: `/referrals/${this.referral.id}/expected-release-date-unknown?amendPPDetails=true`,
+      })
+    }
+
     return {
-      title: `${this.serviceUserNameForServiceCategory}’s location and expected release date`,
-      summary: [
-        {
-          key: 'Location at time of referral',
-          lines: [this.prisonName(this.referral.personCustodyPrisonId)],
-          changeLink: `/referrals/${this.referral.id}/submit-current-location?amendPPDetails=true`,
-        },
-        {
-          key: 'Expected release date',
-          lines: [expectedReleaseInfo],
-          changeLink: `/referrals/${this.referral.id}/expected-release-date?amendPPDetails=true`,
-        },
-      ],
+      title: `${this.serviceUserNameForServiceCategory}’s current location and expected release date`,
+      summary: currentLocationAndReleaseDetails,
     }
   }
 

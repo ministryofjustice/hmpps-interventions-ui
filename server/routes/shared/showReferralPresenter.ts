@@ -584,6 +584,12 @@ export default class ShowReferralPresenter {
       ],
     })
     items.push(this.determineReleaseDate)
+    if (this.sentReferral.referral.expectedReleaseDateMissingReason) {
+      items.push({
+        key: 'Expected release date unknown reason',
+        lines: [this.sentReferral.referral.expectedReleaseDateMissingReason],
+      })
+    }
     return items
   }
 
@@ -612,9 +618,9 @@ export default class ShowReferralPresenter {
       this.sentReferral.referral.expectedReleaseDate !== null &&
       this.sentReferral.referral.expectedReleaseDate !== ''
     ) {
-      return moment(this.sentReferral.referral.expectedReleaseDate).format('D MMM YYYY')
+      return moment(this.sentReferral.referral.expectedReleaseDate).format('D MMM YYYY [(]ddd[)]')
     }
-    return this.sentReferral.referral.expectedReleaseDateMissingReason!
+    return 'Not known'
   }
 
   private get locationAtTimeOfReferral(): string {

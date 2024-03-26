@@ -31,7 +31,7 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
       type: 'single',
       title: `Confirm ${utils.convertToTitleCase(
         `${userFirstName} ${userLastName}`
-      )}'s location and expected release date`,
+      )}'s current location and expected release date`,
       number: '2',
       tasks: [
         { title: 'Establishment', url: establishmentUrl, status: establishmentReferralFormStatus },
