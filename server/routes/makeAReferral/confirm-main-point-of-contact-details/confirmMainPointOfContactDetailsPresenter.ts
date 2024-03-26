@@ -70,7 +70,10 @@ export default class ConfirmMainPointOfContactDetailsPresenter {
   readonly fields = {
     probationPractitionerName: this.utils.stringValue(this.referral.ppName, 'probation-practitioner-name'),
     probationPractitionerEmail: this.utils.stringValue(this.referral.ppEmailAddress, 'probation-practitioner-email'),
-    probationPractitionerPhoneNumber: this.utils.stringValue('', 'probation-practitioner-phone-number'),
+    probationPractitionerPhoneNumber: this.utils.stringValue(
+      this.referral.ppPhoneNumber,
+      'probation-practitioner-phone-number'
+    ),
     probationPractitionerRoleOrJobTitle: this.utils.stringValue(
       this.referral.roleOrJobTitle,
       'probation-practitioner-roleOrJobTitle'

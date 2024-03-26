@@ -263,6 +263,10 @@ export default class ShowReferralPresenter {
         lines: [this.sentReferral.referral.roleOrJobTitle || 'Not found'],
       },
       { key: 'Email address', lines: [this.deriveEmailAddress] },
+      {
+        key: 'Phone number',
+        lines: [this.sentReferral.referral.ppPhoneNumber || 'Not found'],
+      },
       this.establishmentOrProbationOffice
     )
     return probationPractitionerDetails
