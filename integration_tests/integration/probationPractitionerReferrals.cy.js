@@ -705,7 +705,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Probation Office')
       .should('contain', 'London')
 
-    cy.contains(`Jenny Jones's location and expected release date`).should('not.exist')
+    cy.contains(`Jenny Jones's current location and expected release date`).should('not.exist')
 
     cy.contains(`Jenny Jones's current location and release details`)
       .parent()

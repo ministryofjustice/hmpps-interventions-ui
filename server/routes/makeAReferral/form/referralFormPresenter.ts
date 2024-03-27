@@ -174,7 +174,7 @@ class FormSectionBuilder {
       type: 'single',
       title: `Confirm ${utils.convertToTitleCase(
         `${this.referral.serviceUser.firstName} ${this.referral.serviceUser.lastName}`
-      )}'s location and expected release date`,
+      )}'s current location and expected release date`,
       number: '2',
       tasks: [
         {

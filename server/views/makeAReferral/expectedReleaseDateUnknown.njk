@@ -2,9 +2,7 @@
 {% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/textarea/macro.njk" import govukTextarea %}
-{% from "govuk/components/date-input/macro.njk" import govukDateInput %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
@@ -27,24 +25,17 @@
 
       <p class="govuk-caption-xl">{{ presenter.text.label }} </p>
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
-      <h2 class="govuk-heading-s">{{ presenter.text.caption }}</h2>
-      <p class="govuk-body">{{ presenter.text.description }} </p>
 
-      <form method="post" action={{ presenter.submitHref }}>
+      <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
-        {% set expectedReleaseDateHtml %}
-        {{ govukDateInput(dateInputArgs) }}
-        {% endset -%}
-        {% set releaseDateUnknownReasonHtml %}
         {{ govukTextarea(releaseDateUnknownReasonArgs) }}
         {{ govukWarningText({
           html: presenter.expectedReleaseWarningMessage,
           iconFallbackText: "Warning"
           })
         }}
-        {% endset -%}
-        {{ govukRadios(expectedReleaseDateRadioArgs(expectedReleaseDateHtml,releaseDateUnknownReasonHtml)) }}
+        <br>
         <br>
         {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
       </form>

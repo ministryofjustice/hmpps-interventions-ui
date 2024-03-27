@@ -25,10 +25,10 @@ export default class CheckAllReferralInformationView {
       )
     : null
 
-  private readonly expectedReleaseDateDetailsSummaryListArgs = this.presenter.expectedReleaseDateSection
+  private readonly expectedReleaseDateDetailsSummaryListArgs = this.presenter.currentLocationAndReleaseDetailsSection
     ? ViewUtils.summaryListArgsWithSummaryCard(
-        this.presenter.expectedReleaseDateSection.summary,
-        this.presenter.expectedReleaseDateSection.title
+        this.presenter.currentLocationAndReleaseDetailsSection.summary,
+        this.presenter.currentLocationAndReleaseDetailsSection.title
       )
     : null
 

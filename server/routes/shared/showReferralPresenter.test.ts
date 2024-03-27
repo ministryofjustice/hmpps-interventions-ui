@@ -576,7 +576,49 @@ describe(ShowReferralPresenter, () => {
         { key: 'Probation Office', lines: ['London'] },
         {
           key: 'Expected release date',
-          lines: [moment.tz('Europe/London').add(2, 'days').format('D MMM YYYY')],
+          lines: [moment.tz('Europe/London').add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
+        },
+      ])
+    })
+    it('returns a summary list when the release date is not known', () => {
+      const referralParamsWithCustodyDetails = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.custody,
+          expectedReleaseDate: null,
+          isReferralReleasingIn12Weeks: null,
+          expectedReleaseDateMissingReason: 'not in ndelius',
+        },
+      }
+      const sentReferral = sentReferralFactory.build(referralParamsWithCustodyDetails)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonsAndSecuredChildAgencies,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer,
+        prisonerDetails
+      )
+      expect(presenter.serviceUserLocationDetails).toEqual([
+        { key: 'Location at time of referral', lines: ['London'] },
+        { key: 'Probation Office', lines: ['London'] },
+        {
+          key: 'Expected release date',
+          lines: ['Not known'],
+        },
+        {
+          key: 'Expected release date unknown reason',
+          lines: ['not in ndelius'],
         },
       ])
     })
@@ -614,7 +656,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'Probation Office', lines: ['London'] },
         {
           key: 'Expected release date',
-          lines: [moment().add(2, 'days').format('D MMM YYYY')],
+          lines: [moment().add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
         },
       ])
     })

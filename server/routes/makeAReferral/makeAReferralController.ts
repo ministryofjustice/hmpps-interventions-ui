@@ -61,9 +61,9 @@ import CurrentLocationPresenter from './current-location/currentLocationPresente
 import CurrentLocationView from './current-location/currentLocationView'
 import CurrentLocationForm from './current-location/currentLocationForm'
 import ReferralTypeForm from './referral-type-form/referralTypeForm'
-import ExpectedReleaseDateForm from './expected-release-date/expectedReleaseDateForm'
-import ExpectedReleaseDatePresenter from './expected-release-date/expectedReleaseDatePresenter'
-import ExpectedReleaseDateView from './expected-release-date/expectedReleaseDateView'
+import SelectExpectedReleaseDateForm from './expected-release-date/select-expected-release-date/selectExpectedReleaseDateForm'
+import SelectExpectedReleaseDatePresenter from './expected-release-date/select-expected-release-date/selectExpectedReleaseDatePresenter'
+import SelectExpectedReleaseDateView from './expected-release-date/select-expected-release-date/selectExpectedReleaseDateView'
 import ConfirmProbationPractitionerDetailsPresenter from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsPresenter'
 import ConfirmProbationPractitionerDetailsView from './confirm-probation-practitioner-details/confirmProbationPractitionerDetailsView'
 import ReferenceDataService from '../../services/referenceDataService'
@@ -106,6 +106,15 @@ import UpdateProbationPractitionerTeamPhoneNumberForm from './update/probation-p
 import ReasonForReferralPresenter from './reason-for-referral/reasonForReferralPresenter'
 import ReasonForReferralView from './reason-for-referral/reasonForReferralView'
 import ReasonForReferralForm from './reason-for-referral/reasonForReferralForm'
+import ChangeExpectedReleaseDatePresenter from './expected-release-date/change-expected-release-date/changeExpectedReleaseDatePresenter'
+import ChangeExpectedReleaseDateView from './expected-release-date/change-expected-release-date/changeExpectedReleaseDateView'
+import ChangeExpectedReleaseDateForm from './expected-release-date/change-expected-release-date/changeExpectedReleaseDateForm'
+import ExpectedReleaseDateUnknownPresenter from './expected-release-date/expected-release-date-unknown/expectedReleaseDateUnknownPresenter'
+import ExpectedReleaseDateUnknownView from './expected-release-date/expected-release-date-unknown/expectedReleaseDateUnknownView'
+import ExpectedReleaseDateUnknownForm from './expected-release-date/expected-release-date-unknown/expectedReleaseDateUnknownForm'
+import ExpectedReleaseDateView from './expected-release-date/expectedReleaseDateView'
+import ExpectedReleaseDatePresenter from './expected-release-date/expectedReleaseDatePresenter'
+import ExpectedReleaseDateForm from './expected-release-date/expectedReleaseDateForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -849,15 +858,24 @@ export default class MakeAReferralController {
   async viewExpectedReleaseDate(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
-    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+    const prisonerDetails = await this.interventionsService.getPrisonerDetails(
+      res.locals.user.token.accessToken,
+      referral.serviceUser.crn
+    )
 
-    const presenter = new ExpectedReleaseDatePresenter(referral)
-    const view = new ExpectedReleaseDateView(presenter)
+    if (prisonerDetails.releaseDate !== null) {
+      await this.viewSelectExpectedReleaseDate(req, res)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+      const presenter = new ExpectedReleaseDatePresenter(referral)
+      const view = new ExpectedReleaseDateView(presenter)
+
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
   }
 
-  async updateExpectedReleaseDate(req: Request, res: Response): Promise<void> {
+  async submitExpectedReleaseDate(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const form = await new ExpectedReleaseDateForm(req).data()
 
@@ -888,6 +906,165 @@ export default class MakeAReferralController {
 
       const presenter = new ExpectedReleaseDatePresenter(referral, error, req.body)
       const view = new ExpectedReleaseDateView(presenter)
+
+      res.status(400)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
+  }
+
+  async viewSelectExpectedReleaseDate(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const prisonerDetails = await this.interventionsService.getPrisonerDetails(
+      res.locals.user.token.accessToken,
+      referral.serviceUser.crn
+    )
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new SelectExpectedReleaseDatePresenter(referral, prisonerDetails.releaseDate)
+    const view = new SelectExpectedReleaseDateView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async submitSelectExpectedReleaseDate(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const prisonerDetails = await this.interventionsService.getPrisonerDetails(
+      res.locals.user.token.accessToken,
+      referral.serviceUser.crn
+    )
+
+    const form = await new SelectExpectedReleaseDateForm(req, prisonerDetails.releaseDate).data()
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    if (error === null && req.body['expected-release-date'] === 'change') {
+      res.redirect(`/referrals/${req.params.id}/change-expected-release-date`)
+    }
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new SelectExpectedReleaseDatePresenter(referral, prisonerDetails.releaseDate, error, req.body)
+      const view = new SelectExpectedReleaseDateView(presenter)
+
+      res.status(400)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
+  }
+
+  async viewChangeExpectedReleaseDate(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new ChangeExpectedReleaseDatePresenter(referral)
+    const view = new ChangeExpectedReleaseDateView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async submitChangeExpectedReleaseDate(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const form = await new ChangeExpectedReleaseDateForm(req).data()
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new ChangeExpectedReleaseDatePresenter(referral, error, req.body)
+      const view = new ChangeExpectedReleaseDateView(presenter)
+
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
+  }
+
+  async viewExpectedReleaseDateUnknown(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new ExpectedReleaseDateUnknownPresenter(referral)
+    const view = new ExpectedReleaseDateUnknownView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async submitExpectedReleaseDateUnknown(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const form = await new ExpectedReleaseDateUnknownForm(req).data()
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new ExpectedReleaseDateUnknownPresenter(referral, error, req.body)
+      const view = new ExpectedReleaseDateUnknownView(presenter)
 
       res.status(400)
       await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')

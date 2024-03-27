@@ -27,24 +27,12 @@
 
       <p class="govuk-caption-xl">{{ presenter.text.label }} </p>
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
-      <h2 class="govuk-heading-s">{{ presenter.text.caption }}</h2>
-      <p class="govuk-body">{{ presenter.text.description }} </p>
 
       <form method="post" action={{ presenter.submitHref }}>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
-
-        {% set expectedReleaseDateHtml %}
-        {{ govukDateInput(dateInputArgs) }}
-        {% endset -%}
-        {% set releaseDateUnknownReasonHtml %}
-        {{ govukTextarea(releaseDateUnknownReasonArgs) }}
-        {{ govukWarningText({
-          html: presenter.expectedReleaseWarningMessage,
-          iconFallbackText: "Warning"
-          })
-        }}
-        {% endset -%}
-        {{ govukRadios(expectedReleaseDateRadioArgs(expectedReleaseDateHtml,releaseDateUnknownReasonHtml)) }}
+        {{ govukRadios(expectedReleaseDateRadioArgs()) }}
+        <a class="govuk-link" href="{{ presenter.releaseDateUnknownUrl }}">I don't know the expected release date</a>
+        <br>
         <br>
         {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
       </form>

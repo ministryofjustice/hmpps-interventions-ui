@@ -14,6 +14,8 @@ export default class ExpectedReleaseDatePresenter {
     this.backLinkUrl = `/referrals/${referral.id}/submit-current-location`
   }
 
+  readonly submitHref = `/referrals/${this.referral.id}/expected-release-date/submit`
+
   private errorMessageForField(field: string): string | null {
     return PresenterUtils.errorMessage(this.error, field)
   }
