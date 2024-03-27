@@ -44,8 +44,8 @@ describe('CurrentLocationPresenter', () => {
         label: `Geoffrey Blue (CRN: ${referral.serviceUser?.crn})`,
         subTitle: `Is Geoffrey Blue in Moorland (HMP & YOI)?`,
         submitLocationInput: {
-          label: 'Which establishment is Geoffrey in?',
-          hint: 'Start typing prison name, then choose from the list.',
+          label: 'Which prison establishment is Geoffrey in?',
+          hint: 'Start typing then choose prison name from the list.',
           errorMessage: null,
         },
         warningText: `If Geoffrey's location changes, you will need to make direct contact with the service provider.`,

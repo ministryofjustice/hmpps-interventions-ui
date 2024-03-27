@@ -264,8 +264,8 @@ describe('Referral form', () => {
       cy.get('h2').contains('Is Alex River in Moorland (HMP & YOI)')
       cy.contains('No').click()
 
-      cy.contains('Which establishment is Alex in?')
-      cy.contains('Start typing prison name, then choose from the list.')
+      cy.contains('Which prison establishment is Alex in?')
+      cy.contains('Start typing then choose prison name from the list.')
       cy.get('#prison-select').type('Aylesbury (HMYOI)')
       cy.stubGetDraftReferral(draftReferral.id, completedEstablishmentDraftReferral)
       cy.contains('Save and continue').click()
@@ -923,8 +923,8 @@ describe('Referral form', () => {
       cy.get('h2').contains('Is Alex River in Moorland (HMP & YOI)')
       cy.contains('No').click()
 
-      cy.contains('Which establishment is Alex in?')
-      cy.contains('Start typing prison name, then choose from the list.')
+      cy.contains('Which prison establishment is Alex in?')
+      cy.contains('Start typing then choose prison name from the list.')
       cy.get('#prison-select').type('Aylesbury (HMYOI)')
       cy.stubGetDraftReferral(draftReferral.id, completedEstablishmentDraftReferral)
       cy.contains('Save and continue').click()
