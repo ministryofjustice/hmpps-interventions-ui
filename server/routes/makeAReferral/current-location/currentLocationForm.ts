@@ -17,16 +17,15 @@ export default class CurrentLocationForm {
   static async createForm(
     request: Request,
     referral: DraftReferral,
-    prisonerDetails: Prisoner | null
+    prisonerDetails: Prisoner | null,
+    prisonName: string
   ): Promise<CurrentLocationForm> {
     return new CurrentLocationForm(
       request,
       await FormUtils.runValidations({
         request,
         validations:
-          prisonerDetails !== null && prisonerDetails.prisonId
-            ? this.validationsWhenPrisonNameIsPresent()
-            : this.validationsWhenPrisonNameIsNotPresent(),
+          prisonName === '' ? this.validationsWhenPrisonNameIsNotPresent() : this.validationsWhenPrisonNameIsPresent(),
       }),
       referral,
       prisonerDetails !== null ? prisonerDetails.prisonId : null
