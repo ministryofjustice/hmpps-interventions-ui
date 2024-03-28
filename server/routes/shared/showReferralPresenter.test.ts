@@ -435,6 +435,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Role / job title', lines: ['PP'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        { key: 'Phone number', lines: ['072121212125'] },
         { key: 'Establishment', lines: ['London'] },
       ])
     })
@@ -447,6 +448,7 @@ describe(ShowReferralPresenter, () => {
           personCurrentLocationType: CurrentLocationType.custody,
           ppName: 'Bernard Beaks',
           ppEmailAddress: 'bernard.beaks@justice.gov.uk',
+          ppPhoneNumber: '1234554321',
           roleOrJobTitle: 'PP',
           ppProbationOffice: 'Leeds',
           ppEstablishment: '',
@@ -474,6 +476,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Role / job title', lines: ['PP'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        { key: 'Phone number', lines: ['1234554321'] },
         { key: 'Probation office', lines: ['Leeds'] },
       ])
     })

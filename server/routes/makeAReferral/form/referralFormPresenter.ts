@@ -587,7 +587,12 @@ class TaskValues {
   }
 
   get mainPointOfContactDetails(): DraftReferralValues {
-    return [this.referral.ppName, this.referral.roleOrJobTitle, this.referral.ppEmailAddress]
+    return [
+      this.referral.ppName,
+      this.referral.roleOrJobTitle,
+      this.referral.ppEmailAddress,
+      this.referral.ppPhoneNumber || 'Not found',
+    ]
   }
 
   get currentLocationDetails(): DraftReferralValues {

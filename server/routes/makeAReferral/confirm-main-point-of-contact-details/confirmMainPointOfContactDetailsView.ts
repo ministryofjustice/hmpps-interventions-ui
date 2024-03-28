@@ -14,7 +14,7 @@ export default class ConfirmMainPointOfContactDetailsView {
     return {
       fieldset: {
         legend: {
-          text: 'Location',
+          text: 'Location of main point of contact',
           classes: 'govuk-fieldset__legend--m',
         },
       },
@@ -70,6 +70,19 @@ export default class ConfirmMainPointOfContactDetailsView {
       },
       value: this.presenter.fields.probationPractitionerEmail,
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.probationPractitionerEmail.errorMessage),
+    }
+  }
+
+  private get probationPractitionerPhoneNumberInputArgs(): InputArgs {
+    return {
+      id: 'probation-practitioner-phone-number',
+      name: 'probation-practitioner-phone-number',
+      classes: 'govuk-input--width-20',
+      label: {
+        text: this.presenter.text.probationPractitionerPhoneNumber.label,
+      },
+      value: this.presenter.fields.probationPractitionerPhoneNumber,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.text.probationPractitionerPhoneNumber.errorMessage),
     }
   }
 
@@ -157,6 +170,7 @@ export default class ConfirmMainPointOfContactDetailsView {
         confirmCorrectDetailsRadiosArgs: this.confirmCorrectDetailsRadiosArgs.bind(this),
         probationPractitionerNameInputArgs: this.probationPractitionerNameInputArgs,
         probationPractitionerEmailInputArgs: this.probationPractitionerEmailInputArgs,
+        probationPractitionerPhoneNumberInputArgs: this.probationPractitionerPhoneNumberInputArgs,
         prisonSelectArgs: this.prisonSelectArgs,
         probationPractitionerRoleOrJobTitleInputArgs: this.probationPractitionerRoleOrJobTitleInputArgs,
         probationPractitionerOfficeSelectArgs: this.probationPractitionerOfficeSelectArgs,
