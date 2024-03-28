@@ -21,7 +21,8 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        prisonerDetails
+        prisonerDetails,
+        'London'
       )
 
       expect(form.error).toBeNull()
@@ -35,7 +36,8 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        null
+        null,
+        ''
       )
 
       expect(form.error).toBeNull()
@@ -50,7 +52,8 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        prisonerDetails
+        prisonerDetails,
+        'London'
       )
 
       expect(form.error).toEqual({
@@ -72,7 +75,8 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        null
+        null,
+        ''
       )
 
       expect(form.error).toEqual({
@@ -94,7 +98,8 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        null
+        null,
+        ''
       )
 
       expect(form.error).toEqual({
@@ -119,7 +124,8 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        prisonerDetails
+        prisonerDetails,
+        'London'
       )
 
       expect(form.paramsForUpdate).toEqual({
@@ -137,7 +143,8 @@ describe('CurrentLocationForm', () => {
           },
         } as Request,
         referral,
-        prisonerDetails
+        prisonerDetails,
+        'London'
       )
 
       expect(form.paramsForUpdate).toEqual({

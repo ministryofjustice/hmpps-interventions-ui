@@ -809,7 +809,7 @@ export default class MakeAReferralController {
     const matchedPerson = prisonAndSecureChildAgency.find(prison => prison.id === prisonerDetails.prisonId)
     const prisonName = matchedPerson ? matchedPerson.description : ''
 
-    const form = await CurrentLocationForm.createForm(req, referral, prisonerDetails)
+    const form = await CurrentLocationForm.createForm(req, referral, prisonerDetails, prisonName)
     let error: FormValidationError | null = null
 
     if (form.isValid) {
