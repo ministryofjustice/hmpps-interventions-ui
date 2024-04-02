@@ -25,7 +25,7 @@ describe(ExpectedReleaseDateUnknownForm, () => {
           {
             errorSummaryLinkedField: 'release-date-unknown-reason',
             formFields: ['release-date-unknown-reason'],
-            message: 'You must enter why the expected release date is not known',
+            message: 'Enter a reason why the expected release date is not known',
           },
         ],
       })

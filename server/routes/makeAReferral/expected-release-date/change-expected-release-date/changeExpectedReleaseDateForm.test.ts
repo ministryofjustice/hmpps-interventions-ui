@@ -19,7 +19,7 @@ describe(ChangeExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-day',
               formFields: ['release-date-day'],
-              message: 'The expected release date must include a day',
+              message: 'Enter the expected release date',
             },
           ],
         })
@@ -42,7 +42,7 @@ describe(ChangeExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-month',
               formFields: ['release-date-month'],
-              message: 'The expected release date must be a real date',
+              message: 'Enter date in the correct format',
             },
           ],
         })
@@ -64,7 +64,7 @@ describe(ChangeExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-day',
               formFields: ['release-date-day'],
-              message: 'The expected release date must be in the future',
+              message: 'Enter date in the future',
             },
           ],
         })

@@ -14,9 +14,9 @@ export default class SelectExpectedReleaseDateView {
       items: [
         {
           value: 'confirm',
-          text: `Expected release date ${
-            this.presenter.fields.releaseDate ? `(${this.presenter.fields.releaseDate})` : null
-          }`,
+          html: `Expected release date <strong>&emsp;${
+            this.presenter.fields.releaseDate ? `${this.presenter.fields.releaseDate}` : null
+          }</strong>`,
           checked: this.presenter.fields.hasMatchingReleaseDate === true,
         },
         {

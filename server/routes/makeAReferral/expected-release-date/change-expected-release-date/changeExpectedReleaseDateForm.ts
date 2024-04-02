@@ -11,7 +11,7 @@ export default class ChangeExpectedReleaseDateForm {
 
   static readonly releaseDateUnknownReason = 'release-date-unknown-reason'
 
-  readonly checkFutureDateErrorMessage = 'The expected release date must be in the future'
+  readonly checkFutureDateErrorMessage = 'Enter date in the future'
 
   async data(): Promise<FormData<Partial<DraftReferral>>> {
     const dateInput = new CalendarDayInput(

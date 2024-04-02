@@ -922,7 +922,8 @@ export default class MakeAReferralController {
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-    const presenter = new SelectExpectedReleaseDatePresenter(referral, prisonerDetails.releaseDate)
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+    const presenter = new SelectExpectedReleaseDatePresenter(referral, amendPPDetails, prisonerDetails.releaseDate)
     const view = new SelectExpectedReleaseDateView(presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
@@ -957,7 +958,9 @@ export default class MakeAReferralController {
     const amendPPDetails = req.query.amendPPDetails === 'true'
 
     if (error === null && req.body['expected-release-date'] === 'change') {
-      res.redirect(`/referrals/${req.params.id}/change-expected-release-date`)
+      res.redirect(
+        `/referrals/${req.params.id}/change-expected-release-date${amendPPDetails ? '?amendPPDetails=true' : ''}`
+      )
     }
     if (error === null && amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
@@ -966,7 +969,13 @@ export default class MakeAReferralController {
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-      const presenter = new SelectExpectedReleaseDatePresenter(referral, prisonerDetails.releaseDate, error, req.body)
+      const presenter = new SelectExpectedReleaseDatePresenter(
+        referral,
+        amendPPDetails,
+        prisonerDetails.releaseDate,
+        error,
+        req.body
+      )
       const view = new SelectExpectedReleaseDateView(presenter)
 
       res.status(400)

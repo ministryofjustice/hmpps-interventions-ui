@@ -8,6 +8,8 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 {% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -29,8 +31,119 @@
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukDateInput(dateInputArgs) }}
-        <br>
-        <br>
+        {{ govukDetails({
+          summaryText: "View months as numbers",
+          html: govukTable({
+                  captionClasses: "govuk-table__caption--m",
+                  firstCellIsHeader: true,
+                  head: [
+                    {
+                      text: "Month"
+                    },
+                    {
+                      text: "Month as a number"
+                    }
+                  ],
+                  rows: [
+                    [
+                      {
+                        text: "January"
+                      },
+                      {
+                        text: "1"
+                      }
+                    ],
+                    [
+                      {
+                        text: "February"
+                      },
+                      {
+                        text: "2"
+                      }
+                    ],
+                    [
+                      {
+                        text: "March"
+                      },
+                      {
+                        text: "3"
+                      }
+                    ],
+                    [
+                      {
+                        text: "April"
+                      },
+                      {
+                        text: "4"
+                      }
+                    ],
+                    [
+                      {
+                        text: "May"
+                      },
+                      {
+                        text: "5"
+                      }
+                    ],
+                    [
+                      {
+                        text: "June"
+                      },
+                      {
+                        text: "6"
+                      }
+                    ],
+                    [
+                      {
+                        text: "July"
+                      },
+                      {
+                        text: "7"
+                      }
+                    ],
+                    [
+                      {
+                        text: "August"
+                      },
+                      {
+                        text: "8"
+                      }
+                    ],
+                    [
+                      {
+                        text: "September"
+                      },
+                      {
+                        text: "9"
+                      }
+                    ],
+                    [
+                      {
+                        text: "October"
+                      },
+                      {
+                        text: "10"
+                      }
+                    ],
+                    [
+                      {
+                        text: "November"
+                      },
+                      {
+                        text: "11"
+                      }
+                    ],
+                    [
+                      {
+                        text: "December"
+                      },
+                      {
+                        text: "12"
+                      }
+                    ]
+                  ]
+                })
+        }) }}
         {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
       </form>
     </div>

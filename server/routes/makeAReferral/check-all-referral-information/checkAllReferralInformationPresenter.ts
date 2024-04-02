@@ -211,7 +211,7 @@ export default class CheckAllReferralInformationPresenter {
 
     if (this.referral.expectedReleaseDateMissingReason) {
       currentLocationAndReleaseDetails.push({
-        key: 'Expected release date unknown reason',
+        key: 'Reason why expected release date is not known',
         lines: [this.referral.expectedReleaseDateMissingReason],
         changeLink: `/referrals/${this.referral.id}/expected-release-date-unknown?amendPPDetails=true`,
       })
