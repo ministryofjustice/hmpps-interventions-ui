@@ -49,6 +49,10 @@ export default class ConfirmMainPointOfContactDetailsPresenter {
       label: 'Email address',
       errorMessage: this.errorMessageForField('probation-practitioner-email'),
     },
+    probationPractitionerPhoneNumber: {
+      label: 'Phone number',
+      errorMessage: this.errorMessageForField('probation-practitioner-phone-number'),
+    },
     probationPractitionerEstablishmentSelect: {
       label: 'Establishment',
       hint: `Start typing then choose prison name from the list.`,
@@ -66,6 +70,10 @@ export default class ConfirmMainPointOfContactDetailsPresenter {
   readonly fields = {
     probationPractitionerName: this.utils.stringValue(this.referral.ppName, 'probation-practitioner-name'),
     probationPractitionerEmail: this.utils.stringValue(this.referral.ppEmailAddress, 'probation-practitioner-email'),
+    probationPractitionerPhoneNumber: this.utils.stringValue(
+      this.referral.ppPhoneNumber,
+      'probation-practitioner-phone-number'
+    ),
     probationPractitionerRoleOrJobTitle: this.utils.stringValue(
       this.referral.roleOrJobTitle,
       'probation-practitioner-roleOrJobTitle'

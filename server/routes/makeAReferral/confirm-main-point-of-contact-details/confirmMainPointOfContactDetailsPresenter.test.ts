@@ -80,6 +80,10 @@ describe('ConfirmMainPointOfContactDetailsPresenter', () => {
           label: 'Name',
           errorMessage: null,
         },
+        probationPractitionerPhoneNumber: {
+          label: 'Phone number',
+          errorMessage: null,
+        },
         probationRoleOrJobTitle: {
           label: 'Role / job title',
           errorMessage: null,

@@ -136,6 +136,11 @@ export default class CheckAllReferralInformationPresenter {
           lines: [this.deriveEmailAddress],
           changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
         },
+        {
+          key: 'Phone number',
+          lines: [this.referral.ppPhoneNumber || 'Not found'],
+          changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+        },
         this.establishmentOrProbationOffice,
       ],
     }

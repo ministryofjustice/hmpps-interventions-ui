@@ -160,6 +160,7 @@ export default {
     emptyProbationOffice: `Enter the probation office`,
     emptyEmail: `Enter email address`,
     invalidEmail: `Enter email address in the correct format`,
+    invalidPhoneNumber: `Enter phone number in the correct format`,
   },
   interpreterLanguageWithoutName: {
     empty: 'Enter the language for interpretation',
