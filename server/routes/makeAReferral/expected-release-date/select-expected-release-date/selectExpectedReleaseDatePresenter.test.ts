@@ -56,7 +56,7 @@ describe('SelectExpectedReleaseDatePresenter', () => {
         const presenter = new SelectExpectedReleaseDatePresenter(referral, false, releaseDate)
 
         expect(presenter.fields.hasMatchingReleaseDate).toBe(null)
-        expect(presenter.fields.releaseDate).toBe('1 Jan 2025 (Wednesday)')
+        expect(presenter.fields.releaseDate).toBe('1 January 2025 (Wednesday)')
       })
     })
 
@@ -69,7 +69,7 @@ describe('SelectExpectedReleaseDatePresenter', () => {
         const presenter = new SelectExpectedReleaseDatePresenter(referral, false, releaseDate)
 
         expect(presenter.fields.hasMatchingReleaseDate).toBe(false)
-        expect(presenter.fields.releaseDate).toBe('1 Jan 2025 (Wednesday)')
+        expect(presenter.fields.releaseDate).toBe('1 January 2025 (Wednesday)')
       })
     })
   })
