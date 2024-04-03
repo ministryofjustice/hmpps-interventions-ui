@@ -1236,7 +1236,7 @@ describe(ShowReferralPresenter, () => {
           },
           { key: 'Date referral submitted', lines: ['1 Jan 2022'] },
           { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
-          { key: 'Date intervention cancelled', lines: ['7 Feb 2024'] },
+          { key: 'Date intervention withdrawn', lines: ['7 Feb 2024'] },
         ])
       })
     })
@@ -1824,7 +1824,7 @@ describe(ShowReferralPresenter, () => {
             lines: ["Alex is currently sleeping on her aunt's sofa"],
           },
           {
-            key: 'Other mobility, disability or accessibility needs',
+            key: 'Mobility, disability or accessibility needs',
             lines: ['She uses a wheelchair'],
           },
           {
@@ -1915,7 +1915,7 @@ describe(ShowReferralPresenter, () => {
           },
           {
             changeLink: undefined,
-            key: 'Other mobility, disability or accessibility needs',
+            key: 'Mobility, disability or accessibility needs',
             lines: ['N/A'],
           },
           {

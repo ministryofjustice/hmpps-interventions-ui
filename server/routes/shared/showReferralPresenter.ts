@@ -184,6 +184,10 @@ export default class ShowReferralPresenter {
         key: 'CRN',
         lines: [this.sentReferral.referral.serviceUser.crn],
       },
+      {
+        key: 'Referral number',
+        lines: [this.sentReferral.referenceNumber ?? ''],
+      },
     ]
   }
 
@@ -524,7 +528,7 @@ export default class ShowReferralPresenter {
     }
     if (this.sentReferral.concludedAt !== null && this.sentReferral.endOfServiceReport === null) {
       return {
-        key: 'Date intervention cancelled',
+        key: 'Date intervention withdrawn',
         lines: [moment(this.sentReferral.concludedAt).format('D MMM YYYY')],
       }
     }
@@ -659,7 +663,7 @@ export default class ShowReferralPresenter {
             : undefined,
       },
       {
-        key: 'Other mobility, disability or accessibility needs',
+        key: 'Mobility, disability or accessibility needs',
         lines: [this.sentReferral.referral.accessibilityNeeds || 'N/A'],
         changeLink:
           this.userType === 'probation-practitioner'
