@@ -12,6 +12,7 @@ import { CurrentLocationType } from '../../../models/draftReferral'
 import PrisonRegisterService from '../../../services/prisonRegisterService'
 import PrisonAndSecuredChildAgency from '../../../models/prisonAndSecureChildAgency'
 import PrisonApiService from '../../../services/prisonApiService'
+import prisoner from '../../../../testutils/factories/prisoner'
 
 jest.mock('../../../services/prisonRegisterService')
 jest.mock('../../../services/prisonApiService')
@@ -41,6 +42,7 @@ describe(CheckAllReferralInformationPresenter, () => {
   const deliusServiceUser = caseConviction.caseDetail
   const prisonList = prisonFactory.build()
   const prisonAndSecuredChildAgencyList = prisonAndSecuredChildFactory.build()
+  const prisonerDetails = prisoner.build()
   const loggedInUser = loggedInUserFactory.build()
   prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
   prisonApiService.getSecureChildrenAgencies.mockResolvedValue(prisonAndSecuredChildAgencyList)
@@ -67,7 +69,8 @@ describe(CheckAllReferralInformationPresenter, () => {
       loggedInUser,
       conviction,
       deliusServiceUser,
-      prisonsAndSecuredChildAgencies
+      prisonsAndSecuredChildAgencies,
+      prisonerDetails
     )
 
     describe('title', () => {
@@ -130,7 +133,8 @@ describe(CheckAllReferralInformationPresenter, () => {
         loggedInUser,
         conviction,
         deliusServiceUser,
-        prisonsAndSecuredChildAgencies
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
       )
 
       describe('title', () => {
@@ -189,7 +193,8 @@ describe(CheckAllReferralInformationPresenter, () => {
             loggedInUser,
             conviction,
             deliusServiceUser,
-            prisonsAndSecuredChildAgencies
+            prisonsAndSecuredChildAgencies,
+            prisonerDetails
           )
 
           expect(checkAllReferralInformationPresenter.probationPractitionerDetailSection?.summary).toEqual([
@@ -243,7 +248,8 @@ describe(CheckAllReferralInformationPresenter, () => {
         loggedInUser,
         conviction,
         deliusServiceUser,
-        prisonsAndSecuredChildAgencies
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
       )
 
       describe('title', () => {
@@ -304,7 +310,8 @@ describe(CheckAllReferralInformationPresenter, () => {
         loggedInUser,
         conviction,
         deliusServiceUser,
-        prisonsAndSecuredChildAgencies
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
       )
 
       describe('title', () => {
@@ -358,7 +365,8 @@ describe(CheckAllReferralInformationPresenter, () => {
       loggedInUser,
       conviction,
       deliusServiceUser,
-      prisonsAndSecuredChildAgencies
+      prisonsAndSecuredChildAgencies,
+      prisonerDetails
     )
 
     describe('title', () => {
@@ -387,11 +395,12 @@ describe(CheckAllReferralInformationPresenter, () => {
         loggedInUser,
         conviction,
         deliusServiceUser,
-        prisonsAndSecuredChildAgencies
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
       )
 
       it('returns the section title', () => {
-        expect(presenter.needsAndRequirementsSection.title).toEqual('Alex’s needs and requirements')
+        expect(presenter.needsAndRequirementsSection.title).toEqual('Alex River’s needs and requirements')
       })
     })
 
@@ -407,7 +416,8 @@ describe(CheckAllReferralInformationPresenter, () => {
           loggedInUser,
           conviction,
           deliusServiceUser,
-          prisonsAndSecuredChildAgencies
+          prisonsAndSecuredChildAgencies,
+          prisonerDetails
         )
 
         it('returns the value from the referral', () => {
@@ -430,7 +440,8 @@ describe(CheckAllReferralInformationPresenter, () => {
           loggedInUser,
           conviction,
           deliusServiceUser,
-          prisonsAndSecuredChildAgencies
+          prisonsAndSecuredChildAgencies,
+          prisonerDetails
         )
 
         it('returns the value from the referral', () => {
@@ -454,7 +465,8 @@ describe(CheckAllReferralInformationPresenter, () => {
             loggedInUser,
             conviction,
             deliusServiceUser,
-            prisonsAndSecuredChildAgencies
+            prisonsAndSecuredChildAgencies,
+            prisonerDetails
           )
 
           expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
@@ -476,7 +488,8 @@ describe(CheckAllReferralInformationPresenter, () => {
             loggedInUser,
             conviction,
             deliusServiceUser,
-            prisonsAndSecuredChildAgencies
+            prisonsAndSecuredChildAgencies,
+            prisonerDetails
           )
 
           it('also includes the language', () => {
@@ -501,7 +514,8 @@ describe(CheckAllReferralInformationPresenter, () => {
             loggedInUser,
             conviction,
             deliusServiceUser,
-            prisonsAndSecuredChildAgencies
+            prisonsAndSecuredChildAgencies,
+            prisonerDetails
           )
 
           expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
@@ -523,7 +537,8 @@ describe(CheckAllReferralInformationPresenter, () => {
             loggedInUser,
             conviction,
             deliusServiceUser,
-            prisonsAndSecuredChildAgencies
+            prisonsAndSecuredChildAgencies,
+            prisonerDetails
           )
 
           it('includes information about when they’re unavailable', () => {
@@ -580,6 +595,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         { serviceCategoryId: accommodationServiceCategory.id, desiredOutcomesIds: ['1', '3'] },
         { serviceCategoryId: eteServiceCategory.id, desiredOutcomesIds: ['2'] },
       ],
+      reasonForReferral: 'Some reason',
     })
     const intervention = interventionFactory.build({
       serviceCategories: [accommodationServiceCategory, eteServiceCategory, serviceCategoryFactory.build()],
@@ -591,13 +607,14 @@ describe(CheckAllReferralInformationPresenter, () => {
       loggedInUser,
       conviction,
       deliusServiceUser,
-      prisonsAndSecuredChildAgencies
+      prisonsAndSecuredChildAgencies,
+      prisonerDetails
     )
 
     it('contains a section for each service category in the referral', () => {
       expect(presenter.referralDetailsSections).toMatchObject([
-        { title: 'Accommodation referral details' },
-        { title: 'Education, training and employment referral details' },
+        { title: 'Accommodation intervention' },
+        { title: 'Education, training and employment intervention' },
       ])
     })
 
@@ -630,6 +647,18 @@ describe(CheckAllReferralInformationPresenter, () => {
           })
         })
       })
+
+      describe('further information', () => {
+        it('includes the further information ', () => {
+          const item = section.summary[2]
+
+          expect(item).toEqual({
+            key: 'Further information for the service provider',
+            lines: ['Some reason'],
+            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/reason-for-referral?amendPPDetails=true',
+          })
+        })
+      })
     })
   })
 
@@ -657,7 +686,8 @@ describe(CheckAllReferralInformationPresenter, () => {
           loggedInUser,
           conviction,
           deliusServiceUser,
-          prisonsAndSecuredChildAgencies
+          prisonsAndSecuredChildAgencies,
+          prisonerDetails
         )
 
         expect(presenter.serviceCategoriesSummary).toBeNull()
@@ -682,7 +712,8 @@ describe(CheckAllReferralInformationPresenter, () => {
             loggedInUser,
             conviction,
             deliusServiceUser,
-            prisonsAndSecuredChildAgencies
+            prisonsAndSecuredChildAgencies,
+            prisonerDetails
           )
           expect(presenter.serviceCategoriesSummary).toEqual({
             title: 'Service categories',
@@ -711,7 +742,8 @@ describe(CheckAllReferralInformationPresenter, () => {
             loggedInUser,
             conviction,
             deliusServiceUser,
-            prisonsAndSecuredChildAgencies
+            prisonsAndSecuredChildAgencies,
+            prisonerDetails
           )
           expect(presenter.serviceCategoriesSummary).toEqual({
             title: 'Service categories',
@@ -757,12 +789,17 @@ describe(CheckAllReferralInformationPresenter, () => {
         loggedInUser,
         assaultConviction.conviction,
         assaultConviction.caseDetail,
-        prisonsAndSecuredChildAgencies
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
       )
 
       expect(presenter.sentenceInformationSummary).toEqual({
-        title: 'Sentence Information',
+        title: 'Intervention details',
         summary: [
+          {
+            key: 'Intervention type',
+            lines: ['Women’s services'],
+          },
           {
             key: 'Sentence',
             lines: ['Common and other types of assault'],
@@ -787,11 +824,6 @@ describe(CheckAllReferralInformationPresenter, () => {
             key: 'Date intervention to be completed by',
             lines: ['24 Oct 2021'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/completion-deadline',
-          },
-          {
-            key: 'Further information for the service provider',
-            lines: ['Some reason'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/reason-for-referral?amendPPDetails=true',
           },
         ],
       })

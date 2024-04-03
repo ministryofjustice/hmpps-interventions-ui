@@ -2008,9 +2008,10 @@ export default class MakeAReferralController {
       throw new Error('Attempting to check answers without relevant sentence selected')
     }
 
-    const [intervention, caseConviction] = await Promise.all([
+    const [intervention, caseConviction, prisonerDetails] = await Promise.all([
       this.interventionsService.getIntervention(accessToken, referral.interventionId),
       this.ramDeliusApiService.getConvictionByCrnAndId(referral.serviceUser.crn, referral.relevantSentenceId),
+      this.interventionsService.getPrisonerDetails(accessToken, referral.serviceUser.crn),
     ])
     const editedOasysRiskInformation = await this.interventionsService.getDraftOasysRiskInformation(
       accessToken,
@@ -2023,6 +2024,7 @@ export default class MakeAReferralController {
       caseConviction.conviction,
       caseConviction.caseDetail,
       prisonAndSecureChildAgency,
+      prisonerDetails,
       editedOasysRiskInformation
     )
     const view = new CheckAllReferralInformationView(presenter)

@@ -700,6 +700,8 @@ describe('Referral form', () => {
       cy.contains('Probation practitioner details')
         .parent()
         .next()
+        .children()
+        .children()
         .should('contain', 'Name')
         .should('contain', 'Bob Alice')
         .contains('Change')
@@ -713,15 +715,32 @@ describe('Referral form', () => {
         .parent()
         .next()
         .children()
+        .children()
+        .next()
         .should('contain', 'Email address')
         .should('contain', 'bobalice@example.com')
         .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/update-probation-practitioner-email-address?amendPPDetails=true`
+        )
 
-      cy.get('#change-link-1').should(
-        'have.attr',
-        'href',
-        `/referrals/${draftReferral.id}/update-probation-practitioner-email-address?amendPPDetails=true`
-      )
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .children()
+        .children()
+        .next()
+        .next()
+        .should('contain', 'Phone number')
+        .should('contain', '073232323232')
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`
+        )
 
       cy.contains('Probation practitioner details')
         .parent()
@@ -730,18 +749,23 @@ describe('Referral form', () => {
         .should('contain', '97 Hackney and City')
         .contains('Change')
 
-      cy.get('#change-link-2').should(
-        'have.attr',
-        'href',
-        `/referrals/${draftReferral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`
-      )
-      // Alex's risk information
-      cy.contains('Additional information')
+      cy.contains('Probation practitioner details')
+        .parent()
         .next()
-        .should('contain', 'No more comments.')
+        .children()
+        .children()
         .next()
+        .next()
+        .next()
+        .next()
+        .should('contain', 'Team phone number')
+        .should('contain', '020343434343')
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/edit-oasys-risk-information`)
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`
+        )
 
       // Alex's needs and requirements
       cy.contains('Additional information about Alex’s needs (optional)')
@@ -810,8 +834,17 @@ describe('Referral form', () => {
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral?amendPPDetails=true`)
 
+      // Alex's risk information
+      cy.contains(`Alex River’s OAsys risk information`)
+        .parent()
+        .next()
+        .children()
+        .should('contain', 'Additional information')
+        .should('contain', 'No more comments.')
+        .should('contain', 'Change')
+
       // Accommodation referral details
-      cy.contains('Accommodation referral details')
+      cy.contains('Accommodation intervention')
       cy.contains('Complexity level')
         .next()
         .should('contain', 'Low complexity')

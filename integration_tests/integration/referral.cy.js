@@ -513,114 +513,21 @@ describe('Referral form', () => {
       cy.contains('alex.river@example.com')
 
       // Alex's personal information
-      cy.contains('Probation practitioner details')
+      cy.contains('Identity details')
         .parent()
         .next()
-        .should('contain', 'Name')
-        .should('contain', 'Bob Alice')
-        .contains('Change')
-        .should(
-          'have.attr',
-          'href',
-          `/referrals/${draftReferral.id}/update-probation-practitioner-name?amendPPDetails=true`
-        )
-
-      cy.contains('Probation practitioner details')
-        .parent()
-        .next()
-        .children()
-        .should('contain', 'Email address')
-        .should('contain', 'bobalice@example.com')
-        .contains('Change')
-
-      cy.get('#change-link-1').should(
-        'have.attr',
-        'href',
-        `/referrals/${draftReferral.id}/update-probation-practitioner-email-address?amendPPDetails=true`
-      )
-      cy.contains('Probation practitioner details')
-        .parent()
-        .next()
-        .should('contain', 'Phone number')
-        .should('contain', '073232323232')
-        .contains('Change')
-
-      cy.get('#change-link-2').should(
-        'have.attr',
-        'href',
-        `/referrals/${draftReferral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`
-      )
-
-      cy.contains('Probation practitioner details')
-        .parent()
-        .next()
-        .should('contain', 'PDU (Probation Delivery Unit)')
-        .should('contain', '97 Hackney and City')
-        .contains('Change')
-
-      cy.contains('Probation practitioner details')
-        .parent()
-        .next()
-        .should('contain', 'Team phone number')
-        .should('contain', '020343434343')
-        .contains('Change')
-
-      cy.get('#change-link-4').should(
-        'have.attr',
-        'href',
-        `/referrals/${draftReferral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`
-      )
-
-      // Back up contact for the referral
-      cy.contains('Back up contact for the referral')
-        .parent()
-        .next()
-        .should('contain', 'Referring officer')
-        .should('contain', 'USER1')
-
-      cy.contains('Back up contact for the referral')
-        .parent()
-        .next()
-        .should('contain', 'Email address')
-        .should('contain', 'a.b@xyz.com')
-
-      // Alex's risk information
-      cy.contains('Additional information')
-        .next()
-        .should('contain', 'No more comments.')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/edit-oasys-risk-information`)
-
-      // Alex's needs and requirements
-      cy.contains('Additional information about Alex’s needs (optional)')
-        .next()
-        .should('contain', 'Alex is currently sleeping on her aunt’s sofa')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
-      cy.contains('Does Alex have any other mobility, disability or accessibility needs? (optional)')
-        .next()
-        .should('contain', 'She uses a wheelchair')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
-      cy.contains('Does Alex need an interpreter?')
-        .next()
-        .should('contain', 'Yes')
-        .and('contain', 'Spanish')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
-      cy.contains('Does Alex have caring or employment responsibilities?')
-        .next()
-        .should('contain', 'Yes')
-        .and('contain', 'She works Mondays 9am - midday')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
-
+        .should('contain', 'First name')
+        .should('contain', 'Alex')
+        .should('contain', 'Last name')
+        .should('contain', 'River')
+        .should('contain', 'CRN')
+        .should('contain', 'X123456')
       // Sentence information
+      cy.contains('Intervention details')
+        .parent()
+        .next()
+        .should('contain', 'Intervention type')
+        .should('contain', `Accommodation`)
       cy.contains('.govuk-summary-list__key', 'Sentence')
         .next()
         .should('contain', 'Burglary')
@@ -659,8 +566,119 @@ describe('Referral form', () => {
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral?amendPPDetails=true`)
 
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .children()
+        .children()
+        .should('contain', 'Name')
+        .should('contain', 'Bob Alice')
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/update-probation-practitioner-name?amendPPDetails=true`
+        )
+
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .children()
+        .children()
+        .next()
+        .should('contain', 'Email address')
+        .should('contain', 'bobalice@example.com')
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/update-probation-practitioner-email-address?amendPPDetails=true`
+        )
+
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .children()
+        .children()
+        .next()
+        .next()
+        .should('contain', 'Phone number')
+        .should('contain', '073232323232')
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`
+        )
+
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .should('contain', 'PDU (Probation Delivery Unit)')
+        .should('contain', '97 Hackney and City')
+        .contains('Change')
+
+      cy.contains('Probation practitioner details')
+        .parent()
+        .next()
+        .children()
+        .children()
+        .next()
+        .next()
+        .next()
+        .next()
+        .should('contain', 'Team phone number')
+        .should('contain', '020343434343')
+        .contains('Change')
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`
+        )
+
+      // Back up contact for the referral
+      cy.contains('Back up contact for the referral')
+        .parent()
+        .next()
+        .should('contain', 'Referring officer')
+        .should('contain', 'USER1')
+
+      cy.contains('Back up contact for the referral')
+        .parent()
+        .next()
+        .should('contain', 'Email address')
+        .should('contain', 'a.b@xyz.com')
+
+      // Alex's needs and requirements
+      cy.contains('Additional information about Alex’s needs (optional)')
+        .next()
+        .should('contain', 'Alex is currently sleeping on her aunt’s sofa')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
+      cy.contains('Does Alex have any other mobility, disability or accessibility needs? (optional)')
+        .next()
+        .should('contain', 'She uses a wheelchair')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
+      cy.contains('Does Alex need an interpreter?')
+        .next()
+        .should('contain', 'Yes')
+        .and('contain', 'Spanish')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
+      cy.contains('Does Alex have caring or employment responsibilities?')
+        .next()
+        .should('contain', 'Yes')
+        .and('contain', 'She works Mondays 9am - midday')
+        .next()
+        .contains('Change')
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/needs-and-requirements`)
+
       // Accommodation referral details
-      cy.contains('Accommodation referral details')
+      cy.contains('Accommodation intervention')
       cy.contains('Complexity level')
         .next()
         .should('contain', 'Low complexity')
@@ -683,6 +701,16 @@ describe('Referral form', () => {
           'href',
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes`
         )
+
+      // Alex's risk information
+      cy.contains(`Alex River’s OAsys risk information`)
+        .parent()
+        .next()
+        .children()
+        .should('contain', 'Additional information')
+        .should('contain', 'No more comments.')
+        .should('contain', 'Change')
+
       cy.contains('Submit referral').click()
       cy.location('pathname').should('equal', `/referrals/${sentReferral.id}/confirmation`)
 
@@ -1201,7 +1229,7 @@ describe('Referral form', () => {
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/service-categories`)
 
-      cy.contains('Accommodation referral details')
+      cy.contains('Accommodation intervention')
       cy.contains('Complexity level')
         .next()
         .should('contain', 'Low complexity')
@@ -1213,7 +1241,7 @@ describe('Referral form', () => {
           'href',
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/complexity-level`
         )
-      cy.contains('Accommodation referral details')
+      cy.contains('Accommodation intervention')
       cy.contains('Desired outcomes')
         .next()
         .should('contain', 'Service user makes progress in obtaining accommodation')
@@ -1226,7 +1254,7 @@ describe('Referral form', () => {
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes`
         )
 
-      cy.contains('Social inclusion referral details')
+      cy.contains('Social inclusion intervention')
         .parent()
         .next()
         .contains('Complexity level')
@@ -1240,7 +1268,7 @@ describe('Referral form', () => {
           'href',
           `/referrals/${draftReferral.id}/service-category/c036826e-f077-49a5-8b33-601dca7ad479/complexity-level`
         )
-      cy.contains('Social inclusion referral details')
+      cy.contains('Social inclusion intervention')
         .parent()
         .next()
         .contains('Desired outcomes')

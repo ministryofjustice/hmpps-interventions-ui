@@ -16,7 +16,20 @@
       <br>
       <p class="govuk-caption-xl">{{ presenter.crnDescription }} </p>
       <h1 class="govuk-heading-xl">Check all referral information</h1>
-      <p class="govuk-body-l">This will be sent to the service provider.</p>
+      <p class="govuk-body-l">These details will be sent to the service provider. Check they are correct before submitting the referral.</p>
+
+      {{ govukSummaryList(identityDetailsSummaryListArgs) }}
+
+      {% if communityLocationAndReleaseDetailsSummaryListArgs and (presenter.isCommunity) %}
+        {{ govukSummaryList(communityLocationAndReleaseDetailsSummaryListArgs) }}
+      {% endif %}
+
+      {{ govukSummaryList(sentenceInformationSummaryListArgs) }}
+
+      {% for section in referralDetailsSections %}
+
+        {{ govukSummaryList(section.summaryListArgs) }}
+      {% endfor %}
 
       {% if probationPractitionerDetailsSummaryListArgs and (not presenter.checkIfUnAllocatedCOM) %}
         {{ govukSummaryList(probationPractitionerDetailsSummaryListArgs) }}
@@ -36,13 +49,17 @@
 
       {% if locationDetailsSummaryListArgs and (not presenter.checkIfExpectedReleaseDateIsAvailable) %}
         {{ govukSummaryList(locationDetailsSummaryListArgs) }}
-      {% endif %}      
+      {% endif %}
       
-      {{ govukSummaryList(serviceUserDetailsSummaryListArgs) }}
+         
+      
+      {{ govukSummaryList(lastKnownAddressAndContactDetailsSummaryListArgs) }}
+
+      {{govukSummaryList(personalDetailsSummaryListArgs)}}
+
+      {{ govukSummaryList(needsAndRequirementsSummaryListArgs) }}      
 
       {{ govukSummaryList(riskInformationSummaryListArgs) }}
-
-      {{ govukSummaryList(needsAndRequirementsSummaryListArgs) }}
 
       {% if serviceCategoriesSummaryListArgs %}
 
@@ -50,12 +67,6 @@
       {% endif %}
 
 
-      {{ govukSummaryList(sentenceInformationSummaryListArgs) }}
-
-      {% for section in referralDetailsSections %}
-
-        {{ govukSummaryList(section.summaryListArgs) }}
-      {% endfor %}
 
       <form method="post" action="send">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">

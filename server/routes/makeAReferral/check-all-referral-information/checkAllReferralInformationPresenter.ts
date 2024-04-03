@@ -16,6 +16,7 @@ import DateUtils from '../../../utils/dateUtils'
 import { DraftOasysRiskInformation } from '../../../models/draftOasysRiskInformation'
 import PrisonAndSecuredChildAgency from '../../../models/prisonAndSecureChildAgency'
 import LoggedInUser from '../../../models/loggedInUser'
+import Prisoner from '../../../models/prisonerOffenderSearch/prisoner'
 
 export default class CheckAllReferralInformationPresenter {
   readonly backLinkUrl: string
@@ -27,6 +28,7 @@ export default class CheckAllReferralInformationPresenter {
     private readonly conviction: DeliusConviction,
     private readonly deliusServiceUser: DeliusServiceUser,
     private readonly prisonAndSecureChildAgency: PrisonAndSecuredChildAgency[],
+    private readonly prisonerDetails: Prisoner,
     private readonly editedOasysRiskInformation: DraftOasysRiskInformation | null = null
   ) {
     this.backLinkUrl = `/referrals/${this.referral.id}/form`
@@ -44,6 +46,51 @@ export default class CheckAllReferralInformationPresenter {
         this.referral?.expectedReleaseDate,
         this.referral?.expectedReleaseDateMissingReason
       ).checkAnswersSummary,
+    }
+  }
+
+  get lastKnownAddressAndContactDetails(): { title: string; summary: SummaryListItem[] } {
+    return {
+      title: `${this.serviceUserNameForServiceCategory}’s last known address and contact details`,
+      summary: new ServiceUserDetailsPresenter(
+        this.referral.serviceUser,
+        this.deliusServiceUser,
+        this.referral.id,
+        this.referral?.personCurrentLocationType,
+        this.referral?.personCustodyPrisonId,
+        this.referral?.expectedReleaseDate,
+        this.referral?.expectedReleaseDateMissingReason
+      ).contactDetailsForReferralDetailsSummary,
+    }
+  }
+
+  get personalDetails(): { title: string; summary: SummaryListItem[] } {
+    return {
+      title: `${this.serviceUserNameForServiceCategory}’s last known address and contact details`,
+      summary: new ServiceUserDetailsPresenter(
+        this.referral.serviceUser,
+        this.deliusServiceUser,
+        this.referral.id,
+        this.referral?.personCurrentLocationType,
+        this.referral?.personCustodyPrisonId,
+        this.referral?.expectedReleaseDate,
+        this.referral?.expectedReleaseDateMissingReason
+      ).contactDetailsForReferralDetailsSummary,
+    }
+  }
+
+  get personalDetailSummary(): { title: string; summary: SummaryListItem[] } {
+    return {
+      title: `${this.serviceUserNameForServiceCategory}’s personal details`,
+      summary: new ServiceUserDetailsPresenter(
+        this.referral.serviceUser,
+        this.deliusServiceUser,
+        this.referral.id,
+        this.referral?.personCurrentLocationType,
+        this.referral?.personCustodyPrisonId,
+        this.referral?.expectedReleaseDate,
+        this.referral?.expectedReleaseDateMissingReason
+      ).personalDetailsForReferralDetailsSummary,
     }
   }
 
@@ -65,6 +112,25 @@ export default class CheckAllReferralInformationPresenter {
 
   get checkIfExpectedReleaseDateIsAvailable(): boolean {
     return this.referral.expectedReleaseDate !== null || this.referral.expectedReleaseDateMissingReason !== null
+  }
+
+  get isCommunity(): boolean {
+    return this.referral.personCurrentLocationType === CurrentLocationType.community
+  }
+
+  get identityDetails(): SummaryListItem[] {
+    return [
+      { key: 'First name', lines: [this.referral.serviceUser.firstName ?? ''] },
+      { key: 'Last name', lines: [this.referral.serviceUser.lastName ?? ''] },
+      {
+        key: 'Date of birth',
+        lines: [this.dateOfBirthWithShortMonth ? `${this.dateOfBirthWithShortMonth} (${this.age} years old)` : ''],
+      },
+      {
+        key: 'CRN',
+        lines: [this.referral.serviceUser.crn],
+      },
+    ]
   }
 
   get probationPractitionerDetailSection(): { title: string; summary: SummaryListItem[] } | null {
@@ -183,9 +249,6 @@ export default class CheckAllReferralInformationPresenter {
   }
 
   get currentLocationAndReleaseDetailsSection(): { title: string; summary: SummaryListItem[] } | null {
-    if (this.referral.personCurrentLocationType !== CurrentLocationType.custody) {
-      return null
-    }
     const expectedReleaseInfo: string =
       this.referral.expectedReleaseDate !== null
         ? moment(this.referral.expectedReleaseDate!).format('D MMM YYYY [(]ddd[)]')
@@ -214,6 +277,25 @@ export default class CheckAllReferralInformationPresenter {
 
     return {
       title: `${this.serviceUserNameForServiceCategory}’s current location and expected release date`,
+      summary: currentLocationAndReleaseDetails,
+    }
+  }
+
+  get communityCurrentLocationAndReleaseDetailsSection(): { title: string; summary: SummaryListItem[] } | null {
+    const currentLocationAndReleaseDetails: SummaryListItem[] = [
+      {
+        key: 'Location at time of referral',
+        lines: [`${utils.convertToProperCase(this.referral.personCurrentLocationType!)}`],
+        changeLink: `/referrals/${this.referral.id}/submit-current-location?amendPPDetails=true`,
+      },
+      this.derivePduOrProbationOffice,
+      {
+        key: 'Release date',
+        lines: [this.prisonerDetails !== null ? moment(this.prisonerDetails.releaseDate!).format('D MMM YYYY') : '---'],
+      },
+    ]
+    return {
+      title: `${this.serviceUserNameForServiceCategory}’s current location and release details`,
       summary: currentLocationAndReleaseDetails,
     }
   }
@@ -256,7 +338,7 @@ export default class CheckAllReferralInformationPresenter {
   get riskSection(): { title: string; summary: SummaryListItem[] } {
     if (this.editedOasysRiskInformation) {
       return {
-        title: `OAsys risk information`,
+        title: `${this.serviceUserNameForServiceCategory}’s OAsys risk information`,
         summary: [
           {
             key: 'Who is at risk',
@@ -317,7 +399,7 @@ export default class CheckAllReferralInformationPresenter {
     const needsAndRequirementsPresenter = new NeedsAndRequirementsPresenter(this.referral)
 
     return {
-      title: `${this.serviceUserName}’s needs and requirements`,
+      title: `${this.serviceUserNameForServiceCategory}’s needs and requirements`,
       summary: [
         {
           key: needsAndRequirementsPresenter.text.additionalNeedsInformation.label,
@@ -375,7 +457,7 @@ export default class CheckAllReferralInformationPresenter {
       const checkedDesiredOutcomesOptions = desiredOutcomesPresenter.desiredOutcomes.filter(val => val.checked)
 
       return {
-        title: `${utils.convertToProperCase(serviceCategory.name)} referral details`,
+        title: `${utils.convertToProperCase(serviceCategory.name)} intervention`,
         summary: [
           {
             key: 'Complexity level',
@@ -387,6 +469,11 @@ export default class CheckAllReferralInformationPresenter {
             lines: checkedDesiredOutcomesOptions.map(option => option.text),
             listStyle: checkedDesiredOutcomesOptions.length > 1 ? ListStyle.bulleted : ListStyle.noMarkers,
             changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/desired-outcomes`,
+          },
+          {
+            key: 'Further information for the service provider',
+            lines: [this.determineFurtherInformation(this.referral)],
+            changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
           },
         ],
       }
@@ -424,8 +511,9 @@ export default class CheckAllReferralInformationPresenter {
     }
 
     return {
-      title: 'Sentence Information',
+      title: 'Intervention details',
       summary: [
+        { key: 'Intervention type', lines: [utils.convertToProperCase(this.intervention.contractType.name)] },
         {
           key: 'Sentence',
           lines: [presenter.category],
@@ -451,23 +539,32 @@ export default class CheckAllReferralInformationPresenter {
           lines: [DateUtils.formattedDate(completionDeadline, { month: 'short' })],
           changeLink: `/referrals/${this.referral.id}/completion-deadline`,
         },
-        {
-          key: 'Further information for the service provider',
-          lines: [determineFurtherInformation(this.referral)],
-          changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
-        },
       ],
     }
+  }
 
-    function determineFurtherInformation(referral: DraftReferral) {
-      if (referral.reasonForReferral?.length) {
-        return referral.reasonForReferral!
-      }
-      if (referral.furtherInformation?.length) {
-        return referral.furtherInformation!
-      }
-      return 'None'
+  private determineFurtherInformation(referral: DraftReferral) {
+    if (referral.reasonForReferral?.length) {
+      return referral.reasonForReferral!
     }
+    if (referral.furtherInformation?.length) {
+      return referral.furtherInformation!
+    }
+    return 'None'
+  }
+
+  private get dateOfBirthWithShortMonth() {
+    if (this.referral.serviceUser.dateOfBirth === null) {
+      return ''
+    }
+    return DateUtils.formattedDate(this.referral.serviceUser.dateOfBirth, { month: 'short' })
+  }
+
+  private get age() {
+    if (this.referral.serviceUser.dateOfBirth === null) {
+      return ''
+    }
+    return DateUtils.age(this.referral.serviceUser.dateOfBirth)
   }
 
   private readonly serviceUserName = this.referral.serviceUser.firstName ?? ''
