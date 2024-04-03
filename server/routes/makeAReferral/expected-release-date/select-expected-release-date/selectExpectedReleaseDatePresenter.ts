@@ -47,7 +47,7 @@ export default class SelectExpectedReleaseDatePresenter {
       errorMessage: this.errorMessageForField('expected-release-date'),
     },
     hasMatchingReleaseDate: this.matchesExpectedReleaseDate(),
-    releaseDate: moment(this.releaseDate).format('D MMM YYYY [(]dddd[)]'),
+    releaseDate: moment(this.releaseDate).format('D MMMM YYYY [(]dddd[)]'),
   }
 
   matchesExpectedReleaseDate(): boolean | null {
