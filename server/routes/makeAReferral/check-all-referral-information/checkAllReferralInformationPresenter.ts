@@ -296,7 +296,11 @@ export default class CheckAllReferralInformationPresenter {
       this.derivePduOrProbationOffice,
       {
         key: 'Release date',
-        lines: [this.prisonerDetails !== null ? moment(this.prisonerDetails.releaseDate!).format('D MMM YYYY') : '---'],
+        lines: [
+          this.prisonerDetails !== null && this.prisonerDetails.releaseDate !== null
+            ? moment(this.prisonerDetails.releaseDate).format('D MMM YYYY')
+            : '---',
+        ],
       },
     ]
     return {

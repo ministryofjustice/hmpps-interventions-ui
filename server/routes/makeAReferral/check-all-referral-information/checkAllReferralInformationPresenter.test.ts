@@ -354,6 +354,201 @@ describe(CheckAllReferralInformationPresenter, () => {
     })
   })
 
+  describe('identity details section', () => {
+    const referral = parameterisedDraftReferralFactory.build({
+      personCurrentLocationType: CurrentLocationType.community,
+    })
+    const presenter = new CheckAllReferralInformationPresenter(
+      referral,
+      interventionFactory.build({ serviceCategories }),
+      loggedInUser,
+      conviction,
+      deliusServiceUser,
+      prisonsAndSecuredChildAgencies,
+      prisonerDetails
+    )
+
+    describe('identity details summary', () => {
+      it('returns the identity details', () => {
+        const yearsElapsed = moment().diff('1980-01-01', 'years')
+        expect(presenter.identityDetails).toEqual([
+          {
+            key: 'First name',
+            lines: ['Alex'],
+          },
+          {
+            key: 'Last name',
+            lines: ['River'],
+          },
+          {
+            key: 'Date of birth',
+            lines: [`1 Jan 1980 (${yearsElapsed} years old)`],
+          },
+          {
+            key: 'CRN',
+            lines: ['X862134'],
+          },
+        ])
+      })
+    })
+  })
+
+  describe('referral current location and release details', () => {
+    describe('current location and release details for a community referral', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.community,
+        ppProbationOffice: 'Derbyshire: Buxton Probation Office',
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
+        conviction,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
+      )
+      it('returns the location and release details summary', () => {
+        expect(presenter.communityCurrentLocationAndReleaseDetailsSection).toEqual({
+          title: `Alex River’s current location and release details`,
+          summary: [
+            {
+              key: 'Location at time of referral',
+              lines: ['Community'],
+              changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+            },
+            {
+              key: 'Probation office',
+              lines: ['Derbyshire: Buxton Probation Office'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+            },
+            {
+              key: 'Release date',
+              lines: [`2 May 2023`],
+            },
+          ],
+        })
+      })
+    })
+
+    describe('current location and release details for a community referral where release details is not available', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.community,
+        ppProbationOffice: 'Derbyshire: Buxton Probation Office',
+      })
+
+      const prisonDetailsWithoutReleaseDate = prisoner.build({
+        releaseDate: null,
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
+        conviction,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        prisonDetailsWithoutReleaseDate
+      )
+      it('returns the location and release details summary', () => {
+        expect(presenter.communityCurrentLocationAndReleaseDetailsSection).toEqual({
+          title: `Alex River’s current location and release details`,
+          summary: [
+            {
+              key: 'Location at time of referral',
+              lines: ['Community'],
+              changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+            },
+            {
+              key: 'Probation office',
+              lines: ['Derbyshire: Buxton Probation Office'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+            },
+            {
+              key: 'Release date',
+              lines: [`---`],
+            },
+          ],
+        })
+      })
+    })
+
+    describe('current location and release details for a custody referral', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.custody,
+        ppProbationOffice: 'Derbyshire: Buxton Probation Office',
+        expectedReleaseDate: '04-04-2024',
+        personCustodyPrisonId: 'ccc',
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
+        conviction,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
+      )
+      it('returns the location and release details summary', () => {
+        expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
+          title: `Alex River’s current location and expected release date`,
+          summary: [
+            {
+              key: 'Location at time of referral',
+              lines: ['Aylesbury (HMYOI)'],
+              changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+            },
+            {
+              key: 'Expected release date',
+              lines: [`4 Apr 2024 (Thu)`],
+              changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+            },
+          ],
+        })
+      })
+    })
+
+    describe('current location for a custody referral when release details is not known', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.custody,
+        ppProbationOffice: 'Derbyshire: Buxton Probation Office',
+        expectedReleaseDate: null,
+        personCustodyPrisonId: 'ccc',
+        expectedReleaseDateMissingReason: 'it will be known next week',
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
+        conviction,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
+      )
+      it('returns the location and release details summary', () => {
+        expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
+          title: `Alex River’s current location and expected release date`,
+          summary: [
+            {
+              key: 'Location at time of referral',
+              lines: ['Aylesbury (HMYOI)'],
+              changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+            },
+            {
+              key: 'Expected release date',
+              lines: [`Not known`],
+              changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+            },
+            {
+              key: 'Reason why expected release date is not known',
+              lines: [`it will be known next week`],
+              changeLink: `/referrals/${referral.id}/expected-release-date-unknown?amendPPDetails=true`,
+            },
+          ],
+        })
+      })
+    })
+  })
+
   describe('riskSection', () => {
     const referral = parameterisedDraftReferralFactory.build({
       id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
