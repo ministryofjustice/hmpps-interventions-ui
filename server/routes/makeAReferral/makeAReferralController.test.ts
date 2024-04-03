@@ -2482,12 +2482,14 @@ describe('GET /referrals/:id/check-all-referral-information', () => {
       .build({
         serviceUser: { firstName: 'Johnny', lastName: 'Blair', religionOrBelief: 'Agnostic' },
         relevantSentenceId: 123,
+        personCurrentLocationType: CurrentLocationType.community,
       })
     const conviction = caseConvictionFactory.build()
     const prisonList = prisonFactory.build()
 
     interventionsService.getIntervention.mockResolvedValue(intervention)
     interventionsService.getDraftReferral.mockResolvedValue(referral)
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
     ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(expandedDeliusServiceUserFactory.build())
     ramDeliusApiService.getConvictionByCrnAndId.mockResolvedValue(conviction)
     prisonRegisterService.getPrisons.mockResolvedValue(prisonList)

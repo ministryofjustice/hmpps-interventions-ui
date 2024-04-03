@@ -39,10 +39,30 @@ export default class CheckAllReferralInformationView {
       )
     : null
 
+  private readonly communityLocationAndReleaseDetailsSummaryListArgs = this.presenter
+    .communityCurrentLocationAndReleaseDetailsSection
+    ? ViewUtils.summaryListArgsWithSummaryCard(
+        this.presenter.communityCurrentLocationAndReleaseDetailsSection.summary,
+        this.presenter.communityCurrentLocationAndReleaseDetailsSection.title
+      )
+    : null
+
   private readonly serviceUserDetailsSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
     this.presenter.serviceUserDetailsSection.summary,
     this.presenter.serviceUserDetailsSection.title
   )
+
+  private readonly lastKnownAddressAndContactDetailsSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
+    this.presenter.lastKnownAddressAndContactDetails.summary,
+    this.presenter.lastKnownAddressAndContactDetails.title
+  )
+
+  private get identityDetailsSummaryListArgs() {
+    return ViewUtils.summaryListArgsWithSummaryCard(this.presenter.identityDetails, 'Identity details', {
+      showBorders: true,
+      showTitle: true,
+    })
+  }
 
   private readonly needsAndRequirementsSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
     this.presenter.needsAndRequirementsSection.summary,
@@ -61,6 +81,13 @@ export default class CheckAllReferralInformationView {
       )
     : null
 
+  private readonly personalDetailsSummaryListArgs = this.presenter.personalDetailSummary
+    ? ViewUtils.summaryListArgsWithSummaryCard(
+        this.presenter.personalDetailSummary.summary,
+        this.presenter.personalDetailSummary.title
+      )
+    : null
+
   private readonly sentenceInformationSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
     this.presenter.sentenceInformationSummary.summary,
     this.presenter.sentenceInformationSummary.title
@@ -76,12 +103,16 @@ export default class CheckAllReferralInformationView {
       'makeAReferral/checkAllReferralInformation',
       {
         presenter: this.presenter,
+        identityDetailsSummaryListArgs: this.identityDetailsSummaryListArgs,
         probationPractitionerDetailsSummaryListArgs: this.probationPractitionerDetailsSummaryListArgs,
         mainPointOfContactDetailsSummaryListArgs: this.mainPointOfContactDetailsSummaryListArgs,
         expectedReleaseDateDetailsSummaryListArgs: this.expectedReleaseDateDetailsSummaryListArgs,
         locationDetailsSummaryListArgs: this.locationDetailsSummaryListArgs,
+        communityLocationAndReleaseDetailsSummaryListArgs: this.communityLocationAndReleaseDetailsSummaryListArgs,
         backUpContactDetailsSummaryListArgs: this.backUpContactDetailsSummaryListArgs,
         serviceUserDetailsSummaryListArgs: this.serviceUserDetailsSummaryListArgs,
+        lastKnownAddressAndContactDetailsSummaryListArgs: this.lastKnownAddressAndContactDetailsSummaryListArgs,
+        personalDetailsSummaryListArgs: this.personalDetailsSummaryListArgs,
         needsAndRequirementsSummaryListArgs: this.needsAndRequirementsSummaryListArgs,
         referralDetailsSections: this.referralDetailsSections,
         serviceCategoriesSummaryListArgs: this.serviceCategoriesSummaryListArgs,

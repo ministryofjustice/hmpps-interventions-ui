@@ -543,6 +543,16 @@ describe('Referral form', () => {
       cy.contains('Autism')
       cy.contains('alex.river@example.com')
 
+      cy.contains('Identity details')
+        .parent()
+        .next()
+        .should('contain', 'First name')
+        .should('contain', 'Alex')
+        .should('contain', 'Last name')
+        .should('contain', 'River')
+        .should('contain', 'CRN')
+        .should('contain', 'X123456')
+
       // Alex's risk information
       cy.contains('Main point of contact details')
         .parent()
@@ -583,16 +593,6 @@ describe('Referral form', () => {
         .should('contain', 'Bedford (HMP & YOI)')
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
-
-      //
-      // Alex's risk information
-      cy.contains('Additional information')
-        .next()
-        .should('contain', 'No more comments.')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/edit-oasys-risk-information`)
-
       // Alex's needs and requirements
       cy.contains('Additional information about Alex’s needs (optional)')
         .next()
@@ -661,7 +661,7 @@ describe('Referral form', () => {
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral?amendPPDetails=true`)
 
       // Accommodation referral details
-      cy.contains('Accommodation referral details')
+      cy.contains('Accommodation intervention')
       cy.contains('Complexity level')
         .next()
         .should('contain', 'Low complexity')
@@ -684,6 +684,14 @@ describe('Referral form', () => {
           'href',
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes`
         )
+      // Alex's risk information
+      cy.contains(`Alex River’s OAsys risk information`)
+        .parent()
+        .next()
+        .children()
+        .should('contain', 'Additional information')
+        .should('contain', 'No more comments.')
+        .should('contain', 'Change')
       cy.contains('Submit referral').click()
       cy.location('pathname').should('equal', `/referrals/${sentReferral.id}/confirmation`)
 
@@ -1136,7 +1144,6 @@ describe('Referral form', () => {
       cy.contains('alex.river@example.com')
 
       // Alex's risk information
-      // Alex's risk information
       cy.contains('Main point of contact details')
         .parent()
         .next()
@@ -1168,15 +1175,6 @@ describe('Referral form', () => {
         .should('contain', 'Bedford (HMP & YOI)')
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
-      //
-      // Alex's risk information
-      cy.contains('Additional information')
-        .next()
-        .should('contain', 'No more comments.')
-        .next()
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/edit-oasys-risk-information`)
-
       // Alex's needs and requirements
       cy.contains('Additional information about Alex’s needs (optional)')
         .next()
@@ -1245,7 +1243,7 @@ describe('Referral form', () => {
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/reason-for-referral?amendPPDetails=true`)
 
       // Accommodation referral details
-      cy.contains('Accommodation referral details')
+      cy.contains('Accommodation intervention')
       cy.contains('Complexity level')
         .next()
         .should('contain', 'Low complexity')
@@ -1268,6 +1266,15 @@ describe('Referral form', () => {
           'href',
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes`
         )
+      // Alex's risk information
+      cy.contains(`Alex River’s OAsys risk information`)
+        .parent()
+        .next()
+        .children()
+        .should('contain', 'Additional information')
+        .should('contain', 'No more comments.')
+        .should('contain', 'Change')
+
       cy.contains('Submit referral').click()
       cy.location('pathname').should('equal', `/referrals/${sentReferral.id}/confirmation`)
 
@@ -1830,7 +1837,7 @@ describe('Referral form', () => {
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/service-categories`)
 
-      cy.contains('Accommodation referral details')
+      cy.contains('Accommodation intervention')
       cy.contains('Complexity level')
         .next()
         .should('contain', 'Low complexity')
@@ -1842,7 +1849,7 @@ describe('Referral form', () => {
           'href',
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/complexity-level`
         )
-      cy.contains('Accommodation referral details')
+      cy.contains('Accommodation intervention')
       cy.contains('Desired outcomes')
         .next()
         .should('contain', 'Service user makes progress in obtaining accommodation')
@@ -1855,7 +1862,7 @@ describe('Referral form', () => {
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes`
         )
 
-      cy.contains('Social inclusion referral details')
+      cy.contains('Social inclusion intervention')
         .parent()
         .next()
         .contains('Complexity level')
@@ -1869,7 +1876,7 @@ describe('Referral form', () => {
           'href',
           `/referrals/${draftReferral.id}/service-category/c036826e-f077-49a5-8b33-601dca7ad479/complexity-level`
         )
-      cy.contains('Social inclusion referral details')
+      cy.contains('Social inclusion intervention')
         .parent()
         .next()
         .contains('Desired outcomes')
