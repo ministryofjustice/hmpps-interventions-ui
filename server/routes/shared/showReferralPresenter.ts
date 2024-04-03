@@ -590,7 +590,7 @@ export default class ShowReferralPresenter {
     items.push(this.determineReleaseDate)
     if (this.sentReferral.referral.expectedReleaseDateMissingReason) {
       items.push({
-        key: 'Expected release date unknown reason',
+        key: 'Reason why expected release date is not known',
         lines: [this.sentReferral.referral.expectedReleaseDateMissingReason],
       })
     }

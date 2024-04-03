@@ -14,7 +14,7 @@ export default class ChangeExpectedReleaseDatePresenter {
     this.backLinkUrl = `/referrals/${referral.id}/expected-release-date`
   }
 
-  readonly expectedReleaseDateHint = 'For example, 31 3 1980'
+  readonly expectedReleaseDateHint = 'For example, 27 3 2023'
 
   readonly text = {
     label: `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`,

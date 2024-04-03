@@ -72,7 +72,7 @@ describe('ExpectedReleaseDatePresenter', () => {
             {
               formFields: ['release-date-day'],
               errorSummaryLinkedField: 'release-date-day',
-              message: 'The expected release date must include a day',
+              message: 'Enter the expected release date',
             },
           ],
         })

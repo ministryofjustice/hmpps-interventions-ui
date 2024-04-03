@@ -56,7 +56,7 @@ describe(ExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-day',
               formFields: ['release-date-day'],
-              message: 'The expected release date must include a day',
+              message: 'Enter the expected release date',
             },
           ],
         })
@@ -78,7 +78,7 @@ describe(ExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-month',
               formFields: ['release-date-month'],
-              message: 'The expected release date must include a month',
+              message: 'Enter the expected release date',
             },
           ],
         })
@@ -100,7 +100,7 @@ describe(ExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-year',
               formFields: ['release-date-year'],
-              message: 'The expected release date must include a year',
+              message: 'Enter the expected release date',
             },
           ],
         })
@@ -122,7 +122,7 @@ describe(ExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-month',
               formFields: ['release-date-month'],
-              message: 'The expected release date must be a real date',
+              message: 'Enter date in the correct format',
             },
           ],
         })
@@ -144,7 +144,7 @@ describe(ExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-day',
               formFields: ['release-date-day'],
-              message: 'The expected release date must be in the future',
+              message: 'Enter date in the future',
             },
           ],
         })
@@ -163,7 +163,7 @@ describe(ExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-unknown-reason',
               formFields: ['release-date-unknown-reason'],
-              message: 'You must enter why the expected release date is not known',
+              message: 'Enter a reason why the expected release date is not known',
             },
           ],
         })

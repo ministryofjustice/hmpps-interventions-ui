@@ -24,14 +24,14 @@
         {{ govukErrorSummary(errorSummaryArgs) }}
       {% endif %}
 
-
       <p class="govuk-caption-xl">{{ presenter.text.label }} </p>
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
-
       <form method="post" action={{ presenter.submitHref }}>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
         {{ govukRadios(expectedReleaseDateRadioArgs()) }}
-        <a class="govuk-link" href="{{ presenter.releaseDateUnknownUrl }}">I don't know the expected release date</a>
+        <p class="govuk-body">
+          <a class="govuk-link" href="{{ presenter.releaseDateUnknownUrl }}">I don't know the expected release date</a
+        </p>
         <br>
         <br>
         {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}

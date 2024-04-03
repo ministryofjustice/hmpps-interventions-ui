@@ -620,7 +620,7 @@ describe(ShowReferralPresenter, () => {
           lines: ['Not known'],
         },
         {
-          key: 'Expected release date unknown reason',
+          key: 'Reason why expected release date is not known',
           lines: ['not in ndelius'],
         },
       ])

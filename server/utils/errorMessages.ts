@@ -68,11 +68,11 @@ export default {
     mustBeInFuture: 'The date by which the service needs to be completed must be in the future',
   },
   releaseDate: {
-    dayEmpty: 'The expected release date must include a day',
-    monthEmpty: 'The expected release date must include a month',
-    yearEmpty: 'The expected release date must include a year',
-    invalidDate: 'The expected release date must be a real date',
-    mustBeInFuture: 'The expected release date must be in the future',
+    dayEmpty: 'Enter the expected release date',
+    monthEmpty: 'Enter the expected release date',
+    yearEmpty: 'Enter the expected release date',
+    invalidDate: 'Enter date in the correct format',
+    mustBeInFuture: 'Enter date in the future',
   },
   reasonForChange: {
     cannotBeEmpty: 'Reason for change cannot be empty',
@@ -173,7 +173,7 @@ export default {
     empty: 'Select the expected release date or choose a different date',
   },
   releaseDateUnknownReason: {
-    empty: `You must enter why the expected release date is not known`,
+    empty: `Enter a reason why the expected release date is not known`,
   },
   hasAdditionalResponsibilities: {
     empty: (name: string) => `Select yes if ${name} has caring or employment responsibilities`,
