@@ -1638,7 +1638,7 @@ describe('POST /referrals/:id/confirm-main-point-of-contact', () => {
         })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain(`Enter name of main point of contact`)
+          expect(res.text).toContain(`Add main point of contact name - this is a mandatory field`)
         })
 
       expect(interventionsService.patchDraftReferral).not.toHaveBeenCalled()
