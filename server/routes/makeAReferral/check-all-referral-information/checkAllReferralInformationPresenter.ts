@@ -121,7 +121,7 @@ export default class CheckAllReferralInformationPresenter {
   get identityDetails(): SummaryListItem[] {
     return [
       { key: 'First name', lines: [this.referral.serviceUser.firstName ?? ''] },
-      { key: 'Last name', lines: [this.referral.serviceUser.lastName ?? ''] },
+      { key: 'Last name(s)', lines: [this.referral.serviceUser.lastName ?? ''] },
       {
         key: 'Date of birth',
         lines: [this.dateOfBirthWithShortMonth ? `${this.dateOfBirthWithShortMonth} (${this.age} years old)` : ''],
@@ -213,7 +213,11 @@ export default class CheckAllReferralInformationPresenter {
   }
 
   get backupContactDetails(): { title: string; summary: SummaryListItem[] } | null {
-    if (this.loggedInUser.username.toUpperCase() === this.referral.ndeliusPPName?.toUpperCase()) return null
+    if (
+      this.loggedInUser.username.toUpperCase() === this.referral.ndeliusPPName?.toUpperCase() ||
+      this.loggedInUser.username.toUpperCase() === this.referral.ppName?.toUpperCase()
+    )
+      return null
 
     const backupContactDetails: SummaryListItem[] = []
     backupContactDetails.push({
@@ -291,7 +295,6 @@ export default class CheckAllReferralInformationPresenter {
       {
         key: 'Location at time of referral',
         lines: [`${utils.convertToProperCase(this.referral.personCurrentLocationType!)}`],
-        changeLink: `/referrals/${this.referral.id}/submit-current-location?amendPPDetails=true`,
       },
       this.derivePduOrProbationOffice,
       {
@@ -355,37 +358,37 @@ export default class CheckAllReferralInformationPresenter {
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
           },
           {
-            key: 'What is the nature of the risk',
+            key: 'Nature of risk',
             lines: [this.editedOasysRiskInformation.riskSummaryNatureOfRisk || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
           },
           {
-            key: 'When is the risk likely to be greatest',
+            key: 'When risk likely to be greatest',
             lines: [this.editedOasysRiskInformation.riskSummaryRiskImminence || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
           },
           {
-            key: 'Concerns in relation to self-harm',
+            key: 'Concerns relating to self harm',
             lines: [this.editedOasysRiskInformation.riskToSelfSelfHarm || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
           },
           {
-            key: 'Concerns in relation to suicide',
+            key: 'Concerns relating to suicide',
             lines: [this.editedOasysRiskInformation.riskToSelfSuicide || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
           },
           {
-            key: 'Concerns in relation to coping in a hostel setting',
+            key: 'Concerns relating to coping in a hotel setting',
             lines: [this.editedOasysRiskInformation.riskToSelfHostelSetting || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
           },
           {
-            key: 'Concerns in relation to vulnerability',
+            key: 'Concerns relating to vulnerability',
             lines: [this.editedOasysRiskInformation.riskToSelfVulnerability || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
           },
           {
-            key: 'Additional information',
+            key: 'Additional risk information',
             lines: [this.editedOasysRiskInformation.additionalInformation || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
           },
@@ -411,25 +414,31 @@ export default class CheckAllReferralInformationPresenter {
       title: `${this.serviceUserNameForServiceCategory}’s needs and requirements`,
       summary: [
         {
-          key: needsAndRequirementsPresenter.text.additionalNeedsInformation.label,
+          key: 'Identify needs',
           lines: [needsAndRequirementsPresenter.fields.additionalNeedsInformation],
           changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
         {
-          key: needsAndRequirementsPresenter.text.accessibilityNeeds.label,
+          key: 'Mobility, disability or accessibility needs',
           lines: [needsAndRequirementsPresenter.fields.accessibilityNeeds],
           changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
         {
-          key: needsAndRequirementsPresenter.text.needsInterpreter.label,
-          lines: this.conditionalValue(
-            needsAndRequirementsPresenter.fields.needsInterpreter,
-            needsAndRequirementsPresenter.fields.interpreterLanguage
-          ),
+          key: 'Interpreter required',
+          lines: [this.referral.needsInterpreter ? 'Yes' : 'No'],
           changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
         },
         {
-          key: needsAndRequirementsPresenter.text.hasAdditionalResponsibilities.label,
+          key: 'Interpreter language',
+          lines: [this.referral.interpreterLanguage || 'N/A'],
+          changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
+        },
+        {
+          key: 'Primary language',
+          lines: [this.referral.serviceUser.preferredLanguage || 'N/A'],
+        },
+        {
+          key: 'Caring or employment responsibilities',
           lines: this.conditionalValue(
             needsAndRequirementsPresenter.fields.hasAdditionalResponsibilities,
             needsAndRequirementsPresenter.fields.whenUnavailable
@@ -469,6 +478,11 @@ export default class CheckAllReferralInformationPresenter {
         title: `${utils.convertToProperCase(serviceCategory.name)} intervention`,
         summary: [
           {
+            key: 'Reason for referral and further information for the service provider',
+            lines: [this.determineFurtherInformation(this.referral)],
+            changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
+          },
+          {
             key: 'Complexity level',
             lines: [checkedComplexityOption?.title ?? '', '', checkedComplexityOption?.hint ?? ''],
             changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/complexity-level`,
@@ -478,11 +492,6 @@ export default class CheckAllReferralInformationPresenter {
             lines: checkedDesiredOutcomesOptions.map(option => option.text),
             listStyle: checkedDesiredOutcomesOptions.length > 1 ? ListStyle.bulleted : ListStyle.noMarkers,
             changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/desired-outcomes`,
-          },
-          {
-            key: 'Further information for the service provider',
-            lines: [this.determineFurtherInformation(this.referral)],
-            changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
           },
         ],
       }

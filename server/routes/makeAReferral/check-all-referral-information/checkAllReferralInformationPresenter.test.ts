@@ -377,7 +377,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             lines: ['Alex'],
           },
           {
-            key: 'Last name',
+            key: 'Last name(s)',
             lines: ['River'],
           },
           {
@@ -415,7 +415,6 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'Location at time of referral',
               lines: ['Community'],
-              changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
             },
             {
               key: 'Probation office',
@@ -456,7 +455,6 @@ describe(CheckAllReferralInformationPresenter, () => {
             {
               key: 'Location at time of referral',
               lines: ['Community'],
-              changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
             },
             {
               key: 'Probation office',
@@ -617,7 +615,7 @@ describe(CheckAllReferralInformationPresenter, () => {
 
         it('returns the value from the referral', () => {
           expect(presenter.needsAndRequirementsSection.summary[0]).toEqual({
-            key: 'Additional information about Alex’s needs (optional)',
+            key: 'Identify needs',
             lines: ['Some additional needs information'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
@@ -641,7 +639,7 @@ describe(CheckAllReferralInformationPresenter, () => {
 
         it('returns the value from the referral', () => {
           expect(presenter.needsAndRequirementsSection.summary[1]).toEqual({
-            key: 'Does Alex have any other mobility, disability or accessibility needs? (optional)',
+            key: 'Mobility, disability or accessibility needs',
             lines: ['Some accessibility needs information'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
@@ -665,7 +663,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           )
 
           expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
-            key: 'Does Alex need an interpreter?',
+            key: 'Interpreter required',
             lines: ['No'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
@@ -688,11 +686,31 @@ describe(CheckAllReferralInformationPresenter, () => {
           )
 
           it('also includes the language', () => {
-            expect(presenter.needsAndRequirementsSection.summary[2]).toEqual({
-              key: 'Does Alex need an interpreter?',
-              lines: ['Yes', 'Spanish'],
+            expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
+              key: 'Interpreter language',
+              lines: ['Spanish'],
               changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
             })
+          })
+        })
+      })
+
+      describe('primary language', () => {
+        const referral = parameterisedDraftReferralFactory.build()
+        const presenter = new CheckAllReferralInformationPresenter(
+          referral,
+          interventionFactory.build({ serviceCategories }),
+          loggedInUser,
+          conviction,
+          deliusServiceUser,
+          prisonsAndSecuredChildAgencies,
+          prisonerDetails
+        )
+
+        it('returns the value from the referral', () => {
+          expect(presenter.needsAndRequirementsSection.summary[4]).toEqual({
+            key: 'Primary language',
+            lines: ['English'],
           })
         })
       })
@@ -713,8 +731,8 @@ describe(CheckAllReferralInformationPresenter, () => {
             prisonerDetails
           )
 
-          expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
-            key: 'Does Alex have caring or employment responsibilities?',
+          expect(presenter.needsAndRequirementsSection.summary[5]).toEqual({
+            key: 'Caring or employment responsibilities',
             lines: ['No'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
           })
@@ -737,8 +755,8 @@ describe(CheckAllReferralInformationPresenter, () => {
           )
 
           it('includes information about when they’re unavailable', () => {
-            expect(presenter.needsAndRequirementsSection.summary[3]).toEqual({
-              key: 'Does Alex have caring or employment responsibilities?',
+            expect(presenter.needsAndRequirementsSection.summary[5]).toEqual({
+              key: 'Caring or employment responsibilities',
               lines: ['Yes', 'Alex can’t attend on Fridays'],
               changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
             })
@@ -818,7 +836,7 @@ describe(CheckAllReferralInformationPresenter, () => {
 
       describe('complexity level', () => {
         it('includes the chosen complexity level’s title and description', () => {
-          const item = section.summary[0]
+          const item = section.summary[1]
 
           expect(item).toEqual({
             key: 'Complexity level',
@@ -831,7 +849,7 @@ describe(CheckAllReferralInformationPresenter, () => {
 
       describe('desired outcomes', () => {
         it('includes the chosen desired outcomes’ descriptions', () => {
-          const item = section.summary[1]
+          const item = section.summary[2]
 
           expect(item).toEqual({
             key: 'Desired outcomes',
@@ -845,10 +863,10 @@ describe(CheckAllReferralInformationPresenter, () => {
 
       describe('further information', () => {
         it('includes the further information ', () => {
-          const item = section.summary[2]
+          const item = section.summary[0]
 
           expect(item).toEqual({
-            key: 'Further information for the service provider',
+            key: 'Reason for referral and further information for the service provider',
             lines: ['Some reason'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/reason-for-referral?amendPPDetails=true',
           })
