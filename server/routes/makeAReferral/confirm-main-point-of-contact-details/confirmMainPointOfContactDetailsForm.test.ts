@@ -61,7 +61,7 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
           {
             formFields: ['location'],
             errorSummaryLinkedField: 'location',
-            message: 'Select establishment or probation office',
+            message: 'Select prison establishment or probation office',
           },
         ],
       })
@@ -87,7 +87,7 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
           {
             formFields: ['probation-practitioner-name'],
             errorSummaryLinkedField: 'probation-practitioner-name',
-            message: 'Enter name of main point of contact',
+            message: 'Add main point of contact name - this is a mandatory field',
           },
         ],
       })
@@ -113,7 +113,7 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
           {
             formFields: ['probation-practitioner-roleOrJobTitle'],
             errorSummaryLinkedField: 'probation-practitioner-roleOrJobTitle',
-            message: 'Enter role/job title',
+            message: 'Add role / job title - this is a mandatory field',
           },
         ],
       })
@@ -139,7 +139,7 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
           {
             formFields: ['prison-select'],
             errorSummaryLinkedField: 'prison-select',
-            message: 'Enter the prison name',
+            message: 'Select a prison establishment from the list',
           },
         ],
       })
@@ -165,7 +165,7 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
           {
             formFields: ['probation-practitioner-office'],
             errorSummaryLinkedField: 'probation-practitioner-office',
-            message: 'Enter the probation office',
+            message: 'Select a probation office from the list',
           },
         ],
       })
