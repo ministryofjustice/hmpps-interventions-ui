@@ -611,7 +611,11 @@ export default class ShowReferralPresenter {
     }
     return {
       key: 'Release date',
-      lines: [this.prisonerDetails !== null ? moment(this.prisonerDetails.releaseDate!).format('D MMM YYYY') : '---'],
+      lines: [
+        this.prisonerDetails !== null
+          ? moment(this.prisonerDetails.releaseDate!).format('D MMM YYYY [(]ddd[)]')
+          : '---',
+      ],
     }
   }
 

@@ -423,7 +423,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             },
             {
               key: 'Release date',
-              lines: [`2 May 2023`],
+              lines: [`2 May 2023 (Tue)`],
             },
           ],
         })

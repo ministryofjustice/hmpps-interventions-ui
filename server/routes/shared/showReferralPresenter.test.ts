@@ -504,7 +504,7 @@ describe(ShowReferralPresenter, () => {
       expect(presenter.serviceUserLocationDetails).toEqual([
         { key: 'Location at time of referral', lines: ['Community'] },
         { key: 'Probation Office', lines: ['London'] },
-        { key: 'Release date', lines: ['2 May 2023'] },
+        { key: 'Release date', lines: ['2 May 2023 (Tue)'] },
       ])
     })
 
