@@ -309,6 +309,11 @@ export default {
       empty: 'Select a reason for cancelling the referral',
     },
   },
+  withdrawReferral: {
+    withdrawalReason: {
+      empty: 'Select a reason for withdrawing the referral',
+    },
+  },
   reasonForReferral: {
     empty: 'Enter reason for the referral and any further information',
   },

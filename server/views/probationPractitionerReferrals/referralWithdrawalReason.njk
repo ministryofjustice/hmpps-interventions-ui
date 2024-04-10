@@ -1,0 +1,31 @@
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Referral withdrawal" %}
+{% set pageSubTitle = "Provide withdrawal reason" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+      <p class="govuk-body-m govuk-!-margin-bottom-8">{{ presenter.text.information }}</p>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {{ govukRadios(referralCancellationRadiosArgs) }}
+        {{ govukTextarea(additionalCommentsTextareaArgs) }}
+
+        {{ govukButton({ text: "Continue", preventDoubleClick: true }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
