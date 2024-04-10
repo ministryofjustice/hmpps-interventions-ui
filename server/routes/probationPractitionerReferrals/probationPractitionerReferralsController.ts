@@ -110,6 +110,7 @@ export default class ProbationPractitionerReferralsController {
       size: pageSize,
       sort,
     }
+    await this.interventionsService.addNewUserToIntervention(res.locals.user.token.accessToken)
 
     const cases = await this.interventionsService.getSentReferralsForUserTokenPaged(
       res.locals.user.token.accessToken,

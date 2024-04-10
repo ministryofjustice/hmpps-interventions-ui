@@ -61,6 +61,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
     cy.stubGetIntervention(womensServicesIntervention.id, womensServicesIntervention)
+    cy.stubAddInterventionNewUser()
     cy.stubGetSentReferralsForUserTokenPaged(page)
 
     cy.login()
@@ -97,6 +98,7 @@ describe('Probation practitioner referrals dashboard', () => {
   it('user views an end of service report', () => {
     const page = pageFactory.pageContent([]).build()
     cy.stubGetSentReferralsForUserTokenPaged(page)
+    cy.stubAddInterventionNewUser()
     cy.login()
     const serviceCategory1 = serviceCategoryFactory.build()
     const serviceCategory2 = serviceCategoryFactory.build({
@@ -184,6 +186,7 @@ describe('Probation practitioner referrals dashboard', () => {
         const deliusUser = ramDeliusUserFactory.build()
         cy.stubGetSentReferral(assignedReferral.id, assignedReferral)
         cy.stubGetIntervention(intervention.id, intervention)
+        cy.stubAddInterventionNewUser()
         cy.stubGetApprovedActionPlanSummaries(assignedReferral.id, [])
         cy.stubGetCaseDetailsByCrn(assignedReferral.referral.serviceUser.crn, deliusServiceUserFactory.build())
         cy.stubGetConvictionByCrnAndId(assignedReferral.referral.serviceUser.crn, conviction.conviction.id, conviction)
@@ -386,6 +389,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
+    cy.stubAddInterventionNewUser()
     cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
@@ -620,6 +624,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
     cy.stubGetSentReferral(referral.id, referral)
     cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
+    cy.stubAddInterventionNewUser()
     cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
     cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
     cy.stubGetUserByUsername(deliusUser.username, deliusUser)
@@ -847,6 +852,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
+      cy.stubAddInterventionNewUser()
       cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
@@ -948,6 +954,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
       cy.stubGetSentReferral(referral.id, referral)
       cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
+      cy.stubAddInterventionNewUser()
       cy.stubGetCaseDetailsByCrn(referral.referral.serviceUser.crn, deliusServiceUser)
       cy.stubGetConvictionByCrnAndId(referral.referral.serviceUser.crn, conviction.conviction.id, conviction)
       cy.stubGetUserByUsername(deliusUser.username, deliusUser)
@@ -1131,6 +1138,7 @@ describe('Probation practitioner referrals dashboard', () => {
 
         cy.stubGetSentReferral(referral.id, referral)
         cy.stubGetIntervention(personalWellbeingIntervention.id, personalWellbeingIntervention)
+        cy.stubAddInterventionNewUser()
         cy.stubGetApprovedActionPlanSummaries(referral.id, [])
 
         cy.stubGetSupplierAssessment(referral.id, supplierAssessment)

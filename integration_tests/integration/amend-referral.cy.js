@@ -32,6 +32,7 @@ context('Amend a referral', () => {
 
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
+      cy.stubAddInterventionNewUser()
       cy.stubGetUserByUsername(pp.username, pp)
       cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
       cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())
@@ -124,6 +125,7 @@ context('Amend a referral', () => {
 
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
+      cy.stubAddInterventionNewUser()
       cy.stubGetUserByUsername(pp.username, pp)
       cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
       cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())
@@ -227,6 +229,7 @@ context('Amend a referral', () => {
 
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetIntervention(sentReferral.referral.interventionId, intervention.build())
+      cy.stubAddInterventionNewUser()
       cy.stubGetUserByUsername(pp.username, pp)
       cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
       cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())
@@ -360,6 +363,7 @@ context('Amend a referral', () => {
       const pp = ramDeliusUserFactory.build()
 
       cy.stubGetIntervention(sentReferral.referral.interventionId, personalWellbeingIntervention)
+      cy.stubAddInterventionNewUser()
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
       cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())
@@ -603,6 +607,7 @@ context('Amend a referral', () => {
       const pp = ramDeliusUserFactory.build()
 
       cy.stubGetIntervention(sentReferral.referral.interventionId, personalWellbeingIntervention)
+      cy.stubAddInterventionNewUser()
       cy.stubGetSentReferral(sentReferral.id, sentReferral)
       cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
       cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())

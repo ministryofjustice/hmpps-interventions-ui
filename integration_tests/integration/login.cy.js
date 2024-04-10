@@ -22,6 +22,7 @@ context('Login', () => {
 
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
       cy.stubGetDraftReferralsForUserToken([])
+      cy.stubAddInterventionNewUser()
       cy.login()
     })
 
@@ -66,6 +67,7 @@ context('Login', () => {
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
       cy.stubGetPrisons(prisonFactory.build())
       cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
+      cy.stubAddInterventionNewUser()
       cy.login()
     })
 

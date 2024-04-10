@@ -12,6 +12,7 @@ context('Find an intervention', () => {
 
     cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
     cy.stubGetDraftReferralsForUserToken([])
+    cy.stubAddInterventionNewUser()
     cy.login()
   })
 

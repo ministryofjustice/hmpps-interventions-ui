@@ -865,4 +865,12 @@ export default class InterventionsService {
       data: { ...amendNeedsAndRequirement },
     })
   }
+
+  async addNewUserToIntervention(token: string): Promise<void> {
+    const restClient = this.createRestClient(token)
+    await restClient.post({
+      path: `/intervention/user`,
+      headers: { Accept: 'application/json' },
+    })
+  }
 }

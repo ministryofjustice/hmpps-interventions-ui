@@ -21,6 +21,7 @@ context('Case notes', () => {
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.stubGetPrisons(prisonFactory.build())
         cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
+        cy.stubAddInterventionNewUser()
         cy.login()
 
         const ppCaseNote = caseNoteFactory.build({
@@ -54,6 +55,7 @@ context('Case notes', () => {
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.stubGetPrisons(prisonFactory.build())
         cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
+        cy.stubAddInterventionNewUser()
         cy.login()
 
         const ppCaseNote = caseNoteFactory.build({
@@ -88,6 +90,7 @@ context('Case notes', () => {
         const sentReferral = sentReferralFactory.build()
         cy.stubGetSentReferralsForUserToken([])
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
+        cy.stubAddInterventionNewUser()
         cy.login()
 
         const ppCaseNote = caseNoteFactory.build({
@@ -118,6 +121,7 @@ context('Case notes', () => {
         cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
         cy.stubGetPrisons(prisonFactory.build())
         cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
+        cy.stubAddInterventionNewUser()
         cy.login()
 
         const ppCaseNote = caseNoteFactory.build({

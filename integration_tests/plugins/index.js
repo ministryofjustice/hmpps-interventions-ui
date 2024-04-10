@@ -131,6 +131,10 @@ export default on => {
       return interventionsService.stubGetIntervention(arg.id, arg.responseJson)
     },
 
+    stubAddInterventionNewUser: () => {
+      return interventionsService.stubAddInterventionNewUser()
+    },
+
     stubGetPccRegions: arg => {
       return interventionsService.stubGetPccRegions(arg.responseJson)
     },

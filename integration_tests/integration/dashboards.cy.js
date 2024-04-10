@@ -45,6 +45,7 @@ describe('Dashboards', () => {
 
       cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
       cy.stubGetIntervention(womensServicesIntervention.id, womensServicesIntervention)
+      cy.stubAddInterventionNewUser()
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
     })
 
@@ -267,6 +268,7 @@ describe('Dashboards', () => {
 
       cy.stubGetIntervention(accommodationIntervention.id, accommodationIntervention)
       cy.stubGetIntervention(womensServicesIntervention.id, womensServicesIntervention)
+      cy.stubAddInterventionNewUser()
 
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
       cy.stubGetPrisons(prisonFactory.build())
