@@ -99,6 +99,8 @@ export default class InterventionProgressPresenter {
 
   readonly amendReferralHref = `/probation-practitioner/referrals/${this.referral.id}/details`
 
+  readonly withdrawReferralHref = `/probation-practitioner/referrals/${this.referral.id}/withdraw`
+
   readonly hasSessions = this.actionPlanAppointments.length !== 0
 
   readonly sessionTableHeaders = ['Session details', 'Time and date', 'Status', 'Action']

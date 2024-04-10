@@ -1,0 +1,20 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Referral withdrawal" %}
+{% set pageSubTitle = "Confirm" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+      <p class="govuk-body-m govuk-!-margin-bottom-8">{{ presenter.text.confirmationQuestion }}</p>
+      <form method="post" action="{{ presenter.confirmCancellationHref }}">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {{ govukButton({ text: "Cancel referral", preventDoubleClick: true }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}
