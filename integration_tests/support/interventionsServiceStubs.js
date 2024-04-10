@@ -62,6 +62,10 @@ Cypress.Commands.add('stubGetIntervention', (id, responseJson) => {
   cy.task('stubGetIntervention', { id, responseJson })
 })
 
+Cypress.Commands.add('stubAddInterventionNewUser', () => {
+  cy.task('stubAddInterventionNewUser')
+})
+
 Cypress.Commands.add('stubGetPccRegions', responseJson => {
   cy.task('stubGetPccRegions', { responseJson })
 })

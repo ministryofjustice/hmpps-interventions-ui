@@ -232,6 +232,12 @@ export default class ServiceProviderReferralsController {
       sort,
     }
 
+    /**
+     * This is done to save any new user to interventions db before calling the sent referral summaries api
+     * This will then enable us to switch sent referral summaries api to read only dbs
+     * */
+    await this.interventionsService.addNewUserToIntervention(res.locals.user.token.accessToken)
+
     const cases = await this.interventionsService.getSentReferralsForUserTokenPaged(
       res.locals.user.token.accessToken,
       getSentReferralsFilterParams,
