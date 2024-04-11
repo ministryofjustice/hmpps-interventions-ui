@@ -826,8 +826,8 @@ describe(CheckAllReferralInformationPresenter, () => {
 
     it('contains a section for each service category in the referral', () => {
       expect(presenter.referralDetailsSections).toMatchObject([
-        { title: 'Accommodation intervention' },
-        { title: 'Education, training and employment intervention' },
+        { title: 'Accommodation service' },
+        { title: 'Education, training and employment service' },
       ])
     })
 
@@ -836,7 +836,7 @@ describe(CheckAllReferralInformationPresenter, () => {
 
       describe('complexity level', () => {
         it('includes the chosen complexity level’s title and description', () => {
-          const item = section.summary[1]
+          const item = section.summary[0]
 
           expect(item).toEqual({
             key: 'Complexity level',
@@ -849,7 +849,7 @@ describe(CheckAllReferralInformationPresenter, () => {
 
       describe('desired outcomes', () => {
         it('includes the chosen desired outcomes’ descriptions', () => {
-          const item = section.summary[2]
+          const item = section.summary[1]
 
           expect(item).toEqual({
             key: 'Desired outcomes',
@@ -857,18 +857,6 @@ describe(CheckAllReferralInformationPresenter, () => {
             listStyle: ListStyle.bulleted,
             changeLink:
               '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes',
-          })
-        })
-      })
-
-      describe('further information', () => {
-        it('includes the further information ', () => {
-          const item = section.summary[0]
-
-          expect(item).toEqual({
-            key: 'Reason for referral and further information for the service provider',
-            lines: ['Some reason'],
-            changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/reason-for-referral?amendPPDetails=true',
           })
         })
       })
@@ -910,12 +898,17 @@ describe(CheckAllReferralInformationPresenter, () => {
     describe('for a cohort intervention', () => {
       const intervention = interventionFactory.build({
         serviceCategories: [accommodationServiceCategory, eteServiceCategory, serviceCategoryFactory.build()],
+        contractType: {
+          code: 'PWW',
+          name: 'Personal Wellbeing',
+        },
       })
 
       describe('with a single service category chosen in the referral', () => {
         const referral = parameterisedDraftReferralFactory.build({
           id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           serviceCategoryIds: [accommodationServiceCategory.id],
+          reasonForReferral: 'Some reason',
         })
 
         it('lists the service categories chosen in the referral', () => {
@@ -929,10 +922,15 @@ describe(CheckAllReferralInformationPresenter, () => {
             prisonerDetails
           )
           expect(presenter.serviceCategoriesSummary).toEqual({
-            title: 'Service categories',
+            title: 'Personal wellbeing intervention',
             summary: [
               {
-                key: 'Selected service categories',
+                key: 'Reason for referral and further information for the service provider',
+                lines: ['Some reason'],
+                changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/reason-for-referral?amendPPDetails=true',
+              },
+              {
+                key: 'Selected services',
                 lines: ['Accommodation'],
                 listStyle: ListStyle.noMarkers,
                 changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
@@ -946,6 +944,7 @@ describe(CheckAllReferralInformationPresenter, () => {
         const referral = parameterisedDraftReferralFactory.build({
           id: '03e9e6cd-a45f-4dfc-adad-06301349042e',
           serviceCategoryIds: [accommodationServiceCategory.id, eteServiceCategory.id],
+          reasonForReferral: 'Some reason',
         })
 
         it('lists the service categories chosen in the referral', () => {
@@ -959,10 +958,15 @@ describe(CheckAllReferralInformationPresenter, () => {
             prisonerDetails
           )
           expect(presenter.serviceCategoriesSummary).toEqual({
-            title: 'Service categories',
+            title: 'Personal wellbeing intervention',
             summary: [
               {
-                key: 'Selected service categories',
+                key: 'Reason for referral and further information for the service provider',
+                lines: ['Some reason'],
+                changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/reason-for-referral?amendPPDetails=true',
+              },
+              {
+                key: 'Selected services',
                 lines: ['Accommodation', 'Education, training and employment'],
                 listStyle: ListStyle.noMarkers,
                 changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,

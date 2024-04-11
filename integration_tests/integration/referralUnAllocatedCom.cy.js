@@ -1843,8 +1843,8 @@ describe('Referral form', () => {
       cy.get('a').contains('Check referral information').click()
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/check-all-referral-information`)
 
-      cy.contains('Service categories')
-      cy.contains('Selected service categories')
+      cy.contains(`Women's services intervention`)
+      cy.contains('Selected services')
         .next()
         .should('contain', 'Accommodation')
         .and('contain', 'Social inclusion')
@@ -1852,7 +1852,7 @@ describe('Referral form', () => {
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/service-categories`)
 
-      cy.contains('Accommodation intervention')
+      cy.contains('Accommodation service')
       cy.contains('Complexity level')
         .next()
         .should('contain', 'Low complexity')
@@ -1864,7 +1864,7 @@ describe('Referral form', () => {
           'href',
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/complexity-level`
         )
-      cy.contains('Accommodation intervention')
+      cy.contains('Accommodation service')
       cy.contains('Desired outcomes')
         .next()
         .should('contain', 'Service user makes progress in obtaining accommodation')
@@ -1877,7 +1877,7 @@ describe('Referral form', () => {
           `/referrals/${draftReferral.id}/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes`
         )
 
-      cy.contains('Social inclusion intervention')
+      cy.contains('Social inclusion service')
         .parent()
         .next()
         .contains('Complexity level')
@@ -1891,7 +1891,7 @@ describe('Referral form', () => {
           'href',
           `/referrals/${draftReferral.id}/service-category/c036826e-f077-49a5-8b33-601dca7ad479/complexity-level`
         )
-      cy.contains('Social inclusion intervention')
+      cy.contains('Social inclusion service')
         .parent()
         .next()
         .contains('Desired outcomes')

@@ -473,27 +473,34 @@ export default class CheckAllReferralInformationPresenter {
 
       const desiredOutcomesPresenter = new DesiredOutcomesPresenter(this.referral, serviceCategory)
       const checkedDesiredOutcomesOptions = desiredOutcomesPresenter.desiredOutcomes.filter(val => val.checked)
+      const { isCohortIntervention } = new InterventionDecorator(this.intervention)
+      const summaries: SummaryListItem[] = []
 
+      if (!isCohortIntervention) {
+        summaries.push({
+          key: 'Reason for referral and further information for the service provider',
+          lines: [this.determineFurtherInformation(this.referral)],
+          changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
+        })
+      }
+      summaries.push(
+        {
+          key: 'Complexity level',
+          lines: [checkedComplexityOption?.title ?? '', '', checkedComplexityOption?.hint ?? ''],
+          changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/complexity-level`,
+        },
+        {
+          key: 'Desired outcomes',
+          lines: checkedDesiredOutcomesOptions.map(option => option.text),
+          listStyle: checkedDesiredOutcomesOptions.length > 1 ? ListStyle.bulleted : ListStyle.noMarkers,
+          changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/desired-outcomes`,
+        }
+      )
       return {
-        title: `${utils.convertToProperCase(serviceCategory.name)} intervention`,
-        summary: [
-          {
-            key: 'Reason for referral and further information for the service provider',
-            lines: [this.determineFurtherInformation(this.referral)],
-            changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
-          },
-          {
-            key: 'Complexity level',
-            lines: [checkedComplexityOption?.title ?? '', '', checkedComplexityOption?.hint ?? ''],
-            changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/complexity-level`,
-          },
-          {
-            key: 'Desired outcomes',
-            lines: checkedDesiredOutcomesOptions.map(option => option.text),
-            listStyle: checkedDesiredOutcomesOptions.length > 1 ? ListStyle.bulleted : ListStyle.noMarkers,
-            changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/desired-outcomes`,
-          },
-        ],
+        title: isCohortIntervention
+          ? `${utils.convertToProperCase(serviceCategory.name)} service`
+          : `${utils.convertToProperCase(serviceCategory.name)} intervention`,
+        summary: summaries,
       }
     })
   }
@@ -508,10 +515,15 @@ export default class CheckAllReferralInformationPresenter {
     )
 
     return {
-      title: 'Service categories',
+      title: `${utils.convertToProperCase(this.intervention.contractType.name)} intervention`,
       summary: [
         {
-          key: 'Selected service categories',
+          key: 'Reason for referral and further information for the service provider',
+          lines: [this.determineFurtherInformation(this.referral)],
+          changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
+        },
+        {
+          key: 'Selected services',
           lines: serviceCategories.map(serviceCategory => utils.convertToProperCase(serviceCategory.name)),
           listStyle: ListStyle.noMarkers,
           changeLink: `/referrals/${this.referral.id}/service-categories`,
