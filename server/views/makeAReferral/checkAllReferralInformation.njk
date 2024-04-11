@@ -26,6 +26,11 @@
 
       {{ govukSummaryList(sentenceInformationSummaryListArgs) }}
 
+      {% if serviceCategoriesSummaryListArgs %}
+
+        {{ govukSummaryList(serviceCategoriesSummaryListArgs) }}
+      {% endif %}
+
       {% for section in referralDetailsSections %}
 
         {{ govukSummaryList(section.summaryListArgs) }}
@@ -51,8 +56,6 @@
         {{ govukSummaryList(locationDetailsSummaryListArgs) }}
       {% endif %}
       
-         
-      
       {{ govukSummaryList(lastKnownAddressAndContactDetailsSummaryListArgs) }}
 
       {{govukSummaryList(personalDetailsSummaryListArgs)}}
@@ -60,13 +63,6 @@
       {{ govukSummaryList(needsAndRequirementsSummaryListArgs) }}      
 
       {{ govukSummaryList(riskInformationSummaryListArgs) }}
-
-      {% if serviceCategoriesSummaryListArgs %}
-
-        {{ govukSummaryList(serviceCategoriesSummaryListArgs) }}
-      {% endif %}
-
-
 
       <form method="post" action="send">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
