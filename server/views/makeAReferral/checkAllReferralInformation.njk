@@ -1,6 +1,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 
 {% extends "../partials/layout.njk" %}
@@ -18,10 +19,12 @@
       <h1 class="govuk-heading-xl">Check all referral information</h1>
       <p class="govuk-body-l">These details will be sent to the service provider. Check they are correct before submitting the referral.</p>
 
-      {{ govukInsetText({
-            text: "This information is correct at the time of referral. If the referral is ineligible you must contact the probation practitioner as soon as possible."
-        })
-      }}
+      {% if presenter.loggedInUserType == 'service-provider' %}
+        {{ govukInsetText({
+                text: "This information is correct at the time of referral. If the referral is ineligible you must contact the probation practitioner as soon as possible."
+            })
+        }}
+      {% endif %}
 
       {{ govukSummaryList(identityDetailsSummaryListArgs) }}
 
