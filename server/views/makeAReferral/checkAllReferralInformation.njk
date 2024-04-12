@@ -18,6 +18,11 @@
       <h1 class="govuk-heading-xl">Check all referral information</h1>
       <p class="govuk-body-l">These details will be sent to the service provider. Check they are correct before submitting the referral.</p>
 
+      {{ govukInsetText({
+            text: "This information is correct at the time of referral. If the referral is ineligible you must contact the probation practitioner as soon as possible."
+        })
+      }}
+
       {{ govukSummaryList(identityDetailsSummaryListArgs) }}
 
       {% if communityLocationAndReleaseDetailsSummaryListArgs and (presenter.isCommunity) %}

@@ -29,6 +29,13 @@
         <p class="govuk-body">{{ presenter.text.noCaseworkerAssigned }}</p>
       {% endif %}
 
+      {% if presenter.userType == 'service-provider' %}
+        {{ govukInsetText({
+                text: "This information is correct at the time of referral. If the referral is ineligible you must contact the probation practitioner as soon as possible."
+            })
+        }}
+      {% endif %}
+
       {{ govukSummaryList(identityDetailsSummaryListArgs) }}
 
       {% if (presenter.checkIfReferralTypeIsSet) %}
