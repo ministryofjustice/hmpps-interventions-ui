@@ -110,7 +110,7 @@ context('Amend a referral', () => {
     })
   })
 
-  describe('updating Other mobility, disability or accessibility needs', () => {
+  describe('updating Mobility, disability or accessibility needs', () => {
     const sentReferral = sentReferralFactory.build()
     const stubCallsForUpdateReferralPage = () => {
       cy.stubUpdateSentReferralDetails(sentReferral.id, { referralId: sentReferral.id })
@@ -146,7 +146,7 @@ context('Amend a referral', () => {
       it('takes the pp to the form when clicking the change link in the details page', () => {
         cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
-        cy.contains('.govuk-summary-list__key', ' Other mobility, disability or accessibility needs ')
+        cy.contains('.govuk-summary-list__key', ' Mobility, disability or accessibility needs ')
           .next()
           .next()
           .contains('Change')

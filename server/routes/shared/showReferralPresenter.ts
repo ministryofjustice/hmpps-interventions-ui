@@ -106,7 +106,9 @@ export default class ShowReferralPresenter {
         !this.sentReferral.referral.isReferralReleasingIn12Weeks)
     )
       return `${this.serviceUserNames}'s current location and release details`
-    return `${this.serviceUserNames}'s current location and expected release details`
+    if (this.sentReferral.referral.personCurrentLocationType === 'CUSTODY')
+      return `${this.serviceUserNames}'s current location and expected release details`
+    return `${this.serviceUserNames}'s current location`
   }
 
   get responsibleOfficerDetailsHeading(): string {
@@ -175,7 +177,7 @@ export default class ShowReferralPresenter {
   get identityDetails(): SummaryListItem[] {
     return [
       { key: 'First name', lines: [this.sentReferral.referral.serviceUser.firstName ?? ''] },
-      { key: 'Last name', lines: [this.sentReferral.referral.serviceUser.lastName ?? ''] },
+      { key: 'Last name(s)', lines: [this.sentReferral.referral.serviceUser.lastName ?? ''] },
       {
         key: 'Date of birth',
         lines: [this.dateOfBirthWithShortMonth ? `${this.dateOfBirthWithShortMonth} (${this.age} years old)` : ''],
@@ -183,6 +185,10 @@ export default class ShowReferralPresenter {
       {
         key: 'CRN',
         lines: [this.sentReferral.referral.serviceUser.crn],
+      },
+      {
+        key: 'Referral number',
+        lines: [this.sentReferral.referenceNumber ?? ''],
       },
     ]
   }
@@ -345,7 +351,7 @@ export default class ShowReferralPresenter {
     const backupContactDetails: SummaryListItem[] = []
     const backupUser = this.sentBy
     backupContactDetails.push({
-      key: 'Referring officer',
+      key: 'Referring officer name',
       lines: [`${backupUser?.name.forename || ''} ${backupUser?.name.surname || ''}`.trim() || 'Not found'],
     })
     backupContactDetails.push({
@@ -364,8 +370,10 @@ export default class ShowReferralPresenter {
   serviceCategorySection(serviceCategory: ServiceCategory, tagMacro: (args: TagArgs) => string): SummaryListItem[] {
     const items: SummaryListItem[] = []
 
+    const extraInfoText = this.userType === 'service-provider' ? '' : ' for the service provider'
+
     items.push({
-      key: 'Reason for the referral and further information for the service provider',
+      key: `Reason for the referral and further information${extraInfoText}`,
       lines: [this.sentReferral.referral.reasonForReferral || this.sentReferral.referral.furtherInformation || 'N/A'],
       changeLink:
         this.userType === 'probation-practitioner'
@@ -492,7 +500,7 @@ export default class ShowReferralPresenter {
             : undefined,
       },
       {
-        key: 'Date referral submitted',
+        key: this.userType === 'probation-practitioner' ? 'Date referral submitted' : 'Date intervention received',
         lines: [moment(this.sentReferral.sentAt).format('D MMM YYYY')],
       },
       {
@@ -524,7 +532,7 @@ export default class ShowReferralPresenter {
     }
     if (this.sentReferral.concludedAt !== null && this.sentReferral.endOfServiceReport === null) {
       return {
-        key: 'Date intervention cancelled',
+        key: 'Date intervention withdrawn',
         lines: [moment(this.sentReferral.concludedAt).format('D MMM YYYY')],
       }
     }
@@ -607,7 +615,11 @@ export default class ShowReferralPresenter {
     }
     return {
       key: 'Release date',
-      lines: [this.prisonerDetails !== null ? moment(this.prisonerDetails.releaseDate!).format('D MMM YYYY') : '---'],
+      lines: [
+        this.prisonerDetails !== null
+          ? moment(this.prisonerDetails.releaseDate!).format('D MMM YYYY [(]ddd[)]')
+          : '---',
+      ],
     }
   }
 
@@ -649,7 +661,7 @@ export default class ShowReferralPresenter {
   }
 
   get serviceUserNeeds(): SummaryListItem[] {
-    return [
+    const result = [
       {
         key: 'Identify needs',
         lines: [this.sentReferral.referral.additionalNeedsInformation || 'N/A'],
@@ -659,7 +671,7 @@ export default class ShowReferralPresenter {
             : undefined,
       },
       {
-        key: 'Other mobility, disability or accessibility needs',
+        key: 'Mobility, disability or accessibility needs',
         lines: [this.sentReferral.referral.accessibilityNeeds || 'N/A'],
         changeLink:
           this.userType === 'probation-practitioner'
@@ -687,11 +699,16 @@ export default class ShowReferralPresenter {
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/employment-responsibilities`
             : undefined,
       },
-      {
+    ]
+
+    if (this.sentReferral.referral.hasAdditionalResponsibilities === true) {
+      result.push({
         key: `Provide details of when ${this.sentReferral.referral.serviceUser.firstName} will not be able to attend sessions`,
         lines: [this.sentReferral.referral.whenUnavailable || 'N/A'],
-      },
-    ]
+      })
+    }
+
+    return result
   }
 
   private getPrisonName(prisonId: string | null): string {

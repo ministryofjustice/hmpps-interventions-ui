@@ -301,7 +301,7 @@ export default class CheckAllReferralInformationPresenter {
         key: 'Release date',
         lines: [
           this.prisonerDetails !== null && this.prisonerDetails.releaseDate !== null
-            ? moment(this.prisonerDetails.releaseDate).format('D MMM YYYY')
+            ? moment(this.prisonerDetails.releaseDate).format('D MMM YYYY [(]ddd[)]')
             : '---',
         ],
       },

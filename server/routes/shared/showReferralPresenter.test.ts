@@ -504,7 +504,7 @@ describe(ShowReferralPresenter, () => {
       expect(presenter.serviceUserLocationDetails).toEqual([
         { key: 'Location at time of referral', lines: ['Community'] },
         { key: 'Probation Office', lines: ['London'] },
-        { key: 'Release date', lines: ['2 May 2023'] },
+        { key: 'Release date', lines: ['2 May 2023 (Tue)'] },
       ])
     })
 
@@ -921,7 +921,7 @@ describe(ShowReferralPresenter, () => {
         )
 
         expect(presenter.backupContactDetails).toEqual([
-          { key: 'Referring officer', lines: ['Bernard Beaks'] },
+          { key: 'Referring officer name', lines: ['Bernard Beaks'] },
           { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
         ])
       })
@@ -1060,7 +1060,7 @@ describe(ShowReferralPresenter, () => {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
           },
-          { key: 'Date referral submitted', lines: ['1 Jan 2022'] },
+          { key: 'Date intervention received', lines: ['1 Jan 2022'] },
           { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
         ])
       })
@@ -1147,7 +1147,7 @@ describe(ShowReferralPresenter, () => {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
           },
-          { key: 'Date referral submitted', lines: ['1 Jan 2022'] },
+          { key: 'Date intervention received', lines: ['1 Jan 2022'] },
           { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
         ])
       })
@@ -1234,9 +1234,9 @@ describe(ShowReferralPresenter, () => {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
           },
-          { key: 'Date referral submitted', lines: ['1 Jan 2022'] },
+          { key: 'Date intervention received', lines: ['1 Jan 2022'] },
           { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
-          { key: 'Date intervention cancelled', lines: ['7 Feb 2024'] },
+          { key: 'Date intervention withdrawn', lines: ['7 Feb 2024'] },
         ])
       })
     })
@@ -1322,7 +1322,7 @@ describe(ShowReferralPresenter, () => {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
           },
-          { key: 'Date referral submitted', lines: ['1 Jan 2022'] },
+          { key: 'Date intervention received', lines: ['1 Jan 2022'] },
           { key: 'Date intervention to be completed by', lines: ['1 Apr 2021'] },
           { key: 'Date intervention completed', lines: ['7 Feb 2024'] },
         ])
@@ -1374,7 +1374,7 @@ describe(ShowReferralPresenter, () => {
         })
       ).toEqual([
         {
-          key: 'Reason for the referral and further information for the service provider',
+          key: 'Reason for the referral and further information',
           lines: ['For crs'],
           changeLink: undefined,
         },
@@ -1504,7 +1504,7 @@ describe(ShowReferralPresenter, () => {
           })
         ).toEqual([
           {
-            key: 'Reason for the referral and further information for the service provider',
+            key: 'Reason for the referral and further information',
             lines: ['For crs'],
           },
           expect.objectContaining({
@@ -1641,7 +1641,7 @@ describe(ShowReferralPresenter, () => {
           })
         ).toEqual([
           {
-            key: 'Reason for the referral and further information for the service provider',
+            key: 'Reason for the referral and further information',
             lines: ['For crs'],
           },
           {
@@ -1824,7 +1824,7 @@ describe(ShowReferralPresenter, () => {
             lines: ["Alex is currently sleeping on her aunt's sofa"],
           },
           {
-            key: 'Other mobility, disability or accessibility needs',
+            key: 'Mobility, disability or accessibility needs',
             lines: ['She uses a wheelchair'],
           },
           {
@@ -1915,7 +1915,7 @@ describe(ShowReferralPresenter, () => {
           },
           {
             changeLink: undefined,
-            key: 'Other mobility, disability or accessibility needs',
+            key: 'Mobility, disability or accessibility needs',
             lines: ['N/A'],
           },
           {
@@ -1933,12 +1933,102 @@ describe(ShowReferralPresenter, () => {
             key: 'Caring or employment responsibilities',
             lines: ['No'],
           },
-          {
-            key: `Provide details of when Alex will not be able to attend sessions`,
-            lines: ['N/A'],
-          },
         ])
       })
+    })
+  })
+
+  describe('when no conditional/optional text answers are present and caring responsibilities', () => {
+    it("returns a summary list of the service user's needs with N/A for those fields, availability is present", () => {
+      const referralWithNoConditionalFields = sentReferralFactory.build({
+        referral: {
+          createdAt: '2020-12-07T20:45:21.986389Z',
+          completionDeadline: '2021-04-01',
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          serviceCategoryIds: [serviceCategory.id],
+          complexityLevels: [
+            { serviceCategoryId: serviceCategory.id, complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2' },
+          ],
+          furtherInformation: '',
+          desiredOutcomes: [
+            {
+              serviceCategoryId: serviceCategory.id,
+              desiredOutcomesIds: ['65924ac6-9724-455b-ad30-906936291421', '9b30ffad-dfcb-44ce-bdca-0ea49239a21a'],
+            },
+          ],
+          additionalNeedsInformation: '',
+          accessibilityNeeds: '',
+          needsInterpreter: false,
+          interpreterLanguage: null,
+          hasAdditionalResponsibilities: true,
+          whenUnavailable: 'Monday mornings',
+          serviceUser: {
+            crn: 'X123456',
+            title: 'Mr',
+            firstName: 'Alex',
+            lastName: 'River',
+            dateOfBirth: '1980-01-01',
+            gender: 'Male',
+            ethnicity: 'British',
+            preferredLanguage: 'English',
+            religionOrBelief: 'Agnostic',
+            disabilities: ['Autism spectrum condition', 'sciatica'],
+          },
+          maximumEnforceableDays: 10,
+        },
+      })
+
+      const presenter = new ShowReferralPresenter(
+        referralWithNoConditionalFields,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonsAndSecuredChildAgencies,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer,
+        prisonerDetails
+      )
+
+      expect(presenter.serviceUserNeeds).toEqual([
+        {
+          changeLink: undefined,
+          key: 'Identify needs',
+          lines: ['N/A'],
+        },
+        {
+          changeLink: undefined,
+          key: 'Mobility, disability or accessibility needs',
+          lines: ['N/A'],
+        },
+        {
+          changeLink: undefined,
+          key: 'Interpreter required',
+          lines: ['No'],
+        },
+        { changeLink: undefined, key: 'Interpreter language', lines: ['N/A'] },
+        {
+          key: 'Primary language',
+          lines: ['English'],
+        },
+        {
+          changeLink: undefined,
+          key: 'Caring or employment responsibilities',
+          lines: ['Yes'],
+        },
+        {
+          changeLink: undefined,
+          key: 'Provide details of when Alex will not be able to attend sessions',
+          lines: ['Monday mornings'],
+        },
+      ])
     })
   })
 
