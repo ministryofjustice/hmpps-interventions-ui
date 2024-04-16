@@ -565,6 +565,43 @@ describe('viewing supplier assessment feedback', () => {
             expect(res.text).toContain('Attempting to view supplier assessment feedback without a current appointment')
           })
       })
+      it('renders a page showing the supplier assessment feedback and user as deactivated', async () => {
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        const referral = sentReferralFactory.assigned().build()
+        const appointment = initialAssessmentAppointmentFactory.build({
+          appointmentTime: '2021-02-01T13:00:00Z',
+          appointmentFeedback: {
+            attendanceFeedback: {
+              didSessionHappen: true,
+              attended: 'yes',
+            },
+            sessionFeedback: {
+              late: false,
+              sessionSummary: 'stub session summary',
+              sessionResponse: 'stub session response',
+              notifyProbationPractitioner: false,
+            },
+            submitted: false,
+          },
+        })
+        const supplierAssessment = supplierAssessmentFactory.build({
+          appointments: [appointment],
+          currentAppointmentId: appointment.id,
+        })
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
+        interventionsService.getSentReferral.mockResolvedValue(referral)
+        interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
+        hmppsAuthService.getSPUserByUsername.mockImplementation(() => {
+          throw createError(404)
+        })
+
+        await request(app)
+          .get(`/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`)
+          .expect(200)
+          .expect(res => {
+            expect(res.text).toContain('Deactivated R&amp;M account')
+          })
+      })
     })
   })
 })
