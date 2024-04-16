@@ -1,9 +1,13 @@
+import { Request } from 'express'
 import ExpectedReleaseDatePresenter from './expectedReleaseDatePresenter'
 import ViewUtils from '../../../utils/viewUtils'
 import { DateInputArgs, RadiosArgs, TextareaArgs } from '../../../utils/govukFrontendTypes'
 
 export default class ExpectedReleaseDateView {
-  constructor(private readonly presenter: ExpectedReleaseDatePresenter) {}
+  constructor(
+    private readonly request: Request,
+    private readonly presenter: ExpectedReleaseDatePresenter
+  ) {}
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
@@ -15,7 +19,9 @@ export default class ExpectedReleaseDateView {
         {
           value: 'yes',
           text: 'Yes',
-          checked: this.presenter.fields.hasExpectedReleaseDate === true,
+          checked:
+            this.request.body['expected-release-date'] === 'yes' ||
+            this.presenter.fields.hasExpectedReleaseDate === true,
           conditional: {
             html: yesHtml,
           },
@@ -23,7 +29,9 @@ export default class ExpectedReleaseDateView {
         {
           value: 'no',
           text: 'No',
-          checked: this.presenter.fields.hasExpectedReleaseDate === false,
+          checked:
+            this.request.body['expected-release-date'] === 'no' ||
+            this.presenter.fields.hasExpectedReleaseDate === false,
           conditional: {
             html: noHtml,
           },

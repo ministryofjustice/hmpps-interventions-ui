@@ -1,9 +1,13 @@
+import { Request } from 'express'
 import ViewUtils from '../../../utils/viewUtils'
 import { RadiosArgs, SelectArgs, SelectArgsItem } from '../../../utils/govukFrontendTypes'
 import CurrentLocationPresenter from './currentLocationPresenter'
 
 export default class CurrentLocationView {
-  constructor(private readonly presenter: CurrentLocationPresenter) {}
+  constructor(
+    private readonly request: Request,
+    private readonly presenter: CurrentLocationPresenter
+  ) {}
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
@@ -15,12 +19,16 @@ export default class CurrentLocationView {
         {
           value: 'yes',
           text: 'Yes',
-          checked: this.presenter.fields.alreadyKnowPrisonName === true,
+          checked:
+            this.request.body['already-know-prison-name'] === 'yes' ||
+            this.presenter.fields.alreadyKnowPrisonName === true,
         },
         {
           value: 'no',
           text: 'No',
-          checked: this.presenter.fields.alreadyKnowPrisonName === false,
+          checked:
+            this.request.body['already-know-prison-name'] === 'no' ||
+            this.presenter.fields.alreadyKnowPrisonName === false,
           conditional: {
             html: noHtml,
           },
