@@ -1,5 +1,6 @@
 import { Express } from 'express'
 import request from 'supertest'
+import createError from 'http-errors'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
@@ -107,15 +108,13 @@ describe.each([
         interventionsService.getSentReferral.mockResolvedValue(sentReferral)
         interventionsService.getCaseNotes.mockResolvedValue(caseNotePage)
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
-        hmppsAuthService.getUserDetailsByUsername.mockImplementation(() => {
-          return Promise.reject()
-        })
+        hmppsAuthService.getUserDetailsByUsername.mockRejectedValue(createError(404))
         ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUserFactory.build())
         await request(app)
           .get(`/${user.userType}/referrals/${sentReferral.id}/case-notes`)
           .expect(200)
           .expect(res => {
-            expect(res.text).toContain('username')
+            expect(res.text).toContain('Deactivated R&M account')
           })
       })
     })

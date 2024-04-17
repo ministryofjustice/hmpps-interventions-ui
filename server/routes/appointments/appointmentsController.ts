@@ -1357,7 +1357,7 @@ export default class AppointmentsController {
       const interventionsServiceError = e as InterventionsServiceError
       if (interventionsServiceError.status === 404) {
         logger.warn(`Auth user details not found for user ${username}".`)
-        return username
+        return 'Deactivated R&M account'
       }
       throw e
     }

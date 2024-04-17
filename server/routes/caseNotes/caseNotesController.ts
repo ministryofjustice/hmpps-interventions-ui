@@ -60,6 +60,8 @@ export default class CaseNotesController {
                 return { username, fullName: userDetail.name }
               })
               .catch(error => {
+                const interventionsServiceError = error as InterventionsServiceError
+                if (interventionsServiceError.status === 404) return { username, fullName: 'Deactivated R&M account' }
                 return { username, fullName: undefined }
               })
           })
