@@ -687,7 +687,7 @@ export default class MakeAReferralController {
     logger.info({ prisonName }, 'The matching prison name for crn')
 
     const presenter = new CurrentLocationPresenter(referral, prisonAndSecureChildAgency, prisonName, null, req.body)
-    const view = new CurrentLocationView(presenter)
+    const view = new CurrentLocationView(req, presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
@@ -848,7 +848,7 @@ export default class MakeAReferralController {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
       const presenter = new CurrentLocationPresenter(referral, prisonAndSecureChildAgency, prisonName, error, req.body)
-      const view = new CurrentLocationView(presenter)
+      const view = new CurrentLocationView(req, presenter)
 
       res.status(400)
       await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
@@ -869,7 +869,7 @@ export default class MakeAReferralController {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
       const presenter = new ExpectedReleaseDatePresenter(referral)
-      const view = new ExpectedReleaseDateView(presenter)
+      const view = new ExpectedReleaseDateView(req, presenter)
 
       await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
     }
@@ -905,7 +905,7 @@ export default class MakeAReferralController {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
       const presenter = new ExpectedReleaseDatePresenter(referral, error, req.body)
-      const view = new ExpectedReleaseDateView(presenter)
+      const view = new ExpectedReleaseDateView(req, presenter)
 
       res.status(400)
       await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
@@ -1810,7 +1810,7 @@ export default class MakeAReferralController {
       ? this.updateRiskSummary(editedOasysRiskInformation, riskSummary)
       : riskSummary
     const presenter = new OasysRiskInformationPresenter(referral.id, updatedRiskSummary, error, label)
-    const view = new OasysRiskInformationView(presenter)
+    const view = new OasysRiskInformationView(req, presenter)
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 

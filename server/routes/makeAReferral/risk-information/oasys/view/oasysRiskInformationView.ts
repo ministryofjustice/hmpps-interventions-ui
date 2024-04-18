@@ -1,3 +1,4 @@
+import { Request } from 'express'
 import OasysRiskInformationPresenter from './oasysRiskInformationPresenter'
 import RoshPanelView from '../../../../shared/roshPanelView'
 import { CheckboxesArgs, DetailsArgs, RadiosArgs } from '../../../../../utils/govukFrontendTypes'
@@ -9,7 +10,10 @@ export default class OasysRiskInformationView {
 
   riskSummaryView: OasysRiskSummaryView
 
-  constructor(readonly presenter: OasysRiskInformationPresenter) {
+  constructor(
+    readonly request: Request,
+    readonly presenter: OasysRiskInformationPresenter
+  ) {
     this.roshPanelView = new RoshPanelView(this.presenter.riskPresenter, 'probation-practitioner')
     this.riskSummaryView = new OasysRiskSummaryView(presenter.riskSummary)
   }
@@ -69,6 +73,7 @@ export default class OasysRiskInformationView {
         {
           value: 'yes',
           text: 'Yes',
+          checked: this.request.body['edit-risk-confirmation'] === 'yes',
         },
         {
           value: 'no',
@@ -76,6 +81,7 @@ export default class OasysRiskInformationView {
           conditional: {
             html: noEditRiskSelectionHTML,
           },
+          checked: this.request.body['edit-risk-confirmation'] === 'no',
         },
       ],
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.errors.editRiskInformation),
