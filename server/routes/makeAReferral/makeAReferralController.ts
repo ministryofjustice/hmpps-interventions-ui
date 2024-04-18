@@ -961,11 +961,10 @@ export default class MakeAReferralController {
       res.redirect(
         `/referrals/${req.params.id}/change-expected-release-date${amendPPDetails ? '?amendPPDetails=true' : ''}`
       )
-    }
-    if (error === null && amendPPDetails) {
-      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
-    } else if (error === null) {
+    } else if (error === null && req.body['expected-release-date'] === 'confirm' && !amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/form`)
+    } else if (error === null && req.body['expected-release-date'] === 'confirm' && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
