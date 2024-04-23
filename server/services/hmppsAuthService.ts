@@ -99,13 +99,12 @@ export default class HmppsAuthService {
     return Promise.resolve(authUsers[0])
   }
 
-  async getSPUserByUsername(token: string, username: string, mustExist = true): Promise<AuthUserDetails> {
+  async getSPUserByUsername(token: string, username: string): Promise<AuthUserDetails> {
     return (await this.manageUsersRestClient(token)
       .get({ path: `/externalusers/${username}` })
       .catch(error => {
         if (error.status !== 404) throw error
-        if (mustExist) throw error
-        else return { username, email: username }
+        else return { username: 'Deactivated R&M account', email: 'Deactivated R&M account' }
       })) as AuthUserDetails
   }
 

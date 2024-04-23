@@ -11,7 +11,7 @@ describe('authUserFullName', () => {
   describe('when the user is missing', () => {
     it('returns "a deleted person"', () => {
       const user = { username: 'deleted_person_username' } as AuthUserDetails
-      expect(authUserFullName(user)).toEqual('a deleted user')
+      expect(authUserFullName(user)).toEqual('Deactivated R&M account')
     })
   })
 })

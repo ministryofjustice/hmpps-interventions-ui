@@ -11,5 +11,5 @@ export default interface AuthUserDetails {
 }
 
 export function authUserFullName(user: AuthUserDetails): string {
-  return user.userId ? `${user.firstName} ${user.lastName}` : 'a deleted user'
+  return user.userId ? `${user.firstName} ${user.lastName}` : 'Deactivated R&M account'
 }
