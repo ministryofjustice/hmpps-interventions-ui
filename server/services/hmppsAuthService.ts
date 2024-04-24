@@ -104,7 +104,7 @@ export default class HmppsAuthService {
       .get({ path: `/externalusers/${username}` })
       .catch(error => {
         if (error.status !== 404) throw error
-        else return { username: 'Deactivated R&M account', email: 'Deactivated R&M account' }
+        else return 'Deactivated R&M account'
       })) as AuthUserDetails
   }
 
