@@ -221,8 +221,8 @@ describe('hmppsAuthService', () => {
     it('should return stub user if not required and response is 404', async () => {
       const response = {
         userId: undefined,
-        username: 'MISSING',
-        email: 'MISSING',
+        username: 'Deactivated R&M account',
+        email: 'Deactivated R&M account',
         firstName: undefined,
         lastName: undefined,
         locked: undefined,
@@ -236,19 +236,8 @@ describe('hmppsAuthService', () => {
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(404, {})
 
-      const output = await hmppsAuthService.getSPUserByUsername(token.access_token, 'MISSING', false)
+      const output = await hmppsAuthService.getSPUserByUsername(token.access_token, 'MISSING')
       expect(output).toEqual(response)
-    })
-
-    it('raises an error if required and the response is 404', async () => {
-      fakeManagerUsersApi
-        .get('/externalusers/MISSING')
-        .matchHeader('authorization', `Bearer ${token.access_token}`)
-        .reply(404, {})
-
-      await expect(hmppsAuthService.getSPUserByUsername(token.access_token, 'MISSING', true)).rejects.toThrow(
-        'Not Found'
-      )
     })
 
     it('raises an error if not required but response is non-404 4xx', async () => {
@@ -257,9 +246,7 @@ describe('hmppsAuthService', () => {
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(400, {})
 
-      await expect(hmppsAuthService.getSPUserByUsername(token.access_token, 'MISSING', false)).rejects.toThrow(
-        'Bad Request'
-      )
+      await expect(hmppsAuthService.getSPUserByUsername(token.access_token, 'MISSING')).rejects.toThrow('Bad Request')
     })
   })
 

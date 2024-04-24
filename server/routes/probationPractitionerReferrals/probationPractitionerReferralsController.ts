@@ -175,7 +175,7 @@ export default class ProbationPractitionerReferralsController {
         : this.interventionsService.getActionPlan(accessToken, sentReferral.actionPlanId)
     const supplierAssessmentPromise = this.interventionsService.getSupplierAssessment(accessToken, sentReferral.id)
     const assigneePromise = sentReferral.assignedTo
-      ? this.hmppsAuthService.getSPUserByUsername(accessToken, sentReferral.assignedTo.username, false)
+      ? this.hmppsAuthService.getSPUserByUsername(accessToken, sentReferral.assignedTo.username)
       : Promise.resolve(null)
 
     const [intervention, actionPlan, approvedActionPlanSummaries, serviceUser, supplierAssessment, assignee] =
@@ -261,8 +261,7 @@ export default class ProbationPractitionerReferralsController {
         ? null
         : await this.hmppsAuthService.getSPUserByUsername(
             res.locals.user.token.accessToken,
-            sentReferral.assignedTo.username,
-            false
+            sentReferral.assignedTo.username
           )
 
     const presenter = new ShowReferralPresenter(
