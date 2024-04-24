@@ -219,25 +219,13 @@ describe('hmppsAuthService', () => {
     })
 
     it('should return stub user if not required and response is 404', async () => {
-      const response = {
-        userId: undefined,
-        username: 'Deactivated R&M account',
-        email: 'Deactivated R&M account',
-        firstName: undefined,
-        lastName: undefined,
-        locked: undefined,
-        enabled: undefined,
-        verified: undefined,
-        lastLoggedIn: undefined,
-      }
-
       fakeManagerUsersApi
         .get('/externalusers/MISSING')
         .matchHeader('authorization', `Bearer ${token.access_token}`)
         .reply(404, {})
 
       const output = await hmppsAuthService.getSPUserByUsername(token.access_token, 'MISSING')
-      expect(output).toEqual(response)
+      expect(output).toEqual('Deactivated R&M account')
     })
 
     it('raises an error if not required but response is non-404 4xx', async () => {
