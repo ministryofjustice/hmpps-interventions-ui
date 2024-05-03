@@ -484,6 +484,9 @@ describe(ShowReferralPresenter, () => {
   describe(`referral's location`, () => {
     it('returns a summary list for a referral community location', () => {
       const sentReferral = sentReferralFactory.build(referralParams)
+      const prisonerDetail = prisoner.build({
+        confirmedReleaseDate: '2024-05-01',
+      })
       const presenter = new ShowReferralPresenter(
         sentReferral,
         intervention,
@@ -498,13 +501,13 @@ describe(ShowReferralPresenter, () => {
         deliusServiceUser,
         riskSummary,
         deliusRoOfficer,
-        prisonerDetails
+        prisonerDetail
       )
 
       expect(presenter.serviceUserLocationDetails).toEqual([
         { key: 'Location at time of referral', lines: ['Community'] },
         { key: 'Probation Office', lines: ['London'] },
-        { key: 'Release date', lines: ['2 May 2023 (Tue)'] },
+        { key: 'Release date', lines: ['1 May 2024 (Wed)'] },
       ])
     })
 
