@@ -633,7 +633,12 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
     cy.stubGetPrisons(prisons)
     cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
-    cy.stubGetPrisonerDetails(referral.referral.serviceUser.crn, prisoner.build())
+    cy.stubGetPrisonerDetails(
+      referral.referral.serviceUser.crn,
+      prisoner.build({
+        confirmedReleaseDate: '2024-05-01',
+      })
+    )
 
     cy.login()
 
@@ -722,7 +727,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Community')
       .should('contain', 'London')
       .should('contain', 'Release date')
-      .should('contain', '2 May 2023')
+      .should('contain', '1 May 2024')
 
     cy.contains(`Jenny Jones's personal details`)
       .parent()

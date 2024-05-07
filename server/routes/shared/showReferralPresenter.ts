@@ -617,7 +617,7 @@ export default class ShowReferralPresenter {
       key: 'Release date',
       lines: [
         this.prisonerDetails !== null
-          ? moment(this.prisonerDetails.releaseDate!).format('D MMM YYYY [(]ddd[)]')
+          ? moment(this.prisonerDetails.confirmedReleaseDate!).format('D MMM YYYY [(]ddd[)]')
           : '---',
       ],
     }
