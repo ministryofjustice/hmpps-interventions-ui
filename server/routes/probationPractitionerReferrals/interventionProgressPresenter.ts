@@ -1,4 +1,4 @@
-import SentReferral from '../../models/sentReferral'
+import SentReferral, { WithdrawalState } from '../../models/sentReferral'
 import ActionPlan from '../../models/actionPlan'
 import utils from '../../utils/utils'
 import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../shared/referralOverviewPagePresenter'
@@ -95,11 +95,13 @@ export default class InterventionProgressPresenter {
     return this.referralAssigned ? `${this.assignee!.email}` : null
   }
 
+  readonly canWithdraw = this.referral.concludedAt === null && this.referral.withdrawalState === WithdrawalState.preICA
+
   readonly referralCancellationHref = `/probation-practitioner/referrals/${this.referral.id}/cancellation/start`
 
   readonly amendReferralHref = `/probation-practitioner/referrals/${this.referral.id}/details`
 
-  readonly withdrawReferralHref = `/probation-practitioner/referrals/${this.referral.id}/withdraw`
+  readonly withdrawReferralHref = `/probation-practitioner/referrals/${this.referral.id}/withdrawal/start`
 
   readonly hasSessions = this.actionPlanAppointments.length !== 0
 

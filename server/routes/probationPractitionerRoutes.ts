@@ -147,7 +147,6 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     services.interventionsService,
     services.ramDeliusApiService,
     services.hmppsAuthService,
-    services.assessRisksAndNeedsService,
     services.draftsService
   )
 

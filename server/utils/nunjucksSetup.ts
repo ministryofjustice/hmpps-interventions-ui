@@ -24,4 +24,11 @@ export default function nunjucksSetup(app: express.Application, path: pathModule
   Object.keys(mojFilters).forEach(filterName => {
     njkEnv.addFilter(filterName, mojFilters[filterName])
   })
+
+  // eslint-disable-next-line func-names
+  njkEnv.addFilter('setAttribute', function (dictionary, key, value) {
+    // eslint-disable-next-line no-param-reassign
+    dictionary[key] = value
+    return dictionary
+  })
 }

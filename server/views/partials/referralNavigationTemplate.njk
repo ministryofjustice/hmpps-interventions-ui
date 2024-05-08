@@ -10,18 +10,35 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
 
-      {{ govukBackLink(backLinkArgs) }}
+      <div class="govuk-grid-row">
+          {{ govukBackLink(backLinkArgs) }}
+          {% if notificationBannerArgs %}
+             {{ govukNotificationBanner(notificationBannerArgs) }}
+          {% endif %}
+      </div>
 
-      {% if notificationBannerArgs %}
-         {{ govukNotificationBanner(notificationBannerArgs) }}
-      {% endif %}
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <h1 class="govuk-heading-l">{{ presenter.text.title }}</h1>
+        </div>
+        <div class="govuk-grid-column-one-third">
 
-      <h1 class="govuk-heading-l">{{ presenter.text.title }}</h1>
+          {% if presenter.canWithdraw %}
+              <a href={{presenter.withdrawReferralHref}}>
+                  {{ govukButton({
+                    text: "Withdraw referral",
+                    classes: "govuk-button--secondary"
+                  }) }}
+              </a>
+          {% endif %}
+        </div>
+      </div>
 
       {{ mojSubNavigation(subNavArgs) }}
 
       {% block referralPageSection %}{% endblock %}
 
-    </div>
+
+  </div>
   </div>
 {% endblock %}

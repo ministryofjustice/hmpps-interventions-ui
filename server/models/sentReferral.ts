@@ -17,4 +17,11 @@ export default interface SentReferral {
   endOfServiceReport: EndOfServiceReport | null
   endOfServiceReportCreationRequired: boolean
   concludedAt: string | null
+  withdrawalState: WithdrawalState | null
+}
+
+export enum WithdrawalState {
+  preICA = 'PRE_ICA_WITHDRAWAL',
+  postICA = 'POST_ICA_WITHDRAWAL',
+  postICACLosed = 'POST_ICA_CLOSE_REFERRAL_EARLY',
 }
