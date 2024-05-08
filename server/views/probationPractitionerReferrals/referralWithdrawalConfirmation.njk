@@ -10,14 +10,13 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {{ govukPanel({titleText: presenter.text.confirmationText }) }}
-
-      {{ govukSummaryList(summaryListArgs) }}
-
+      <br>
       <h2 class="govuk-heading-m">{{presenter.text.headingText}}</p>
 
-      <p class="govuk-body">{{presenter.text.whatHappensNextText}}</p>
+      <p class="govuk-body">{{presenter.text.whatHappensNextText.line1}}</p>
+      <p class="govuk-body">{{presenter.text.whatHappensNextText.line2}}</p>
 
-      <a href="{{ presenter.myCasesHref }}" class="govuk-button">Go back to My Cases</a>
+      <a href="{{ presenter.myCasesHref }}" class="govuk-button">Close</a>
     </div>
   </div>
 {% endblock %}

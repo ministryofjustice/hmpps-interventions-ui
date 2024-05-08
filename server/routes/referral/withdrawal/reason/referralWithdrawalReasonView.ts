@@ -1,4 +1,4 @@
-import { RadiosArgs, TextareaArgs } from '../../../../utils/govukFrontendTypes'
+import { BackLinkArgs, RadiosArgsItem } from '../../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../../utils/viewUtils'
 import ReferralWithdrawalReasonPresenter from './referralWithdrawlReasonPresenter'
 
@@ -7,30 +7,26 @@ export default class ReferralWithdrawalReasonView {
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
-  private get referralWithdrawalRadiosArgs(): RadiosArgs {
+  private get backLinkArgs(): BackLinkArgs {
     return {
-      fieldset: {
-        legend: {
-          text: 'What is the reason for the withdrawal of this referral?',
-          isPageHeading: false,
-          classes: 'govuk-fieldset__legend--m govuk-!-margin-bottom-6',
-        },
-      },
-      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
-      name: 'withdrawal-reason',
-      items: this.presenter.withdrawalReasonsFields,
+      href: this.presenter.backLinkHref,
     }
   }
 
-  private get additionalCommentsTextareaArgs(): TextareaArgs {
-    return {
-      id: 'withdrawal-comments',
-      name: 'withdrawal-comments',
-      label: {
-        text: this.presenter.text.additionalCommentsLabel,
-      },
-      value: this.presenter.fields.withdrawalComments,
-    }
+  get problemItems(): RadiosArgsItem[] {
+    return this.presenter.problemReasonsFields
+  }
+
+  get userItems(): RadiosArgsItem[] {
+    return this.presenter.userReasonsFields
+  }
+
+  get sentenceItems(): RadiosArgsItem[] {
+    return this.presenter.sentenceReasonsFields
+  }
+
+  get otherItems(): RadiosArgsItem[] {
+    return this.presenter.otherReasonsFields
   }
 
   get renderArgs(): [string, Record<string, unknown>] {
@@ -39,8 +35,11 @@ export default class ReferralWithdrawalReasonView {
       {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,
-        referralWithdrawalRadiosArgs: this.referralWithdrawalRadiosArgs,
-        additionalCommentsTextareaArgs: this.additionalCommentsTextareaArgs,
+        problemItems: this.problemItems,
+        userItems: this.userItems,
+        sentenceItems: this.sentenceItems,
+        otherItems: this.otherItems,
+        backLinkArgs: this.backLinkArgs,
       },
     ]
   }

@@ -1,6 +1,6 @@
 import { Factory } from 'fishery'
 import moment from 'moment-timezone'
-import SentReferral from '../../server/models/sentReferral'
+import SentReferral, { WithdrawalState } from '../../server/models/sentReferral'
 import { CurrentLocationType, ReferralFields } from '../../server/models/draftReferral'
 import serviceCategoryFactory from './serviceCategory'
 import interventionFactory from './intervention'
@@ -75,6 +75,7 @@ const exampleReferralFields = () => {
     ppLocationType: null,
     allocatedCommunityPP: true,
     reasonForReferral: 'For crs',
+    withdrawalState: WithdrawalState.preICA,
   }
 }
 
@@ -139,4 +140,5 @@ export default SentReferralFactory.define(({ sequence }) => ({
   endOfServiceReport: null,
   endOfServiceReportCreationRequired: false,
   concludedAt: null,
+  withdrawalState: WithdrawalState.preICA,
 }))

@@ -146,6 +146,7 @@ export default class SessionFeedbackView {
         },
         {
           divider: 'or',
+          class: 'govuk-label--m',
         },
         {
           id: 'noNotifyPPCheckbox',

@@ -700,6 +700,25 @@ export default class InterventionsService {
     })) as SentReferral
   }
 
+  async withdrawReferral(
+    token: string,
+    referralId: string,
+    code: string,
+    comments: string | null,
+    withdrawalState: string
+  ): Promise<SentReferral> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/sent-referral/${referralId}/withdraw-referral`,
+      data: {
+        code,
+        comments,
+        withdrawalState,
+      },
+      headers: { Accept: 'application/json' },
+    })) as SentReferral
+  }
+
   async getReferralCancellationReasons(token: string): Promise<CancellationReason[]> {
     const restClient = this.createRestClient(token)
     return (await restClient.get({

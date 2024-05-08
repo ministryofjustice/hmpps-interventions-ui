@@ -5,7 +5,6 @@ import ReferralWithdrawalReasonForm from './reason/referralWithdrawalReasonForm'
 import { FormValidationError } from '../../../utils/formValidationError'
 import InterventionsService from '../../../services/interventionsService'
 import HmppsAuthService from '../../../services/hmppsAuthService'
-import AssessRisksAndNeedsService from '../../../services/assessRisksAndNeedsService'
 import DraftsService from '../../../services/draftsService'
 import RamDeliusApiService from '../../../services/ramDeliusApiService'
 import ReferralWithdrawalReasonPresenter from './reason/referralWithdrawlReasonPresenter'
@@ -20,7 +19,6 @@ export default class ReferralWithdrawalController {
     private readonly interventionsService: InterventionsService,
     private readonly ramDeliusApiService: RamDeliusApiService,
     private readonly hmppsAuthService: HmppsAuthService,
-    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly draftsService: DraftsService
   ) {}
 
@@ -30,6 +28,7 @@ export default class ReferralWithdrawalController {
       {
         withdrawalReason: null,
         withdrawalComments: null,
+        withdrawalState: null,
       },
       { userId: res.locals.user.userId }
     )
@@ -47,10 +46,12 @@ export default class ReferralWithdrawalController {
       return
     }
     const draftWithdrawal = fetchResult.draft
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
 
-    const data = await new ReferralWithdrawalReasonForm(req).data()
+    const data = await new ReferralWithdrawalReasonForm(req, sentReferral.withdrawalState!).data()
 
     let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
 
     if (req.method === 'POST') {
       if (!data.error) {
@@ -66,9 +67,9 @@ export default class ReferralWithdrawalController {
 
       res.status(400)
       formError = data.error
+      userInputData = req.body
     }
 
-    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const intervention = await this.interventionsService.getIntervention(
       accessToken,
       sentReferral.referral.interventionId
@@ -82,7 +83,8 @@ export default class ReferralWithdrawalController {
       intervention,
       serviceUser,
       withdrawalReasons,
-      formError
+      formError,
+      userInputData
     )
     const view = new ReferralWithdrawalReasonView(presenter)
 
@@ -102,20 +104,34 @@ export default class ReferralWithdrawalController {
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
 
-    const presenter = new ReferralWithdrawalCheckAnswersPresenter(req.params.id, draftWithdrawal.id)
+    const intervention = await this.interventionsService.getIntervention(
+      accessToken,
+      sentReferral.referral.interventionId
+    )
+
+    const presenter = new ReferralWithdrawalCheckAnswersPresenter(
+      req.params.id,
+      draftWithdrawal.id,
+      serviceUser,
+      intervention
+    )
     const view = new ReferralWithdrawalCheckAnswersView(presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async submitWithdrawal(req: Request, res: Response): Promise<void> {
+    if (req.body['confirm-withdrawal'] === 'no') {
+      res.redirect(`/probation-practitioner/referrals/${req.params.id}/progress`)
+    }
+
     const fetchResult = await this.fetchDraftWithdrawalOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
     }
     const draftWithdrawal = fetchResult.draft
 
-    const { withdrawalReason, withdrawalComments } = draftWithdrawal.data
+    const { withdrawalReason, withdrawalComments, withdrawalState } = draftWithdrawal.data
 
     if (withdrawalReason === null) {
       throw new Error('Got unexpectedly null withdrawalReason')
@@ -128,7 +144,13 @@ export default class ReferralWithdrawalController {
     const { accessToken } = user.token
     const referralId = req.params.id
 
-    await this.interventionsService.endReferral(accessToken, referralId, withdrawalReason, withdrawalComments)
+    await this.interventionsService.withdrawReferral(
+      accessToken,
+      referralId,
+      withdrawalReason,
+      withdrawalComments,
+      withdrawalState!
+    )
     await this.draftsService.deleteDraft(draftWithdrawal.id, { userId: res.locals.user.userId })
 
     res.redirect(`/probation-practitioner/referrals/${referralId}/withdrawal/confirmation`)
