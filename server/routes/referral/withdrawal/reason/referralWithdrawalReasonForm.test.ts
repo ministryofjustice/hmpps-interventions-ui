@@ -1,5 +1,6 @@
 import TestUtils from '../../../../../testutils/testUtils'
 import ReferralWithdrawalReasonForm from './referralWithdrawalReasonForm'
+import { WithdrawalState } from '../../../../models/sentReferral'
 
 describe(ReferralWithdrawalReasonForm, () => {
   describe('data', () => {
@@ -9,7 +10,7 @@ describe(ReferralWithdrawalReasonForm, () => {
           'withdrawal-reason': 'INE',
           'withdrawal-comments-INE': 'Alex has moved to a new area',
         })
-        const data = await new ReferralWithdrawalReasonForm(request).data()
+        const data = await new ReferralWithdrawalReasonForm(request, WithdrawalState.preICA).data()
 
         expect(data.paramsForUpdate?.withdrawalReason).toEqual('INE')
         expect(data.paramsForUpdate?.withdrawalComments).toEqual('Alex has moved to a new area')
@@ -22,7 +23,7 @@ describe(ReferralWithdrawalReasonForm, () => {
           'withdrawal-comments-INE': 'Alex has moved to a new area',
           'withdrawal-comments-MIS': 'incorrect comment',
         })
-        const data = await new ReferralWithdrawalReasonForm(request).data()
+        const data = await new ReferralWithdrawalReasonForm(request, WithdrawalState.preICA).data()
 
         expect(data.paramsForUpdate?.withdrawalReason).toEqual('INE')
         expect(data.paramsForUpdate?.withdrawalComments).toEqual('Alex has moved to a new area')
@@ -36,7 +37,7 @@ describe(ReferralWithdrawalReasonForm, () => {
         'withdrawal-reason': 'INE',
       })
 
-      const data = await new ReferralWithdrawalReasonForm(request).data()
+      const data = await new ReferralWithdrawalReasonForm(request, WithdrawalState.preICA).data()
 
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'withdrawal-comments-INE',
@@ -47,7 +48,7 @@ describe(ReferralWithdrawalReasonForm, () => {
     it('returns an error when the withdrawal reason property is not present', async () => {
       const request = TestUtils.createRequest({})
 
-      const data = await new ReferralWithdrawalReasonForm(request).data()
+      const data = await new ReferralWithdrawalReasonForm(request, WithdrawalState.preICA).data()
 
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'withdrawal-reason',
