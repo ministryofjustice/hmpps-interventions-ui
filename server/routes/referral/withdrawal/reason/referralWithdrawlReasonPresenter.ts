@@ -22,9 +22,7 @@ export default class ReferralWithdrawalReasonPresenter {
   readonly backLinkHref = `/probation-practitioner/referrals/${this.sentReferral.id}/progress`
 
   readonly text = {
-    title: 'Referral withdrawal',
-    information: `You are about to cancel ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}'s referral for ${this.intervention.contractType.name} intervention with ${this.sentReferral.referral.serviceProvider.name}.`,
-    additionalCommentsLabel: 'Additional comments (optional):',
+    title: `Why are you withdrawing ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}’s ${this.intervention.contractType.name} referral?`,
   }
 
   get problemReasonsFields(): { value: string; text: string; checked: boolean }[] {
