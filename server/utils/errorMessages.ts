@@ -313,6 +313,9 @@ export default {
     withdrawalReason: {
       empty: 'Select a reason for withdrawing the referral',
     },
+    withdrawalComments: {
+      empty: 'Enter details about why this reason was selected',
+    },
   },
   reasonForReferral: {
     empty: 'Enter reason for the referral and any further information',

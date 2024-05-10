@@ -45,7 +45,7 @@ export default class ReferralWithdrawalReasonForm {
       body(`withdrawal-comments-${this.request.body['withdrawal-reason']}`)
         .if(body('withdrawal-reason').notEmpty({ ignore_whitespace: true }))
         .notEmpty({ ignore_whitespace: true })
-        .withMessage('aaa'),
+        .withMessage(errorMessages.withdrawReferral.withdrawalComments.empty),
     ]
   }
 

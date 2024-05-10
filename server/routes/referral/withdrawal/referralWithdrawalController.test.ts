@@ -105,7 +105,7 @@ describe('GET /probation-practitioner/referrals/:id/withdrawal/:draftWithdrawalI
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('Referral withdrawal')
-        expect(res.text).toContain('You are about to cancel')
+        expect(res.text).toContain('Why are you withdrawing')
         expect(res.text).toContain('Ineligible Referral')
         expect(res.text).toContain('Mistaken or duplicate referral')
       })

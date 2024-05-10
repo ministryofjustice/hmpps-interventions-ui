@@ -42,7 +42,7 @@ describe(ReferralWithdrawalReasonForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'withdrawal-comments-INE',
         formFields: ['withdrawal-comments-INE'],
-        message: 'aaa',
+        message: 'Enter details about why this reason was selected',
       })
     })
     it('returns an error when the withdrawal reason property is not present', async () => {
