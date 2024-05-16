@@ -391,6 +391,46 @@ describe(CheckAllReferralInformationPresenter, () => {
         ])
       })
     })
+
+    describe('identity details summary for custody', () => {
+      const custodyReferral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.custody,
+      })
+      const custodyReferralPresenter = new CheckAllReferralInformationPresenter(
+        custodyReferral,
+        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
+        conviction,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
+      )
+      it('returns the identity details', () => {
+        const yearsElapsed = moment().diff('1980-01-01', 'years')
+        expect(custodyReferralPresenter.identityDetails).toEqual([
+          {
+            key: 'First name',
+            lines: ['Alex'],
+          },
+          {
+            key: 'Last name(s)',
+            lines: ['River'],
+          },
+          {
+            key: 'Date of birth',
+            lines: [`1 Jan 1980 (${yearsElapsed} years old)`],
+          },
+          {
+            key: 'CRN',
+            lines: ['X862134'],
+          },
+          {
+            key: 'Prison number',
+            lines: ['MDI'],
+          },
+        ])
+      })
+    })
   })
 
   describe('referral current location and release details', () => {

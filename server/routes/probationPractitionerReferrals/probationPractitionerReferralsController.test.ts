@@ -562,6 +562,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
     prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
     prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
 
     await request(app)
       .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
@@ -587,6 +588,7 @@ describe('GET /probation-practitioner/referrals/:id/details', () => {
       interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
       prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
       prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
+      interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
 
       await request(app)
         .get(`/probation-practitioner/referrals/${sentReferral.id}/details`)
