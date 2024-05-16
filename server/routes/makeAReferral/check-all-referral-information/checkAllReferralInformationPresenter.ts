@@ -119,7 +119,7 @@ export default class CheckAllReferralInformationPresenter {
   }
 
   get identityDetails(): SummaryListItem[] {
-    return [
+    const summaryListItem: SummaryListItem[] = [
       { key: 'First name', lines: [this.referral.serviceUser.firstName ?? ''] },
       { key: 'Last name(s)', lines: [this.referral.serviceUser.lastName ?? ''] },
       {
@@ -131,6 +131,13 @@ export default class CheckAllReferralInformationPresenter {
         lines: [this.referral.serviceUser.crn],
       },
     ]
+    if (!this.isCommunity) {
+      summaryListItem.push({
+        key: 'Prison number',
+        lines: [this.prisonerDetails.prisonId],
+      })
+    }
+    return summaryListItem
   }
 
   get probationPractitionerDetailSection(): { title: string; summary: SummaryListItem[] } | null {

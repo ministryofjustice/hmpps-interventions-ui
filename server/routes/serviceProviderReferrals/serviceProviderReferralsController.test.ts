@@ -982,6 +982,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
     prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -1033,6 +1034,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
     prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -1088,6 +1090,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
     prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -1142,6 +1145,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
     ramDeliusApiService.getResponsibleOfficer.mockResolvedValue(responsibleOfficer)
     prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/details`)
@@ -1170,6 +1174,7 @@ describe('GET /service-provider/referrals/:id/details', () => {
       prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
       sentReferral = sentReferralFactory.assigned().build()
       interventionsService.getSentReferral.mockResolvedValue(sentReferral)
+      interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
       await request(app)
         .get(`/service-provider/referrals/${sentReferral.id}/details`)
         .expect(200)
@@ -1311,6 +1316,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedSummaries)
     interventionsService.getActionPlanAppointments.mockResolvedValue(actionPlanAppointments)
     interventionsService.getActionPlan.mockResolvedValue(actionPlan)
+    interventionsService.getPrisonerDetails.mockResolvedValue(prisoner.build())
 
     await request(app)
       .get(`/service-provider/referrals/${sentReferral.id}/progress`)

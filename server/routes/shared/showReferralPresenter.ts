@@ -175,7 +175,7 @@ export default class ShowReferralPresenter {
   }
 
   get identityDetails(): SummaryListItem[] {
-    return [
+    const summaryListItem: SummaryListItem[] = [
       { key: 'First name', lines: [this.sentReferral.referral.serviceUser.firstName ?? ''] },
       { key: 'Last name(s)', lines: [this.sentReferral.referral.serviceUser.lastName ?? ''] },
       {
@@ -191,6 +191,13 @@ export default class ShowReferralPresenter {
         lines: [this.sentReferral.referenceNumber ?? ''],
       },
     ]
+    if (this.isCustodyReferral && this.prisonerDetails !== null) {
+      summaryListItem.push({
+        key: 'Prison number',
+        lines: [this.prisonerDetails.prisonId],
+      })
+    }
+    return summaryListItem
   }
 
   get probationPractitionerDetailsForCommunity(): SummaryListItem[] {

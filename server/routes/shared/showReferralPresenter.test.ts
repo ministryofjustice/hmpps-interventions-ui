@@ -260,6 +260,119 @@ describe(ShowReferralPresenter, () => {
     })
   })
 
+  describe('identity details', () => {
+    it('returns a identity details for the custody referral', () => {
+      const yearsElapsed = moment().diff('1980-01-01', 'years')
+      const custodyReferralParams = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.custody,
+          ppName: 'Bernard Beaks',
+          ppEmailAddress: 'bernard.beaks@justice.gov.uk',
+        },
+      }
+      const sentReferral = sentReferralFactory.build(custodyReferralParams)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonsAndSecuredChildAgencies,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer,
+        prisonerDetails
+      )
+
+      expect(presenter.identityDetails).toEqual([
+        {
+          key: 'First name',
+          lines: ['Jenny'],
+        },
+        {
+          key: 'Last name(s)',
+          lines: ['Jones'],
+        },
+        {
+          key: 'Date of birth',
+          lines: [`1 Jan 1980 (${yearsElapsed} years old)`],
+        },
+        {
+          key: 'CRN',
+          lines: ['X123456'],
+        },
+        {
+          key: 'Referral number',
+          lines: [sentReferral.referenceNumber],
+        },
+        {
+          key: 'Prison number',
+          lines: ['MDI'],
+        },
+      ])
+    })
+    it('returns a identity details for the community referral', () => {
+      const yearsElapsed = moment().diff('1980-01-01', 'years')
+      const communityReferralParams = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.community,
+          ppName: 'Bernard Beaks',
+          ppEmailAddress: 'bernard.beaks@justice.gov.uk',
+        },
+      }
+      const sentReferral = sentReferralFactory.build(communityReferralParams)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonsAndSecuredChildAgencies,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer,
+        prisonerDetails
+      )
+
+      expect(presenter.identityDetails).toEqual([
+        {
+          key: 'First name',
+          lines: ['Jenny'],
+        },
+        {
+          key: 'Last name(s)',
+          lines: ['Jones'],
+        },
+        {
+          key: 'Date of birth',
+          lines: [`1 Jan 1980 (${yearsElapsed} years old)`],
+        },
+        {
+          key: 'CRN',
+          lines: ['X123456'],
+        },
+        {
+          key: 'Referral number',
+          lines: [sentReferral.referenceNumber],
+        },
+      ])
+    })
+  })
+
   describe('probationPractitionerDetails', () => {
     it('returns a summary list of probation practitioner details for service provider', () => {
       const sentReferral = sentReferralFactory.build(referralParams)
