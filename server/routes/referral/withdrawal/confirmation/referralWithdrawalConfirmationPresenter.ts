@@ -9,11 +9,17 @@ export default class ReferralWithdrawalConfirmationPresenter {
   ) {}
 
   readonly text = {
-    confirmationText: 'Referral withdrawn',
+    confirmationText: this.referral.withdrawalCode === 'EAR' ? 'Referral closed early' : 'Referral withdrawn',
     headingText: 'What happens next.',
     whatHappensNextText: {
-      line1: `The referral has been withdrawn. The service provider has been emailed.`,
-      line2: `You can view the referral in the cancelled referrals list.`,
+      line1:
+        this.referral.withdrawalCode === 'EAR'
+          ? `The referral has been closed. The service provider has been emailed.`
+          : `The referral has been withdrawn. The service provider has been emailed.`,
+      line2:
+        this.referral.withdrawalCode === 'EAR'
+          ? `You can view the referral in the completed referrals list.`
+          : `You can view the referral in the cancelled referrals list.`,
     },
   }
 

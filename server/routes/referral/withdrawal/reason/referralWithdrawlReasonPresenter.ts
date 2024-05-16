@@ -1,6 +1,6 @@
 import DeliusServiceUser from '../../../../models/delius/deliusServiceUser'
 import WithdrawalReason from '../../../../models/withdrawalReason'
-import SentReferral from '../../../../models/sentReferral'
+import SentReferral, { WithdrawalState } from '../../../../models/sentReferral'
 import { FormValidationError } from '../../../../utils/formValidationError'
 import PresenterUtils from '../../../../utils/presenterUtils'
 import Intervention from '../../../../models/intervention'
@@ -25,6 +25,10 @@ export default class ReferralWithdrawalReasonPresenter {
     title: `Why are you withdrawing ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}’s ${this.intervention.contractType.name} referral?`,
   }
 
+  readonly showPostICAOptions =
+    this.sentReferral.withdrawalState === WithdrawalState.postICA ||
+    this.sentReferral.withdrawalState === WithdrawalState.postICAClosed
+
   get problemReasonsFields(): { value: string; text: string; checked: boolean }[] {
     return this.getRadioArgs('problem')
   }
@@ -35,6 +39,10 @@ export default class ReferralWithdrawalReasonPresenter {
 
   get sentenceReasonsFields(): { value: string; text: string; checked: boolean }[] {
     return this.getRadioArgs('sentence')
+  }
+
+  get earlyReasonsFields(): { value: string; text: string; checked: boolean }[] {
+    return this.getRadioArgs('early')
   }
 
   get otherReasonsFields(): { value: string; text: string; checked: boolean }[] {
@@ -123,6 +131,10 @@ export default class ReferralWithdrawalReasonPresenter {
       ANO: {
         value: this.utils.stringValue(this.draftWithdrawal.data.withdrawalComments, 'withdrawal-comments-ANO'),
         errorMessage: PresenterUtils.errorMessage(this.error, 'withdrawal-comments-ANO'),
+      },
+      EAR: {
+        value: this.utils.stringValue(this.draftWithdrawal.data.withdrawalComments, 'withdrawal-comments-EAR'),
+        errorMessage: PresenterUtils.errorMessage(this.error, 'withdrawal-comments-EAR'),
       },
     },
   }

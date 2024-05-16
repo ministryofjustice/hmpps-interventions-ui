@@ -49,18 +49,14 @@ export default class ReferralWithdrawalReasonForm {
     ]
   }
 
-  private getWithdrawalState() {
-    return this.withdrawalState // Should always be pre-ica at the moment.
-    // POST ICA CALCULATIONS
-    // if(this.withdrawalState === WithdrawalState.preICA){
-    //   return this.withdrawalState
-    // }
-    // else{
-    //   if(this.request.body['withdrawal-reason'] === 'early closure') {
-    //     return WithdrawalState.postICACLosed
-    //   }
-    //   return WithdrawalState.postICA
-    // }
+  private getWithdrawalState(): WithdrawalState {
+    if (this.withdrawalState === WithdrawalState.preICA) {
+      return this.withdrawalState
+    }
+    if (this.request.body['withdrawal-reason'] === 'EAR') {
+      return WithdrawalState.postICAClosed
+    }
+    return WithdrawalState.postICA
   }
 
   private error(validationResult: Result<ValidationError>): FormValidationError | null {

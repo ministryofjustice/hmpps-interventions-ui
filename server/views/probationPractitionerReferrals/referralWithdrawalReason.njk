@@ -35,6 +35,10 @@
           {% set item = item.conditional|setAttribute('html',  govukTextarea(item.conditional.html)) %}
      {% endfor %}
 
+     {% for item in earlyItems %}
+          {% set item = item.conditional|setAttribute('html',  govukTextarea(item.conditional.html)) %}
+     {% endfor %}
+
      {% for item in otherItems %}
        {% set item = item.conditional|setAttribute('html',  govukTextarea(item.conditional.html)) %}
      {% endfor %}
@@ -71,6 +75,17 @@
           errorMessage: presenter.fields.withdrawalReason.errorMessage.text,
           value: presenter.fields.withdrawalReason.value
         }) }}
+
+        {% if presenter.showPostICAOptions %}
+            <h3 class="govuk-heading-m">Early closure</h3>
+            {{ govukRadios({
+              idPrefix: "early",
+              name: "withdrawal-reason",
+              items: earlyItems,
+              errorMessage: presenter.fields.withdrawalReason.errorMessage.text,
+              value: presenter.fields.withdrawalReason.value
+            }) }}
+        {% endif %}
 
          <p class="govuk-radios__divider">Or</p>
 

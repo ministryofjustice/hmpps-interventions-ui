@@ -26,7 +26,7 @@
           {% if presenter.canWithdraw %}
               <a href={{presenter.withdrawReferralHref}}>
                   {{ govukButton({
-                    text: "Withdraw referral",
+                    text: presenter.withdrawalButtonText,
                     classes: "govuk-button--secondary"
                   }) }}
               </a>

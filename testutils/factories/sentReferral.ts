@@ -141,4 +141,5 @@ export default SentReferralFactory.define(({ sequence }) => ({
   endOfServiceReportCreationRequired: false,
   concludedAt: null,
   withdrawalState: WithdrawalState.preICA,
+  withdrawalCode: null,
 }))

@@ -25,6 +25,10 @@ export default class ReferralWithdrawalReasonView {
     return this.presenter.sentenceReasonsFields
   }
 
+  get earlyItems(): RadiosArgsItem[] {
+    return this.presenter.earlyReasonsFields
+  }
+
   get otherItems(): RadiosArgsItem[] {
     return this.presenter.otherReasonsFields
   }
@@ -39,6 +43,7 @@ export default class ReferralWithdrawalReasonView {
         userItems: this.userItems,
         sentenceItems: this.sentenceItems,
         otherItems: this.otherItems,
+        earlyItems: this.earlyItems,
         backLinkArgs: this.backLinkArgs,
       },
     ]

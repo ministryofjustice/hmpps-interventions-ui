@@ -95,7 +95,10 @@ export default class InterventionProgressPresenter {
     return this.referralAssigned ? `${this.assignee!.email}` : null
   }
 
-  readonly canWithdraw = this.referral.concludedAt === null && this.referral.withdrawalState === WithdrawalState.preICA
+  readonly canWithdraw = this.referral.concludedAt === null && this.referral.withdrawalState !== null
+
+  readonly withdrawalButtonText =
+    this.referral.withdrawalState === WithdrawalState.preICA ? 'Withdraw referral' : 'Withdraw or close referral early'
 
   readonly referralCancellationHref = `/probation-practitioner/referrals/${this.referral.id}/cancellation/start`
 

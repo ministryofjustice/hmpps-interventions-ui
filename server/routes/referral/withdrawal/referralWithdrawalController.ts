@@ -100,6 +100,7 @@ export default class ReferralWithdrawalController {
       return
     }
     const draftWithdrawal = fetchResult.draft
+    const { withdrawalState } = draftWithdrawal.data
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, req.params.id)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
@@ -113,7 +114,8 @@ export default class ReferralWithdrawalController {
       req.params.id,
       draftWithdrawal.id,
       serviceUser,
-      intervention
+      intervention,
+      withdrawalState!
     )
     const view = new ReferralWithdrawalCheckAnswersView(presenter)
 

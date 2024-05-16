@@ -29,6 +29,36 @@ describe(ReferralWithdrawalReasonForm, () => {
         expect(data.paramsForUpdate?.withdrawalComments).toEqual('Alex has moved to a new area')
       })
     })
+
+    describe('withdrawal state is calculated correctly', () => {
+      it('pre-ica', async () => {
+        const request = TestUtils.createRequest({
+          'withdrawal-reason': 'INE',
+          'withdrawal-comments-INE': 'Alex has moved to a new area',
+        })
+        const data = await new ReferralWithdrawalReasonForm(request, WithdrawalState.preICA).data()
+
+        expect(data.paramsForUpdate?.withdrawalState).toEqual(WithdrawalState.preICA)
+      })
+      it('post-ica', async () => {
+        const request = TestUtils.createRequest({
+          'withdrawal-reason': 'INE',
+          'withdrawal-comments-INE': 'Alex has moved to a new area',
+        })
+        const data = await new ReferralWithdrawalReasonForm(request, WithdrawalState.postICA).data()
+
+        expect(data.paramsForUpdate?.withdrawalState).toEqual(WithdrawalState.postICA)
+      })
+      it('post-ica-closed', async () => {
+        const request = TestUtils.createRequest({
+          'withdrawal-reason': 'EAR',
+          'withdrawal-comments-EAR': 'referral completed',
+        })
+        const data = await new ReferralWithdrawalReasonForm(request, WithdrawalState.postICA).data()
+
+        expect(data.paramsForUpdate?.withdrawalState).toEqual(WithdrawalState.postICAClosed)
+      })
+    })
   })
 
   describe('invalid fields', () => {
