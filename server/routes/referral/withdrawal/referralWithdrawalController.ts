@@ -125,8 +125,8 @@ export default class ReferralWithdrawalController {
   async submitWithdrawal(req: Request, res: Response): Promise<void> {
     if (req.body['confirm-withdrawal'] === 'no') {
       res.redirect(`/probation-practitioner/referrals/${req.params.id}/progress`)
+      return
     }
-
     const fetchResult = await this.fetchDraftWithdrawalOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return
