@@ -619,8 +619,8 @@ describe(ShowReferralPresenter, () => {
 
       expect(presenter.serviceUserLocationDetails).toEqual([
         { key: 'Location at time of referral', lines: ['Community'] },
-        { key: 'Probation Office', lines: ['London'] },
         { key: 'Release date', lines: ['1 May 2024 (Wed)'] },
+        { key: 'Probation office', lines: ['London'] },
       ])
     })
 
@@ -656,9 +656,9 @@ describe(ShowReferralPresenter, () => {
       )
 
       expect(presenter.serviceUserLocationDetails).toEqual([
-        { key: 'Location at time of referral', lines: ['London'] },
-        { key: 'Probation Office', lines: ['London'] },
+        { key: 'Prison establishment', lines: ['London'] },
         { key: 'Expected release date', lines: ['---'] },
+        { key: 'Expected probation office', lines: ['London'] },
       ])
     })
 
@@ -691,12 +691,12 @@ describe(ShowReferralPresenter, () => {
         prisonerDetails
       )
       expect(presenter.serviceUserLocationDetails).toEqual([
-        { key: 'Location at time of referral', lines: ['London'] },
-        { key: 'Probation Office', lines: ['London'] },
+        { key: 'Prison establishment', lines: ['London'] },
         {
           key: 'Expected release date',
           lines: [moment.tz('Europe/London').add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
         },
+        { key: 'Expected probation office', lines: ['London'] },
       ])
     })
     it('returns a summary list when the release date is not known', () => {
@@ -729,8 +729,7 @@ describe(ShowReferralPresenter, () => {
         prisonerDetails
       )
       expect(presenter.serviceUserLocationDetails).toEqual([
-        { key: 'Location at time of referral', lines: ['London'] },
-        { key: 'Probation Office', lines: ['London'] },
+        { key: 'Prison establishment', lines: ['London'] },
         {
           key: 'Expected release date',
           lines: ['Not known'],
@@ -739,6 +738,7 @@ describe(ShowReferralPresenter, () => {
           key: 'Reason why expected release date is not known',
           lines: ['not in ndelius'],
         },
+        { key: 'Expected probation office', lines: ['London'] },
       ])
     })
     it('returns a summary list for a unallocated COM who knows the release date', () => {
@@ -771,12 +771,12 @@ describe(ShowReferralPresenter, () => {
       )
 
       expect(presenter.serviceUserLocationDetails).toEqual([
-        { key: 'Location at time of referral', lines: ['London'] },
-        { key: 'Probation Office', lines: ['London'] },
+        { key: 'Prison establishment', lines: ['London'] },
         {
           key: 'Expected release date',
           lines: [moment().add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
         },
+        { key: 'Expected probation office', lines: ['London'] },
       ])
     })
   })

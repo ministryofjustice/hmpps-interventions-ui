@@ -540,6 +540,52 @@ describe(CheckAllReferralInformationPresenter, () => {
               lines: [`4 Apr 2024 (Thu)`],
               changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
             },
+            {
+              key: 'Expected probation office',
+              lines: ['Derbyshire: Buxton Probation Office'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+            },
+          ],
+        })
+      })
+    })
+
+    describe('current location and release details for a custody referral with pdu', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.custody,
+        ppPdu: 'London',
+        ppProbationOffice: null,
+        expectedReleaseDate: '04-04-2024',
+        personCustodyPrisonId: 'ccc',
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
+        conviction,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
+      )
+      it('returns the location and release details summary', () => {
+        expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
+          title: `Alex River’s current location and expected release date`,
+          summary: [
+            {
+              key: 'Location at time of referral',
+              lines: ['Aylesbury (HMYOI)'],
+              changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+            },
+            {
+              key: 'Expected release date',
+              lines: [`4 Apr 2024 (Thu)`],
+              changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+            },
+            {
+              key: 'Expected PDU (Probation Delivery Unit)',
+              lines: ['London'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
+            },
           ],
         })
       })
@@ -580,6 +626,11 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Reason why expected release date is not known',
               lines: [`it will be known next week`],
               changeLink: `/referrals/${referral.id}/expected-release-date-unknown?amendPPDetails=true`,
+            },
+            {
+              key: 'Expected probation office',
+              lines: ['Derbyshire: Buxton Probation Office'],
+              changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
             },
           ],
         })

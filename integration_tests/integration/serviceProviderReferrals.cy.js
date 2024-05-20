@@ -268,7 +268,7 @@ describe('Service provider referrals dashboard', () => {
       .children()
       .last()
       .children()
-      .should('contain', 'Location at time of referral')
+      .should('contain', 'Prison establishment')
       .should('contain', 'Expected release date')
       .should('contain', moment().add(1, 'days').format('D MMM YYYY'))
 

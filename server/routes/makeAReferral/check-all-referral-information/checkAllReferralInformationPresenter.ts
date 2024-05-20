@@ -162,7 +162,7 @@ export default class CheckAllReferralInformationPresenter {
           lines: [this.referral.ppPhoneNumber || this.referral.ndeliusPhoneNumber || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
         },
-        this.derivePduOrProbationOffice,
+        this.derivePduOrProbationOffice('Probation office', 'PDU (Probation Delivery Unit)'),
         {
           key: 'Team phone number',
           lines: [this.referral.ppTeamPhoneNumber || this.referral.ndeliusTeamPhoneNumber || 'Not provided'],
@@ -172,16 +172,16 @@ export default class CheckAllReferralInformationPresenter {
     }
   }
 
-  private get derivePduOrProbationOffice(): SummaryListItem {
+  private derivePduOrProbationOffice(probationOfficeHeading: string, pduHeading: string): SummaryListItem {
     if (this.referral.ppProbationOffice) {
       return {
-        key: 'Probation office',
+        key: probationOfficeHeading,
         lines: [this.referral.ppProbationOffice || 'Not provided'],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
       }
     }
     return {
-      key: 'PDU (Probation Delivery Unit)',
+      key: pduHeading,
       lines: [this.referral.ppPdu || this.referral.ndeliusPDU || ''],
       changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
     }
@@ -290,7 +290,11 @@ export default class CheckAllReferralInformationPresenter {
         changeLink: `/referrals/${this.referral.id}/expected-release-date-unknown?amendPPDetails=true`,
       })
     }
-
+    if (!this.checkIfUnAllocatedCOM) {
+      currentLocationAndReleaseDetails.push(
+        this.derivePduOrProbationOffice('Expected probation office', 'Expected PDU (Probation Delivery Unit)')
+      )
+    }
     return {
       title: `${this.serviceUserNameForServiceCategory}’s current location and expected release date`,
       summary: currentLocationAndReleaseDetails,
@@ -303,7 +307,7 @@ export default class CheckAllReferralInformationPresenter {
         key: 'Location at time of referral',
         lines: [`${utils.convertToProperCase(this.referral.personCurrentLocationType!)}`],
       },
-      this.derivePduOrProbationOffice,
+      this.derivePduOrProbationOffice('Probation office', 'PDU (Probation Delivery Unit)'),
       {
         key: 'Release date',
         lines: [
