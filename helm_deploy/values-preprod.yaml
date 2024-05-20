@@ -25,4 +25,4 @@ generic-service:
     FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS: true
     FLAG_CUSTODY_LOCATION_ENABLED: true
     PRISON_REGISTER_API_URL: https://prison-register-preprod.hmpps.service.justice.gov.uk
-    PRISON_API_URL: https://api-preprod.prison.service.justice.gov.uk
+    PRISON_API_URL: https://prison-api-preprod.prison.service.justice.gov.uk
