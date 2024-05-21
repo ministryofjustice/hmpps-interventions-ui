@@ -194,7 +194,7 @@ export default class ShowReferralPresenter {
     if (this.isCustodyReferral && this.prisonerDetails !== null) {
       summaryListItem.push({
         key: 'Prison number',
-        lines: [this.prisonerDetails.prisonId],
+        lines: [this.prisonerDetails.prisonerNumber ?? ''],
       })
     }
     return summaryListItem
