@@ -587,21 +587,7 @@ export default class ShowReferralPresenter {
 
   get serviceUserLocationDetails(): SummaryListItem[] {
     const items: SummaryListItem[] = []
-    items.push({
-      key: 'Location at time of referral',
-      lines: [this.locationAtTimeOfReferral],
-    })
-    items.push({
-      key:
-        this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-          ? 'Probation Office'
-          : 'PDU (Probation Delivery Unit)',
-      lines: [
-        this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-          ? this.sentReferral.referral.ppProbationOffice
-          : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '',
-      ],
-    })
+    items.push(this.locationAtTimeOfReferral)
     items.push(this.determineReleaseDate)
     if (this.sentReferral.referral.expectedReleaseDateMissingReason) {
       items.push({
@@ -609,7 +595,40 @@ export default class ShowReferralPresenter {
         lines: [this.sentReferral.referral.expectedReleaseDateMissingReason],
       })
     }
+    items.push(this.determineOfficeLocation)
     return items
+  }
+
+  private get determineOfficeLocation(): SummaryListItem {
+    const { personCurrentLocationType } = this.sentReferral.referral
+
+    let location: string
+
+    if (personCurrentLocationType === CurrentLocationType.custody) {
+      if (
+        this.sentReferral.referral.ppProbationOffice !== null &&
+        this.sentReferral.referral.ppProbationOffice !== ''
+      ) {
+        location = 'Expected probation office'
+      } else {
+        location = 'Expected PDU (Probation Delivery Unit)'
+      }
+    } else if (
+      this.sentReferral.referral.ppProbationOffice !== null &&
+      this.sentReferral.referral.ppProbationOffice !== ''
+    ) {
+      location = 'Probation office'
+    } else {
+      location = 'PDU (Probation Delivery Unit)'
+    }
+    return {
+      key: location,
+      lines: [
+        this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
+          ? this.sentReferral.referral.ppProbationOffice
+          : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '---',
+      ],
+    }
   }
 
   private get determineReleaseDate(): SummaryListItem {
@@ -646,16 +665,22 @@ export default class ShowReferralPresenter {
     return 'Not known'
   }
 
-  private get locationAtTimeOfReferral(): string {
+  private get locationAtTimeOfReferral(): SummaryListItem {
     const { personCurrentLocationType } = this.sentReferral.referral
     const currentPrisonName = this.getPrisonName(this.sentReferral.referral.personCustodyPrisonId)
+    let locationAtTimeOfReferral = ''
     if (this.sentReferral.referral.personCustodyPrisonId && personCurrentLocationType === CurrentLocationType.custody) {
-      return currentPrisonName
+      locationAtTimeOfReferral = currentPrisonName
+    } else if (personCurrentLocationType) {
+      locationAtTimeOfReferral = utils.convertToProperCase(personCurrentLocationType)
     }
-    if (personCurrentLocationType) {
-      return utils.convertToProperCase(personCurrentLocationType)
+    return {
+      key:
+        personCurrentLocationType === CurrentLocationType.custody
+          ? 'Prison establishment'
+          : 'Location at time of referral',
+      lines: [locationAtTimeOfReferral],
     }
-    return ''
   }
 
   get serviceUserRisks(): SummaryListItem[] {
