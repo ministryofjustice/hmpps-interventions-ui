@@ -3,6 +3,7 @@ import Prisoner from '../../server/models/prisonerOffenderSearch/prisoner'
 
 export default Factory.define<Prisoner>(() => ({
   prisonId: 'MDI',
+  prisonerNumber: 'A6838DA',
   releaseDate: '2023-05-02',
   confirmedReleaseDate: '2023-05-01',
   nonDtoReleaseDate: '2023-05-01',

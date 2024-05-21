@@ -934,6 +934,7 @@ describe('GET /referrals/:id/expected-release-date', () => {
     beforeEach(() => {
       interventionsService.getPrisonerDetails.mockResolvedValue({
         prisonId: '',
+        prisonerNumber: null,
         releaseDate: null,
         confirmedReleaseDate: null,
         nonDtoReleaseDate: null,

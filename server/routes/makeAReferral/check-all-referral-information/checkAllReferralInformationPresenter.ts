@@ -134,7 +134,7 @@ export default class CheckAllReferralInformationPresenter {
     if (!this.isCommunity) {
       summaryListItem.push({
         key: 'Prison number',
-        lines: [this.prisonerDetails.prisonId],
+        lines: [this.prisonerDetails.prisonerNumber ?? ''],
       })
     }
     return summaryListItem

@@ -432,7 +432,7 @@ describe('Probation practitioner referrals dashboard', () => {
       .should('contain', 'Jones')
       .should('contain', `1 Jan 1980 (${yearsElapsed} years old)`)
       .should('contain', 'X123456')
-      .should('contain', 'MDI')
+      .should('contain', 'A6838DA')
 
     cy.contains('Accommodation intervention')
       .parent()

@@ -314,7 +314,7 @@ describe(ShowReferralPresenter, () => {
         },
         {
           key: 'Prison number',
-          lines: ['MDI'],
+          lines: ['A6838DA'],
         },
       ])
     })
