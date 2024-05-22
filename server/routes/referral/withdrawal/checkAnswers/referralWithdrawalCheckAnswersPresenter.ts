@@ -11,7 +11,9 @@ export default class ReferralWithdrawalCheckAnswersPresenter {
     private readonly withdrawalState: string
   ) {}
 
-  readonly backLinkHref = `/probation-practitioner/referrals/${this.referralId}/withdrawal/${this.draftWithdrawalId}/reason`
+  readonly backLinkHref = {
+    href: `/probation-practitioner/referrals/${this.referralId}/withdrawal/${this.draftWithdrawalId}/reason`,
+  }
 
   readonly text = {
     title:

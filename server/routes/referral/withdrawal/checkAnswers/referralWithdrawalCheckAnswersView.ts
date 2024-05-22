@@ -1,14 +1,7 @@
 import ReferralWithdrawalCheckAnswersPresenter from './referralWithdrawalCheckAnswersPresenter'
-import { BackLinkArgs } from '../../../../utils/govukFrontendTypes'
 
 export default class ReferralWithdrawalCheckAnswersView {
   constructor(private readonly presenter: ReferralWithdrawalCheckAnswersPresenter) {}
-
-  private get backLinkArgs(): BackLinkArgs {
-    return {
-      href: this.presenter.backLinkHref,
-    }
-  }
 
   private get confirmWithdrawalButtonArgs(): Record<string, unknown> {
     return {
@@ -42,7 +35,7 @@ export default class ReferralWithdrawalCheckAnswersView {
       'probationPractitionerReferrals/referralWithdrawalCheckAnswers',
       {
         presenter: this.presenter,
-        backLinkArgs: this.backLinkArgs,
+        backLinkArgs: this.presenter.backLinkHref,
         confirmWithdrawalButtonArgs: this.confirmWithdrawalButtonArgs,
       },
     ]
