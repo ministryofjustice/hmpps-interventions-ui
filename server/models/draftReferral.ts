@@ -2,8 +2,6 @@ import ReferralComplexityLevel from './referralComplexityLevel'
 import ReferralDesiredOutcomes from './referralDesiredOutcomes'
 import ServiceProvider from './serviceProvider'
 import ServiceUser from './serviceUser'
-// eslint-disable-next-line import/no-named-as-default,import/no-cycle
-import WithdrawalState from './sentReferral'
 
 type WithNullableValues<T> = { [K in keyof T]: T[K] | null }
 
@@ -50,7 +48,7 @@ export interface ReferralFields {
   ppLocationType: string | null
   allocatedCommunityPP: boolean | null
   reasonForReferral: string | null
-  withdrawalState: WithdrawalState | null
+  withdrawalState: string | null
 }
 
 export enum CurrentLocationType {

@@ -271,4 +271,5 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   ppLocationType: null,
   allocatedCommunityPP: null,
   reasonForReferral: null,
+  withdrawalState: null,
 }))
