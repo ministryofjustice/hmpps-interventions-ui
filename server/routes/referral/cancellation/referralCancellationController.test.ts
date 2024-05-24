@@ -15,6 +15,7 @@ import MockAssessRisksAndNeedsService from '../../testutils/mocks/mockAssessRisk
 import AssessRisksAndNeedsService from '../../../services/assessRisksAndNeedsService'
 import DraftsService from '../../../services/draftsService'
 import appWithAllRoutes, { AppSetupUserType } from '../../testutils/appSetup'
+import { WithdrawalState } from '../../../models/sentReferral'
 
 jest.mock('../../../services/interventionsService')
 jest.mock('../../../services/ramDeliusApiService')
@@ -244,7 +245,7 @@ describe('GET /probation-practitioner/referrals/:id/cancellation/:draftCancellat
       })
       draftsService.fetchDraft.mockResolvedValue(draftCancellation)
 
-      const referral = sentReferralFactory.assigned().build()
+      const referral = sentReferralFactory.assigned().build({ withdrawalState: WithdrawalState.preICA })
       const intervention = interventionFactory.build()
       const serviceUser = deliusServiceUserFactory.build()
 

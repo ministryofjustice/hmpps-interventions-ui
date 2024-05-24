@@ -38,6 +38,7 @@ import ChangelogDetail from '../models/changelogDetail'
 import { AmendOtherNeeds } from '../models/OtherNeeds'
 import SessionFeedback, { NoSessionReasonType } from '../models/sessionFeedback'
 import Prisoner from '../models/prisonerOffenderSearch/prisoner'
+import WithdrawalReason from '../models/withdrawalReason'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -699,12 +700,39 @@ export default class InterventionsService {
     })) as SentReferral
   }
 
+  async withdrawReferral(
+    token: string,
+    referralId: string,
+    code: string,
+    comments: string | null,
+    withdrawalState: string
+  ): Promise<SentReferral> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/sent-referral/${referralId}/withdraw-referral`,
+      data: {
+        code,
+        comments,
+        withdrawalState,
+      },
+      headers: { Accept: 'application/json' },
+    })) as SentReferral
+  }
+
   async getReferralCancellationReasons(token: string): Promise<CancellationReason[]> {
     const restClient = this.createRestClient(token)
     return (await restClient.get({
       path: '/referral-cancellation-reasons',
       headers: { Accept: 'application/json' },
     })) as CancellationReason[]
+  }
+
+  async getReferralWithdrawalReasons(token: string): Promise<WithdrawalReason[]> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: '/referral-withdrawal-reasons',
+      headers: { Accept: 'application/json' },
+    })) as WithdrawalReason[]
   }
 
   async approveActionPlan(token: string, actionPlanId: string): Promise<void> {

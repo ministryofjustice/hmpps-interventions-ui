@@ -1,0 +1,106 @@
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Referral withdrawal" %}
+{% set pageSubTitle = "Provide withdrawal reason" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
+      {{ govukBackLink(backLinkArgs) }}
+
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+    {% for item in problemItems %}
+         {% set item = item.conditional|setAttribute('html',  govukTextarea(item.conditional.html)) %}
+     {% endfor %}
+
+     {% for item in userItems %}
+          {% set item = item.conditional|setAttribute('html',  govukTextarea(item.conditional.html)) %}
+     {% endfor %}
+
+     {% for item in sentenceItems %}
+          {% set item = item.conditional|setAttribute('html',  govukTextarea(item.conditional.html)) %}
+     {% endfor %}
+
+     {% for item in earlyItems %}
+          {% set item = item.conditional|setAttribute('html',  govukTextarea(item.conditional.html)) %}
+     {% endfor %}
+
+     {% for item in otherItems %}
+       {% set item = item.conditional|setAttribute('html',  govukTextarea(item.conditional.html)) %}
+     {% endfor %}
+
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <div id="changedName-hint" class="govuk-hint">
+              Select one reason.
+            </div>
+        </legend>
+        <h3 class="govuk-heading-m">Problem with referral</h3>
+        {{ govukRadios({
+          idPrefix: "problem",
+          name: "withdrawal-reason",
+          items: problemItems ,
+          errorMessage: presenter.fields.withdrawalReason.errorMessage.text,
+          value: presenter.fields.withdrawalReason.value
+        }) }}
+
+        <h3 class="govuk-heading-m">User related</h3>
+        {{ govukRadios({
+          idPrefix: "user",
+          name: "withdrawal-reason",
+          items: userItems,
+          errorMessage: presenter.fields.withdrawalReason.errorMessage.text,
+          value: presenter.fields.withdrawalReason.value
+        }) }}
+
+        <h3 class="govuk-heading-m">Sentence / custody related</h3>
+        {{ govukRadios({
+          idPrefix: "sentence",
+          name: "withdrawal-reason",
+          items: sentenceItems,
+          errorMessage: presenter.fields.withdrawalReason.errorMessage.text,
+          value: presenter.fields.withdrawalReason.value
+        }) }}
+
+        {% if presenter.showPostICAOptions %}
+            <h3 class="govuk-heading-m">Early closure</h3>
+            {{ govukRadios({
+              idPrefix: "early",
+              name: "withdrawal-reason",
+              items: earlyItems,
+              errorMessage: presenter.fields.withdrawalReason.errorMessage.text,
+              value: presenter.fields.withdrawalReason.value
+            }) }}
+        {% endif %}
+
+         <p class="govuk-radios__divider">Or</p>
+
+        {{ govukRadios({
+          idPrefix: "other",
+          name: "withdrawal-reason",
+          items: otherItems,
+          errorMessage: presenter.fields.withdrawalReason.errorMessage.text,
+          value: presenter.fields.withdrawalReason.value
+        }) }}
+      </fieldset>
+
+
+        {{ govukButton({ text: "Continue", preventDoubleClick: true }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -6,6 +6,7 @@ import ReferralCancellationController from './referral/cancellation/referralCanc
 import AppointmentsController from './appointments/appointmentsController'
 import AmendAReferralController from './amendAReferral/amendAReferralController'
 import ChangeLogController from './amendAReferral/changeLogController'
+import ReferralWithdrawalController from './referral/withdrawal/referralWithdrawalController'
 
 export const probationPractitionerUrlPrefix = '/probation-practitioner'
 
@@ -140,6 +141,31 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   )
   get(router, '/referrals/:id/cancellation/confirmation', (req, res) =>
     referralCancellationController.showCancellationConfirmationPage(req, res)
+  )
+
+  const referralWithdrawalController = new ReferralWithdrawalController(
+    services.interventionsService,
+    services.ramDeliusApiService,
+    services.hmppsAuthService,
+    services.draftsService
+  )
+
+  get(router, '/referrals/:id/withdrawal/start', (req, res) => referralWithdrawalController.startWithdrawal(req, res))
+
+  get(router, '/referrals/:id/withdrawal/:draftWithdrawalId/reason', (req, res) =>
+    referralWithdrawalController.editWithdrawalReason(req, res)
+  )
+  post(router, '/referrals/:id/withdrawal/:draftWithdrawalId/reason', (req, res) =>
+    referralWithdrawalController.editWithdrawalReason(req, res)
+  )
+  get(router, '/referrals/:id/withdrawal/:draftWithdrawalId/check-your-answers', (req, res) =>
+    referralWithdrawalController.withdrawalCheckAnswers(req, res)
+  )
+  post(router, '/referrals/:id/withdrawal/:draftWithdrawalId/submit', (req, res) =>
+    referralWithdrawalController.submitWithdrawal(req, res)
+  )
+  get(router, '/referrals/:id/withdrawal/confirmation', (req, res) =>
+    referralWithdrawalController.showWithdrawalConfirmationPage(req, res)
   )
 
   get(router, '/referrals/:id/supplier-assessment', (req, res) =>
