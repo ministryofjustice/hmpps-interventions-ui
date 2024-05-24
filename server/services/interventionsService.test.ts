@@ -2,7 +2,7 @@ import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 import moment from 'moment-timezone'
 import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
-import SentReferral from '../models/sentReferral'
+import SentReferral, { WithdrawalState } from '../models/sentReferral'
 import SentReferralSummaries from '../models/sentReferralSummaries'
 import ServiceUser from '../models/serviceUser'
 import config from '../config'
@@ -1519,7 +1519,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     endOfServiceReport: null,
     referenceNumber: 'HDJ2123F',
     supplementaryRiskId: 'a1f5ce02-53a3-47c4-bc71-45f1bdbf504c',
-    withdrawalState: null,
+    withdrawalState: WithdrawalState.preICA,
     withdrawalCode: null,
     referral: {
       createdAt: '2021-01-11T10:32:12.382884Z',
