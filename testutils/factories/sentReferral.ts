@@ -55,6 +55,8 @@ const exampleReferralFields = () => {
     alreadyKnowPrisonName: null,
     expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
     expectedReleaseDateMissingReason: null,
+    expectedProbationOffice: 'London',
+    expectedProbationOfficeUnKnownReason: null,
     hasExpectedReleaseDate: null,
     ndeliusPPName: 'John Davies',
     ndeliusPPEmailAddress: 'john@example.com',

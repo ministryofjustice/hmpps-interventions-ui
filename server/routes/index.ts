@@ -196,6 +196,18 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   post(router, '/referrals/:id/expected-release-date-unknown', (req, res) =>
     makeAReferralController.submitExpectedReleaseDateUnknown(req, res)
   )
+  get(router, '/referrals/:id/expected-probation-office', (req, res) =>
+    makeAReferralController.viewExpectedProbationOffice(req, res)
+  )
+  post(router, '/referrals/:id/expected-probation-office', (req, res) =>
+    makeAReferralController.submitExpectedProbationOffice(req, res)
+  )
+  get(router, '/referrals/:id/expected-probation-office-unknown', (req, res) =>
+    makeAReferralController.viewExpectedProbationOfficeUnknown(req, res)
+  )
+  post(router, '/referrals/:id/expected-probation-office-unknown', (req, res) =>
+    makeAReferralController.submitExpectedProbationOfficeUnknown(req, res)
+  )
   get(router, '/referrals/:id/confirm-probation-practitioner-details', (req, res) =>
     makeAReferralController.viewConfirmProbationPractitionerDetails(req, res)
   )

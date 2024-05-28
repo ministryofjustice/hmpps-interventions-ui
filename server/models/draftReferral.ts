@@ -29,6 +29,8 @@ export interface ReferralFields {
   hasExpectedReleaseDate: boolean | null
   expectedReleaseDate: string | null
   expectedReleaseDateMissingReason: string | null
+  expectedProbationOffice: string | null
+  expectedProbationOfficeUnKnownReason: string | null
   ndeliusPPName: string | null
   ndeliusPPEmailAddress: string | null
   ndeliusPDU: string | null

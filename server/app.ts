@@ -113,6 +113,8 @@ export default function createApp(
             "'sha256-mVhB0scNdTtTt/aOmRKykONFOV4hJa+aNdQO2Obzqig='",
             "'sha256-DWY4ZjS+wfkiCnvHmqAv42nwL2SgDelOl9jdsr8bGF0='",
             "'sha256-T8GG0mM7xjlF3v8OUaEoJYxlIf7UxMsiPqzKf4nDq5M='",
+            "'sha256-1cKzDM/GsErWIInvbcYrPPfVrsi2bLJKL43qOwMja1E='",
+            "'sha256-5JS2PkGWbRcUgQsFF0ABm71FY0rNntJ6wE5+r3Ky9d4='",
             'https://www.google-analytics.com',
             'https://ssl.google-analytics.com',
             'https://www.googletagmanager.com/',

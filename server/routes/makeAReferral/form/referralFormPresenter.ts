@@ -176,24 +176,46 @@ class FormSectionBuilder {
         `${this.referral.serviceUser.firstName} ${this.referral.serviceUser.lastName}`
       )}'s current location and expected release date`,
       number: '2',
-      tasks: [
-        {
-          title: 'Establishment',
-          url: this.calculateTaskUrl(
-            'submit-current-location',
-            this.referral.isReferralReleasingIn12Weeks === null
-              ? this.taskValues.probationPractitionerDetails
-              : this.taskValues.mainPointOfContactDetails
-          ),
-          status: this.calculateStatus(this.taskValues.currentLocationDetails),
-        },
-        {
-          title: 'Expected release date',
-          url: this.calculateTaskUrl('expected-release-date', this.taskValues.currentLocationDetails),
-          status: this.calculateStatus(this.taskValues.expectedReleaseDateDetails),
-        },
-      ],
+      tasks: this.buildCurrentLocationAndExpectedReleaseTaskList(),
     }
+  }
+
+  private buildCurrentLocationAndExpectedReleaseTaskList(): ReferralFormTaskPresenter[] {
+    let title
+    if (this.referral.isReferralReleasingIn12Weeks !== null && this.referral.isReferralReleasingIn12Weeks) {
+      title = 'Current location'
+    } else {
+      title = 'Establishment'
+    }
+
+    const referralTaskPresenter: ReferralFormTaskPresenter[] = []
+
+    referralTaskPresenter.push(
+      {
+        title,
+        url: this.calculateTaskUrl(
+          'submit-current-location',
+          this.referral.isReferralReleasingIn12Weeks === null
+            ? this.taskValues.probationPractitionerDetails
+            : this.taskValues.mainPointOfContactDetails
+        ),
+        status: this.calculateStatus(this.taskValues.currentLocationDetails),
+      },
+      {
+        title: 'Expected release date',
+        url: this.calculateTaskUrl('expected-release-date', this.taskValues.currentLocationDetails),
+        status: this.calculateStatus(this.taskValues.expectedReleaseDateDetails),
+      }
+    )
+    if (this.referral.isReferralReleasingIn12Weeks !== null && this.referral.isReferralReleasingIn12Weeks) {
+      referralTaskPresenter.push({
+        title: 'Expected probation office',
+        url: this.calculateTaskUrl('expected-probation-office', this.taskValues.expectedReleaseDateDetails),
+        status: this.calculateStatus(this.taskValues.expectedProbationOfficeDetails),
+      })
+    }
+
+    return referralTaskPresenter
   }
 
   private buildCurrentLocationSection(): ReferralFormSingleListSectionPresenter {
@@ -601,6 +623,10 @@ class TaskValues {
 
   get expectedReleaseDateDetails(): DraftReferralValues {
     return [this.referral.expectedReleaseDate || this.referral.expectedReleaseDateMissingReason ? true : null]
+  }
+
+  get expectedProbationOfficeDetails(): DraftReferralValues {
+    return [this.referral.expectedProbationOffice || this.referral.expectedProbationOfficeUnKnownReason ? true : null]
   }
 
   // TODO: remove this.referral.additionalRiskInformation once switched over to full risk information

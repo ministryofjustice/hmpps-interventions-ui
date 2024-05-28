@@ -115,6 +115,12 @@ import ExpectedReleaseDateUnknownForm from './expected-release-date/expected-rel
 import ExpectedReleaseDateView from './expected-release-date/expectedReleaseDateView'
 import ExpectedReleaseDatePresenter from './expected-release-date/expectedReleaseDatePresenter'
 import ExpectedReleaseDateForm from './expected-release-date/expectedReleaseDateForm'
+import SelectExpectedProbationOfficePresenter from './expected-probation-office/select-probation-office/selectExpectedProbationOfficePresenter'
+import SelectExpectedProbationOfficeView from './expected-probation-office/select-probation-office/selectExpectedProbationOfficeView'
+import SelectExpectedProbationOfficeForm from './expected-probation-office/select-probation-office/selectExpectedProbationOfficeForm'
+import ExpectedProbationOfficeUnknownPresenter from './expected-probation-office/expected-probation-office-unknown/expectedProbationOfficeUnknownPresenter'
+import ExpectedProbationOfficeUnknownView from './expected-probation-office/expected-probation-office-unknown/expectedProbationOfficeUnknownView'
+import ExpectedProbationOfficeUnknownForm from './expected-probation-office/expected-probation-office-unknown/expectedProbationOfficeUnknownForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -900,7 +906,7 @@ export default class MakeAReferralController {
     if (error === null && amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
     } else if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      res.redirect(`/referrals/${req.params.id}/expected-probation-office`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
@@ -962,7 +968,11 @@ export default class MakeAReferralController {
         `/referrals/${req.params.id}/change-expected-release-date${amendPPDetails ? '?amendPPDetails=true' : ''}`
       )
     } else if (error === null && req.body['expected-release-date'] === 'confirm' && !amendPPDetails) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      if (referral.isReferralReleasingIn12Weeks !== null && referral.isReferralReleasingIn12Weeks) {
+        res.redirect(`/referrals/${req.params.id}/expected-probation-office`)
+      } else {
+        res.redirect(`/referrals/${req.params.id}/form`)
+      }
     } else if (error === null && req.body['expected-release-date'] === 'confirm' && amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
     } else {
@@ -1018,7 +1028,13 @@ export default class MakeAReferralController {
 
     if (error === null && amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
-    } else if (error === null) {
+    } else if (
+      error === null &&
+      referral.isReferralReleasingIn12Weeks !== null &&
+      referral.isReferralReleasingIn12Weeks
+    ) {
+      res.redirect(`/referrals/${req.params.id}/expected-probation-office`)
+    } else if (error === null && referral.isReferralReleasingIn12Weeks === null) {
       res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
@@ -1073,6 +1089,111 @@ export default class MakeAReferralController {
 
       const presenter = new ExpectedReleaseDateUnknownPresenter(referral, error, req.body)
       const view = new ExpectedReleaseDateUnknownView(presenter)
+
+      res.status(400)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
+  }
+
+  async viewExpectedProbationOffice(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new SelectExpectedProbationOfficePresenter(referral, deliusOfficeLocations)
+    const view = new SelectExpectedProbationOfficeView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async submitExpectedProbationOffice(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+    const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
+
+    const form = await SelectExpectedProbationOfficeForm.createForm(req)
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    if (error === null && !amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new SelectExpectedProbationOfficePresenter(
+        referral,
+        deliusOfficeLocations,
+        amendPPDetails,
+        error,
+        req.body
+      )
+      const view = new SelectExpectedProbationOfficeView(presenter)
+
+      res.status(400)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
+  }
+
+  async viewExpectedProbationOfficeUnknown(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+    const presenter = new ExpectedProbationOfficeUnknownPresenter(referral)
+    const view = new ExpectedProbationOfficeUnknownView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async submitExpectedProbationOfficeUnknown(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const form = await new ExpectedProbationOfficeUnknownForm(req).data()
+
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new ExpectedProbationOfficeUnknownPresenter(referral, error, req.body)
+      const view = new ExpectedProbationOfficeUnknownView(presenter)
 
       res.status(400)
       await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')

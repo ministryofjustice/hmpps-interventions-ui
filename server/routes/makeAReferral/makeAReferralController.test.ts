@@ -1012,7 +1012,7 @@ describe('POST /referrals/:id/expected-release-date/submit', () => {
         'release-date-year': tomorrow.format('YYYY'),
       })
       .expect(302)
-      .expect('Location', '/referrals/1/form')
+      .expect('Location', '/referrals/1/expected-probation-office')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',
@@ -1042,7 +1042,7 @@ describe('POST /referrals/:id/expected-release-date/submit', () => {
         'release-date-unknown-reason': 'yet to receive the information from prison',
       })
       .expect(302)
-      .expect('Location', '/referrals/1/form')
+      .expect('Location', '/referrals/1/expected-probation-office')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',

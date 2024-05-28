@@ -53,28 +53,37 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     })
   }
 
-  selectedServiceCategories(serviceCategories: ServiceCategory[]) {
+  selectedServiceCategories(serviceCategories: ServiceCategory[], unallocatedCOM = false) {
     const resolvedServiceCategoryIds = serviceCategories.map(serviceCategory => serviceCategory.id)
+    if (unallocatedCOM) {
+      return this.filledFormUpToExpectedProbationOffice().params({
+        serviceCategoryIds: resolvedServiceCategoryIds,
+      })
+    }
     return this.filledFormUpToExpectedReleaseDate().params({
       serviceCategoryIds: resolvedServiceCategoryIds,
     })
   }
 
-  filledFormUpToRiskInformation(serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()]) {
-    return this.selectedServiceCategories(serviceCategories).params({
+  filledFormUpToRiskInformation(
+    serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()],
+    unallocatedCOM = false
+  ) {
+    return this.selectedServiceCategories(serviceCategories, unallocatedCOM).params({
       additionalRiskInformation: 'A danger to the elderly',
     })
   }
 
   filledFormUpToNeedsAndRequirements(
     serviceCategories: ServiceCategory[] = [serviceCategoryFactory.build()],
-    skipAdditionalRiskInformation = false
+    skipAdditionalRiskInformation = false,
+    unallocatedCOM = false
   ) {
     let filledForm: this
     if (skipAdditionalRiskInformation) {
-      filledForm = this.selectedServiceCategories(serviceCategories)
+      filledForm = this.selectedServiceCategories(serviceCategories, unallocatedCOM)
     } else {
-      filledForm = this.filledFormUpToRiskInformation(serviceCategories)
+      filledForm = this.filledFormUpToRiskInformation(serviceCategories, unallocatedCOM)
     }
     return filledForm.params({
       additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
@@ -153,6 +162,12 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     const tomorrow = moment().add(1, 'days')
     return this.filledFormUpToCurrentLocation().params({
       expectedReleaseDate: tomorrow.format('YYYY-MM-DD'),
+    })
+  }
+
+  filledFormUpToExpectedProbationOffice() {
+    return this.filledFormUpToExpectedReleaseDate().params({
+      expectedProbationOffice: 'Chelmsford: Chelmsford Probation Office',
     })
   }
 
@@ -248,6 +263,8 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   hasExpectedReleaseDate: null,
   expectedReleaseDate: null,
   expectedReleaseDateMissingReason: null,
+  expectedProbationOffice: null,
+  expectedProbationOfficeUnKnownReason: null,
   contractTypeName: interventionFactory.build().contractType.name,
   personCurrentLocationType: null,
   personCustodyPrisonId: null,
