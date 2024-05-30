@@ -2,7 +2,7 @@ import { pactWith } from 'jest-pact'
 import { Matchers } from '@pact-foundation/pact'
 import moment from 'moment-timezone'
 import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
-import SentReferral from '../models/sentReferral'
+import SentReferral, { WithdrawalState } from '../models/sentReferral'
 import SentReferralSummaries from '../models/sentReferralSummaries'
 import ServiceUser from '../models/serviceUser'
 import config from '../config'
@@ -1519,7 +1519,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     endOfServiceReport: null,
     referenceNumber: 'HDJ2123F',
     supplementaryRiskId: 'a1f5ce02-53a3-47c4-bc71-45f1bdbf504c',
-    withdrawalState: null,
+    withdrawalState: WithdrawalState.preICA,
     withdrawalCode: null,
     referral: {
       createdAt: '2021-01-11T10:32:12.382884Z',
@@ -1577,6 +1577,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ppLocationType: null,
       allocatedCommunityPP: true,
       reasonForReferral: 'for crs',
+      withdrawalState: WithdrawalState.preICA,
     },
   }
 
@@ -1784,7 +1785,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     describe('for a sent referral that has had an end request', () => {
       it('populates the endRequested properties', async () => {
-        const endRequestedReferral = sentReferralFactory.endRequested().build()
+        const endRequestedReferral = sentReferralFactory.endRequested().build({ withdrawalCode: 'MIS' })
         await provider.addInteraction({
           state:
             'There is an existing sent referral with ID of c5554f8f-aac6-4eaf-ba70-63281de35685, and it has been requested to be ended',
@@ -3572,44 +3573,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
       const result = await interventionsService.submitEndOfServiceReport(probationPractitionerToken, id)
       expect(result).toEqual(submittedEndOfServiceReport)
-    })
-  })
-
-  describe('endReferral', () => {
-    const endedReferral = sentReferralFactory.endRequested().build({ concludedAt: '2020-12-07T20:45:21.986389Z' })
-
-    beforeEach(async () => {
-      await provider.addInteraction({
-        state:
-          'There is an existing assigned referral with ID of 5f71c68f-3e43-46b6-8f25-027a88637ee1 with no attended sessions',
-        uponReceiving:
-          'a POST request to end the referral with ID 5f71c68f-3e43-46b6-8f25-027a88637ee1 because SU was recalled ',
-        withRequest: {
-          method: 'POST',
-          path: '/sent-referral/5f71c68f-3e43-46b6-8f25-027a88637ee1/end',
-          body: {
-            reasonCode: 'REC',
-            comments: 'Alex was arrested for driving without insurance and immediately recalled.',
-          },
-          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-        },
-        willRespondWith: {
-          status: 200,
-          body: Matchers.like(endedReferral),
-          headers: { 'Content-Type': 'application/json' },
-        },
-      })
-    })
-
-    it('returns an ended referral', async () => {
-      expect(
-        await interventionsService.endReferral(
-          probationPractitionerToken,
-          '5f71c68f-3e43-46b6-8f25-027a88637ee1',
-          'REC',
-          'Alex was arrested for driving without insurance and immediately recalled.'
-        )
-      ).toMatchObject(endedReferral)
     })
   })
 
