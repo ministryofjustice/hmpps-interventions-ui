@@ -75,8 +75,6 @@ const exampleReferralFields = () => {
     ppLocationType: null,
     allocatedCommunityPP: true,
     reasonForReferral: 'For crs',
-    withdrawalState: WithdrawalState.preICA,
-    withdrawalCode: null,
   }
 }
 

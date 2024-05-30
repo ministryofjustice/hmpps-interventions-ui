@@ -1577,7 +1577,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ppLocationType: null,
       allocatedCommunityPP: true,
       reasonForReferral: 'for crs',
-      withdrawalState: WithdrawalState.preICA,
     },
   }
 
