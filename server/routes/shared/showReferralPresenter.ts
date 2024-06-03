@@ -602,32 +602,36 @@ export default class ShowReferralPresenter {
   private get determineOfficeLocation(): SummaryListItem {
     const { personCurrentLocationType } = this.sentReferral.referral
 
-    let location: string
-
     if (personCurrentLocationType === CurrentLocationType.custody) {
+      if (this.sentReferral.referral.isReferralReleasingIn12Weeks !== null) {
+        return {
+          key: 'Expected probation office',
+          lines: [this.sentReferral.referral.expectedProbationOffice || '---'],
+        }
+      }
       if (
         this.sentReferral.referral.ppProbationOffice !== null &&
         this.sentReferral.referral.ppProbationOffice !== ''
       ) {
-        location = 'Expected probation office'
-      } else {
-        location = 'Expected PDU (Probation Delivery Unit)'
+        return {
+          key: 'Expected probation office',
+          lines: [this.sentReferral.referral.ppProbationOffice],
+        }
       }
-    } else if (
-      this.sentReferral.referral.ppProbationOffice !== null &&
-      this.sentReferral.referral.ppProbationOffice !== ''
-    ) {
-      location = 'Probation office'
-    } else {
-      location = 'PDU (Probation Delivery Unit)'
+      return {
+        key: 'Expected PDU (Probation Delivery Unit)',
+        lines: [this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '---'],
+      }
+    }
+    if (this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== '') {
+      return {
+        key: 'Probation office',
+        lines: [this.sentReferral.referral.ppProbationOffice],
+      }
     }
     return {
-      key: location,
-      lines: [
-        this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== ''
-          ? this.sentReferral.referral.ppProbationOffice
-          : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '---',
-      ],
+      key: 'PDU (Probation Delivery Unit)',
+      lines: [this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '---'],
     }
   }
 

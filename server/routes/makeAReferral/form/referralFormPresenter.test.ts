@@ -105,7 +105,7 @@ describe('ReferralFormPresenter', () => {
                 firstName: 'Bob',
                 lastName: 'Wills',
               },
-              personCurrentLocationType: CurrentLocationType.community,
+              personCurrentLocationType: CurrentLocationType.custody,
               isReferralReleasingIn12Weeks: true,
             })
             const presenter = new ReferralFormPresenter(referral, nonCohortIntervention)
@@ -118,7 +118,8 @@ describe('ReferralFormPresenter', () => {
                 )
                 .build(),
               referralFormSectionFactory
-                .confirmCurrentLocationAndExpectedReleaseDate(
+                .confirmCurrentLocationAndExpectedReleaseDateForPreReleaseNoCom(
+                  ReferralFormStatus.NotStarted,
                   ReferralFormStatus.NotStarted,
                   ReferralFormStatus.NotStarted,
                   referral.serviceUser.firstName,
@@ -132,13 +133,13 @@ describe('ReferralFormPresenter', () => {
                   ReferralFormStatus.NotStarted,
                   referral.serviceUser.firstName,
                   referral.serviceUser.lastName,
-                  '2'
+                  '3'
                 )
                 .build(),
               referralFormSectionFactory
-                .interventionDetails('accommodation', '3', ReferralFormStatus.CannotStartYet)
+                .interventionDetails('accommodation', '4', ReferralFormStatus.CannotStartYet)
                 .build(),
-              referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet, '4').build(),
+              referralFormSectionFactory.checkAllReferralInformation(ReferralFormStatus.CannotStartYet, '5').build(),
             ]
             expect(presenter.sections).toEqual(expected)
           })

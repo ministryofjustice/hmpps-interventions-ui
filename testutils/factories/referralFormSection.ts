@@ -40,6 +40,34 @@ class ReferralFormSectionFactory extends Factory<ReferralFormSingleListSectionPr
     })
   }
 
+  confirmCurrentLocationAndExpectedReleaseDateForPreReleaseNoCom(
+    establishmentReferralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    expectedReleaseDateReferralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    expectedProbationOfficeReferralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
+    userFirstName: string | null = null,
+    userLastName: string | null = null,
+    establishmentUrl: string | null = null,
+    expectedReleaseDateUrl: string | null = null,
+    expectedProbationOfficeUrl: string | null = null
+  ) {
+    return this.params({
+      type: 'single',
+      title: `Confirm ${utils.convertToTitleCase(
+        `${userFirstName} ${userLastName}`
+      )}'s current location and expected release date`,
+      number: '2',
+      tasks: [
+        { title: 'Current location', url: establishmentUrl, status: establishmentReferralFormStatus },
+        { title: 'Expected release date', url: expectedReleaseDateUrl, status: expectedReleaseDateReferralFormStatus },
+        {
+          title: 'Expected probation office',
+          url: expectedProbationOfficeUrl,
+          status: expectedProbationOfficeReferralFormStatus,
+        },
+      ],
+    })
+  }
+
   confirmCurrentLocation(
     establishmentReferralFormStatus: ReferralFormStatus = ReferralFormStatus.NotStarted,
     userFirstName: string | null = null,

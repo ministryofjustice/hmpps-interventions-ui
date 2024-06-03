@@ -175,6 +175,12 @@ export default {
   releaseDateUnknownReason: {
     empty: `Enter a reason why the expected release date is not known`,
   },
+  expectedProbationOffice: {
+    empty: `Select a probation office from the list`,
+  },
+  probationOfficeUnknownReason: {
+    empty: `Enter a reason why the expected probation office is not known`,
+  },
   hasAdditionalResponsibilities: {
     empty: (name: string) => `Select yes if ${name} has caring or employment responsibilities`,
   },

@@ -619,7 +619,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             },
             {
               key: 'Expected release date',
-              lines: [`Not known`],
+              lines: [`---`],
               changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
             },
             {
@@ -631,6 +631,90 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Expected probation office',
               lines: ['Derbyshire: Buxton Probation Office'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+            },
+          ],
+        })
+      })
+    })
+
+    describe('current location and release details for a pre-release with no com custody referral', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.custody,
+        isReferralReleasingIn12Weeks: true,
+        expectedProbationOffice: 'London',
+        ppProbationOffice: 'Derbyshire: Buxton Probation Office',
+        expectedReleaseDate: '04-04-2024',
+        personCustodyPrisonId: 'ccc',
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
+        conviction,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
+      )
+      it('returns the location and release details summary', () => {
+        expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
+          title: `Alex River’s current location and expected release date`,
+          summary: [
+            {
+              key: 'Location at time of referral',
+              lines: ['Aylesbury (HMYOI)'],
+              changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+            },
+            {
+              key: 'Expected release date',
+              lines: [`4 Apr 2024 (Thu)`],
+              changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+            },
+            {
+              key: 'Expected probation office',
+              lines: ['London'],
+              changeLink: `/referrals/${referral.id}/expected-probation-office?amendPPDetails=true`,
+            },
+          ],
+        })
+      })
+    })
+
+    describe('current location and release details for a pre-release with no com and in prison', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.custody,
+        isReferralReleasingIn12Weeks: false,
+        expectedProbationOffice: null,
+        ppProbationOffice: 'Derbyshire: Buxton Probation Office',
+        expectedReleaseDate: null,
+        personCustodyPrisonId: 'ccc',
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
+        conviction,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
+      )
+      it('returns the location and release details summary', () => {
+        expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
+          title: `Alex River’s current location and expected release date`,
+          summary: [
+            {
+              key: 'Location at time of referral',
+              lines: ['Aylesbury (HMYOI)'],
+              changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+            },
+            {
+              key: 'Expected release date',
+              lines: [`---`],
+              changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+            },
+            {
+              key: 'Expected probation office',
+              lines: ['---'],
+              changeLink: `/referrals/${referral.id}/expected-probation-office?amendPPDetails=true`,
             },
           ],
         })

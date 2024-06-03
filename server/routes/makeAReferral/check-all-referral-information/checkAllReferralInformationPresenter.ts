@@ -173,16 +173,25 @@ export default class CheckAllReferralInformationPresenter {
   }
 
   private derivePduOrProbationOffice(probationOfficeHeading: string, pduHeading: string): SummaryListItem {
-    if (this.referral.ppProbationOffice) {
+    if (this.referral.isReferralReleasingIn12Weeks !== null && !this.referral.isReferralReleasingIn12Weeks) {
       return {
         key: probationOfficeHeading,
-        lines: [this.referral.ppProbationOffice || 'Not provided'],
-        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+        lines: [this.referral.expectedProbationOffice || '---'],
+        changeLink: `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`,
+      }
+    }
+    if (this.referral.expectedProbationOffice || this.referral.ppProbationOffice) {
+      return {
+        key: probationOfficeHeading,
+        lines: [this.referral.expectedProbationOffice || this.referral.ppProbationOffice || 'Not provided'],
+        changeLink: this.checkIfUnAllocatedCOM
+          ? `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`
+          : `/referrals/${this.referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
       }
     }
     return {
       key: pduHeading,
-      lines: [this.referral.ppPdu || this.referral.ndeliusPDU || ''],
+      lines: [this.referral.ppPdu || this.referral.ndeliusPDU || '---'],
       changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
     }
   }
@@ -268,7 +277,7 @@ export default class CheckAllReferralInformationPresenter {
     const expectedReleaseInfo: string =
       this.referral.expectedReleaseDate !== null
         ? moment(this.referral.expectedReleaseDate!).format('D MMM YYYY [(]ddd[)]')
-        : 'Not known'
+        : '---'
 
     const currentLocationAndReleaseDetails: SummaryListItem[] = [
       {
@@ -290,11 +299,9 @@ export default class CheckAllReferralInformationPresenter {
         changeLink: `/referrals/${this.referral.id}/expected-release-date-unknown?amendPPDetails=true`,
       })
     }
-    if (!this.checkIfUnAllocatedCOM) {
-      currentLocationAndReleaseDetails.push(
-        this.derivePduOrProbationOffice('Expected probation office', 'Expected PDU (Probation Delivery Unit)')
-      )
-    }
+    currentLocationAndReleaseDetails.push(
+      this.derivePduOrProbationOffice('Expected probation office', 'Expected PDU (Probation Delivery Unit)')
+    )
     return {
       title: `${this.serviceUserNameForServiceCategory}’s current location and expected release date`,
       summary: currentLocationAndReleaseDetails,

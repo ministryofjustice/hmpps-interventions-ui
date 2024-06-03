@@ -34,6 +34,34 @@ class _ReferralSectionChecker {
       .contains('Expected release date')
       .next()
       .contains(activeLinks.expectedReleaseDateStatus, { matchCase: false })
+
+    return this
+  }
+
+  reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice(activeLinks) {
+    cy.get('[data-cy=url]').contains('Current location').should(hrefAttrChainer(activeLinks.establishment), 'href')
+    cy.get('[data-cy=url]')
+      .contains('Current location')
+      .next()
+      .contains(activeLinks.establishmentStatus, { matchCase: false })
+
+    cy.get('[data-cy=url]')
+      .contains('Expected release date')
+      .should(hrefAttrChainer(activeLinks.expectedReleaseDate), 'href')
+
+    cy.get('[data-cy=url]')
+      .contains('Expected release date')
+      .next()
+      .contains(activeLinks.expectedReleaseDateStatus, { matchCase: false })
+
+    cy.get('[data-cy=url]')
+      .contains('Expected probation office')
+      .should(hrefAttrChainer(activeLinks.expectedProbationOffice), 'href')
+
+    cy.get('[data-cy=url]')
+      .contains('Expected probation office')
+      .next()
+      .contains(activeLinks.expectedProbationOfficeStatus, { matchCase: false })
     return this
   }
 

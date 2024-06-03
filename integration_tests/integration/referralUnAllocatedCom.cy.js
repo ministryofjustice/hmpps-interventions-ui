@@ -102,7 +102,8 @@ describe('Referral form', () => {
       })
 
       const completedNeedsAndRequirementsDraftReferral = draftReferralFactory
-        .filledFormUpToNeedsAndRequirements([accommodationServiceCategory])
+        .filledMainPointOfContactDetails()
+        .filledFormUpToNeedsAndRequirements([accommodationServiceCategory], false, true)
         .build({
           id: draftReferral.id,
           serviceCategoryIds: [accommodationServiceCategory.id],
@@ -121,6 +122,20 @@ describe('Referral form', () => {
           serviceProvider: {
             name: 'Harmony Living',
           },
+          isReferralReleasingIn12Weeks: true,
+        })
+
+      const completedExpectedProbationOfficeDraftReferral = draftReferralFactory
+        .filledMainPointOfContactDetails()
+        .filledFormUpToExpectedProbationOffice(CurrentLocationType.custody)
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: [accommodationServiceCategory.id],
+          interventionId: draftReferral.interventionId,
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          isReferralReleasingIn12Weeks: true,
         })
 
       const completedEstablishmentDraftReferral = draftReferralFactory
@@ -132,10 +147,12 @@ describe('Referral form', () => {
           serviceProvider: {
             name: 'Harmony Living',
           },
+          isReferralReleasingIn12Weeks: true,
         })
 
       const completedDraftReferral = draftReferralFactory
         .filledMainPointOfContactDetails()
+        .filledFormUpToExpectedProbationOffice()
         .filledFormUpToFurtherInformation([accommodationServiceCategory], 'Some information about Alex')
         .build({
           id: draftReferral.id,
@@ -230,11 +247,13 @@ describe('Referral form', () => {
           ppDetails: true,
           ppDetailsStatus: 'NOT STARTED',
         })
-        .reviewCurrentLocationAndExpectedReleaseDate({
+        .reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice({
           establishment: false,
           establishmentStatus: 'NOT STARTED',
           expectedReleaseDate: false,
           expectedReleaseDateStatus: 'NOT STARTED',
+          expectedProbationOffice: false,
+          expectedProbationOfficeStatus: 'NOT STARTED',
         })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: false,
@@ -281,14 +300,16 @@ describe('Referral form', () => {
           ppDetails: true,
           ppDetailsStatus: 'COMPLETED',
         })
-        .reviewCurrentLocationAndExpectedReleaseDate({
+        .reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice({
           establishment: true,
           establishmentStatus: 'NOT STARTED',
           expectedReleaseDate: false,
           expectedReleaseDateStatus: 'NOT STARTED',
+          expectedProbationOffice: false,
+          expectedProbationOfficeStatus: 'NOT STARTED',
         })
 
-      cy.contains('Establishment').click()
+      cy.contains('Current location').click()
       // Submit current location Page
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
       cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
@@ -301,7 +322,6 @@ describe('Referral form', () => {
       cy.get('#prison-select').type('Aylesbury (HMYOI)')
       cy.stubGetDraftReferral(draftReferral.id, completedEstablishmentDraftReferral)
       cy.contains('Save and continue').click()
-
       // Submit expected release date
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-release-date`)
       cy.get('h1').contains(`Confirm Alex River's expected release date`)
@@ -316,16 +336,31 @@ describe('Referral form', () => {
       cy.stubGetDraftReferral(draftReferral.id, completedExpectedReleaseDateDraftReferral)
       cy.contains('Save and continue').click()
 
+      // submit expected probation office
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-probation-office`)
+      cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
+      cy.get('h1').contains(
+        `Confirm ${completedPPDetails.serviceUser.firstName} ${completedPPDetails.serviceUser.lastName}'s expected probation office`
+      )
+      cy.contains('Probation office')
+
+      cy.contains('Start typing then choose probation office from the list')
+      cy.get('#expected-probation-office').type('Chelmsford: Chelmsford Probation Office')
+      cy.stubGetDraftReferral(draftReferral.id, completedExpectedProbationOfficeDraftReferral)
+      cy.contains('Save and continue').click()
+
       ReferralSectionVerifier.verifySection
         .reviewPPDetails({
           ppDetails: true,
           ppDetailsStatus: 'COMPLETED',
         })
-        .reviewCurrentLocationAndExpectedReleaseDate({
+        .reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice({
           establishment: true,
           establishmentStatus: 'COMPLETED',
           expectedReleaseDate: true,
           expectedReleaseDateStatus: 'COMPLETED',
+          expectedProbationOffice: true,
+          expectedProbationOfficeStatus: 'COMPLETED',
         })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
@@ -339,7 +374,7 @@ describe('Referral form', () => {
       cy.contains('Personal details').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/service-user-details`)
-      cy.contains(`Alex River (CRN: ${completedExpectedReleaseDateDraftReferral.serviceUser.crn})`)
+      cy.contains(`Alex River (CRN: ${completedExpectedProbationOfficeDraftReferral.serviceUser.crn})`)
       cy.get('h1').contains("Review Alex River's information")
       cy.contains('X123456')
       cy.contains('River')
@@ -400,11 +435,13 @@ describe('Referral form', () => {
           ppDetails: true,
           ppDetailsStatus: 'COMPLETED',
         })
-        .reviewCurrentLocationAndExpectedReleaseDate({
+        .reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice({
           establishment: true,
           establishmentStatus: 'COMPLETED',
           expectedReleaseDate: true,
           expectedReleaseDateStatus: 'COMPLETED',
+          expectedProbationOffice: true,
+          expectedProbationOfficeStatus: 'COMPLETED',
         })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
@@ -493,11 +530,13 @@ describe('Referral form', () => {
           ppDetails: true,
           ppDetailsStatus: 'COMPLETED',
         })
-        .reviewCurrentLocationAndExpectedReleaseDate({
+        .reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice({
           establishment: true,
           establishmentStatus: 'COMPLETED',
           expectedReleaseDate: true,
           expectedReleaseDateStatus: 'COMPLETED',
+          expectedProbationOffice: true,
+          expectedProbationOfficeStatus: 'COMPLETED',
         })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
@@ -1379,7 +1418,8 @@ describe('Referral form', () => {
       })
 
       const completedNeedsAndRequirementsDraftReferral = draftReferralFactory
-        .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory])
+        .filledMainPointOfContactDetails()
+        .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory], false, true)
         .build({
           id: draftReferral.id,
           serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
@@ -1398,6 +1438,7 @@ describe('Referral form', () => {
           serviceProvider: {
             name: 'Harmony Living',
           },
+          isReferralReleasingIn12Weeks: true,
         })
 
       const completedEstablishmentDraftReferral = draftReferralFactory
@@ -1411,8 +1452,22 @@ describe('Referral form', () => {
           },
         })
 
+      const completedExpectedProbationOfficeDraftReferral = draftReferralFactory
+        .filledMainPointOfContactDetails()
+        .filledFormUpToExpectedProbationOffice(CurrentLocationType.custody)
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: [accommodationServiceCategory.id],
+          interventionId: draftReferral.interventionId,
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          isReferralReleasingIn12Weeks: true,
+        })
+
       const completedDraftReferral = draftReferralFactory
         .filledMainPointOfContactDetails()
+        .filledFormUpToExpectedProbationOffice()
         .filledFormUpToFurtherInformation(
           [accommodationServiceCategory, socialInclusionServiceCategory],
           'Some information about Alex'
@@ -1431,9 +1486,10 @@ describe('Referral form', () => {
         .filledFormUpToNeedsAndRequirements(
           [accommodationServiceCategory, socialInclusionServiceCategory],
           false,
+          true,
           CurrentLocationType.custody
         )
-        .selectedServiceCategories([accommodationServiceCategory, socialInclusionServiceCategory])
+        .selectedServiceCategories([accommodationServiceCategory, socialInclusionServiceCategory], true)
         .build({
           id: draftReferral.id,
           interventionId: intervention.id,
@@ -1523,11 +1579,13 @@ describe('Referral form', () => {
           ppDetails: true,
           ppDetailsStatus: 'NOT STARTED',
         })
-        .reviewCurrentLocationAndExpectedReleaseDate({
+        .reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice({
           establishment: false,
           establishmentStatus: 'NOT STARTED',
           expectedReleaseDate: false,
           expectedReleaseDateStatus: 'NOT STARTED',
+          expectedProbationOffice: false,
+          expectedProbationOfficeStatus: 'NOT STARTED',
         })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: false,
@@ -1561,14 +1619,16 @@ describe('Referral form', () => {
           ppDetails: true,
           ppDetailsStatus: 'COMPLETED',
         })
-        .reviewCurrentLocationAndExpectedReleaseDate({
+        .reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice({
           establishment: true,
           establishmentStatus: 'NOT STARTED',
           expectedReleaseDate: false,
           expectedReleaseDateStatus: 'NOT STARTED',
+          expectedProbationOffice: false,
+          expectedProbationOfficeStatus: 'NOT STARTED',
         })
 
-      cy.contains('Establishment').click()
+      cy.contains('Current location').click()
       // Submit current location Page
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
       cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
@@ -1596,16 +1656,31 @@ describe('Referral form', () => {
       cy.stubGetDraftReferral(draftReferral.id, completedExpectedReleaseDateDraftReferral)
       cy.contains('Save and continue').click()
 
+      // submit expected probation office
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/expected-probation-office`)
+      cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
+      cy.get('h1').contains(
+        `Confirm ${completedPPDetails.serviceUser.firstName} ${completedPPDetails.serviceUser.lastName}'s expected probation office`
+      )
+      cy.contains('Probation office')
+
+      cy.contains('Start typing then choose probation office from the list')
+      cy.get('#expected-probation-office').type('Chelmsford: Chelmsford Probation Office')
+      cy.stubGetDraftReferral(draftReferral.id, completedExpectedProbationOfficeDraftReferral)
+      cy.contains('Save and continue').click()
+
       ReferralSectionVerifier.verifySection
         .reviewPPDetails({
           ppDetails: true,
           ppDetailsStatus: 'COMPLETED',
         })
-        .reviewCurrentLocationAndExpectedReleaseDate({
+        .reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice({
           establishment: true,
           establishmentStatus: 'COMPLETED',
           expectedReleaseDate: true,
           expectedReleaseDateStatus: 'COMPLETED',
+          expectedProbationOffice: true,
+          expectedProbationOfficeStatus: 'COMPLETED',
         })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
@@ -1679,11 +1754,13 @@ describe('Referral form', () => {
           ppDetails: true,
           ppDetailsStatus: 'COMPLETED',
         })
-        .reviewCurrentLocationAndExpectedReleaseDate({
+        .reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice({
           establishment: true,
           establishmentStatus: 'COMPLETED',
           expectedReleaseDate: true,
           expectedReleaseDateStatus: 'COMPLETED',
+          expectedProbationOffice: true,
+          expectedProbationOfficeStatus: 'COMPLETED',
         })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,
@@ -1801,11 +1878,13 @@ describe('Referral form', () => {
           ppDetails: true,
           ppDetailsStatus: 'COMPLETED',
         })
-        .reviewCurrentLocationAndExpectedReleaseDate({
+        .reviewCurrentLocationAndExpectedReleaseDateAndExpectedProbationOffice({
           establishment: true,
           establishmentStatus: 'COMPLETED',
           expectedReleaseDate: true,
           expectedReleaseDateStatus: 'COMPLETED',
+          expectedProbationOffice: true,
+          expectedProbationOfficeStatus: 'COMPLETED',
         })
         .reviewServiceUserInformation({
           confirmServiceUserDetails: true,

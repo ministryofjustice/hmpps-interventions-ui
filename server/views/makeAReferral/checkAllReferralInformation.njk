@@ -32,7 +32,7 @@
         {{ govukSummaryList(communityLocationAndReleaseDetailsSummaryListArgs) }}
       {% endif %}
 
-      {% if expectedReleaseDateDetailsSummaryListArgs and (presenter.checkIfExpectedReleaseDateIsAvailable) %}
+      {% if expectedReleaseDateDetailsSummaryListArgs %}
         {{ govukSummaryList(expectedReleaseDateDetailsSummaryListArgs) }}
       {% endif %}
 
@@ -58,10 +58,6 @@
 
       {% if mainPointOfContactDetailsSummaryListArgs and (presenter.checkIfUnAllocatedCOM) %}
         {{ govukSummaryList(mainPointOfContactDetailsSummaryListArgs) }}
-      {% endif %}
-      
-      {% if locationDetailsSummaryListArgs and (not presenter.checkIfExpectedReleaseDateIsAvailable) %}
-        {{ govukSummaryList(locationDetailsSummaryListArgs) }}
       {% endif %}
 
       {{ govukSummaryList(lastKnownAddressAndContactDetailsSummaryListArgs) }}
