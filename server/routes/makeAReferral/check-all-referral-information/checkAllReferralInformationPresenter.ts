@@ -173,7 +173,14 @@ export default class CheckAllReferralInformationPresenter {
   }
 
   private derivePduOrProbationOffice(probationOfficeHeading: string, pduHeading: string): SummaryListItem {
-    if (this.referral.isReferralReleasingIn12Weeks !== null && !this.referral.isReferralReleasingIn12Weeks) {
+    if (this.referral.isReferralReleasingIn12Weeks !== null) {
+      if (this.referral.expectedProbationOfficeUnKnownReason !== null) {
+        return {
+          key: 'Reason why expected probation office is not known',
+          lines: [this.referral.expectedProbationOfficeUnKnownReason],
+          changeLink: `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`,
+        }
+      }
       return {
         key: probationOfficeHeading,
         lines: [this.referral.expectedProbationOffice || '---'],
