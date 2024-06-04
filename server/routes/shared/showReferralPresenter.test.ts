@@ -819,6 +819,47 @@ describe(ShowReferralPresenter, () => {
       ])
     })
 
+    it('returns a summary list for an unallocated COM who does not know the probation office', () => {
+      const referralParamsWithCustodyDetails = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.custody,
+          expectedReleaseDate: moment().add(2, 'days').format('YYYY-MM-DD'),
+          expectedProbationOffice: null,
+          expectedProbationOfficeUnKnownReason: 'Some reason',
+          isReferralReleasingIn12Weeks: true,
+        },
+      }
+      const sentReferral = sentReferralFactory.build(referralParamsWithCustodyDetails)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonsAndSecuredChildAgencies,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer,
+        prisonerDetails
+      )
+
+      expect(presenter.serviceUserLocationDetails).toEqual([
+        { key: 'Prison establishment', lines: ['London'] },
+        {
+          key: 'Expected release date',
+          lines: [moment().add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
+        },
+        { key: 'Reason why expected probation office is not known', lines: ['Some reason'] },
+      ])
+    })
+
     it('returns a summary list for an unallocated COM with unknown release date and probation office', () => {
       const referralParamsWithCustodyDetails = {
         referral: {

@@ -10,6 +10,7 @@ describe(ExpectedProbationOfficeUnknownForm, () => {
       const data = await new ExpectedProbationOfficeUnknownForm(request).data()
 
       expect(data.paramsForUpdate?.expectedProbationOfficeUnKnownReason).toEqual('data not received from nDelius')
+      expect(data.paramsForUpdate?.expectedProbationOffice).toBeNull()
     })
   })
 

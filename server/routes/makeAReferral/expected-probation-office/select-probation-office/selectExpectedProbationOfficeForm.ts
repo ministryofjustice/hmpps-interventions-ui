@@ -22,6 +22,7 @@ export default class SelectExpectedProbationOfficeForm {
   get paramsForUpdate(): Partial<DraftReferral> {
     return {
       expectedProbationOffice: this.request.body['expected-probation-office'],
+      expectedProbationOfficeUnKnownReason: null,
     }
   }
 

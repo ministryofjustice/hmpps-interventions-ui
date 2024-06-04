@@ -679,6 +679,49 @@ describe(CheckAllReferralInformationPresenter, () => {
       })
     })
 
+    describe('probation office not known and release details for a pre-release with no com custody referral', () => {
+      const referral = parameterisedDraftReferralFactory.build({
+        personCurrentLocationType: CurrentLocationType.custody,
+        isReferralReleasingIn12Weeks: true,
+        expectedProbationOffice: null,
+        expectedProbationOfficeUnKnownReason: 'some reason',
+        ppProbationOffice: 'Derbyshire: Buxton Probation Office',
+        expectedReleaseDate: '04-04-2024',
+        personCustodyPrisonId: 'ccc',
+      })
+      const presenter = new CheckAllReferralInformationPresenter(
+        referral,
+        interventionFactory.build({ serviceCategories }),
+        loggedInUser,
+        conviction,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        prisonerDetails
+      )
+      it('returns the location and release details summary', () => {
+        expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
+          title: `Alex River’s current location and expected release date`,
+          summary: [
+            {
+              key: 'Location at time of referral',
+              lines: ['Aylesbury (HMYOI)'],
+              changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+            },
+            {
+              key: 'Expected release date',
+              lines: [`4 Apr 2024 (Thu)`],
+              changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+            },
+            {
+              key: 'Reason why expected probation office is not known',
+              lines: ['some reason'],
+              changeLink: `/referrals/${referral.id}/expected-probation-office?amendPPDetails=true`,
+            },
+          ],
+        })
+      })
+    })
+
     describe('current location and release details for a pre-release with no com and in prison', () => {
       const referral = parameterisedDraftReferralFactory.build({
         personCurrentLocationType: CurrentLocationType.custody,

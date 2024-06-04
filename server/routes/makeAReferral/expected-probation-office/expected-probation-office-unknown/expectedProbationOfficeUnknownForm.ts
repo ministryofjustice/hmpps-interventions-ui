@@ -25,6 +25,7 @@ export default class ExpectedProbationOfficeUnknownForm {
       : {
           paramsForUpdate: {
             expectedProbationOfficeUnKnownReason: this.request.body['probation-office-unknown-reason'],
+            expectedProbationOffice: null,
           },
           error: null,
         }

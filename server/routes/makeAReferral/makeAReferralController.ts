@@ -1100,7 +1100,8 @@ export default class MakeAReferralController {
     const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-    const presenter = new SelectExpectedProbationOfficePresenter(referral, deliusOfficeLocations)
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+    const presenter = new SelectExpectedProbationOfficePresenter(referral, deliusOfficeLocations, amendPPDetails)
     const view = new SelectExpectedProbationOfficeView(presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')

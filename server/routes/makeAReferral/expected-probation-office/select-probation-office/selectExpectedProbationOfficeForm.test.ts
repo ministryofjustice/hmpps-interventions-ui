@@ -11,6 +11,7 @@ describe(SelectExpectedProbationOfficeForm, () => {
         const data = await SelectExpectedProbationOfficeForm.createForm(request)
 
         expect(data.paramsForUpdate?.expectedProbationOffice).toEqual('London')
+        expect(data.paramsForUpdate?.expectedProbationOfficeUnKnownReason).toBeNull()
       })
     })
   })

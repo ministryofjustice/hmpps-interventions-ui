@@ -604,6 +604,12 @@ export default class ShowReferralPresenter {
 
     if (personCurrentLocationType === CurrentLocationType.custody) {
       if (this.sentReferral.referral.isReferralReleasingIn12Weeks !== null) {
+        if (this.sentReferral.referral.expectedProbationOfficeUnKnownReason !== null) {
+          return {
+            key: 'Reason why expected probation office is not known',
+            lines: [this.sentReferral.referral.expectedProbationOfficeUnKnownReason],
+          }
+        }
         return {
           key: 'Expected probation office',
           lines: [this.sentReferral.referral.expectedProbationOffice || '---'],
