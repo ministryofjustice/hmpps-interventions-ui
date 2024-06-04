@@ -91,8 +91,8 @@
 <p>Below you will be able to find the end of service report created by the service provider. Once submitted, you will be able to read and download it.</p>
 {% endif %}
 {% if presenter.canCancelReferral %}
-<h2 class="govuk-heading-m">Change this referral</h2>
-<p>You can also <a href='{{ presenter.amendReferralHref }}'>change some parts of the referral</a>.</p>
+<h2 class="govuk-heading-m">Amend a referral</h2>
+<p>You can also <a href='{{ presenter.amendReferralHref }}'>You can also amend some parts of the referral</a>.</p>
 {% elseif presenter.referralEndRequested %}
 <p class="govuk-body">{{ presenter.referralEndRequestedText }}</p>
 {% endif %}
