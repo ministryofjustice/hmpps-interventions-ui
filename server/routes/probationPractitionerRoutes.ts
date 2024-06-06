@@ -161,7 +161,10 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   get(router, '/referrals/:id/withdrawal/:draftWithdrawalId/check-your-answers', (req, res) =>
     referralWithdrawalController.withdrawalCheckAnswers(req, res)
   )
-  post(router, '/referrals/:id/withdrawal/:draftWithdrawalId/submit', (req, res) =>
+  post(router, '/referrals/:id/withdrawal/:draftWithdrawalId/check-your-answers', (req, res) =>
+    referralWithdrawalController.withdrawalCheckAnswers(req, res)
+  )
+  get(router, '/referrals/:id/withdrawal/:draftWithdrawalId/submit', (req, res) =>
     referralWithdrawalController.submitWithdrawal(req, res)
   )
   get(router, '/referrals/:id/withdrawal/confirmation', (req, res) =>

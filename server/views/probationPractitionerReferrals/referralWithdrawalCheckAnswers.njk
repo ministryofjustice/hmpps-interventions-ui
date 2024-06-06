@@ -1,6 +1,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -10,12 +11,14 @@
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-
+      {% if errorSummaryArgs !== null %}
+        {{ govukErrorSummary(errorSummaryArgs) }}
+      {% endif %}
     {{ govukBackLink(backLinkArgs) }}
 
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
       <p class="govuk-body-m govuk-!-margin-bottom-8">{{ presenter.text.confirmationQuestion }}</p>
-      <form method="post" action="{{ presenter.confirmWithdrawalHref }}">
+      <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">
 
         {{ govukRadios(confirmWithdrawalButtonArgs) }}

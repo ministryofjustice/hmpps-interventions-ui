@@ -1,6 +1,8 @@
 import DeliusServiceUser from '../../../../models/delius/deliusServiceUser'
 import Intervention from '../../../../models/intervention'
 import { WithdrawalState } from '../../../../models/sentReferral'
+import { FormValidationError } from '../../../../utils/formValidationError'
+import PresenterUtils from '../../../../utils/presenterUtils'
 
 export default class ReferralWithdrawalCheckAnswersPresenter {
   constructor(
@@ -8,7 +10,9 @@ export default class ReferralWithdrawalCheckAnswersPresenter {
     private readonly draftWithdrawalId: string,
     private readonly serviceUser: DeliusServiceUser,
     private readonly intervention: Intervention,
-    private readonly withdrawalState: string
+    private readonly withdrawalState: string,
+    private readonly error: FormValidationError | null = null,
+    readonly userInputData: Record<string, unknown> | null = null
   ) {}
 
   readonly backLinkHref = {
@@ -27,4 +31,8 @@ export default class ReferralWithdrawalCheckAnswersPresenter {
   }
 
   readonly confirmWithdrawalHref = `/probation-practitioner/referrals/${this.referralId}/withdrawal/${this.draftWithdrawalId}/submit`
+
+  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'confirm-withdrawal')
+
+  readonly errorSummary = PresenterUtils.errorSummary(this.error)
 }
