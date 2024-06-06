@@ -225,6 +225,66 @@ describe(CheckAllReferralInformationPresenter, () => {
             },
           ])
         })
+        it('returns the main point of contact details summary', () => {
+          const referralWithUnAllocatedCom = parameterisedDraftReferralFactory.build({
+            personCurrentLocationType: CurrentLocationType.custody,
+            ndeliusPPName: 'Victor Drake',
+            ndeliusPPEmailAddress: 'a.b@xyz.com',
+            ndeliusPDU: 'London',
+            ndeliusPhoneNumber: '075950243221',
+            ndeliusTeamPhoneNumber: '020456734343',
+            ppName: null,
+            ppEmailAddress: null,
+            ppPdu: null,
+            ppProbationOffice: 'London',
+            ppPhoneNumber: '045890232322',
+            hasValidDeliusPPDetails: null,
+            roleOrJobTitle: 'probation practitioner',
+            reasonForReferralCreationBeforeAllocation: 'some reason',
+            isReferralReleasingIn12Weeks: true,
+          })
+          const referralWithUnAllocatedComPresenter = new CheckAllReferralInformationPresenter(
+            referralWithUnAllocatedCom,
+            interventionFactory.build({ serviceCategories }),
+            loggedInUser,
+            conviction,
+            deliusServiceUser,
+            prisonsAndSecuredChildAgencies,
+            prisonerDetails
+          )
+          expect(referralWithUnAllocatedComPresenter.mainPointOfContactDetailsSection?.summary).toEqual([
+            {
+              key: 'Name',
+              lines: ['Victor Drake'],
+              changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+            },
+            {
+              key: 'Role / job title',
+              lines: ['probation practitioner'],
+              changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+            },
+            {
+              key: 'Email address',
+              lines: ['a.b@xyz.com'],
+              changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+            },
+            {
+              key: 'Reason why referral is being made before probation practitioner allocated',
+              lines: ['some reason'],
+              changeLink: `/referrals/${referralWithUnAllocatedCom.id}/reason-for-referral-before-allocation?amendPPDetails=true`,
+            },
+            {
+              key: 'Phone number',
+              lines: ['045890232322'],
+              changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+            },
+            {
+              key: 'Probation office',
+              lines: ['London'],
+              changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+            },
+          ])
+        })
       })
     })
 

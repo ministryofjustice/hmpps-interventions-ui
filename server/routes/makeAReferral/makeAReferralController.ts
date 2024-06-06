@@ -121,6 +121,9 @@ import SelectExpectedProbationOfficeForm from './expected-probation-office/selec
 import ExpectedProbationOfficeUnknownPresenter from './expected-probation-office/expected-probation-office-unknown/expectedProbationOfficeUnknownPresenter'
 import ExpectedProbationOfficeUnknownView from './expected-probation-office/expected-probation-office-unknown/expectedProbationOfficeUnknownView'
 import ExpectedProbationOfficeUnknownForm from './expected-probation-office/expected-probation-office-unknown/expectedProbationOfficeUnknownForm'
+import ReferralCreationReasonPresenter from './referral-creation-reason/referralCreationReasonPresenter'
+import ReferralCreationReasonView from './referral-creation-reason/referralCreationReasonView'
+import ReferralCreationReasonForm from './referral-creation-reason/referralCreationReasonForm'
 
 export default class MakeAReferralController {
   constructor(
@@ -1201,6 +1204,55 @@ export default class MakeAReferralController {
     }
   }
 
+  async viewReasonForReferralBeforePpAllocation(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    const presenter = new ReferralCreationReasonPresenter(referral, amendPPDetails)
+    const view = new ReferralCreationReasonView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async submitReasonForReferralBeforePpAllocation(req: Request, res: Response): Promise<void> {
+    const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
+
+    const form = await new ReferralCreationReasonForm(req).data()
+    let error: FormValidationError | null = null
+
+    if (!form.error) {
+      try {
+        await this.interventionsService.patchDraftReferral(
+          res.locals.user.token.accessToken,
+          req.params.id,
+          form.paramsForUpdate
+        )
+      } catch (e) {
+        const interventionsServiceError = e as InterventionsServiceError
+        error = createFormValidationErrorOrRethrow(interventionsServiceError)
+      }
+    } else {
+      error = form.error
+    }
+    const amendPPDetails = req.query.amendPPDetails === 'true'
+
+    if (error === null && amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
+    } else if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
+    } else {
+      const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
+      const presenter = new ReferralCreationReasonPresenter(referral, amendPPDetails, req.body)
+      const view = new ReferralCreationReasonView(presenter)
+
+      res.status(400)
+      await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+    }
+  }
+
   async viewConfirmProbationPractitionerDetails(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const deliusResponsibleOfficer = await this.ramDeliusApiService.getResponsibleOfficer(referral.serviceUser.crn)
@@ -1851,7 +1903,7 @@ export default class MakeAReferralController {
     if (error === null && amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
     } else if (error === null && !amendPPDetails) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      res.redirect(`/referrals/${req.params.id}/reason-for-referral-before-allocation`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 

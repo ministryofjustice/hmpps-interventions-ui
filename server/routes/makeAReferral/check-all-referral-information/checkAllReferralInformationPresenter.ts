@@ -239,6 +239,11 @@ export default class CheckAllReferralInformationPresenter {
           changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
         },
         {
+          key: 'Reason why referral is being made before probation practitioner allocated',
+          lines: [this.referral.reasonForReferralCreationBeforeAllocation || ''],
+          changeLink: `/referrals/${this.referral.id}/reason-for-referral-before-allocation?amendPPDetails=true`,
+        },
+        {
           key: 'Phone number',
           lines: [this.referral.ppPhoneNumber || 'Not found'],
           changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
