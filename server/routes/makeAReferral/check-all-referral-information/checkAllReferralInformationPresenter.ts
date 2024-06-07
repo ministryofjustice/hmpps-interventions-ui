@@ -162,7 +162,7 @@ export default class CheckAllReferralInformationPresenter {
           lines: [this.referral.ppPhoneNumber || this.referral.ndeliusPhoneNumber || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
         },
-        this.derivePduOrProbationOffice('Probation office', 'PDU (Probation Delivery Unit)'),
+        ...this.derivePduOrProbationOffice('Probation office', 'PDU (Probation Delivery Unit)'),
         {
           key: 'Team phone number',
           lines: [this.referral.ppTeamPhoneNumber || this.referral.ndeliusTeamPhoneNumber || 'Not provided'],
@@ -172,35 +172,48 @@ export default class CheckAllReferralInformationPresenter {
     }
   }
 
-  private derivePduOrProbationOffice(probationOfficeHeading: string, pduHeading: string): SummaryListItem {
+  private derivePduOrProbationOffice(probationOfficeHeading: string, pduHeading: string): SummaryListItem[] {
     if (this.referral.isReferralReleasingIn12Weeks !== null) {
       if (this.referral.expectedProbationOfficeUnKnownReason !== null) {
-        return {
-          key: 'Reason why expected probation office is not known',
-          lines: [this.referral.expectedProbationOfficeUnKnownReason],
+        return [
+          {
+            key: 'Expected probation office',
+            lines: ['---'],
+            changeLink: `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`,
+          },
+          {
+            key: 'Reason why expected probation office is not known',
+            lines: [this.referral.expectedProbationOfficeUnKnownReason],
+            changeLink: `/referrals/${this.referral.id}/expected-probation-office-unknown?amendPPDetails=true`,
+          },
+        ]
+      }
+      return [
+        {
+          key: probationOfficeHeading,
+          lines: [this.referral.expectedProbationOffice || '---'],
           changeLink: `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`,
-        }
-      }
-      return {
-        key: probationOfficeHeading,
-        lines: [this.referral.expectedProbationOffice || '---'],
-        changeLink: `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`,
-      }
+        },
+      ]
     }
     if (this.referral.expectedProbationOffice || this.referral.ppProbationOffice) {
-      return {
-        key: probationOfficeHeading,
-        lines: [this.referral.expectedProbationOffice || this.referral.ppProbationOffice || 'Not provided'],
-        changeLink: this.checkIfUnAllocatedCOM
-          ? `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`
-          : `/referrals/${this.referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
-      }
+      return [
+        {
+          key: probationOfficeHeading,
+          lines: [this.referral.expectedProbationOffice || this.referral.ppProbationOffice || 'Not provided'],
+          changeLink: this.checkIfUnAllocatedCOM
+            ? `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`
+            : `/referrals/${this.referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+        },
+      ]
     }
-    return {
-      key: pduHeading,
-      lines: [this.referral.ppPdu || this.referral.ndeliusPDU || '---'],
-      changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
-    }
+    return [
+      {
+        key: pduHeading,
+        lines: [this.referral.ppPdu || this.referral.ndeliusPDU || '---'],
+        changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
+      },
+    ]
   }
 
   get mainPointOfContactDetailsSection(): { title: string; summary: SummaryListItem[] } | null {
@@ -307,10 +320,10 @@ export default class CheckAllReferralInformationPresenter {
       })
     }
     currentLocationAndReleaseDetails.push(
-      this.derivePduOrProbationOffice('Expected probation office', 'Expected PDU (Probation Delivery Unit)')
+      ...this.derivePduOrProbationOffice('Expected probation office', 'Expected PDU (Probation Delivery Unit)')
     )
     return {
-      title: `${this.serviceUserNameForServiceCategory}’s current location and expected release date`,
+      title: `${this.serviceUserNameForServiceCategory}’s current location and expected release details`,
       summary: currentLocationAndReleaseDetails,
     }
   }
@@ -321,7 +334,7 @@ export default class CheckAllReferralInformationPresenter {
         key: 'Location at time of referral',
         lines: [`${utils.convertToProperCase(this.referral.personCurrentLocationType!)}`],
       },
-      this.derivePduOrProbationOffice('Probation office', 'PDU (Probation Delivery Unit)'),
+      ...this.derivePduOrProbationOffice('Probation office', 'PDU (Probation Delivery Unit)'),
       {
         key: 'Release date',
         lines: [

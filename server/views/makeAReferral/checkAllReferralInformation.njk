@@ -32,7 +32,7 @@
         {{ govukSummaryList(communityLocationAndReleaseDetailsSummaryListArgs) }}
       {% endif %}
 
-      {% if expectedReleaseDateDetailsSummaryListArgs %}
+      {% if expectedReleaseDateDetailsSummaryListArgs and (not presenter.isCommunity) %}
         {{ govukSummaryList(expectedReleaseDateDetailsSummaryListArgs) }}
       {% endif %}
 
