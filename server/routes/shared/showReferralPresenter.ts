@@ -595,50 +595,66 @@ export default class ShowReferralPresenter {
         lines: [this.sentReferral.referral.expectedReleaseDateMissingReason],
       })
     }
-    items.push(this.determineOfficeLocation)
+    items.push(...this.determineOfficeLocation)
     return items
   }
 
-  private get determineOfficeLocation(): SummaryListItem {
+  private get determineOfficeLocation(): SummaryListItem[] {
     const { personCurrentLocationType } = this.sentReferral.referral
 
     if (personCurrentLocationType === CurrentLocationType.custody) {
       if (this.sentReferral.referral.isReferralReleasingIn12Weeks !== null) {
         if (this.sentReferral.referral.expectedProbationOfficeUnKnownReason !== null) {
-          return {
-            key: 'Reason why expected probation office is not known',
-            lines: [this.sentReferral.referral.expectedProbationOfficeUnKnownReason],
-          }
+          return [
+            {
+              key: 'Expected probation office',
+              lines: ['Not known'],
+            },
+            {
+              key: 'Reason why expected probation office is not known',
+              lines: [this.sentReferral.referral.expectedProbationOfficeUnKnownReason],
+            },
+          ]
         }
-        return {
-          key: 'Expected probation office',
-          lines: [this.sentReferral.referral.expectedProbationOffice || '---'],
-        }
+        return [
+          {
+            key: 'Expected probation office',
+            lines: [this.sentReferral.referral.expectedProbationOffice || '---'],
+          },
+        ]
       }
       if (
         this.sentReferral.referral.ppProbationOffice !== null &&
         this.sentReferral.referral.ppProbationOffice !== ''
       ) {
-        return {
-          key: 'Expected probation office',
-          lines: [this.sentReferral.referral.ppProbationOffice],
-        }
+        return [
+          {
+            key: 'Expected probation office',
+            lines: [this.sentReferral.referral.ppProbationOffice],
+          },
+        ]
       }
-      return {
-        key: 'Expected PDU (Probation Delivery Unit)',
-        lines: [this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '---'],
-      }
+      return [
+        {
+          key: 'Expected PDU (Probation Delivery Unit)',
+          lines: [this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '---'],
+        },
+      ]
     }
     if (this.sentReferral.referral.ppProbationOffice !== null && this.sentReferral.referral.ppProbationOffice !== '') {
-      return {
-        key: 'Probation office',
-        lines: [this.sentReferral.referral.ppProbationOffice],
-      }
+      return [
+        {
+          key: 'Probation office',
+          lines: [this.sentReferral.referral.ppProbationOffice],
+        },
+      ]
     }
-    return {
-      key: 'PDU (Probation Delivery Unit)',
-      lines: [this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '---'],
-    }
+    return [
+      {
+        key: 'PDU (Probation Delivery Unit)',
+        lines: [this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '---'],
+      },
+    ]
   }
 
   private get determineReleaseDate(): SummaryListItem {
@@ -661,16 +677,16 @@ export default class ShowReferralPresenter {
 
   private get determineExpectedReleaseDate(): string {
     if (
-      this.sentReferral.referral.isReferralReleasingIn12Weeks !== null &&
-      !this.sentReferral.referral.isReferralReleasingIn12Weeks
-    ) {
-      return '---'
-    }
-    if (
       this.sentReferral.referral.expectedReleaseDate !== null &&
       this.sentReferral.referral.expectedReleaseDate !== ''
     ) {
       return moment(this.sentReferral.referral.expectedReleaseDate).format('D MMM YYYY [(]ddd[)]')
+    }
+    if (
+      this.sentReferral.referral.isReferralReleasingIn12Weeks !== null &&
+      !this.sentReferral.referral.isReferralReleasingIn12Weeks
+    ) {
+      return '---'
     }
     return 'Not known'
   }

@@ -635,6 +635,7 @@ describe(ShowReferralPresenter, () => {
           ppEmailAddress: 'bernard.beaks@justice.gov.uk',
           roleOrJobTitle: 'PP',
           isReferralReleasingIn12Weeks: false,
+          expectedReleaseDate: null,
         },
       }
       const sentReferral = sentReferralFactory.build(referralParamsForSummary)
@@ -856,6 +857,10 @@ describe(ShowReferralPresenter, () => {
           key: 'Expected release date',
           lines: [moment().add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
         },
+        {
+          key: 'Expected probation office',
+          lines: ['Not known'],
+        },
         { key: 'Reason why expected probation office is not known', lines: ['Some reason'] },
       ])
     })
@@ -893,7 +898,7 @@ describe(ShowReferralPresenter, () => {
         { key: 'Prison establishment', lines: ['London'] },
         {
           key: 'Expected release date',
-          lines: ['---'],
+          lines: [moment().add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
         },
         { key: 'Expected probation office', lines: ['London'] },
       ])

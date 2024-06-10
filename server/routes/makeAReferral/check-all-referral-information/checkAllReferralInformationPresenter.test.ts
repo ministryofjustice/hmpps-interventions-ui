@@ -528,7 +528,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       )
       it('returns the location and release details summary', () => {
         expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
-          title: `Alex River’s current location and expected release date`,
+          title: `Alex River’s current location and expected release details`,
           summary: [
             {
               key: 'Location at time of referral',
@@ -569,7 +569,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       )
       it('returns the location and release details summary', () => {
         expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
-          title: `Alex River’s current location and expected release date`,
+          title: `Alex River’s current location and expected release details`,
           summary: [
             {
               key: 'Location at time of referral',
@@ -610,7 +610,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       )
       it('returns the location and release details summary', () => {
         expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
-          title: `Alex River’s current location and expected release date`,
+          title: `Alex River’s current location and expected release details`,
           summary: [
             {
               key: 'Location at time of referral',
@@ -657,7 +657,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       )
       it('returns the location and release details summary', () => {
         expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
-          title: `Alex River’s current location and expected release date`,
+          title: `Alex River’s current location and expected release details`,
           summary: [
             {
               key: 'Location at time of referral',
@@ -700,7 +700,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       )
       it('returns the location and release details summary', () => {
         expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
-          title: `Alex River’s current location and expected release date`,
+          title: `Alex River’s current location and expected release details`,
           summary: [
             {
               key: 'Location at time of referral',
@@ -713,9 +713,14 @@ describe(CheckAllReferralInformationPresenter, () => {
               changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
             },
             {
+              key: 'Expected probation office',
+              lines: [`---`],
+              changeLink: `/referrals/${referral.id}/expected-probation-office?amendPPDetails=true`,
+            },
+            {
               key: 'Reason why expected probation office is not known',
               lines: ['some reason'],
-              changeLink: `/referrals/${referral.id}/expected-probation-office?amendPPDetails=true`,
+              changeLink: `/referrals/${referral.id}/expected-probation-office-unknown?amendPPDetails=true`,
             },
           ],
         })
@@ -742,7 +747,7 @@ describe(CheckAllReferralInformationPresenter, () => {
       )
       it('returns the location and release details summary', () => {
         expect(presenter.currentLocationAndReleaseDetailsSection).toEqual({
-          title: `Alex River’s current location and expected release date`,
+          title: `Alex River’s current location and expected release details`,
           summary: [
             {
               key: 'Location at time of referral',
