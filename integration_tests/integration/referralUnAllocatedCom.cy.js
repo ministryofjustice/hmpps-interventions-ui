@@ -611,7 +611,7 @@ describe('Referral form', () => {
         .should('contain', 'CRN')
         .should('contain', 'X123456')
 
-      // Alex's risk information
+      // Alex's main point of contact details
       cy.contains('Main point of contact details')
         .parent()
         .next()
@@ -636,21 +636,17 @@ describe('Referral form', () => {
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
 
-      cy.contains('Main point of contact details')
-        .parent()
+      cy.contains('Reason why referral is being made before probation practitioner allocated')
         .next()
-        .should('contain', 'Phone number')
-        .should('contain', '+441234')
+        .should('contain', 'some reason')
+        .next()
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/reason-for-referral-before-allocation?amendPPDetails=true`
+        )
 
-      cy.contains('Main point of contact details')
-        .parent()
-        .next()
-        .should('contain', 'Establishment')
-        .should('contain', 'Bedford (HMP & YOI)')
-        .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
       // Alex's needs and requirements
       cy.contains('Identify needs')
         .next()
@@ -1254,13 +1250,17 @@ describe('Referral form', () => {
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
 
-      cy.contains('Main point of contact details')
-        .parent()
+      cy.contains('Reason why referral is being made before probation practitioner allocated')
         .next()
-        .should('contain', 'Establishment')
-        .should('contain', 'Bedford (HMP & YOI)')
+        .should('contain', 'some reason')
+        .next()
         .contains('Change')
-        .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
+        .should(
+          'have.attr',
+          'href',
+          `/referrals/${draftReferral.id}/reason-for-referral-before-allocation?amendPPDetails=true`
+        )
+
       // Alex's needs and requirements
       cy.contains('Identify needs')
         .next()
