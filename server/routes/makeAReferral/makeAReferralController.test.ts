@@ -1611,7 +1611,7 @@ describe('POST /referrals/:id/confirm-main-point-of-contact', () => {
         'probation-practitioner-pdu': '',
       })
       .expect(302)
-      .expect('Location', '/referrals/1/form')
+      .expect('Location', '/referrals/1/reason-for-referral-before-allocation')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',

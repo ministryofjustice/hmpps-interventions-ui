@@ -548,6 +548,10 @@ describe(ShowReferralPresenter, () => {
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Role / job title', lines: ['PP'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        {
+          key: 'Reason why referral is being made before probation practitioner allocated',
+          lines: ['for quick assessment'],
+        },
         { key: 'Phone number', lines: ['072121212125'] },
         { key: 'Establishment', lines: ['London'] },
       ])
@@ -589,6 +593,10 @@ describe(ShowReferralPresenter, () => {
         { key: 'Name', lines: ['Bernard Beaks'] },
         { key: 'Role / job title', lines: ['PP'] },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        {
+          key: 'Reason why referral is being made before probation practitioner allocated',
+          lines: ['for quick assessment'],
+        },
         { key: 'Phone number', lines: ['1234554321'] },
         { key: 'Probation office', lines: ['Leeds'] },
       ])

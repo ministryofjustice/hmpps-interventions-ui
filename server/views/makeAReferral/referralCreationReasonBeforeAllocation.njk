@@ -1,0 +1,33 @@
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Make a referral" %}
+{% set pageSubTitle = "Expected probation office" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukBackLink(backLinkArgs) }}
+      <br>
+      <br>
+      <p class="govuk-caption-xl">{{ presenter.text.label }} </p>
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+
+      <form method="post">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+        {{ govukTextarea(reasonForReferralCreationBeforeAllocationReasonArgs) }}
+        <br>
+        <br>
+        {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

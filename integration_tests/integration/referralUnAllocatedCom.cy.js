@@ -101,8 +101,17 @@ describe('Referral form', () => {
         interventionId: draftReferral.interventionId,
       })
 
+      const completedReferralReason = draftReferralFactory.filledReasonForReferralCreationBeforeAllocation().build({
+        id: draftReferral.id,
+        serviceCategoryIds: [accommodationServiceCategory.id],
+        serviceProvider: {
+          name: 'Harmony Living',
+        },
+        interventionId: draftReferral.interventionId,
+      })
+
       const completedNeedsAndRequirementsDraftReferral = draftReferralFactory
-        .filledMainPointOfContactDetails()
+        .filledReasonForReferralCreationBeforeAllocation()
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory], false, true)
         .build({
           id: draftReferral.id,
@@ -126,7 +135,7 @@ describe('Referral form', () => {
         })
 
       const completedExpectedProbationOfficeDraftReferral = draftReferralFactory
-        .filledMainPointOfContactDetails()
+        .filledReasonForReferralCreationBeforeAllocation()
         .filledFormUpToExpectedProbationOffice(CurrentLocationType.custody)
         .build({
           id: draftReferral.id,
@@ -151,7 +160,7 @@ describe('Referral form', () => {
         })
 
       const completedDraftReferral = draftReferralFactory
-        .filledMainPointOfContactDetails()
+        .filledReasonForReferralCreationBeforeAllocation()
         .filledFormUpToExpectedProbationOffice()
         .filledFormUpToFurtherInformation([accommodationServiceCategory], 'Some information about Alex')
         .build({
@@ -293,6 +302,15 @@ describe('Referral form', () => {
       cy.get('[type="radio"]').check('establishment')
       cy.get('#prison-select').type('Bedford (HMP & YOI)')
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/reason-for-referral-before-allocation`)
+      cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
+      cy.contains(
+        'Enter reason why referral is being made before a probation practitioner has been allocated (if known'
+      )
+      cy.get('#referral-creation-reason-before-allocation').type('some reason')
+      cy.stubGetDraftReferral(draftReferral.id, completedReferralReason)
       cy.contains('Save and continue').click()
 
       ReferralSectionVerifier.verifySection
@@ -768,7 +786,19 @@ describe('Referral form', () => {
 
       const completedPPDetails = draftReferralFactory
         .filledPersonalCurrentLocationType(CurrentLocationType.custody)
-        .filledMainPointOfContactDetails(false)
+        .filledReasonForReferralCreationBeforeAllocation(false)
+        .build({
+          id: draftReferral.id,
+          serviceCategoryIds: [accommodationServiceCategory.id],
+          serviceProvider: {
+            name: 'Harmony Living',
+          },
+          interventionId: draftReferral.interventionId,
+        })
+
+      const completedReferralReason = draftReferralFactory
+        .filledPersonalCurrentLocationType(CurrentLocationType.custody)
+        .filledReasonForReferralCreationBeforeAllocation('some reason', false)
         .build({
           id: draftReferral.id,
           serviceCategoryIds: [accommodationServiceCategory.id],
@@ -780,7 +810,7 @@ describe('Referral form', () => {
 
       const completedNeedsAndRequirementsDraftReferral = draftReferralFactory
         .filledPersonalCurrentLocationType(CurrentLocationType.custody)
-        .filledMainPointOfContactDetails(false)
+        .filledReasonForReferralCreationBeforeAllocation('some reason', false)
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory])
         .build({
           id: draftReferral.id,
@@ -794,7 +824,7 @@ describe('Referral form', () => {
 
       const completedEstablishmentDraftReferral = draftReferralFactory
         .filledPersonalCurrentLocationType(CurrentLocationType.custody)
-        .filledMainPointOfContactDetails(false)
+        .filledReasonForReferralCreationBeforeAllocation(false)
         .filledFormUpToCurrentLocationForUnallocatedCOM(false)
         .build({
           id: draftReferral.id,
@@ -807,7 +837,7 @@ describe('Referral form', () => {
 
       const completedDraftReferral = draftReferralFactory
         .filledPersonalCurrentLocationType(CurrentLocationType.custody)
-        .filledMainPointOfContactDetails(false)
+        .filledReasonForReferralCreationBeforeAllocation('some reason', false)
         .filledFormUpToFurtherInformation([accommodationServiceCategory], 'Some information about Alex')
         .build({
           id: draftReferral.id,
@@ -942,6 +972,15 @@ describe('Referral form', () => {
       cy.get('[type="radio"]').check('establishment')
       cy.get('#prison-select').type('Bedford (HMP & YOI)')
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/reason-for-referral-before-allocation`)
+      cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
+      cy.contains(
+        'Enter reason why referral is being made before a probation practitioner has been allocated (if known'
+      )
+      cy.get('#referral-creation-reason-before-allocation').type('some reason')
+      cy.stubGetDraftReferral(draftReferral.id, completedReferralReason)
       cy.contains('Save and continue').click()
 
       ReferralSectionVerifier.verifySection
@@ -1417,8 +1456,17 @@ describe('Referral form', () => {
         interventionId: draftReferral.interventionId,
       })
 
+      const completedReferralReason = draftReferralFactory.filledReasonForReferralCreationBeforeAllocation().build({
+        id: draftReferral.id,
+        serviceCategoryIds: [accommodationServiceCategory.id],
+        serviceProvider: {
+          name: 'Harmony Living',
+        },
+        interventionId: draftReferral.interventionId,
+      })
+
       const completedNeedsAndRequirementsDraftReferral = draftReferralFactory
-        .filledMainPointOfContactDetails()
+        .filledReasonForReferralCreationBeforeAllocation()
         .filledFormUpToNeedsAndRequirements([accommodationServiceCategory, socialInclusionServiceCategory], false, true)
         .build({
           id: draftReferral.id,
@@ -1453,7 +1501,7 @@ describe('Referral form', () => {
         })
 
       const completedExpectedProbationOfficeDraftReferral = draftReferralFactory
-        .filledMainPointOfContactDetails()
+        .filledReasonForReferralCreationBeforeAllocation()
         .filledFormUpToExpectedProbationOffice(CurrentLocationType.custody)
         .build({
           id: draftReferral.id,
@@ -1466,7 +1514,7 @@ describe('Referral form', () => {
         })
 
       const completedDraftReferral = draftReferralFactory
-        .filledMainPointOfContactDetails()
+        .filledReasonForReferralCreationBeforeAllocation()
         .filledFormUpToExpectedProbationOffice()
         .filledFormUpToFurtherInformation(
           [accommodationServiceCategory, socialInclusionServiceCategory],
@@ -1612,6 +1660,15 @@ describe('Referral form', () => {
       cy.get('[type="radio"]').check('establishment')
       cy.get('#prison-select').type('Bedford (HMP & YOI)')
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
+      cy.contains('Save and continue').click()
+
+      cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/reason-for-referral-before-allocation`)
+      cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
+      cy.contains(
+        'Enter reason why referral is being made before a probation practitioner has been allocated (if known'
+      )
+      cy.get('#referral-creation-reason-before-allocation').type('some reason')
+      cy.stubGetDraftReferral(draftReferral.id, completedReferralReason)
       cy.contains('Save and continue').click()
 
       ReferralSectionVerifier.verifySection

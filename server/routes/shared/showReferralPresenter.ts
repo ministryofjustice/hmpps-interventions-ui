@@ -277,6 +277,10 @@ export default class ShowReferralPresenter {
       },
       { key: 'Email address', lines: [this.deriveEmailAddress] },
       {
+        key: 'Reason why referral is being made before probation practitioner allocated',
+        lines: [this.sentReferral.referral.reasonForReferralCreationBeforeAllocation || ''],
+      },
+      {
         key: 'Phone number',
         lines: [this.sentReferral.referral.ppPhoneNumber || 'Not found'],
       },

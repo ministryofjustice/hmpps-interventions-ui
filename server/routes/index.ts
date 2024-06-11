@@ -208,6 +208,12 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   post(router, '/referrals/:id/expected-probation-office-unknown', (req, res) =>
     makeAReferralController.submitExpectedProbationOfficeUnknown(req, res)
   )
+  get(router, '/referrals/:id/reason-for-referral-before-allocation', (req, res) =>
+    makeAReferralController.viewReasonForReferralBeforePpAllocation(req, res)
+  )
+  post(router, '/referrals/:id/reason-for-referral-before-allocation', (req, res) =>
+    makeAReferralController.submitReasonForReferralBeforePpAllocation(req, res)
+  )
   get(router, '/referrals/:id/confirm-probation-practitioner-details', (req, res) =>
     makeAReferralController.viewConfirmProbationPractitionerDetails(req, res)
   )

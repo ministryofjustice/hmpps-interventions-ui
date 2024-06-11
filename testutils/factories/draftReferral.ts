@@ -107,7 +107,7 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     isReferralReleasingIn12Weeks = true,
     currentLocationType: CurrentLocationType = CurrentLocationType.custody
   ) {
-    return this.filledMainPointOfContactDetails(isReferralReleasingIn12Weeks).params({
+    return this.filledReasonForReferralCreationBeforeAllocation('some reason', isReferralReleasingIn12Weeks).params({
       personCurrentLocationType: currentLocationType,
       personCustodyPrisonId: currentLocationType === CurrentLocationType.custody ? 'abc' : null,
     })
@@ -139,6 +139,15 @@ class DraftReferralFactory extends Factory<DraftReferral> {
       ppPhoneNumber,
       ppEstablishment,
       roleOrJobTitle,
+    })
+  }
+
+  filledReasonForReferralCreationBeforeAllocation(
+    reasonForReferralCreationBeforeAllocation = 'some reason',
+    isReferralReleasingIn12Weeks = true
+  ) {
+    return this.filledMainPointOfContactDetails(isReferralReleasingIn12Weeks).params({
+      reasonForReferralCreationBeforeAllocation,
     })
   }
 
@@ -289,4 +298,5 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   allocatedCommunityPP: null,
   reasonForReferral: null,
   withdrawalState: null,
+  reasonForReferralCreationBeforeAllocation: null,
 }))
