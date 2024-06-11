@@ -111,13 +111,13 @@ export default class ReferralWithdrawalController {
       sentReferral.referral.interventionId
     )
 
-    const data = await new ReferralWithdrawalCheckAnswersForm(req).data()
+    const data = await new ReferralWithdrawalCheckAnswersForm(req).validate()
 
     let formError: FormValidationError | null = null
     let userInputData: Record<string, unknown> | null = null
 
     if (req.method === 'POST') {
-      if (!data.error) {
+      if (!data) {
         if (req.body['confirm-withdrawal'] === 'no') {
           res.redirect(`/probation-practitioner/referrals/${req.params.id}/progress`)
           return
@@ -126,7 +126,7 @@ export default class ReferralWithdrawalController {
         return
       }
       res.status(400)
-      formError = data.error
+      formError = data
       userInputData = req.body
     }
 
