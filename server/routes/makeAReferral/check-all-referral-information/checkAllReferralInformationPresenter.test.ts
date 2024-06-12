@@ -273,16 +273,6 @@ describe(CheckAllReferralInformationPresenter, () => {
               lines: ['some reason'],
               changeLink: `/referrals/${referralWithUnAllocatedCom.id}/reason-for-referral-before-allocation?amendPPDetails=true`,
             },
-            {
-              key: 'Phone number',
-              lines: ['045890232322'],
-              changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
-            },
-            {
-              key: 'Probation office',
-              lines: ['London'],
-              changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
-            },
           ])
         })
       })
