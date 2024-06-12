@@ -1595,8 +1595,10 @@ describe('POST /referrals/:id/confirm-main-point-of-contact', () => {
       ppEmailAddress: 'a.b@xyz.com',
       roleOrJobTitle: 'Probation Practitioner',
       ppProbationOffice: 'London',
+      isReferralReleasingIn12Weeks: true,
     })
 
+    interventionsService.getDraftReferral.mockResolvedValue(updatedReferral)
     interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
 
     await request(app)

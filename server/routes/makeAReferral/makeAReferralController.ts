@@ -1902,8 +1902,10 @@ export default class MakeAReferralController {
 
     if (error === null && amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
-    } else if (error === null && !amendPPDetails) {
+    } else if (error === null && referral.isReferralReleasingIn12Weeks && !amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/reason-for-referral-before-allocation`)
+    } else if (error === null && !referral.isReferralReleasingIn12Weeks && !amendPPDetails) {
+      res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
