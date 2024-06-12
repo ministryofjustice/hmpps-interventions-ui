@@ -13,6 +13,7 @@ import ReferralWithdrawalConfirmationPresenter from './confirmation/referralWith
 import ReferralWithdrawalConfirmationView from './confirmation/referralWithdrawalConfirmationView'
 import ReferralWithdrawalCheckAnswersPresenter from './checkAnswers/referralWithdrawalCheckAnswersPresenter'
 import ReferralWithdrawalCheckAnswersView from './checkAnswers/referralWithdrawalCheckAnswersView'
+import ReferralWithdrawalCheckAnswersForm from './checkAnswers/referralWithdrawalCheckAnswersForm'
 
 export default class ReferralWithdrawalController {
   constructor(
@@ -110,12 +111,33 @@ export default class ReferralWithdrawalController {
       sentReferral.referral.interventionId
     )
 
+    const data = await new ReferralWithdrawalCheckAnswersForm(req).validate()
+
+    let formError: FormValidationError | null = null
+    let userInputData: Record<string, unknown> | null = null
+
+    if (req.method === 'POST') {
+      if (!data) {
+        if (req.body['confirm-withdrawal'] === 'no') {
+          res.redirect(`/probation-practitioner/referrals/${req.params.id}/progress`)
+          return
+        }
+        res.redirect(`/probation-practitioner/referrals/${sentReferral.id}/withdrawal/${draftWithdrawal.id}/submit`)
+        return
+      }
+      res.status(400)
+      formError = data
+      userInputData = req.body
+    }
+
     const presenter = new ReferralWithdrawalCheckAnswersPresenter(
       req.params.id,
       draftWithdrawal.id,
       serviceUser,
       intervention,
-      withdrawalState!
+      withdrawalState!,
+      formError,
+      userInputData
     )
     const view = new ReferralWithdrawalCheckAnswersView(presenter)
 
@@ -123,10 +145,6 @@ export default class ReferralWithdrawalController {
   }
 
   async submitWithdrawal(req: Request, res: Response): Promise<void> {
-    if (req.body['confirm-withdrawal'] === 'no') {
-      res.redirect(`/probation-practitioner/referrals/${req.params.id}/progress`)
-      return
-    }
     const fetchResult = await this.fetchDraftWithdrawalOrRenderMessage(req, res)
     if (fetchResult.rendered) {
       return

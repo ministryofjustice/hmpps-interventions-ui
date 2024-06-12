@@ -273,7 +273,7 @@ describe('POST /probation-practitioner/referrals/:id/withdrawal/:draftWithdrawal
     draftsService.deleteDraft.mockResolvedValue()
 
     await request(app)
-      .post(
+      .get(
         `/probation-practitioner/referrals/9747b7fb-51bc-40e2-bbbd-791a9be9284b/withdrawal/${draftWithdrawal.id}/submit`
       )
       .expect(302)
@@ -298,7 +298,7 @@ describe('POST /probation-practitioner/referrals/:id/withdrawal/:draftWithdrawal
       draftsService.fetchDraft.mockResolvedValue(null)
 
       await request(app)
-        .post(`/probation-practitioner/referrals/abc/withdrawal/def/submit`)
+        .get(`/probation-practitioner/referrals/abc/withdrawal/def/submit`)
         .expect(410)
         .expect(res => {
           expect(res.text).toContain('This page is no longer available')

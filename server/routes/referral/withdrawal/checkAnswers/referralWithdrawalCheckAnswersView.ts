@@ -1,7 +1,10 @@
 import ReferralWithdrawalCheckAnswersPresenter from './referralWithdrawalCheckAnswersPresenter'
+import ViewUtils from '../../../../utils/viewUtils'
 
 export default class ReferralWithdrawalCheckAnswersView {
   constructor(private readonly presenter: ReferralWithdrawalCheckAnswersPresenter) {}
+
+  private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
   private get confirmWithdrawalButtonArgs(): Record<string, unknown> {
     return {
@@ -27,6 +30,7 @@ export default class ReferralWithdrawalCheckAnswersView {
           text: 'No',
         },
       ],
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
     }
   }
 
@@ -37,6 +41,7 @@ export default class ReferralWithdrawalCheckAnswersView {
         presenter: this.presenter,
         backLinkArgs: this.presenter.backLinkHref,
         confirmWithdrawalButtonArgs: this.confirmWithdrawalButtonArgs,
+        errorSummaryArgs: this.errorSummaryArgs,
       },
     ]
   }
