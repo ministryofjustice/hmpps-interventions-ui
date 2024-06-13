@@ -238,13 +238,20 @@ export default class CheckAllReferralInformationPresenter {
           lines: [this.deriveEmailAddress],
           changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
         },
-        {
-          key: 'Reason why referral is being made before probation practitioner allocated',
-          lines: [this.referral.reasonForReferralCreationBeforeAllocation || ''],
-          changeLink: `/referrals/${this.referral.id}/reason-for-referral-before-allocation?amendPPDetails=true`,
-        },
+        this.determineElementForMainPointOfContacts,
       ],
     }
+  }
+
+  private get determineElementForMainPointOfContacts(): SummaryListItem {
+    if (this.referral.isReferralReleasingIn12Weeks) {
+      return {
+        key: 'Reason why referral is being made before probation practitioner allocated',
+        lines: [this.referral.reasonForReferralCreationBeforeAllocation || ''],
+        changeLink: `/referrals/${this.referral.id}/reason-for-referral-before-allocation?amendPPDetails=true`,
+      }
+    }
+    return this.establishmentOrProbationOffice
   }
 
   get backupContactDetails(): { title: string; summary: SummaryListItem[] } | null {
@@ -273,7 +280,7 @@ export default class CheckAllReferralInformationPresenter {
   private get establishmentOrProbationOffice(): SummaryListItem {
     if (this.referral.ppEstablishment) {
       return {
-        key: 'Establishment',
+        key: 'Prison establishment',
         lines: [this.prisonName(this.referral.ppEstablishment)],
         changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
       }

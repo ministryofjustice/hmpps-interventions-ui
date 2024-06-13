@@ -1250,16 +1250,12 @@ describe('Referral form', () => {
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
 
-      cy.contains('Reason why referral is being made before probation practitioner allocated')
+      cy.contains('Prison establishment')
         .next()
-        .should('contain', 'some reason')
+        .should('contain', 'Bedford (HMP & YOI)')
         .next()
         .contains('Change')
-        .should(
-          'have.attr',
-          'href',
-          `/referrals/${draftReferral.id}/reason-for-referral-before-allocation?amendPPDetails=true`
-        )
+        .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
 
       // Alex's needs and requirements
       cy.contains('Identify needs')
