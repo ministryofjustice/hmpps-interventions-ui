@@ -11,6 +11,18 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
+    {% set whatsNewVersion5Html %}
+        <h3 class="govuk-heading-s">Withdraw a referral</h3>
+        <p> If you submit a referral for an intervention but later discover a change in circumstance or a problem that means it should not continue, we’ve made it easier for you to withdraw the referral.
+        We have added a new button to the top of the case details screen that, once clicked, takes you to a list of withdrawal reasons.
+        The options range from a problem with the referral, to user-related issues and sentence/custody changes.
+        You need to select a reason and provide some more details. Once you have submitted the request, the referral will be withdrawn.</p>
+
+        <h3 class="govuk-heading-s"> Close a completed referral early</h3>
+        <p> If an intervention has been completed you may want to close the referral early. We have now added new functionality to make this easier for you to do. We have added a new button to the top of the case details screen. Once clicked, on the next screen under the heading ‘Early closure’ you should select ‘Intervention has been completed’. Once you have submitted the request, the referral will be closed early.</p>
+    {% endset %}
+
+
     {% set whatsNewVersion4Html %}
         <p>When service providers create a case note on Refer and monitor an intervention, they’re now asked if you need an email about it.</p>
 
@@ -81,11 +93,21 @@
         items: [
           {
             label: {
+                text: "Changes to withdrawing or closing a referral early"
+            },
+            html: whatsNewVersion5Html,
+            datetime: {
+              timestamp: "2024-06-13",
+              type: "date"
+            }
+          },
+          {
+            label: {
                 text: "Helping to reduce your emails"
             },
             html: whatsNewVersion4Html,
             datetime: {
-              timestamp: "2023-03-04",
+              timestamp: "2024-03-04",
               type: "date"
             }
           },
