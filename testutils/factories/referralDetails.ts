@@ -8,4 +8,5 @@ export default ReferralDetailsFactory.define(({ sequence }) => ({
   completionDeadline: '2022-06-06',
   maximumEnforceableDays: 15,
   furtherInformation: 'this person has 3 children at home',
+  reasonForReferral: 'For crs',
 }))

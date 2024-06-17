@@ -321,3 +321,54 @@ describe('GET /probation-practitioner/referrals/:id/employment-responsibilities'
       })
   })
 })
+
+describe('GET /referrals/:referralId/amend-reason-for-referral', () => {
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('renders the page to update additional information', () => {
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain(
+          'Update the reason for this referral and further information for the service provider'
+        )
+      })
+  })
+})
+
+describe('POST /probation-practitioner/referrals/:id/amend-reason-for-referral', () => {
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('redirects to the referral details page on success', () => {
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`)
+      .send({
+        'reason-for-change': 'new value',
+        'amend-reason-for-referral': 'For custody and crs',
+      })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
+  })
+
+  describe('with form validation errors', () => {
+    it('renders an error message', () => {
+      return request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`)
+        .send({ 'reason-for-change': ' ' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain(
+            'Update the reason for this referral and further information for the service provider'
+          )
+        })
+    })
+  })
+})

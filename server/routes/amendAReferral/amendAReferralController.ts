@@ -27,6 +27,9 @@ import AmendAdditionalInformationForm from './additionalInformation/amendAdditio
 import AmendEmploymentResponsibilitiesPresenter from './employment-responsibilities/amendEmploymentResponsibilitiesPresenter'
 import AmendEmploymentResponsibilitiesView from './employment-responsibilities/amendEmploymentResponsibilitiesView'
 import AmendEmploymentResponsibilitiesForm from './employment-responsibilities/amendEmploymentResponsibilitiesForm'
+import AmendReasonForReferralPresenter from './reason-for-referral/amendReasonForReferralPresenter'
+import AmendReasonForReferralView from './reason-for-referral/amendReasonForReferralView'
+import AmendReasonForReferralForm from './reason-for-referral/amendReasonForReferralForm'
 
 export default class AmendAReferralController {
   constructor(
@@ -336,6 +339,32 @@ export default class AmendAReferralController {
       req.query.noChanges === 'true'
     )
     const view = new AmendEmploymentResponsibilitiesView(presenter)
+
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async amendReasonForReferral(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId } = req.params
+    let error: FormValidationError | null = null
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    if (req.method === 'POST') {
+      const form = await new AmendReasonForReferralForm(req).data()
+
+      if (!form.error) {
+        await this.interventionsService.updateSentReferralDetails(accessToken, referralId, form.paramsForUpdate)
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
+      }
+
+      error = form.error
+      res.status(400)
+    }
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
+
+    const presenter = new AmendReasonForReferralPresenter(sentReferral, error)
+    const view = new AmendReasonForReferralView(presenter)
 
     return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
