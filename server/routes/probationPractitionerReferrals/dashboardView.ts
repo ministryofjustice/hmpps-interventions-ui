@@ -37,7 +37,7 @@ export default class DashboardView {
 
   get serviceOutageBannerArgs(): NotificationBannerArgs | null {
     const text =
-      'Please be advised that R & M will be offline from 6pm on Friday 21 June until 8am on Monday 24 June, due to planned maintenance being carried out in nDelius.'
+      'Please be advised that Refer & Monitor will be offline from 6pm on Friday 21 June until 8am on Monday 24 June, due to planned maintenance being carried out in nDelius.'
 
     const html = `<p class="govuk-notification-banner__heading">${text}</p>
                   <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p>`
