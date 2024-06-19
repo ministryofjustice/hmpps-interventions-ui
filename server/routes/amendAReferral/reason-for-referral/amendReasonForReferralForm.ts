@@ -27,7 +27,7 @@ export default class AmendReasonForReferralForm {
     return {
       paramsForUpdate: {
         reasonForReferral: this.request.body['amend-reason-for-referral'],
-        reasonForChange: 'amending the reason for referral',
+        reasonForChange: '',
       },
       error: null,
     }

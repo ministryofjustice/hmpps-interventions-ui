@@ -11,7 +11,7 @@ describe(AmendReasonForReferralForm, () => {
         const data = await new AmendReasonForReferralForm(request).data()
 
         expect(data.paramsForUpdate?.reasonForReferral).toEqual('To refer him to CRS')
-        expect(data.paramsForUpdate?.reasonForChange).toEqual('amending the reason for referral')
+        expect(data.paramsForUpdate?.reasonForChange).toEqual('')
       })
     })
   })

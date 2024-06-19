@@ -72,6 +72,11 @@ export default class ChangelogDetailView {
           to: `<p>${newValue[0].length > 0 ? newValue[0].trim() : 'N/A'}</p>`,
           reason: this.presenter.changelogDetail.reasonForChange,
         }
+      case 'REASON_FOR_REFERRAL':
+        return {
+          from: `<p>${oldValue[0].length > 0 ? oldValue[0].trim() : 'N/A'}</p>`,
+          to: `<p>${newValue[0].length > 0 ? newValue[0].trim() : 'N/A'}</p>`,
+        }
       default:
         return {}
     }

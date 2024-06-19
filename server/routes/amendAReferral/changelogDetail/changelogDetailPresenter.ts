@@ -35,6 +35,8 @@ export default class ChangelogDetailPresenter {
         return 'Need for an interpreter was changed'
       case 'NEEDS_AND_REQUIREMENTS_HAS_ADDITIONAL_RESPONSIBILITIES':
         return 'Caring or employment responsibilites were changed'
+      case 'REASON_FOR_REFERRAL':
+        return 'Reason for this referral and further information has changed'
       default:
         return ''
     }
