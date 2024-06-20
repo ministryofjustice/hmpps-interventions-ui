@@ -189,7 +189,7 @@ export default class ServiceProviderReferralsController {
       await this.renderDashboard(
         req,
         res,
-        { concluded: true, unassigned: false, search: searchText?.trim() },
+        { concluded: true, search: searchText?.trim() },
         'Completed cases',
         'spCompletedCases',
         pageSize
