@@ -30,7 +30,8 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   )
   const amendAReferralController = new AmendAReferralController(
     services.interventionsService,
-    services.ramDeliusApiService
+    services.ramDeliusApiService,
+    services.prisonAndSecuredChildAgencyService
   )
   const changeLogController = new ChangeLogController(services.interventionsService, services.ramDeliusApiService)
 
@@ -105,6 +106,13 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   )
   post(router, '/referrals/:referralId/amend-reason-for-referral', (req, res) =>
     amendAReferralController.amendReasonForReferral(req, res)
+  )
+
+  get(router, '/referrals/:referralId/amend-prison-establishment', (req, res) =>
+    amendAReferralController.amendPrisonEstablishment(req, res)
+  )
+  post(router, '/referrals/:referralId/amend-prison-establishment', (req, res) =>
+    amendAReferralController.amendPrisonEstablishment(req, res)
   )
 
   // Legacy route to keep links in old emails still working. We'll monitor and remove once traffic drops off

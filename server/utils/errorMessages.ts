@@ -326,6 +326,10 @@ export default {
   reasonForReferral: {
     empty: 'Enter reason for the referral and any further information',
   },
+  prisonEstablishment: {
+    empty: 'Enter a prison establishment',
+    emptyReason: 'Enter a reason',
+  },
 
   caseNote: {
     subject: {

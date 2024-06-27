@@ -30,11 +30,16 @@ import AmendEmploymentResponsibilitiesForm from './employment-responsibilities/a
 import AmendReasonForReferralPresenter from './reason-for-referral/amendReasonForReferralPresenter'
 import AmendReasonForReferralView from './reason-for-referral/amendReasonForReferralView'
 import AmendReasonForReferralForm from './reason-for-referral/amendReasonForReferralForm'
+import AmendPrisonEstablishmentForm from './amend-prison-establishment/amendPrisonEstablishmentForm'
+import AmendPrisonEstablishmentPresenter from './amend-prison-establishment/amendPrisonEstablishmentPresenter'
+import AmendPrisonEstablishmentView from './amend-prison-establishment/amendPrisonEstablishmentView'
+import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 
 export default class AmendAReferralController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly ramDeliusApiService: RamDeliusApiService
+    private readonly ramDeliusApiService: RamDeliusApiService,
+    private readonly prisonAndSecureChildAgencyService: PrisonAndSecuredChildAgencyService
   ) {}
 
   async updateMaximumEnforceableDays(req: Request, res: Response): Promise<void> {
@@ -365,6 +370,35 @@ export default class AmendAReferralController {
 
     const presenter = new AmendReasonForReferralPresenter(sentReferral, error)
     const view = new AmendReasonForReferralView(presenter)
+
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async amendPrisonEstablishment(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId } = req.params
+    let error: FormValidationError | null = null
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const prisonAndSecureChildAgency = await this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(
+      res.locals.user.token.accessToken
+    )
+
+    if (req.method === 'POST') {
+      const form = await new AmendPrisonEstablishmentForm(req).data()
+
+      if (!form.error) {
+        await this.interventionsService.updatePrisonEstablishment(accessToken, referralId, form.paramsForUpdate)
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
+      }
+
+      error = form.error
+      res.status(400)
+    }
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
+
+    const presenter = new AmendPrisonEstablishmentPresenter(sentReferral, prisonAndSecureChildAgency, error)
+    const view = new AmendPrisonEstablishmentView(presenter)
 
     return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }

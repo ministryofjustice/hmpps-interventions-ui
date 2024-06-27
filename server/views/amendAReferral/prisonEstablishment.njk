@@ -1,0 +1,65 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Make a referral" %}
+{% set pageSubTitle = "Amend prison establishment" %}
+
+{% block pageContent %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+
+      {% if backLinkArgs %}
+        {{ govukBackLink(backLinkArgs) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+
+      {{ govukWarningText({
+          text: "If the prison location is changed this may affect the eligibility of the referral. Check with the service provider.",
+          iconFallbackText: "Warning"
+        }) 
+      }}
+
+      <p class="govuk-caption-xl">{{ presenter.text.label }} </p>
+      <form method="post" novalidate>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+        {% if errorSummaryArgs !== null %}
+          {{ govukErrorSummary(errorSummaryArgs) }}
+        {% endif %}
+
+        {{ govukSelect(prisonSelectArgs) }}
+
+        {% if reasonForChangeInputArgs %}
+          {{ govukTextarea(reasonForChangeInputArgs) }}
+        {% endif %}
+
+        {{ govukButton({ classes: "confirm-location", text: "Save and continue", preventDoubleClick: true }) }}
+      </form>
+    </div>
+  </div>
+<script src="/assets/accessible-autocomplete.min.js"></script>
+
+<script>
+    accessibleAutocomplete.enhanceSelectElement({
+      defaultValue: '',
+      selectElement: document.querySelector('#amend-prison-establishment')
+    })
+    $(function () {
+      $('.confirm-location').on('click', function () {
+        if (!$.trim($('#amend-prison-establishment').val()).length) {
+          $('.select-location').val('')
+        }
+    })
+  })    
+</script>
+
+{% endblock %}
