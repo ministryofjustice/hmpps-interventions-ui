@@ -710,6 +710,10 @@ export default class ShowReferralPresenter {
           ? 'Prison establishment'
           : 'Location at time of referral',
       lines: [locationAtTimeOfReferral],
+      changeLink:
+        this.userType === 'probation-practitioner'
+          ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-prison-establishment`
+          : undefined,
     }
   }
 

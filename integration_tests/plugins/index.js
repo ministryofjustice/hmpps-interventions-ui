@@ -320,5 +320,9 @@ export default on => {
     stubAmendAdditionalInformation: arg => {
       return interventionsService.stubAmendAdditionalInformation(arg.referralId, arg.responseJson)
     },
+
+    stubAmendPrisonEstablishment: arg => {
+      return interventionsService.stubAmendPrisonEstablishment(arg.referralId, arg.responseJson)
+    },
   })
 }

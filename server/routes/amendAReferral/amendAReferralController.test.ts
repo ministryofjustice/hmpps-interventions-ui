@@ -6,25 +6,41 @@ import RamDeliusApiService from '../../services/ramDeliusApiService'
 import referralDetails from '../../../testutils/factories/referralDetails'
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import prisonAndSecuredChildFactory from '../../../testutils/factories/secureChildAgency'
+import prisonFactory from '../../../testutils/factories/prison'
 import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
 import sentReferral from '../../../testutils/factories/sentReferral'
 import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
 import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
+import PrisonApiService from '../../services/prisonApiService'
+import PrisonAndSecuredChildAgency from '../../models/prisonAndSecureChildAgency'
+import PrisonRegisterService from '../../services/prisonRegisterService'
+import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/ramDeliusApiService')
+jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/prisonApiService')
+jest.mock('../../services/prisonAndSecuredChildAgencyService')
+
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
 const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
+const prisonApiService = new PrisonApiService() as jest.Mocked<PrisonApiService>
+const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
+const prisonAndSecuredChildAgencyService = new PrisonAndSecuredChildAgencyService(
+  prisonRegisterService,
+  prisonApiService
+) as jest.Mocked<PrisonAndSecuredChildAgencyService>
 
 let app: Express
 let referral: SentReferral
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, ramDeliusApiService },
+    overrides: { interventionsService, ramDeliusApiService, prisonAndSecuredChildAgencyService },
     userType: AppSetupUserType.probationPractitioner,
   })
   referral = sentReferral.build()
@@ -368,6 +384,59 @@ describe('POST /probation-practitioner/referrals/:id/amend-reason-for-referral',
           expect(res.text).toContain(
             'Update the reason for this referral and further information for the service provider'
           )
+        })
+    })
+  })
+})
+
+describe('POST /probation-practitioner/referrals/:id/amend-prison-establishment', () => {
+  const prisonAndSecuredChildAgencyList = prisonAndSecuredChildFactory.build()
+  const prisonList = prisonFactory.build()
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+    prisonRegisterService.getPrisons.mockResolvedValue(prisonList)
+    prisonApiService.getSecureChildrenAgencies.mockResolvedValue(prisonAndSecuredChildAgencyList)
+
+    const prisonsAndSecuredChildAgencies: PrisonAndSecuredChildAgency[] = []
+
+    prisonList.forEach(prison =>
+      prisonsAndSecuredChildAgencies.push({ id: prison.prisonId, description: prison.prisonName })
+    )
+    prisonAndSecuredChildAgencyList.forEach(securedChildAgency =>
+      prisonsAndSecuredChildAgencies.push({
+        id: securedChildAgency.agencyId,
+        description: securedChildAgency.description,
+      })
+    )
+    prisonAndSecuredChildAgencyService.getPrisonsAndSecureChildAgencies.mockResolvedValue(
+      prisonsAndSecuredChildAgencies
+    )
+  })
+
+  it('redirects to the referral details page on success', () => {
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/amend-prison-establishment`)
+      .send({
+        'reason-for-change': 'new value',
+        'amend-prison-establishment': 'bbb',
+      })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
+  })
+
+  describe('with form validation errors', () => {
+    it('renders an error message', () => {
+      return request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-prison-establishment`)
+        .send({
+          'reason-for-change': 'new value',
+          'amend-prison-establishment': '',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Enter a prison establishment')
         })
     })
   })
