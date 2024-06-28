@@ -1,5 +1,6 @@
 import ChangelogDetail from '../../../models/changelogDetail'
 import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
+import PrisonAndSecuredChildAgency from '../../../models/prisonAndSecureChildAgency'
 import SentReferral from '../../../models/sentReferral'
 import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
@@ -10,6 +11,7 @@ export default class ChangelogDetailPresenter {
     readonly changelogDetail: ChangelogDetail,
     private sentReferral: SentReferral,
     private deliusServiceUser: DeliusServiceUser,
+    readonly prisonAndSecuredChildAgency: PrisonAndSecuredChildAgency[],
     public loggedInUserType: 'service-provider' | 'probation-practitioner'
   ) {}
 
@@ -37,6 +39,8 @@ export default class ChangelogDetailPresenter {
         return 'Caring or employment responsibilites were changed'
       case 'REASON_FOR_REFERRAL':
         return 'Reason for this referral and further information has changed'
+      case 'PRISON_ESTABLISHMENT':
+        return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s prison establishment has changed`
       default:
         return ''
     }
@@ -60,6 +64,8 @@ export default class ChangelogDetailPresenter {
         return `Reason for changing whether ${this.deliusServiceUser.name.forename} needs an interpreter`
       case 'NEEDS_AND_REQUIREMENTS_HAS_ADDITIONAL_RESPONSIBILITIES':
         return `Reason for changing whether ${this.deliusServiceUser.name.forename}'s caring or employment responsibilities`
+      case 'PRISON_ESTABLISHMENT':
+        return 'Reason why the prison establishment has changed'
       default:
         return ''
     }

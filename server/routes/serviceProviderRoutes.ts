@@ -113,7 +113,11 @@ export default function serviceProviderRoutes(
     serviceProviderReferralsController.addNumberOfSessionsToActionPlan(req, res)
   )
 
-  const changeLogController = new ChangeLogController(services.interventionsService, services.ramDeliusApiService)
+  const changeLogController = new ChangeLogController(
+    services.interventionsService,
+    services.ramDeliusApiService,
+    services.prisonAndSecuredChildAgencyService
+  )
 
   get(router, '/referrals/:referralId/changelog', (req, res) =>
     changeLogController.getChangelog(req, res, 'service-provider')

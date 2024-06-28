@@ -7,11 +7,13 @@ import ChangelogView from './changelog/changelogView'
 import ChangelogDetailPresenter from './changelogDetail/changelogDetailPresenter'
 import ChangelogDetailView from './changelogDetail/changelogDetailView'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
+import PrisonAndSecureChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 
 export default class ChangeLogController {
   constructor(
     private readonly interventionsService: InterventionsService,
-    private readonly ramDeliusApiService: RamDeliusApiService
+    private readonly ramDeliusApiService: RamDeliusApiService,
+    private readonly prisonAndSecureChildAgencyService: PrisonAndSecureChildAgencyService
   ) {}
 
   async getChangelog(
@@ -50,11 +52,14 @@ export default class ChangeLogController {
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const changeLogDetail = await this.interventionsService.getChangelogDetail(accessToken, changelogId)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
+    const prisonsAndSecuredChildAgencies =
+      await this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(accessToken)
     const presenter = new ChangelogDetailPresenter(
       formError,
       changeLogDetail,
       sentReferral,
       serviceUser,
+      prisonsAndSecuredChildAgencies,
       loggedInUserType
     )
     const view = new ChangelogDetailView(presenter)

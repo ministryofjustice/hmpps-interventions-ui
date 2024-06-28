@@ -33,7 +33,11 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     services.ramDeliusApiService,
     services.prisonAndSecuredChildAgencyService
   )
-  const changeLogController = new ChangeLogController(services.interventionsService, services.ramDeliusApiService)
+  const changeLogController = new ChangeLogController(
+    services.interventionsService,
+    services.ramDeliusApiService,
+    services.prisonAndSecuredChildAgencyService
+  )
 
   get(router, '/dashboard', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))
   get(router, '/dashboard/open-cases', (req, res) => probationPractitionerReferralsController.showOpenCases(req, res))

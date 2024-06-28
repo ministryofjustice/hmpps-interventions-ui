@@ -5,6 +5,9 @@ import SentReferral from '../../../models/sentReferral'
 import sentReferral from '../../../../testutils/factories/sentReferral'
 import deliusServerUserFactory from '../../../../testutils/factories/deliusServiceUser'
 import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
+import prisonFactory from '../../../../testutils/factories/prison'
+import securedChildAgency from '../../../../testutils/factories/secureChildAgency'
+import PrisonAndSecuredChildAgency from '../../../models/prisonAndSecureChildAgency'
 
 describe('ChangeLogPresenter', () => {
   const changeLog1 = changelogDetail.build({
@@ -71,9 +74,29 @@ describe('ChangeLogPresenter', () => {
     newValue: ['Yes-cannot attend on wednesday afternoons'],
     reasonForChange: 'Error at desired outcome change',
   })
+  const changeLog9 = changelogDetail.build({
+    changelogId: '9',
+    name: 'changelog 8 name',
+    topic: 'PRISON_ESTABLISHMENT',
+    oldValue: ['aaa'],
+    newValue: ['bbb'],
+    reasonForChange: 'Error at desired outcome change',
+  })
   const formError: FormValidationError | null = null
   const referral: SentReferral = sentReferral.build()
   const deliusServiceUser: DeliusServiceUser = deliusServerUserFactory.build()
+  const prisonList = prisonFactory.build()
+  const prisonAndSecuredChildAgencyList = securedChildAgency.build()
+
+  const prisonsAndSecuredChildAgencies: PrisonAndSecuredChildAgency[] = []
+
+  prisonList.forEach(prison =>
+    prisonsAndSecuredChildAgencies.push({ id: prison.prisonId, description: prison.prisonName })
+  )
+  prisonAndSecuredChildAgencyList.forEach(sca =>
+    prisonsAndSecuredChildAgencies.push({ id: sca.agencyId, description: sca.description })
+  )
+
   describe('generated title for different change log detail', () => {
     it('check the title for complexity level', () => {
       const presenter = new ChangelogDetailPresenter(
@@ -81,6 +104,7 @@ describe('ChangeLogPresenter', () => {
         changeLog1,
         referral,
         deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
         'probation-practitioner'
       )
       expect(presenter.renderTitle).toEqual('Complexity level was changed')
@@ -92,6 +116,7 @@ describe('ChangeLogPresenter', () => {
         changeLog2,
         referral,
         deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
         'probation-practitioner'
       )
       expect(presenter.renderTitle).toEqual('Desired outcomes was changed')
@@ -102,6 +127,7 @@ describe('ChangeLogPresenter', () => {
         changeLog3,
         referral,
         deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
         'probation-practitioner'
       )
       expect(presenter.renderTitle).toEqual('Completion date was changed')
@@ -112,6 +138,7 @@ describe('ChangeLogPresenter', () => {
         changeLog4,
         referral,
         deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
         'probation-practitioner'
       )
       expect(presenter.renderTitle).toEqual('Enforceable days was changed')
@@ -123,6 +150,7 @@ describe('ChangeLogPresenter', () => {
         changeLog5,
         referral,
         deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
         'probation-practitioner'
       )
       expect(presenter.renderTitle).toEqual('Mobility, disability or accessibility needs were changed')
@@ -134,6 +162,7 @@ describe('ChangeLogPresenter', () => {
         changeLog6,
         referral,
         deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
         'probation-practitioner'
       )
       expect(presenter.renderTitle).toEqual(
@@ -147,6 +176,7 @@ describe('ChangeLogPresenter', () => {
         changeLog7,
         referral,
         deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
         'probation-practitioner'
       )
       expect(presenter.renderTitle).toEqual('Need for an interpreter was changed')
@@ -158,9 +188,23 @@ describe('ChangeLogPresenter', () => {
         changeLog8,
         referral,
         deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
         'probation-practitioner'
       )
       expect(presenter.renderTitle).toEqual('Caring or employment responsibilites were changed')
+    })
+    it('check the title for prison establishment', () => {
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog9,
+        referral,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        'probation-practitioner'
+      )
+      expect(presenter.renderTitle).toEqual(
+        `${referral.referral.serviceUser.firstName} ${referral.referral.serviceUser.lastName}'s prison establishment has changed`
+      )
     })
   })
 })
