@@ -711,7 +711,7 @@ export default class ShowReferralPresenter {
           : 'Location at time of referral',
       lines: [locationAtTimeOfReferral],
       changeLink:
-        this.userType === 'probation-practitioner'
+        this.userType === 'probation-practitioner' && personCurrentLocationType === CurrentLocationType.custody
           ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-prison-establishment`
           : undefined,
     }

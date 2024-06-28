@@ -77,6 +77,12 @@ export default class ChangelogDetailView {
           from: `<p>${oldValue[0].length > 0 ? oldValue[0].trim() : 'N/A'}</p>`,
           to: `<p>${newValue[0].length > 0 ? newValue[0].trim() : 'N/A'}</p>`,
         }
+      case 'PRISON_ESTABLISHMENT':
+        return {
+          from: `<p>${oldValue[0].length > 0 ? this.getPrisonName(oldValue[0].trim()) : 'N/A'}</p>`,
+          to: `<p>${newValue[0].length > 0 ? this.getPrisonName(newValue[0].trim()) : 'N/A'}</p>`,
+          reason: this.presenter.changelogDetail.reasonForChange,
+        }
       default:
         return {}
     }
@@ -109,5 +115,13 @@ export default class ChangelogDetailView {
         renderBasedonTopicArgs: this.renderBasedonTopic.bind(this),
       },
     ]
+  }
+
+  private getPrisonName(prisonId: string | null): string {
+    return (
+      this.presenter.prisonAndSecuredChildAgency.find(
+        prisonAndSecuredChildAgency => prisonAndSecuredChildAgency.id === prisonId
+      )?.description || ''
+    )
   }
 }

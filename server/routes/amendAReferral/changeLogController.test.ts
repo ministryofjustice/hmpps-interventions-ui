@@ -12,14 +12,30 @@ import SentReferral from '../../models/sentReferral'
 import ChangelogDetail from '../../models/changelogDetail'
 import Changelog from '../../models/changelog'
 import interventionFactory from '../../../testutils/factories/intervention'
+import prisonAndSecuredChildFactory from '../../../testutils/factories/secureChildAgency'
+import prisonFactory from '../../../testutils/factories/prison'
 import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
+import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
+import PrisonApiService from '../../services/prisonApiService'
+import PrisonRegisterService from '../../services/prisonRegisterService'
+import PrisonAndSecuredChildAgency from '../../models/prisonAndSecureChildAgency'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/ramDeliusApiService')
+jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/prisonApiService')
+jest.mock('../../services/prisonAndSecuredChildAgencyService')
+
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
 ) as jest.Mocked<InterventionsService>
 const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
+const prisonApiService = new PrisonApiService() as jest.Mocked<PrisonApiService>
+const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
+const prisonAndSecuredChildAgencyService = new PrisonAndSecuredChildAgencyService(
+  prisonRegisterService,
+  prisonApiService
+) as jest.Mocked<PrisonAndSecuredChildAgencyService>
 
 let app: Express
 let referral: SentReferral
@@ -31,11 +47,13 @@ let changelogDetail5: ChangelogDetail
 let changelogDetail6: ChangelogDetail
 let changelogDetail7: ChangelogDetail
 let changelogDetail8: ChangelogDetail
+let changelogDetail9: ChangelogDetail
+let changelogDetail10: ChangelogDetail
 let changelog: Changelog[]
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, ramDeliusApiService },
+    overrides: { interventionsService, ramDeliusApiService, prisonAndSecuredChildAgencyService },
     userType: AppSetupUserType.probationPractitioner,
   })
   referral = sentReferral.build()
@@ -108,6 +126,36 @@ beforeEach(() => {
     newValue: ['Yes-cannot attend on wednesday afternoons'],
     reasonForChange: 'Error at desired outcome change',
   })
+  changelogDetail9 = changelogDetailFactory.build({
+    changelogId: '9',
+    name: 'changelog 9 name',
+    topic: 'REASON_FOR_REFERRAL',
+    oldValue: ['old reason'],
+    newValue: ['new reason'],
+    reasonForChange: '',
+  })
+  changelogDetail10 = changelogDetailFactory.build({
+    changelogId: '10',
+    name: 'changelog 10 name',
+    topic: 'PRISON_ESTABLISHMENT',
+    oldValue: ['aaa'],
+    newValue: ['bbb'],
+    reasonForChange: 'Reason why the prison establishment has changed',
+  })
+  const prisonAndSecuredChildAgencyList = prisonAndSecuredChildFactory.build()
+  const prisonList = prisonFactory.build()
+  const prisonsAndSecuredChildAgencies: PrisonAndSecuredChildAgency[] = []
+
+  prisonList.forEach(prison =>
+    prisonsAndSecuredChildAgencies.push({ id: prison.prisonId, description: prison.prisonName })
+  )
+  prisonAndSecuredChildAgencyList.forEach(securedChildAgency =>
+    prisonsAndSecuredChildAgencies.push({
+      id: securedChildAgency.agencyId,
+      description: securedChildAgency.description,
+    })
+  )
+  prisonAndSecuredChildAgencyService.getPrisonsAndSecureChildAgencies.mockResolvedValue(prisonsAndSecuredChildAgencies)
 })
 
 describe('GET /referrals/:referralId/changelog', () => {
@@ -252,6 +300,33 @@ describe('GET /referrals/:referralId/changelog/:changelogId/details', () => {
         expect(res.text).toContain('To')
         expect(res.text).toContain(changelogDetail8.oldValue[0])
         expect(res.text).toContain(changelogDetail8.newValue[0])
+      })
+  })
+  it('renders the changelog detail for the reason for referral change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail9)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail9.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Reason for this referral and further information has changed')
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain(changelogDetail9.oldValue[0])
+        expect(res.text).toContain(changelogDetail9.newValue[0])
+      })
+  })
+
+  it('renders the changelog detail for the prison establishment change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail10)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail10.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain(`Alex River&#39;s prison establishment has changed`)
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain('London')
+        expect(res.text).toContain('Sheffield')
       })
   })
 })
