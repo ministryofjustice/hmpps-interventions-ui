@@ -131,7 +131,7 @@
     "indefinite": "^2.4.3",
     "joi": "^17.11.0",
     "jquery": "^3.7.1",
-    "jwt-decode": "^3.1.2",
+    "jwt-decode": "^4.0.0",
     "md5": "^2.3.0",
     "moment-timezone": "^0.5.44",
     "nocache": "^4.0.0",
