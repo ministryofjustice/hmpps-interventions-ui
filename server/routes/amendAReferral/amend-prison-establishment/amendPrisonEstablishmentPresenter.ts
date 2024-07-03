@@ -17,7 +17,7 @@ export default class AmendPrisonEstablishmentPresenter {
 
   readonly text = {
     title: `Update ${this.referral.referral.serviceUser.firstName} ${this.referral.referral.serviceUser.lastName}'s prison establishment`,
-    reasonForChangeHeading: 'what is the reason for changing the prison?',
+    reasonForChangeHeading: 'What is the reason for changing the prison?',
     submitLocationInput: {
       label: `What is the correct prison establishment for ${this.referral.referral.serviceUser?.firstName}?`,
       hint: `Start typing then choose prison name from the list.`,

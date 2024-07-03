@@ -6,13 +6,28 @@ describe(AmendPrisonEstablishmentForm, () => {
     describe('when prison establishment is passed', () => {
       it('returns a paramsForUpdate with the reasonForReferral', async () => {
         const request = TestUtils.createRequest({
-          'amend-prison-establishment': `Bronzefield (HMP & YOI)`,
+          'amend-prison-establishment': `COW`,
           'reason-for-change': 'some reason',
         })
-        const data = await new AmendPrisonEstablishmentForm(request).data()
+        const data = await new AmendPrisonEstablishmentForm(
+          request,
+          [
+            {
+              id: 'PBI',
+              description: 'Peterborough (HMP & YOI)',
+            },
+            {
+              id: 'COW',
+              description: 'Cookham Wood (HMYOI)',
+            },
+          ],
+          'PBI'
+        ).data()
 
-        expect(data.paramsForUpdate?.personCustodyPrisonId).toEqual(`Bronzefield (HMP & YOI)`)
+        expect(data.paramsForUpdate?.personCustodyPrisonId).toEqual(`COW`)
         expect(data.paramsForUpdate?.reasonForChange).toEqual('some reason')
+        expect(data.paramsForUpdate?.oldPrisonEstablishment).toEqual('Peterborough (HMP & YOI)')
+        expect(data.paramsForUpdate?.newPrisonEstablishment).toEqual('Cookham Wood (HMYOI)')
       })
     })
   })

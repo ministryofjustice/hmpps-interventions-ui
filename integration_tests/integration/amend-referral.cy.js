@@ -888,11 +888,6 @@ context('Amend a referral', () => {
         cy.contains(`Update Jenny Jones's prison establishment`)
       })
 
-      it('shows the existing reason for referral in the form', () => {
-        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/amend-prison-establishment`)
-        cy.get('#amend-prison-establishment').should('have.value', 'Aylesbury (HMYOI)')
-      })
-
       it('redirects to referral details on submission', () => {
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/amend-prison-establishment`)
         cy.get('#amend-prison-establishment').type('Brinsford (HMP & YOI)')
