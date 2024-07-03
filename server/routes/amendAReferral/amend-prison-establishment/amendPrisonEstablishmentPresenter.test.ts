@@ -8,7 +8,7 @@ describe('AmendPrisonEstablishmentPresenter', () => {
       const presenter = new AmendPrisonEstablishmentPresenter(referral)
 
       expect(presenter.text.title).toEqual(`Update Alex River's prison establishment`)
-      expect(presenter.text.reasonForChangeHeading).toEqual('what is the reason for changing the prison?')
+      expect(presenter.text.reasonForChangeHeading).toEqual('What is the reason for changing the prison?')
       expect(presenter.backLinkUrl).toEqual(`/probation-practitioner/referrals/${referral.id}/details`)
     })
   })

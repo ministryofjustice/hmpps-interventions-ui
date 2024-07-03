@@ -385,7 +385,11 @@ export default class AmendAReferralController {
     )
 
     if (req.method === 'POST') {
-      const form = await new AmendPrisonEstablishmentForm(req).data()
+      const form = await new AmendPrisonEstablishmentForm(
+        req,
+        prisonAndSecureChildAgency,
+        sentReferral.referral.personCustodyPrisonId
+      ).data()
 
       if (!form.error) {
         await this.interventionsService.updatePrisonEstablishment(accessToken, referralId, form.paramsForUpdate)

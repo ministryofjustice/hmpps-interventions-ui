@@ -27,9 +27,7 @@ export default class AmendPrisonEstablishmentView {
       return {
         text: prisonAndSecureChildAgency.description,
         value: prisonAndSecureChildAgency.id,
-        selected: this.presenter.referral.referral.personCustodyPrisonId
-          ? this.presenter.referral.referral.personCustodyPrisonId === prisonAndSecureChildAgency.id
-          : false,
+        selected: false,
       }
     })
 
