@@ -18,7 +18,32 @@ export default class InterventionProgressView {
     this.actionPlanProgressView = new ActionPlanProgressView(presenter.actionPlanProgressPresenter)
   }
 
-  get cancelledReferralNotificationBannerArgs(): NotificationBannerArgs {
+  private get withdrawnBannerArgs(): NotificationBannerArgs {
+    let endingDateHtml = ''
+
+    if (this.presenter.referralEndedFields.endRequestedAt) {
+      const formattedEndDate = DateUtils.formattedDate(this.presenter.referralEndedFields.endRequestedAt)
+      endingDateHtml = `<p>The probation practitioner ended this intervention on ${formattedEndDate}.</p>`
+    }
+
+    const withdrawalReasonHtml = `<p>${this.presenter.withdrawalEndedBannerText}</p>`
+
+    const html = `<div>${endingDateHtml}${withdrawalReasonHtml}</div>`
+    return {
+      titleText: 'Intervention ended',
+      html,
+      classes: 'govuk-notification-banner--warning',
+    }
+  }
+
+  get interventionEndedNotificationBannerArgs(): NotificationBannerArgs {
+    if (this.presenter.referralEndedFields.endRequestedAt && this.presenter.referralEndedFields.withdrawalCode) {
+      return this.withdrawnBannerArgs
+    }
+    return this.cancelledReferralNotificationBannerArgs
+  }
+
+  private get cancelledReferralNotificationBannerArgs(): NotificationBannerArgs {
     let cancellationReasonHTML = ''
     let cancellationCommentsHTML = ''
     let notConcludedWarningHTML = ''
@@ -141,7 +166,7 @@ export default class InterventionProgressView {
         actionPlanTableArgs: this.actionPlanProgressView.tableArgs.bind(this.actionPlanProgressView),
         backLinkArgs: this.backLinkArgs,
         endOfServiceReportSummaryListArgs: this.endOfServiceReportSummaryListArgs.bind(this),
-        cancelledReferralNotificationBannerArgs: this.cancelledReferralNotificationBannerArgs,
+        interventionEndedNotificationBannerArgs: this.interventionEndedNotificationBannerArgs,
         sessionFeedbackAddedNotificationBannerArgs: this.sessionFeedbackAddedNotificationBannerArgs,
       },
     ]
