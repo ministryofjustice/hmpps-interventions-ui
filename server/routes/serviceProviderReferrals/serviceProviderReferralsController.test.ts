@@ -1193,6 +1193,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       firstName: 'caseWorkerFirstName',
       lastName: 'caseWorkerLastName',
     })
+    const deliusServiceUser = deliusServiceUserFactory.build()
 
     const sentReferral = sentReferralFactory.assigned().build({
       referral: { interventionId: intervention.id },
@@ -1203,6 +1204,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
 
     await request(app)
@@ -1221,6 +1223,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       firstName: 'caseWorkerFirstName',
       lastName: 'caseWorkerLastName',
     })
+    const deliusServiceUser = deliusServiceUserFactory.build()
     const appointment = actionPlanAppointmentFactory.attended('yes').build({
       sessionNumber: 1,
       appointmentTime: `Thu Jun 18 2022 17:20`,
@@ -1266,6 +1269,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessment)
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue([])
     interventionsService.getActionPlanAppointments.mockResolvedValue([appointment, appointmentDuplicate3])
     interventionsService.getActionPlan.mockResolvedValue(actionPlan)
@@ -1289,6 +1293,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       firstName: 'caseWorkerFirstName',
       lastName: 'caseWorkerLastName',
     })
+    const deliusServiceUser = deliusServiceUserFactory.build()
     const actionPlan = actionPlanFactory.build()
     const sentReferral = sentReferralFactory.assigned().build({
       referral: { interventionId: intervention.id },
@@ -1313,6 +1318,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedSummaries)
     interventionsService.getActionPlanAppointments.mockResolvedValue(actionPlanAppointments)
     interventionsService.getActionPlan.mockResolvedValue(actionPlan)
@@ -1430,6 +1436,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
       firstName: 'caseWorkerFirstName',
       lastName: 'caseWorkerLastName',
     })
+    const deliusServiceUser = deliusServiceUserFactory.build()
     const actionPlan = actionPlanFactory.build()
     const sentReferral = sentReferralFactory.assigned().build({
       referral: { interventionId: intervention.id },
@@ -1472,6 +1479,7 @@ describe('GET /service-provider/referrals/:id/progress', () => {
     interventionsService.getSentReferral.mockResolvedValue(sentReferral)
     interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
     hmppsAuthService.getSPUserByUsername.mockResolvedValue(hmppsAuthUser)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
     interventionsService.getApprovedActionPlanSummaries.mockResolvedValue(approvedSummaries)
     interventionsService.getActionPlanAppointments.mockResolvedValue(actionPlanAppointments)
     interventionsService.getActionPlan.mockResolvedValue(actionPlan)

@@ -7,7 +7,7 @@
 {% set pageSubTitle = "Progress" %}
 {% block referralPageSection %}
 {% if presenter.referralEnded %}
-{{ govukNotificationBanner(cancelledReferralNotificationBannerArgs) }}
+{{ govukNotificationBanner(interventionEndedNotificationBannerArgs) }}
 {% endif %}
 {% if presenter.showFeedbackBanner %}
 {{ govukNotificationBanner(sessionFeedbackAddedNotificationBannerArgs) }}

@@ -18,6 +18,7 @@ interface EndedFields {
   endRequestedAt: string | null
   endRequestedComments: string | null
   endRequestedReason: string | null
+  withdrawalCode: string | null
 }
 
 interface ProgressSessionTableRow {
@@ -105,7 +106,31 @@ export default class InterventionProgressPresenter {
       endRequestedAt: this.referral.endRequestedAt,
       endRequestedComments: this.referral.endRequestedComments,
       endRequestedReason: this.referral.endRequestedReason,
+      withdrawalCode: this.referral.withdrawalCode,
     }
+  }
+
+  get withdrawalEndedBannerText(): string | null {
+    if (this.referral.withdrawalCode) {
+      return this.withdrawalCodeDisplayTextMap[this.referral.withdrawalCode]
+    }
+    return null
+  }
+
+  private withdrawalCodeDisplayTextMap = {
+    INE: `This is because it was an ineligible referral.`,
+    MIS: `This is because it was a mistaken or duplicate referral.`,
+    NOT: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} was not engaged in the intervention.`,
+    NEE: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}’s needs are being met through another route.`,
+    MOV: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} has moved out of the service area.`,
+    WOR: `This is due to ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}’s work or caring responsibilities.`,
+    USE: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} has died.`,
+    ACQ: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} was acquitted on appeal.`,
+    RET: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} has returned to custody.`,
+    SER: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}’s sentence was revoked.`,
+    SEE: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}’s sentence expired.`,
+    EAR: `It has been closed early because the intervention has been completed.`,
+    ANO: `This is due to a change of circumstance.`,
   }
 
   get isConcluded(): boolean {
