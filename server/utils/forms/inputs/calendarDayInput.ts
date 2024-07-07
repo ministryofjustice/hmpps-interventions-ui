@@ -19,7 +19,9 @@ export default class CalendarDayInput {
     private readonly errorMessages: CalendarDayErrorMessages,
     private readonly referralDate: string | null = null,
     private readonly checkFutureDate: boolean = false,
-    private readonly checkFutureDateErrorMessage: string | null = null
+    private readonly checkFutureDateErrorMessage: string | null = null,
+    private readonly checkExistingDateEarlier: boolean = false,
+    private readonly existingDateString: string | null = null
   ) {}
 
   private static keys(key: string) {
@@ -155,6 +157,39 @@ export default class CalendarDayInput {
 
           if (enteredDate < dateReferralMade) {
             const formattedDateReferralMade = dateReferralMade
+              .toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })
+              .replace(/ /g, ' ')
+
+            throw new Error(`Date must be no earlier than ${formattedDateReferralMade}`)
+          }
+        }
+        return true
+      }),
+      ExpressValidator.body(this.keys.day).custom(() => {
+        if (
+          this.request.body[this.keys.year] === '' ||
+          this.request.body[this.keys.month] === '' ||
+          this.request.body[this.keys.day] === ''
+        ) {
+          return true
+        }
+        const enteredDate = new Date(
+          Number(this.request.body[this.keys.year]),
+          Number(this.request.body[this.keys.month] - 1),
+          Number(this.request.body[this.keys.day]),
+          23,
+          59,
+          59
+        )
+
+        if (this.existingDateString != null) {
+          const exisitingDate = new Date(this.existingDateString)
+          if (enteredDate < exisitingDate) {
+            const formattedDateReferralMade = exisitingDate
               .toLocaleDateString('en-GB', {
                 day: 'numeric',
                 month: 'long',

@@ -34,6 +34,9 @@ import AmendPrisonEstablishmentForm from './amend-prison-establishment/amendPris
 import AmendPrisonEstablishmentPresenter from './amend-prison-establishment/amendPrisonEstablishmentPresenter'
 import AmendPrisonEstablishmentView from './amend-prison-establishment/amendPrisonEstablishmentView'
 import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
+import AmendExpectedReleaseDateForm from './amend-expected-release-date/amendExpectedReleaseDateForm'
+import AmendExpectedReleaseDatePresenter from './amend-expected-release-date/amendExpectedReleaseDatePresenter'
+import AmendExpectedReleaseDateView from './amend-expected-release-date/amendExpectedReleaseDateView'
 
 export default class AmendAReferralController {
   constructor(
@@ -403,6 +406,32 @@ export default class AmendAReferralController {
 
     const presenter = new AmendPrisonEstablishmentPresenter(sentReferral, prisonAndSecureChildAgency, error)
     const view = new AmendPrisonEstablishmentView(presenter)
+
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async amendExpectedReleaseDate(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId } = req.params
+    let error: FormValidationError | null = null
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    if (req.method === 'POST') {
+      const form = await new AmendExpectedReleaseDateForm(req, sentReferral.referral.expectedReleaseDate).data()
+
+      if (!form.error) {
+        await this.interventionsService.updateExpectedReleaseDate(accessToken, referralId, form.paramsForUpdate)
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
+      }
+
+      error = form.error
+      res.status(400)
+    }
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
+
+    const presenter = new AmendExpectedReleaseDatePresenter(sentReferral, error)
+    const view = new AmendExpectedReleaseDateView(presenter, req)
 
     return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }

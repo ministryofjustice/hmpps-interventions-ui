@@ -40,6 +40,7 @@ import SessionFeedback, { NoSessionReasonType } from '../models/sessionFeedback'
 import Prisoner from '../models/prisonerOffenderSearch/prisoner'
 import WithdrawalReason from '../models/withdrawalReason'
 import { AmendPrisonEstablishmentUpdate } from '../models/referralPrisonEstablishment'
+import AmendExpectedReleaseDateUpdate from '../models/referralExpectedReleaseDate'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -355,6 +356,15 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
     return (await restClient.post({
       path: `/sent-referral/${id}/amend-prison-establishment`,
+      data: { ...update },
+      headers: { Accept: 'application/json' },
+    })) as null
+  }
+
+  async updateExpectedReleaseDate(token: string, id: string, update: AmendExpectedReleaseDateUpdate): Promise<null> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/sent-referral/${id}/amend-expected-release-date`,
       data: { ...update },
       headers: { Accept: 'application/json' },
     })) as null
