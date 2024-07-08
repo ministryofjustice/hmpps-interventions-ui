@@ -885,6 +885,22 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubAmendExpectedReleaseDate = async (id: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/sent-referral/${id}/amend-expected-release-date`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubUpdateDesiredOutcomesForServiceCategory = async (
     referralId: string,
     serviceCategoryId: string,

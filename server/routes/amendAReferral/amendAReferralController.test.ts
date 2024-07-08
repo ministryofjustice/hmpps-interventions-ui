@@ -1,5 +1,6 @@
 import request from 'supertest'
 import { Express } from 'express'
+import moment from 'moment-timezone'
 import InterventionsService from '../../services/interventionsService'
 import apiConfig from '../../config'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
@@ -437,6 +438,74 @@ describe('POST /probation-practitioner/referrals/:id/amend-prison-establishment'
         .expect(400)
         .expect(res => {
           expect(res.text).toContain('Enter a prison establishment')
+        })
+    })
+  })
+})
+
+describe('POST /probation-practitioner/referrals/:id/amend-expected-release-date', () => {
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('redirects to the referral details page on success of amending expected release date', () => {
+    const tomorrow = moment().add(5, 'days')
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/amend-expected-release-date`)
+      .send({
+        'release-date': 'confirm',
+        'amend-expected-release-date-year': tomorrow.format('YYYY'),
+        'amend-expected-release-date-month': tomorrow.format('M'),
+        'amend-expected-release-date-day': tomorrow.format('D'),
+        'amend-date-unknown-reason': null,
+      })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
+  })
+
+  describe('with form validation errors when amending expected release date', () => {
+    it('renders an error message', () => {
+      const tomorrow = moment().add(5, 'days')
+      return request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-expected-release-date`)
+        .send({
+          'release-date': 'confirm',
+          'amend-expected-release-date-year': '',
+          'amend-expected-release-date-month': tomorrow.format('M'),
+          'amend-expected-release-date-day': tomorrow.format('D'),
+          'amend-date-unknown-reason': null,
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Enter the expected release date')
+        })
+    })
+  })
+
+  it('redirects to the referral details page on success of amending expected release date not known reason', () => {
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/amend-expected-release-date`)
+      .send({
+        'release-date': 'change',
+        'amend-date-unknown-reason': 'some reason',
+      })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
+  })
+
+  describe('with form validation errors when amending expected release date not known reason', () => {
+    it('renders an error message', () => {
+      return request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-expected-release-date`)
+        .send({
+          'release-date': 'change',
+          'amend-date-unknown-reason': null,
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Enter a reason')
         })
     })
   })
