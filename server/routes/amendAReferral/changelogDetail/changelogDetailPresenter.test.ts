@@ -76,11 +76,18 @@ describe('ChangeLogPresenter', () => {
   })
   const changeLog9 = changelogDetail.build({
     changelogId: '9',
-    name: 'changelog 8 name',
+    name: 'changelog 9 name',
     topic: 'PRISON_ESTABLISHMENT',
     oldValue: ['aaa'],
     newValue: ['bbb'],
     reasonForChange: 'Error at desired outcome change',
+  })
+  const changeLog10 = changelogDetail.build({
+    changelogId: '10',
+    name: 'changelog 10 name',
+    topic: 'EXPECTED_RELEASE_DATE',
+    oldValue: ['02-Aug-2024'],
+    newValue: ['05-Aug-2024'],
   })
   const formError: FormValidationError | null = null
   const referral: SentReferral = sentReferral.build()
@@ -204,6 +211,20 @@ describe('ChangeLogPresenter', () => {
       )
       expect(presenter.renderTitle).toEqual(
         `${referral.referral.serviceUser.firstName} ${referral.referral.serviceUser.lastName}'s prison establishment has changed`
+      )
+    })
+
+    it('check the title for expected release date', () => {
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog10,
+        referral,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        'probation-practitioner'
+      )
+      expect(presenter.renderTitle).toEqual(
+        `${referral.referral.serviceUser.firstName} ${referral.referral.serviceUser.lastName}'s expected release date information has changed`
       )
     })
   })

@@ -41,6 +41,8 @@ export default class ChangelogDetailPresenter {
         return 'Reason for this referral and further information has changed'
       case 'PRISON_ESTABLISHMENT':
         return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s prison establishment has changed`
+      case 'EXPECTED_RELEASE_DATE':
+        return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date information has changed`
       default:
         return ''
     }

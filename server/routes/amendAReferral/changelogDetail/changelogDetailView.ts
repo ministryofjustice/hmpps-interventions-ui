@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import { TagArgs } from '../../../utils/govukFrontendTypes'
 import ViewUtils from '../../../utils/viewUtils'
 import ChangelogDetailPresenter from './changelogDetailPresenter'
@@ -83,6 +84,11 @@ export default class ChangelogDetailView {
           to: `<p>${newValue[0].length > 0 ? this.getPrisonName(newValue[0].trim()) : 'N/A'}</p>`,
           reason: this.presenter.changelogDetail.reasonForChange,
         }
+      case 'EXPECTED_RELEASE_DATE':
+        return {
+          from: `<p>${oldValue[0].length > 0 ? this.determineExpectedReleaseDateValue(oldValue[0].trim()) : 'N/A'}</p>`,
+          to: `<p>${newValue[0].length > 0 ? this.determineExpectedReleaseDateValue(newValue[0].trim()) : 'N/A'}</p>`,
+        }
       default:
         return {}
     }
@@ -123,5 +129,13 @@ export default class ChangelogDetailView {
         prisonAndSecuredChildAgency => prisonAndSecuredChildAgency.id === prisonId
       )?.description || ''
     )
+  }
+
+  private determineExpectedReleaseDateValue(expectedReleaseDateString: string): string {
+    const dateString = moment(expectedReleaseDateString)
+    if (dateString.isValid()) {
+      return moment(expectedReleaseDateString).format('DD MMM YYYY')
+    }
+    return expectedReleaseDateString
   }
 }
