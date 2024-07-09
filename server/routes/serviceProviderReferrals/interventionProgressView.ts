@@ -20,6 +20,7 @@ export default class InterventionProgressView {
 
   private get withdrawnBannerArgs(): NotificationBannerArgs {
     let endingDateHtml = ''
+    let withdrawalCommentsHTML = ''
 
     if (this.presenter.referralEndedFields.endRequestedAt) {
       const formattedEndDate = DateUtils.formattedDate(this.presenter.referralEndedFields.endRequestedAt)
@@ -28,7 +29,14 @@ export default class InterventionProgressView {
 
     const withdrawalReasonHtml = `<p>${this.presenter.withdrawalEndedBannerText}</p>`
 
-    const html = `<div>${endingDateHtml}${withdrawalReasonHtml}</div>`
+    if (this.presenter.referralEndedFields.withdrawalComments) {
+      withdrawalCommentsHTML = `
+        <p>
+            Additional information: ${ViewUtils.escape(this.presenter.referralEndedFields.withdrawalComments)}
+        </p>`
+    }
+
+    const html = `<div>${endingDateHtml}${withdrawalReasonHtml}${withdrawalCommentsHTML}</div>`
     return {
       titleText: 'Intervention ended',
       html,

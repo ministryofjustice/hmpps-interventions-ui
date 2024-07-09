@@ -144,4 +144,5 @@ export default SentReferralFactory.define(({ sequence }) => ({
   concludedAt: null,
   withdrawalState: WithdrawalState.preICA,
   withdrawalCode: null,
+  withdrawalComments: null,
 }))
