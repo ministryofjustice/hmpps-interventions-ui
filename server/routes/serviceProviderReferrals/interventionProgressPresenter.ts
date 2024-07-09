@@ -123,7 +123,7 @@ export default class InterventionProgressPresenter {
     NOT: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} was not engaged in the intervention.`,
     NEE: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}’s needs are being met through another route.`,
     MOV: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} has moved out of the service area.`,
-    WOR: `This is due to ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}’s work or caring responsibilities.`,
+    WOR: `This is due to ${this.serviceUser.name.forename} ${this.serviceUser.name.surname}’s work/caring responsibilities or sickness.`,
     USE: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} has died.`,
     ACQ: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} was acquitted on appeal.`,
     RET: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} has returned to custody.`,
