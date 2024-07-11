@@ -111,31 +111,5 @@ describe(AmendExpectedReleaseDateForm, () => {
         })
       })
     })
-
-    describe('when the existing expected release date is later than input expected release date', () => {
-      it('returns a validation error with the appropriate error message', async () => {
-        const tomorrow = moment().add(1, 'days')
-        const dayAfterTomorrow = moment().add(2, 'days')
-        const dayAfterTomorrowString = moment().add(2, 'days').format('YYYY-MM-DD')
-        const request = TestUtils.createRequest({
-          'release-date': 'confirm',
-          'amend-expected-release-date-year': tomorrow.format('YYYY'),
-          'amend-expected-release-date-month': tomorrow.format('M'),
-          'amend-expected-release-date-day': tomorrow.format('D'),
-          'amend-date-unknown-reason': null,
-        })
-        const data = await new AmendExpectedReleaseDateForm(request, dayAfterTomorrowString).data()
-
-        expect(data.error).toEqual({
-          errors: [
-            {
-              errorSummaryLinkedField: 'amend-expected-release-date-day',
-              formFields: ['amend-expected-release-date-day'],
-              message: `Date must be no earlier than ${dayAfterTomorrow.format('D MMMM YYYY')}`,
-            },
-          ],
-        })
-      })
-    })
   })
 })

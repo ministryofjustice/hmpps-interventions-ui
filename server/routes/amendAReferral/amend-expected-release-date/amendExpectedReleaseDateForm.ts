@@ -29,9 +29,7 @@ export default class AmendExpectedReleaseDateForm {
       errorMessages.releaseDate,
       null,
       true,
-      this.checkFutureDateErrorMessage,
-      true,
-      this.expectedReleaseDate
+      this.checkFutureDateErrorMessage
     )
     const releaseDateResult = await dateInput.validate()
 
