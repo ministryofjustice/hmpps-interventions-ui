@@ -113,6 +113,7 @@ class SentReferralFactory extends Factory<SentReferral> {
       endRequestedAt: '2021-04-28T20:45:21.986389Z',
       endRequestedReason: 'Service user was recalled',
       endRequestedComments: "you'll be seeing alex again soon i'm sure!",
+      withdrawalComments: 'some comments',
     })
   }
 
