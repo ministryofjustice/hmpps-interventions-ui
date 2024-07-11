@@ -19,6 +19,7 @@ interface EndedFields {
   endRequestedComments: string | null
   endRequestedReason: string | null
   withdrawalCode: string | null
+  withdrawalComments: string | null
 }
 
 interface ProgressSessionTableRow {
@@ -107,6 +108,7 @@ export default class InterventionProgressPresenter {
       endRequestedComments: this.referral.endRequestedComments,
       endRequestedReason: this.referral.endRequestedReason,
       withdrawalCode: this.referral.withdrawalCode,
+      withdrawalComments: this.referral.withdrawalComments,
     }
   }
 

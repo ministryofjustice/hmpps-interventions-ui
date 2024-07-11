@@ -19,6 +19,7 @@ export default interface SentReferral {
   concludedAt: string | null
   withdrawalState: WithdrawalState | null
   withdrawalCode: string | null
+  withdrawalComments: string | null
 }
 
 export enum WithdrawalState {
