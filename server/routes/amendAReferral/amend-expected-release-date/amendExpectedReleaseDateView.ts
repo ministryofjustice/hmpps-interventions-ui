@@ -22,8 +22,7 @@ export default class AmendExpectedReleaseDateView {
         {
           value: 'confirm',
           text: `Enter a different date`,
-          checked:
-            this.request.body['release-date'] === 'confirm' || this.presenter.fields.expectedReleaseDate !== null,
+          checked: this.request.body['release-date'] === 'confirm',
           conditional: {
             html: enterExpectedReleaseDateHTML,
           },
@@ -31,11 +30,7 @@ export default class AmendExpectedReleaseDateView {
         {
           value: 'change',
           text: `I don't know the expected release date`,
-          checked:
-            this.request.body['release-date'] === 'change' ||
-            (this.request.body['release-date'] !== 'confirm' &&
-              this.presenter.fields.expectedReleaseDateUnknownReason !== null &&
-              this.presenter.fields.expectedReleaseDateUnknownReason !== ''),
+          checked: this.request.body['release-date'] === 'change',
           conditional: {
             html: enterReasonWhyDateNotKnownHTML,
           },

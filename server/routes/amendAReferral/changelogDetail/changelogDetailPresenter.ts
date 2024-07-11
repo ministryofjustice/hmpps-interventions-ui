@@ -1,3 +1,4 @@
+import moment from 'moment-timezone'
 import ChangelogDetail from '../../../models/changelogDetail'
 import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 import PrisonAndSecuredChildAgency from '../../../models/prisonAndSecureChildAgency'
@@ -42,7 +43,7 @@ export default class ChangelogDetailPresenter {
       case 'PRISON_ESTABLISHMENT':
         return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s prison establishment has changed`
       case 'EXPECTED_RELEASE_DATE':
-        return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date information has changed`
+        return this.determineExpectedReleaseDateHeading
       default:
         return ''
     }
@@ -71,5 +72,18 @@ export default class ChangelogDetailPresenter {
       default:
         return ''
     }
+  }
+
+  private get determineExpectedReleaseDateHeading(): string {
+    const oldValue = moment(this.changelogDetail.oldValue[0])
+    const newValue = moment(this.changelogDetail.newValue[0])
+
+    if (oldValue.isValid() && newValue.isValid()) {
+      return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date has changed`
+    }
+    if (!oldValue.isValid() && newValue.isValid()) {
+      return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date information has been added`
+    }
+    return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date information has changed`
   }
 }

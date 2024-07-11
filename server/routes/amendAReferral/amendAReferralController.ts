@@ -355,6 +355,7 @@ export default class AmendAReferralController {
     const { accessToken } = res.locals.user.token
     const { referralId } = req.params
     let error: FormValidationError | null = null
+    let userInputData = null
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
 
@@ -367,11 +368,12 @@ export default class AmendAReferralController {
       }
 
       error = form.error
+      userInputData = req.body
       res.status(400)
     }
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
 
-    const presenter = new AmendReasonForReferralPresenter(sentReferral, error)
+    const presenter = new AmendReasonForReferralPresenter(sentReferral, error, userInputData)
     const view = new AmendReasonForReferralView(presenter)
 
     return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
@@ -381,6 +383,7 @@ export default class AmendAReferralController {
     const { accessToken } = res.locals.user.token
     const { referralId } = req.params
     let error: FormValidationError | null = null
+    let userInputData = null
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const prisonAndSecureChildAgency = await this.prisonAndSecureChildAgencyService.getPrisonsAndSecureChildAgencies(
@@ -400,11 +403,17 @@ export default class AmendAReferralController {
       }
 
       error = form.error
+      userInputData = req.body
       res.status(400)
     }
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
 
-    const presenter = new AmendPrisonEstablishmentPresenter(sentReferral, prisonAndSecureChildAgency, error)
+    const presenter = new AmendPrisonEstablishmentPresenter(
+      sentReferral,
+      prisonAndSecureChildAgency,
+      error,
+      userInputData
+    )
     const view = new AmendPrisonEstablishmentView(presenter)
 
     return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
@@ -413,6 +422,7 @@ export default class AmendAReferralController {
   async amendExpectedReleaseDate(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { referralId } = req.params
+    let userInputData = null
     let error: FormValidationError | null = null
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
@@ -426,11 +436,12 @@ export default class AmendAReferralController {
       }
 
       error = form.error
+      userInputData = req.body
       res.status(400)
     }
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
 
-    const presenter = new AmendExpectedReleaseDatePresenter(sentReferral, error)
+    const presenter = new AmendExpectedReleaseDatePresenter(sentReferral, error, userInputData)
     const view = new AmendExpectedReleaseDateView(presenter, req)
 
     return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')

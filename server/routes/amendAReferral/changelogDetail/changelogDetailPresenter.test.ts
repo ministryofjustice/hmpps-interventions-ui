@@ -89,6 +89,27 @@ describe('ChangeLogPresenter', () => {
     oldValue: ['02-Aug-2024'],
     newValue: ['05-Aug-2024'],
   })
+  const changeLog11 = changelogDetail.build({
+    changelogId: '11',
+    name: 'changelog 11 name',
+    topic: 'EXPECTED_RELEASE_DATE',
+    oldValue: ['02-Aug-2024'],
+    newValue: ['some reason'],
+  })
+  const changeLog12 = changelogDetail.build({
+    changelogId: '12',
+    name: 'changelog 12 name',
+    topic: 'EXPECTED_RELEASE_DATE',
+    oldValue: ['some reason'],
+    newValue: ['02-Aug-2024'],
+  })
+  const changeLog13 = changelogDetail.build({
+    changelogId: '13',
+    name: 'changelog 13 name',
+    topic: 'EXPECTED_RELEASE_DATE',
+    oldValue: ['some reason'],
+    newValue: ['new reason'],
+  })
   const formError: FormValidationError | null = null
   const referral: SentReferral = sentReferral.build()
   const deliusServiceUser: DeliusServiceUser = deliusServerUserFactory.build()
@@ -214,7 +235,7 @@ describe('ChangeLogPresenter', () => {
       )
     })
 
-    it('check the title for expected release date', () => {
+    it('check the title for expected release date when date is changed to another date', () => {
       const presenter = new ChangelogDetailPresenter(
         formError,
         changeLog10,
@@ -224,8 +245,50 @@ describe('ChangeLogPresenter', () => {
         'probation-practitioner'
       )
       expect(presenter.renderTitle).toEqual(
+        `${referral.referral.serviceUser.firstName} ${referral.referral.serviceUser.lastName}'s expected release date has changed`
+      )
+    })
+
+    it('check the title when expected release date is changed to unknown reason', () => {
+      const presenter = new ChangelogDetailPresenter(
+        formError,
+        changeLog11,
+        referral,
+        deliusServiceUser,
+        prisonsAndSecuredChildAgencies,
+        'probation-practitioner'
+      )
+      expect(presenter.renderTitle).toEqual(
         `${referral.referral.serviceUser.firstName} ${referral.referral.serviceUser.lastName}'s expected release date information has changed`
       )
     })
+  })
+
+  it('check the title when expected release date unknown reason is changed to another unknown reason', () => {
+    const presenter = new ChangelogDetailPresenter(
+      formError,
+      changeLog12,
+      referral,
+      deliusServiceUser,
+      prisonsAndSecuredChildAgencies,
+      'probation-practitioner'
+    )
+    expect(presenter.renderTitle).toEqual(
+      `${referral.referral.serviceUser.firstName} ${referral.referral.serviceUser.lastName}'s expected release date information has been added`
+    )
+  })
+
+  it('check the title when expected release date unknown reason is changed to expected release date ', () => {
+    const presenter = new ChangelogDetailPresenter(
+      formError,
+      changeLog13,
+      referral,
+      deliusServiceUser,
+      prisonsAndSecuredChildAgencies,
+      'probation-practitioner'
+    )
+    expect(presenter.renderTitle).toEqual(
+      `${referral.referral.serviceUser.firstName} ${referral.referral.serviceUser.lastName}'s expected release date information has changed`
+    )
   })
 })
