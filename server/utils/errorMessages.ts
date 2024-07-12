@@ -171,6 +171,10 @@ export default {
   },
   expectedReleaseDate: {
     empty: 'Select the expected release date or choose a different date',
+    emptyRadioButton: 'Select an option',
+    emptyReason: 'Enter a reason',
+    noChangesinExpectedReleaseDate: 'Enter a different expected release date',
+    noChangesinExpectedReleaseDateMissingReason: 'Enter a different expected release date unknown reason',
   },
   releaseDateUnknownReason: {
     empty: `Enter a reason why the expected release date is not known`,
