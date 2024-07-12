@@ -1,5 +1,5 @@
 import { Request } from 'express'
-import { body, Result, ValidationChain, ValidationError } from 'express-validator'
+import { body, Result, ValidationError } from 'express-validator'
 import errorMessages from '../../../utils/errorMessages'
 import { FormData } from '../../../utils/forms/formData'
 import { FormValidationError } from '../../../utils/formValidationError'
@@ -10,12 +10,27 @@ import FormUtils from '../../../utils/formUtils'
 export default class AmendExpectedReleaseDateForm {
   constructor(
     private readonly request: Request,
-    private readonly expectedReleaseDate: string | null
+    private readonly existingExpectedReleaseDate: string | null,
+    private readonly existingExpectedReleaseDateMissingReason: string | null = null
   ) {}
 
   readonly checkFutureDateErrorMessage = 'Enter date in the future'
 
   async data(): Promise<FormData<AmendExpectedReleaseDateUpdate>> {
+    const validationResult = await FormUtils.runValidations({
+      request: this.request,
+      validations: [body('release-date').notEmpty().withMessage(errorMessages.expectedReleaseDate.emptyRadioButton)],
+    })
+
+    const error = this.error(validationResult)
+
+    if (error) {
+      return {
+        paramsForUpdate: null,
+        error,
+      }
+    }
+
     if (this.request.body['release-date'] === 'confirm') {
       return this.expectedReleaseDateData()
     }
@@ -41,9 +56,29 @@ export default class AmendExpectedReleaseDateForm {
         },
       }
     }
+    const expectedReleaseDateString = releaseDateResult.value.iso8601
+    const validationResult = await FormUtils.runValidations({
+      request: this.request,
+      validations: [
+        body('amend-expected-release-date')
+          .custom(() => {
+            return expectedReleaseDateString !== this.existingExpectedReleaseDate
+          })
+          .withMessage(errorMessages.expectedReleaseDate.noChangesinExpectedReleaseDate),
+      ],
+    })
+    const error = this.error(validationResult)
+
+    if (error) {
+      return {
+        paramsForUpdate: null,
+        error,
+      }
+    }
+
     return {
       paramsForUpdate: {
-        expectedReleaseDate: releaseDateResult.value.iso8601,
+        expectedReleaseDate: expectedReleaseDateString,
         expectedReleaseDateMissingReason: null,
       },
       error: null,
@@ -53,7 +88,17 @@ export default class AmendExpectedReleaseDateForm {
   async expectedReleaseDateUnknownReasonData(): Promise<FormData<AmendExpectedReleaseDateUpdate>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: AmendExpectedReleaseDateForm.validations,
+      validations: [
+        body('amend-date-unknown-reason')
+          .if(body('release-date').equals('change'))
+          .notEmpty()
+          .withMessage(errorMessages.expectedReleaseDate.emptyReason),
+        body('amend-date-unknown-reason')
+          .custom(() => {
+            return this.existingExpectedReleaseDateMissingReason !== this.request.body['amend-date-unknown-reason']
+          })
+          .withMessage(errorMessages.expectedReleaseDate.noChangesinExpectedReleaseDateMissingReason),
+      ],
     })
 
     const error = this.error(validationResult)
@@ -71,10 +116,6 @@ export default class AmendExpectedReleaseDateForm {
       },
       error: null,
     }
-  }
-
-  static get validations(): ValidationChain[] {
-    return [body('amend-date-unknown-reason').notEmpty().withMessage(errorMessages.prisonEstablishment.emptyReason)]
   }
 
   private error(validationResult: Result<ValidationError>): FormValidationError | null {

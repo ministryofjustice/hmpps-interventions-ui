@@ -428,7 +428,11 @@ export default class AmendAReferralController {
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
 
     if (req.method === 'POST') {
-      const form = await new AmendExpectedReleaseDateForm(req, sentReferral.referral.expectedReleaseDate).data()
+      const form = await new AmendExpectedReleaseDateForm(
+        req,
+        sentReferral.referral.expectedReleaseDate,
+        sentReferral.referral.expectedReleaseDateMissingReason
+      ).data()
 
       if (!form.error) {
         await this.interventionsService.updateExpectedReleaseDate(accessToken, referralId, form.paramsForUpdate)
