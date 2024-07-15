@@ -14,17 +14,22 @@ export default class UpdateProbationPractitionerOfficePresenter {
     private readonly amendPPDetails: boolean = false,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null,
-    readonly deliusOfficeLocations: DeliusOfficeLocation[]
+    readonly deliusOfficeLocations: DeliusOfficeLocation[],
+    private readonly amendSentReferral: boolean = false
   ) {
-    this.backLinkUrl = amendPPDetails
-      ? `/referrals/${id}/check-all-referral-information`
-      : `/referrals/${id}/confirm-probation-practitioner-details`
+    if (amendSentReferral) {
+      this.backLinkUrl = `/probation-practitioner/referrals/${id}/details`
+    } else {
+      this.backLinkUrl = amendPPDetails
+        ? `/referrals/${id}/check-all-referral-information`
+        : `/referrals/${id}/confirm-probation-practitioner-details`
+    }
   }
 
   readonly text = {
     title: 'Update probation office',
     label: `${this.firstName} ${this.lastName} (CRN: ${this.crn})`,
-    inputHeading: 'Probation office (if known)',
+    inputHeading: `${this.amendSentReferral ? 'Probation office' : 'Probation office (if known)'}`,
     hint: `Start typing then choose probation office from the list`,
   }
 

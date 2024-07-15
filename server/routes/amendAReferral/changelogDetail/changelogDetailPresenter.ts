@@ -44,6 +44,10 @@ export default class ChangelogDetailPresenter {
         return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s prison establishment has changed`
       case 'EXPECTED_RELEASE_DATE':
         return this.determineExpectedReleaseDateHeading
+      case 'EXPECTED_PROBATION_OFFICE':
+        return 'Expected probation office has changed'
+      case 'PROBATION_PRACTITIONER_PROBATION_OFFICE':
+        return 'Probation practitioner probation office has changed'
       default:
         return ''
     }

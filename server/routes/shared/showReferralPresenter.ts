@@ -227,6 +227,12 @@ export default class ShowReferralPresenter {
             ? this.sentReferral.referral.ppProbationOffice
             : this.sentReferral.referral.ppPdu || this.sentReferral.referral.ndeliusPDU || '',
         ],
+        changeLink:
+          this.sentReferral.referral.ppProbationOffice !== null &&
+          this.sentReferral.referral.ppProbationOffice !== '' &&
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/confirm-amend-pp-probation-office`
+            : undefined,
       })
       probationPractitionerDetails.push({
         key: 'Team phone number',
@@ -629,6 +635,10 @@ export default class ShowReferralPresenter {
           {
             key: 'Expected probation office',
             lines: [this.sentReferral.referral.expectedProbationOffice || '---'],
+            changeLink:
+              this.userType === 'probation-practitioner'
+                ? `/probation-practitioner/referrals/${this.sentReferral.id}/confirm-amend-expected-probation-office`
+                : undefined,
           },
         ]
       }
@@ -639,7 +649,11 @@ export default class ShowReferralPresenter {
         return [
           {
             key: 'Expected probation office',
-            lines: [this.sentReferral.referral.ppProbationOffice],
+            lines: [this.sentReferral.referral.expectedProbationOffice || this.sentReferral.referral.ppProbationOffice],
+            changeLink:
+              this.userType === 'probation-practitioner'
+                ? `/probation-practitioner/referrals/${this.sentReferral.id}/confirm-amend-expected-probation-office`
+                : undefined,
           },
         ]
       }
@@ -655,6 +669,10 @@ export default class ShowReferralPresenter {
         {
           key: 'Probation office',
           lines: [this.sentReferral.referral.ppProbationOffice],
+          changeLink:
+            this.userType === 'probation-practitioner'
+              ? `/probation-practitioner/referrals/${this.sentReferral.id}/confirm-amend-pp-probation-office`
+              : undefined,
         },
       ]
     }

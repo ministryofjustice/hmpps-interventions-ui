@@ -1,0 +1,55 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/select/macro.njk" import govukSelect %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Amend a referral" %}
+{% set pageSubTitle = "Amend probation office" %}
+
+{% block pageContent %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            {% if backLinkArgs %}
+                {{ govukBackLink(backLinkArgs) }}
+            {% endif %}
+
+            <p class="govuk-caption-l">{{ presenter.text.label }} </p>
+            <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+
+            <form method="post" novalidate>
+                <input type="hidden" name="_csrf" value="{{csrfToken}}">
+
+                {% if errorSummaryArgs !== null %}
+                    {{ govukErrorSummary(errorSummaryArgs) }}
+                {% endif %}
+
+                {{ govukSelect(probationOfficeSelectArgs) }}
+                <script src="/assets/accessible-autocomplete.min.js"></script>
+                <script>
+                  accessibleAutocomplete.enhanceSelectElement({
+                    defaultValue: '',
+                    selectElement: document.querySelector('#probation-office')
+                  })
+                </script>
+                {{ govukButton({ classes: "confirm-pp-details",text: "Save and continue", preventDoubleClick: true }) }}
+            </form>
+        </div>
+    </div>
+    <script>
+      $(function () {
+        $('.confirm-pp-details').on('click', function () {
+          if (!$.trim($('#probation-office').val()).length) {
+            $('.confirm-probation-office').val('')
+            $('.confirm-probation-office').selected = false
+          }
+        })
+      })
+    </script>
+{% endblock %}

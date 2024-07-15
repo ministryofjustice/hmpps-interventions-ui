@@ -1,0 +1,40 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitle = "Amend a referral" %}
+{% set pageSubTitle = "Confirm amend probation office" %}
+
+{% block pageContent %}
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+
+            {% if backLinkArgs %}
+                {{ govukBackLink(backLinkArgs) }}
+            {% endif %}
+
+            <div class="interruption-panel">
+
+                <h2 class="govuk-heading-l">Changing probation office may affect the eligibility of the referral </h2>
+
+                <p class="govuk-body">You can only change the probation office if it is within the current PDU (probation delivery unit).</p>
+                <p class="govuk-body">If {{ presenter.firstName }} {{ presenter.lastName }} is moving out of the area to a different PDU (or has already moved) you will need to <a href={{ presenter.withdrawalUrl }}>withdraw this referral</a>.</p>
+
+                <h2 class="govuk-heading-s">Can you confirm that the new probation office is within the current PDU - {{ presenter.ppPdu }}?</h2>
+
+                <form method="get" action="{{ presenter.amendProbationOfficeUrl }}">
+                    {{ govukButton({ text: "Confirm", preventDoubleClick: true, classes: 'govuk-!-margin-bottom-4 white-button' }) }}
+                </form>
+                <a href={{ presenter.backLinkUrl }}>Cancel</a>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

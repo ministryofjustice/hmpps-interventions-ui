@@ -41,6 +41,7 @@ import Prisoner from '../models/prisonerOffenderSearch/prisoner'
 import WithdrawalReason from '../models/withdrawalReason'
 import { AmendPrisonEstablishmentUpdate } from '../models/referralPrisonEstablishment'
 import AmendExpectedReleaseDateUpdate from '../models/referralExpectedReleaseDate'
+import { AmendProbationOfficeUpdate } from '../models/referralProbationOffice'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -374,6 +375,28 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
     return (await restClient.post({
       path: `/sent-referral/${id}/amend-needs-and-requirements/additional-responsibilities`,
+      data: { ...update },
+      headers: { Accept: 'application/json' },
+    })) as null
+  }
+
+  async updateExpectedProbationOffice(token: string, id: string, update: AmendProbationOfficeUpdate): Promise<null> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/sent-referral/${id}/amend-expected-probation-office`,
+      data: { ...update },
+      headers: { Accept: 'application/json' },
+    })) as null
+  }
+
+  async updateProbationPractitionerProbationOffice(
+    token: string,
+    id: string,
+    update: AmendProbationOfficeUpdate
+  ): Promise<null> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/sent-referral/${id}/amend-pp-probation-office`,
       data: { ...update },
       headers: { Accept: 'application/json' },
     })) as null
