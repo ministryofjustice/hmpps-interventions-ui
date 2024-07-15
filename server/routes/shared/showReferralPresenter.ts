@@ -642,21 +642,16 @@ export default class ShowReferralPresenter {
           },
         ]
       }
-      if (
-        this.sentReferral.referral.ppProbationOffice !== null &&
-        this.sentReferral.referral.ppProbationOffice !== ''
-      ) {
-        return [
-          {
-            key: 'Expected probation office',
-            lines: [this.sentReferral.referral.expectedProbationOffice || this.sentReferral.referral.ppProbationOffice],
-            changeLink:
-              this.userType === 'probation-practitioner'
-                ? `/probation-practitioner/referrals/${this.sentReferral.id}/confirm-amend-expected-probation-office`
-                : undefined,
-          },
-        ]
-      }
+      return [
+        {
+          key: 'Expected probation office',
+          lines: [this.sentReferral.referral.expectedProbationOffice || '---'],
+          changeLink:
+            this.userType === 'probation-practitioner'
+              ? `/probation-practitioner/referrals/${this.sentReferral.id}/confirm-amend-expected-probation-office`
+              : undefined,
+        },
+      ]
       return [
         {
           key: 'Expected PDU (Probation Delivery Unit)',
