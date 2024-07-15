@@ -25,10 +25,12 @@
                     {%endif%}
                     <div class="govuk-!-margin-top-5">    
                         <p class="govuk-body"><b>From</b></p>
+                        <p class="govuk-body"><b>{{renderBasedonTopicArgs(govukTag).fromTitle | safe}}</b></p>
                         {{renderBasedonTopicArgs(govukTag).from | safe}}
                     </div>
                     <div class="govuk-!-margin-top-5">
                         <p class="govuk-body"><b>To</b></p>
+                        <p class="govuk-body"><b>{{renderBasedonTopicArgs(govukTag).toTitle | safe}}</b></p>
                         {{renderBasedonTopicArgs(govukTag).to | safe}}
                     </div>
                     <div class="govuk-!-margin-top-5">    

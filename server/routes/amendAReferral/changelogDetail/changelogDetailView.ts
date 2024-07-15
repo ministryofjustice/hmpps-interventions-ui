@@ -85,10 +85,7 @@ export default class ChangelogDetailView {
           reason: this.presenter.changelogDetail.reasonForChange,
         }
       case 'EXPECTED_RELEASE_DATE':
-        return {
-          from: `<p>${oldValue[0].length > 0 ? this.determineExpectedReleaseDateValue(oldValue[0].trim()) : 'N/A'}</p>`,
-          to: `<p>${newValue[0].length > 0 ? this.determineExpectedReleaseDateValue(newValue[0].trim()) : 'N/A'}</p>`,
-        }
+        return this.determineExpectedReleaseDate(oldValue, newValue)
       default:
         return {}
     }
@@ -137,5 +134,24 @@ export default class ChangelogDetailView {
       return moment(expectedReleaseDateString).format('DD MMM YYYY')
     }
     return expectedReleaseDateString
+  }
+
+  private determineExpectedReleaseDate(oldValue: string[], newValue: string[]) {
+    const oldValueDateString = moment(oldValue[0].trim())
+    const newValueDateString = moment(newValue[0].trim())
+    if (oldValueDateString.isValid() || newValueDateString.isValid()) {
+      return {
+        from: `<p>${oldValue[0].length > 0 ? this.determineExpectedReleaseDateValue(oldValue[0].trim()) : 'N/A'}</p>`,
+        to: `<p>${newValue[0].length > 0 ? this.determineExpectedReleaseDateValue(newValue[0].trim()) : 'N/A'}</p>`,
+        fromTitle: `${!oldValueDateString.isValid() ? 'Expected release date is not known.' : ''}`,
+        toTitle: `${!newValueDateString.isValid() ? 'Expected release date is not known.' : ''}`,
+      }
+    }
+    return {
+      from: `<p>${oldValue[0].length > 0 ? oldValue[0].trim() : 'N/A'}</p>`,
+      to: `<p>${newValue[0].length > 0 ? newValue[0].trim() : 'N/A'}</p>`,
+      fromTitle: 'Expected release date is not known.',
+      toTitle: 'Expected release date is not known.',
+    }
   }
 }
