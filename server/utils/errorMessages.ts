@@ -179,7 +179,7 @@ export default {
   releaseDateUnknownReason: {
     empty: `Enter a reason why the expected release date is not known`,
   },
-  expectedProbationOffice: {
+  probationOffice: {
     empty: `Select a probation office from the list`,
   },
   probationOfficeUnknownReason: {

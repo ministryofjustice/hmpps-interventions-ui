@@ -18,12 +18,15 @@ import PrisonApiService from '../../services/prisonApiService'
 import PrisonAndSecuredChildAgency from '../../models/prisonAndSecureChildAgency'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
+import ReferenceDataService from '../../services/referenceDataService'
+import { CurrentLocationType } from '../../models/draftReferral'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/ramDeliusApiService')
 jest.mock('../../services/prisonRegisterService')
 jest.mock('../../services/prisonApiService')
 jest.mock('../../services/prisonAndSecuredChildAgencyService')
+jest.mock('../../services/referenceDataService')
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
@@ -35,16 +38,21 @@ const prisonAndSecuredChildAgencyService = new PrisonAndSecuredChildAgencyServic
   prisonRegisterService,
   prisonApiService
 ) as jest.Mocked<PrisonAndSecuredChildAgencyService>
+const referenceDataService = new ReferenceDataService() as jest.Mocked<ReferenceDataService>
 
 let app: Express
 let referral: SentReferral
 
 beforeEach(() => {
   app = appWithAllRoutes({
-    overrides: { interventionsService, ramDeliusApiService, prisonAndSecuredChildAgencyService },
+    overrides: { interventionsService, ramDeliusApiService, prisonAndSecuredChildAgencyService, referenceDataService },
     userType: AppSetupUserType.probationPractitioner,
   })
   referral = sentReferral.build()
+})
+
+afterEach(() => {
+  jest.clearAllMocks()
 })
 
 describe('GET /probation-practitioner/referrals/:id/update-maximum-enforceable-days', () => {
@@ -506,6 +514,132 @@ describe('POST /probation-practitioner/referrals/:id/amend-expected-release-date
         .expect(400)
         .expect(res => {
           expect(res.text).toContain('Enter a reason')
+        })
+    })
+  })
+})
+
+describe('POST /probation-practitioner/referrals/:id/amend-expected-probation-office', () => {
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+    referenceDataService.getProbationOffices.mockResolvedValue([])
+  })
+
+  describe('referral is not in custody (pre-release) or does not have an allocated com', () => {
+    it('does not update probation practitioner probation office', async () => {
+      await request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-expected-probation-office`)
+        .send({
+          'probation-office': 'new value',
+        })
+        .expect(302)
+
+      expect(interventionsService.updateExpectedProbationOffice).toBeCalledTimes(1)
+      expect(interventionsService.updateProbationPractitionerProbationOffice).toBeCalledTimes(0)
+    })
+  })
+
+  describe('referral is in custody (pre-release) and has an allocated com', () => {
+    it('also updates probation practitioner probation office', async () => {
+      referral.referral.personCurrentLocationType = CurrentLocationType.custody
+      referral.referral.isReferralReleasingIn12Weeks = null
+      await request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-expected-probation-office`)
+        .send({
+          'probation-office': 'new value',
+        })
+        .expect(302)
+
+      expect(interventionsService.updateExpectedProbationOffice).toBeCalledTimes(1)
+      expect(interventionsService.updateProbationPractitionerProbationOffice).toBeCalledTimes(1)
+    })
+  })
+
+  it('redirects to the referral details page on success', () => {
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/amend-expected-probation-office`)
+      .send({
+        'probation-office': 'new value',
+      })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
+  })
+
+  describe('with form validation errors', () => {
+    it('renders an error message', () => {
+      return request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-expected-probation-office`)
+        .send({
+          'probation-office': '',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Select a probation office')
+        })
+    })
+  })
+})
+
+describe('POST /probation-practitioner/referrals/:id/amend-pp-probation-office', () => {
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+    referenceDataService.getProbationOffices.mockResolvedValue([])
+  })
+
+  describe('referral is not in custody (pre-release) or does not have an allocated com', () => {
+    it('does not update expected probation office', async () => {
+      await request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-pp-probation-office`)
+        .send({
+          'probation-office': 'new value',
+        })
+        .expect(302)
+
+      expect(interventionsService.updateProbationPractitionerProbationOffice).toBeCalledTimes(1)
+      expect(interventionsService.updateExpectedProbationOffice).toBeCalledTimes(0)
+    })
+  })
+
+  describe('referral is in custody (pre-release) and has an allocated com', () => {
+    it('also updates expected probation office', async () => {
+      referral.referral.personCurrentLocationType = CurrentLocationType.custody
+      referral.referral.isReferralReleasingIn12Weeks = null
+      await request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-pp-probation-office`)
+        .send({
+          'probation-office': 'new value',
+        })
+        .expect(302)
+
+      expect(interventionsService.updateProbationPractitionerProbationOffice).toBeCalledTimes(1)
+      expect(interventionsService.updateExpectedProbationOffice).toBeCalledTimes(1)
+    })
+  })
+
+  it('redirects to the referral details page on success', () => {
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/amend-pp-probation-office`)
+      .send({
+        'probation-office': 'new value',
+      })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
+  })
+
+  describe('with form validation errors', () => {
+    it('renders an error message', () => {
+      return request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-pp-probation-office`)
+        .send({
+          'probation-office': '',
+        })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Select a probation office')
         })
     })
   })

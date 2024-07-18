@@ -393,8 +393,8 @@ context('Amend a referral', () => {
           .last()
           .children()
           .should('contain', 'Desired outcomes')
-          .contains('Change')
-        cy.get('#change-link-2').click()
+          .find('#change-link-2')
+          .click()
 
         cy.location('pathname').should(
           'equal',
@@ -415,9 +415,8 @@ context('Amend a referral', () => {
           .children()
           .should('contain', 'Complexity level')
           .should('contain', 'Desired outcomes')
-          .contains('Change')
-
-        cy.get('#change-link-2').click()
+          .find('#change-link-2')
+          .click()
 
         cy.location('pathname').should(
           'equal',

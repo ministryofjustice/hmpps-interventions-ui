@@ -86,6 +86,16 @@ export default class ChangelogDetailView {
         }
       case 'EXPECTED_RELEASE_DATE':
         return this.determineExpectedReleaseDate(oldValue, newValue)
+      case 'EXPECTED_PROBATION_OFFICE':
+        return {
+          from: `<p>${oldValue[0].length > 0 ? oldValue[0].trim() : 'N/A'}</p>`,
+          to: `<p>${newValue[0].length > 0 ? newValue[0].trim() : 'N/A'}</p>`,
+        }
+      case 'PROBATION_PRACTITIONER_PROBATION_OFFICE':
+        return {
+          from: `<p>${oldValue[0].length > 0 ? oldValue[0].trim() : 'N/A'}</p>`,
+          to: `<p>${newValue[0].length > 0 ? newValue[0].trim() : 'N/A'}</p>`,
+        }
       default:
         return {}
     }

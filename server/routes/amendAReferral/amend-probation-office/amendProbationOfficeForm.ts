@@ -1,36 +1,33 @@
 import { Request } from 'express'
 import { Result } from 'express-validator/src/validation-result'
 import { ValidationChain, ValidationError, body } from 'express-validator'
-import DraftReferral from '../../../../models/draftReferral'
-import FormUtils from '../../../../utils/formUtils'
-import errorMessages from '../../../../utils/errorMessages'
-import { FormValidationError } from '../../../../utils/formValidationError'
+import errorMessages from '../../../utils/errorMessages'
+import { FormValidationError } from '../../../utils/formValidationError'
+import FormUtils from '../../../utils/formUtils'
+import { AmendProbationOfficeUpdate } from '../../../models/referralProbationOffice'
 
-export default class SelectExpectedProbationOfficeForm {
+export default class AmendProbationOfficeForm {
   constructor(
     private readonly request: Request,
     private readonly result: Result<ValidationError>
   ) {}
 
-  static async createForm(request: Request): Promise<SelectExpectedProbationOfficeForm> {
-    return new SelectExpectedProbationOfficeForm(
+  static async createForm(request: Request): Promise<AmendProbationOfficeForm> {
+    return new AmendProbationOfficeForm(
       request,
       await FormUtils.runValidations({ request, validations: this.validations() })
     )
   }
 
-  get paramsForUpdate(): Partial<DraftReferral> {
+  get paramsForUpdate(): AmendProbationOfficeUpdate {
     return {
-      expectedProbationOffice: this.request.body['expected-probation-office'],
-      expectedProbationOfficeUnKnownReason: null,
+      probationOffice: this.request.body['probation-office'],
     }
   }
 
   static validations(): ValidationChain[] {
     return [
-      body('expected-probation-office')
-        .notEmpty({ ignore_whitespace: true })
-        .withMessage(errorMessages.probationOffice.empty),
+      body('probation-office').notEmpty({ ignore_whitespace: true }).withMessage(errorMessages.probationOffice.empty),
     ]
   }
 

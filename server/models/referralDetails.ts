@@ -11,4 +11,5 @@ export default interface ReferralDetails extends ReferralDetailsFields {
 
 export interface ReferralDetailsUpdate extends ReferralDetailsFields {
   reasonForChange: string
+  expectedProbationOffice?: string | null
 }

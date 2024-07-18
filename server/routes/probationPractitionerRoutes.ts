@@ -31,7 +31,8 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   const amendAReferralController = new AmendAReferralController(
     services.interventionsService,
     services.ramDeliusApiService,
-    services.prisonAndSecuredChildAgencyService
+    services.prisonAndSecuredChildAgencyService,
+    services.referenceDataService
   )
   const changeLogController = new ChangeLogController(
     services.interventionsService,
@@ -57,6 +58,30 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     probationPractitionerReferralsController.showInterventionProgress(req, res)
   )
   get(router, '/referrals/:id/details', (req, res) => probationPractitionerReferralsController.showReferral(req, res))
+
+  get(router, '/referrals/:id/confirm-amend-expected-probation-office', (req, res) =>
+    amendAReferralController.confirmAmendExpectedProbationOffice(req, res)
+  )
+
+  get(router, '/referrals/:id/amend-expected-probation-office', (req, res) =>
+    amendAReferralController.amendExpectedProbationOffice(req, res)
+  )
+
+  post(router, '/referrals/:id/amend-expected-probation-office', (req, res) =>
+    amendAReferralController.amendExpectedProbationOffice(req, res)
+  )
+
+  get(router, '/referrals/:id/confirm-amend-pp-probation-office', (req, res) =>
+    amendAReferralController.confirmAmendProbationPractitionerProbationOffice(req, res)
+  )
+
+  get(router, '/referrals/:id/amend-pp-probation-office', (req, res) =>
+    amendAReferralController.amendProbationPractitionerProbationOffice(req, res)
+  )
+
+  post(router, '/referrals/:id/amend-pp-probation-office', (req, res) =>
+    amendAReferralController.amendProbationPractitionerProbationOffice(req, res)
+  )
 
   get(router, '/referrals/:id/update-maximum-enforceable-days', (req, res) =>
     amendAReferralController.updateMaximumEnforceableDays(req, res)

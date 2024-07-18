@@ -985,9 +985,8 @@ describe('Probation practitioner referrals dashboard', () => {
         .children()
         .should('contain', 'Complexity level')
         .should('contain', 'Desired outcomes')
-        .contains('Change')
-
-      cy.get('#change-link-2').click()
+        .find('#change-link-2')
+        .click()
 
       cy.location('pathname').should(
         'equal',

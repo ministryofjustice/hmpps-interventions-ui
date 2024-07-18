@@ -37,13 +37,161 @@ import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredC
 import AmendExpectedReleaseDateForm from './amend-expected-release-date/amendExpectedReleaseDateForm'
 import AmendExpectedReleaseDatePresenter from './amend-expected-release-date/amendExpectedReleaseDatePresenter'
 import AmendExpectedReleaseDateView from './amend-expected-release-date/amendExpectedReleaseDateView'
+import ConfirmAmendProbationOfficePresenter from './amend-probation-office/confirmAmendProbationOfficePresenter'
+import ConfirmAmendProbationOfficeView from './amend-probation-office/confirmAmendProbationOfficeView'
+import ReferenceDataService from '../../services/referenceDataService'
+import AmendProbationOfficePresenter from './amend-probation-office/amendProbationOfficePresenter'
+import AmendProbationOfficeView from './amend-probation-office/amendProbationOfficeView'
+import AmendProbationOfficeForm from './amend-probation-office/amendProbationOfficeForm'
+import { CurrentLocationType } from '../../models/draftReferral'
 
 export default class AmendAReferralController {
   constructor(
     private readonly interventionsService: InterventionsService,
     private readonly ramDeliusApiService: RamDeliusApiService,
-    private readonly prisonAndSecureChildAgencyService: PrisonAndSecuredChildAgencyService
+    private readonly prisonAndSecureChildAgencyService: PrisonAndSecuredChildAgencyService,
+    private readonly referenceDataService: ReferenceDataService
   ) {}
+
+  async confirmAmendExpectedProbationOffice(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { id: referralId } = req.params
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
+    const presenter = new ConfirmAmendProbationOfficePresenter(
+      referral.id,
+      'amend-expected-probation-office',
+      referral.referral.serviceUser.firstName,
+      referral.referral.serviceUser.lastName,
+      referral.referral.ppPdu ?? referral.referral.ndeliusPDU
+    )
+    const view = new ConfirmAmendProbationOfficeView(presenter)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async amendExpectedProbationOffice(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { id } = req.params
+    let error: FormValidationError | null = null
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, id)
+
+    if (req.method === 'POST') {
+      const form = await AmendProbationOfficeForm.createForm(req)
+
+      const isInCustodyWithCom =
+        sentReferral.referral.personCurrentLocationType === CurrentLocationType.custody &&
+        sentReferral.referral.isReferralReleasingIn12Weeks === null
+
+      if (!form.error) {
+        try {
+          await this.interventionsService.updateExpectedProbationOffice(
+            res.locals.user.token.accessToken,
+            req.params.id,
+            form.paramsForUpdate
+          )
+          if (isInCustodyWithCom) {
+            await this.interventionsService.updateProbationPractitionerProbationOffice(
+              res.locals.user.token.accessToken,
+              req.params.id,
+              form.paramsForUpdate
+            )
+          }
+          return res.redirect(`/probation-practitioner/referrals/${id}/details?detailsUpdated=true`)
+        } catch (e) {
+          const interventionsServiceError = e as InterventionsServiceError
+          error = createFormValidationErrorOrRethrow(interventionsServiceError)
+        }
+      }
+      error = form.error
+      res.status(400)
+    }
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
+    const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
+
+    const presenter = new AmendProbationOfficePresenter(
+      sentReferral,
+      deliusOfficeLocations,
+      error,
+      null,
+      'expectedProbationOffice'
+    )
+    const view = new AmendProbationOfficeView(presenter)
+
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async confirmAmendProbationPractitionerProbationOffice(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { id: referralId } = req.params
+
+    const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
+    const presenter = new ConfirmAmendProbationOfficePresenter(
+      referral.id,
+      'amend-pp-probation-office',
+      referral.referral.serviceUser.firstName,
+      referral.referral.serviceUser.lastName,
+      referral.referral.ppPdu ?? referral.referral.ndeliusPDU
+    )
+    const view = new ConfirmAmendProbationOfficeView(presenter)
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async amendProbationPractitionerProbationOffice(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { id } = req.params
+    let error: FormValidationError | null = null
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, id)
+
+    if (req.method === 'POST') {
+      const form = await AmendProbationOfficeForm.createForm(req)
+
+      const isInCustodyWithCom =
+        sentReferral.referral.personCurrentLocationType === CurrentLocationType.custody &&
+        sentReferral.referral.isReferralReleasingIn12Weeks === null
+
+      if (!form.error) {
+        try {
+          await this.interventionsService.updateProbationPractitionerProbationOffice(
+            res.locals.user.token.accessToken,
+            req.params.id,
+            form.paramsForUpdate
+          )
+          if (isInCustodyWithCom) {
+            await this.interventionsService.updateExpectedProbationOffice(
+              res.locals.user.token.accessToken,
+              req.params.id,
+              form.paramsForUpdate
+            )
+          }
+          return res.redirect(`/probation-practitioner/referrals/${id}/details?detailsUpdated=true`)
+        } catch (e) {
+          const interventionsServiceError = e as InterventionsServiceError
+          error = createFormValidationErrorOrRethrow(interventionsServiceError)
+        }
+      }
+      error = form.error
+      res.status(400)
+    }
+
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
+    const deliusOfficeLocations = await this.referenceDataService.getProbationOffices()
+
+    const presenter = new AmendProbationOfficePresenter(
+      sentReferral,
+      deliusOfficeLocations,
+      error,
+      null,
+      'expectedProbationOffice'
+    )
+    const view = new AmendProbationOfficeView(presenter)
+
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
 
   async updateMaximumEnforceableDays(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
