@@ -25,9 +25,9 @@
                 <h2 class="govuk-heading-l">Changing probation office may affect the eligibility of the referral </h2>
 
                 <p class="govuk-body">You can only change the probation office if it is within the current PDU (probation delivery unit).</p>
-                <p class="govuk-body">If {{ presenter.firstName }} {{ presenter.lastName }} is moving out of the area to a different PDU (or has already moved) you will need to <a href={{ presenter.withdrawalUrl }}>withdraw this referral</a>.</p>
+                <p class="govuk-body">If {{ presenter.firstName }} {{ presenter.lastName }} is moving out of the area to a different PDU (or has already moved) you will need to <a target="_blank" href={{ presenter.withdrawalUrl }}>withdraw this referral</a>.</p>
 
-                <h2 class="govuk-heading-s">Can you confirm that the new probation office is within the current PDU - {{ presenter.ppPdu }}?</h2>
+                <h2 class="govuk-heading-s">Can you confirm that the new probation office is within the current PDU?</h2>
 
                 <form method="get" action="{{ presenter.amendProbationOfficeUrl }}">
                     {{ govukButton({ text: "Confirm", preventDoubleClick: true, classes: 'govuk-!-margin-bottom-4 white-button' }) }}

@@ -13,7 +13,7 @@ export default class AmendProbationOfficePresenter {
     private readonly userInputData: Record<string, string> | null = null,
     private readonly probationOfficeType: string | null = null
   ) {
-    this.backLinkUrl = `/referrals/${sentReferral.id}/details`
+    this.backLinkUrl = `/probation-practitioner/referrals/${sentReferral.id}/details`
   }
 
   readonly text = {

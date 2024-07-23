@@ -157,7 +157,7 @@ export default {
     emptyName: `Add main point of contact name - this is a mandatory field`,
     emptyPrisonName: `Select a prison establishment from the list`,
     emptyRoleOrJobTitle: `Add role / job title - this is a mandatory field`,
-    emptyProbationOffice: `Select a probation office from the list`,
+    emptyProbationOffice: `Enter a probation office`,
     emptyEmail: `Add email address - this is a mandatory field`,
     invalidEmail: `Enter email address in the correct format`,
     invalidPhoneNumber: `Enter phone number in the correct format`,
@@ -180,7 +180,7 @@ export default {
     empty: `Enter a reason why the expected release date is not known`,
   },
   probationOffice: {
-    empty: `Select a probation office from the list`,
+    empty: `Enter a probation office`,
   },
   probationOfficeUnknownReason: {
     empty: `Enter a reason why the expected probation office is not known`,

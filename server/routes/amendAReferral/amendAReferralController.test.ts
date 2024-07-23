@@ -576,7 +576,7 @@ describe('POST /probation-practitioner/referrals/:id/amend-expected-probation-of
         })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('Select a probation office')
+          expect(res.text).toContain('Select a Probation Office')
         })
     })
   })
@@ -639,7 +639,7 @@ describe('POST /probation-practitioner/referrals/:id/amend-pp-probation-office',
         })
         .expect(400)
         .expect(res => {
-          expect(res.text).toContain('Select a probation office')
+          expect(res.text).toContain('Select a Probation Office')
         })
     })
   })

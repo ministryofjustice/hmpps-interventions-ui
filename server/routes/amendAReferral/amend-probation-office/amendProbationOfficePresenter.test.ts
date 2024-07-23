@@ -13,7 +13,7 @@ describe('AmendProbationOfficePresenter', () => {
       )
       expect(presenter.text.inputHeading).toEqual('Probation office')
       expect(presenter.text.hint).toEqual('Start typing then choose probation office from the list')
-      expect(presenter.backLinkUrl).toEqual(`/referrals/${sentReferral.id}/details`)
+      expect(presenter.backLinkUrl).toEqual(`/probation-practitioner/referrals/${sentReferral.id}/details`)
     })
   })
 
@@ -32,12 +32,12 @@ describe('AmendProbationOfficePresenter', () => {
             {
               formFields: ['probation-office'],
               errorSummaryLinkedField: 'probation-office',
-              message: 'Select a probation office from the list',
+              message: 'Enter a probation office',
             },
           ],
         })
 
-        expect(presenter.errorMessage).toEqual('Select a probation office from the list')
+        expect(presenter.errorMessage).toEqual('Enter a probation office')
       })
     })
   })
@@ -57,7 +57,7 @@ describe('AmendProbationOfficePresenter', () => {
             {
               formFields: ['probation-office'],
               errorSummaryLinkedField: 'probation-office',
-              message: 'Select a probation office from the list',
+              message: 'Enter a probation office',
             },
           ],
         })
@@ -65,7 +65,7 @@ describe('AmendProbationOfficePresenter', () => {
         expect(presenter.errorSummary).toEqual([
           {
             field: 'probation-office',
-            message: 'Select a probation office from the list',
+            message: 'Enter a probation office',
           },
         ])
       })

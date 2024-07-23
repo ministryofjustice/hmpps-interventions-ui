@@ -26,7 +26,7 @@ describe(AmendProbationOfficeForm, () => {
       expect(form.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'probation-office',
         formFields: ['probation-office'],
-        message: 'Select a probation office from the list',
+        message: 'Enter a probation office',
       })
     })
   })
