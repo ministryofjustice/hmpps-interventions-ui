@@ -165,7 +165,7 @@ describe('ConfirmProbationPractitionerDetailsForm', () => {
           {
             formFields: ['probation-practitioner-office'],
             errorSummaryLinkedField: 'probation-practitioner-office',
-            message: 'Select a probation office from the list',
+            message: 'Enter a probation office',
           },
         ],
       })
