@@ -842,123 +842,194 @@ describe(InterventionProgressPresenter, () => {
     })
   })
 
-  describe('supplierAssessmentLink', () => {
-    describe('when the supplier assessment has no appointments', () => {
-      it('returns null', () => {
+  describe('supplierAssessmentTableRows', () => {
+    const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+    describe('dateAndTime', () => {
+      it('returns the date and time of the appointments', () => {
         const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const supplierAssessment = supplierAssessmentFactory.justCreated.build()
+        const firstScheduledAppointment = initialAssessmentAppointmentFactory.build({
+          appointmentTime: '2021-10-11T01:00:00+01:00',
+        })
+        const secondScheduledAppointment = initialAssessmentAppointmentFactory.build({
+          appointmentTime: '2021-10-10T01:00:00+01:00',
+        })
 
         const presenter = new InterventionProgressPresenter(
           referral,
-          intervention,
+          interventionFactory.build(),
           [],
           null,
           [],
-          supplierAssessment,
-          null
+          supplierAssessmentFactory.build({ appointments: [firstScheduledAppointment, secondScheduledAppointment] }),
+          assignee
         )
 
-        expect(presenter.supplierAssessmentLink).toBeNull()
+        expect(presenter.supplierAssessmentTableRows[0].dateAndTime).toEqual('1:00am on 11 Oct 2021')
+        expect(presenter.supplierAssessmentTableRows[1].dateAndTime).toEqual('1:00am on 10 Oct 2021')
       })
     })
 
-    describe('when the supplier assessment has an appointment still awaiting feedback', () => {
-      describe('when the appointment is in the past', () => {
-        it('returns a link to a page for viewing the supplier assessment', () => {
-          const appointment = initialAssessmentAppointmentFactory.inThePast.build()
-          const referral = sentReferralFactory.build()
-          const intervention = interventionFactory.build()
-          const supplierAssessment = supplierAssessmentFactory.withAnAppointment(appointment).build()
-          const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+    describe('statusPresenter', () => {
+      it('returns a presenter with the supplier assessment appointment status', () => {
+        const supplierAssessmentWithNoAppointmentScheduled = supplierAssessmentFactory.justCreated.build()
 
+        const presenter = new InterventionProgressPresenter(
+          sentReferralFactory.build(),
+          interventionFactory.build(),
+          [],
+          null,
+          [],
+          supplierAssessmentWithNoAppointmentScheduled,
+          assignee
+        )
+
+        expect(presenter.supplierAssessmentTableRows[0].statusPresenter.text).toEqual('not scheduled')
+      })
+    })
+
+    describe('action', () => {
+      describe('when there is no supplier appointment scheduled', () => {
+        it('returns a link to the scheduling page', () => {
           const presenter = new InterventionProgressPresenter(
-            referral,
-            intervention,
+            sentReferralFactory.build(),
+            interventionFactory.build(),
             [],
             null,
             [],
-            supplierAssessment,
+            supplierAssessmentFactory.build({ appointments: [] }),
             assignee
           )
 
-          expect(presenter.supplierAssessmentLink).toEqual({
-            href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment`,
-            text: 'View appointment details',
+          expect(presenter.supplierAssessmentTableRows[0].action).toEqual([
+            {
+              text: '',
+              href: ``,
+            },
+          ])
+        })
+      })
+
+      describe('when there is a supplier assessment scheduled', () => {
+        describe('when the appointment is in the past', () => {
+          it('returns links to a page to add feedback for the appointment', () => {
+            const referral = sentReferralFactory.build()
+            const appointment = initialAssessmentAppointmentFactory.inThePast.build()
+
+            const presenter = new InterventionProgressPresenter(
+              referral,
+              interventionFactory.build(),
+              [],
+              null,
+              [],
+              supplierAssessmentFactory.withAnAppointment(appointment).build(),
+              assignee
+            )
+
+            expect(presenter.supplierAssessmentTableRows[0].action).toEqual([
+              {
+                text: 'View appointment details',
+                href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment`,
+              },
+            ])
+          })
+        })
+
+        describe('when the appointment is in the future', () => {
+          it('returns links to a page to view appointment details for the appointment', () => {
+            const referral = sentReferralFactory.build()
+            const appointment = initialAssessmentAppointmentFactory.inTheFuture.build()
+
+            const presenter = new InterventionProgressPresenter(
+              referral,
+              interventionFactory.build(),
+              [],
+              null,
+              [],
+              supplierAssessmentFactory.withAnAppointment(appointment).build(),
+              assignee
+            )
+
+            expect(presenter.supplierAssessmentTableRows[0].action).toEqual([
+              {
+                text: 'View appointment details',
+                href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment`,
+              },
+            ])
           })
         })
       })
 
-      describe('when the appointment is in the future', () => {
-        it('returns a link to a page for viewing the supplier assessment', () => {
-          const appointment = initialAssessmentAppointmentFactory.inTheFuture.build()
+      describe('when the supplier assessment appointment was attended', () => {
+        it('returns a link to a page to view feedback for the appointment', () => {
           const referral = sentReferralFactory.build()
-          const intervention = interventionFactory.build()
-          const supplierAssessment = supplierAssessmentFactory.withAnAppointment(appointment).build()
-          const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+          const appointment = initialAssessmentAppointmentFactory.attended('yes').build()
 
           const presenter = new InterventionProgressPresenter(
             referral,
-            intervention,
+            interventionFactory.build(),
             [],
             null,
             [],
-            supplierAssessment,
+            supplierAssessmentFactory.withAnAppointment(appointment).build(),
             assignee
           )
 
-          expect(presenter.supplierAssessmentLink).toEqual({
-            href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment`,
-            text: 'View appointment details',
+          expect(presenter.supplierAssessmentTableRows[0].action).toEqual([
+            {
+              text: 'View feedback',
+              href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`,
+            },
+          ])
+        })
+      })
+
+      describe('when the supplier assessment appointment was not attended', () => {
+        describe('when the missed appointment is the current appointment', () => {
+          it('returns a link to a page to schedule a new appointment and a link to view feedback', () => {
+            const referral = sentReferralFactory.build()
+            const appointment = initialAssessmentAppointmentFactory.attended('no', false).build()
+
+            const presenter = new InterventionProgressPresenter(
+              referral,
+              interventionFactory.build(),
+              [],
+              null,
+              [],
+              supplierAssessmentFactory.withAnAppointment(appointment).build({ currentAppointmentId: appointment.id }),
+              assignee
+            )
+
+            expect(presenter.supplierAssessmentTableRows[0].action).toEqual([
+              {
+                href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`,
+                text: 'View feedback',
+              },
+            ])
           })
         })
-      })
-    })
 
-    describe('when the supplier assessment has an appointment with feedback and it was attended', () => {
-      it('returns a link to a page for viewing feedback for the supplier assessment', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const supplierAssessment = supplierAssessmentFactory.withAttendedAppointment.build()
-        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
+        describe('when the missed appointment is an old appointment', () => {
+          it('returns a link to view the feedback page', () => {
+            const referral = sentReferralFactory.build()
+            const appointment = initialAssessmentAppointmentFactory.attended('no', false).build()
 
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          [],
-          null,
-          [],
-          supplierAssessment,
-          assignee
-        )
+            const presenter = new InterventionProgressPresenter(
+              referral,
+              interventionFactory.build(),
+              [],
+              null,
+              [],
+              supplierAssessmentFactory.build({ appointments: [appointment] }),
+              assignee
+            )
 
-        expect(presenter.supplierAssessmentLink).toEqual({
-          href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`,
-          text: 'View feedback',
-        })
-      })
-    })
-
-    describe('when the supplier assessment has an appointment with feedback and it was not attended', () => {
-      it('returns a link to a page for viewing feedback for the supplier assessment', () => {
-        const referral = sentReferralFactory.build()
-        const intervention = interventionFactory.build()
-        const supplierAssessment = supplierAssessmentFactory.withNonAttendedAppointment.build()
-        const assignee = hmppsAuthUserFactory.build({ firstName: 'Liam', lastName: 'Johnson' })
-
-        const presenter = new InterventionProgressPresenter(
-          referral,
-          intervention,
-          [],
-          null,
-          [],
-          supplierAssessment,
-          assignee
-        )
-
-        expect(presenter.supplierAssessmentLink).toEqual({
-          href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback`,
-          text: 'View feedback',
+            expect(presenter.supplierAssessmentTableRows[0].action).toEqual([
+              {
+                href: `/probation-practitioner/referrals/${referral.id}/supplier-assessment/post-assessment-feedback/${appointment.id}`,
+                text: 'View feedback',
+              },
+            ])
+          })
         })
       })
     })

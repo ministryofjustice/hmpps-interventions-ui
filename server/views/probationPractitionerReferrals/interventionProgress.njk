@@ -17,8 +17,8 @@
 <p class="govuk-body">
   {{ presenter.supplierAssessmentMessage }}
 </p>
-{% if supplierAssessmentSummaryListArgs(govukTag) !== null %}
-{{ govukSummaryList(supplierAssessmentSummaryListArgs(govukTag)) }}
+{% if supplierAssessmentAppointmentsTableArgs(govukTag) !== null %}
+{{ govukTable(supplierAssessmentAppointmentsTableArgs(govukTag)) }}
 {% endif %}
 <h2 class="govuk-heading-m">Action plan</h2>
 <p class="govuk-body">

@@ -9,7 +9,7 @@ import Intervention from '../../models/intervention'
 import SupplierAssessment from '../../models/supplierAssessment'
 import SupplierAssessmentDecorator from '../../decorators/supplierAssessmentDecorator'
 import AuthUserDetails, { authUserFullName } from '../../models/hmppsAuth/authUserDetails'
-import { ActionPlanAppointment } from '../../models/appointment'
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../../models/appointment'
 import ActionPlanProgressPresenter from '../shared/action-plan/actionPlanProgressPresenter'
 import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
 
@@ -31,6 +31,18 @@ enum SupplierAssessmentStatus {
   notScheduled,
   scheduled,
   delivered,
+}
+
+interface SupplierAssessmentAppointmentLink {
+  text: string
+  href: string
+  hiddenText?: string
+}
+
+interface SupplierAssessmentTableRow {
+  dateAndTime: string
+  statusPresenter: SessionStatusPresenter
+  action: SupplierAssessmentAppointmentLink[]
 }
 
 export default class InterventionProgressPresenter {
@@ -223,6 +235,42 @@ export default class InterventionProgressPresenter {
 
   readonly supplierAssessmentSessionStatusPresenter = new SessionStatusPresenter(this.supplierAssessmentSessionStatus)
 
+  readonly supplierAssessmentAppointment = new SupplierAssessmentDecorator(this.supplierAssessment).currentAppointment
+
+  readonly supplierAssessmentTableHeaders = ['Time and date', 'Status', 'Action']
+
+  get supplierAssessmentTableRows(): SupplierAssessmentTableRow[] {
+    const decorator = new SupplierAssessmentDecorator(this.supplierAssessment)
+
+    const appointments = decorator.sortedAppointments.map(appointment => {
+      return {
+        dateAndTime: decorator.appointmentDateAndTime(appointment),
+        statusPresenter: this.supplierAssessmentAppointmentStatusPresenter(appointment),
+        action: this.supplierAssessmentLink(appointment),
+      }
+    })
+
+    if (this.supplierAssessmentAppointment === null) {
+      appointments.push({
+        dateAndTime: decorator.appointmentDateAndTime(null),
+        statusPresenter: this.supplierAssessmentAppointmentStatusPresenter(null),
+        action: this.supplierAssessmentLink(null),
+      })
+    }
+
+    return appointments
+  }
+
+  private supplierAssessmentAppointmentStatusPresenter(
+    appointment: InitialAssessmentAppointment | null
+  ): SessionStatusPresenter {
+    return new SessionStatusPresenter(this.supplierAssessmentSessionStatusForAppointment(appointment))
+  }
+
+  private supplierAssessmentSessionStatusForAppointment(appointment: InitialAssessmentAppointment | null) {
+    return sessionStatus.forAppointment(appointment)
+  }
+
   private get supplierAssessmentStatus(): SupplierAssessmentStatus {
     switch (this.supplierAssessmentSessionStatus) {
       case SessionStatus.scheduled:
@@ -258,23 +306,49 @@ export default class InterventionProgressPresenter {
     }
   }
 
-  get supplierAssessmentLink(): { text: string; href: string } | null {
-    switch (this.supplierAssessmentSessionStatus) {
+  private supplierAssessmentLink(
+    appointment: InitialAssessmentAppointment | null
+  ): SupplierAssessmentAppointmentLink[] {
+    const { currentAppointment } = new SupplierAssessmentDecorator(this.supplierAssessment)
+
+    const isCurrentAppointment =
+      currentAppointment && appointment && currentAppointment.id && currentAppointment.id === appointment.id
+
+    switch (this.supplierAssessmentSessionStatusForAppointment(appointment)) {
       case SessionStatus.scheduled:
       case SessionStatus.awaitingFeedback:
-        return {
-          text: 'View appointment details',
-          href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment`,
-        }
+        return [
+          {
+            text: 'View appointment details',
+            href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment`,
+          },
+        ]
       case SessionStatus.completed:
       case SessionStatus.didNotAttend:
       case SessionStatus.didNotHappen:
-        return {
-          text: 'View feedback',
-          href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback`,
-        }
+        return isCurrentAppointment
+          ? [
+              {
+                text: 'View feedback',
+                href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment/post-assessment-feedback`,
+              },
+            ]
+          : [
+              {
+                text: 'View feedback',
+                href: `/probation-practitioner/referrals/${
+                  this.referral.id
+                }/supplier-assessment/post-assessment-feedback/${appointment!.id}`,
+              },
+            ]
+
       default:
-        return null
+        return [
+          {
+            text: '',
+            href: '',
+          },
+        ]
     }
   }
 }
