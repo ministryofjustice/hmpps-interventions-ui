@@ -101,8 +101,8 @@ export default class ProbationPractitionerReferralsController {
       config.userData.ppDashboardSortOrder.storageDurationInSeconds,
       tablePersistentId,
       DashboardPresenter.headingsAndSortFields.map(it => it.sortField).filter(it => it) as string[],
-      'serviceUserData.lastName,ASC',
-      'sentAt,ASC'
+      'serviceuserlastname,ASC',
+      'sentat,ASC'
     )
 
     const paginationQuery = {

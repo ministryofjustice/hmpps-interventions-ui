@@ -222,8 +222,8 @@ export default class ServiceProviderReferralsController {
       config.userData.spDashboardSortOrder.storageDurationInSeconds,
       tablePersistentId,
       DashboardPresenter.headingsAndSortFields.map(it => it.sortField).filter(it => it) as string[],
-      'sentAt,DESC',
-      'sentAt,DESC'
+      'sentat,DESC',
+      'sentat,DESC'
     )
 
     const paginationQuery = {
