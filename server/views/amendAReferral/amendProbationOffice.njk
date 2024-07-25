@@ -38,6 +38,10 @@
                     selectElement: document.querySelector('#probation-office')
                   })
                 </script>
+                {{ govukWarningText({
+                    text: "These details should also be updated in nDelius by someone with edit access.",
+                    iconFallbackText: "Warning"
+                }) }}
                 {{ govukButton({ classes: "confirm-pp-details",text: "Save and continue", preventDoubleClick: true }) }}
             </form>
         </div>
