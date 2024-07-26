@@ -82,30 +82,30 @@ export default class DashboardPresenter {
   static readonly headingsAndSortFields = [
     {
       columnName: 'Name/CRN',
-      sortField: 'serviceUserData.lastName',
+      sortField: 'serviceuserlastname',
     },
     {
       columnName: 'Expected release date',
-      sortField: 'referralLocation.expectedReleaseDate',
+      sortField: 'expectedreleasedate',
     },
     {
       columnName: 'Location',
     },
     {
       columnName: 'Referral number',
-      sortField: 'referenceNumber',
+      sortField: 'referencenumber',
     },
     {
       columnName: 'Intervention type',
-      sortField: 'intervention.title',
+      sortField: 'interventiontitle',
     },
     {
       columnName: 'Caseworker',
-      sortField: 'assignments.assignedTo.userName',
+      sortField: 'assignedtousername',
     },
     {
       columnName: 'Date received',
-      sortField: 'sentAt',
+      sortField: 'sentat',
     },
   ]
 

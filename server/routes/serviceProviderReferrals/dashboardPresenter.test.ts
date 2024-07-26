@@ -73,10 +73,10 @@ describe(DashboardPresenter, () => {
         prisonsAndSecuredChildAgencies
       )
       expect(presenter.tableHeadings.map(headers => headers.persistentId)).toEqual([
-        'serviceUserData.lastName',
-        'referenceNumber',
-        'intervention.title',
-        'sentAt',
+        'serviceuserlastname',
+        'referencenumber',
+        'interventiontitle',
+        'sentat',
       ])
     })
   })
