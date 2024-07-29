@@ -1,4 +1,4 @@
-import { TagArgs, TableArgs, SummaryListArgs } from '../../utils/govukFrontendTypes'
+import { TagArgs, TableArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
 
 import InterventionProgressPresenter from './interventionProgressPresenter'
@@ -11,30 +11,23 @@ export default class InterventionProgressView {
     this.actionPlanProgressView = new ActionPlanProgressView(presenter.actionPlanProgressPresenter)
   }
 
-  private supplierAssessmentSummaryListArgs(tagMacro: (args: TagArgs) => string): SummaryListArgs | null {
-    if (!this.presenter.shouldDisplaySupplierAssessmentSummaryList) {
-      return null
-    }
-
+  private supplierAssessmentAppointmentsTableArgs(tagMacro: (args: TagArgs) => string): TableArgs {
     return {
-      rows: [
-        {
-          key: { text: 'Appointment status' },
-          value: {
-            html: ViewUtils.sessionStatusTagHtml(this.presenter.supplierAssessmentSessionStatusPresenter, args =>
-              tagMacro({ ...args, attributes: { ...(args.attributes ?? {}), id: 'supplier-assessment-status' } })
+      head: this.presenter.supplierAssessmentTableHeaders.map((header: string) => ({ text: header })),
+      rows: this.presenter.supplierAssessmentTableRows.map(row => {
+        return [
+          { text: row.dateAndTime },
+          {
+            html: ViewUtils.sessionStatusTagHtml(row.statusPresenter, args =>
+              tagMacro({ ...args, attributes: { id: 'supplier-assessment-status' } })
             ),
           },
-        },
-        this.presenter.supplierAssessmentLink
-          ? {
-              key: { text: 'To do' },
-              value: {
-                html: ViewUtils.linkHtml([this.presenter.supplierAssessmentLink]),
-              },
-            }
-          : null,
-      ].flatMap(val => (val === null ? [] : [val])),
+          {
+            html: ViewUtils.linkHtml(row.action),
+          },
+        ]
+      }),
+      attributes: { 'data-cy': 'supplier-assessment-table' },
     }
   }
 
@@ -65,7 +58,7 @@ export default class InterventionProgressView {
         presenter: this.presenter,
         backLinkArgs: this.backLinkArgs,
         subNavArgs: this.presenter.referralOverviewPagePresenter.subNavArgs,
-        supplierAssessmentSummaryListArgs: this.supplierAssessmentSummaryListArgs.bind(this),
+        supplierAssessmentAppointmentsTableArgs: this.supplierAssessmentAppointmentsTableArgs.bind(this),
         endOfServiceReportTableArgs: this.endOfServiceReportTableArgs.bind(this),
         actionPlanTableArgs: this.actionPlanProgressView.tableArgs.bind(this.actionPlanProgressView),
       },
