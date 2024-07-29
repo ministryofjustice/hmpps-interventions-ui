@@ -11,9 +11,7 @@ export default class AmendProbationOfficeView {
     const officeLocationItems: SelectArgsItem[] = this.presenter.deliusOfficeLocations.map(officeLocation => ({
       text: officeLocation.name,
       value: officeLocation.name.toString(),
-      selected: this.presenter.fields.probationOffice
-        ? this.presenter.fields.probationOffice === officeLocation.name
-        : false,
+      selected: false,
     }))
 
     const items: SelectArgsItem[] = [

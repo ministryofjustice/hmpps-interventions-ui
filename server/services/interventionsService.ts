@@ -380,11 +380,16 @@ export default class InterventionsService {
     })) as null
   }
 
-  async updateExpectedProbationOffice(token: string, id: string, update: AmendProbationOfficeUpdate): Promise<null> {
+  async updateExpectedProbationOffice(
+    token: string,
+    id: string,
+    update: AmendProbationOfficeUpdate,
+    preventEmailNotification: boolean | null = null
+  ): Promise<null> {
     const restClient = this.createRestClient(token)
     return (await restClient.post({
       path: `/sent-referral/${id}/amend-expected-probation-office`,
-      data: { ...update },
+      data: { ...update, preventEmailNotification },
       headers: { Accept: 'application/json' },
     })) as null
   }
@@ -392,12 +397,13 @@ export default class InterventionsService {
   async updateProbationPractitionerProbationOffice(
     token: string,
     id: string,
-    update: AmendProbationOfficeUpdate
+    update: AmendProbationOfficeUpdate,
+    preventEmailNotification: boolean | null = null
   ): Promise<null> {
     const restClient = this.createRestClient(token)
     return (await restClient.post({
       path: `/sent-referral/${id}/amend-pp-probation-office`,
-      data: { ...update },
+      data: { ...update, preventEmailNotification },
       headers: { Accept: 'application/json' },
     })) as null
   }

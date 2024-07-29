@@ -59,9 +59,11 @@ export default class AmendAReferralController {
 
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
+    const referralWithoutCom = referral.referral.isReferralReleasingIn12Weeks
     const presenter = new ConfirmAmendProbationOfficePresenter(
       referral.id,
       'amend-expected-probation-office',
+      referralWithoutCom,
       referral.referral.serviceUser.firstName,
       referral.referral.serviceUser.lastName,
       referral.referral.ppPdu ?? referral.referral.ndeliusPDU
@@ -95,7 +97,8 @@ export default class AmendAReferralController {
             await this.interventionsService.updateProbationPractitionerProbationOffice(
               res.locals.user.token.accessToken,
               req.params.id,
-              form.paramsForUpdate
+              form.paramsForUpdate,
+              true
             )
           }
           return res.redirect(`/probation-practitioner/referrals/${id}/details?detailsUpdated=true`)
@@ -129,9 +132,11 @@ export default class AmendAReferralController {
 
     const referral = await this.interventionsService.getSentReferral(accessToken, referralId)
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
+    const referralWithoutCom = referral.referral.isReferralReleasingIn12Weeks
     const presenter = new ConfirmAmendProbationOfficePresenter(
       referral.id,
       'amend-pp-probation-office',
+      referralWithoutCom,
       referral.referral.serviceUser.firstName,
       referral.referral.serviceUser.lastName,
       referral.referral.ppPdu ?? referral.referral.ndeliusPDU
@@ -165,7 +170,8 @@ export default class AmendAReferralController {
             await this.interventionsService.updateExpectedProbationOffice(
               res.locals.user.token.accessToken,
               req.params.id,
-              form.paramsForUpdate
+              form.paramsForUpdate,
+              true
             )
           }
           return res.redirect(`/probation-practitioner/referrals/${id}/details?detailsUpdated=true`)
