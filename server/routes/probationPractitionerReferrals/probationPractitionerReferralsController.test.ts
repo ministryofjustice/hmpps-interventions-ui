@@ -194,7 +194,7 @@ describe('GET /probation-practitioner/dashboard', () => {
       await request(app)
         .get(dashboard.url)
         .expect(res => {
-          const cookieVal = getCookieValue(res.header['set-cookie'])
+          const cookieVal = getCookieValue(res.get('Set-Cookie'))
           expect(cookieVal).toMatchObject({
             dashboardOriginPage: `/probation-practitioner/dashboard${dashboard.dashboardType}?${dashboard.searchString}`,
           })

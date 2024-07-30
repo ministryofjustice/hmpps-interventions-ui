@@ -1,4 +1,4 @@
-export default function getCookieValue(cookieHeader = []) {
+export default function getCookieValue(cookieHeader: string[] = []) {
   const regExp = /.*express:sess=(\w*);.*/
   const cookieValBase64 = cookieHeader.reduce((found: string, curr: string) => {
     if (found) return found

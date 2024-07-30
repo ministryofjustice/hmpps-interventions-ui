@@ -154,7 +154,7 @@ describe('GET /service-provider/dashboard', () => {
     await request(app)
       .get('/service-provider/dashboard')
       .expect(res => {
-        const cookieVal = getCookieValue(res.header['set-cookie'])
+        const cookieVal = getCookieValue(res.get('Set-Cookie'))
         expect(cookieVal).toMatchObject({
           dashboardOriginPage: '/service-provider/dashboard',
         })
@@ -177,7 +177,7 @@ describe('GET /service-provider/dashboard', () => {
     await request(app)
       .get('/service-provider/dashboard?page=2')
       .expect(res => {
-        const cookieVal = getCookieValue(res.header['set-cookie'])
+        const cookieVal = getCookieValue(res.get('Set-Cookie'))
         expect(cookieVal).toMatchObject({
           dashboardOriginPage: '/service-provider/dashboard?page=2',
         })
@@ -226,7 +226,7 @@ describe('GET /service-provider/dashboard/my-cases', () => {
     await request(app)
       .get('/service-provider/dashboard/my-cases')
       .expect(res => {
-        const cookieVal = getCookieValue(res.header['set-cookie'])
+        const cookieVal = getCookieValue(res.get('Set-Cookie'))
         expect(cookieVal).toMatchObject({
           dashboardOriginPage: '/service-provider/dashboard/my-cases',
         })
@@ -249,7 +249,7 @@ describe('GET /service-provider/dashboard/my-cases', () => {
     await request(app)
       .get('/service-provider/dashboard/my-cases?page=2')
       .expect(res => {
-        const cookieVal = getCookieValue(res.header['set-cookie'])
+        const cookieVal = getCookieValue(res.get('Set-Cookie'))
         expect(cookieVal).toMatchObject({
           dashboardOriginPage: '/service-provider/dashboard/my-cases?page=2',
         })
@@ -467,7 +467,7 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     await request(app)
       .get('/service-provider/dashboard/all-open-cases')
       .expect(res => {
-        const cookieVal = getCookieValue(res.header['set-cookie'])
+        const cookieVal = getCookieValue(res.get('Set-Cookie'))
         expect(cookieVal).toMatchObject({
           dashboardOriginPage: '/service-provider/dashboard/all-open-cases',
         })
@@ -492,7 +492,7 @@ describe('GET /service-provider/dashboard/all-open-cases', () => {
     await request(app)
       .get('/service-provider/dashboard/all-open-cases?page=2')
       .expect(res => {
-        const cookieVal = getCookieValue(res.header['set-cookie'])
+        const cookieVal = getCookieValue(res.get('Set-Cookie'))
         expect(cookieVal).toMatchObject({
           dashboardOriginPage: '/service-provider/dashboard/all-open-cases?page=2',
         })
@@ -656,7 +656,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
     await request(app)
       .get('/service-provider/dashboard/unassigned-cases')
       .expect(res => {
-        const cookieVal = getCookieValue(res.header['set-cookie'])
+        const cookieVal = getCookieValue(res.get('Set-Cookie'))
         expect(cookieVal).toMatchObject({
           dashboardOriginPage: '/service-provider/dashboard/unassigned-cases',
         })
@@ -681,7 +681,7 @@ describe('GET /service-provider/dashboard/unassigned-cases', () => {
     await request(app)
       .get('/service-provider/dashboard/unassigned-cases?page=2')
       .expect(res => {
-        const cookieVal = getCookieValue(res.header['set-cookie'])
+        const cookieVal = getCookieValue(res.get('Set-Cookie'))
         expect(cookieVal).toMatchObject({
           dashboardOriginPage: '/service-provider/dashboard/unassigned-cases?page=2',
         })
@@ -840,7 +840,7 @@ describe('GET /service-provider/dashboard/completed-cases', () => {
     await request(app)
       .get('/service-provider/dashboard/completed-cases')
       .expect(res => {
-        const cookieVal = getCookieValue(res.header['set-cookie'])
+        const cookieVal = getCookieValue(res.get('Set-Cookie'))
         expect(cookieVal).toMatchObject({
           dashboardOriginPage: '/service-provider/dashboard/completed-cases',
         })
@@ -863,7 +863,7 @@ describe('GET /service-provider/dashboard/completed-cases', () => {
     await request(app)
       .get('/service-provider/dashboard/completed-cases?page=2')
       .expect(res => {
-        const cookieVal = getCookieValue(res.header['set-cookie'])
+        const cookieVal = getCookieValue(res.get('Set-Cookie'))
         expect(cookieVal).toMatchObject({
           dashboardOriginPage: '/service-provider/dashboard/completed-cases?page=2',
         })
