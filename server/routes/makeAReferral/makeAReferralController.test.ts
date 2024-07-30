@@ -992,7 +992,7 @@ describe('POST /referrals/:id/expected-release-date/submit', () => {
     interventionsService.getDraftReferral.mockResolvedValue(referral)
   })
 
-  it('updates the expected release date on the backend and redirects to the draft form', async () => {
+  it('updates the expected release date on the backend and redirects to the expected probation office form for referrals without COM', async () => {
     const tomorrow = moment().add(1, 'days')
     const updatedReferral = draftReferralFactory.serviceUserSelected().build({
       serviceUser: { firstName: 'Geoffrey' },
@@ -1000,6 +1000,7 @@ describe('POST /referrals/:id/expected-release-date/submit', () => {
       hasExpectedReleaseDate: true,
     })
 
+    interventionsService.getDraftReferral.mockResolvedValue(updatedReferral)
     interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
 
     await request(app)
@@ -1013,6 +1014,41 @@ describe('POST /referrals/:id/expected-release-date/submit', () => {
       })
       .expect(302)
       .expect('Location', '/referrals/1/expected-probation-office')
+
+    expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
+      'token',
+      '1',
+      {
+        expectedReleaseDate: tomorrow.format('YYYY-MM-DD'),
+        hasExpectedReleaseDate: true,
+        expectedReleaseDateMissingReason: null,
+      },
+    ])
+  })
+
+  it('updates the expected release date on the backend and redirects to the draft form for referrals with COM', async () => {
+    const tomorrow = moment().add(1, 'days')
+    const updatedReferral = draftReferralFactory.serviceUserSelected().build({
+      serviceUser: { firstName: 'Geoffrey' },
+      expectedReleaseDate: tomorrow.format('YYYY-MM-DD'),
+      hasExpectedReleaseDate: true,
+      personCurrentLocationType: CurrentLocationType.custody,
+    })
+
+    interventionsService.getDraftReferral.mockResolvedValue(updatedReferral)
+    interventionsService.patchDraftReferral.mockResolvedValue(updatedReferral)
+
+    await request(app)
+      .post('/referrals/1/expected-release-date/submit')
+      .type('form')
+      .send({
+        'expected-release-date': 'yes',
+        'release-date-day': tomorrow.format('DD'),
+        'release-date-month': tomorrow.format('MM'),
+        'release-date-year': tomorrow.format('YYYY'),
+      })
+      .expect(302)
+      .expect('Location', '/referrals/1/form')
 
     expect(interventionsService.patchDraftReferral.mock.calls[0]).toEqual([
       'token',

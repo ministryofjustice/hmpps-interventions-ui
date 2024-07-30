@@ -53,7 +53,7 @@ import OasysRiskInformationView from './risk-information/oasys/view/oasysRiskInf
 import { RestClientError } from '../../data/restClient'
 import EditOasysRiskInformationView from './risk-information/oasys/edit/editOasysRiskInformationView'
 import EditOasysRiskInformationPresenter from './risk-information/oasys/edit/editOasysRiskInformationPresenter'
-import DraftReferral from '../../models/draftReferral'
+import DraftReferral, { CurrentLocationType } from '../../models/draftReferral'
 import ConfirmOasysRiskInformationForm from './risk-information/oasys/confirmOasysRiskInformationForm'
 import EditOasysRiskInformationForm from './risk-information/oasys/edit/editOasysRiskInformationForm'
 import { DraftOasysRiskInformation } from '../../models/draftOasysRiskInformation'
@@ -887,6 +887,9 @@ export default class MakeAReferralController {
   async submitExpectedReleaseDate(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const form = await new ExpectedReleaseDateForm(req).data()
+    const isInCustodyWithCom =
+      referral.personCurrentLocationType === CurrentLocationType.custody &&
+      referral.isReferralReleasingIn12Weeks === null
 
     let error: FormValidationError | null = null
 
@@ -908,8 +911,10 @@ export default class MakeAReferralController {
 
     if (error === null && amendPPDetails) {
       res.redirect(`/referrals/${req.params.id}/check-all-referral-information`)
-    } else if (error === null) {
+    } else if (error === null && !isInCustodyWithCom) {
       res.redirect(`/referrals/${req.params.id}/expected-probation-office`)
+    } else if (error === null) {
+      res.redirect(`/referrals/${req.params.id}/form`)
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
