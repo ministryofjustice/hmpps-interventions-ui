@@ -631,10 +631,12 @@ export default class ShowReferralPresenter {
             },
           ]
         }
+      }
+      if (this.sentReferral.referral.expectedProbationOffice) {
         return [
           {
             key: 'Expected probation office',
-            lines: [this.sentReferral.referral.expectedProbationOffice || '---'],
+            lines: [this.sentReferral.referral.expectedProbationOffice],
             changeLink:
               this.userType === 'probation-practitioner'
                 ? `/probation-practitioner/referrals/${this.sentReferral.id}/confirm-amend-expected-probation-office`
@@ -642,16 +644,6 @@ export default class ShowReferralPresenter {
           },
         ]
       }
-      return [
-        {
-          key: 'Expected probation office',
-          lines: [this.sentReferral.referral.expectedProbationOffice || '---'],
-          changeLink:
-            this.userType === 'probation-practitioner'
-              ? `/probation-practitioner/referrals/${this.sentReferral.id}/confirm-amend-expected-probation-office`
-              : undefined,
-        },
-      ]
       return [
         {
           key: 'Expected PDU (Probation Delivery Unit)',

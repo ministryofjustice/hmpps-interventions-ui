@@ -754,6 +754,46 @@ describe(ShowReferralPresenter, () => {
         { key: 'Expected probation office', lines: ['London'] },
       ])
     })
+
+    it('returns a summary list for a referral custody location with Expected PDU when expected probation office was not provided', () => {
+      const referralParamsWithCustodyDetails = {
+        referral: {
+          serviceCategoryId: serviceCategory.id,
+          serviceCategoryIds: [serviceCategory.id],
+          serviceUser: { firstName: 'Jenny', lastName: 'Jones' },
+          personCurrentLocationType: CurrentLocationType.custody,
+          expectedReleaseDate: moment().add(2, 'days').format('YYYY-MM-DD'),
+          isReferralReleasingIn12Weeks: null,
+          expectedProbationOffice: null,
+          ppPdu: 'City',
+        },
+      }
+      const sentReferral = sentReferralFactory.build(referralParamsWithCustodyDetails)
+      const presenter = new ShowReferralPresenter(
+        sentReferral,
+        intervention,
+        deliusConviction,
+        supplementaryRiskInformation,
+        deliusUser,
+        prisonsAndSecuredChildAgencies,
+        null,
+        null,
+        'service-provider',
+        true,
+        deliusServiceUser,
+        riskSummary,
+        deliusRoOfficer,
+        prisonerDetails
+      )
+      expect(presenter.serviceUserLocationDetails).toEqual([
+        { key: 'Prison establishment', lines: ['London'] },
+        {
+          key: 'Expected release date',
+          lines: [moment.tz('Europe/London').add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
+        },
+        { key: 'Expected PDU (Probation Delivery Unit)', lines: ['City'] },
+      ])
+    })
     it('returns a summary list for an unallocated COM with expected probation office', () => {
       const referralParamsWithCustodyDetails = {
         referral: {
