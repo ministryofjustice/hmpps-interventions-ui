@@ -30,7 +30,7 @@ export default class ExpandedDeliusServiceUserDecorator {
     const numberAndOrBuildingName =
       address.buildingNumber && address.buildingName
         ? `${address.buildingNumber} ${address.buildingName},`
-        : (address.buildingNumber || address.buildingName) ?? ''
+        : ((address.buildingNumber || address.buildingName) ?? '')
 
     const firstLine = `${numberAndOrBuildingName} ${address.streetName}`.trim()
 
