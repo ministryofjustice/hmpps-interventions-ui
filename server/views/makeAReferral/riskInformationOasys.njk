@@ -45,27 +45,27 @@
         {% if riskInformation.summary.riskImminence.label %}
             <p class="govuk-body {{riskInformation.summary.riskImminence.label.class}}">{{ riskInformation.summary.riskImminence.label.text }}</p>
         {% endif %}
-        <p class="govuk-body">{{ riskInformation.summary.riskImminence.text | escape | nl2br }}</p>
+        <p class="govuk-body">{{ riskInformation.summary.riskImminence.text }}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to self-harm</h2>
         <p class="govuk-body {{ riskInformation.riskToSelf.selfHarm.label.class }}"> {{ riskInformation.riskToSelf.selfHarm.label.text }}</p>
-        <p class="govuk-body">{{ riskInformation.riskToSelf.selfHarm.text | escape | nl2br }}</p>
+        <p class="govuk-body">{{ riskInformation.riskToSelf.selfHarm.text }}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to suicide</h2>
         <p class="govuk-body {{ riskInformation.riskToSelf.suicide.label.class }}"> {{ riskInformation.riskToSelf.suicide.label.text }}</p>
-        <p class="govuk-body">{{ riskInformation.riskToSelf.suicide.text | escape | nl2br }}</p>
+        <p class="govuk-body">{{ riskInformation.riskToSelf.suicide.text}}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to coping in a hostel setting</h2>
         <p class="govuk-body {{ riskInformation.riskToSelf.hostelSetting.label.class }}"> {{ riskInformation.riskToSelf.hostelSetting.label.text }}</p>
-        <p class="govuk-body">{{ riskInformation.riskToSelf.hostelSetting.text | escape | nl2br }}</p>
+        <p class="govuk-body">{{ riskInformation.riskToSelf.hostelSetting.text}}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">Concerns in relation to vulnerability</h2>
         <p class="govuk-body {{ riskInformation.riskToSelf.vulnerability.label.class }}"> {{ riskInformation.riskToSelf.vulnerability.label.text }}</p>
-        <p class="govuk-body">{{ riskInformation.riskToSelf.vulnerability.text | escape | nl2br }}</p>
+        <p class="govuk-body">{{ riskInformation.riskToSelf.vulnerability.text}}</p>
         <hr/>
 
         <h2 class="govuk-heading-m">Additional information</h2>

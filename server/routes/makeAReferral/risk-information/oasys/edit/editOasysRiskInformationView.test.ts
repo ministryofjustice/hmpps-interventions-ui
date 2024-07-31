@@ -9,10 +9,10 @@ describe('EditOasysRiskInformationView', () => {
     describe('when superseded by draft information', () => {
       const riskSummary = riskSummaryFactory.build({
         riskToSelf: {
-          suicide: { currentConcernsText: 'OAsysSuicide' },
-          selfHarm: { currentConcernsText: 'OAsysSelfHarm' },
-          hostelSetting: { currentConcernsText: 'OAsysHostelSetting' },
-          vulnerability: { currentConcernsText: 'OAsysVulnerability' },
+          suicide: { currentConcernsText: 'OAsysSuicide', current: 'YES' },
+          selfHarm: { currentConcernsText: 'OAsysSelfHarm', current: 'YES' },
+          hostelSetting: { currentConcernsText: 'OAsysHostelSetting', current: 'YES' },
+          vulnerability: { currentConcernsText: 'OAsysVulnerability', current: 'YES' },
         },
         summary: {
           whoIsAtRisk: 'OAsysWhoIsAtRisk',

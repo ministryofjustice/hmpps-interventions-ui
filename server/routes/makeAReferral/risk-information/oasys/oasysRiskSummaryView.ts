@@ -1,4 +1,4 @@
-import RiskSummary from '../../../../models/assessRisksAndNeeds/riskSummary'
+import RiskSummary, { Risk } from '../../../../models/assessRisksAndNeeds/riskSummary'
 import { RiskInformationArgs, RiskInformationLabels } from './riskInformationLabels'
 
 // This is for presenting the non-editable OAsys risk information in Make A Referral journey
@@ -30,19 +30,19 @@ export default class OasysRiskSummaryView {
       riskToSelf: {
         suicide: {
           label: this.riskInformationLabels.riskToSelfLabel(riskToSelf?.suicide),
-          text: riskToSelf?.suicide ? riskToSelf.suicide.currentConcernsText : null,
+          text: this.determineRiskToSelfText(riskToSelf?.suicide),
         },
         selfHarm: {
           label: this.riskInformationLabels.riskToSelfLabel(riskToSelf?.selfHarm),
-          text: riskToSelf?.selfHarm ? riskToSelf?.selfHarm.currentConcernsText : null,
+          text: this.determineRiskToSelfText(riskToSelf?.selfHarm),
         },
         hostelSetting: {
           label: this.riskInformationLabels.riskToSelfLabel(riskToSelf?.hostelSetting),
-          text: riskToSelf?.hostelSetting ? riskToSelf?.hostelSetting.currentConcernsText : null,
+          text: this.determineRiskToSelfText(riskToSelf?.hostelSetting),
         },
         vulnerability: {
           label: this.riskInformationLabels.riskToSelfLabel(riskToSelf?.vulnerability),
-          text: riskToSelf?.vulnerability ? riskToSelf.vulnerability.currentConcernsText : null,
+          text: this.determineRiskToSelfText(riskToSelf?.vulnerability),
         },
       },
       additionalRiskInformation: {
@@ -50,5 +50,12 @@ export default class OasysRiskSummaryView {
         text: null,
       },
     }
+  }
+
+  private determineRiskToSelfText(risk: Risk | null | undefined): string | null {
+    if (!risk || risk.current !== 'YES') {
+      return null
+    }
+    return risk.currentConcernsText ? risk.currentConcernsText : null
   }
 }

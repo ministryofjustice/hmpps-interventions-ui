@@ -69,6 +69,10 @@ describe('OasysRiskSummaryView', () => {
         expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.label.text).toEqual("Don't know")
         expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.label.text).toEqual("Don't know")
         expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.label.text).toEqual("Don't know")
+        expect(view.oasysRiskInformationArgs.riskToSelf.suicide.text).toEqual(null)
+        expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.text).toEqual(null)
+        expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.text).toEqual(null)
+        expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.text).toEqual(null)
       })
 
       it('returns "Don\'t know" label text when no values provided ', () => {
@@ -85,13 +89,17 @@ describe('OasysRiskSummaryView', () => {
         expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.label.text).toEqual("Don't know")
         expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.label.text).toEqual("Don't know")
         expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.label.text).toEqual("Don't know")
+        expect(view.oasysRiskInformationArgs.riskToSelf.suicide.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.text).toBeNull()
       })
 
       it('returns "Yes" label text when \'YES\' RiskResponse is provided', () => {
         const yesRisk: Risk = {
           risk: null,
           current: 'YES',
-          currentConcernsText: null,
+          currentConcernsText: 'concerns text',
         }
         const view = new OasysRiskSummaryView(
           riskSummaryFactory.build({
@@ -107,6 +115,10 @@ describe('OasysRiskSummaryView', () => {
         expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.label.text).toEqual('Yes')
         expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.label.text).toEqual('Yes')
         expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.label.text).toEqual('Yes')
+        expect(view.oasysRiskInformationArgs.riskToSelf.suicide.text).toEqual('concerns text')
+        expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.text).toEqual('concerns text')
+        expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.text).toEqual('concerns text')
+        expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.text).toEqual('concerns text')
       })
 
       it('returns "No" label text when \'NO\' RiskResponse is provided', () => {
@@ -129,6 +141,10 @@ describe('OasysRiskSummaryView', () => {
         expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.label.text).toEqual('No')
         expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.label.text).toEqual('No')
         expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.label.text).toEqual('No')
+        expect(view.oasysRiskInformationArgs.riskToSelf.suicide.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.text).toBeNull()
       })
 
       it("returns \"Don't know\" label text when 'DK' RiskResponse is provided", () => {
@@ -151,6 +167,10 @@ describe('OasysRiskSummaryView', () => {
         expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.label.text).toEqual("Don't know")
         expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.label.text).toEqual("Don't know")
         expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.label.text).toEqual("Don't know")
+        expect(view.oasysRiskInformationArgs.riskToSelf.suicide.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.text).toBeNull()
       })
 
       it('returns "Don\'t know" label text when no values for current are provided', () => {
@@ -173,6 +193,10 @@ describe('OasysRiskSummaryView', () => {
         expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.label.text).toEqual("Don't know")
         expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.label.text).toEqual("Don't know")
         expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.label.text).toEqual("Don't know")
+        expect(view.oasysRiskInformationArgs.riskToSelf.suicide.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.selfHarm.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.hostelSetting.text).toBeNull()
+        expect(view.oasysRiskInformationArgs.riskToSelf.vulnerability.text).toBeNull()
       })
     })
   })

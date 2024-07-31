@@ -65,7 +65,7 @@ export default class EditOasysRiskInformationView {
       name: 'risk-to-self-self-harm',
       id: 'risk-to-self-self-harm',
       label: {},
-      value: ViewUtils.escape(selfHarm || ''),
+      value: selfHarm || '',
       attributes: {
         oasysRiskInfo: ViewUtils.escape(oasysRiskInfoText),
       },
@@ -79,7 +79,7 @@ export default class EditOasysRiskInformationView {
       name: 'risk-to-self-suicide',
       id: 'risk-to-self-suicide',
       label: {},
-      value: ViewUtils.escape(suicide || ''),
+      value: suicide || '',
       attributes: {
         oasysRiskInfo: ViewUtils.escape(oasysRiskInfoText),
       },
@@ -93,7 +93,7 @@ export default class EditOasysRiskInformationView {
       name: 'risk-to-self-hostel-setting',
       id: 'risk-to-self-hostel-setting',
       label: {},
-      value: ViewUtils.escape(hostelSetting || ''),
+      value: hostelSetting || '',
       attributes: {
         oasysRiskInfo: ViewUtils.escape(oasysRiskInfoText),
       },
@@ -107,7 +107,7 @@ export default class EditOasysRiskInformationView {
       name: 'risk-to-self-vulnerability',
       id: 'risk-to-self-vulnerability',
       label: {},
-      value: ViewUtils.escape(vulnerability || ''),
+      value: vulnerability || '',
       attributes: {
         oasysRiskInfo: ViewUtils.escape(oasysRiskInfoText),
       },
