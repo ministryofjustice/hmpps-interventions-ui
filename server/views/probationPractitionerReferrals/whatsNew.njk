@@ -11,6 +11,15 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
+    {% set whatsNewVersion6Html %}
+        <h3 class="govuk-heading-s">Amending the probation office</h3>
+        <p> When you have submitted a referral, you can now update the probation office. You should only change the probation office if it is within the current PDU (probation delivery unit).
+        If the person is moving out of the area to a different PDU (or has already moved) you will need to withdraw the referral. </p>
+
+        <h3 class="govuk-heading-s">Showing the history of Supplier Assessment Appointments</h3>
+        <p> You can now see the history of Supplier Assessment Appointments that did not happen or was not attended and view the feedback.</p>
+    {% endset %}
+
     {% set whatsNewVersion5Html %}
         <h3 class="govuk-heading-s">Withdraw a referral</h3>
         <p> If you submit a referral for an intervention but later discover a change in circumstance or a problem that means it should not continue, we’ve made it easier for you to withdraw the referral.
@@ -91,6 +100,16 @@
 
       {{ mojTimeline({
         items: [
+           {
+            label: {
+                text: "Changes to withdraw and Monitor and intervention"
+            },
+            html: whatsNewVersion6Html,
+            datetime: {
+              timestamp: "2024-08-01",
+              type: "date"
+            }
+          },
           {
             label: {
                 text: "Changes to withdrawing or closing a referral early"
