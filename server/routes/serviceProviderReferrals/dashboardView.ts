@@ -32,6 +32,11 @@ export default class DashboardView {
         href: `/service-provider/dashboard/completed-cases`,
         active: this.presenter.dashboardType === 'Completed cases',
       },
+      {
+        text: 'Cancelled cases',
+        href: `/service-provider/dashboard/cancelled-cases`,
+        active: this.presenter.dashboardType === 'Cancelled cases',
+      },
     ],
     attributes: { 'data-cy': 'dashboard-navigation' },
   }

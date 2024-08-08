@@ -189,7 +189,7 @@ export default class ServiceProviderReferralsController {
       await this.renderDashboard(
         req,
         res,
-        { concluded: true, search: searchText?.trim() },
+        { concluded: true, cancelled: false, search: searchText?.trim() },
         'Completed cases',
         'spCompletedCases',
         pageSize
@@ -202,6 +202,31 @@ export default class ServiceProviderReferralsController {
       SPDashboardType.CompletedCases
     )
     await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Completed cases')
+  }
+
+  async showCancelledCases(req: Request, res: Response): Promise<void> {
+    this.handlePaginatedSearchText(req)
+    const searchText = (req.body['case-search-text'] as string) ?? null
+    if (
+      FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
+    ) {
+      const pageSize = config.dashboards.serviceProvider.cancelledCases
+      await this.renderDashboard(
+        req,
+        res,
+        { cancelled: true, search: searchText?.trim() },
+        'Cancelled cases',
+        'spCancelledCases',
+        pageSize
+      )
+      return
+    }
+
+    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
+      res.locals.user.token.accessToken,
+      SPDashboardType.CancelledCases
+    )
+    await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Cancelled cases')
   }
 
   private async renderDashboard(
