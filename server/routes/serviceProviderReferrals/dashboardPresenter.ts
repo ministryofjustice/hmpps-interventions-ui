@@ -12,7 +12,7 @@ import PresenterUtils from '../../utils/presenterUtils'
 import DashboardDetails from '../../models/dashboardDetails'
 import PrisonAndSecuredChildAgency from '../../models/prisonAndSecureChildAgency'
 
-export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
+export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases' | 'Cancelled cases'
 const dashboardDetails: Record<DashboardType, DashboardDetails> = {
   'My cases': {
     tabHref: '/service-provider/dashboard',
@@ -38,6 +38,13 @@ const dashboardDetails: Record<DashboardType, DashboardDetails> = {
   'Completed cases': {
     tabHref: '/service-provider/dashboard/completed-cases',
     displayText: 'completed cases',
+    isSearchable: true,
+    showAssignedCaseworker: true,
+    showReleaseDateAndLocation: false,
+  },
+  'Cancelled cases': {
+    tabHref: '/service-provider/dashboard/cancelled-cases',
+    displayText: 'cancelled cases',
     isSearchable: true,
     showAssignedCaseworker: true,
     showReleaseDateAndLocation: false,

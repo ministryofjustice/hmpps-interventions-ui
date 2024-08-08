@@ -104,6 +104,7 @@ export enum SPDashboardType {
   OpenCases = 'OpenCases',
   UnassignedCases = 'UnassignedCases',
   CompletedCases = 'CompletedCases',
+  CancelledCases = 'CancelledCases',
 }
 
 export type InterventionsServiceError = RestClientError
