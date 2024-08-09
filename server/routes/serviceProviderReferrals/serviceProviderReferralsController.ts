@@ -99,7 +99,7 @@ export default class ServiceProviderReferralsController {
       await this.renderDashboard(
         req,
         res,
-        { concluded: false, assignedTo: res.locals.user.userId },
+        { completed: false, assignedTo: res.locals.user.userId },
         'My cases',
         'spMyCases',
         pageSize
@@ -139,7 +139,7 @@ export default class ServiceProviderReferralsController {
       await this.renderDashboard(
         req,
         res,
-        { concluded: false, search: searchText?.trim() },
+        { completed: false, cancelled: false, search: searchText?.trim() },
         'All open cases',
         'spAllOpenCases',
         pageSize
@@ -164,7 +164,7 @@ export default class ServiceProviderReferralsController {
       await this.renderDashboard(
         req,
         res,
-        { concluded: false, unassigned: true, search: searchText?.trim() },
+        { completed: false, unassigned: true, search: searchText?.trim() },
         'Unassigned cases',
         'spUnassignedCases',
         pageSize
@@ -189,7 +189,7 @@ export default class ServiceProviderReferralsController {
       await this.renderDashboard(
         req,
         res,
-        { concluded: true, cancelled: false, search: searchText?.trim() },
+        { completed: true, cancelled: false, search: searchText?.trim() },
         'Completed cases',
         'spCompletedCases',
         pageSize
