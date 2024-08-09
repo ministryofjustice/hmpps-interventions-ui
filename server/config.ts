@@ -182,6 +182,7 @@ export default {
       openCases: Number(get('SP_OPEN_CASES_PAGE_SIZE', '500')),
       unassignedCases: Number(get('SP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
       completedCases: Number(get('SP_COMPLETED_PAGE_SIZE', '500')),
+      cancelledCases: Number(get('SP_CANCELLED_PAGE_SIZE', '500')),
     },
   },
   featureFlags: {

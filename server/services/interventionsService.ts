@@ -92,7 +92,7 @@ export interface PaginationParams {
 }
 
 export interface GetSentReferralsFilterParams {
-  concluded?: boolean
+  completed?: boolean
   cancelled?: boolean
   unassigned?: boolean
   assignedTo?: string
@@ -104,6 +104,7 @@ export enum SPDashboardType {
   OpenCases = 'OpenCases',
   UnassignedCases = 'UnassignedCases',
   CompletedCases = 'CompletedCases',
+  CancelledCases = 'CancelledCases',
 }
 
 export type InterventionsServiceError = RestClientError
