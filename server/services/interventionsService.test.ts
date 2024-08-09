@@ -2039,7 +2039,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           withRequest: {
             method: 'GET',
             path: '/sent-referrals/summaries',
-            query: { concluded: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
+            query: { completed: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
@@ -2051,7 +2051,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
         const actualSentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
           probationPractitionerToken,
-          { concluded: true },
+          { completed: true },
           { page: 0, size: 10, sort: ['sentAt,DESC'] }
         )
         expect(actualSentReferralSummaries.content.length).toEqual(2)

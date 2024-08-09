@@ -92,7 +92,7 @@ export interface PaginationParams {
 }
 
 export interface GetSentReferralsFilterParams {
-  concluded?: boolean
+  completed?: boolean
   cancelled?: boolean
   unassigned?: boolean
   assignedTo?: string
