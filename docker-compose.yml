@@ -82,8 +82,8 @@ services:
     environment:
       - SERVER_PORT=8098
       - SPRING_PROFILES_ACTIVE=dev,local-postgres
-      - SPRING_R2DBC_URL=r2dbc:postgresql://auth-db:5432/auth-db?sslmode=prefer
-      - SPRING_FLYWAY_URL=jdbc:postgresql://auth-db:5432/auth-db?sslmode=prefer
+      - SPRING_R2DBC_URL=r2dbc:postgresql://auth-db:5432/auth-db?sslmode=verify-full
+      - SPRING_FLYWAY_URL=jdbc:postgresql://auth-db:5432/auth-db?sslmode=verify-full
       - API_BASE_URL_OAUTH=http://hmpps-auth:8090/auth
 
   community-api:
