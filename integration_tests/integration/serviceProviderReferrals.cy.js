@@ -660,7 +660,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Attend training course')
     cy.contains('Activity 2')
     cy.contains('Create appointment with local authority')
-    cy.contains('Submit for approval').click()
+    cy.contains('Submit action plan').click()
 
     cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/review`)
     cy.contains('There is a problem')
@@ -819,7 +819,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Attend training course')
     cy.contains('Activity 2')
     cy.contains('Create appointment with local authority')
-    cy.contains('Submit for approval').click()
+    cy.contains('Submit action plan').click()
 
     cy.contains('Action plan submitted for approval')
     cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/confirmation`)
@@ -977,7 +977,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.stubSubmitActionPlan(actionPlanWithUpdatedSessions.id, actionPlanWithUpdatedSessions)
 
-      cy.contains('Submit for approval').click()
+      cy.contains('Submit action plan').click()
 
       cy.contains('Action plan submitted for approval')
       cy.location('pathname').should(
@@ -1066,7 +1066,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.stubSubmitActionPlan(submittedActionPlanVersionTwo.id, submittedActionPlanVersionTwo)
 
-      cy.contains('Submit for approval').click()
+      cy.contains('Submit action plan').click()
 
       cy.contains('Action plan submitted for approval')
       cy.location('pathname').should(
