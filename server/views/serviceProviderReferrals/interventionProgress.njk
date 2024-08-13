@@ -30,7 +30,7 @@
 <h2 class="govuk-heading-m">Action plan</h2>
 {% if presenter.referralAssigned %}
 <p class="govuk-body">
-  Complete the action plan and submit it to the probation practitioner for approval.
+  Complete the action plan, this will be shared with the probation practitioner.
 </p>
 {{ govukTable(actionPlanTableArgs(govukTag, csrfToken)) }}
 {% else %}

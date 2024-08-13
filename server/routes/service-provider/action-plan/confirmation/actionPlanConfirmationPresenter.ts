@@ -13,7 +13,7 @@ export default class ActionPlanConfirmationPresenter {
 
   text = {
     whatHappensNext:
-      'The action plan has been saved and submitted to the probation practitioner for approval. They’ll get in touch with you to make amendments if needed and you’ll get an email once it’s been approved.',
+      'The action plan has been submitted and will be shared with the probation practitioner. Action plans no longer require approval by the probation practitioner therfore you can commence delivery of intervention sessions immediately. Where amendments are required, the probation practitioner will contact you.',
   }
 
   readonly summary: SummaryListItem[] = [
