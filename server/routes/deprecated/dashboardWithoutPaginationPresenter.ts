@@ -8,7 +8,7 @@ import LoggedInUser from '../../models/loggedInUser'
 
 import PresenterUtils from '../../utils/presenterUtils'
 
-export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases'
+export type DashboardType = 'My cases' | 'All open cases' | 'Unassigned cases' | 'Completed cases' | 'Cancelled cases'
 export default class DashboardWithoutPaginationPresenter {
   constructor(
     private readonly referralsSummary: ServiceProviderSentReferralSummary[],
