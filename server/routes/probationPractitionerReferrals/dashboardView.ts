@@ -37,7 +37,7 @@ export default class DashboardView {
 
   get serviceOutageBannerArgs(): NotificationBannerArgs | null {
     const text =
-      'Urgent work is being carried out on NDelius today at 12 noon for 15 minutes. You will not be able to create appointments on Refer and Monitor during this time.'
+      'Urgent work is being carried out on NDelius today at 12 noon for 15 minutes. You will not be able to create referrals or make appointments on Refer and Monitor during this time.'
 
     const html = `<p class="govuk-notification-banner__heading">${text}</p>
                   <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p>`
