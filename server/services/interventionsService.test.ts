@@ -2821,12 +2821,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         authSource: 'delius',
       },
       submittedAt: '2020-12-08T20:47:21.986389Z',
-      approvedBy: {
-        username: 'BERNARD.BEAKS',
-        userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-        authSource: 'delius',
-      },
-      approvedAt: '2020-12-08T20:47:21.986389Z',
+      approvedBy: null,
+      approvedAt: null,
     }
 
     beforeEach(async () => {

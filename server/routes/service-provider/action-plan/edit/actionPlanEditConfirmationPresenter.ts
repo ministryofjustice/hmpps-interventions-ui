@@ -16,7 +16,7 @@ export default class ActionPlanEditConfirmationPresenter {
     if (this.actionPlanSummaryPresenter.actionPlanApproved) {
       return {
         title: 'Are you sure you want to create a new action plan?',
-        note: 'Note: Creating a new action plan will overwrite the current one once the probation practitioner approves it.',
+        note: 'Note: Creating a new action plan will overwrite the current one.',
       }
     }
 
