@@ -10,9 +10,7 @@ describe(ActionPlanEditConfirmationPresenter, () => {
         const presenter = new ActionPlanEditConfirmationPresenter(approvedActionPlan)
 
         expect(presenter.text.title).toEqual('Are you sure you want to create a new action plan?')
-        expect(presenter.text.note).toEqual(
-          'Note: Creating a new action plan will overwrite the current one once the probation practitioner approves it.'
-        )
+        expect(presenter.text.note).toEqual('Note: Creating a new action plan will overwrite the current one.')
       })
     })
 
