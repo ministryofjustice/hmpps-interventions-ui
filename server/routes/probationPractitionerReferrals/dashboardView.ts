@@ -39,10 +39,10 @@ export default class DashboardView {
     const text =
       'Updates are being made to Refer and monitor on Friday 30 August from 5pm. This means that over the weekend the service will run slower than usual and may time out. Normal service will resume on Monday 2 September. This work will deliver changes to the dashboard and an auto-approve action plan feature.'
 
-    const html = `<p class="govuk-notification-banner__heading">${text}</p>
-                  <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p>`
+    const html = `<div class="refer-and-monitor__max-width"><p class="govuk-notification-banner__heading">${text}</p>
+                  <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p></div>`
     return {
-      titleText: 'Planned downtime',
+      titleText: 'Planned changes',
       html,
       classes: 'govuk-notification-banner--info',
     }
