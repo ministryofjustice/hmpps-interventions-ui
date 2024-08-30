@@ -66,7 +66,7 @@ export default class DashboardView {
     const html = `<div class="refer-and-monitor__max-width"><p class="govuk-notification-banner__heading">${text}</p>
                   <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p></div>`
     return {
-      titleText: 'Planned downtime',
+      titleText: 'Planned changes',
       html,
       classes: 'govuk-notification-banner--info',
     }
