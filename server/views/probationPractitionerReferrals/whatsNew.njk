@@ -11,6 +11,23 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
+      {% set whatsNewVersion7_2Html %}
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Action plans that are submitted will be automatically approved. Subsequent action plans that are submitted will also be automatically approved.</li>
+          <li>The Service Provider will be able to commence delivery of intervention sessions immediately after the action plan is submitted.</li>
+          <li>You will be informed by email when you can view an action plan.</li>
+          <li>If any amendments are required, please contact the Service Provider.</li>
+        </ul>
+      {% endset %}
+
+      {% set whatsNewVersion7Html %}
+        <ul class="govuk-list govuk-list--bullet">
+          <li>Referrals that have been withdrawn pre-ICA by the probation practitioner will be moved into the ‘cancelled’ tab.</li>
+          <li>Any referrals awaiting an End of Service Report (EoSR) will remain in the ‘my cases/all open cases’ tab.</li>
+          <li>Referrals that have been closed or closed early by the probation practitioner that are post-ICA with a completed EoSR, will go into the ‘completed’ tab.</li>
+        </ul>
+      {% endset %}
+
     {% set whatsNewVersion6Html %}
         <h3 class="govuk-heading-s">Amending the probation office</h3>
         <p> If you have submitted a referral but due to a change in circumstances you need to change the probation office a person is being allocated to, you can now update this.
@@ -101,6 +118,26 @@
 
       {{ mojTimeline({
         items: [
+          {
+            label: {
+            text: "Action Plans - automatic approval"
+          },
+            html: whatsNewVersion7_2Html,
+            datetime: {
+            timestamp: "2024-09-02",
+            type: "date"
+            }
+          },
+          {
+            label: {
+            text: "Dashboard - improved tab functionality"
+          },
+            html: whatsNewVersion7Html,
+            datetime: {
+            timestamp: "2024-09-02",
+            type: "date"
+            }
+          },
            {
             label: {
                 text: "Changes to withdraw and Monitor and intervention"
