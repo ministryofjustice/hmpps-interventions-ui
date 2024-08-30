@@ -11,15 +11,6 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
-            {% set whatsNewVersion4Html %}
-                <ul class="govuk-list govuk-list--bullet">
-                    <li>We have introduced a ‘cancelled’ tab on the dashboard to enable easy filtering/viewing of cancelled referrals.</li>
-                    <li>Referrals that have been withdrawn pre-ICA by the probation practitioner will be moved into the ‘cancelled’ tab.</li>
-                    <li>Any referrals awaiting an End of Service Report (EoSR) will remain in the ‘my cases/all open cases’ tab.</li>
-                    <li>Referrals that have been closed or closed early by the probation practitioner that are post-ICA with a completed EoSR, will go into the ‘completed’ tab.</li>
-                </ul>
-            {% endset %}
-
       {% set whatsNewVersion3Html %}
         <p>When you create a case note you now need to choose whether the probation practitioner needs an email with a link to it. They’re still able to read all case notes in the service. </p>
         <p>This is to help reduce the amount of case note emails we send to probation practitioners.</p>
@@ -72,16 +63,6 @@
 
           {{ mojTimeline({
                   items: [
-                  {
-                      label: {
-                      text: "Service provider dashboard - improved tab functionality"
-                  },
-                      html: whatsNewVersion4Html,
-                      datetime: {
-                      timestamp: "2024-08-23",
-                      type: "date"
-                  }
-                  },
                     {
                       label: {
                         text: "Helping to reduce emails to probation practitioners"
