@@ -99,7 +99,7 @@ export default class ServiceProviderReferralsController {
       await this.renderDashboard(
         req,
         res,
-        { completed: false, assignedTo: res.locals.user.userId },
+        { completed: false, cancelled: false, assignedTo: res.locals.user.userId },
         'My cases',
         'spMyCases',
         pageSize
@@ -164,7 +164,7 @@ export default class ServiceProviderReferralsController {
       await this.renderDashboard(
         req,
         res,
-        { completed: false, unassigned: true, search: searchText?.trim() },
+        { completed: false, cancelled: false, unassigned: true, search: searchText?.trim() },
         'Unassigned cases',
         'spUnassignedCases',
         pageSize
