@@ -29,6 +29,7 @@ import ApprovedActionPlanSummary from '../models/approvedActionPlanSummary'
 import { Page } from '../models/pagination'
 import { CaseNote } from '../models/caseNote'
 import { DraftOasysRiskInformation } from '../models/draftOasysRiskInformation'
+import { SentOasysRiskInformation } from '../models/sentOasysRiskInformation'
 import ReferralDetails, { ReferralDetailsUpdate } from '../models/referralDetails'
 import Changelog from '../models/changelog'
 import { ReferralAdditionalInformationUpdate } from '../models/referralAdditionalInformation'
@@ -928,6 +929,27 @@ export default class InterventionsService {
       path: `/draft-referral/${referralId}/oasys-risk-information`,
       headers: { Accept: 'application/json' },
     })) as DraftOasysRiskInformation
+  }
+
+  async updateSentOasysRiskInformation(
+    token: string,
+    referralId: string,
+    sentOasysRiskInformation: SentOasysRiskInformation
+  ): Promise<SentOasysRiskInformation> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.patch({
+      path: `/referral/${referralId}/oasys-risk-information`,
+      headers: { Accept: 'application/json' },
+      data: { ...sentOasysRiskInformation },
+    })) as SentOasysRiskInformation
+  }
+
+  async getSentOasysRiskInformation(token: string, referralId: string): Promise<SentOasysRiskInformation> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.get({
+      path: `/referral/${referralId}/oasys-risk-information`,
+      headers: { Accept: 'application/json' },
+    })) as SentOasysRiskInformation
   }
 
   async updateNeedsAndRequirments(

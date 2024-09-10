@@ -189,8 +189,10 @@ export default class ViewUtils {
   static summaryListArgsForRiskInfo(
     riskInformationArgs: RiskInformationArgs,
     isRedactedRisk: boolean,
-    heading: string | null | undefined = null,
-    options: { showBorders: boolean; showTitle: boolean } = { showBorders: true, showTitle: true }
+    options: { showBorders: boolean; showTitle: boolean },
+    actionHref: string,
+    actionText: string,
+    heading: string | null | undefined
   ): SummaryListArgs {
     if (!isRedactedRisk) {
       return {
@@ -199,6 +201,9 @@ export default class ViewUtils {
             return {
               title: {
                 text: heading,
+              },
+              actions: {
+                items: [{ href: actionHref, text: actionText, visuallyHiddenText: null }],
               },
             }
           }
@@ -226,6 +231,9 @@ export default class ViewUtils {
           return {
             title: {
               text: heading,
+            },
+            actions: {
+              items: [{ href: actionHref, text: actionText, visuallyHiddenText: null }],
             },
           }
         }

@@ -92,8 +92,10 @@ export default class ShowReferralView {
     return ViewUtils.summaryListArgsForRiskInfo(
       this.presenter.supplementaryRiskInformationView.supplementaryRiskInformationArgs,
       !!this.presenter.riskInformation.redactedRisk,
-      this.presenter.riskInformationHeading,
-      { showBorders: true, showTitle: true }
+      { showBorders: true, showTitle: true },
+      this.presenter.changeRiskHref,
+      'Change',
+      this.presenter.riskInformationHeading
     )
   }
 

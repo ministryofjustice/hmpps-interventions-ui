@@ -393,7 +393,7 @@ export default class CheckAllReferralInformationPresenter {
     return 'Not provided'
   }
 
-  get riskSection(): { title: string; summary: SummaryListItem[] } {
+  get riskSection(): { title: string; summary: SummaryListItem[]; changeLink: string } {
     if (this.editedOasysRiskInformation) {
       return {
         title: `${this.serviceUserNameForServiceCategory}’s OAsys risk information`,
@@ -439,6 +439,7 @@ export default class CheckAllReferralInformationPresenter {
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
           },
         ],
+        changeLink: 'OurLink',
       }
     }
     return {
@@ -450,6 +451,7 @@ export default class CheckAllReferralInformationPresenter {
           changeLink: `/referrals/${this.referral.id}/risk-information`,
         },
       ],
+      changeLink: 'OurLink',
     }
   }
 

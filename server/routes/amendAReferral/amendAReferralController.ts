@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import ControllerUtils from '../../utils/controllerUtils'
 import InterventionsService, { InterventionsServiceError } from '../../services/interventionsService'
+import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
 import AmendMaximumEnforceableDaysPresenter from './maximumEnforceableDays/amendMaximumEnforceableDaysPresenter'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
 import AmendMaximumEnforceableDaysView from './maximumEnforceableDays/amendMaximumEnforceableDaysView'
@@ -13,6 +14,7 @@ import AmendDesiredOutcomesPresenter from './desired-outcomes/amendDesiredOutcom
 import AmendDesiredOutcomesForm from './desired-outcomes/amendDesiredOutcomesForm'
 import ReferralDesiredOutcomes from '../../models/referralDesiredOutcomes'
 import { FormValidationError } from '../../utils/formValidationError'
+import { RestClientError } from '../../data/restClient'
 import createFormValidationErrorOrRethrow from '../../utils/interventionsFormError'
 import AmendComplexityLevelPresenter from './complexityLevel/amendComplexityLevelPresenter'
 import AmendComplexityLevelView from './complexityLevel/amendComplexityLevelView'
@@ -43,6 +45,10 @@ import ReferenceDataService from '../../services/referenceDataService'
 import AmendProbationOfficePresenter from './amend-probation-office/amendProbationOfficePresenter'
 import AmendProbationOfficeView from './amend-probation-office/amendProbationOfficeView'
 import AmendProbationOfficeForm from './amend-probation-office/amendProbationOfficeForm'
+import EditOasysRiskInformationPresenter from './amend-risk-information/oasys/edit/editOasysRiskInformationPresenter'
+import EditOasysRiskInformationView from './amend-risk-information/oasys/edit/editOasysRiskInformationView'
+import EditOasysRiskInformationForm from './amend-risk-information/oasys/edit/editOasysRiskInformationForm'
+import { SentOasysRiskInformation } from '../../models/sentOasysRiskInformation'
 import { CurrentLocationType } from '../../models/draftReferral'
 
 export default class AmendAReferralController {
@@ -50,7 +56,8 @@ export default class AmendAReferralController {
     private readonly interventionsService: InterventionsService,
     private readonly ramDeliusApiService: RamDeliusApiService,
     private readonly prisonAndSecureChildAgencyService: PrisonAndSecuredChildAgencyService,
-    private readonly referenceDataService: ReferenceDataService
+    private readonly referenceDataService: ReferenceDataService,
+    private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService
   ) {}
 
   async confirmAmendExpectedProbationOffice(req: Request, res: Response): Promise<void> {
@@ -601,6 +608,103 @@ export default class AmendAReferralController {
 
     const presenter = new AmendExpectedReleaseDatePresenter(sentReferral, error, userInputData)
     const view = new AmendExpectedReleaseDateView(presenter, req)
+
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  private async getSentOasysRiskInformation(
+    accessToken: string,
+    referralId: string
+  ): Promise<SentOasysRiskInformation | null> {
+    try {
+      return await this.interventionsService.getSentOasysRiskInformation(accessToken, referralId)
+    } catch (e) {
+      const restClientError = e as RestClientError
+      if (restClientError.status === 404) {
+        return null
+      }
+      throw e
+    }
+  }
+
+  async editOasysRiskInformation(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const referralId = req.params.id
+    let error: FormValidationError | null = null
+    let sentOasysRiskInformation: SentOasysRiskInformation | null = null
+    if (req.method === 'POST') {
+      const form = await EditOasysRiskInformationForm.createForm(req)
+      if (form.isValid) {
+        await this.interventionsService.updateSentOasysRiskInformation(
+          accessToken,
+          referralId,
+          form.editedSentRiskInformation
+        )
+
+        /* change */
+        res.redirect(`/NEXT-URL`) // referrals/${req.params.id}/needs-and-requirements`)
+        return
+      }
+      error = form.error
+      // sentOasysRiskInformation = form.data().editedSentRiskInformation
+    } else {
+      try {
+        sentOasysRiskInformation = await this.interventionsService.getSentOasysRiskInformation(accessToken, referralId)
+      } catch (e) {
+        const restClientError = e as RestClientError
+        if (restClientError.status === 404) {
+          sentOasysRiskInformation = null
+        } else {
+          throw e
+        }
+      }
+    }
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+    const { referral } = sentReferral
+    const [serviceUser, riskSummary] = await Promise.all([
+      this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn),
+      this.assessRisksAndNeedsService.getRiskSummary(referral.serviceUser.crn, accessToken),
+    ])
+    const label = `${referral.serviceUser?.firstName} ${referral.serviceUser?.lastName} (CRN: ${referral.serviceUser?.crn})`
+
+    const presenter = new EditOasysRiskInformationPresenter(riskSummary, sentOasysRiskInformation, error, label)
+    const view = new EditOasysRiskInformationView(presenter)
+
+    await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async amendOasysRiskInformation(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId } = req.params
+    let userInputData = null
+    let error: FormValidationError | null = null
+    // let label = 'OASys risk information'
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    const form = await EditOasysRiskInformationForm.createForm(req)
+
+    if (req.method === 'POST') {
+      // const formData = form.data
+
+      if (!form.error) {
+        // await this.interventionsService.updateSentOasysRiskInformation(accessToken, referralId, form.paramsForUpdate)
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
+      }
+
+      error = form.error
+      userInputData = req.body
+      res.status(400)
+    }
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
+
+    const presenter = new EditOasysRiskInformationPresenter(
+      null /* riskSummary */,
+      null /* form.paramsForUpdate */,
+      error,
+      userInputData
+    )
+    const view = new EditOasysRiskInformationView(presenter)
 
     return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }

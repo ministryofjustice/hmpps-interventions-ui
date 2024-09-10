@@ -137,6 +137,10 @@ export default class ShowReferralPresenter {
     return `/probation-practitioner/referrals/${this.sentReferral.id}/details`
   }
 
+  get changeRiskHref(): string {
+    return `/probation-practitioner/referrals/${this.sentReferral.id}/amend-risk-information`
+  }
+
   get referralAssigned(): boolean {
     return this.assignee !== null
   }

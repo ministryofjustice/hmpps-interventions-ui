@@ -95,7 +95,9 @@ export default class CheckAllReferralInformationView {
 
   private readonly riskInformationSummaryListArgs = ViewUtils.summaryListArgsWithSummaryCard(
     this.presenter.riskSection.summary,
-    this.presenter.riskSection.title
+    this.presenter.riskSection.title,
+    { showBorders: true, showTitle: true },
+    { href: '#', text: 'Andrews Link', visuallyHiddenText: null }
   )
 
   get renderArgs(): [string, Record<string, unknown>] {
