@@ -328,5 +328,8 @@ export default on => {
     stubAmendExpectedReleaseDate: arg => {
       return interventionsService.stubAmendExpectedReleaseDate(arg.referralId, arg.responseJson)
     },
+    stubAmendProbationPractitionerName: arg => {
+      return interventionsService.stubAmendProbationPractitionerName(arg.referralId, arg.responseJson)
+    },
   })
 }

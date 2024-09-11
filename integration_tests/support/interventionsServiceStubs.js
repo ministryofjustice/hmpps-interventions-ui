@@ -233,3 +233,7 @@ Cypress.Commands.add('stubAmendPrisonEstablishment', (referralId, responseJson) 
 Cypress.Commands.add('stubAmendExpectedReleaseDate', (referralId, responseJson) => {
   cy.task('stubAmendExpectedReleaseDate', { referralId, responseJson })
 })
+
+Cypress.Commands.add('stubAmendProbationPractitionerName', (referralId, responseJson) => {
+  cy.task('stubAmendProbationPractitionerName', { referralId, responseJson })
+})

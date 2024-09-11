@@ -330,6 +330,9 @@ export default {
   reasonForReferral: {
     empty: 'Enter reason for the referral and any further information',
   },
+  probationPractitionerName: {
+    empty: 'Enter probation practitioner name',
+  },
   prisonEstablishment: {
     empty: 'Enter a prison establishment',
     emptyReason: 'Enter a reason',

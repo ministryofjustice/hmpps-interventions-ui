@@ -421,7 +421,11 @@ describe(ShowReferralPresenter, () => {
       )
 
       expect(presenter.probationPractitionerDetailsForCommunity).toEqual([
-        { key: 'Name', lines: ['Bernard Beaks'] },
+        {
+          key: 'Name',
+          lines: ['Bernard Beaks'],
+          changeLink: `/probation-practitioner/referrals/${sentReferral.id}/amend-probation-practitioner-name`,
+        },
         { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
         { key: 'Phone number', lines: ['072121212125'] },
         {

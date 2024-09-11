@@ -398,6 +398,52 @@ describe('POST /probation-practitioner/referrals/:id/amend-reason-for-referral',
   })
 })
 
+describe('GET /referrals/:referralId/amend-probation-practitioner-name', () => {
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('renders the page to update additional information', () => {
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/amend-probation-practitioner-name`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Update probation practitioner name')
+      })
+  })
+})
+
+describe('POST /probation-practitioner/referrals/:id/amend-probation-practitioner-name', () => {
+  beforeEach(() => {
+    interventionsService.getSentReferral.mockResolvedValue(referral)
+    interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
+    ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
+  })
+
+  it('redirects to the referral details page on success', () => {
+    return request(app)
+      .post(`/probation-practitioner/referrals/${referral.id}/amend-probation-practitioner-name`)
+      .send({
+        'amend-probation-practitioner-name': 'Luke right',
+      })
+      .expect(302)
+      .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
+  })
+
+  describe('with form validation errors', () => {
+    it('renders an error message', () => {
+      return request(app)
+        .post(`/probation-practitioner/referrals/${referral.id}/amend-probation-practitioner-name`)
+        .send({ 'amend-probation-practitioner-name': '' })
+        .expect(400)
+        .expect(res => {
+          expect(res.text).toContain('Enter probation practitioner name')
+        })
+    })
+  })
+})
+
 describe('POST /probation-practitioner/referrals/:id/amend-prison-establishment', () => {
   const prisonAndSecuredChildAgencyList = prisonAndSecuredChildFactory.build()
   const prisonList = prisonFactory.build()
