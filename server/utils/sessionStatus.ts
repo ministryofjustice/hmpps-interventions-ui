@@ -8,12 +8,17 @@ export enum SessionStatus {
   completed,
   didNotAttend,
   didNotHappen,
+  rescheduled,
 }
 export default {
   forAppointment: (appointment: InitialAssessmentAppointment | ActionPlanAppointment | null): SessionStatus => {
     if (appointment === null) {
       return SessionStatus.notScheduled
     }
+    if (appointment.superseded) {
+      return SessionStatus.rescheduled
+    }
+
     const appointmentDecorator = new AppointmentDecorator(appointment)
     if (appointment.appointmentFeedback.submitted) {
       const sessionFeedbackAttendance = appointment.appointmentFeedback.attendanceFeedback

@@ -15,6 +15,8 @@ export default class SessionStatusPresenter {
         return 'completed'
       case SessionStatus.didNotHappen:
         return 'did not happen'
+      case SessionStatus.rescheduled:
+        return 'rescheduled'
       default:
         return 'not scheduled'
     }
@@ -32,6 +34,8 @@ export default class SessionStatusPresenter {
         return 'govuk-tag--green'
       case SessionStatus.didNotHappen:
         return 'govuk-tag--yellow'
+      case SessionStatus.rescheduled:
+        return 'govuk-tag--grey'
       default:
         return 'govuk-tag--grey'
     }

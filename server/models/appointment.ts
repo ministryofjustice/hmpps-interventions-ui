@@ -17,6 +17,7 @@ interface Appointment extends AppointmentSchedulingDetails {
   appointmentId?: string
   id?: string // This is the same as above. In some cases the service returns as id(appointmentDTO), in others appointmentId(deliverySessionDTO) This needs changing!
   appointmentFeedback: AppointmentFeedback
+  superseded?: boolean
 }
 
 export interface AppointmentSchedulingDetails {
