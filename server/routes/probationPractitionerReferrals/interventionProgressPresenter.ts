@@ -323,6 +323,15 @@ export default class InterventionProgressPresenter {
             href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment`,
           },
         ]
+      case SessionStatus.rescheduled:
+        return [
+          {
+            text: 'View appointment details',
+            href: `/probation-practitioner/referrals/${this.referral.id}/supplier-assessment/appointment/${
+              appointment!.id
+            }`,
+          },
+        ]
       case SessionStatus.completed:
       case SessionStatus.didNotAttend:
       case SessionStatus.didNotHappen:

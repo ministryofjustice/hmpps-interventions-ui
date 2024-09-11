@@ -246,6 +246,8 @@ export default class AppointmentsController {
     userType: 'service-provider' | 'probation-practitioner'
   ): Promise<void> {
     const referralId = req.params.id
+    const { appointmentId } = req.params
+
     const { accessToken } = res.locals.user.token
     const [referral, supplierAssessment] = await Promise.all([
       this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId),
@@ -253,7 +255,14 @@ export default class AppointmentsController {
       this.interventionsService.getSupplierAssessment(res.locals.user.token.accessToken, referralId),
     ])
 
-    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    let appointment
+
+    if (appointmentId) {
+      appointment = new SupplierAssessmentDecorator(supplierAssessment).appointmentFromId(appointmentId)
+    } else {
+      appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    }
+
     if (appointment === null) {
       throw new Error('Attempting to view supplier assessment without a current appointment')
     }

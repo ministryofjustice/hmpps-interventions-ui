@@ -254,6 +254,14 @@ export default class InterventionProgressPresenter {
           },
         ]
         break
+      case SessionStatus.rescheduled:
+        links = [
+          {
+            text: 'View appointment details',
+            href: viewHref,
+          },
+        ]
+        break
       default:
         links = [
           {
@@ -364,6 +372,13 @@ export default class InterventionProgressPresenter {
           {
             text: 'View details or reschedule',
             href: `/service-provider/referrals/${this.referral.id}/supplier-assessment`,
+          },
+        ]
+      case SessionStatus.rescheduled:
+        return [
+          {
+            text: 'View appointment details',
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/appointment/${appointment!.id}`,
           },
         ]
       case SessionStatus.awaitingFeedback:
