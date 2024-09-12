@@ -4,7 +4,6 @@ import querystring from 'querystring'
 import InterventionsService, {
   GetSentReferralsFilterParams,
   InterventionsServiceError,
-  SPDashboardType,
 } from '../../services/interventionsService'
 import ActionPlan from '../../models/actionPlan'
 import HmppsAuthService from '../../services/hmppsAuthService'
@@ -60,7 +59,6 @@ import config from '../../config'
 import ServiceProviderSentReferralSummary from '../../models/serviceProviderSentReferralSummary'
 import DashboardWithoutPaginationPresenter from '../deprecated/dashboardWithoutPaginationPresenter'
 import DashboardWithoutPaginationView from '../deprecated/dashboardWithoutPaginationView'
-import FeatureFlagService from '../../services/featureFlagService'
 import UserDataService from '../../services/userDataService'
 import PrisonRegisterService from '../../services/prisonRegisterService'
 import RamDeliusApiService from '../../services/ramDeliusApiService'
@@ -92,26 +90,15 @@ export default class ServiceProviderReferralsController {
   }
 
   async showMyCasesDashboard(req: Request, res: Response): Promise<void> {
-    if (
-      FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
-    ) {
-      const pageSize = config.dashboards.serviceProvider.myCases
-      await this.renderDashboard(
-        req,
-        res,
-        { completed: false, cancelled: false, assignedTo: res.locals.user.userId },
-        'My cases',
-        'spMyCases',
-        pageSize
-      )
-      return
-    }
-
-    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken,
-      SPDashboardType.MyCases
+    const pageSize = config.dashboards.serviceProvider.myCases
+    return this.renderDashboard(
+      req,
+      res,
+      { completed: false, cancelled: false, assignedTo: res.locals.user.userId },
+      'My cases',
+      'spMyCases',
+      pageSize
     )
-    await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'My cases')
   }
 
   private handlePaginatedSearchText(req: Request) {
@@ -131,102 +118,60 @@ export default class ServiceProviderReferralsController {
   async showAllOpenCasesDashboard(req: Request, res: Response): Promise<void> {
     this.handlePaginatedSearchText(req)
     const searchText = (req.body['case-search-text'] as string) ?? null
-
-    if (
-      FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
-    ) {
-      const pageSize = config.dashboards.serviceProvider.openCases
-      await this.renderDashboard(
-        req,
-        res,
-        { completed: false, cancelled: false, search: searchText?.trim() },
-        'All open cases',
-        'spAllOpenCases',
-        pageSize
-      )
-      return
-    }
-
-    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken,
-      SPDashboardType.OpenCases
+    const pageSize = config.dashboards.serviceProvider.openCases
+    return this.renderDashboard(
+      req,
+      res,
+      { completed: false, cancelled: false, search: searchText?.trim() },
+      'All open cases',
+      'spAllOpenCases',
+      pageSize
     )
-    await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'All open cases')
   }
 
   async showUnassignedCasesDashboard(req: Request, res: Response): Promise<void> {
     this.handlePaginatedSearchText(req)
     const searchText = (req.body['case-search-text'] as string) ?? null
-    if (
-      FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
-    ) {
-      const pageSize = config.dashboards.serviceProvider.unassignedCases
-      await this.renderDashboard(
-        req,
-        res,
-        { completed: false, cancelled: false, unassigned: true, search: searchText?.trim() },
-        'Unassigned cases',
-        'spUnassignedCases',
-        pageSize
-      )
-      return
-    }
 
-    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken,
-      SPDashboardType.UnassignedCases
+    const pageSize = config.dashboards.serviceProvider.unassignedCases
+    return this.renderDashboard(
+      req,
+      res,
+      { completed: false, cancelled: false, unassigned: true, search: searchText?.trim() },
+      'Unassigned cases',
+      'spUnassignedCases',
+      pageSize
     )
-    await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Unassigned cases')
   }
 
   async showCompletedCasesDashboard(req: Request, res: Response): Promise<void> {
     this.handlePaginatedSearchText(req)
     const searchText = (req.body['case-search-text'] as string) ?? null
-    if (
-      FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
-    ) {
-      const pageSize = config.dashboards.serviceProvider.completedCases
-      await this.renderDashboard(
-        req,
-        res,
-        { completed: true, cancelled: false, search: searchText?.trim() },
-        'Completed cases',
-        'spCompletedCases',
-        pageSize
-      )
-      return
-    }
 
-    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken,
-      SPDashboardType.CompletedCases
+    const pageSize = config.dashboards.serviceProvider.completedCases
+    return this.renderDashboard(
+      req,
+      res,
+      { completed: true, cancelled: false, search: searchText?.trim() },
+      'Completed cases',
+      'spCompletedCases',
+      pageSize
     )
-    await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Completed cases')
   }
 
   async showCancelledCases(req: Request, res: Response): Promise<void> {
     this.handlePaginatedSearchText(req)
     const searchText = (req.body['case-search-text'] as string) ?? null
-    if (
-      FeatureFlagService.enableForUser(res.locals.user, config.dashboards.serviceProvider.percentageOfPaginationUsers)
-    ) {
-      const pageSize = config.dashboards.serviceProvider.cancelledCases
-      await this.renderDashboard(
-        req,
-        res,
-        { cancelled: true, search: searchText?.trim() },
-        'Cancelled cases',
-        'spCancelledCases',
-        pageSize
-      )
-      return
-    }
 
-    const referralsSummary = await this.interventionsService.getServiceProviderSentReferralsSummaryForUserToken(
-      res.locals.user.token.accessToken,
-      SPDashboardType.CancelledCases
+    const pageSize = config.dashboards.serviceProvider.cancelledCases
+    return this.renderDashboard(
+      req,
+      res,
+      { cancelled: true, search: searchText?.trim() },
+      'Cancelled cases',
+      'spCancelledCases',
+      pageSize
     )
-    await this.renderDashboardWithoutPagination(req, res, referralsSummary, 'Cancelled cases')
   }
 
   private async renderDashboard(

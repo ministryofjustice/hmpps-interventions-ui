@@ -115,10 +115,6 @@ export default on => {
       return interventionsService.stubGetSentReferralsForUserTokenPaged(arg.responseJson)
     },
 
-    stubGetServiceProviderSentReferralsSummaryForUserToken: arg => {
-      return interventionsService.stubGetServiceProviderSentReferralsSummaryForUserToken(arg.responseJson)
-    },
-
     stubAssignSentReferral: arg => {
       return interventionsService.stubAssignSentReferral(arg.id, arg.responseJson)
     },
