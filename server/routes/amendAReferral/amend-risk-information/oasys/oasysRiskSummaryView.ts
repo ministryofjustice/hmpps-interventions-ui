@@ -1,7 +1,7 @@
 import RiskSummary, { Risk } from '../../../../models/assessRisksAndNeeds/riskSummary'
 import { RiskInformationArgs, RiskInformationLabels } from './riskInformationLabels'
 
-// This is for presenting the non-editable OAsys risk information in Amend A Referral journey
+// This is for presenting the editable OAsys risk information in Amend A Referral journey
 export default class OasysRiskSummaryView {
   private readonly riskInformationLabels: RiskInformationLabels
 

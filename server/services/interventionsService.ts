@@ -938,7 +938,7 @@ export default class InterventionsService {
   ): Promise<SentOasysRiskInformation> {
     const restClient = this.createRestClient(token)
     return (await restClient.patch({
-      path: `/referral/${referralId}/oasys-risk-information`,
+      path: `/draft-referral/${referralId}/oasys-risk-information`,
       headers: { Accept: 'application/json' },
       data: { ...sentOasysRiskInformation },
     })) as SentOasysRiskInformation
@@ -947,7 +947,7 @@ export default class InterventionsService {
   async getSentOasysRiskInformation(token: string, referralId: string): Promise<SentOasysRiskInformation> {
     const restClient = this.createRestClient(token)
     return (await restClient.get({
-      path: `/referral/${referralId}/oasys-risk-information`,
+      path: `/draft-referral/${referralId}/oasys-risk-information`,
       headers: { Accept: 'application/json' },
     })) as SentOasysRiskInformation
   }

@@ -635,18 +635,17 @@ export default class AmendAReferralController {
     if (req.method === 'POST') {
       const form = await EditOasysRiskInformationForm.createForm(req)
       if (form.isValid) {
-        await this.interventionsService.updateSentOasysRiskInformation(
+        await this.interventionsService.updateDraftOasysRiskInformation(
           accessToken,
           referralId,
           form.editedSentRiskInformation
         )
 
-        /* change */
-        res.redirect(`/NEXT-URL`) // referrals/${req.params.id}/needs-and-requirements`)
+        res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`) // referrals/${req.params.id}/needs-and-requirements`)
         return
       }
       error = form.error
-      // sentOasysRiskInformation = form.data().editedSentRiskInformation
+      sentOasysRiskInformation = form.editedSentRiskInformation
     } else {
       try {
         sentOasysRiskInformation = await this.interventionsService.getSentOasysRiskInformation(accessToken, referralId)
@@ -678,17 +677,18 @@ export default class AmendAReferralController {
     const { referralId } = req.params
     let userInputData = null
     let error: FormValidationError | null = null
-    // let label = 'OASys risk information'
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
 
     const form = await EditOasysRiskInformationForm.createForm(req)
 
     if (req.method === 'POST') {
-      // const formData = form.data
-
       if (!form.error) {
-        // await this.interventionsService.updateSentOasysRiskInformation(accessToken, referralId, form.paramsForUpdate)
+        await this.interventionsService.updateSentOasysRiskInformation(
+          accessToken,
+          referralId,
+          form.editedSentRiskInformation
+        )
         return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
       }
 
@@ -696,14 +696,14 @@ export default class AmendAReferralController {
       userInputData = req.body
       res.status(400)
     }
-    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
 
-    const presenter = new EditOasysRiskInformationPresenter(
-      null /* riskSummary */,
-      null /* form.paramsForUpdate */,
-      error,
-      userInputData
-    )
+    const [serviceUser, riskSummary, draftRiskInfo] = await Promise.all([
+      this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
+      this.assessRisksAndNeedsService.getRiskSummary(sentReferral.referral.serviceUser.crn, accessToken),
+      this.interventionsService.getSentOasysRiskInformation(accessToken, sentReferral.id),
+    ])
+
+    const presenter = new EditOasysRiskInformationPresenter(riskSummary, draftRiskInfo, error, userInputData)
     const view = new EditOasysRiskInformationView(presenter)
 
     return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
