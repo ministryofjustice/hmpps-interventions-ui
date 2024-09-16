@@ -15,7 +15,8 @@ describe(ScheduleActionPlanSessionPresenter, () => {
         referral,
         appointment,
         new AppointmentSummary(appointment),
-        []
+        [],
+        false
       )
 
       expect(presenter.text).toEqual({ title: 'Add session 1 details' })

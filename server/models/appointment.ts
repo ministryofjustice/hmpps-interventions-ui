@@ -9,6 +9,7 @@ export interface InitialAssessmentAppointment extends Appointment {
 
 export interface ActionPlanAppointment extends Appointment {
   sessionNumber: number
+  currentAppointment?: Appointment
   oldAppointments?: Appointment[]
 }
 
@@ -25,4 +26,5 @@ export interface AppointmentSchedulingDetails {
   appointmentDeliveryType: AppointmentDeliveryType | null
   appointmentDeliveryAddress: Address | null
   npsOfficeCode: string | null
+  rescheduledReason?: string
 }
