@@ -4,6 +4,7 @@ import {
   RadiosArgs,
   SelectArgs,
   SelectArgsItem,
+  TextareaArgs,
   TimeInputArgs,
 } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
@@ -28,6 +29,7 @@ export default class ScheduleAppointmentView {
         serverError: this.serverError,
         address: this.addressFormView.inputArgs,
         sessionTypeRadioInputArgs: this.sessionTypeRadioInputArgs,
+        rescheduledReasonTextareaArgs: this.rescheduledReasonTextareaArgs,
         meetingMethodRadioInputArgs: this.meetingMethodRadioInputArgs.bind(this),
         backLinkArgs: this.backLinkArgs,
         appointmentSummaryListArgs: ViewUtils.summaryListArgs(this.presenter.appointmentSummary),
@@ -243,6 +245,19 @@ export default class ScheduleAppointmentView {
         text: 'Select one option',
       },
       items,
+    }
+  }
+
+  private get rescheduledReasonTextareaArgs(): TextareaArgs {
+    return {
+      name: 'rescheduled-reason',
+      id: 'rescheduled-reason',
+      label: {
+        text: this.presenter.rescheduledReason.label,
+        classes: 'govuk-label--l',
+      },
+      value: this.presenter.fields.rescheduledReason,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.rescheduledReason.errorMessage),
     }
   }
 

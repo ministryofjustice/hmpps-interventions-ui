@@ -12,7 +12,7 @@ describe(ScheduleAppointmentPresenter, () => {
     describe('title', () => {
       describe('when the session has not yet been scheduled', () => {
         it('returns an appropriate title', () => {
-          const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
+          const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [], false)
 
           expect(presenter.text).toEqual({ title: 'Add appointment details' })
         })
@@ -25,7 +25,8 @@ describe(ScheduleAppointmentPresenter, () => {
             referral,
             initialAssessmentAppointmentFactory.build(),
             null,
-            []
+            [],
+            false
           )
 
           expect(presenter.text).toEqual({ title: 'Change appointment details' })
@@ -39,7 +40,8 @@ describe(ScheduleAppointmentPresenter, () => {
             referral,
             initialAssessmentAppointmentFactory.attended('no').build(),
             null,
-            []
+            [],
+            false
           )
           expect(presenter.text).toEqual({ title: 'Add appointment details' })
         })
@@ -50,7 +52,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('appointmentSummary', () => {
     describe('when the appointment has not yet been scheduled', () => {
       it('should return an empty summary', () => {
-        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [], false)
         expect(presenter.appointmentSummary).toEqual([])
       })
     })
@@ -71,7 +73,8 @@ describe(ScheduleAppointmentPresenter, () => {
               appointment,
               authUserDetailsFactory.build({ firstName: 'firstName', lastName: 'lastName' })
             ),
-            []
+            [],
+            false
           )
           expect(presenter.appointmentSummary).toMatchObject([
             {
@@ -102,6 +105,7 @@ describe(ScheduleAppointmentPresenter, () => {
             appointment,
             new AppointmentSummary(appointment),
             [],
+            false,
             null
           )
           expect(presenter.appointmentSummary).toEqual([
@@ -117,7 +121,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('appointmentAlreadyAttended', () => {
     describe('when the appointment has not yet been scheduled', () => {
       it('should return false', () => {
-        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [], false)
         expect(presenter.appointmentAlreadyAttended).toBe(false)
       })
     })
@@ -129,7 +133,8 @@ describe(ScheduleAppointmentPresenter, () => {
           referral,
           initialAssessmentAppointmentFactory.build(),
           null,
-          []
+          [],
+          false
         )
         expect(presenter.appointmentAlreadyAttended).toBe(false)
       })
@@ -143,7 +148,8 @@ describe(ScheduleAppointmentPresenter, () => {
             referral,
             initialAssessmentAppointmentFactory.attended('no').build(),
             null,
-            []
+            [],
+            false
           )
           expect(presenter.appointmentAlreadyAttended).toBe(true)
         })
@@ -156,7 +162,8 @@ describe(ScheduleAppointmentPresenter, () => {
             referral,
             actionPlanAppointmentFactory.attended('no').build(),
             null,
-            []
+            [],
+            false
           )
           expect(presenter.appointmentAlreadyAttended).toBe(false)
         })
@@ -174,6 +181,7 @@ describe(ScheduleAppointmentPresenter, () => {
           appointment,
           null,
           [],
+          false,
           {
             errors: [
               {
@@ -216,6 +224,7 @@ describe(ScheduleAppointmentPresenter, () => {
           appointment,
           null,
           [],
+          false,
           {
             errors: [
               {
@@ -236,7 +245,7 @@ describe(ScheduleAppointmentPresenter, () => {
     describe('when no error is passed in', () => {
       it('returns null', () => {
         const appointment = initialAssessmentAppointmentFactory.build()
-        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, appointment, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, appointment, null, [], false)
 
         expect(presenter.errorSummary).toEqual(null)
       })
@@ -246,7 +255,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('fields', () => {
     describe('with null draft scheduling details and a null appointment', () => {
       it('returns empty fields', () => {
-        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [], false)
 
         expect(presenter.fields).toEqual({
           date: {
@@ -271,6 +280,7 @@ describe(ScheduleAppointmentPresenter, () => {
           },
           sessionType: { value: '', errorMessage: null },
           meetingMethod: { value: null, errorMessage: null },
+          rescheduledReason: '',
           address: {
             value: null,
             errors: {
@@ -293,7 +303,8 @@ describe(ScheduleAppointmentPresenter, () => {
           referral,
           initialAssessmentAppointmentFactory.attended('no').build(),
           null,
-          []
+          [],
+          false
         )
 
         expect(presenter.fields).toEqual({
@@ -319,6 +330,7 @@ describe(ScheduleAppointmentPresenter, () => {
           },
           sessionType: { value: '', errorMessage: null },
           meetingMethod: { value: null, errorMessage: null },
+          rescheduledReason: '',
           address: {
             value: null,
             errors: {
@@ -349,7 +361,7 @@ describe(ScheduleAppointmentPresenter, () => {
             postCode: 'SY4 0RE',
           },
         })
-        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, appointment, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, appointment, null, [], false)
 
         expect(presenter.fields).toEqual({
           date: {
@@ -374,6 +386,7 @@ describe(ScheduleAppointmentPresenter, () => {
           },
           sessionType: { value: 'ONE_TO_ONE', errorMessage: null },
           meetingMethod: { value: 'IN_PERSON_MEETING_OTHER', errorMessage: null },
+          rescheduledReason: '',
           address: {
             value: {
               firstAddressLine: 'Harmony Living Office, Room 4',
@@ -404,7 +417,7 @@ describe(ScheduleAppointmentPresenter, () => {
           appointmentDeliveryType: 'IN_PERSON_MEETING_PROBATION_OFFICE',
           npsOfficeCode: 'CRS00001',
         })
-        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, appointment, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, appointment, null, [], false)
 
         expect(presenter.fields).toEqual({
           date: {
@@ -429,6 +442,7 @@ describe(ScheduleAppointmentPresenter, () => {
           },
           sessionType: { value: 'ONE_TO_ONE', errorMessage: null },
           meetingMethod: { value: 'IN_PERSON_MEETING_PROBATION_OFFICE', errorMessage: null },
+          rescheduledReason: '',
           address: {
             value: null,
             errors: {
@@ -466,6 +480,7 @@ describe(ScheduleAppointmentPresenter, () => {
             null,
             null,
             [],
+            false,
             null,
             draftSchedulingDetails
           )
@@ -492,6 +507,7 @@ describe(ScheduleAppointmentPresenter, () => {
               minutes: { value: '15', hasError: false },
             },
             meetingMethod: { value: 'IN_PERSON_MEETING_OTHER', errorMessage: null },
+            rescheduledReason: '',
             sessionType: { value: 'ONE_TO_ONE', errorMessage: null },
             address: {
               value: {
@@ -528,6 +544,7 @@ describe(ScheduleAppointmentPresenter, () => {
             currentAppointment,
             null,
             [],
+            false,
             null,
             draftSchedulingDetails,
             null,
@@ -559,7 +576,7 @@ describe(ScheduleAppointmentPresenter, () => {
   describe('backLinkHref', () => {
     describe('when overrideBackLinkHref is not provided to the constructor', () => {
       it('returns the URL of the intervention progress page', () => {
-        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
+        const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [], false)
 
         expect(presenter.backLinkHref).toEqual(`/service-provider/referrals/${referral.id}/progress`)
       })
@@ -573,6 +590,7 @@ describe(ScheduleAppointmentPresenter, () => {
           null,
           null,
           [],
+          false,
           null,
           null,
           null,
@@ -587,13 +605,13 @@ describe(ScheduleAppointmentPresenter, () => {
 
   describe('allowSessionTypeSelection', () => {
     it('returns true when the form type is actionPlan', () => {
-      const presenter = new ScheduleAppointmentPresenter('actionPlan', referral, null, null, [])
+      const presenter = new ScheduleAppointmentPresenter('actionPlan', referral, null, null, [], false)
 
       expect(presenter.allowSessionTypeSelection).toEqual(true)
     })
 
     it('returns false when the form type is supplierAssessment', () => {
-      const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [])
+      const presenter = new ScheduleAppointmentPresenter('supplierAssessment', referral, null, null, [], false)
 
       expect(presenter.allowSessionTypeSelection).toEqual(false)
     })

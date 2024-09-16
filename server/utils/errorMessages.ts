@@ -305,6 +305,9 @@ export default {
       empty: 'Select an office',
       invalidOfficeSelection: 'Select an office from the list',
     },
+    recsheduledReason: {
+      empty: 'Enter reason for changing appointment',
+    },
   },
   endOfServiceReportOutcome: {
     achievementLevel: {

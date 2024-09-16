@@ -102,7 +102,13 @@ export default class AppointmentsController {
     let serverError: FormValidationError | null = null
 
     if (req.method === 'POST') {
-      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations, false, referral.sentAt).data()
+      const data = await new ScheduleAppointmentForm(
+        req,
+        deliusOfficeLocations,
+        false,
+        referral.sentAt,
+        hasExistingScheduledAppointment
+      ).data()
       if (data.error) {
         res.status(400)
         formError = data.error
@@ -140,6 +146,7 @@ export default class AppointmentsController {
       currentAppointment,
       appointmentSummary,
       deliusOfficeLocations,
+      hasExistingScheduledAppointment,
       formError,
       draft.data,
       userInputData,
@@ -299,12 +306,27 @@ export default class AppointmentsController {
     const deliusOfficeLocations: DeliusOfficeLocation[] =
       await this.deliusOfficeLocationFilter.findOfficesByIntervention(intervention)
 
+    const appointment = await this.interventionsService.getActionPlanAppointment(
+      res.locals.user.token.accessToken,
+      req.params.id,
+      sessionNumber
+    )
+
+    const hasExistingScheduledAppointment =
+      appointment.appointmentId !== undefined && appointment.appointmentId !== null
+
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
     let serverError: FormValidationError | null = null
 
     if (req.method === 'POST') {
-      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations, true, referral.sentAt).data()
+      const data = await new ScheduleAppointmentForm(
+        req,
+        deliusOfficeLocations,
+        true,
+        referral.sentAt,
+        hasExistingScheduledAppointment
+      ).data()
 
       if (data.error) {
         res.status(400)
@@ -331,11 +353,6 @@ export default class AppointmentsController {
     }
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
-    const appointment = await this.interventionsService.getActionPlanAppointment(
-      res.locals.user.token.accessToken,
-      req.params.id,
-      sessionNumber
-    )
     const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
     const appointmentScheduleDetails = this.extractAppointmentSchedulingDetails(draft)
     const presenter = new ScheduleActionPlanSessionPresenter(
@@ -343,6 +360,7 @@ export default class AppointmentsController {
       appointment,
       appointmentSummary,
       deliusOfficeLocations,
+      hasExistingScheduledAppointment,
       formError,
       appointmentScheduleDetails,
       userInputData,

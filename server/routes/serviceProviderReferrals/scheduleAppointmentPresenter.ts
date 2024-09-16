@@ -18,6 +18,7 @@ export default class ScheduleAppointmentPresenter {
     private readonly currentAppointment: InitialAssessmentAppointment | ActionPlanAppointment | null,
     private readonly currentAppointmentSummary: AppointmentSummary | null,
     private readonly deliusOfficeLocations: DeliusOfficeLocation[],
+    private readonly hasExistingScheduledAppointment: boolean,
     private readonly validationError: FormValidationError | null = null,
     private readonly draftSchedulingDetails: AppointmentSchedulingDetails | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
@@ -34,6 +35,13 @@ export default class ScheduleAppointmentPresenter {
       this.currentAppointment && !this.appointmentAlreadyAttended
         ? 'Change appointment details'
         : 'Add appointment details',
+  }
+
+  get rescheduledReason(): Record<string, string | null> {
+    return {
+      label: 'Enter reason for changing appointment',
+      errorMessage: PresenterUtils.errorMessage(this.validationError, 'rescheduled-reason'),
+    }
   }
 
   private readonly utils = new PresenterUtils(this.userInputData)
@@ -121,6 +129,10 @@ export default class ScheduleAppointmentPresenter {
         this.schedulingDetailsToEdit?.npsOfficeCode ?? null,
         'delius-office-location-code',
         this.validationError
+      ),
+      rescheduledReason: this.utils.stringValue(
+        this.currentAppointment?.rescheduledReason ?? null,
+        'rescheduled-reason'
       ),
     }
   })()
