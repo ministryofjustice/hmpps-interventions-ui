@@ -170,7 +170,10 @@ export default class InterventionProgressPresenter {
       .filter(
         x =>
           x.isParent ||
-          (!x.isParent && (x.statusPresenter.text === 'did not attend' || x.statusPresenter.text === 'did not happen'))
+          (!x.isParent &&
+            (x.statusPresenter.text === 'did not attend' ||
+              x.statusPresenter.text === 'did not happen' ||
+              x.statusPresenter.text === 'rescheduled'))
       )
   }
 
