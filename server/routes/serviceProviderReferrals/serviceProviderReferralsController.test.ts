@@ -2194,7 +2194,7 @@ describe('GET /service-provider/action-plan/:actionPlanId/confirmation', () => {
       .get(`/service-provider/action-plan/${submittedActionPlan.id}/confirmation`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Action plan submitted for approval')
+        expect(res.text).toContain('Action plan submitted')
       })
   })
 })

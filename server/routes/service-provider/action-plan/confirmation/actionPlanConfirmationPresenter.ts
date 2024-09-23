@@ -34,7 +34,7 @@ export default class ActionPlanConfirmationPresenter {
     const currentTime = Date.now()
     const autoApprovalStartDate = new Date('2024-09-02T00:00:00+00:00').getTime()
     if (currentTime >= autoApprovalStartDate) {
-      return 'The action plan has been submitted and will be shared with the probation practitioner. Action plans no longer require approval by the probation practitioner therfore you can commence delivery of intervention sessions immediately. Where amendments are required, the probation practitioner will contact you.'
+      return 'The action plan has been submitted and will be shared with the probation practitioner. Action plans no longer require approval by the probation practitioner therefore you can commence delivery of intervention sessions immediately. Where amendments are required, the probation practitioner will contact you.'
     }
     return 'The action plan has been saved and submitted to the probation practitioner for approval. They’ll get in touch with you to make amendments if needed and you’ll get an email once it’s been approved.'
   }
