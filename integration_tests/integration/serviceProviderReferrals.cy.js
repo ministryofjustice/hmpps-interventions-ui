@@ -821,7 +821,7 @@ describe('Service provider referrals dashboard', () => {
     cy.contains('Create appointment with local authority')
     cy.contains('Submit action plan').click()
 
-    cy.contains('Action plan submitted for approval')
+    cy.contains('Action plan submitted')
     cy.location('pathname').should('equal', `/service-provider/action-plan/${draftActionPlan.id}/confirmation`)
     cy.contains('Return to service progress').click()
 
@@ -979,7 +979,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Submit action plan').click()
 
-      cy.contains('Action plan submitted for approval')
+      cy.contains('Action plan submitted')
       cy.location('pathname').should(
         'equal',
         `/service-provider/action-plan/${actionPlanWithUpdatedSessions.id}/confirmation`
@@ -1068,7 +1068,7 @@ describe('Service provider referrals dashboard', () => {
 
       cy.contains('Submit action plan').click()
 
-      cy.contains('Action plan submitted for approval')
+      cy.contains('Action plan submitted')
       cy.location('pathname').should(
         'equal',
         `/service-provider/action-plan/${submittedActionPlanVersionTwo.id}/confirmation`
