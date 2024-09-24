@@ -8,5 +8,7 @@
 {% block formSection %}
   {{ govukSummaryList(sessionDetailsSummaryListArgs) }}
   <br>
-  {% include "../partials/postSessionFeedbackResponses.njk" %}
+  {% if not presenter.isRescheduledAppointment %}
+    {% include "../partials/postSessionFeedbackResponses.njk" %}
+  {% endif %}
 {% endblock %}

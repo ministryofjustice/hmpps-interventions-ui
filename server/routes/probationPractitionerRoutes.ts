@@ -165,7 +165,11 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   get(
     router,
     '/referrals/:referralId/session/:sessionNumber/appointment/:appointmentId/post-session-feedback',
-    (req, res) => appointmentsController.viewSubmittedActionPlanSessionFeedback(req, res, 'probation-practitioner')
+    (req, res) =>
+      appointmentsController.viewSubmittedActionPlanSessionFeedback(req, res, 'probation-practitioner', false)
+  )
+  get(router, '/referrals/:referralId/session/:sessionNumber/appointment/:appointmentId/rescheduled', (req, res) =>
+    appointmentsController.viewSubmittedActionPlanSessionFeedback(req, res, 'probation-practitioner', true)
   )
   get(router, '/action-plan/:actionPlanId', (req, res) =>
     probationPractitionerReferralsController.viewActionPlanById(req, res)
@@ -236,10 +240,13 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     appointmentsController.showSupplierAssessmentAppointment(req, res, 'probation-practitioner')
   )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback', (req, res) =>
-    appointmentsController.viewSupplierAssessmentFeedback(req, res, 'probation-practitioner')
+    appointmentsController.viewSupplierAssessmentFeedback(req, res, 'probation-practitioner', false)
   )
   get(router, '/referrals/:referralId/supplier-assessment/post-assessment-feedback/:appointmentId', (req, res) =>
-    appointmentsController.viewSupplierAssessmentFeedback(req, res, 'probation-practitioner')
+    appointmentsController.viewSupplierAssessmentFeedback(req, res, 'probation-practitioner', false)
+  )
+  get(router, '/referrals/:referralId/supplier-assessment/rescheduled/appointment/:appointmentId', (req, res) =>
+    appointmentsController.viewSupplierAssessmentFeedback(req, res, 'service-provider', true)
   )
   get(router, '/referrals/:id/action-plan', (req, res) =>
     probationPractitionerReferralsController.viewLatestActionPlan(req, res)

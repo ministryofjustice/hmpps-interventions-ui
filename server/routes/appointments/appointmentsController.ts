@@ -900,7 +900,8 @@ export default class AppointmentsController {
   async viewSupplierAssessmentFeedback(
     req: Request,
     res: Response,
-    userType: 'service-provider' | 'probation-practitioner'
+    userType: 'service-provider' | 'probation-practitioner',
+    rescheduled: boolean
   ): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
@@ -939,7 +940,8 @@ export default class AppointmentsController {
       serviceUser,
       userType,
       referralId,
-      true
+      true,
+      rescheduled
     )
     const view = new SubmittedFeedbackView(presenter)
 
@@ -1456,7 +1458,8 @@ export default class AppointmentsController {
   async viewSubmittedActionPlanSessionFeedback(
     req: Request,
     res: Response,
-    userType: 'service-provider' | 'probation-practitioner'
+    userType: 'service-provider' | 'probation-practitioner',
+    rescheduled: boolean
   ): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { sessionNumber, actionPlanId, appointmentId } = req.params
@@ -1498,7 +1501,8 @@ export default class AppointmentsController {
       serviceUser,
       userType,
       referral.id,
-      false
+      false,
+      rescheduled
     )
     const view = new SubmittedFeedbackView(presenter)
 
@@ -1531,6 +1535,7 @@ export default class AppointmentsController {
       serviceUser,
       'probation-practitioner',
       referral.id,
+      false,
       false,
       null
     )

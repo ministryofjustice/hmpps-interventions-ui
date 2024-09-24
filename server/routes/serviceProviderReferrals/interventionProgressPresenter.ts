@@ -190,6 +190,9 @@ export default class InterventionProgressPresenter {
     const viewHref = `/service-provider/action-plan/${this.actionPlan!.id}/session/${
       appointment.sessionNumber
     }/appointment/${appointment.appointmentId}/post-session-feedback`
+    const viewRescheduledHref = `/service-provider/action-plan/${this.actionPlan!.id}/session/${
+      appointment.sessionNumber
+    }/appointment/${appointment.appointmentId}/rescheduled`
     const editHref = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${
       appointment.sessionNumber
     }/edit/start`
@@ -261,7 +264,7 @@ export default class InterventionProgressPresenter {
         links = [
           {
             text: 'View appointment details',
-            href: viewHref,
+            href: viewRescheduledHref,
           },
         ]
         break
@@ -381,7 +384,9 @@ export default class InterventionProgressPresenter {
         return [
           {
             text: 'View appointment details',
-            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/appointment/${appointment!.id}`,
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/rescheduled/appointment/${
+              appointment!.id
+            }`,
           },
         ]
       case SessionStatus.awaitingFeedback:
