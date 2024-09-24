@@ -171,6 +171,10 @@ export default class FeedbackAnswersPresenter {
   }
 
   get notifyProbationPractitionerOfBehaviourAnswers(): { question: string; answer: string } | null {
+    if (this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfBehaviour === null) {
+      return null
+    }
+
     const notifyPP = this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfBehaviour
       ? 'Yes'
       : 'No'
@@ -185,6 +189,10 @@ export default class FeedbackAnswersPresenter {
   }
 
   get notifyProbationPractitionerOfConcernsAnswers(): { question: string; answer: string } | null {
+    if (this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfConcerns === null) {
+      return null
+    }
+
     const notifyPP =
       this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitionerOfConcerns ||
       this.appointment.appointmentFeedback.sessionFeedback.notifyProbationPractitioner
