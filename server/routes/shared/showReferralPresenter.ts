@@ -208,6 +208,10 @@ export default class ShowReferralPresenter {
         {
           key: 'Name',
           lines: [this.sentReferral.referral.ppName || this.sentReferral.referral.ndeliusPPName || 'Not found'],
+          changeLink:
+            this.userType === 'probation-practitioner'
+              ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-probation-practitioner-name`
+              : undefined,
         },
         { key: 'Email address', lines: [this.deriveEmailAddress] }
       )
