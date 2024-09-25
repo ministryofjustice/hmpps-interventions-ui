@@ -96,6 +96,11 @@ export default class ChangelogDetailView {
           from: `<p>${oldValue[0].length > 0 ? oldValue[0].trim() : 'N/A'}</p>`,
           to: `<p>${newValue[0].length > 0 ? newValue[0].trim() : 'N/A'}</p>`,
         }
+      case 'PROBATION_PRACTITIONER_NAME':
+        return {
+          from: `<p>${oldValue.length > 0 ? oldValue : 'N/A'}</p>`,
+          to: `<p>${newValue.length > 0 ? newValue : 'N/A'}</p>`,
+        }
       default:
         return {}
     }
