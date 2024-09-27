@@ -50,6 +50,7 @@ export interface ReferralFields {
   ppLocationType: string | null
   allocatedCommunityPP: boolean | null
   reasonForReferral: string | null
+  reasonForReferralFurtherInformation: string | null
   reasonForReferralCreationBeforeAllocation: string | null
 }
 
