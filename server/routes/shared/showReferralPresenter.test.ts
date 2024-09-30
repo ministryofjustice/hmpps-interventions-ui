@@ -1670,9 +1670,14 @@ describe(ShowReferralPresenter, () => {
         })
       ).toEqual([
         {
-          key: 'Reason for the referral and further information',
+          key: 'Reason for referral and referral details',
           lines: ['For crs'],
           changeLink: undefined,
+        },
+        {
+          key: 'Further information',
+          lines: ['more info'],
+          // changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
         },
         {
           key: 'Complexity level',
@@ -1718,9 +1723,14 @@ describe(ShowReferralPresenter, () => {
           })
         ).toEqual([
           {
-            key: 'Reason for the referral and further information for the service provider',
+            key: 'Reason for referral and referral details',
             lines: ['For crs'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
+          },
+          {
+            key: 'Further information for the service provider',
+            lines: ['more info'],
+            // changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
           },
           expect.objectContaining({
             key: 'Complexity level',
@@ -1759,9 +1769,14 @@ describe(ShowReferralPresenter, () => {
           })
         ).toEqual([
           {
-            key: 'Reason for the referral and further information for the service provider',
+            key: 'Reason for referral and referral details',
             lines: ['For crs'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
+          },
+          {
+            key: 'Further information for the service provider',
+            lines: ['more info'],
+            // changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
           },
           expect.objectContaining({
             key: 'Complexity level',
@@ -1800,8 +1815,12 @@ describe(ShowReferralPresenter, () => {
           })
         ).toEqual([
           {
-            key: 'Reason for the referral and further information',
+            key: 'Reason for referral and referral details',
             lines: ['For crs'],
+          },
+          {
+            key: 'Further information',
+            lines: ['more info'],
           },
           expect.objectContaining({
             key: 'Complexity level',
@@ -1843,9 +1862,14 @@ describe(ShowReferralPresenter, () => {
           })
         ).toEqual([
           {
-            key: 'Reason for the referral and further information for the service provider',
+            key: 'Reason for referral and referral details',
             lines: ['For crs'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
+          },
+          {
+            key: 'Further information for the service provider',
+            lines: ['more info'],
+            // changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
           },
           {
             key: 'Complexity level',
@@ -1888,9 +1912,14 @@ describe(ShowReferralPresenter, () => {
           })
         ).toEqual([
           {
-            key: 'Reason for the referral and further information for the service provider',
+            key: 'Reason for referral and referral details',
             lines: ['For crs'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
+          },
+          {
+            key: 'Further information for the service provider',
+            lines: ['more info'],
+            // changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
           },
           {
             key: 'Complexity level',
@@ -1937,8 +1966,12 @@ describe(ShowReferralPresenter, () => {
           })
         ).toEqual([
           {
-            key: 'Reason for the referral and further information',
+            key: 'Reason for referral and referral details',
             lines: ['For crs'],
+          },
+          {
+            key: 'Further information',
+            lines: ['more info'],
           },
           {
             key: 'Complexity level',
