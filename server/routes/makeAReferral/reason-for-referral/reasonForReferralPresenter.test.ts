@@ -32,7 +32,7 @@ describe('ReasonForReferralPresenter', () => {
       it('returns null', () => {
         const presenter = new ReasonForReferralPresenter(referral)
 
-        expect(presenter.errorMessage).toBeNull()
+        expect(presenter.reasonForReferralErrorMessage).toBeNull()
       })
     })
 
@@ -48,7 +48,9 @@ describe('ReasonForReferralPresenter', () => {
           ],
         })
 
-        expect(presenter.errorMessage).toEqual('Enter reason for the referral and any further information')
+        expect(presenter.reasonForReferralErrorMessage).toEqual(
+          'Enter reason for the referral and any further information'
+        )
       })
     })
   })

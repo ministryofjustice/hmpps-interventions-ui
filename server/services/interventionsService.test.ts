@@ -1580,6 +1580,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       ppLocationType: null,
       allocatedCommunityPP: true,
       reasonForReferral: 'for crs',
+      reasonForReferralFurtherInformation: 'more info',
       reasonForReferralCreationBeforeAllocation: 'for quick assessment',
     },
   }

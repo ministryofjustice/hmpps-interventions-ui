@@ -524,8 +524,13 @@ export default class CheckAllReferralInformationPresenter {
 
       if (!isCohortIntervention) {
         summaries.push({
-          key: 'Reason for referral and further information for the service provider',
+          key: 'Reason for referral and referral details',
           lines: [this.determineFurtherInformation(this.referral)],
+          changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
+        })
+        summaries.push({
+          key: 'Further Information for the service provider',
+          lines: [this.determineReasonForReferralFurtherInformation(this.referral)],
           changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
         })
       }
@@ -626,6 +631,14 @@ export default class CheckAllReferralInformationPresenter {
     if (referral.furtherInformation?.length) {
       return referral.furtherInformation!
     }
+    return 'None'
+  }
+
+  private determineReasonForReferralFurtherInformation(referral: DraftReferral) {
+    if (referral.reasonForReferralFurtherInformation !== null) {
+      return referral.reasonForReferralFurtherInformation!
+    }
+
     return 'None'
   }
 
