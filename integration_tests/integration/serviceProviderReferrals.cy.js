@@ -1136,6 +1136,8 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#method-other-location-address-town-or-city').type('Blackpool')
           cy.get('#method-other-location-address-county').type('Lancashire')
           cy.get('#method-other-location-address-postcode').type('SY4 0RE')
+          cy.get('[id=rescheduleRequestedBySpRadio]').click()
+          cy.get('#rescheduled-reason').type('test reason')
 
           const scheduledAppointment = actionPlanAppointmentFactory.build({
             ...appointment,
@@ -1209,6 +1211,8 @@ describe('Service provider referrals dashboard', () => {
             cy.get('#method-other-location-address-town-or-city').type('Blackpool')
             cy.get('#method-other-location-address-county').type('Lancashire')
             cy.get('#method-other-location-address-postcode').type('SY4 0RE')
+            cy.get('[id=rescheduleRequestedBySpRadio]').click()
+            cy.get('#rescheduled-reason').type('test reason')
 
             cy.contains('Save and continue').click()
 
@@ -1243,6 +1247,8 @@ describe('Service provider referrals dashboard', () => {
             cy.get('#method-other-location-address-town-or-city').should('have.value', 'Blackpool')
             cy.get('#method-other-location-address-county').should('have.value', 'Lancashire')
             cy.get('#method-other-location-address-postcode').should('have.value', 'SY4 0RE')
+            cy.get('[id=rescheduleRequestedBySpRadio]').click()
+            cy.get('#rescheduled-reason').type('test reason')
 
             cy.get('#date-day').clear()
             cy.get('#date-day').type(rescheduledDate.format('D'))
@@ -1293,6 +1299,8 @@ describe('Service provider referrals dashboard', () => {
           cy.contains('Group session').click()
           cy.contains('In-person meeting - NPS offices').click()
           cy.get('#delius-office-location-code').select('Blackpool: Blackpool Probation Office')
+          cy.get('[id=rescheduleRequestedBySpRadio]').click()
+          cy.get('#rescheduled-reason').type('test reason')
 
           const scheduledAppointment = actionPlanAppointmentFactory.build({
             ...appointment,
@@ -1356,6 +1364,8 @@ describe('Service provider referrals dashboard', () => {
             cy.get('#duration-minutes').type('15')
             cy.contains('1:1').click()
             cy.contains('Phone call').click()
+            cy.get('[id=rescheduleRequestedBySpRadio]').click()
+            cy.get('#rescheduled-reason').type('test reason')
 
             cy.contains('Save and continue').click()
 
