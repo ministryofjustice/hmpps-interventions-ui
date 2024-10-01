@@ -64,6 +64,7 @@
           {% endset -%}
           {{ govukRadios(meetingMethodRadioInputArgs(deliusOfficeLocationHtml, otherLocationHtml)) }}
             {% if presenter.hasExistingScheduledAppointment %}
+                {{ govukRadios(rescheduleRequestedByRadioButtonArgs) }}
                 {{ govukTextarea(rescheduledReasonTextareaArgs) }}
             {% endif %}
         </div>

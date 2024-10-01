@@ -99,6 +99,7 @@ export default class ScheduleAppointmentForm {
         appointmentDeliveryType: appointmentDeliveryType.value!,
         appointmentDeliveryAddress: appointmentDeliveryAddress.value,
         npsOfficeCode: deliusOfficeLocation.value,
+        rescheduleRequestedBy: this.request.body['reschedule-requested-by'],
         rescheduledReason: this.request.body['rescheduled-reason'],
       },
     }
@@ -114,7 +115,12 @@ export default class ScheduleAppointmentForm {
 
   private validateRescheduledReason(): ValidationChain[] {
     return this.hasExistingScheduledAppointment
-      ? [body('rescheduled-reason').notEmpty().withMessage(errorMessages.scheduleAppointment.recsheduledReason.empty)]
+      ? [
+          body('reschedule-requested-by')
+            .notEmpty()
+            .withMessage(errorMessages.scheduleAppointment.rescheduleRequestedBy.emptyRadio),
+          body('rescheduled-reason').notEmpty().withMessage(errorMessages.scheduleAppointment.rescheduledReason.empty),
+        ]
       : []
   }
 }

@@ -92,6 +92,8 @@ describe('Scheduling a supplier assessment appointment', () => {
         const draftBooking = draftAppointmentBookingFactory.build()
         draftsService.fetchDraft.mockResolvedValue(draftBooking)
 
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
@@ -119,6 +121,8 @@ describe('Scheduling a supplier assessment appointment', () => {
         )
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
         await request(app)
           .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
@@ -146,6 +150,8 @@ describe('Scheduling a supplier assessment appointment', () => {
         hmppsAuthService.getSPUserByUsername.mockResolvedValue(
           hmppsAuthUserFactory.build({ firstName: 'caseWorkerFirstName', lastName: 'caseWorkerLastName' })
         )
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
         await request(app)
           .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
@@ -182,6 +188,8 @@ describe('Scheduling a supplier assessment appointment', () => {
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
         await request(app)
           .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details?clash=true`)
@@ -251,6 +259,8 @@ describe('Scheduling a supplier assessment appointment', () => {
           interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
           interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
           interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+          const deliusServiceUser = deliusServiceUserFactory.build()
+          ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
           await request(app)
             .post(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
@@ -630,6 +640,9 @@ describe('Scheduling a delivery session', () => {
 
       const appointment = actionPlanAppointmentFactory.build()
 
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
+
       interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
       interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
@@ -704,6 +717,9 @@ describe('Scheduling a delivery session', () => {
 
         const actionPlan = actionPlanFactory.build()
         const appointment = actionPlanAppointmentFactory.build()
+
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
         interventionsService.getActionPlan.mockResolvedValue(actionPlan)
         interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)

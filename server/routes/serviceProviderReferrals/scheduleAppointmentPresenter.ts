@@ -44,6 +44,13 @@ export default class ScheduleAppointmentPresenter {
     }
   }
 
+  get rescheduleRequestedBy(): Record<string, string | null> {
+    return {
+      label: 'Appointment change requested by',
+      errorMessage: PresenterUtils.errorMessage(this.validationError, 'reschedule-requested-by'),
+    }
+  }
+
   private readonly utils = new PresenterUtils(this.userInputData)
 
   get appointmentSummary(): SummaryListItem[] {

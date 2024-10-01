@@ -27,5 +27,6 @@ export interface AppointmentSchedulingDetails {
   appointmentDeliveryType: AppointmentDeliveryType | null
   appointmentDeliveryAddress: Address | null
   npsOfficeCode: string | null
+  rescheduleRequestedBy?: string
   rescheduledReason?: string
 }

@@ -154,7 +154,8 @@ export default class AppointmentsController {
       overrideBackLinkHref
     )
 
-    const view = new ScheduleAppointmentView(presenter)
+    const serviceUserName = `${serviceUser.name.forename} ${serviceUser.name.surname}`
+    const view = new ScheduleAppointmentView(req, serviceUserName, presenter)
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
@@ -375,7 +376,8 @@ export default class AppointmentsController {
       userInputData,
       serverError
     )
-    const view = new ScheduleAppointmentView(presenter)
+    const serviceUserName = `${serviceUser.name.forename} ${serviceUser.name.surname}`
+    const view = new ScheduleAppointmentView(req, serviceUserName, presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }

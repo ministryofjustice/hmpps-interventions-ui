@@ -305,7 +305,10 @@ export default {
       empty: 'Select an office',
       invalidOfficeSelection: 'Select an office from the list',
     },
-    recsheduledReason: {
+    rescheduleRequestedBy: {
+      emptyRadio: 'Select who requested the appointment change',
+    },
+    rescheduledReason: {
       empty: 'Enter reason for changing appointment',
     },
   },
