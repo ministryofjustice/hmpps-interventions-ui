@@ -20,7 +20,12 @@ export default class ReasonForReferralPresenter {
     title: `Provide the reason for this referral and further information for the service provider`,
   }
 
-  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'reason-for-referral')
+  readonly reasonForReferralErrorMessage = PresenterUtils.errorMessage(this.error, 'reason-for-referral')
+
+  readonly reasonForReferralFurtherInformationErrorMessage = PresenterUtils.errorMessage(
+    this.error,
+    'reason-for-referral-further-information'
+  )
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error, {
     fieldOrder: ['reason-for-referral'],
@@ -30,6 +35,10 @@ export default class ReasonForReferralPresenter {
 
   readonly fields = {
     reasonForReferral: this.utils.stringValue(this.referral.reasonForReferral, 'reason-for-referral'),
+    reasonForReferralFurtherInformation: this.utils.stringValue(
+      this.referral.reasonForReferralFurtherInformation,
+      'reason-for-referral-further-information'
+    ),
   }
 
   private get determinBackUpLink(): string {

@@ -27,13 +27,19 @@ export default class ReasonForReferralForm {
     return {
       paramsForUpdate: {
         reasonForReferral: this.request.body['reason-for-referral'],
+        reasonForReferralFurtherInformation: this.request.body['reason-for-referral-further-information'],
       },
       error: null,
     }
   }
 
   static get validations(): ValidationChain[] {
-    return [body('reason-for-referral').notEmpty().withMessage(errorMessages.reasonForReferral.empty)]
+    return [
+      body('reason-for-referral').notEmpty().withMessage(errorMessages.reasonForReferral.empty),
+      body('reason-for-referral-further-information')
+        .notEmpty()
+        .withMessage(errorMessages.reasonForReferralFurtherInformation.empty),
+    ]
   }
 
   private error(validationResult: Result<ValidationError>): FormValidationError | null {

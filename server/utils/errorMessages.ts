@@ -334,7 +334,10 @@ export default {
     },
   },
   reasonForReferral: {
-    empty: 'Enter reason for the referral and any further information',
+    empty: 'Enter reason for the referral and referral details',
+  },
+  reasonForReferralFurtherInformation: {
+    empty: 'Enter any further information',
   },
   probationPractitionerName: {
     empty: 'Enter probation practitioner name',

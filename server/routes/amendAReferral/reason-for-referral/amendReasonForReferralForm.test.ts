@@ -25,7 +25,7 @@ describe(AmendReasonForReferralForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'amend-reason-for-referral',
         formFields: ['amend-reason-for-referral'],
-        message: 'Enter reason for the referral and any further information',
+        message: 'Enter reason for the referral and referral details',
       })
     })
   })

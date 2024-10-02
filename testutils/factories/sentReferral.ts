@@ -77,6 +77,7 @@ const exampleReferralFields = () => {
     ppLocationType: null,
     allocatedCommunityPP: true,
     reasonForReferral: 'For crs',
+    reasonForReferralFurtherInformation: 'more info',
     reasonForReferralCreationBeforeAllocation: 'for quick assessment',
   }
 }
