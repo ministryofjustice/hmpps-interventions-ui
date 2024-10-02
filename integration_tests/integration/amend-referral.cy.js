@@ -393,7 +393,7 @@ context('Amend a referral', () => {
           .last()
           .children()
           .should('contain', 'Desired outcomes')
-          .find('#change-link-2')
+          .find('#change-link-3')
           .click()
 
         cy.location('pathname').should(
@@ -415,7 +415,7 @@ context('Amend a referral', () => {
           .children()
           .should('contain', 'Complexity level')
           .should('contain', 'Desired outcomes')
-          .find('#change-link-2')
+          .find('#change-link-3')
           .click()
 
         cy.location('pathname').should(
@@ -757,10 +757,7 @@ context('Amend a referral', () => {
 
       it('takes the pp to the form when clicking the change link in the details page', () => {
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
-        cy.contains(
-          '.govuk-summary-list__key',
-          'Reason for the referral and further information for the service provider'
-        )
+        cy.contains('.govuk-summary-list__key', 'Reason for referral and referral details')
           .next()
           .next()
           .contains('Change')
@@ -802,10 +799,10 @@ context('Amend a referral', () => {
         cy.get('textarea[name="amend-reason-for-referral"]').clear()
         cy.contains('Save and continue').click()
 
-        cy.contains('There is a problem').next().contains('Enter reason for the referral and any further information')
+        cy.contains('There is a problem').next().contains('Enter reason for the referral and referral details')
         cy.get('textarea[name="amend-reason-for-referral"]')
           .prev()
-          .contains('Enter reason for the referral and any further information')
+          .contains('Enter reason for the referral and referral details')
       })
     })
   })

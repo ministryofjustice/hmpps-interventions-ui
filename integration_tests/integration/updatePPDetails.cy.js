@@ -632,7 +632,8 @@ describe('Referral form', () => {
       cy.contains('Save and continue').click()
       cy.visit(`/referrals/${draftReferral.id}/reason-for-referral`)
       cy.get('h1').contains('Provide the reason for this referral and further information for the service provider')
-      cy.get('textarea').type('Some information about Alex')
+      cy.get('#reason-for-referral').type('Some information about Alex')
+      cy.get('#reason-for-referral-further-information').type('Some information about Alex')
 
       // stub completed draft referral to mark section as completed
       cy.stubGetDraftReferral(draftReferral.id, completedDraftReferral)
@@ -834,7 +835,7 @@ describe('Referral form', () => {
         .next()
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/completion-deadline`)
-      cy.contains('Reason for referral and further information for the service provider')
+      cy.contains('Reason for referral and referral details')
         .next()
         .should('contain', 'Some reason')
         .next()
