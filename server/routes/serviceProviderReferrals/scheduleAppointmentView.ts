@@ -1,9 +1,11 @@
+import { Request } from 'express'
 import {
   BackLinkArgs,
   DateInputArgs,
   RadiosArgs,
   SelectArgs,
   SelectArgsItem,
+  TextareaArgs,
   TimeInputArgs,
 } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
@@ -11,29 +13,13 @@ import ScheduleAppointmentPresenter from './scheduleAppointmentPresenter'
 import AddressFormComponent from '../shared/addressFormComponent'
 
 export default class ScheduleAppointmentView {
-  constructor(private readonly presenter: ScheduleAppointmentPresenter) {}
+  constructor(
+    readonly request: Request,
+    private readonly serviceUserName: string,
+    private readonly presenter: ScheduleAppointmentPresenter
+  ) {}
 
   addressFormView = new AddressFormComponent(this.presenter.fields.address, 'method-other-location')
-
-  get renderArgs(): [string, Record<string, unknown>] {
-    return [
-      'serviceProviderReferrals/scheduleAppointment',
-      {
-        presenter: this.presenter,
-        dateInputArgs: this.dateInputArgs,
-        timeInputArgs: this.timeInputArgs,
-        durationDateInputArgs: this.durationDateInputArgs,
-        deliusOfficeLocationSelectArgs: this.deliusOfficeLocationSelectArgs,
-        errorSummaryArgs: this.errorSummaryArgs,
-        serverError: this.serverError,
-        address: this.addressFormView.inputArgs,
-        sessionTypeRadioInputArgs: this.sessionTypeRadioInputArgs,
-        meetingMethodRadioInputArgs: this.meetingMethodRadioInputArgs.bind(this),
-        backLinkArgs: this.backLinkArgs,
-        appointmentSummaryListArgs: ViewUtils.summaryListArgs(this.presenter.appointmentSummary),
-      },
-    ]
-  }
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
@@ -246,10 +232,79 @@ export default class ScheduleAppointmentView {
     }
   }
 
+  private get rescheduleRequestedByRadioButtonArgs(): Record<string, unknown> {
+    return {
+      classes: 'govuk-radios',
+      idPrefix: 'reschedule-requested-by',
+      name: 'reschedule-requested-by',
+      attributes: { 'data-cy': 'reschedule-requested-by-radios' },
+      fieldset: {
+        legend: {
+          text: this.presenter.rescheduleRequestedBy.label,
+          isPageHeading: false,
+          classes: 'govuk-fieldset__legend--m',
+        },
+      },
+      hint: {
+        text: 'Select one option',
+      },
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.rescheduleRequestedBy.errorMessage),
+      items: [
+        {
+          id: 'rescheduleRequestedBySpRadio',
+          value: 'Service Provider',
+          text: 'Service Provider',
+          checked: this.request.body['reschedule-requested-by'] === 'Service Provider',
+        },
+        {
+          id: 'rescheduleRequestedByUserRadio',
+          value: this.serviceUserName,
+          text: this.serviceUserName,
+          checked: this.request.body['reschedule-requested-by'] === this.serviceUserName,
+        },
+      ],
+    }
+  }
+
+  private get rescheduledReasonTextareaArgs(): TextareaArgs {
+    return {
+      name: 'rescheduled-reason',
+      id: 'rescheduled-reason',
+      label: {
+        text: this.presenter.rescheduledReason.label,
+        classes: 'govuk-label--l',
+      },
+      value: this.presenter.fields.rescheduledReason,
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.rescheduledReason.errorMessage),
+    }
+  }
+
   private get backLinkArgs(): BackLinkArgs {
     return {
       text: 'Back',
       href: this.presenter.backLinkHref,
     }
+  }
+
+  get renderArgs(): [string, Record<string, unknown>] {
+    return [
+      'serviceProviderReferrals/scheduleAppointment',
+      {
+        presenter: this.presenter,
+        dateInputArgs: this.dateInputArgs,
+        timeInputArgs: this.timeInputArgs,
+        durationDateInputArgs: this.durationDateInputArgs,
+        deliusOfficeLocationSelectArgs: this.deliusOfficeLocationSelectArgs,
+        errorSummaryArgs: this.errorSummaryArgs,
+        serverError: this.serverError,
+        address: this.addressFormView.inputArgs,
+        sessionTypeRadioInputArgs: this.sessionTypeRadioInputArgs,
+        rescheduleRequestedByRadioButtonArgs: this.rescheduleRequestedByRadioButtonArgs,
+        rescheduledReasonTextareaArgs: this.rescheduledReasonTextareaArgs,
+        meetingMethodRadioInputArgs: this.meetingMethodRadioInputArgs.bind(this),
+        backLinkArgs: this.backLinkArgs,
+        appointmentSummaryListArgs: ViewUtils.summaryListArgs(this.presenter.appointmentSummary),
+      },
+    ]
   }
 }

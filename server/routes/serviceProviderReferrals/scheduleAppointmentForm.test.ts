@@ -44,6 +44,38 @@ describe(ScheduleAppointmentForm, () => {
         })
       })
 
+      describe('with rescheduledReason and rescheduleRequestedBy', () => {
+        it('returns a paramsForUpdate with the completionDeadline key, an ISO-formatted date, rescheduledReason and rescheduleRequestedBy', async () => {
+          const request = TestUtils.createRequest({
+            'date-year': '2022',
+            'date-month': '4',
+            'date-day': '11',
+            'time-hour': '1',
+            'time-minute': '05',
+            'time-part-of-day': 'pm',
+            'duration-hours': '1',
+            'duration-minutes': '30',
+            'session-type': 'ONE_TO_ONE',
+            'meeting-method': 'PHONE_CALL',
+            'rescheduled-reason': 'test reason',
+            'reschedule-requested-by': 'Service Provider',
+          })
+
+          const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations, false, null, true).data()
+
+          expect(data.paramsForUpdate).toEqual({
+            appointmentTime: '2022-04-11T12:05:00.000Z',
+            durationInMinutes: 90,
+            sessionType: 'ONE_TO_ONE',
+            appointmentDeliveryType: 'PHONE_CALL',
+            appointmentDeliveryAddress: null,
+            npsOfficeCode: null,
+            rescheduledReason: 'test reason',
+            rescheduleRequestedBy: 'Service Provider',
+          })
+        })
+      })
+
       describe('with an other locations appointment', () => {
         it('returns a paramsForUpdate with the completionDeadline key, an ISO-formatted date and phone call', async () => {
           const request = TestUtils.createRequest({
@@ -277,6 +309,68 @@ describe(ScheduleAppointmentForm, () => {
                   errorSummaryLinkedField: 'date-year',
                   formFields: ['date-year'],
                   message: 'The session date must be a real date',
+                },
+              ],
+            })
+          })
+        })
+        describe('having no rescheduled reason when there is an existing appointment', () => {
+          it('returns an error message for empty rescheduled reason', async () => {
+            const request = TestUtils.createRequest({
+              'date-year': '2022',
+              'date-month': '3',
+              'date-day': '1',
+              'time-hour': '1',
+              'time-minute': '05',
+              'time-part-of-day': 'pm',
+              'duration-hours': '1',
+              'duration-minutes': '30',
+              'session-type': 'ONE_TO_ONE',
+              'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
+              'delius-office-location-code': 'CRS0001',
+              'rescheduled-reason': '',
+              'reschedule-requested-by': 'Service Provider',
+            })
+
+            const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations, false, null, true).data()
+
+            expect(data.error).toEqual({
+              errors: [
+                {
+                  errorSummaryLinkedField: 'rescheduled-reason',
+                  formFields: ['rescheduled-reason'],
+                  message: 'Enter reason for changing appointment',
+                },
+              ],
+            })
+          })
+        })
+        describe('having no rescheduled reason when there is an existing appointment', () => {
+          it('returns an error message for empty rescheduled reason', async () => {
+            const request = TestUtils.createRequest({
+              'date-year': '2022',
+              'date-month': '3',
+              'date-day': '1',
+              'time-hour': '1',
+              'time-minute': '05',
+              'time-part-of-day': 'pm',
+              'duration-hours': '1',
+              'duration-minutes': '30',
+              'session-type': 'ONE_TO_ONE',
+              'meeting-method': 'IN_PERSON_MEETING_PROBATION_OFFICE',
+              'delius-office-location-code': 'CRS0001',
+              'rescheduled-reason': 'test reason',
+              'reschedule-requested-by': '',
+            })
+
+            const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations, false, null, true).data()
+
+            expect(data.error).toEqual({
+              errors: [
+                {
+                  errorSummaryLinkedField: 'reschedule-requested-by',
+                  formFields: ['reschedule-requested-by'],
+                  message: 'Select who requested the appointment change',
                 },
               ],
             })

@@ -18,6 +18,7 @@ describe(SubmittedFeedbackPresenter, () => {
         serviceUser,
         userType,
         referralId,
+        false,
         false
       )
       expect(presenter.text).toMatchObject({
@@ -30,6 +31,7 @@ describe(SubmittedFeedbackPresenter, () => {
         serviceUser,
         userType,
         referralId,
+        false,
         false
       )
       expect(presenter.text).toMatchObject({
@@ -48,6 +50,7 @@ describe(SubmittedFeedbackPresenter, () => {
         serviceUser,
         'probation-practitioner',
         'test-referral-id',
+        false,
         false
       )
 

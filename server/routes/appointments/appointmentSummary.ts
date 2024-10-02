@@ -71,6 +71,12 @@ export default class AppointmentSummary {
         lines: this.inPersonMeetingProbationOfficeAddressLines(this.deliusOfficeLocation),
       })
     }
+    if (this.appointment.rescheduleRequestedBy) {
+      summary.push({ key: 'Appointment change requested by', lines: [this.appointment.rescheduleRequestedBy] })
+    }
+    if (this.appointment.rescheduledReason) {
+      summary.push({ key: 'Reason for appointment change', lines: [this.appointment.rescheduledReason] })
+    }
     return summary
   }
 

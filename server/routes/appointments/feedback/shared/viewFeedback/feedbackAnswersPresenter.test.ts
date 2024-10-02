@@ -296,14 +296,8 @@ describe(FeedbackAnswersPresenter, () => {
 
         const presenter = new FeedbackAnswersPresenter(appointment, serviceUser, false)
 
-        expect(presenter.notifyProbationPractitionerOfBehaviourAnswers).toEqual({
-          question: `Does the probation practitioner need to be notified about poor behaviour?`,
-          answer: 'No',
-        })
-        expect(presenter.notifyProbationPractitionerOfConcernsAnswers).toEqual({
-          question: `Does the probation practitioner need to be notified about any concerns?`,
-          answer: 'No',
-        })
+        expect(presenter.notifyProbationPractitionerOfBehaviourAnswers).toBeNull()
+        expect(presenter.notifyProbationPractitionerOfConcernsAnswers).toBeNull()
       })
     })
   })

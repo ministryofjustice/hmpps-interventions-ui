@@ -92,6 +92,8 @@ describe('Scheduling a supplier assessment appointment', () => {
         const draftBooking = draftAppointmentBookingFactory.build()
         draftsService.fetchDraft.mockResolvedValue(draftBooking)
 
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
@@ -102,6 +104,7 @@ describe('Scheduling a supplier assessment appointment', () => {
           .expect(res => {
             expect(res.text).toContain('Add appointment details')
             expect(res.text).not.toContain('Previous missed appointment')
+            expect(res.text).not.toContain('Enter reason for changing appointment')
           })
 
         expect(draftsService.fetchDraft).toHaveBeenCalledWith(draftBooking.id, { userId: '123' })
@@ -118,12 +121,15 @@ describe('Scheduling a supplier assessment appointment', () => {
         )
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
         await request(app)
           .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
           .expect(200)
           .expect(res => {
             expect(res.text).toContain('Change appointment details')
+            expect(res.text).toContain('Enter reason for changing appointment')
             expect(res.text).not.toContain('Previous missed appointment')
           })
 
@@ -144,6 +150,8 @@ describe('Scheduling a supplier assessment appointment', () => {
         hmppsAuthService.getSPUserByUsername.mockResolvedValue(
           hmppsAuthUserFactory.build({ firstName: 'caseWorkerFirstName', lastName: 'caseWorkerLastName' })
         )
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
         await request(app)
           .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
@@ -180,6 +188,8 @@ describe('Scheduling a supplier assessment appointment', () => {
         interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
         await request(app)
           .get(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details?clash=true`)
@@ -249,6 +259,8 @@ describe('Scheduling a supplier assessment appointment', () => {
           interventionsService.getSupplierAssessment.mockResolvedValue(supplierAssessmentFactory.build())
           interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
           interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+          const deliusServiceUser = deliusServiceUserFactory.build()
+          ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
           await request(app)
             .post(`/service-provider/referrals/1/supplier-assessment/schedule/${draftBooking.id}/details`)
@@ -628,6 +640,9 @@ describe('Scheduling a delivery session', () => {
 
       const appointment = actionPlanAppointmentFactory.build()
 
+      const deliusServiceUser = deliusServiceUserFactory.build()
+      ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
+
       interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
       interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
       interventionsService.getActionPlan.mockResolvedValue(actionPlanFactory.build())
@@ -649,10 +664,13 @@ describe('Scheduling a delivery session', () => {
         draftsService.fetchDraft.mockResolvedValue(draftBooking)
 
         const actionPlan = actionPlanFactory.build()
+        const appointment = actionPlanAppointmentFactory.build()
+        appointment.appointmentId = undefined
 
         interventionsService.getActionPlan.mockResolvedValue(actionPlan)
         interventionsService.getSentReferral.mockResolvedValue(sentReferralFactory.build())
         interventionsService.getIntervention.mockResolvedValue(interventionFactory.build())
+        interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)
 
         await request(app)
           .post(`/service-provider/action-plan/${actionPlan.id}/sessions/1/edit/${draftBooking.id}/details`)
@@ -666,6 +684,7 @@ describe('Scheduling a delivery session', () => {
             'time-part-of-day': 'am',
             'duration-hours': '1',
             'duration-minutes': '15',
+            'rescheduled-reason': '',
             'session-type': 'ONE_TO_ONE',
             'meeting-method': 'PHONE_CALL',
           })
@@ -683,6 +702,7 @@ describe('Scheduling a delivery session', () => {
             durationInMinutes: 75,
             appointmentDeliveryType: 'PHONE_CALL',
             npsOfficeCode: null,
+            rescheduledReason: '',
             sessionType: 'ONE_TO_ONE',
           },
           { userId: '123' }
@@ -697,6 +717,9 @@ describe('Scheduling a delivery session', () => {
 
         const actionPlan = actionPlanFactory.build()
         const appointment = actionPlanAppointmentFactory.build()
+
+        const deliusServiceUser = deliusServiceUserFactory.build()
+        ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser)
 
         interventionsService.getActionPlan.mockResolvedValue(actionPlan)
         interventionsService.getActionPlanAppointment.mockResolvedValue(appointment)

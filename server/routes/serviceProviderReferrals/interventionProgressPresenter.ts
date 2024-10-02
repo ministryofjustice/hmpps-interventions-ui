@@ -170,7 +170,10 @@ export default class InterventionProgressPresenter {
       .filter(
         x =>
           x.isParent ||
-          (!x.isParent && (x.statusPresenter.text === 'did not attend' || x.statusPresenter.text === 'did not happen'))
+          (!x.isParent &&
+            (x.statusPresenter.text === 'did not attend' ||
+              x.statusPresenter.text === 'did not happen' ||
+              x.statusPresenter.text === 'rescheduled'))
       )
   }
 
@@ -187,6 +190,9 @@ export default class InterventionProgressPresenter {
     const viewHref = `/service-provider/action-plan/${this.actionPlan!.id}/session/${
       appointment.sessionNumber
     }/appointment/${appointment.appointmentId}/post-session-feedback`
+    const viewRescheduledHref = `/service-provider/action-plan/${this.actionPlan!.id}/session/${
+      appointment.sessionNumber
+    }/appointment/${appointment.appointmentId}/rescheduled`
     const editHref = `/service-provider/action-plan/${this.actionPlan!.id}/sessions/${
       appointment.sessionNumber
     }/edit/start`
@@ -251,6 +257,14 @@ export default class InterventionProgressPresenter {
           {
             text: 'Reschedule session',
             href: editHref,
+          },
+        ]
+        break
+      case SessionStatus.rescheduled:
+        links = [
+          {
+            text: 'View appointment details',
+            href: viewRescheduledHref,
           },
         ]
         break
@@ -364,6 +378,15 @@ export default class InterventionProgressPresenter {
           {
             text: 'View details or reschedule',
             href: `/service-provider/referrals/${this.referral.id}/supplier-assessment`,
+          },
+        ]
+      case SessionStatus.rescheduled:
+        return [
+          {
+            text: 'View appointment details',
+            href: `/service-provider/referrals/${this.referral.id}/supplier-assessment/rescheduled/appointment/${
+              appointment!.id
+            }`,
           },
         ]
       case SessionStatus.awaitingFeedback:

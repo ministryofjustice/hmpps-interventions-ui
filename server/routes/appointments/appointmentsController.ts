@@ -102,7 +102,13 @@ export default class AppointmentsController {
     let serverError: FormValidationError | null = null
 
     if (req.method === 'POST') {
-      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations, false, referral.sentAt).data()
+      const data = await new ScheduleAppointmentForm(
+        req,
+        deliusOfficeLocations,
+        false,
+        referral.sentAt,
+        hasExistingScheduledAppointment
+      ).data()
       if (data.error) {
         res.status(400)
         formError = data.error
@@ -140,6 +146,7 @@ export default class AppointmentsController {
       currentAppointment,
       appointmentSummary,
       deliusOfficeLocations,
+      hasExistingScheduledAppointment,
       formError,
       draft.data,
       userInputData,
@@ -147,7 +154,8 @@ export default class AppointmentsController {
       overrideBackLinkHref
     )
 
-    const view = new ScheduleAppointmentView(presenter)
+    const serviceUserName = `${serviceUser.name.forename} ${serviceUser.name.surname}`
+    const view = new ScheduleAppointmentView(req, serviceUserName, presenter)
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
 
@@ -246,6 +254,8 @@ export default class AppointmentsController {
     userType: 'service-provider' | 'probation-practitioner'
   ): Promise<void> {
     const referralId = req.params.id
+    const { appointmentId } = req.params
+
     const { accessToken } = res.locals.user.token
     const [referral, supplierAssessment] = await Promise.all([
       this.interventionsService.getSentReferral(res.locals.user.token.accessToken, referralId),
@@ -253,7 +263,14 @@ export default class AppointmentsController {
       this.interventionsService.getSupplierAssessment(res.locals.user.token.accessToken, referralId),
     ])
 
-    const appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    let appointment
+
+    if (appointmentId) {
+      appointment = new SupplierAssessmentDecorator(supplierAssessment).appointmentFromId(appointmentId)
+    } else {
+      appointment = new SupplierAssessmentDecorator(supplierAssessment).currentAppointment
+    }
+
     if (appointment === null) {
       throw new Error('Attempting to view supplier assessment without a current appointment')
     }
@@ -299,12 +316,27 @@ export default class AppointmentsController {
     const deliusOfficeLocations: DeliusOfficeLocation[] =
       await this.deliusOfficeLocationFilter.findOfficesByIntervention(intervention)
 
+    const appointment = await this.interventionsService.getActionPlanAppointment(
+      res.locals.user.token.accessToken,
+      req.params.id,
+      sessionNumber
+    )
+
+    const hasExistingScheduledAppointment =
+      appointment.appointmentId !== undefined && appointment.appointmentId !== null
+
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
     let serverError: FormValidationError | null = null
 
     if (req.method === 'POST') {
-      const data = await new ScheduleAppointmentForm(req, deliusOfficeLocations, true, referral.sentAt).data()
+      const data = await new ScheduleAppointmentForm(
+        req,
+        deliusOfficeLocations,
+        true,
+        referral.sentAt,
+        hasExistingScheduledAppointment
+      ).data()
 
       if (data.error) {
         res.status(400)
@@ -331,11 +363,6 @@ export default class AppointmentsController {
     }
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
-    const appointment = await this.interventionsService.getActionPlanAppointment(
-      res.locals.user.token.accessToken,
-      req.params.id,
-      sessionNumber
-    )
     const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
     const appointmentScheduleDetails = this.extractAppointmentSchedulingDetails(draft)
     const presenter = new ScheduleActionPlanSessionPresenter(
@@ -343,12 +370,14 @@ export default class AppointmentsController {
       appointment,
       appointmentSummary,
       deliusOfficeLocations,
+      hasExistingScheduledAppointment,
       formError,
       appointmentScheduleDetails,
       userInputData,
       serverError
     )
-    const view = new ScheduleAppointmentView(presenter)
+    const serviceUserName = `${serviceUser.name.forename} ${serviceUser.name.surname}`
+    const view = new ScheduleAppointmentView(req, serviceUserName, presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'service-provider')
   }
@@ -873,7 +902,8 @@ export default class AppointmentsController {
   async viewSupplierAssessmentFeedback(
     req: Request,
     res: Response,
-    userType: 'service-provider' | 'probation-practitioner'
+    userType: 'service-provider' | 'probation-practitioner',
+    rescheduled: boolean
   ): Promise<void> {
     const { user } = res.locals
     const { accessToken } = user.token
@@ -912,7 +942,8 @@ export default class AppointmentsController {
       serviceUser,
       userType,
       referralId,
-      true
+      true,
+      rescheduled
     )
     const view = new SubmittedFeedbackView(presenter)
 
@@ -1429,7 +1460,8 @@ export default class AppointmentsController {
   async viewSubmittedActionPlanSessionFeedback(
     req: Request,
     res: Response,
-    userType: 'service-provider' | 'probation-practitioner'
+    userType: 'service-provider' | 'probation-practitioner',
+    rescheduled: boolean
   ): Promise<void> {
     const { accessToken } = res.locals.user.token
     const { sessionNumber, actionPlanId, appointmentId } = req.params
@@ -1471,7 +1503,8 @@ export default class AppointmentsController {
       serviceUser,
       userType,
       referral.id,
-      false
+      false,
+      rescheduled
     )
     const view = new SubmittedFeedbackView(presenter)
 
@@ -1504,6 +1537,7 @@ export default class AppointmentsController {
       serviceUser,
       'probation-practitioner',
       referral.id,
+      false,
       false,
       null
     )

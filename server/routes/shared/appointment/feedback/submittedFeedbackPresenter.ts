@@ -14,6 +14,7 @@ export default class SubmittedFeedbackPresenter {
     private readonly userType: 'probation-practitioner' | 'service-provider',
     private readonly referralId: string,
     private readonly isSupplierAssessmentAppointment: boolean,
+    private readonly isRescheduledAppointment: boolean,
     private readonly actionPlanId: string | null = null
   ) {
     this.feedbackAnswersPresenter = new FeedbackAnswersPresenter(

@@ -20,6 +20,16 @@ export default class SupplierAssessmentDecorator {
     return currentAppointment
   }
 
+  appointmentFromId(id: string): InitialAssessmentAppointment | null {
+    const foundAppointment = this.supplierAssessment.appointments.find(appointment => appointment.id === id)
+
+    if (foundAppointment === undefined) {
+      throw new Error(`Could not find appointment with ID ${this.supplierAssessment.currentAppointmentId}`)
+    }
+
+    return foundAppointment
+  }
+
   get sortedAppointments(): InitialAssessmentAppointment[] {
     return this.supplierAssessment.appointments.sort((appointmentA, appointmentB) => {
       if (appointmentA.appointmentTime === null) {

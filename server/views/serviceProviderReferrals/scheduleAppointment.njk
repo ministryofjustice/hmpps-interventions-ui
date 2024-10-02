@@ -7,6 +7,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/select/macro.njk" import govukSelect %}
 {% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/textarea/macro.njk" import govukTextarea %}
 
 {% extends "../partials/layout.njk" %}
 
@@ -62,6 +63,10 @@
               {{ govukInput(address.postCodeInputArgs) }}
           {% endset -%}
           {{ govukRadios(meetingMethodRadioInputArgs(deliusOfficeLocationHtml, otherLocationHtml)) }}
+            {% if presenter.hasExistingScheduledAppointment %}
+                {{ govukRadios(rescheduleRequestedByRadioButtonArgs) }}
+                {{ govukTextarea(rescheduledReasonTextareaArgs) }}
+            {% endif %}
         </div>
         {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
       </form>

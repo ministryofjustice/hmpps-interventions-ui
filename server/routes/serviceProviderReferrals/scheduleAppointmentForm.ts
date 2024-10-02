@@ -18,29 +18,33 @@ export default class ScheduleAppointmentForm {
     private readonly request: Request,
     private readonly deliusOfficeLocations: DeliusOfficeLocation[],
     private readonly allowPastAppointments = false,
-    private readonly referralDate: string | null = null
+    private readonly referralDate: string | null = null,
+    private readonly hasExistingScheduledAppointment: boolean = false
   ) {}
 
   async data(): Promise<FormData<AppointmentSchedulingDetails>> {
-    const [dateResult, durationResult, sessionTypeResult, appointmentDeliveryType] = await Promise.all([
-      new TwelveHourBritishDateTimeInput(
-        this.request,
-        'date',
-        'time',
-        errorMessages.scheduleAppointment.time,
-        null,
-        this.referralDate
-      ).validate(),
-      new DurationInput(this.request, 'duration', errorMessages.scheduleAppointment.duration).validate(),
-      FormUtils.runValidations({ request: this.request, validations: this.validateSessionType() }),
-      new MeetingMethodInput(
-        this.request,
-        'meeting-method',
-        errorMessages.scheduleAppointment.meetingMethod
-      ).validate(),
-    ])
+    const [dateResult, durationResult, sessionTypeResult, appointmentDeliveryType, rescheduledReasonResult] =
+      await Promise.all([
+        new TwelveHourBritishDateTimeInput(
+          this.request,
+          'date',
+          'time',
+          errorMessages.scheduleAppointment.time,
+          null,
+          this.referralDate
+        ).validate(),
+        new DurationInput(this.request, 'duration', errorMessages.scheduleAppointment.duration).validate(),
+        FormUtils.runValidations({ request: this.request, validations: this.validateSessionType() }),
+        new MeetingMethodInput(
+          this.request,
+          'meeting-method',
+          errorMessages.scheduleAppointment.meetingMethod
+        ).validate(),
+        FormUtils.runValidations({ request: this.request, validations: this.validateRescheduledReason() }),
+      ])
 
     const sessionTypeError = FormUtils.validationErrorFromResult(sessionTypeResult)
+    const rescheduledReasonError = FormUtils.validationErrorFromResult(rescheduledReasonResult)
 
     let appointmentDeliveryAddress: FormValidationResult<Address | null> = { value: null, error: null }
 
@@ -67,7 +71,8 @@ export default class ScheduleAppointmentForm {
       appointmentDeliveryType.error ||
       appointmentDeliveryAddress.error ||
       sessionTypeError ||
-      deliusOfficeLocation.error
+      deliusOfficeLocation.error ||
+      rescheduledReasonError
     ) {
       return {
         paramsForUpdate: null,
@@ -79,6 +84,7 @@ export default class ScheduleAppointmentForm {
             ...(appointmentDeliveryType.error?.errors ?? []),
             ...(appointmentDeliveryAddress.error?.errors ?? []),
             ...(deliusOfficeLocation.error?.errors ?? []),
+            ...(rescheduledReasonError?.errors ?? []),
           ],
         },
       }
@@ -93,6 +99,8 @@ export default class ScheduleAppointmentForm {
         appointmentDeliveryType: appointmentDeliveryType.value!,
         appointmentDeliveryAddress: appointmentDeliveryAddress.value,
         npsOfficeCode: deliusOfficeLocation.value,
+        rescheduleRequestedBy: this.request.body['reschedule-requested-by'],
+        rescheduledReason: this.request.body['rescheduled-reason'],
       },
     }
   }
@@ -103,5 +111,16 @@ export default class ScheduleAppointmentForm {
         .isIn(['ONE_TO_ONE', 'GROUP'])
         .withMessage(errorMessages.scheduleAppointment.sessionType.empty),
     ]
+  }
+
+  private validateRescheduledReason(): ValidationChain[] {
+    return this.hasExistingScheduledAppointment
+      ? [
+          body('reschedule-requested-by')
+            .notEmpty()
+            .withMessage(errorMessages.scheduleAppointment.rescheduleRequestedBy.emptyRadio),
+          body('rescheduled-reason').notEmpty().withMessage(errorMessages.scheduleAppointment.rescheduledReason.empty),
+        ]
+      : []
   }
 }
