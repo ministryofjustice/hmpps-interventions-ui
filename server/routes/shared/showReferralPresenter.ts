@@ -404,10 +404,10 @@ export default class ShowReferralPresenter {
     items.push({
       key: `Further information${extraInfoText}`,
       lines: [this.sentReferral.referral.reasonForReferralFurtherInformation || 'N/A'],
-      // changeLink:
-      //     this.userType === 'probation-practitioner'
-      //         ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-reason-for-referral`
-      //         : undefined,
+      changeLink:
+        this.userType === 'probation-practitioner'
+          ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-reason-for-referral`
+          : undefined,
     })
     const complexityLevel = this.getReferralComplexityLevelForServiceCategory(serviceCategory)
     items.push({
