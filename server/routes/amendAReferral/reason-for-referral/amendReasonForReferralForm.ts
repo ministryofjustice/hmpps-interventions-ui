@@ -27,6 +27,7 @@ export default class AmendReasonForReferralForm {
     return {
       paramsForUpdate: {
         reasonForReferral: this.request.body['amend-reason-for-referral'],
+        reasonForReferralFurtherInformation: this.request.body['amend-reason-for-referral-further-information'],
         reasonForChange: '',
       },
       error: null,
@@ -34,7 +35,12 @@ export default class AmendReasonForReferralForm {
   }
 
   static get validations(): ValidationChain[] {
-    return [body('amend-reason-for-referral').notEmpty().withMessage(errorMessages.reasonForReferral.empty)]
+    return [
+      body('amend-reason-for-referral').notEmpty().withMessage(errorMessages.reasonForReferral.empty),
+      body('amend-reason-for-referral-further-information')
+        .notEmpty()
+        .withMessage(errorMessages.reasonForReferralFurtherInformation.empty),
+    ]
   }
 
   private error(validationResult: Result<ValidationError>): FormValidationError | null {

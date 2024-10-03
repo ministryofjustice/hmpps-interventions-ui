@@ -3,6 +3,7 @@ interface ReferralDetailsFields {
   completionDeadline?: string | null
   furtherInformation?: string | null
   reasonForReferral?: string | null
+  reasonForReferralFurtherInformation?: string | null
 }
 
 export default interface ReferralDetails extends ReferralDetailsFields {
