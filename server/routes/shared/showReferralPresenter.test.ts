@@ -426,7 +426,11 @@ describe(ShowReferralPresenter, () => {
           lines: ['Bernard Beaks'],
           changeLink: `/probation-practitioner/referrals/${sentReferral.id}/amend-probation-practitioner-name`,
         },
-        { key: 'Email address', lines: ['bernard.beaks@justice.gov.uk'] },
+        {
+          key: 'Email address',
+          lines: ['bernard.beaks@justice.gov.uk'],
+          changeLink: `/probation-practitioner/referrals/${sentReferral.id}/amend-probation-practitioner-email`,
+        },
         { key: 'Phone number', lines: ['072121212125'] },
         {
           key: 'Probation Office',
