@@ -33,7 +33,7 @@ export default class AmendReasonForReferralView {
         <ul class="govuk-list govuk-list--bullet">
           <li>why ${referral.serviceUser?.firstName} is being referred</li>
           <li>what ${referral.serviceUser?.firstName} hopes to achieve</li>
-          <li>details of any pre-release transition support Alex needs and ongoing post-release support required in the community</li>
+          <li>details of any pre-release transition support ${referral.serviceUser?.firstName} needs and ongoing post-release support required in the community</li>
           <li>any relevant licence/PSS conditions that require consideration to ensure safe delivery of CRS services</li>
           <li>previous interventions or activities undertaken in relation to this service need</li>
           <li>other support services ${referral.serviceUser?.firstName} is currently engaging with (and times of regular appointments)</li>
