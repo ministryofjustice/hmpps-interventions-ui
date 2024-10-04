@@ -272,7 +272,7 @@ export default class ScheduleAppointmentView {
       id: 'rescheduled-reason',
       label: {
         text: this.presenter.rescheduledReason.label,
-        classes: 'govuk-label--l',
+        classes: 'govuk-label--m',
       },
       value: this.presenter.fields.rescheduledReason,
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.rescheduledReason.errorMessage),
