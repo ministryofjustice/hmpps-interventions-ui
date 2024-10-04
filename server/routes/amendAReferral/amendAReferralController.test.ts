@@ -359,7 +359,7 @@ describe('GET /referrals/:referralId/amend-reason-for-referral', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain(
-          'Update the reason for this referral and further information for the service provider'
+          'Provide the reason for this referral and further information for the service provider'
         )
       })
   })
@@ -378,6 +378,7 @@ describe('POST /probation-practitioner/referrals/:id/amend-reason-for-referral',
       .send({
         'reason-for-change': 'new value',
         'amend-reason-for-referral': 'For custody and crs',
+        'amend-reason-for-referral-further-information': 'more info',
       })
       .expect(302)
       .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)
@@ -391,7 +392,7 @@ describe('POST /probation-practitioner/referrals/:id/amend-reason-for-referral',
         .expect(400)
         .expect(res => {
           expect(res.text).toContain(
-            'Update the reason for this referral and further information for the service provider'
+            'Provide the reason for this referral and further information for the service provider'
           )
         })
     })

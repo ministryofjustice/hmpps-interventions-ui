@@ -78,6 +78,11 @@ export default class ChangelogDetailView {
           from: `<p>${oldValue[0].length > 0 ? oldValue[0].trim() : 'N/A'}</p>`,
           to: `<p>${newValue[0].length > 0 ? newValue[0].trim() : 'N/A'}</p>`,
         }
+      case 'REASON_FOR_REFERRAL_FURTHER_INFORMATION':
+        return {
+          from: `<p>${oldValue[0].length > 0 ? oldValue[0].trim() : 'N/A'}</p>`,
+          to: `<p>${newValue[0].length > 0 ? newValue[0].trim() : 'N/A'}</p>`,
+        }
       case 'PRISON_ESTABLISHMENT':
         return {
           from: `<p>${oldValue[0].length > 0 ? this.getPrisonName(oldValue[0].trim()) : 'N/A'}</p>`,
