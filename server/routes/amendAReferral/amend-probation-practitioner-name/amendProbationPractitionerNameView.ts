@@ -26,7 +26,7 @@ export default class AmendProbationPractitionerNameView {
       summaryText: 'Will your changes make the referral ineligible?',
       html: `<p class="govuk-body">You can only change the probation practitioner details if they stay within the current PDU (probation delivery unit).</p>
       <p>If ${referral.serviceUser?.firstName} ${referral.serviceUser?.lastName} is moving out of the area to a different PDU (or has already) you will need to 
-      <a href="/probation-practitioner/referrals/${this.presenter.referral.id}/withdrawal/start">withdraw this referral</a></p>`,
+      <a href="/probation-practitioner/referrals/${this.presenter.referral.id}/withdrawal/start" target="_blank" rel="noopener noreferrer">withdraw this referral</a></p>`,
     }
   }
 

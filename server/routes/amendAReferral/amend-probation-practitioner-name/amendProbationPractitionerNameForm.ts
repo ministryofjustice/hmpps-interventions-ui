@@ -7,12 +7,15 @@ import { FormValidationError } from '../../../utils/formValidationError'
 import { AmendProbationPractitionerNameUpdate } from '../../../models/referralProbationPractitionerName'
 
 export default class AmendProbationPractitionerNameForm {
-  constructor(private readonly request: Request) {}
+  constructor(
+    private readonly request: Request,
+    private readonly beforePpName: string
+  ) {}
 
   async data(): Promise<FormData<AmendProbationPractitionerNameUpdate>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: AmendProbationPractitionerNameForm.validations,
+      validations: AmendProbationPractitionerNameForm.validations(this.request, this.beforePpName),
     })
 
     const error = this.error(validationResult)
@@ -32,9 +35,13 @@ export default class AmendProbationPractitionerNameForm {
     }
   }
 
-  static get validations(): ValidationChain[] {
+  static validations(request: Request, beforePpName: string): ValidationChain[] {
     return [
       body('amend-probation-practitioner-name').notEmpty().withMessage(errorMessages.probationPractitionerName.empty),
+      body('amend-probation-practitioner-name')
+        .not()
+        .equals(beforePpName)
+        .withMessage(errorMessages.probationPractitionerName.unchanged),
     ]
   }
 

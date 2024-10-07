@@ -8,9 +8,26 @@ describe(AmendProbationPractitionerNameForm, () => {
         const request = TestUtils.createRequest({
           'amend-probation-practitioner-name': 'Alex River',
         })
-        const data = await new AmendProbationPractitionerNameForm(request).data()
+        const data = await new AmendProbationPractitionerNameForm(request, 'Previous PP').data()
 
         expect(data.paramsForUpdate?.ppName).toEqual('Alex River')
+      })
+    })
+
+    describe('when reason for referral are passed, but pp name unchanged', () => {
+      it('returns an undefined paramsForUpdate', async () => {
+        const request = TestUtils.createRequest({
+          'amend-probation-practitioner-name': 'Previous PP',
+        })
+        const data = await new AmendProbationPractitionerNameForm(request, 'Previous PP').data()
+
+        expect(data.paramsForUpdate?.ppName).toEqual(undefined)
+
+        expect(data.error?.errors).toContainEqual({
+          errorSummaryLinkedField: 'amend-probation-practitioner-name',
+          formFields: ['amend-probation-practitioner-name'],
+          message: 'Probation practitioner name must have changed',
+        })
       })
     })
   })
@@ -19,7 +36,7 @@ describe(AmendProbationPractitionerNameForm, () => {
     it('returns an error when the cancellationReason property is not present', async () => {
       const request = TestUtils.createRequest({})
 
-      const data = await new AmendProbationPractitionerNameForm(request).data()
+      const data = await new AmendProbationPractitionerNameForm(request, 'Previous PP').data()
 
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'amend-probation-practitioner-name',

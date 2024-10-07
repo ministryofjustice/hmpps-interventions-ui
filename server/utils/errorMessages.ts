@@ -341,6 +341,7 @@ export default {
   },
   probationPractitionerName: {
     empty: 'Enter probation practitioner name',
+    unchanged: 'Probation practitioner name must have changed',
   },
   prisonEstablishment: {
     empty: 'Enter a prison establishment',
