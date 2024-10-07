@@ -39,7 +39,9 @@ export default class ChangelogDetailPresenter {
       case 'NEEDS_AND_REQUIREMENTS_HAS_ADDITIONAL_RESPONSIBILITIES':
         return 'Caring or employment responsibilites were changed'
       case 'REASON_FOR_REFERRAL':
-        return 'Reason for this referral and further information has changed'
+        return 'Reason for this referral and referral details has changed'
+      case 'REASON_FOR_REFERRAL_FURTHER_INFORMATION':
+        return 'Further information for this referral has changed'
       case 'PRISON_ESTABLISHMENT':
         return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s prison establishment has changed`
       case 'EXPECTED_RELEASE_DATE':

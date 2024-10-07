@@ -49,6 +49,7 @@ let changelogDetail7: ChangelogDetail
 let changelogDetail8: ChangelogDetail
 let changelogDetail9: ChangelogDetail
 let changelogDetail10: ChangelogDetail
+let changelogDetail11: ChangelogDetail
 let changelog: Changelog[]
 
 beforeEach(() => {
@@ -141,6 +142,14 @@ beforeEach(() => {
     oldValue: ['aaa'],
     newValue: ['bbb'],
     reasonForChange: 'Reason why the prison establishment has changed',
+  })
+  changelogDetail11 = changelogDetailFactory.build({
+    changelogId: '11',
+    name: 'changelog 11 name',
+    topic: 'REASON_FOR_REFERRAL_FURTHER_INFORMATION',
+    oldValue: ['old reason'],
+    newValue: ['new reason'],
+    reasonForChange: '',
   })
   const prisonAndSecuredChildAgencyList = prisonAndSecuredChildFactory.build()
   const prisonList = prisonFactory.build()
@@ -308,11 +317,25 @@ describe('GET /referrals/:referralId/changelog/:changelogId/details', () => {
       .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail9.changelogId}/details`)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('Reason for this referral and further information has changed')
+        expect(res.text).toContain('Reason for this referral and referral details has changed')
         expect(res.text).toContain('From')
         expect(res.text).toContain('To')
         expect(res.text).toContain(changelogDetail9.oldValue[0])
         expect(res.text).toContain(changelogDetail9.newValue[0])
+      })
+  })
+
+  it('renders the changelog detail for the reason for referral further information change', () => {
+    interventionsService.getChangelogDetail.mockResolvedValue(changelogDetail11)
+    return request(app)
+      .get(`/probation-practitioner/referrals/${referral.id}/changelog/${changelogDetail11.changelogId}/details`)
+      .expect(200)
+      .expect(res => {
+        expect(res.text).toContain('Further information for this referral has changed')
+        expect(res.text).toContain('From')
+        expect(res.text).toContain('To')
+        expect(res.text).toContain(changelogDetail11.oldValue[0])
+        expect(res.text).toContain(changelogDetail11.newValue[0])
       })
   })
 

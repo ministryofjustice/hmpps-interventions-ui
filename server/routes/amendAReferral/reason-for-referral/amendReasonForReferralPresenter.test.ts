@@ -8,7 +8,7 @@ describe('AmendReasonForReferralPresenter', () => {
       const presenter = new AmendReasonForReferralPresenter(referral)
 
       expect(presenter.text.title).toEqual(
-        'Update the reason for this referral and further information for the service provider'
+        'Provide the reason for this referral and further information for the service provider'
       )
       expect(presenter.backLinkUrl).toEqual(`/probation-practitioner/referrals/${referral.id}/details`)
     })
@@ -19,7 +19,8 @@ describe('AmendReasonForReferralPresenter', () => {
       it('returns null', () => {
         const presenter = new AmendReasonForReferralPresenter(referral)
 
-        expect(presenter.errorMessage).toBeNull()
+        expect(presenter.reasonForReferralErrorMessage).toBeNull()
+        expect(presenter.reasonForReferralFurtherInformationErrorMessage).toBeNull()
       })
     })
 
@@ -35,7 +36,9 @@ describe('AmendReasonForReferralPresenter', () => {
           ],
         })
 
-        expect(presenter.errorMessage).toEqual('Enter reason for the referral and any further information')
+        expect(presenter.reasonForReferralErrorMessage).toEqual(
+          'Enter reason for the referral and any further information'
+        )
       })
     })
   })

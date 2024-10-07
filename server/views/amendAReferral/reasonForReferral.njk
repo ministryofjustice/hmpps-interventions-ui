@@ -20,6 +20,7 @@
         {{ govukBackLink(backLinkArgs) }}
       {% endif %}
 
+      <p class="govuk-caption-l">{{ presenter.text.label }} </p>
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
 
       <form method="post" novalidate>
@@ -29,9 +30,8 @@
           {{ govukErrorSummary(errorSummaryArgs) }}
         {% endif %}
 
-        {{ govukDetails(reasonDetailsArgs) }}
-
         {{ govukTextarea(reasonForReferralArgs) }}
+        {{ govukTextarea(reasonForReferralFurtherInformationArgs) }}
 
         {{ govukButton({ text: "Save and continue", preventDoubleClick: true }) }}
       </form>

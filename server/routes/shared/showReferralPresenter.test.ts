@@ -1730,7 +1730,7 @@ describe(ShowReferralPresenter, () => {
           {
             key: 'Further information for the service provider',
             lines: ['more info'],
-            // changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
+            changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
           },
           expect.objectContaining({
             key: 'Complexity level',
@@ -1776,7 +1776,7 @@ describe(ShowReferralPresenter, () => {
           {
             key: 'Further information for the service provider',
             lines: ['more info'],
-            // changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
+            changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
           },
           expect.objectContaining({
             key: 'Complexity level',
@@ -1869,7 +1869,7 @@ describe(ShowReferralPresenter, () => {
           {
             key: 'Further information for the service provider',
             lines: ['more info'],
-            // changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
+            changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
           },
           {
             key: 'Complexity level',
@@ -1919,7 +1919,7 @@ describe(ShowReferralPresenter, () => {
           {
             key: 'Further information for the service provider',
             lines: ['more info'],
-            // changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
+            changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
           },
           {
             key: 'Complexity level',

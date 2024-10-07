@@ -28,7 +28,7 @@ export default class ReasonForReferralPresenter {
   )
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error, {
-    fieldOrder: ['reason-for-referral'],
+    fieldOrder: ['reason-for-referral', 'reason-for-referral-further-information'],
   })
 
   private readonly utils = new PresenterUtils(this.userInputData)

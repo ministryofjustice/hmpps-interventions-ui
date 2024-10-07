@@ -14,10 +14,16 @@ export default class AmendReasonForReferralPresenter {
   }
 
   readonly text = {
-    title: `Update the reason for this referral and further information for the service provider`,
+    label: `${this.referral.referral.serviceUser?.firstName} ${this.referral.referral.serviceUser?.lastName} (CRN: ${this.referral.referral.serviceUser?.crn})`,
+    title: `Provide the reason for this referral and further information for the service provider`,
   }
 
-  readonly errorMessage = PresenterUtils.errorMessage(this.error, 'amend-reason-for-referral')
+  readonly reasonForReferralErrorMessage = PresenterUtils.errorMessage(this.error, 'amend-reason-for-referral')
+
+  readonly reasonForReferralFurtherInformationErrorMessage = PresenterUtils.errorMessage(
+    this.error,
+    'amend-reason-for-referral-further-information'
+  )
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error, {
     fieldOrder: ['reason-for-referral'],
@@ -27,5 +33,9 @@ export default class AmendReasonForReferralPresenter {
 
   readonly fields = {
     reasonForReferral: this.utils.stringValue(this.referral.referral.reasonForReferral, 'amend-reason-for-referral'),
+    reasonForReferralFurtherInformation: this.utils.stringValue(
+      this.referral.referral.reasonForReferralFurtherInformation,
+      'amend-reason-for-referral-further-information'
+    ),
   }
 }
