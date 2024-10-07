@@ -762,7 +762,7 @@ context('Amend a referral', () => {
           .next()
           .contains('Change')
           .click()
-        cy.contains('Update the reason for this referral and further information for the service provider')
+        cy.contains('Provide the reason for this referral and further information for the service provider')
       })
 
       it('shows the existing reason for referral in the form', () => {
