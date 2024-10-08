@@ -15,7 +15,7 @@ export default {
     if (appointment === null) {
       return SessionStatus.notScheduled
     }
-    if (appointment.superseded) {
+    if (appointment.superseded && appointment.appointmentFeedback.attendanceFeedback.attended === null) {
       return SessionStatus.rescheduled
     }
 
