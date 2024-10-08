@@ -343,6 +343,11 @@ export default {
     empty: 'Enter probation practitioner name',
     unchanged: 'Probation practitioner name must have changed',
   },
+  probationPractitionerEmail: {
+    empty: 'Enter probation practitioner email address',
+    unchanged: 'Probation practitioner email address must have changed',
+    invalidEmail: `Enter email address in the correct format`,
+  },
   prisonEstablishment: {
     empty: 'Enter a prison establishment',
     emptyReason: 'Enter a reason',
