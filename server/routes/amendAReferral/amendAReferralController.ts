@@ -650,8 +650,13 @@ export default class AmendAReferralController {
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
 
+    const beforePpEmailAddress: string =
+      (sentReferral.referral && sentReferral.referral.ppEmailAddress) ||
+      sentReferral.referral.ndeliusPPEmailAddress ||
+      'Invalid Email'
+
     if (req.method === 'POST') {
-      const form = await new AmendProbationPractitionerEmailForm(req).data()
+      const form = await new AmendProbationPractitionerEmailForm(req, beforePpEmailAddress).data()
 
       if (!form.error) {
         await this.interventionsService.updateProbationPractitionerEmail(accessToken, referralId, form.paramsForUpdate)

@@ -32,7 +32,7 @@ export default class AmendProbationPractitionerEmailView {
 
   get renderArgs(): [string, Record<string, unknown>] {
     return [
-      'amendAReferral/probationPractitionerName',
+      'amendAReferral/probationPractitionerEmail',
       {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,

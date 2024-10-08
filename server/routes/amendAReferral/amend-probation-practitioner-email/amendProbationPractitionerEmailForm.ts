@@ -7,12 +7,15 @@ import { FormValidationError } from '../../../utils/formValidationError'
 import { AmendProbationPractitionerEmailUpdate } from '../../../models/referralProbationPractitionerEmail'
 
 export default class AmendProbationPractitionerEmailForm {
-  constructor(private readonly request: Request) {}
+  constructor(
+    private readonly request: Request,
+    private readonly beforePpEmail: string
+  ) {}
 
   async data(): Promise<FormData<AmendProbationPractitionerEmailUpdate>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: AmendProbationPractitionerEmailForm.validations,
+      validations: AmendProbationPractitionerEmailForm.validations(this.request, this.beforePpEmail),
     })
 
     const error = this.error(validationResult)
@@ -32,9 +35,16 @@ export default class AmendProbationPractitionerEmailForm {
     }
   }
 
-  static get validations(): ValidationChain[] {
+  static validations(request: Request, beforePpEmail: string): ValidationChain[] {
     return [
       body('amend-probation-practitioner-email').notEmpty().withMessage(errorMessages.probationPractitionerEmail.empty),
+      body('amend-probation-practitioner-email')
+        .not()
+        .equals(beforePpEmail)
+        .withMessage(errorMessages.probationPractitionerEmail.unchanged),
+      body('amend-probation-practitioner-email')
+        .isEmail()
+        .withMessage(errorMessages.probationPractitionerEmail.invalidEmail),
     ]
   }
 

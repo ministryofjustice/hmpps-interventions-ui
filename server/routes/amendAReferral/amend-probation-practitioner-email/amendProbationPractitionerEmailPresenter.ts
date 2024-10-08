@@ -21,7 +21,7 @@ export default class AmendProbationPractitionerEmailPresenter {
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'amend-probation-practitioner-email')
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error, {
-    fieldOrder: ['probation-practitioner-email'],
+    fieldOrder: ['amend-probation-practitioner-email'],
   })
 
   private readonly utils = new PresenterUtils(this.userInputData)
