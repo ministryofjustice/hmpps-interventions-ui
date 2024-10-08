@@ -965,7 +965,7 @@ context('Amend a referral', () => {
     const stubCallsForUpdateReferralPage = () => {
       cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
       cy.stubAmendComplexityLevelForServiceCategory(sentReferral.id, accommodationServiceCategory.id, sentReferral)
-      cy.stubAmendProbationPractitionerName(sentReferral.id, { referralId: sentReferral.id })
+      cy.stubAmendProbationPractitionerEmail(sentReferral.id, { referralId: sentReferral.id })
     }
     const stubCallsForReferralDetailsPage = () => {
       const { crn } = sentReferral.referral.serviceUser
