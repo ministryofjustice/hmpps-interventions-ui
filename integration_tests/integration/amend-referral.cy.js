@@ -1003,10 +1003,10 @@ context('Amend a referral', () => {
         cy.get('#amend-probation-practitioner-email').clear()
         cy.get('#amend-probation-practitioner-email').type('michael.atherton@somewhereelse.com')
         cy.contains('Save and continue').click()
-        /* cy.url().should(
+        cy.url().should(
           'be.equal',
           `${Cypress.config('baseUrl')}/probation-practitioner/referrals/${sentReferral.id}/details?detailsUpdated=true`
-        ) */
+        )
         cy.contains('Success')
         cy.contains('Referral changes saved')
       })
