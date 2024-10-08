@@ -151,7 +151,12 @@ export default class InterventionProgressPresenter {
         return a.sessionNumber - b.sessionNumber
       })
       .filter(
-        x => x.isParent || (!x.isParent && (x.tagArgs.text === 'did not attend' || x.tagArgs.text === 'did not happen'))
+        x =>
+          x.isParent ||
+          (!x.isParent &&
+            (x.tagArgs.text === 'did not attend' ||
+              x.tagArgs.text === 'did not happen' ||
+              x.tagArgs.text === 'rescheduled'))
       )
   }
 
@@ -183,6 +188,15 @@ export default class InterventionProgressPresenter {
           link: {
             text: 'View feedback form',
             href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.appointmentId}/post-session-feedback`,
+          },
+        }
+      case SessionStatus.rescheduled:
+        return {
+          text: presenter.text,
+          tagClass: presenter.tagClass,
+          link: {
+            text: 'View appointment details',
+            href: `/probation-practitioner/referrals/${this.referral.id}/session/${appointment.sessionNumber}/appointment/${appointment.appointmentId}/rescheduled`,
           },
         }
       case SessionStatus.awaitingFeedback:
