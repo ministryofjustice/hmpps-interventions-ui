@@ -26,6 +26,6 @@ export default class InitialAssessmentCheckAnswersPresenter {
       throw new Error('Draft has null data on check your answers page')
     }
 
-    return new AppointmentSummary(this.draft.data, null).appointmentSummaryList
+    return new AppointmentSummary(this.draft.data, null, null, null, 'supplierAssessment').appointmentSummaryList
   })()
 }
