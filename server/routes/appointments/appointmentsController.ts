@@ -558,7 +558,12 @@ export default class AppointmentsController {
     }
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
-    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
+    const appointmentSummary = await this.createAppointmentSummary(
+      accessToken,
+      appointment,
+      referral,
+      'supplierAssessment'
+    )
     const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
       appointment,
       serviceUser,
@@ -935,7 +940,12 @@ export default class AppointmentsController {
       }
     }
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
-    const appointmentSummary = await this.createAppointmentSummary(accessToken, supplierAssessmentAppointment, referral)
+    const appointmentSummary = await this.createAppointmentSummary(
+      accessToken,
+      supplierAssessmentAppointment,
+      referral,
+      'supplierAssessment'
+    )
     const presenter = new SubmittedFeedbackPresenter(
       supplierAssessmentAppointment,
       appointmentSummary,
@@ -1447,14 +1457,21 @@ export default class AppointmentsController {
   private async createAppointmentSummary(
     accessToken: string,
     appointment: ActionPlanAppointment | InitialAssessmentAppointment,
-    referral: SentReferral
+    referral: SentReferral,
+    formType: 'supplierAssessment' | 'actionPlan' | null = null
   ): Promise<AppointmentSummary> {
     const [deliusOfficeLocation, assignedCaseworker, feedbackSubmittedByCaseworker] = await Promise.all([
       this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment),
       this.getAssignedCaseworker(accessToken, referral),
       this.getFeedbackSubmittedByCaseworker(accessToken, appointment),
     ])
-    return new AppointmentSummary(appointment, assignedCaseworker, deliusOfficeLocation, feedbackSubmittedByCaseworker)
+    return new AppointmentSummary(
+      appointment,
+      assignedCaseworker,
+      deliusOfficeLocation,
+      feedbackSubmittedByCaseworker,
+      formType
+    )
   }
 
   async viewSubmittedActionPlanSessionFeedback(

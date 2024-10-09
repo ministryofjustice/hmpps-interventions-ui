@@ -12,7 +12,8 @@ export default class AppointmentSummary {
     private readonly appointment: AppointmentSchedulingDetails,
     private readonly assignedCaseworker: AuthUserDetails | string | null = null,
     private readonly deliusOfficeLocation: DeliusOfficeLocation | null = null,
-    private readonly feedbackSubmittedBy: AuthUserDetails | string | null = null
+    private readonly feedbackSubmittedBy: AuthUserDetails | string | null = null,
+    private readonly formType: 'supplierAssessment' | 'actionPlan' | null = null
   ) {}
 
   private readonly appointmentDecorator = new AppointmentDecorator(this.appointment)
@@ -72,10 +73,16 @@ export default class AppointmentSummary {
       })
     }
     if (this.appointment.rescheduleRequestedBy) {
-      summary.push({ key: 'Appointment change requested by', lines: [this.appointment.rescheduleRequestedBy] })
+      summary.push({
+        key: `${this.formType === 'supplierAssessment' ? 'Appointment' : 'Session'} change requested by`,
+        lines: [this.appointment.rescheduleRequestedBy],
+      })
     }
     if (this.appointment.rescheduledReason) {
-      summary.push({ key: 'Reason for appointment change', lines: [this.appointment.rescheduledReason] })
+      summary.push({
+        key: `Reason for ${this.formType === 'supplierAssessment' ? 'appointment' : 'session'} change`,
+        lines: [this.appointment.rescheduledReason],
+      })
     }
     return summary
   }

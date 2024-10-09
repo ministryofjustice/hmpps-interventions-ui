@@ -39,14 +39,14 @@ export default class ScheduleAppointmentPresenter {
 
   get rescheduledReason(): Record<string, string | null> {
     return {
-      label: 'Enter reason for changing appointment',
+      label: `Enter reason for changing ${this.formType === 'supplierAssessment' ? 'appointment' : 'session'}`,
       errorMessage: PresenterUtils.errorMessage(this.validationError, 'rescheduled-reason'),
     }
   }
 
   get rescheduleRequestedBy(): Record<string, string | null> {
     return {
-      label: 'Appointment change requested by',
+      label: `${this.formType === 'supplierAssessment' ? 'Appointment' : 'Session'} change requested by`,
       errorMessage: PresenterUtils.errorMessage(this.validationError, 'reschedule-requested-by'),
     }
   }
