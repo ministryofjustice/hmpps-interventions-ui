@@ -109,7 +109,7 @@
     "accessible-autocomplete": "^2.0.4",
     "agentkeepalive": "^4.5.0",
     "applicationinsights": "^2.9.5",
-    "body-parser": "^1.20.2",
+    "body-parser": "^1.20.3",
     "bunyan": "^1.8.15",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
