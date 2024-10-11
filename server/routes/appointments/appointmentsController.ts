@@ -95,7 +95,10 @@ export default class AppointmentsController {
       await this.deliusOfficeLocationFilter.findOfficesByIntervention(intervention)
     const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
     const hasExistingScheduledAppointment =
-      currentAppointment !== null && !currentAppointment.appointmentFeedback.submitted
+      currentAppointment !== null &&
+      (!currentAppointment.appointmentFeedback.submitted ||
+        currentAppointment.appointmentFeedback.attendanceFeedback.attended === 'no' ||
+        !currentAppointment.appointmentFeedback.attendanceFeedback.didSessionHappen)
 
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
@@ -879,6 +882,8 @@ export default class AppointmentsController {
           sessionType: draftAppointment.sessionType,
           appointmentDeliveryAddress: draftAppointment.appointmentDeliveryAddress,
           npsOfficeCode: draftAppointment.npsOfficeCode,
+          rescheduleRequestedBy: draftAppointment.rescheduleRequestedBy,
+          rescheduledReason: draftAppointment.rescheduledReason,
           attendanceFeedback: { ...draftAppointment.session.attendanceFeedback },
           sessionFeedback: { ...draftAppointment.session.sessionFeedback },
         }
@@ -1201,7 +1206,7 @@ export default class AppointmentsController {
     }
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
-    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
+    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral, 'actionPlan')
     const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
       appointment,
       serviceUser,
@@ -1258,6 +1263,8 @@ export default class AppointmentsController {
           sessionType: draftAppointment.sessionType,
           appointmentDeliveryAddress: draftAppointment.appointmentDeliveryAddress,
           npsOfficeCode: draftAppointment.npsOfficeCode,
+          rescheduleRequestedBy: draftAppointment.rescheduleRequestedBy,
+          rescheduledReason: draftAppointment.rescheduledReason,
           attendanceFeedback: { ...draftAppointment.session.attendanceFeedback },
           sessionFeedback: { ...draftAppointment.session.sessionFeedback },
         }
