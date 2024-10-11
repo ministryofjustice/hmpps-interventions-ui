@@ -43,6 +43,7 @@ import { AmendPrisonEstablishmentUpdate } from '../models/referralPrisonEstablis
 import AmendExpectedReleaseDateUpdate from '../models/referralExpectedReleaseDate'
 import { AmendProbationOfficeUpdate } from '../models/referralProbationOffice'
 import { AmendProbationPractitionerNameUpdate } from '../models/referralProbationPractitionerName'
+import { AmendProbationPractitionerEmailUpdate } from '../models/referralProbationPractitionerEmail'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -372,6 +373,19 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
     return (await restClient.post({
       path: `/sent-referral/${id}/amend-probation-practitioner-name`,
+      data: { ...update },
+      headers: { Accept: 'application/json' },
+    })) as null
+  }
+
+  async updateProbationPractitionerEmail(
+    token: string,
+    id: string,
+    update: AmendProbationPractitionerEmailUpdate
+  ): Promise<null> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/sent-referral/${id}/amend-probation-practitioner-email`,
       data: { ...update },
       headers: { Accept: 'application/json' },
     })) as null

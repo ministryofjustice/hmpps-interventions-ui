@@ -52,6 +52,8 @@ export default class ChangelogDetailPresenter {
         return 'Probation practitioner probation office has changed'
       case 'PROBATION_PRACTITIONER_NAME':
         return 'Probation practitioner name has changed'
+      case 'PROBATION_PRACTITIONER_EMAIL':
+        return 'Probation practitioner email address has changed'
       default:
         return ''
     }

@@ -213,7 +213,14 @@ export default class ShowReferralPresenter {
               ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-probation-practitioner-name`
               : undefined,
         },
-        { key: 'Email address', lines: [this.deriveEmailAddress] }
+        {
+          key: 'Email address',
+          lines: [this.deriveEmailAddress],
+          changeLink:
+            this.userType === 'probation-practitioner'
+              ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-probation-practitioner-email`
+              : undefined,
+        }
       )
       probationPractitionerDetails.push({
         key: 'Phone number',
