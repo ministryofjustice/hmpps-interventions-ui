@@ -95,10 +95,7 @@ export default class AppointmentsController {
       await this.deliusOfficeLocationFilter.findOfficesByIntervention(intervention)
     const { currentAppointment } = new SupplierAssessmentDecorator(supplierAssessment)
     const hasExistingScheduledAppointment =
-      currentAppointment !== null &&
-      (!currentAppointment.appointmentFeedback.submitted ||
-        currentAppointment.appointmentFeedback.attendanceFeedback.attended === 'no' ||
-        !currentAppointment.appointmentFeedback.attendanceFeedback.didSessionHappen)
+      currentAppointment !== null && !currentAppointment.appointmentFeedback.submitted
 
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
