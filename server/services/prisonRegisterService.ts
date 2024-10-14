@@ -10,6 +10,6 @@ export default class PrisonRegisterService {
 
   async getPrisons(): Promise<Prison[]> {
     logger.info(`Getting prisons with prison register`)
-    return (await this.restClient().get({ path: '/prisons/search?active=true' })) as Prison[]
+    return (await this.restClient().get({ path: '/prisons/names?active=true' })) as Prison[]
   }
 }
