@@ -2662,8 +2662,6 @@ describe('Service provider referrals dashboard', () => {
           cy.get('#duration-minutes').clear()
           cy.get('#duration-minutes').type('45')
           cy.contains('Video call').click()
-          cy.get('[id=rescheduleRequestedBySpRadio]').click()
-          cy.get('#rescheduled-reason').type('test reason')
 
           cy.contains('Save and continue').click()
 
