@@ -323,7 +323,9 @@ export default class AppointmentsController {
     )
 
     const hasExistingScheduledAppointment =
-      appointment.appointmentId !== undefined && appointment.appointmentId !== null
+      appointment.appointmentId !== undefined &&
+      appointment.appointmentId !== null &&
+      !appointment.appointmentFeedback.submitted
 
     let userInputData: Record<string, unknown> | null = null
     let formError: FormValidationError | null = null
@@ -562,7 +564,8 @@ export default class AppointmentsController {
       accessToken,
       appointment,
       referral,
-      'supplierAssessment'
+      'supplierAssessment',
+      true
     )
     const presenter = new InitialAssessmentAttendanceFeedbackPresenter(
       appointment,
@@ -1030,7 +1033,13 @@ export default class AppointmentsController {
       return
     }
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
-    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral)
+    const appointmentSummary = await this.createAppointmentSummary(
+      accessToken,
+      appointment,
+      referral,
+      'actionPlan',
+      true
+    )
     const presenter = new ActionPlanPostSessionAttendanceFeedbackPresenter(
       appointment,
       serviceUser,
@@ -1203,7 +1212,13 @@ export default class AppointmentsController {
     }
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
-    const appointmentSummary = await this.createAppointmentSummary(accessToken, appointment, referral, 'actionPlan')
+    const appointmentSummary = await this.createAppointmentSummary(
+      accessToken,
+      appointment,
+      referral,
+      'actionPlan',
+      true
+    )
     const presenter = new ActionPlanPostSessionFeedbackCheckAnswersPresenter(
       appointment,
       serviceUser,
@@ -1462,7 +1477,8 @@ export default class AppointmentsController {
     accessToken: string,
     appointment: ActionPlanAppointment | InitialAssessmentAppointment,
     referral: SentReferral,
-    formType: 'supplierAssessment' | 'actionPlan' | null = null
+    formType: 'supplierAssessment' | 'actionPlan' | null = null,
+    hideRescheduleDetails: boolean | null = false
   ): Promise<AppointmentSummary> {
     const [deliusOfficeLocation, assignedCaseworker, feedbackSubmittedByCaseworker] = await Promise.all([
       this.deliusOfficeLocationFilter.findOfficeByAppointment(appointment),
@@ -1474,7 +1490,8 @@ export default class AppointmentsController {
       assignedCaseworker,
       deliusOfficeLocation,
       feedbackSubmittedByCaseworker,
-      formType
+      formType,
+      hideRescheduleDetails
     )
   }
 
