@@ -107,7 +107,8 @@ export default class AppointmentsController {
         deliusOfficeLocations,
         false,
         referral.sentAt,
-        hasExistingScheduledAppointment
+        hasExistingScheduledAppointment,
+        'supplierAssessment'
       ).data()
       if (data.error) {
         res.status(400)
@@ -337,7 +338,8 @@ export default class AppointmentsController {
         deliusOfficeLocations,
         true,
         referral.sentAt,
-        hasExistingScheduledAppointment
+        hasExistingScheduledAppointment,
+        'actionPlan'
       ).data()
 
       if (data.error) {

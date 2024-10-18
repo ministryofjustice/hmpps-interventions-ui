@@ -332,7 +332,14 @@ describe(ScheduleAppointmentForm, () => {
               'reschedule-requested-by': 'Service Provider',
             })
 
-            const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations, false, null, true).data()
+            const data = await new ScheduleAppointmentForm(
+              request,
+              deliusOfficeLocations,
+              false,
+              null,
+              true,
+              'supplierAssessment'
+            ).data()
 
             expect(data.error).toEqual({
               errors: [
@@ -363,14 +370,21 @@ describe(ScheduleAppointmentForm, () => {
               'reschedule-requested-by': '',
             })
 
-            const data = await new ScheduleAppointmentForm(request, deliusOfficeLocations, false, null, true).data()
+            const data = await new ScheduleAppointmentForm(
+              request,
+              deliusOfficeLocations,
+              false,
+              null,
+              true,
+              'actionPlan'
+            ).data()
 
             expect(data.error).toEqual({
               errors: [
                 {
                   errorSummaryLinkedField: 'reschedule-requested-by',
                   formFields: ['reschedule-requested-by'],
-                  message: 'Select who requested the appointment change',
+                  message: 'Select who requested the session change',
                 },
               ],
             })
