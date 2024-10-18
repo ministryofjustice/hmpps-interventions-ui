@@ -306,10 +306,12 @@ export default {
       invalidOfficeSelection: 'Select an office from the list',
     },
     rescheduleRequestedBy: {
-      emptyRadio: 'Select who requested the appointment change',
+      emptyRadio: (formType: string | null) =>
+        `Select who requested the ${formType === 'supplierAssessment' ? 'appointment' : 'session'} change`,
     },
     rescheduledReason: {
-      empty: 'Enter reason for changing appointment',
+      empty: (formType: string | null) =>
+        `Enter reason for changing ${formType === 'supplierAssessment' ? 'appointment' : 'session'}`,
     },
   },
   endOfServiceReportOutcome: {

@@ -19,7 +19,8 @@ export default class ScheduleAppointmentForm {
     private readonly deliusOfficeLocations: DeliusOfficeLocation[],
     private readonly allowPastAppointments = false,
     private readonly referralDate: string | null = null,
-    private readonly hasExistingScheduledAppointment: boolean = false
+    private readonly hasExistingScheduledAppointment: boolean = false,
+    private readonly formType: 'supplierAssessment' | 'actionPlan' | null = null
   ) {}
 
   async data(): Promise<FormData<AppointmentSchedulingDetails>> {
@@ -118,8 +119,10 @@ export default class ScheduleAppointmentForm {
       ? [
           body('reschedule-requested-by')
             .notEmpty()
-            .withMessage(errorMessages.scheduleAppointment.rescheduleRequestedBy.emptyRadio),
-          body('rescheduled-reason').notEmpty().withMessage(errorMessages.scheduleAppointment.rescheduledReason.empty),
+            .withMessage(errorMessages.scheduleAppointment.rescheduleRequestedBy.emptyRadio(this.formType)),
+          body('rescheduled-reason')
+            .notEmpty()
+            .withMessage(errorMessages.scheduleAppointment.rescheduledReason.empty(this.formType)),
         ]
       : []
   }
