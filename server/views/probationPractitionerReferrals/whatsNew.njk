@@ -11,6 +11,24 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
+      {% set whatsNewVersion8Html %}
+          <h3 class="govuk-heading-s">Rescheduled session history</h3>
+          <p>The history of all SAAs, ICAs and sessions rescheduled before the session took place will now be visible to you and the provider.</p>
+          <p>The provider can now record the reason for rescheduling an appointment. The provider can now indicate if the rescheduled appointment was at the request of the person on probation or the provider.
+           This will be visible to you in Refer and monitor an intervention and in the appointment outcome on NDelius.</p>
+
+          <h3 class="govuk-heading-s">Changes to reason for the referral and further information</h3>
+          <p>Content changes have been made to improve sharing of information with the provider relevant to the service, additional prompts for you to consider include:</p>
+          <ul class="govuk-list govuk-list--bullet">
+              <li>Details of any pre-release transition support the person needs and ongoing support required post release in the community.</li>
+              <li>Any relevant registration flags on nDelius such as sexual or violent offences, racist behaviour, arson, risk to staff, MAPPA domestic abuse perpetrator or victim, modern day slavery perpetrator or victim.</li>
+              <li>Where the person is a victim of domestic abuse/modern day slavery indicate whether it is safe to contact by phone/email. If not, what is the preferred method of contact?</li>
+          </ul>
+
+          <h3 class="govuk-heading-s">Amending probation practitioner details</h3>
+          <p>You can update the probation practitioner name and email address post-submission of a referral.</p>
+      {% endset %}
+
       {% set whatsNewVersion7_2Html %}
         <ul class="govuk-list govuk-list--bullet">
           <li>Action plans that are submitted will be automatically approved. Subsequent action plans that are submitted will also be automatically approved.</li>
@@ -118,6 +136,16 @@
 
       {{ mojTimeline({
         items: [
+          {
+            label: {
+            text: "Changes to Refer and monitor an intervention"
+          },
+            html: whatsNewVersion8Html,
+            datetime: {
+            timestamp: "2024-10-25",
+            type: "date"
+            }
+          },
           {
             label: {
             text: "Action Plans - automatic approval"
