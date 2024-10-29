@@ -1106,7 +1106,7 @@ context('Amend a referral', () => {
 
       it('takes the pp to the form when clicking the change link in the details page', () => {
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
-        cy.contains('.govuk-summary-list__key', 'Phone Number').next().next().contains('Change').click()
+        cy.contains('.govuk-summary-list__key', 'Phone').next().next().contains('Change').click()
         cy.contains('Update probation practitioner phone number')
       })
 
