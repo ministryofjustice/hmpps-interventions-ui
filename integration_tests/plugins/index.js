@@ -334,5 +334,8 @@ export default on => {
     stubAmendProbationPractitionerEmail: arg => {
       return interventionsService.stubAmendProbationPractitionerEmail(arg.referralId, arg.responseJson)
     },
+    stubAmendProbationPractitionerPhoneNumber: arg => {
+      return interventionsService.stubAmendProbationPractitionerPhoneNumber(arg.referralId, arg.responseJson)
+    },
   })
 }

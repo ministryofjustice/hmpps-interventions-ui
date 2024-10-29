@@ -350,6 +350,11 @@ export default {
     unchanged: 'Probation practitioner email address must have changed',
     invalidEmail: `Enter email address in the correct format`,
   },
+  probationPractitionerPhoneNumber: {
+    empty: 'Enter probation practitioner phone number',
+    unchanged: 'Probation practitioner phone number must have changed',
+    invalidPhoneNumber: `Enter phone number in the correct format`,
+  },
   prisonEstablishment: {
     empty: 'Enter a prison establishment',
     emptyReason: 'Enter a reason',

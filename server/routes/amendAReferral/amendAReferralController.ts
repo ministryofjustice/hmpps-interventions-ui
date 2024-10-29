@@ -50,6 +50,9 @@ import AmendProbationPractitionerNameView from './amend-probation-practitioner-n
 import AmendProbationPractitionerEmailForm from './amend-probation-practitioner-email/amendProbationPractitionerEmailForm'
 import AmendProbationPractitionerEmailPresenter from './amend-probation-practitioner-email/amendProbationPractitionerEmailPresenter'
 import AmendProbationPractitionerEmailView from './amend-probation-practitioner-email/amendProbationPractitionerEmailView'
+import AmendProbationPractitionerPhoneNumberForm from './amend-probation-practitioner-phone-number/amendProbationPractitionerPhoneNumberForm'
+import AmendProbationPractitionerPhoneNumberPresenter from './amend-probation-practitioner-phone-number/amendProbationPractitionerPhoneNumberPresenter'
+import AmendProbationPractitionerPhoneNumberView from './amend-probation-practitioner-phone-number/amendProbationPractitionerPhoneNumberView'
 
 export default class AmendAReferralController {
   constructor(
@@ -671,6 +674,43 @@ export default class AmendAReferralController {
 
     const presenter = new AmendProbationPractitionerEmailPresenter(sentReferral, error, userInputData)
     const view = new AmendProbationPractitionerEmailView(presenter)
+
+    return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
+  }
+
+  async amendProbationPractitionerPhoneNumber(req: Request, res: Response): Promise<void> {
+    const { accessToken } = res.locals.user.token
+    const { referralId } = req.params
+    let error: FormValidationError | null = null
+    let userInputData = null
+
+    const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
+
+    const beforePpPhoneNumber: string =
+      (sentReferral.referral && sentReferral.referral.ppPhoneNumber) ||
+      sentReferral.referral.ndeliusPhoneNumber ||
+      'Invalid Phone Number'
+
+    if (req.method === 'POST') {
+      const form = await new AmendProbationPractitionerPhoneNumberForm(req, beforePpPhoneNumber).data()
+
+      if (!form.error) {
+        await this.interventionsService.updateProbationPractitionerPhoneNumber(
+          accessToken,
+          referralId,
+          form.paramsForUpdate
+        )
+        return res.redirect(`/probation-practitioner/referrals/${referralId}/details?detailsUpdated=true`)
+      }
+
+      error = form.error
+      userInputData = req.body
+      res.status(400)
+    }
+    const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn)
+
+    const presenter = new AmendProbationPractitionerPhoneNumberPresenter(sentReferral, error, userInputData)
+    const view = new AmendProbationPractitionerPhoneNumberView(presenter)
 
     return ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
