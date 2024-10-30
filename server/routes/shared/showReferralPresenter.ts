@@ -227,6 +227,10 @@ export default class ShowReferralPresenter {
         lines: [
           this.sentReferral.referral.ppPhoneNumber || this.sentReferral.referral.ndeliusPhoneNumber || 'Not provided',
         ],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-probation-practitioner-phone-number`
+            : undefined,
       })
       probationPractitionerDetails.push({
         key:

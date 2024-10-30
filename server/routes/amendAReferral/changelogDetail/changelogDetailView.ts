@@ -111,6 +111,11 @@ export default class ChangelogDetailView {
           from: `<p>${oldValue.length > 0 ? oldValue : 'N/A'}</p>`,
           to: `<p>${newValue.length > 0 ? newValue : 'N/A'}</p>`,
         }
+      case 'PROBATION_PRACTITIONER_PHONE_NUMBER':
+        return {
+          from: `<p>${oldValue.length > 0 ? oldValue : 'N/A'}</p>`,
+          to: `<p>${newValue.length > 0 ? newValue : 'N/A'}</p>`,
+        }
       default:
         return {}
     }

@@ -1031,6 +1031,120 @@ context('Amend a referral', () => {
     })
   })
 
+  describe('updating probation practitioner phone number', () => {
+    const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
+    const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })
+    const personalWellbeingIntervention = intervention.build({
+      contractType: { code: 'PWB', name: 'Personal wellbeing' },
+      serviceCategories: [accommodationServiceCategory, socialInclusionServiceCategory],
+    })
+
+    const conviction = caseConvictionFactory.build()
+
+    const sentReferral = sentReferralFactory.build({
+      sentAt: '2020-12-13T13:00:00.000000Z',
+      referenceNumber: 'ABCABCA2',
+      referral: {
+        ppName: 'Brendon Mccullum',
+        interventionId: personalWellbeingIntervention.id,
+        isReferralReleasingIn12Weeks: null,
+        serviceUser: { firstName: 'Jenny', lastName: 'Jones', crn: 'X123456' },
+        relevantSentenceId: conviction.convictionId,
+        serviceCategoryIds: [accommodationServiceCategory.id, socialInclusionServiceCategory.id],
+        complexityLevels: [
+          {
+            serviceCategoryId: accommodationServiceCategory.id,
+            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          },
+          {
+            serviceCategoryId: socialInclusionServiceCategory.id,
+            complexityLevelId: '110f2405-d944-4c15-836c-0c6684e2aa78',
+          },
+        ],
+        desiredOutcomes: [
+          {
+            serviceCategoryId: accommodationServiceCategory.id,
+            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+          },
+          {
+            serviceCategoryId: socialInclusionServiceCategory.id,
+            desiredOutcomesIds: ['9b30ffad-dfcb-44ce-bdca-0ea49239a21a', 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d'],
+          },
+        ],
+      },
+    })
+
+    const stubCallsForUpdateReferralPage = () => {
+      cy.stubGetCaseDetailsByCrn(sentReferral.referral.serviceUser.crn, deliusServiceUser.build())
+      cy.stubAmendComplexityLevelForServiceCategory(sentReferral.id, accommodationServiceCategory.id, sentReferral)
+      cy.stubAmendProbationPractitionerPhoneNumber(sentReferral.id, { referralId: sentReferral.id })
+    }
+    const stubCallsForReferralDetailsPage = () => {
+      const { crn } = sentReferral.referral.serviceUser
+      const pp = ramDeliusUserFactory.build()
+
+      cy.stubGetIntervention(sentReferral.referral.interventionId, personalWellbeingIntervention)
+      cy.stubAddInterventionNewUser()
+      cy.stubGetSentReferral(sentReferral.id, sentReferral)
+      cy.stubGetCaseDetailsByCrn(crn, deliusServiceUser.build())
+      cy.stubGetConvictionByCrnAndId(crn, sentReferral.referral.relevantSentenceId, caseConvictionFactory.build())
+      cy.stubGetUserByUsername(pp.username, pp)
+      cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
+      cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
+      cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
+      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
+      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetSecuredChildAgencies(secureChildAgency.build())
+      cy.stubGetPrisonerDetails(crn, prisoner.build())
+    }
+
+    describe('as a probation practitioner', () => {
+      beforeEach(() => {
+        stubCallsForReferralDetailsPage()
+        stubCallsForUpdateReferralPage()
+      })
+
+      it('takes the pp to the form when clicking the change link in the details page', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
+        cy.contains('.govuk-summary-list__key', 'Phone').next().next().contains('Change').click()
+        cy.contains('Update probation practitioner phone number')
+      })
+
+      it('redirects to referral details on submission', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/amend-probation-practitioner-phone-number`)
+        cy.get('#amend-probation-practitioner-phone-number').clear()
+        cy.get('#amend-probation-practitioner-phone-number').type('11111111111')
+        cy.contains('Save and continue').click()
+        cy.url().should(
+          'be.equal',
+          `${Cypress.config('baseUrl')}/probation-practitioner/referrals/${sentReferral.id}/details?detailsUpdated=true`
+        )
+        cy.contains('Success')
+        cy.contains('Referral changes saved')
+      })
+
+      it('takes you back to referral details when back link is clicked', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/amend-probation-practitioner-phone-number`)
+        cy.contains('Back').click()
+        cy.url().should(
+          'be.equal',
+          `${Cypress.config('baseUrl')}/probation-practitioner/referrals/${sentReferral.id}/details`
+        )
+      })
+
+      it('shows a validation error if the ppPhoneNumber is not supplied', () => {
+        cy.login(`/probation-practitioner/referrals/${sentReferral.id}/amend-probation-practitioner-phone-number`)
+        cy.get('#amend-probation-practitioner-phone-number').clear()
+        cy.contains('Save and continue').click()
+
+        cy.contains('There is a problem').next().contains('Enter probation practitioner phone number')
+        cy.get('#amend-probation-practitioner-phone-number')
+          .prev()
+          .contains('Enter probation practitioner phone number')
+      })
+    })
+  })
+
   describe('updating prison establishment', () => {
     const accommodationServiceCategory = serviceCategoryFactory.build({ name: 'accommodation' })
     const socialInclusionServiceCategory = serviceCategoryFactory.build({ name: 'social inclusion' })

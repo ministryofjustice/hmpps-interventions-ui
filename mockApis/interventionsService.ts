@@ -917,6 +917,22 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubAmendProbationPractitionerPhoneNumber = async (id: string, responseJson: unknown): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${this.mockPrefix}/sent-referral/${id}/amend-probation-practitioner-phone-number`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubAmendExpectedReleaseDate = async (id: string, responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
