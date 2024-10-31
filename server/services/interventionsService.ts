@@ -45,6 +45,7 @@ import { AmendProbationOfficeUpdate } from '../models/referralProbationOffice'
 import { AmendProbationPractitionerNameUpdate } from '../models/referralProbationPractitionerName'
 import { AmendProbationPractitionerEmailUpdate } from '../models/referralProbationPractitionerEmail'
 import { AmendProbationPractitionerPhoneNumberUpdate } from '../models/referralProbationPractitionerPhoneNumber'
+import { AmendProbationPractitionerTeamPhoneNumberUpdate } from '../models/referralProbationPractitionerTeamPhoneNumber'
 
 export interface InterventionsServiceValidationError {
   field: string
@@ -400,6 +401,19 @@ export default class InterventionsService {
     const restClient = this.createRestClient(token)
     return (await restClient.post({
       path: `/sent-referral/${id}/amend-probation-practitioner-phone-number`,
+      data: { ...update },
+      headers: { Accept: 'application/json' },
+    })) as null
+  }
+
+  async updateProbationPractitionerTeamPhoneNumber(
+    token: string,
+    id: string,
+    update: AmendProbationPractitionerTeamPhoneNumberUpdate
+  ): Promise<null> {
+    const restClient = this.createRestClient(token)
+    return (await restClient.post({
+      path: `/sent-referral/${id}/amend-probation-practitioner-team-phone-number`,
       data: { ...update },
       headers: { Accept: 'application/json' },
     })) as null

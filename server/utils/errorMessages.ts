@@ -355,6 +355,11 @@ export default {
     unchanged: 'Probation practitioner phone number must have changed',
     invalidPhoneNumber: `Enter phone number in the correct format`,
   },
+  probationPractitionerTeamPhoneNumber: {
+    empty: 'Enter team phone number',
+    unchanged: 'Team phone number must have changed',
+    invalidPhoneNumber: `Enter a valid phone number`,
+  },
   prisonEstablishment: {
     empty: 'Enter a prison establishment',
     emptyReason: 'Enter a reason',

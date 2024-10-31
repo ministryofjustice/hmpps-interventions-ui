@@ -258,7 +258,7 @@ export default class ShowReferralPresenter {
         ],
         changeLink:
           this.userType === 'probation-practitioner'
-            ? `/probation-practitioner/referrals/${this.sentReferral.id}/confirm-amend-pp-probation-office`
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-team-phone-number`
             : undefined,
       })
       return probationPractitionerDetails
