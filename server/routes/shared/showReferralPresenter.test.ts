@@ -441,7 +441,11 @@ describe(ShowReferralPresenter, () => {
           lines: ['London'],
           changeLink: `/probation-practitioner/referrals/${sentReferral.id}/confirm-amend-pp-probation-office`,
         },
-        { key: 'Team phone number', lines: ['020343434565'] },
+        {
+          key: 'Team phone number',
+          lines: ['020343434565'],
+          changeLink: '/probation-practitioner/referrals/16/amend-team-phone-number',
+        },
       ])
     })
     it('returns a summary list of probation practitioner details from ndelius for service provider', () => {
