@@ -256,6 +256,10 @@ export default class ShowReferralPresenter {
             this.sentReferral.referral.ndeliusTeamPhoneNumber ||
             'Not provided',
         ],
+        changeLink:
+          this.userType === 'probation-practitioner'
+            ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-team-phone-number`
+            : undefined,
       })
       return probationPractitionerDetails
     }
