@@ -689,13 +689,13 @@ export default class AmendAReferralController {
 
     const sentReferral = await this.interventionsService.getSentReferral(accessToken, referralId)
 
-    const beforePpPhoneNumber: string =
+    const beforePpTeamPhoneNumber: string =
       (sentReferral.referral && sentReferral.referral.ppPhoneNumber) ||
       sentReferral.referral.ndeliusPhoneNumber ||
       'Invalid Phone Number'
 
     if (req.method === 'POST') {
-      const form = await new AmendProbationPractitionerPhoneNumberForm(req, beforePpPhoneNumber).data()
+      const form = await new AmendProbationPractitionerPhoneNumberForm(req, beforePpTeamPhoneNumber).data()
 
       if (!form.error) {
         await this.interventionsService.updateProbationPractitionerPhoneNumber(

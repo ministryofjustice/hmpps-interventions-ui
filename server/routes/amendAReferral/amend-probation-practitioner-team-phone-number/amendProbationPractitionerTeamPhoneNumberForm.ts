@@ -9,13 +9,16 @@ import { AmendProbationPractitionerTeamPhoneNumberUpdate } from '../../../models
 export default class AmendProbationPractitionerTeamPhoneNumberForm {
   constructor(
     private readonly request: Request,
-    private readonly beforePpPhoneNumber: string
+    private readonly beforePpTeamPhoneNumber: string
   ) {}
 
   async data(): Promise<FormData<AmendProbationPractitionerTeamPhoneNumberUpdate>> {
     const validationResult = await FormUtils.runValidations({
       request: this.request,
-      validations: AmendProbationPractitionerTeamPhoneNumberForm.validations(this.request, this.beforePpPhoneNumber),
+      validations: AmendProbationPractitionerTeamPhoneNumberForm.validations(
+        this.request,
+        this.beforePpTeamPhoneNumber
+      ),
     })
 
     const error = this.error(validationResult)

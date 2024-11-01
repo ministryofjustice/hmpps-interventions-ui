@@ -7,7 +7,7 @@ export default class AmendProbationPractitionerTeamPhoneNumberView {
 
   private readonly errorSummaryArgs = ViewUtils.govukErrorSummaryArgs(this.presenter.errorSummary)
 
-  private get probationPractitionerPhoneNumberArgs(): InputArgs {
+  private get probationPractitionerTeamPhoneNumberArgs(): InputArgs {
     return {
       id: 'amend-probation-practitioner-team-phone-number',
       name: 'amend-probation-practitioner-team-phone-number',
@@ -37,7 +37,7 @@ export default class AmendProbationPractitionerTeamPhoneNumberView {
         presenter: this.presenter,
         errorSummaryArgs: this.errorSummaryArgs,
         reasonDetailsArgs: this.reasonDetailsArgs,
-        probationPractitionerPhoneNumberArgs: this.probationPractitionerPhoneNumberArgs,
+        probationPractitionerTeamPhoneNumberArgs: this.probationPractitionerTeamPhoneNumberArgs,
         backLinkArgs: { href: this.presenter.backLinkUrl },
         suppressServiceUserBanner: true,
       },
