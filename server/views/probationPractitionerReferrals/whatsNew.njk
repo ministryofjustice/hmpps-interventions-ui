@@ -11,6 +11,11 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
+      {% set whatsNewVersion9Html %}
+          <h3 class="govuk-heading-s">Amending probation practitioner details</h3>
+          <p> You can update the probation practitioner's phone number and team phone number post-submission of a referral.</p>
+      {% endset %}
+
       {% set whatsNewVersion8Html %}
           <h3 class="govuk-heading-s">Rescheduled session history</h3>
           <p>The history of all SAAs, ICAs and sessions rescheduled before the session took place will now be visible to you and the provider.</p>
@@ -136,6 +141,16 @@
 
       {{ mojTimeline({
         items: [
+          {
+            label: {
+            text: "Changes to Refer and monitor an intervention"
+          },
+            html: whatsNewVersion9Html,
+            datetime: {
+            timestamp: "2024-11-15",
+            type: "date"
+            }
+          },
           {
             label: {
             text: "Changes to Refer and monitor an intervention"
