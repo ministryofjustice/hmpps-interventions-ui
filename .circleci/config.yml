@@ -157,7 +157,7 @@ workflows:
           env: "prod"
           show_changelog: true
           slack_notification: true
-          slack_channel_name: "interventions-team"
+          slack_channel_name: "refer-and-monitor-an-intervention"
           requires:
             - approve_prod
           context:
