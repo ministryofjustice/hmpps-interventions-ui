@@ -158,7 +158,7 @@
     "@types/jest": "^27.5.2",
     "@types/jquery": "^3.5.30",
     "@types/jsonwebtoken": "^9.0.6",
-    "@types/jwt-decode": "^2.2.1",
+    "@types/jwt-decode": "^3.0.0",
     "@types/nunjucks": "^3.2.6",
     "@types/passport": "^1.0.16",
     "@types/passport-oauth2": "^1.4.17",
