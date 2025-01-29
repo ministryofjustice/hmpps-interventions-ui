@@ -62,8 +62,11 @@ export default class DashboardView {
   get serviceOutageBannerArgs(): NotificationBannerArgs {
     const text =
       'Please be advised that Refer & Monitor will be offline from 5pm until 7pm on Friday 31st January, due to planned maintenance being carried out in nDelius.'
+    const subHeading = 'Planned Downtime'
 
-    const html = `<div class="refer-and-monitor__max-width"><p class="govuk-notification-banner__heading">${text}</p>
+    const html = `<div class="refer-and-monitor__max-width">
+                  <p class="govuk-notification-banner__heading"> ${subHeading}</p>
+                  <p class="govuk-body">${text}</p>
                   <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p></div>`
     return {
       titleText: 'Downtime',
