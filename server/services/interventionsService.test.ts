@@ -30,6 +30,7 @@ jest.mock('../services/hmppsAuthService')
 
  I’ve created IC-2024 to investigate this, but I think the temporary solution
  is to set the timeout ourselves.
+ https://dsdmoj.atlassian.net/browse/IC-2024
 
   ● Pact between Interventions UI and Interventions Service › with 30000 ms timeout for Pact › getDraftReferral › returns a referral for the gi
 ven ID
@@ -37,7 +38,14 @@ ven ID
     thrown: "Exceeded timeout of 5000 ms for a hook.
     Use jest.setTimeout(newTimeout) to increase the timeout value, if this is a long-running test."
 */
-jest.setTimeout(30000)
+
+/**
+    TJW-C, 2025-03-11 
+    This test appears to be (reliably) failing in CI, but not locally.  I have increased the timeout
+    to 45s.  This is an unsustainable approach to this problem, but no effort appears to have been 
+    made relating to the above ticket.
+ */
+jest.setTimeout(45_000)
 
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService
