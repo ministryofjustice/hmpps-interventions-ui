@@ -1,6 +1,6 @@
-import DashboardPresenter from './dashboardPresenter'
+import { InputArgs, NotificationBannerArgs, TableArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
-import { TableArgs, InputArgs, NotificationBannerArgs } from '../../utils/govukFrontendTypes'
+import DashboardPresenter from './dashboardPresenter'
 
 export default class DashboardView {
   constructor(private readonly presenter: DashboardPresenter) {}
@@ -61,12 +61,15 @@ export default class DashboardView {
 
   get serviceOutageBannerArgs(): NotificationBannerArgs {
     const text =
-      'Updates are being made to Refer and monitor on Friday 30 August from 5pm. This means that over the weekend the service will run slower than usual and may time out. Normal service will resume on Monday 2 September. This work will deliver changes to the dashboard and an auto-approve action plan feature.'
+      'Please be advised that Refer & Monitor will be offline from 5pm on Friday 14 March until 8am on Monday 17 March, due to planned maintenance being carried out in nDelius.'
+    const subHeading = 'Planned Downtime'
 
-    const html = `<div class="refer-and-monitor__max-width"><p class="govuk-notification-banner__heading">${text}</p>
+    const html = `<div class="refer-and-monitor__max-width">
+                  <p class="govuk-notification-banner__heading"> ${subHeading}</p>
+                  <p class="govuk-body">${text}</p>
                   <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p></div>`
     return {
-      titleText: 'Planned changes',
+      titleText: 'Downtime',
       html,
       classes: 'govuk-notification-banner--info',
     }
