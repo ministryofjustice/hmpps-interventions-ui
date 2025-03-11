@@ -1,6 +1,6 @@
-import DashboardPresenter from './dashboardPresenter'
+import { InputArgs, NotificationBannerArgs, TableArgs } from '../../utils/govukFrontendTypes'
 import ViewUtils from '../../utils/viewUtils'
-import { TableArgs, InputArgs, NotificationBannerArgs } from '../../utils/govukFrontendTypes'
+import DashboardPresenter from './dashboardPresenter'
 
 export default class DashboardView {
   constructor(private readonly presenter: DashboardPresenter) {}
@@ -61,7 +61,7 @@ export default class DashboardView {
 
   get serviceOutageBannerArgs(): NotificationBannerArgs {
     const text =
-      'Please be advised that Refer & Monitor will be offline from 5pm until 7pm on Friday 31st January, due to planned maintenance being carried out in nDelius.'
+      'Please be advised that Refer & Monitor will be offline from 5pm on Friday 14 March until 8am on Monday 17 March, due to planned maintenance being carried out in nDelius.'
     const subHeading = 'Planned Downtime'
 
     const html = `<div class="refer-and-monitor__max-width">
