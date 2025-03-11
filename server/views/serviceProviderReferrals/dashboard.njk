@@ -12,6 +12,9 @@
 {% endblock %}
 
 {% block pageContent %}
+  {% if presenter.disableDowntimeBanner != true %}
+    {{ govukNotificationBanner(serviceOutageBannerArgs) }}
+  {% endif %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
@@ -31,7 +34,7 @@
             </div>
           </form>
         </div>
-        
+
         <div class="govuk-!-margin-top-8 govuk-!-margin-bottom-7">
           {% include "../partials/pagination.njk" %}
         </div>
@@ -39,8 +42,8 @@
         {{ govukInsetText({
           text: "This information is correct at the time of referral"
           }) 
-        }}  
-        
+        }}
+
         {% if presenter.SearchText == '' %}
           <div class="govuk-width-container govuk-!-margin-left-7">
             <h2 class="govuk-heading-m govuk-!-margin-top-7">You have not entered any search terms</h2>
@@ -50,16 +53,16 @@
               <li class="govuk-body govuk-!-margin-bottom-0">first and last name of the person on probation, for example James Baker</li>
             </div>
           </div>
-        {% elif tableArgs.rows.length <1 and presenter.SearchText !== null %}
+        {% elif tableArgs.rows.length < 1 and presenter.SearchText !== null %}
           <div class="govuk-width-container govuk-!-margin-left-7">
-              <h2 class="govuk-heading-m govuk-!-margin-top-7"> There are no results for "{{presenter.SearchText | escape }}" in {{presenter.casesType}}</h2>
-              <p>If you searched by:</p>
-                <div class="govuk-list--bullet govuk-!-margin-bottom-5">
-                  <li class="govuk-body govuk-!-margin-bottom-0">person on probation, make sure you use their first and last name, for example James Baker</li>
-                  <li class="govuk-body govuk-!-margin-bottom-0">referral number, check it's 8 characters long (2 letters, 4 numbers and then 2 letters)</li>
-                </div>
-              <p>If you still cannot find it, it may not be in {{presenter.casesType}}. Check in other case lists.</p>
-              <p>If the referral is missing from every case list, <a href="/report-a-problem"> raise a support ticket </a>. </p>
+            <h2 class="govuk-heading-m govuk-!-margin-top-7"> There are no results for "{{presenter.SearchText | escape }}" in {{presenter.casesType}}</h2>
+            <p>If you searched by:</p>
+            <div class="govuk-list--bullet govuk-!-margin-bottom-5">
+              <li class="govuk-body govuk-!-margin-bottom-0">person on probation, make sure you use their first and last name, for example James Baker</li>
+              <li class="govuk-body govuk-!-margin-bottom-0">referral number, check it's 8 characters long (2 letters, 4 numbers and then 2 letters)</li>
+            </div>
+            <p>If you still cannot find it, it may not be in {{presenter.casesType}}. Check in other case lists.</p>
+            <p>If the referral is missing from every case list, <a href="/report-a-problem"> raise a support ticket </a>. </p>
           </div>
         {% else %}
           {{ govukTable(tableArgs) }}
@@ -70,7 +73,7 @@
       <hr class="govuk-section-break govuk-section-break--m">
 
       {% if not presenter.isSearchable %}
-      {% include "../partials/pagination.njk" %}
+        {% include "../partials/pagination.njk" %}
         {{ govukInsetText({
           text: "This information is correct at the time of referral"
           }) 
