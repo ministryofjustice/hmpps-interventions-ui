@@ -105,7 +105,7 @@
     "@types/express-serve-static-core": "^4.19.5",
     "@types/md5": "^2.3.5",
     "@types/qs": "^6.9.15",
-    "@types/uuid": "^9.0.8",
+    "@types/uuid": "^10.0.0",
     "accessible-autocomplete": "^3.0.0",
     "agentkeepalive": "^4.5.0",
     "applicationinsights": "^2.9.5",
@@ -141,7 +141,7 @@
     "redis": "^4.7.0",
     "superagent": "^9.0.2",
     "timezone-support": "^3.1.0",
-    "uuid": "^9.0.1"
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@pact-foundation/pact": "^9.18.1",
