@@ -16,20 +16,19 @@ services:
       - hmpps
     container_name: hmpps-auth
     depends_on:
-        - auth-db
+        - postgres
     ports:
       - '8090:8090'
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8090/auth/health']
     environment:
       - SERVER_PORT=8090
-      - SPRING_PROFILES_ACTIVE=dev,delius,local-postgres
+      - SPRING_PROFILES_ACTIVE=dev,delius
       - DELIUS_ENDPOINT_URL=http://wiremock:8080/delius
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/auth-db
       - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
       - DELIUS_ENABLED=true
       - MANAGE_USERS_API_ENABLED=true
-      - MANAGE_USERS_API_ENDPOINT_URL=http://hmpps-manage-users-api:8080
+      - MANAGE_USERS_API_ENDPOINT_URL=http://hmpps-manage-users:8096
 
   hmpps-manage-users:
     image: quay.io/hmpps/hmpps-manage-users-api:latest
@@ -76,7 +75,7 @@ services:
         - hmpps
       container_name: hmpps-external-users-api
       depends_on:
-        - auth-db
+        - postgres
         - hmpps-auth
       ports:
         - "8098:8098"
@@ -84,10 +83,12 @@ services:
         test: ["CMD", "curl", "-f", "http://localhost:8098/health/ping"]
       environment:
         - SERVER_PORT=8098
-        - SPRING_PROFILES_ACTIVE=dev,local-postgres
-        - SPRING_R2DBC_URL=r2dbc:postgresql://auth-db:5432/auth-db?sslmode=prefer
-        - SPRING_FLYWAY_URL=jdbc:postgresql://auth-db:5432/auth-db?sslmode=prefer
+        - SPRING_PROFILES_ACTIVE=dev
         - API_BASE_URL_OAUTH=http://hmpps-auth:8090/auth
+        - SPRING_R2DBC_URL=r2dbc:postgresql://postgres:5432/auth-db?sslmode=prefer
+        - SPRING_FLYWAY_URL=jdbc:postgresql://postgres:5432/auth-db?sslmode=prefer
+        - SPRING_R2DBC_USERNAME=root
+        - SPRING_R2DBC_PASSWORD=dev
         - HMPPS_SQS_PROVIDER=localstack
         - HMPPS_SQS_LOCALSTACKURL=http://localstack:4566  
 
@@ -135,20 +136,6 @@ services:
     volumes:
       - ./testutils/docker/postgres:/docker-entrypoint-initdb.d:ro
 
-  auth-db:
-    image: postgres:15
-    networks:
-      - hmpps
-    container_name: auth-db
-    restart: always
-    ports:
-      - "5434:5432"
-    environment:
-      - POSTGRES_PASSWORD=admin_password
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=auth-db
-    healthcheck:
-      test: pg_isready -d auth-db
 
   wiremock:
     image: wiremock/wiremock
@@ -201,13 +188,11 @@ services:
       image: localstack/localstack:3
       networks:
         - hmpps
-      container_name: localstack-pl
+      container_name: localstack
       ports:
         - "4566:4566"
       environment:
         - SERVICES=sqs
-      volumes:
-        - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
 
 networks:
   hmpps:
