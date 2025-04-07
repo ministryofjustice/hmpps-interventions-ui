@@ -166,7 +166,7 @@
     "@types/supertest": "^6.0.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "concurrently": "^8.2.2",
+    "concurrently": "^9.0.0",
     "cookie-session": "^2.1.0",
     "cypress": "^14.0.0",
     "cypress-multi-reporters": "^1.6.4",
