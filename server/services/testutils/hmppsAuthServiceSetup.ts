@@ -9,10 +9,8 @@ jest.mock('redis', () => ({
   createClient: jest.fn().mockImplementation(() => ({
     connect: jest.fn().mockResolvedValue('connected'),
     on: jest.fn(),
-    v4: {
-      get: jest.fn().mockResolvedValue(true),
-      set: jest.fn().mockImplementation((_key, _value, _options) => Promise.resolve(true)),
-    },
+    get: jest.fn().mockResolvedValue(true),
+    set: jest.fn().mockImplementation((_key, _value, _options) => Promise.resolve(true)),
   })),
 }))
 

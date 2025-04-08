@@ -44,7 +44,7 @@ export default class DraftsService {
   }
 
   private async fetchDraftDTO(id: string): Promise<LatestDraftDTO | null> {
-    const response = await this.redis.v4.get(this.redisKey(id))
+    const response = await this.redis.get(this.redisKey(id))
 
     if (response === null) {
       return null
@@ -71,7 +71,7 @@ export default class DraftsService {
       updatedAt: draft.updatedAt.toISOString(),
     }
 
-    await this.redis.v4.set(
+    await this.redis.set(
       this.redisKey(draft.id),
       JSON.stringify(dto),
       { EX: this.expiry.seconds } // Set the expiry time on this key

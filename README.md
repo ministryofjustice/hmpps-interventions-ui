@@ -1,4 +1,4 @@
-# HMPPS Interventions UI 
+# HMPPS Interventions UI
 
 ## Quickstart
 
@@ -24,10 +24,12 @@ Pull down following repositories:
 hmpps-assess-risks-and-needs, community-api, hmpps-auth, and offender-assessments-api
 
 Go into each folder of downloaded repo's and run following command in each:
+
 ```
 docker buildx build --platform linux/arm64 --load --tag quay.io/hmpps/REPLACE-ME-WITH-REPO-NAME:latest .
 ```
-### Update hosts 
+
+### Update hosts
 
 You'll also need to add the following line to your `/etc/hosts` file:
 
@@ -43,7 +45,6 @@ You'll also need to add the following line to your `/etc/hosts` file:
 
 npm run start:dev
 ```
-
 
 Navigate to `http://localhost:3000` and log in:
 
@@ -70,7 +71,7 @@ and enter a password of `password`. From there you can for example execute `\dt`
 
 #### HMPPS Auth
 
-To connect to the local HMPPS Auth database, visit http://localhost:8090/auth/h2-console and enter a JDBC URL of `jdbc:h2:mem:authdb`, with empty username and password, then click Connect.
+To connect to the local HMPPS Auth database, visit <http://localhost:8090/auth/h2-console> and enter a JDBC URL of `jdbc:h2:mem:authdb`, with empty username and password, then click Connect.
 
 ### Mocking out the interventions service locally
 
@@ -128,11 +129,12 @@ Git Large File Storage replaces large files with text pointers inside Git, and s
 
 git-lfs may conflict with any local git hooks you may have configured, so if you encounter any issues committing files to the repository, you may need to tweak or temporarily disable your local git hooks.
 
-See https://git-lfs.github.com/ for more information.
+See <https://git-lfs.github.com/> for more information.
 
 ### Feature flags
 
 Any features or behaviour that isn't ready to be interacted with by users should be placed behind a config-based feature flag, configured in `server/config.ts`, e.g. as below:
+
 ```
 features: {
   previouslyApprovedActionPlans: get('FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS', 'false') === 'true',
@@ -143,7 +145,7 @@ You can then set whether the feature should be enabled in the config for each en
 
 ### Environment Variables
 
-The project uses [dotenv](https://github.com/motdotla/dotenv#readme) so if you create a `.env` file in the project root you can setup all environment variables you need, including switching feature flags on or off.  See the `helm_deploy/values-[ENVIRONMENT].yaml` files for what env variables are currently set for each enviornment.
+The project uses [dotenv](https://github.com/motdotla/dotenv#readme) so if you create a `.env` file in the project root you can setup all environment variables you need, including switching feature flags on or off. See the `helm_deploy/values-[ENVIRONMENT].yaml` files for what env variables are currently set for each enviornment.
 This file is listed in `.gitignore` so your version won't get included in any changes you make.
 
 Example `.env` file

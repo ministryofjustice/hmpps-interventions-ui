@@ -9,19 +9,13 @@ jest.mock('uuid', () => {
 })
 
 interface ChosenRedisOverloads {
-  v4: {
-    get: jest.Mock
-    set: jest.Mock
-  }
+  get: jest.Mock
+  set: jest.Mock
 }
 
 const redis = {
-  get: jest.fn(),
-  set: jest.fn(),
-  v4: {
-    get: jest.fn().mockResolvedValue(true),
-    set: jest.fn().mockImplementation((_key, _value, _options) => Promise.resolve(true)),
-  },
+  get: jest.fn().mockResolvedValue(true),
+  set: jest.fn().mockImplementation((_key, _value, _options) => Promise.resolve(true)),
 } as unknown as jest.Mocked<ChosenRedisOverloads> & RedisClientType
 
 const expiry = { seconds: 24 * 60 * 60 }
@@ -37,7 +31,7 @@ describe(DraftsService, () => {
     it('generates a random UUID and stores the data in Redis under a key derived from that UUID, with the given expiry time', async () => {
       mockedUuid = '2dc7ef56-58dd-4339-9924-c33318738068'
 
-      redis.v4.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve(true))
+      redis.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve(true))
 
       const draftsService = new DraftsService(redis, expiry, clock)
 
@@ -53,11 +47,11 @@ describe(DraftsService, () => {
         data: { a: 1, b: 2 },
       })
 
-      expect(redis.v4.set).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068', expect.anything(), {
+      expect(redis.set).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068', expect.anything(), {
         EX: expiry.seconds,
       })
 
-      expect(JSON.parse(redis.v4.set.mock.calls[0][1])).toEqual({
+      expect(JSON.parse(redis.set.mock.calls[0][1])).toEqual({
         version: 2,
         id: '2dc7ef56-58dd-4339-9924-c33318738068',
         type: 'someExampleType',
@@ -83,7 +77,7 @@ describe(DraftsService, () => {
         }
         const data = JSON.stringify(dto)
 
-        redis.v4.get.mockImplementationOnce(_key => Promise.resolve(data))
+        redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
         const draftsService = new DraftsService(redis, expiry, clock)
 
@@ -99,7 +93,7 @@ describe(DraftsService, () => {
           data: { a: 1, b: 2 },
         })
 
-        expect(redis.v4.get).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068')
+        expect(redis.get).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068')
       })
     })
 
@@ -115,7 +109,7 @@ describe(DraftsService, () => {
         }
         const data = JSON.stringify(dto)
 
-        redis.v4.get.mockImplementationOnce(_key => Promise.resolve(data))
+        redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
         const draftsService = new DraftsService(redis, expiry, clock)
 
@@ -123,7 +117,7 @@ describe(DraftsService, () => {
           draftsService.fetchDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
         ).rejects.toThrow()
 
-        expect(redis.v4.get).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068')
+        expect(redis.get).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068')
       })
     })
 
@@ -131,13 +125,13 @@ describe(DraftsService, () => {
       it('returns null', async () => {
         const draftsService = new DraftsService(redis, expiry, clock)
 
-        redis.v4.get.mockImplementation(_key => Promise.resolve(null))
+        redis.get.mockImplementation(_key => Promise.resolve(null))
 
         expect(
           await draftsService.fetchDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
         ).toBeNull()
 
-        expect(redis.v4.get).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068')
+        expect(redis.get).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068')
       })
     })
 
@@ -154,7 +148,7 @@ describe(DraftsService, () => {
           }
           const data = JSON.stringify(dto)
 
-          redis.v4.get.mockImplementationOnce(_key => Promise.resolve(data))
+          redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
           const draftsService = new DraftsService(redis, expiry, clock)
 
@@ -186,7 +180,7 @@ describe(DraftsService, () => {
           }
           const data = JSON.stringify(dto)
 
-          redis.v4.get.mockImplementationOnce(_key => Promise.resolve(data))
+          redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
           const draftsService = new DraftsService(redis, expiry, clock)
 
@@ -219,9 +213,9 @@ describe(DraftsService, () => {
         }
         const initialData = JSON.stringify(initialDto)
 
-        redis.v4.get.mockImplementationOnce(_key => Promise.resolve(initialData))
+        redis.get.mockImplementationOnce(_key => Promise.resolve(initialData))
 
-        redis.v4.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve(true))
+        redis.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve(true))
 
         const draftsService = new DraftsService(redis, expiry, clock)
 
@@ -231,11 +225,11 @@ describe(DraftsService, () => {
           { userId: 'someUserId' }
         )
 
-        expect(redis.v4.set).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068', expect.anything(), {
+        expect(redis.set).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068', expect.anything(), {
           EX: expiry.seconds,
         })
 
-        expect(JSON.parse(redis.v4.set.mock.calls[0][1])).toEqual({
+        expect(JSON.parse(redis.set.mock.calls[0][1])).toEqual({
           version: 2,
           id: '2dc7ef56-58dd-4339-9924-c33318738068',
           type: 'someExampleType',
@@ -260,7 +254,7 @@ describe(DraftsService, () => {
         }
         const initialData = JSON.stringify(initialDto)
 
-        redis.v4.get.mockImplementationOnce(_key => Promise.resolve(initialData))
+        redis.get.mockImplementationOnce(_key => Promise.resolve(initialData))
 
         const draftsService = new DraftsService(redis, expiry, clock)
 
@@ -268,13 +262,13 @@ describe(DraftsService, () => {
           draftsService.updateDraft('2dc7ef56-58dd-4339-9924-c33318738068', { c: 3, d: 4 }, { userId: 'someUserId' })
         ).rejects.toThrow()
 
-        expect(redis.v4.set).not.toHaveBeenCalled()
+        expect(redis.set).not.toHaveBeenCalled()
       })
     })
 
     describe('when Redis doesn’t contain a draft for that ID', () => {
       it('throws an error', async () => {
-        redis.v4.get.mockImplementationOnce(_key => Promise.resolve(null))
+        redis.get.mockImplementationOnce(_key => Promise.resolve(null))
 
         const draftsService = new DraftsService(redis, expiry, clock)
 
@@ -282,9 +276,9 @@ describe(DraftsService, () => {
           draftsService.updateDraft('2dc7ef56-58dd-4339-9924-c33318738068', { c: 3, d: 4 }, { userId: 'someUserId' })
         ).rejects.toThrow()
 
-        expect(redis.v4.get).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068')
+        expect(redis.get).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068')
 
-        expect(redis.v4.set).not.toHaveBeenCalled()
+        expect(redis.set).not.toHaveBeenCalled()
       })
     })
   })
@@ -302,19 +296,19 @@ describe(DraftsService, () => {
         }
         const data = JSON.stringify(dto)
 
-        redis.v4.get.mockImplementationOnce(_key => Promise.resolve(data))
+        redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
-        redis.v4.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve(true))
+        redis.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve(true))
 
         const draftsService = new DraftsService(redis, expiry, clock)
 
         await draftsService.deleteDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
 
-        expect(redis.v4.set).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068', expect.anything(), {
+        expect(redis.set).toHaveBeenCalledWith('draft:2dc7ef56-58dd-4339-9924-c33318738068', expect.anything(), {
           EX: expiry.seconds,
         })
 
-        expect(JSON.parse(redis.v4.set.mock.calls[0][1])).toEqual({
+        expect(JSON.parse(redis.set.mock.calls[0][1])).toEqual({
           version: 2,
           id: '2dc7ef56-58dd-4339-9924-c33318738068',
           type: 'someExampleType',
@@ -339,7 +333,7 @@ describe(DraftsService, () => {
         }
         const data = JSON.stringify(dto)
 
-        redis.v4.get.mockImplementationOnce(_key => Promise.resolve(data))
+        redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
         const draftsService = new DraftsService(redis, expiry, clock)
 
@@ -347,13 +341,13 @@ describe(DraftsService, () => {
           draftsService.deleteDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
         ).rejects.toThrow()
 
-        expect(redis.v4.set).not.toHaveBeenCalled()
+        expect(redis.set).not.toHaveBeenCalled()
       })
     })
 
     describe('when Redis doesn’t contain a draft for that ID, as indicated by the Redis GET command', () => {
       it('throws an error', async () => {
-        redis.v4.get.mockImplementationOnce(_key => Promise.resolve(null))
+        redis.get.mockImplementationOnce(_key => Promise.resolve(null))
 
         const draftsService = new DraftsService(redis, expiry, clock)
 
@@ -361,7 +355,7 @@ describe(DraftsService, () => {
           draftsService.deleteDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
         ).rejects.toThrow()
 
-        expect(redis.v4.set).not.toHaveBeenCalled()
+        expect(redis.set).not.toHaveBeenCalled()
       })
     })
   })

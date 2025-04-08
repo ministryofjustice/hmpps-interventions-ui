@@ -1,6 +1,5 @@
 import nock from 'nock'
-import * as redis from 'redis'
-
+import { RedisClientType } from 'redis'
 import config from '../config'
 import HmppsAuthService from './hmppsAuthService'
 
@@ -8,29 +7,24 @@ const token = { access_token: 'token-1', expires_in: 300 }
 const authUser = { username: 'AUTH_ADM', authSource: 'auth', userId: '123456' }
 const deliusUser = { username: 'bernard.beaks', authSource: 'delius', userId: '123456' }
 
-jest.mock('redis', () => ({
+interface ChosenRedisOverloads {
+  connect: jest.Mock
+  createClient: jest.Mock
+  on: jest.Mock
+  get: jest.Mock
+  set: jest.Mock
+}
+
+const redis = {
   createClient: jest.fn().mockReturnThis(),
   connect: jest.fn().mockResolvedValue('connected'),
   on: jest.fn(),
-  v4: {
-    get: jest.fn().mockResolvedValue(true),
-    set: jest.fn().mockImplementation((_key, _value, _options) => Promise.resolve(true)),
-  },
-}))
-
-interface MockRedis {
-  connect: jest.Mock
-  on: jest.Mock
-  v4: {
-    get: jest.Mock
-    set: jest.Mock
-  }
-}
-
-const mockRedis = redis as unknown as MockRedis
+  get: jest.fn(),
+  set: jest.fn().mockImplementation((_key, _value, _options) => Promise.resolve(true)),
+} as unknown as jest.Mocked<ChosenRedisOverloads> & RedisClientType
 
 function givenRedisResponse(storedToken: string | null) {
-  mockRedis.v4.get.mockImplementation(_key => storedToken)
+  redis.get.mockResolvedValue(storedToken)
 }
 
 describe('hmppsAuthService', () => {
@@ -39,9 +33,10 @@ describe('hmppsAuthService', () => {
   let fakeManagerUsersApi: nock.Scope
 
   beforeEach(() => {
+    jest.resetAllMocks()
     fakeHmppsAuthApi = nock(config.apis.hmppsAuth.url)
     fakeManagerUsersApi = nock(config.apis.hmppsManageUsersApi.url)
-    hmppsAuthService = new HmppsAuthService()
+    hmppsAuthService = new HmppsAuthService(redis)
   })
 
   afterEach(() => {
@@ -251,12 +246,6 @@ describe('hmppsAuthService', () => {
   })
 
   describe('getApiClientToken', () => {
-    it('should instantiate the redis client', async () => {
-      givenRedisResponse(token.access_token)
-      await hmppsAuthService.getApiClientToken()
-      expect(redis.createClient).toBeCalledTimes(1)
-    })
-
     it('should return token from redis if one exists', async () => {
       givenRedisResponse(token.access_token)
       const output = await hmppsAuthService.getApiClientToken()
@@ -275,7 +264,7 @@ describe('hmppsAuthService', () => {
       const output = await hmppsAuthService.getApiClientToken()
 
       expect(output).toEqual(token.access_token)
-      expect(mockRedis.v4.set).toBeCalledWith('systemToken:interventions:%ANONYMOUS%', token.access_token, { EX: 240 })
+      expect(redis.set).toBeCalledWith('systemToken:interventions:%ANONYMOUS%', token.access_token, { EX: 240 })
     })
   })
 

@@ -7,7 +7,7 @@ import flash from 'connect-flash'
 import { RedisStore } from 'connect-redis'
 import { randomBytes } from 'crypto'
 import csurf from 'csurf'
-import addRequestId from 'express-request-id'
+import requestID from 'express-request-id'
 import session from 'express-session'
 import helmet from 'helmet'
 import noCache from 'nocache'
@@ -35,6 +35,7 @@ import RamDeliusApiService from './services/ramDeliusApiService'
 import ReferenceDataService from './services/referenceDataService'
 import UserDataService from './services/userDataService'
 import ControllerUtils from './utils/controllerUtils'
+
 import nunjucksSetup from './utils/nunjucksSetup'
 
 declare module 'express-session' {
@@ -139,7 +140,7 @@ export default function createApp(
     next()
   })
 
-  app.use(addRequestId())
+  app.use(requestID())
 
   const redisClient = createClient({
     socket: {
