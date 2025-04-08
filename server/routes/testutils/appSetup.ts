@@ -89,10 +89,9 @@ function appSetup(
   }
 
   app.use((req, res, next) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(req as any).isAuthenticated = () => true
     req.user = user
-    req.isAuthenticated = () => {
-      return true
-    }
     res.locals = {}
     res.locals.user = req.user
     next()
