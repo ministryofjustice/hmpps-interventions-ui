@@ -1,43 +1,41 @@
 import express from 'express'
 
 import * as Sentry from '@sentry/node'
+import bodyParser from 'body-parser'
+import compression from 'compression'
+import flash from 'connect-flash'
+import { RedisStore } from 'connect-redis'
+import { randomBytes } from 'crypto'
+import csurf from 'csurf'
 import addRequestId from 'express-request-id'
+import session from 'express-session'
 import helmet from 'helmet'
 import noCache from 'nocache'
-import csurf from 'csurf'
 import path from 'path'
-import compression from 'compression'
-import bodyParser from 'body-parser'
-import flash from 'connect-flash'
 import { createClient } from 'redis'
-import session from 'express-session'
-import connectRedis from 'connect-redis'
-import { randomBytes } from 'crypto'
-import indexRoutes from './routes'
-import serviceProviderRoutes, { serviceProviderUrlPrefix } from './routes/serviceProviderRoutes'
-import healthcheck from './services/healthCheck'
-import nunjucksSetup from './utils/nunjucksSetup'
+import logger from '../log'
+import passportSetup from './authentication/passport'
+import broadcastMessageConfig from './broadcast-message-config.json'
 import config from './config'
 import createErrorHandler from './errorHandler'
-import standardRouter from './routes/standardRouter'
-import InterventionsService from './services/interventionsService'
-import HmppsAuthService from './services/hmppsAuthService'
-import passportSetup from './authentication/passport'
-import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
-import ControllerUtils from './utils/controllerUtils'
-import broadcastMessageConfig from './broadcast-message-config.json'
+import indexRoutes from './routes'
 import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from './routes/probationPractitionerRoutes'
-import DraftsService from './services/draftsService'
-import ReferenceDataService from './services/referenceDataService'
 import serviceEditorRoutes, { serviceEditorUrlPrefix } from './routes/serviceEditorRoutes'
-import UserDataService from './services/userDataService'
-import logger from '../log'
+import serviceProviderRoutes, { serviceProviderUrlPrefix } from './routes/serviceProviderRoutes'
+import standardRouter from './routes/standardRouter'
+import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
+import DraftsService from './services/draftsService'
+import healthcheck from './services/healthCheck'
+import HmppsAuthService from './services/hmppsAuthService'
+import InterventionsService from './services/interventionsService'
+import PrisonAndSecuredChildAgencyService from './services/prisonAndSecuredChildAgencyService'
+import PrisonApiService from './services/prisonApiService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import RamDeliusApiService from './services/ramDeliusApiService'
-import PrisonApiService from './services/prisonApiService'
-import PrisonAndSecuredChildAgencyService from './services/prisonAndSecuredChildAgencyService'
-
-const RedisStore = connectRedis(session)
+import ReferenceDataService from './services/referenceDataService'
+import UserDataService from './services/userDataService'
+import ControllerUtils from './utils/controllerUtils'
+import nunjucksSetup from './utils/nunjucksSetup'
 
 declare module 'express-session' {
   export interface SessionData {
@@ -144,7 +142,6 @@ export default function createApp(
   app.use(addRequestId())
 
   const redisClient = createClient({
-    legacyMode: true, // connect-redis only supports legacy mode for redis v4
     socket: {
       port: config.redis.port,
       host: config.redis.host,
