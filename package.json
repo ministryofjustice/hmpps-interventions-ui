@@ -145,6 +145,7 @@
   },
   "devDependencies": {
     "@pact-foundation/pact": "^9.18.1",
+    "@types/body-parser": "^1.19.5",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
     "@types/compression": "^1.7.5",
