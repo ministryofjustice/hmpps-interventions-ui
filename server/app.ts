@@ -7,7 +7,6 @@ import flash from 'connect-flash'
 import { RedisStore } from 'connect-redis'
 import { randomBytes } from 'crypto'
 import csurf from 'csurf'
-import requestID from 'express-request-id'
 import session from 'express-session'
 import helmet from 'helmet'
 import noCache from 'nocache'
@@ -139,7 +138,7 @@ export default function createApp(
     next()
   })
 
-  app.use(requestID())
+  app.use(addRequestId())
   app.use(
     session({
       store: new RedisStore({ client: redisClient }),
@@ -151,13 +150,6 @@ export default function createApp(
       unset: 'destroy',
     })
   )
-
-  // Update a value in the cookie so that the set-cookie will be sent.
-  // Only changes every minute so that it's not sent with every request.
-  app.use((req, res, next) => {
-    req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
-    next()
-  })
 
   // Determine whether or not to display broadcast message
   app.use((_req, res, next) => {
@@ -247,6 +239,13 @@ export default function createApp(
   if (!config.testMode) {
     app.use(csurf())
   }
+
+  // Update a value in the cookie so that the set-cookie will be sent.
+  // Only changes every minute so that it's not sent with every request.
+  app.use((req, res, next) => {
+    req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
+    next()
+  })
 
   const clock = { now: () => new Date() }
   const draftsService = new DraftsService(redisClient, config.draftsService.expiry, clock)
