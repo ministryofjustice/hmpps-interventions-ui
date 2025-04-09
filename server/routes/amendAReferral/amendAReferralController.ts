@@ -319,7 +319,11 @@ export default class AmendAReferralController {
     }
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.referral.serviceUser.crn)
-    const serviceCategory = await this.interventionsService.getServiceCategory(accessToken, serviceCategoryId)
+    const serviceCategory = await this.interventionsService.getServiceCategoryByIdAndContractReference(
+      accessToken,
+      serviceCategoryId,
+      referral.referral.dynamicFrameworkContractReference
+    )
     const presenter = new AmendDesiredOutcomesPresenter(
       referral,
       serviceCategory,
