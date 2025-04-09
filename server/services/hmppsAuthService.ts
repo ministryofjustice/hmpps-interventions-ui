@@ -1,42 +1,44 @@
-import superagent, { Response } from 'superagent'
 import querystring from 'querystring'
-import * as redis from 'redis'
+import { createClient } from 'redis'
+import superagent, { Response } from 'superagent'
 import logger from '../../log'
+import generateOauthClientBaiscAuthHeader from '../authentication/clientCredentials'
 import config from '../config'
 import RestClient from '../data/restClient'
-import UserDetails from '../models/hmppsAuth/userDetails'
 import AuthUserDetails from '../models/hmppsAuth/authUserDetails'
-import UserRole from '../models/hmppsAuth/role'
 import UserGroup from '../models/hmppsAuth/group'
+import UserRole from '../models/hmppsAuth/role'
 import ServiceProviderOrganization from '../models/hmppsAuth/serviceProviderOrganization'
 import User from '../models/hmppsAuth/user'
-import generateOauthClientBaiscAuthHeader from '../authentication/clientCredentials'
+import UserDetails from '../models/hmppsAuth/userDetails'
 import UserEmail from '../models/hmppsAuth/userEmail'
 
-const redisClient = redis.createClient({
-  legacyMode: true, // connect-redis only supports legacy mode for redis v4
-  socket: {
-    port: config.redis.port,
-    host: config.redis.host,
-    tls: config.redis.tls_enabled === 'true',
-  },
-  password: config.redis.password,
-})
+// const redisClient = redis.createClient({
+//   legacyMode: true, // connect-redis only supports legacy mode for redis v4
+//   socket: {
+//     port: config.redis.port,
+//     host: config.redis.host,
+//     tls: config.redis.tls_enabled === 'true',
+//   },
+//   password: config.redis.password,
+// })
 
 const REDIS_PREFIX = 'systemToken:' // prefix has been removed from redis config, so manually add it to key
 const FAKE_SYSTEM_USER = 'hmpps-interventions-service' // see also https://github.com/ministryofjustice/hmpps-interventions-service/pull/1353
 
-redisClient
-  .connect()
-  .then(() => logger.info('hmppsAuthService Redis connected'))
-  .catch((error: Error) => {
-    logger.error({ err: error }, 'hmppsAuthService Redis connect error')
-  })
-redisClient.on('error', error => {
-  logger.error({ err: error }, 'hmppsAuthService Redis error')
-})
+// redisClient
+//   .connect()
+//   .then(() => logger.info('hmppsAuthService Redis connected'))
+//   .catch((error: Error) => {
+//     logger.error({ err: error }, 'hmppsAuthService Redis connect error')
+//   })
+// redisClient.on('error', error => {
+//   logger.error({ err: error }, 'hmppsAuthService Redis error')
+// })
 
 export default class HmppsAuthService {
+  constructor(private readonly redis: ReturnType<typeof createClient>) {}
+
   private manageUsersRestClient(token: string): RestClient {
     return new RestClient('HMPPS Manage Users Rest Client', config.apis.hmppsManageUsersApi, token)
   }
@@ -121,7 +123,7 @@ export default class HmppsAuthService {
   async getApiClientToken(): Promise<string> {
     const redisKey = `${REDIS_PREFIX}${config.apis.hmppsAuth.apiClientId}:%ANONYMOUS%`
 
-    const tokenFromRedis = await redisClient.v4.get(redisKey)
+    const tokenFromRedis = await this.redis.get(redisKey)
     if (tokenFromRedis) {
       return tokenFromRedis
     }
@@ -129,7 +131,7 @@ export default class HmppsAuthService {
     const newToken = await this.apiClientTokenRequest()
 
     // set TTL slightly less than expiry of token.
-    await redisClient.v4.set(redisKey, newToken.body.access_token, { EX: newToken.body.expires_in - 60 })
+    await this.redis.set(redisKey, newToken.body.access_token, { EX: newToken.body.expires_in - 60 })
 
     return newToken.body.access_token
   }

@@ -17,10 +17,10 @@ export default class UserDataService {
   }
 
   private async set(key: string, value: string, ex: number): Promise<string | null> {
-    return this.client.v4.set(key, value, { EX: ex })
+    return this.client.set(key, value, { EX: ex })
   }
 
   private async get(key: string): Promise<string | null> {
-    return this.client.v4.get(key)
+    return this.client.get(key)
   }
 }

@@ -1,43 +1,40 @@
 import express from 'express'
 
 import * as Sentry from '@sentry/node'
-import addRequestId from 'express-request-id'
+import bodyParser from 'body-parser'
+import compression from 'compression'
+import flash from 'connect-flash'
+import { RedisStore } from 'connect-redis'
+import { randomBytes } from 'crypto'
+import csurf from 'csurf'
+import requestID from 'express-request-id'
+import session from 'express-session'
 import helmet from 'helmet'
 import noCache from 'nocache'
-import csurf from 'csurf'
 import path from 'path'
-import compression from 'compression'
-import bodyParser from 'body-parser'
-import flash from 'connect-flash'
 import { createClient } from 'redis'
-import session from 'express-session'
-import connectRedis from 'connect-redis'
-import { randomBytes } from 'crypto'
-import indexRoutes from './routes'
-import serviceProviderRoutes, { serviceProviderUrlPrefix } from './routes/serviceProviderRoutes'
-import healthcheck from './services/healthCheck'
-import nunjucksSetup from './utils/nunjucksSetup'
+import passportSetup from './authentication/passport'
+import broadcastMessageConfig from './broadcast-message-config.json'
 import config from './config'
 import createErrorHandler from './errorHandler'
-import standardRouter from './routes/standardRouter'
-import InterventionsService from './services/interventionsService'
-import HmppsAuthService from './services/hmppsAuthService'
-import passportSetup from './authentication/passport'
-import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
-import ControllerUtils from './utils/controllerUtils'
-import broadcastMessageConfig from './broadcast-message-config.json'
+import indexRoutes from './routes'
 import probationPractitionerRoutes, { probationPractitionerUrlPrefix } from './routes/probationPractitionerRoutes'
-import DraftsService from './services/draftsService'
-import ReferenceDataService from './services/referenceDataService'
 import serviceEditorRoutes, { serviceEditorUrlPrefix } from './routes/serviceEditorRoutes'
-import UserDataService from './services/userDataService'
-import logger from '../log'
+import serviceProviderRoutes, { serviceProviderUrlPrefix } from './routes/serviceProviderRoutes'
+import standardRouter from './routes/standardRouter'
+import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
+import DraftsService from './services/draftsService'
+import healthcheck from './services/healthCheck'
+import HmppsAuthService from './services/hmppsAuthService'
+import InterventionsService from './services/interventionsService'
+import PrisonAndSecuredChildAgencyService from './services/prisonAndSecuredChildAgencyService'
+import PrisonApiService from './services/prisonApiService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import RamDeliusApiService from './services/ramDeliusApiService'
-import PrisonApiService from './services/prisonApiService'
-import PrisonAndSecuredChildAgencyService from './services/prisonAndSecuredChildAgencyService'
-
-const RedisStore = connectRedis(session)
+import ReferenceDataService from './services/referenceDataService'
+import UserDataService from './services/userDataService'
+import ControllerUtils from './utils/controllerUtils'
+import nunjucksSetup from './utils/nunjucksSetup'
 
 declare module 'express-session' {
   export interface SessionData {
@@ -55,7 +52,8 @@ export default function createApp(
   referenceDataService: ReferenceDataService,
   prisonRegisterService: PrisonRegisterService,
   prisonApiService: PrisonApiService,
-  prisonAndSecuredChildAgencyService: PrisonAndSecuredChildAgencyService
+  prisonAndSecuredChildAgencyService: PrisonAndSecuredChildAgencyService,
+  redisClient: ReturnType<typeof createClient>
 ): express.Application {
   const app = express()
 
@@ -141,28 +139,7 @@ export default function createApp(
     next()
   })
 
-  app.use(addRequestId())
-
-  const redisClient = createClient({
-    legacyMode: true, // connect-redis only supports legacy mode for redis v4
-    socket: {
-      port: config.redis.port,
-      host: config.redis.host,
-      tls: config.redis.tls_enabled === 'true',
-    },
-    password: config.redis.password,
-  })
-
-  redisClient
-    .connect()
-    .then(() => logger.info('App Redis connected'))
-    .catch((error: Error) => {
-      logger.error({ err: error }, 'App Redis connect error')
-    })
-  redisClient.on('error', error => {
-    logger.error({ err: error }, 'App Redis connect error')
-  })
-
+  app.use(requestID())
   app.use(
     session({
       store: new RedisStore({ client: redisClient }),
@@ -174,6 +151,13 @@ export default function createApp(
       unset: 'destroy',
     })
   )
+
+  // Update a value in the cookie so that the set-cookie will be sent.
+  // Only changes every minute so that it's not sent with every request.
+  app.use((req, res, next) => {
+    req.session.nowInMinutes = Math.floor(Date.now() / 60e3)
+    next()
+  })
 
   // Determine whether or not to display broadcast message
   app.use((_req, res, next) => {
@@ -263,13 +247,6 @@ export default function createApp(
   if (!config.testMode) {
     app.use(csurf())
   }
-
-  // Update a value in the cookie so that the set-cookie will be sent.
-  // Only changes every minute so that it's not sent with every request.
-  app.use((req, res, next) => {
-    req.session!.nowInMinutes = Math.floor(Date.now() / 60e3)
-    next()
-  })
 
   const clock = { now: () => new Date() }
   const draftsService = new DraftsService(redisClient, config.draftsService.expiry, clock)
