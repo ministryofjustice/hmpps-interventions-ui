@@ -13,28 +13,8 @@ import User from '../models/hmppsAuth/user'
 import UserDetails from '../models/hmppsAuth/userDetails'
 import UserEmail from '../models/hmppsAuth/userEmail'
 
-// const redisClient = redis.createClient({
-//   legacyMode: true, // connect-redis only supports legacy mode for redis v4
-//   socket: {
-//     port: config.redis.port,
-//     host: config.redis.host,
-//     tls: config.redis.tls_enabled === 'true',
-//   },
-//   password: config.redis.password,
-// })
-
 const REDIS_PREFIX = 'systemToken:' // prefix has been removed from redis config, so manually add it to key
 const FAKE_SYSTEM_USER = 'hmpps-interventions-service' // see also https://github.com/ministryofjustice/hmpps-interventions-service/pull/1353
-
-// redisClient
-//   .connect()
-//   .then(() => logger.info('hmppsAuthService Redis connected'))
-//   .catch((error: Error) => {
-//     logger.error({ err: error }, 'hmppsAuthService Redis connect error')
-//   })
-// redisClient.on('error', error => {
-//   logger.error({ err: error }, 'hmppsAuthService Redis error')
-// })
 
 export default class HmppsAuthService {
   constructor(private readonly redis: ReturnType<typeof createClient>) {}
