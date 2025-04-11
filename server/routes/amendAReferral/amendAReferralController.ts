@@ -403,7 +403,11 @@ export default class AmendAReferralController {
     }
 
     const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(accessToken, serviceCategoryId),
+      this.interventionsService.getServiceCategoryByIdAndContractReference(
+        accessToken,
+        serviceCategoryId,
+        sentReferral.referral.dynamicFrameworkContractReference
+      ),
       this.ramDeliusApiService.getCaseDetailsByCrn(sentReferral.referral.serviceUser.crn),
     ])
 

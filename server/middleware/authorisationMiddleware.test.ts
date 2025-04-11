@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import { HttpError } from 'http-errors'
 
 import authorisationMiddleware from './authorisationMiddleware'
 
@@ -41,9 +40,13 @@ describe('authorisationMiddleware', () => {
     const req = createReqWithAuth(true)
     const res = createResWithToken(['SOME_OTHER_ROLES', 'THAT_ARENT_AUTHORISED'])
 
-    expect(() => {
-      authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
-    }).toThrow(HttpError)
+    expect(async () => {
+      try {
+        await authorisationMiddleware(['SOME_REQUIRED_ROLE'])(req, res, next)
+      } catch (e: unknown) {
+        expect(e).toBe('user does not have the required role to access this page')
+      }
+    })
   })
 
   it('should return next when user has authorised role', () => {

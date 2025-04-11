@@ -79,6 +79,7 @@ const exampleReferralFields = () => {
     reasonForReferral: 'For crs',
     reasonForReferralFurtherInformation: 'more info',
     reasonForReferralCreationBeforeAllocation: 'for quick assessment',
+    dynamicFrameworkContractReference: '3415a6f2-38ef-4613-bb95-33355deff17f',
   }
 }
 
