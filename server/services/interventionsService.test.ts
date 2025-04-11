@@ -631,7 +631,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         disabilities: ['Autism spectrum condition', 'sciatica'],
       } as ServiceUser
 
-      const serviceUserRequestBody: InterfaceToTemplate<ServiceUser> = { ...serviceUser }
+      const serviceUserRequestBody: InterfaceToTemplate<ServiceUser> = serviceUser
 
       await provider.addInteraction({
         state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
@@ -645,7 +645,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: {
-            serviceUserRequestBody,
+            serviceUser: serviceUserRequestBody,
           },
         },
         willRespondWith: {
@@ -653,7 +653,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           body: {
             id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
             createdAt: '2020-12-07T20:45:21.986389Z',
-            serviceUserRequestBody,
+            serviceUser: serviceUserRequestBody,
           },
           headers: {
             'Content-Type': 'application/json',
