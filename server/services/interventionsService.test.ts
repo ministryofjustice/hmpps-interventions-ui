@@ -1,9 +1,30 @@
 import { InterfaceToTemplate, Matchers } from '@pact-foundation/pact'
 import { pactWith } from 'jest-pact'
+import actionPlanFactory from '../../testutils/factories/actionPlan'
+import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
+import approvedActionPlanSummaryFactory from '../../testutils/factories/approvedActionPlanSummary'
+import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
+import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
+import interventionFactory from '../../testutils/factories/intervention'
 import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
+import referralDetailsFactory from '../../testutils/factories/referralDetails'
+import sentReferralFactory from '../../testutils/factories/sentReferral'
+import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
 import config from '../config'
+import { CurrentLocationType, ReferralFields } from '../models/draftReferral'
+import { Page } from '../models/pagination'
+import SentReferral, { WithdrawalState } from '../models/sentReferral'
+
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../models/appointment'
+import ApprovedActionPlanSummary from '../models/approvedActionPlanSummary'
+import EndOfServiceReport from '../models/endOfServiceReport'
+import Intervention from '../models/intervention'
+import ReferralDetails from '../models/referralDetails'
+import SentReferralSummaries from '../models/sentReferralSummaries'
 import ServiceUser from '../models/serviceUser'
-import InterventionsService from './interventionsService'
+import SupplierAssessment from '../models/supplierAssessment'
+import CalendarDay from '../utils/calendarDay'
+import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -32,16 +53,62 @@ ven ID
  */
 jest.setTimeout(45_000)
 
+describe('getSubsequentActionPlanAppointment', () => {
+  let interventionsService: InterventionsService
+  let probationPractitionerToken: string
+  beforeEach(() => {
+    interventionsService = new InterventionsService({ ...config.apis.interventionsService })
+    probationPractitionerToken = oauth2TokenFactory.probationPractitionerToken().build()
+  })
+  describe('when the current appointment is not the final one', () => {
+    const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
+    const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
+
+    it('fetches the subsequent action plan appointment', async () => {
+      interventionsService.getActionPlanAppointment = jest.fn()
+      await interventionsService.getSubsequentActionPlanAppointment(probationPractitionerToken, actionPlan, appointment)
+
+      expect(interventionsService.getActionPlanAppointment).toHaveBeenCalledWith(
+        probationPractitionerToken,
+        actionPlan.id,
+        2
+      )
+    })
+  })
+
+  describe('when the current appointment is the final one', () => {
+    const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
+    const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
+
+    it('does not fetch the subsequent action plan appointment', async () => {
+      interventionsService.getActionPlanAppointment = jest.fn()
+
+      const subsequentAppointment = await interventionsService.getSubsequentActionPlanAppointment(
+        probationPractitionerToken,
+        actionPlan,
+        appointment
+      )
+
+      expect(subsequentAppointment).toBeNull()
+      expect(interventionsService.getActionPlanAppointment).not.toHaveBeenCalled()
+    })
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+})
+
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService
   let probationPractitionerToken: string
-  // let serviceProviderToken: string
+  let serviceProviderToken: string
 
   beforeEach(() => {
     const testConfig = { ...config.apis.interventionsService, url: provider.mockService.baseUrl }
     interventionsService = new InterventionsService(testConfig)
     probationPractitionerToken = oauth2TokenFactory.probationPractitionerToken().build()
-    // serviceProviderToken = oauth2TokenFactory.serviceProviderToken().build()
+    serviceProviderToken = oauth2TokenFactory.serviceProviderToken().build()
   })
 
   describe('get case notes', () => {
@@ -1204,1877 +1271,2375 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
   })
 
-  //   describe('setDesiredOutcomesForServiceCategory', () => {
-  //     it('returns the updated referral when selecting desired outcomes on a cohort referral', async () => {
-  //       await provider.addInteraction({
-  //         state: `There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had multiple service categories selected`,
-  //         uponReceiving: 'a PATCH request to set the desired outcomes for a service category on a referral',
-  //         withRequest: {
-  //           method: 'PATCH',
-  //           path: `/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7/desired-outcomes`,
-  //           headers: {
-  //             Accept: 'application/json',
-  //             'Content-Type': 'application/json',
-  //             Authorization: `Bearer ${probationPractitionerToken}`,
-  //           },
-  //           body: {
-  //             serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //             desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
-  //           },
+  describe('setDesiredOutcomesForServiceCategory', () => {
+    it('returns the updated referral when selecting desired outcomes on a cohort referral', async () => {
+      await provider.addInteraction({
+        state: `There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had multiple service categories selected`,
+        uponReceiving: 'a PATCH request to set the desired outcomes for a service category on a referral',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7/desired-outcomes`,
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${probationPractitionerToken}`,
+          },
+          body: {
+            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+            desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+            desiredOutcomes: Matchers.like([
+              {
+                serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+              },
+            ]),
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.setDesiredOutcomesForServiceCategory(
+        probationPractitionerToken,
+        '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+        }
+      )
+
+      expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+      expect(referral.desiredOutcomes![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(referral.desiredOutcomes![0].desiredOutcomesIds).toEqual([
+        '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        '65924ac6-9724-455b-ad30-906936291421',
+      ])
+    })
+  })
+
+  describe('setComplexityLevelForServiceCategory', () => {
+    it('returns the updated referral when selecting a complexity level on a cohort referral', async () => {
+      await provider.addInteraction({
+        state: `There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had multiple service categories selected`,
+        uponReceiving: 'a PATCH request to set the complexity level for a service category on a referral',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7/complexity-level`,
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${probationPractitionerToken}`,
+          },
+          body: {
+            serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+            complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+            complexityLevels: Matchers.like([
+              {
+                serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+                complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+              },
+            ]),
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referral = await interventionsService.setComplexityLevelForServiceCategory(
+        probationPractitionerToken,
+        '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+        }
+      )
+
+      expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
+      expect(referral.complexityLevels![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(referral.complexityLevels![0].complexityLevelId).toEqual('d0db50b0-4a50-4fc7-a006-9c97530e38b2')
+    })
+  })
+
+  describe('getServiceCategory/getServiceCategories', () => {
+    const complexityLevels = [
+      {
+        id: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+        title: 'Low complexity',
+        description:
+          'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
+      },
+      {
+        id: '110f2405-d944-4c15-836c-0c6684e2aa78',
+        title: 'Medium complexity',
+        description:
+          'Service user is at risk of homelessness/is homeless, or will be on release from prison. Service user has had some success in maintaining atenancy but may have additional needs e.g. Learning Difficulties and/or Learning Disabilities or other challenges currently.',
+      },
+      {
+        id: 'c86be5ec-31fa-4dfa-8c0c-8fe13451b9f6',
+        title: 'High complexity',
+        description:
+          'Service user is homeless or in temporary/unstable accommodation, or will be on release from prison. Service user has poor accommodation history, complex needs and limited skills to secure or sustain a tenancy.',
+      },
+    ]
+    const desiredOutcomes = [
+      {
+        id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
+        description:
+          'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
+      },
+      {
+        id: '65924ac6-9724-455b-ad30-906936291421',
+        description: 'Service user makes progress in obtaining accommodation',
+      },
+      {
+        id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
+        description: 'Service user is helped to secure social or supported housing',
+      },
+      {
+        id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
+        description: 'Service user is helped to secure a tenancy in the private rented sector (PRS)',
+      },
+      {
+        id: '19d5ef58-5cfc-41fe-894c-acd705dc1325',
+        description: 'Service user is helped to sustain existing accommodation',
+      },
+      {
+        id: 'f6f70273-16a2-4dc7-aafc-9bc74215e713',
+        description: 'Service user is prevented from becoming homeless',
+      },
+      {
+        id: '449a93d7-e705-4340-9936-c859644abd52',
+        description:
+          'Settled accommodation is sustained for a period of at least 6 months or until the end of sentence, whichever occurs first (including for those serving custodial sentences of less than 6 months)',
+      },
+      {
+        id: '55a9cf76-428d-4409-8a57-aaa523f3b631',
+        description: 'Service user at risk of losing their tenancy are successfully helped to retain it',
+      },
+    ]
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a service category with ID 428ee70f-3001-4399-95a6-ad25eaaede16 exists',
+        uponReceiving: 'a GET request to fetch the service category',
+        withRequest: {
+          method: 'GET',
+          path: '/service-category/428ee70f-3001-4399-95a6-ad25eaaede16',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${probationPractitionerToken}`,
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: '428ee70f-3001-4399-95a6-ad25eaaede16',
+            name: 'Accommodation',
+            complexityLevels,
+            desiredOutcomes,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('getServiceCategory returns a single service category by ID', async () => {
+      const serviceCategory = await interventionsService.getServiceCategory(
+        probationPractitionerToken,
+        '428ee70f-3001-4399-95a6-ad25eaaede16'
+      )
+
+      expect(serviceCategory.id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(serviceCategory.name).toEqual('Accommodation')
+      expect(serviceCategory.complexityLevels).toEqual(complexityLevels)
+      expect(serviceCategory.desiredOutcomes).toEqual(desiredOutcomes)
+    })
+
+    it('getServiceCategories returns a list of service categories by ID', async () => {
+      const serviceCategories = await interventionsService.getServiceCategories(probationPractitionerToken, [
+        '428ee70f-3001-4399-95a6-ad25eaaede16',
+        '428ee70f-3001-4399-95a6-ad25eaaede16',
+      ])
+
+      expect(serviceCategories[0].id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(serviceCategories[0].name).toEqual('Accommodation')
+      expect(serviceCategories[1].id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
+      expect(serviceCategories[1].name).toEqual('Accommodation')
+    })
+  })
+
+  describe('getDraftReferralsForUserToken', () => {
+    it('returns a list of draft referrals for a given userID', async () => {
+      const userToken = oauth2TokenFactory
+        .probationPractitionerToken()
+        .build('', { transient: { userID: '8751622134' } })
+
+      await provider.addInteraction({
+        state: 'a single referral for user with ID 8751622134 exists',
+        uponReceiving: 'a GET request to return the referrals for that user ID',
+        withRequest: {
+          method: 'GET',
+          path: '/draft-referrals',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: [
+            {
+              id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+              createdAt: '2020-12-07T20:45:21.986389Z',
+            },
+          ],
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referrals = await interventionsService.getDraftReferralsForUserToken(userToken)
+      expect(referrals.length).toBe(1)
+      expect(referrals[0].id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+    })
+
+    it('returns an empty list for an unknown user ID', async () => {
+      const unknownUserToken = oauth2TokenFactory
+        .probationPractitionerToken()
+        .build('', { transient: { userID: '123344556' } })
+
+      await provider.addInteraction({
+        state: 'a referral does not exist for user with ID 123344556',
+        uponReceiving: 'a GET request to return the referrals for that user ID',
+        withRequest: {
+          method: 'GET',
+          path: '/draft-referrals',
+          headers: {
+            Accept: 'application/json',
+            Authorization: `Bearer ${unknownUserToken}`,
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: [],
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const referrals = await interventionsService.getDraftReferralsForUserToken(unknownUserToken)
+      expect(referrals.length).toBe(0)
+    })
+  })
+
+  const serviceUser = {
+    crn: 'X862134',
+    title: 'Mr',
+    firstName: 'Alex',
+    lastName: 'River',
+    dateOfBirth: '1980-01-01',
+    gender: 'Male',
+    ethnicity: 'British',
+    preferredLanguage: 'English',
+    religionOrBelief: 'Agnostic',
+    disabilities: ['Autism spectrum condition', 'sciatica'],
+  } as ServiceUser
+
+  const sentReferral: SentReferral = {
+    id: '81d754aa-d868-4347-9c0f-50690773014e',
+    sentAt: '2021-01-14T15:56:45.382884Z',
+    sentBy: {
+      username: 'BERNARD.BEAKS',
+      userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+      authSource: 'delius',
+    },
+    assignedTo: null,
+    actionPlanId: null,
+    endRequestedAt: null,
+    endRequestedReason: null,
+    endRequestedComments: null,
+    endOfServiceReportCreationRequired: false,
+    concludedAt: null,
+    endOfServiceReport: null,
+    referenceNumber: 'HDJ2123F',
+    supplementaryRiskId: 'a1f5ce02-53a3-47c4-bc71-45f1bdbf504c',
+    withdrawalState: WithdrawalState.preICA,
+    withdrawalCode: null,
+    withdrawalComments: null,
+    referral: {
+      createdAt: '2021-01-11T10:32:12.382884Z',
+      completionDeadline: '2021-04-01',
+      serviceProvider: {
+        id: '12345',
+        name: 'Harmony Living',
+      },
+      interventionId: '000b2538-914b-4641-a1cc-a293409536bf',
+      serviceCategoryIds: ['428ee70f-3001-4399-95a6-ad25eaaede16'],
+      complexityLevels: [
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+        },
+      ],
+      furtherInformation: 'Some information about the service user',
+      relevantSentenceId: 2600295124,
+      desiredOutcomes: [
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+        },
+      ],
+      additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+      accessibilityNeeds: 'She uses a wheelchair',
+      needsInterpreter: true,
+      interpreterLanguage: 'Spanish',
+      hasAdditionalResponsibilities: true,
+      whenUnavailable: 'She works Mondays 9am - midday',
+      serviceUser,
+      maximumEnforceableDays: 10,
+      personCurrentLocationType: CurrentLocationType.custody,
+      personCustodyPrisonId: 'aaa',
+      alreadyKnowPrisonName: null,
+      expectedReleaseDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      expectedReleaseDateMissingReason: null,
+      expectedProbationOffice: 'London',
+      expectedProbationOfficeUnKnownReason: null,
+      hasExpectedReleaseDate: null,
+      ndeliusPPName: 'Bob',
+      ndeliusPPEmailAddress: 'bob@example.com',
+      ndeliusPDU: 'Hackney and City',
+      ndeliusPhoneNumber: '073232324232',
+      ndeliusTeamPhoneNumber: '020-32352323213',
+      ppName: 'Alice',
+      ppEmailAddress: 'alice@example.com',
+      ppProbationOffice: 'London',
+      ppPdu: 'East Sussex',
+      ppEstablishment: 'aaa',
+      ppPhoneNumber: '093232324232',
+      ppTeamPhoneNumber: '08023232323',
+      hasValidDeliusPPDetails: false,
+      isReferralReleasingIn12Weeks: false,
+      roleOrJobTitle: 'Probation Practitioner',
+      hasMainPointOfContactDetails: false,
+      ppLocationType: null,
+      allocatedCommunityPP: true,
+      reasonForReferral: 'for crs',
+      reasonForReferralFurtherInformation: 'more info',
+      reasonForReferralCreationBeforeAllocation: 'for quick assessment',
+    },
+  }
+
+  const serviceUserRequestBody: InterfaceToTemplate<ServiceUser> = serviceUser
+
+  const sentReferralRequestBody: InterfaceToTemplate<SentReferral> = {
+    id: '81d754aa-d868-4347-9c0f-50690773014e',
+    sentAt: '2021-01-14T15:56:45.382884Z',
+    sentBy: {
+      username: 'BERNARD.BEAKS',
+      userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+      authSource: 'delius',
+    },
+    assignedTo: null,
+    actionPlanId: null,
+    endRequestedAt: null,
+    endRequestedReason: null,
+    endRequestedComments: null,
+    endOfServiceReportCreationRequired: false,
+    concludedAt: null,
+    endOfServiceReport: null,
+    referenceNumber: 'HDJ2123F',
+    supplementaryRiskId: 'a1f5ce02-53a3-47c4-bc71-45f1bdbf504c',
+    withdrawalState: WithdrawalState.preICA,
+    withdrawalCode: null,
+    withdrawalComments: null,
+    referral: {
+      createdAt: '2021-01-11T10:32:12.382884Z',
+      completionDeadline: '2021-04-01',
+      serviceProvider: {
+        id: '12345',
+        name: 'Harmony Living',
+      },
+      interventionId: '000b2538-914b-4641-a1cc-a293409536bf',
+      serviceCategoryIds: ['428ee70f-3001-4399-95a6-ad25eaaede16'],
+      complexityLevels: [
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+        },
+      ],
+      furtherInformation: 'Some information about the service user',
+      relevantSentenceId: 2600295124,
+      desiredOutcomes: [
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+        },
+      ],
+      additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+      accessibilityNeeds: 'She uses a wheelchair',
+      needsInterpreter: true,
+      interpreterLanguage: 'Spanish',
+      hasAdditionalResponsibilities: true,
+      whenUnavailable: 'She works Mondays 9am - midday',
+      serviceUser: serviceUserRequestBody,
+      maximumEnforceableDays: 10,
+      personCurrentLocationType: CurrentLocationType.custody,
+      personCustodyPrisonId: 'aaa',
+      alreadyKnowPrisonName: null,
+      expectedReleaseDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      expectedReleaseDateMissingReason: null,
+      expectedProbationOffice: 'London',
+      expectedProbationOfficeUnKnownReason: null,
+      hasExpectedReleaseDate: null,
+      ndeliusPPName: 'Bob',
+      ndeliusPPEmailAddress: 'bob@example.com',
+      ndeliusPDU: 'Hackney and City',
+      ndeliusPhoneNumber: '073232324232',
+      ndeliusTeamPhoneNumber: '020-32352323213',
+      ppName: 'Alice',
+      ppEmailAddress: 'alice@example.com',
+      ppProbationOffice: 'London',
+      ppPdu: 'East Sussex',
+      ppEstablishment: 'aaa',
+      ppPhoneNumber: '093232324232',
+      ppTeamPhoneNumber: '08023232323',
+      hasValidDeliusPPDetails: false,
+      isReferralReleasingIn12Weeks: false,
+      roleOrJobTitle: 'Probation Practitioner',
+      hasMainPointOfContactDetails: false,
+      ppLocationType: null,
+      allocatedCommunityPP: true,
+      reasonForReferral: 'for crs',
+      reasonForReferralFurtherInformation: 'more info',
+      reasonForReferralCreationBeforeAllocation: 'for quick assessment',
+    },
+  }
+
+  const sentReferralSummaries1: SentReferralSummaries = {
+    id: 'eb25cf36-4956-4924-a887-989fe3d6638d',
+    sentAt: '2021-01-14T15:56:45.382884Z',
+    sentBy: {
+      username: 'BERNARD.BEAKS',
+      userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+      authSource: 'delius',
+    },
+    assignedTo: null,
+    concludedAt: null,
+    referenceNumber: 'HDJ2123F',
+    serviceProvider: {
+      id: '12345',
+      name: 'Harmony Living',
+    },
+    serviceUser,
+    interventionTitle: 'Womens Care Home',
+    supplementaryRiskId: '12345',
+    expectedReleaseDate: '2021-01-14',
+    location: 'aaa',
+    locationType: 'COMMUNITY',
+    isReferralReleasingIn12Weeks: false,
+  }
+
+  const sentReferralSummaries1RequestBody: InterfaceToTemplate<SentReferralSummaries> = {
+    ...sentReferralSummaries1,
+    sentBy: { ...sentReferralSummaries1.sentBy },
+    assignedTo: null,
+    serviceProvider: { ...sentReferralSummaries1.serviceProvider },
+    serviceUser: { ...sentReferralSummaries1.serviceUser },
+  }
+
+  const sentReferralSummaries2: SentReferralSummaries = {
+    id: 'bfabb659-1200-4479-bae7-8927e1e87a0d',
+    sentAt: '2021-01-14T15:56:45.382884Z',
+    sentBy: {
+      username: 'BERNARD.BEAKS',
+      userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+      authSource: 'delius',
+    },
+    assignedTo: null,
+    concludedAt: null,
+    referenceNumber: 'HDJ2123F',
+    serviceProvider: {
+      id: '12345',
+      name: 'Harmony Living',
+    },
+    serviceUser,
+    interventionTitle: 'Womens Care Home',
+    supplementaryRiskId: '12345',
+    expectedReleaseDate: '2021-01-14',
+    location: 'aaa',
+    locationType: 'COMMUNITY',
+    isReferralReleasingIn12Weeks: false,
+  }
+
+  const sentReferralSummaries2RequestBody: InterfaceToTemplate<SentReferralSummaries> = {
+    ...sentReferralSummaries2,
+    sentBy: { ...sentReferralSummaries2.sentBy },
+    assignedTo: null,
+    serviceProvider: { ...sentReferralSummaries2.serviceProvider },
+    serviceUser: { ...sentReferralSummaries2.serviceUser },
+  }
+
+  const sentReferralSummariesPages: Page<SentReferralSummaries> = {
+    content: [sentReferralSummaries1, sentReferralSummaries2],
+    size: 2,
+    totalElements: 2,
+    totalPages: 1,
+    numberOfElements: 2,
+    number: 2,
+  }
+
+  const sentReferralSummariesPagesRequestBody: InterfaceToTemplate<Page<SentReferralSummaries>> = {
+    ...sentReferralSummariesPages,
+    content: [sentReferralSummaries1RequestBody, sentReferralSummaries2RequestBody],
+  }
+
+  const sentReferralSummariesCancelledPages: Page<SentReferralSummaries> = {
+    content: [sentReferralSummaries1],
+    size: 1,
+    totalElements: 1,
+    totalPages: 1,
+    numberOfElements: 1,
+    number: 1,
+  }
+
+  const sentReferralSummariesCancelledPagesRequestBody: InterfaceToTemplate<Page<SentReferralSummaries>> = {
+    ...sentReferralSummariesCancelledPages,
+    content: [sentReferralSummaries1RequestBody],
+  }
+
+  describe('sendDraftReferral', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6 exists and is ready to be sent',
+        uponReceiving: 'a POST request to send the draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6',
+        withRequest: {
+          method: 'POST',
+          path: '/draft-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6/send',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like(sentReferralRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/sent-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6'
+            ),
+          },
+        },
+      })
+    })
+
+    it('returns a sent referral', async () => {
+      expect(
+        await interventionsService.sendDraftReferral(probationPractitionerToken, '2a67075a-9c77-4103-9de0-63c4cfe3e8d6')
+      ).toEqual(sentReferral)
+    })
+  })
+
+  describe('getSentReferral', () => {
+    it('returns a referral for the given ID', async () => {
+      await provider.addInteraction({
+        state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
+        uponReceiving: 'a request for the sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(sentReferralRequestBody),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(
+        await interventionsService.getSentReferral(probationPractitionerToken, '81d754aa-d868-4347-9c0f-50690773014e')
+      ).toEqual(sentReferral)
+    })
+
+    describe('for a referral that has had a caseworker assigned', () => {
+      it('populates the assignedTo property', async () => {
+        await provider.addInteraction({
+          state:
+            'There is an existing sent referral with ID of 2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e, and it has a caseworker assigned',
+          uponReceiving: 'a request for the sent referral with ID of 2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referral/2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(
+          await interventionsService.getSentReferral(probationPractitionerToken, '2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e')
+        ).toMatchObject({
+          assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+        })
+      })
+    })
+
+    describe('for a referral that has an action plan', () => {
+      it('populates the actionPlanId property', async () => {
+        await provider.addInteraction({
+          state:
+            'There is an existing sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9, and it has an action plan',
+          uponReceiving: 'a request for the sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referral/8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({
+              actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+            }),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(
+          await interventionsService.getSentReferral(probationPractitionerToken, '8b423e17-9b60-4cc2-a927-8941ac76fdf9')
+        ).toMatchObject({
+          actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
+        })
+      })
+    })
+
+    describe('for a referral that has an end of service report', () => {
+      it('populates the endOfServiceReport property', async () => {
+        const id = '03bf1369-00d3-4b7f-88b2-da3cc8cc35b9'
+        const endOfServiceReport = endOfServiceReportFactory.build()
+        const endOfServiceReportRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
+          ...endOfServiceReport,
+          outcomes: [],
+        }
+
+        await provider.addInteraction({
+          state: `There is an existing sent referral with ID of ${id}, and it has an end of service report`,
+          uponReceiving: `a request for the sent referral with ID of ${id}`,
+          withRequest: {
+            method: 'GET',
+            path: `/sent-referral/${id}`,
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(endOfServiceReportRequestBody),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getSentReferral(probationPractitionerToken, id)).toMatchObject({
+          ...endOfServiceReport,
+        })
+      })
+    })
+
+    describe('for a sent referral that has had an end request', () => {
+      it('populates the endRequested properties', async () => {
+        const endRequestedReferral = sentReferralFactory.endRequested().build({ withdrawalCode: 'MIS' })
+        const endRequestedReferralRequestBody: InterfaceToTemplate<SentReferral> = {
+          ...endRequestedReferral,
+          referral: {
+            ...endRequestedReferral.referral,
+            serviceProvider: { ...endRequestedReferral.referral.serviceProvider },
+            complexityLevels: {
+              ...endRequestedReferral.referral.complexityLevels.map(level => ({
+                ...level,
+              })),
+            },
+            desiredOutcomes: { ...endRequestedReferral.referral.desiredOutcomes.map(outcome => ({ ...outcome })) },
+            serviceUser: { ...endRequestedReferral.referral.serviceUser },
+          } as InterfaceToTemplate<ReferralFields>,
+          sentBy: { ...endRequestedReferral.sentBy },
+          assignedTo: null,
+          endOfServiceReport: null,
+        }
+        await provider.addInteraction({
+          state:
+            'There is an existing sent referral with ID of c5554f8f-aac6-4eaf-ba70-63281de35685, and it has been requested to be ended',
+          uponReceiving: 'a request for the sent referral with ID of c5554f8f-aac6-4eaf-ba70-63281de35685',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referral/c5554f8f-aac6-4eaf-ba70-63281de35685',
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(endRequestedReferralRequestBody),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const referral = await interventionsService.getSentReferral(
+          probationPractitionerToken,
+          'c5554f8f-aac6-4eaf-ba70-63281de35685'
+        )
+        expect(referral.endRequestedAt).not.toBeNull()
+        expect(referral.endRequestedReason).not.toBeNull()
+        expect(referral.endRequestedComments).not.toBeNull()
+      })
+    })
+  })
+
+  describe('updateSentReferralDetails', () => {
+    it('returns the updated referral details', async () => {
+      const update = {
+        reasonForChange: "change in the service user's circumstances",
+        furtherInformation: 'this person now has 4 children',
+      }
+
+      const referralDetails = referralDetailsFactory.build({
+        referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+        furtherInformation: update.furtherInformation,
+      })
+
+      const referralDetailsRequestBody: InterfaceToTemplate<ReferralDetails> = referralDetails
+
+      await provider.addInteraction({
+        state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
+        uponReceiving: 'a request to create a new version of the referral details with updated fields',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e/referral-details',
+          body: update,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(referralDetailsRequestBody),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      const updatedDetails = await interventionsService.updateSentReferralDetails(
+        probationPractitionerToken,
+        '81d754aa-d868-4347-9c0f-50690773014e',
+        update
+      )
+      expect(updatedDetails.furtherInformation).toBe(update.furtherInformation)
+      // these fields are already set in the existing version of the referral details
+      expect(updatedDetails.maximumEnforceableDays).not.toBeNull()
+      expect(updatedDetails.completionDeadline).not.toBeNull()
+    })
+
+    it('fails if no fields to update are included', async () => {
+      const update = {
+        reasonForChange: 'some reason or another',
+      }
+
+      await provider.addInteraction({
+        state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
+        uponReceiving: 'a request to create a new version of the referral details but with no fields to update',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e/referral-details',
+          body: update,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      await expect(async () =>
+        interventionsService.updateSentReferralDetails(
+          probationPractitionerToken,
+          '81d754aa-d868-4347-9c0f-50690773014e',
+          update
+        )
+      ).rejects.toThrow(Error)
+    })
+
+    describe('amendComplexityLevelForServiceCategory', () => {
+      it('successfully update the complexity level for a selected service category on a sent referral', async () => {
+        const serviceCategoryId = '428ee70f-3001-4399-95a6-ad25eaaede16'
+        const update = {
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+          reasonForChange: 'random update',
+        }
+        await provider.addInteraction({
+          state: `There is an existing sent referral with ID of ${sentReferral.id}`,
+          uponReceiving: 'a POST request to update the complexity level for a service category on a sent referral',
+          withRequest: {
+            method: 'POST',
+            path: `/sent-referral/${sentReferral.id}/service-category/${serviceCategoryId}/amend-complexity-level`,
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${probationPractitionerToken}`,
+            },
+            body: update,
+          },
+          willRespondWith: {
+            status: 204,
+          },
+        })
+
+        await expect(
+          await interventionsService.amendComplexityLevelForServiceCategory(
+            probationPractitionerToken,
+            sentReferral.id,
+            serviceCategoryId,
+            update
+          )
+        ).toEqual({})
+      })
+    })
+
+    describe('amendDesiredOutcomesForServiceCategory', () => {
+      it('returns the updated referral details', async () => {
+        const serviceCategoryId = '428ee70f-3001-4399-95a6-ad25eaaede16'
+        const update = {
+          desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+          reasonForChange: 'update the desired outcomes',
+        }
+        await provider.addInteraction({
+          state: `There is an existing sent referral with ID of ${sentReferral.id}`,
+          uponReceiving: 'a POST request to update the desired outcomes for a service category on a referral',
+          withRequest: {
+            method: 'POST',
+            path: `/sent-referral/${sentReferral.id}/service-category/${serviceCategoryId}/amend-desired-outcomes`,
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${probationPractitionerToken}`,
+            },
+            body: update,
+          },
+          willRespondWith: {
+            status: 204,
+          },
+        })
+
+        await expect(
+          await interventionsService.updateDesiredOutcomesForServiceCategory(
+            probationPractitionerToken,
+            sentReferral.id,
+            serviceCategoryId,
+            update
+          )
+        ).toEqual({})
+      })
+    })
+  })
+
+  describe('getServiceProviderSentReferralsSummaryForUserToken', () => {
+    it('returns a list of sent referrals', async () => {
+      const spUserWithAccess = oauth2TokenFactory
+        .transient({
+          authSource: 'auth',
+          userID: '608955ae-52ed-44cc-884c-011597a77949',
+          username: 'AUTH_USER',
+          roles: ['ROLE_CRS_PROVIDER', 'INT_SP_HARMONY_LIVING'],
+        })
+        .build()
+      const sentReferralSummary = {
+        referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
+        referenceNumber: 'JS18726AC',
+        interventionTitle: 'Accommodation Services - West Midlands',
+        assignedToUserName: 'AUTH_USER',
+        serviceUserFirstName: 'George',
+        serviceUserLastName: 'Michael',
+        endOfServiceReportSubmitted: false,
+      }
+      await provider.addInteraction({
+        state:
+          'There is an existing sent referral with ID of 2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e, and it has a caseworker assigned',
+        uponReceiving: 'a request for all sent referral summaries',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referrals/summary/service-provider',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${spUserWithAccess}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like([sentReferralSummary]),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+      const summaryResult =
+        await interventionsService.getServiceProviderSentReferralsSummaryForUserToken(spUserWithAccess)
+      expect(summaryResult.length).toEqual(1)
+      expect(summaryResult[0].referralId).toEqual(sentReferralSummary.referralId)
+      expect(summaryResult[0].referenceNumber).toEqual(sentReferralSummary.referenceNumber)
+      expect(summaryResult[0].interventionTitle).toEqual(sentReferralSummary.interventionTitle)
+      expect(summaryResult[0].assignedToUserName).toEqual(sentReferralSummary.assignedToUserName)
+      expect(summaryResult[0].serviceUserFirstName).toEqual(sentReferralSummary.serviceUserFirstName)
+      expect(summaryResult[0].serviceUserLastName).toEqual(sentReferralSummary.serviceUserLastName)
+      expect(summaryResult[0].endOfServiceReportSubmitted).toEqual(sentReferralSummary.endOfServiceReportSubmitted)
+    })
+  })
+
+  describe('getReferralsForUserToken', () => {
+    it('returns a list of sent referrals', async () => {
+      await provider.addInteraction({
+        state: 'There are some existing sent referrals sent by a probation practitioner user',
+        uponReceiving: 'a request for all sent referrals for the probation practitioner user',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referrals/summaries',
+          query: { page: '0', size: '10', sort: ['sentAt,DESC'] },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(sentReferralSummariesPagesRequestBody),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(
+        await interventionsService.getSentReferralsForUserTokenPaged(
+          probationPractitionerToken,
+          {},
+          { page: 0, size: 10, sort: ['sentAt,DESC'] }
+        )
+      ).toEqual(sentReferralSummariesPages)
+    })
+
+    describe('with "concluded" option', () => {
+      it('returns concluded sent referrals', async () => {
+        await provider.addInteraction({
+          state: 'There are some sent referrals in various states of completion for probation practitioner user',
+          uponReceiving: 'a request for sent referrals which are concluded',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referrals/summaries',
+            query: { completed: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(sentReferralSummariesPagesRequestBody),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const actualSentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
+          probationPractitionerToken,
+          { completed: true },
+          { page: 0, size: 10, sort: ['sentAt,DESC'] }
+        )
+        expect(actualSentReferralSummaries.content.length).toEqual(2)
+        const sentReferralIds = actualSentReferralSummaries.content.map(referral => referral.id)
+        expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
+        expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
+      })
+    })
+
+    describe('with "cancelled" option', () => {
+      it('returns cancelled sent referrals', async () => {
+        await provider.addInteraction({
+          state: 'There are some sent referrals in various states of completion for probation practitioner user',
+          uponReceiving: 'a request for sent referrals which are cancelled',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referrals/summaries',
+            query: { cancelled: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(sentReferralSummariesCancelledPagesRequestBody),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const sentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
+          probationPractitionerToken,
+          { cancelled: true },
+          { page: 0, size: 10, sort: ['sentAt,DESC'] }
+        )
+        expect(sentReferralSummaries.content.length).toEqual(1)
+        const sentReferralIds = sentReferralSummaries.content.map(referral => referral.id)
+        expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
+      })
+    })
+
+    describe('with "unassigned" option', () => {
+      it('returns unassigned sent referrals', async () => {
+        await provider.addInteraction({
+          state: 'There are some sent referrals in various states of completion for probation practitioner user',
+          uponReceiving: 'a request for sent referrals which are unassigned',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referrals/summaries',
+            query: { unassigned: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(sentReferralSummariesPagesRequestBody),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const actualSentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
+          probationPractitionerToken,
+          { unassigned: true },
+          { page: 0, size: 10, sort: ['sentAt,DESC'] }
+        )
+        expect(actualSentReferralSummaries.content.length).toEqual(2)
+        const sentReferralIds = actualSentReferralSummaries.content.map(referral => referral.id)
+        expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
+        expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
+      })
+    })
+
+    describe('with "assigned" option', () => {
+      it('returns assigned sent referrals', async () => {
+        await provider.addInteraction({
+          state: 'There are some sent referrals in various states of completion for probation practitioner user',
+          uponReceiving: 'a request for sent referrals which are assigned',
+          withRequest: {
+            method: 'GET',
+            path: '/sent-referrals/summaries',
+            query: { assignedTo: 'AUTH_USER', page: '0', size: '10', sort: ['sentAt,DESC'] },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(sentReferralSummariesPagesRequestBody),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        const actualSentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
+          probationPractitionerToken,
+          { assignedTo: 'AUTH_USER' },
+          { page: 0, size: 10, sort: ['sentAt,DESC'] }
+        )
+        expect(actualSentReferralSummaries.content.length).toEqual(2)
+        const sentReferralIds = actualSentReferralSummaries.content.map(referral => referral.id)
+        expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
+        expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
+      })
+    })
+  })
+
+  describe('assignSentReferral', () => {
+    it('returns the sent referral, with the assignedTo property populated', async () => {
+      await provider.addInteraction({
+        state:
+          'There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf and it is unassigned',
+        uponReceiving:
+          'a request to assign the sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf to a caseworker',
+        withRequest: {
+          method: 'POST',
+          path: '/sent-referral/400be4c6-1aa4-4f52-ae86-cbd5d23309bf/assign',
+          body: {
+            assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+          }),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(
+        await interventionsService.assignSentReferral(
+          probationPractitionerToken,
+          '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
+          {
+            username: 'UserABC',
+            userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+            authSource: 'auth',
+          }
+        )
+      ).toMatchObject({
+        assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
+      })
+    })
+  })
+
+  describe('getInterventions', () => {
+    it('returns a list of all interventions', async () => {
+      const interventions = interventionFactory.buildList(2)
+      const interventionsRequestBody: InterfaceToTemplate<Array<Intervention>> = interventions.map(intervention => ({
+        ...intervention,
+        npsRegion: { ...intervention.npsRegion },
+        pccRegions: intervention.pccRegions.map(pccRegion => ({
+          ...pccRegion,
+          npsRegion: { ...intervention.npsRegion },
+        })),
+        serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+          ...serviceCategory,
+          complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+            ...complexityLevel,
+          })),
+          desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+            ...desiredOutcome,
+          })),
+        })),
+        serviceProvider: { ...intervention.serviceProvider },
+        eligibility: { ...intervention.eligibility },
+        contractType: { ...intervention.contractType },
+      }))
+      await provider.addInteraction({
+        state: 'There are some interventions',
+        uponReceiving: 'a request for all interventions',
+        withRequest: {
+          method: 'GET',
+          path: '/interventions',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(interventionsRequestBody),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getInterventions(probationPractitionerToken, {})).toEqual(interventions)
+    })
+
+    describe('allowsMale filter', () => {
+      it.each([[true], [false]])('accepts a value of %s', async value => {
+        const interventions = interventionFactory.buildList(2)
+        const interventionsRequestBody: InterfaceToTemplate<Array<Intervention>> = interventions.map(intervention => ({
+          ...intervention,
+          npsRegion: { ...intervention.npsRegion },
+          pccRegions: intervention.pccRegions.map(pccRegion => ({
+            ...pccRegion,
+            npsRegion: { ...intervention.npsRegion },
+          })),
+          serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+            ...serviceCategory,
+            complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+              ...complexityLevel,
+            })),
+            desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+              ...desiredOutcome,
+            })),
+          })),
+          serviceProvider: { ...intervention.serviceProvider },
+          eligibility: { ...intervention.eligibility },
+          contractType: { ...intervention.contractType },
+        }))
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by allowsMale == ${value}`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { allowsMale: value ? 'true' : 'false' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(interventionsRequestBody),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getInterventions(probationPractitionerToken, { allowsMale: value })).toEqual(
+          interventions
+        )
+      })
+    })
+
+    describe('allowsFemale filter', () => {
+      it.each([[true], [false]])('accepts a value of %s', async value => {
+        const interventions = interventionFactory.buildList(2)
+        const interventionsRequestBody: InterfaceToTemplate<Array<Intervention>> = interventions.map(intervention => ({
+          ...intervention,
+          npsRegion: { ...intervention.npsRegion },
+          pccRegions: intervention.pccRegions.map(pccRegion => ({
+            ...pccRegion,
+            npsRegion: { ...intervention.npsRegion },
+          })),
+          serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+            ...serviceCategory,
+            complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+              ...complexityLevel,
+            })),
+            desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+              ...desiredOutcome,
+            })),
+          })),
+          serviceProvider: { ...intervention.serviceProvider },
+          eligibility: { ...intervention.eligibility },
+          contractType: { ...intervention.contractType },
+        }))
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by allowsFemale == ${value}`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { allowsFemale: value ? 'true' : 'false' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(interventionsRequestBody),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(
+          await interventionsService.getInterventions(probationPractitionerToken, { allowsFemale: value })
+        ).toEqual(interventions)
+      })
+    })
+
+    describe('pccRegionIds filter', () => {
+      it('accepts a list of PCC region IDs', async () => {
+        const intervention = interventionFactory.build()
+        const interventionRequestBody: InterfaceToTemplate<Intervention> = {
+          ...intervention,
+          npsRegion: { ...intervention.npsRegion },
+          pccRegions: intervention.pccRegions.map(pccRegion => ({
+            ...pccRegion,
+            npsRegion: { ...intervention.npsRegion },
+          })),
+          serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+            ...serviceCategory,
+            complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+              ...complexityLevel,
+            })),
+            desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+              ...desiredOutcome,
+            })),
+          })),
+          serviceProvider: { ...intervention.serviceProvider },
+          eligibility: { ...intervention.eligibility },
+          contractType: { ...intervention.contractType },
+        }
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by a non-empty list of pccRegions`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { pccRegionIds: 'cheshire,cumbria,merseyside' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like([interventionRequestBody, interventionRequestBody]),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(
+          await interventionsService.getInterventions(probationPractitionerToken, {
+            pccRegionIds: ['cheshire', 'cumbria', 'merseyside'],
+          })
+        ).toEqual([intervention, intervention])
+      })
+    })
+
+    describe('maximumAge filter', () => {
+      it('accepts a positive integer', async () => {
+        const interventions = interventionFactory.buildList(2)
+        const interventionsRequestBody: InterfaceToTemplate<Array<Intervention>> = interventions.map(intervention => ({
+          ...intervention,
+          npsRegion: { ...intervention.npsRegion },
+          pccRegions: intervention.pccRegions.map(pccRegion => ({
+            ...pccRegion,
+            npsRegion: { ...intervention.npsRegion },
+          })),
+          serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+            ...serviceCategory,
+            complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+              ...complexityLevel,
+            })),
+            desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+              ...desiredOutcome,
+            })),
+          })),
+          serviceProvider: { ...intervention.serviceProvider },
+          eligibility: { ...intervention.eligibility },
+          contractType: { ...intervention.contractType },
+        }))
+
+        await provider.addInteraction({
+          state: 'There are some interventions',
+          uponReceiving: `a request to get all interventions, filtered by maximumAge`,
+          withRequest: {
+            method: 'GET',
+            path: '/interventions',
+            query: { maximumAge: '25' },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like(interventionsRequestBody),
+            headers: { 'Content-Type': 'application/json' },
+          },
+        })
+
+        expect(await interventionsService.getInterventions(probationPractitionerToken, { maximumAge: 25 })).toEqual(
+          interventions
+        )
+      })
+    })
+  })
+
+  describe('getMyInterventions', () => {
+    it('returns a list of interventions', async () => {
+      const interventions = interventionFactory.buildList(2)
+      const interventionsRequestBody: InterfaceToTemplate<Array<Intervention>> = interventions.map(intervention => ({
+        ...intervention,
+        npsRegion: { ...intervention.npsRegion },
+        pccRegions: intervention.pccRegions.map(pccRegion => ({
+          ...pccRegion,
+          npsRegion: { ...intervention.npsRegion },
+        })),
+        serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+          ...serviceCategory,
+          complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+            ...complexityLevel,
+          })),
+          desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+            ...desiredOutcome,
+          })),
+        })),
+        serviceProvider: { ...intervention.serviceProvider },
+        eligibility: { ...intervention.eligibility },
+        contractType: { ...intervention.contractType },
+      }))
+
+      await provider.addInteraction({
+        state: "There are some interventions associated with the default service provider user's access scope",
+        uponReceiving: "a request for 'my' interventions",
+        withRequest: {
+          method: 'GET',
+          path: '/my-interventions',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(interventionsRequestBody),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getMyInterventions(serviceProviderToken)).toEqual(interventions)
+    })
+  })
+
+  describe('getIntervention', () => {
+    it('returns a single intervention', async () => {
+      const interventionId = '15237ae5-a017-4de6-a033-abf350f14d99'
+      const intervention = interventionFactory.build({ id: interventionId })
+      const interventionRequestBody: InterfaceToTemplate<Intervention> = {
+        ...intervention,
+        npsRegion: { ...intervention.npsRegion },
+        pccRegions: intervention.pccRegions.map(pccRegion => ({
+          ...pccRegion,
+          npsRegion: { ...intervention.npsRegion },
+        })),
+        serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+          ...serviceCategory,
+          complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+            ...complexityLevel,
+          })),
+          desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+            ...desiredOutcome,
+          })),
+        })),
+        serviceProvider: { ...intervention.serviceProvider },
+        eligibility: { ...intervention.eligibility },
+        contractType: { ...intervention.contractType },
+      }
+
+      await provider.addInteraction({
+        state: 'There is an existing intervention with ID 15237ae5-a017-4de6-a033-abf350f14d99',
+        uponReceiving: 'a request for that intervention',
+        withRequest: {
+          method: 'GET',
+          path: `/intervention/${interventionId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(interventionRequestBody),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getIntervention(probationPractitionerToken, interventionId)).toEqual(
+        intervention
+      )
+    })
+  })
+
+  describe('getPccRegions', () => {
+    it('returns a list of PCC regions', async () => {
+      const pccRegions = [
+        { id: 'cheshire', name: 'Cheshire' },
+        { id: 'cumbria', name: 'Cumbria' },
+        { id: 'lancashire', name: 'Lancashire' },
+        { id: 'merseyside', name: 'Merseyside' },
+      ]
+
+      await provider.addInteraction({
+        state: 'There are some PCC regions',
+        uponReceiving: 'a request for all the PCC regions',
+        withRequest: {
+          method: 'GET',
+          path: `/pcc-regions`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(pccRegions),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+
+      expect(await interventionsService.getPccRegions(probationPractitionerToken)).toEqual(pccRegions)
+    })
+  })
+
+  describe('createDraftActionPlan', () => {
+    it('returns a newly created draft action plan', async () => {
+      const referralId = '81d754aa-d868-4347-9c0f-50690773014e'
+      await provider.addInteraction({
+        state: 'a caseworker has been assigned to a sent referral and an action plan can be created',
+        uponReceiving: 'a POST request to create a draft action plan',
+        withRequest: {
+          method: 'POST',
+          path: '/draft-action-plan',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          body: {
+            referralId,
+          },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like({
+            id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+            numberOfSessions: null,
+            activities: [],
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/draft-action-plan/dfb64747-f658-40e0-a827-87b4b0bdcfed'
+            ),
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.createDraftActionPlan(probationPractitionerToken, referralId)
+      expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
+    })
+
+    it('returns a newly created draft action plan with number of sessions and activities', async () => {
+      const referralId = '81d754aa-d868-4347-9c0f-50690773014e'
+      await provider.addInteraction({
+        state: 'a caseworker has been assigned to a sent referral and an action plan can be created',
+        uponReceiving: 'a POST request to create a draft action plan that includes numberOfSessions and activities',
+        withRequest: {
+          method: 'POST',
+          path: '/draft-action-plan',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          body: {
+            referralId,
+            numberOfSessions: 5,
+            activities: [{ description: 'activity 1' }, { description: 'activity 2' }],
+          },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like({
+            id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
+            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+            numberOfSessions: 5,
+            activities: [
+              {
+                id: '5f7ce12c-0858-4188-a6af-5c8bdd697536',
+                createdAt: '2020-12-07T20:45:21.986389Z',
+                description: 'activity 1',
+              },
+              {
+                id: '5f7ce12c-0858-4188-a6af-5c8bdd697536',
+                createdAt: '2020-12-07T20:45:21.986389Z',
+                description: 'activity 2',
+              },
+            ],
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/draft-action-plan/dfb64747-f658-40e0-a827-87b4b0bdcfed'
+            ),
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.createDraftActionPlan(
+        probationPractitionerToken,
+        referralId,
+        5,
+        [{ description: 'activity 1' }, { description: 'activity 2' }]
+      )
+      expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
+      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
+      expect(draftActionPlan.numberOfSessions).toBe(5)
+      expect(draftActionPlan.activities.length).toBe(2)
+    })
+  })
+
+  describe('getActionPlan', () => {
+    it('returns an existing draft action plan', async () => {
+      const actionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
+      const referralId = '1be9f8e5-535f-4836-9b00-4d64c96784fd'
+
+      await provider.addInteraction({
+        state: `an action plan exists with ID ${actionPlanId}, and it has not been submitted`,
+        uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
+        withRequest: {
+          method: 'GET',
+          path: `/action-plan/${actionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: actionPlanId,
+            referralId,
+            activities: [],
+            numberOfSessions: null,
+            submittedAt: null,
+            submittedBy: null,
+            approvedAt: null,
+            approvedBy: null,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const actionPlan = await interventionsService.getActionPlan(probationPractitionerToken, actionPlanId)
+      expect(actionPlan).toMatchObject({
+        id: actionPlanId,
+        referralId,
+        activities: [],
+        numberOfSessions: null,
+        submittedAt: null,
+        submittedBy: null,
+        approvedAt: null,
+        approvedBy: null,
+      })
+    })
+
+    it('returns an existing submitted action plan', async () => {
+      const actionPlanId = '7a165933-d851-48c1-9ab0-ff5b8da12695'
+      const referralId = '1BE9F8E5-535F-4836-9B00-4D64C96784FD'
+      const user = {
+        authSource: 'auth',
+        userId: 'BB9C99F7-13EA-43D0-960A-768DC8FA0D91',
+        username: 'SP_USER_1',
+      }
+      const activities = [
+        {
+          id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
+          description: 'Attend training course',
+          createdAt: '2020-12-07T20:45:21.986389Z',
+        },
+      ]
+
+      await provider.addInteraction({
+        state: `an action plan exists with ID ${actionPlanId}, and it has been submitted`,
+        uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
+        withRequest: {
+          method: 'GET',
+          path: `/action-plan/${actionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: actionPlanId,
+            referralId,
+            activities,
+            submittedAt: '2021-03-09T15:08:38Z',
+            submittedBy: user,
+            approvedAt: null,
+            approvedBy: null,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const actionPlan = await interventionsService.getActionPlan(probationPractitionerToken, actionPlanId)
+      expect(actionPlan).toMatchObject({
+        id: actionPlanId,
+        referralId,
+        activities,
+        submittedAt: '2021-03-09T15:08:38Z',
+        submittedBy: user,
+        approvedAt: null,
+        approvedBy: null,
+      })
+    })
+
+    it('returns an existing approved action plan', async () => {
+      const actionPlanId = 'f3ade2c5-075a-4235-9826-eed289e4d17a'
+      const referralId = '1BE9F8E5-535F-4836-9B00-4D64C96784FD'
+      const user = {
+        authSource: 'auth',
+        userId: 'BB9C99F7-13EA-43D0-960A-768DC8FA0D91',
+        username: 'SP_USER_1',
+      }
+      const activities = [
+        {
+          id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
+          description: 'Attend training course',
+          createdAt: '2020-12-07T20:45:21.986389Z',
+        },
+      ]
+
+      await provider.addInteraction({
+        state: `an action plan exists with ID ${actionPlanId}, and it has been approved`,
+        uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
+        withRequest: {
+          method: 'GET',
+          path: `/action-plan/${actionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: actionPlanId,
+            referralId,
+            activities,
+            submittedAt: '2021-03-09T15:08:38Z',
+            submittedBy: user,
+            approvedAt: '2021-03-09T15:08:38Z',
+            approvedBy: user,
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const actionPlan = await interventionsService.getActionPlan(probationPractitionerToken, actionPlanId)
+      expect(actionPlan).toMatchObject({
+        id: actionPlanId,
+        referralId,
+        activities,
+        submittedAt: '2021-03-09T15:08:38Z',
+        submittedBy: user,
+        approvedAt: '2021-03-09T15:08:38Z',
+        approvedBy: user,
+      })
+    })
+  })
+
+  describe('updateDraftActionPlan', () => {
+    it('updates and returns the newly-updated draft action plan when adding an activity', async () => {
+      const draftActionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
+
+      await provider.addInteraction({
+        state: `an action plan exists with id ${draftActionPlanId}`,
+        uponReceiving: 'a PATCH request to set the activities on the action plan',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-action-plan/${draftActionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          body: {
+            newActivity: {
+              description: 'Attend training course',
+            },
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: draftActionPlanId,
+            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+            numberOfSessions: null,
+            activities: [
+              {
+                id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
+                description: 'Attend training course',
+                createdAt: '2020-12-07T20:45:21.986389Z',
+              },
+            ],
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.updateDraftActionPlan(
+        probationPractitionerToken,
+        draftActionPlanId,
+        {
+          newActivity: {
+            description: 'Attend training course',
+          },
+        }
+      )
+
+      expect(draftActionPlan.id).toBe(draftActionPlanId)
+      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
+      expect(draftActionPlan.numberOfSessions).toBe(null)
+      expect(draftActionPlan.activities[0].id).toEqual('91e7ceab-74fd-45d8-97c8-ec58844618dd')
+      expect(draftActionPlan.activities[0].description).toEqual('Attend training course')
+      expect(draftActionPlan.activities[0].createdAt).toEqual('2020-12-07T20:45:21.986389Z')
+    })
+
+    it('updates and returns the newly-updated draft action plan when setting number of sessions', async () => {
+      const draftActionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
+
+      await provider.addInteraction({
+        state: `an action plan exists with id ${draftActionPlanId}`,
+        uponReceiving: 'a PATCH request to set the number of sessions on the action plan',
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-action-plan/${draftActionPlanId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          body: {
+            numberOfSessions: 4,
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like({
+            id: draftActionPlanId,
+            referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+            numberOfSessions: 4,
+            activities: [
+              {
+                id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
+                description: 'Attend training course',
+                createdAt: '2020-12-07T20:45:21.986389Z',
+              },
+            ],
+            createdBy: {
+              username: 'BERNARD.BEAKS',
+              userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+              authSource: 'delius',
+            },
+            createdAt: '2020-12-07T20:45:21.986389Z',
+          }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.updateDraftActionPlan(
+        probationPractitionerToken,
+        draftActionPlanId,
+        {
+          numberOfSessions: 4,
+        }
+      )
+      expect(draftActionPlan.id).toBe(draftActionPlanId)
+      expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
+      expect(draftActionPlan.numberOfSessions).toBe(4)
+      expect(draftActionPlan.activities[0].id).toEqual('91e7ceab-74fd-45d8-97c8-ec58844618dd')
+      expect(draftActionPlan.activities[0].description).toEqual('Attend training course')
+      expect(draftActionPlan.activities[0].createdAt).toEqual('2020-12-07T20:45:21.986389Z')
+    })
+  })
+
+  describe('updateActionPlanActivity', () => {
+    it('updates and returns an updated action plan activity', async () => {
+      const draftActionPlanId = '6e8dfb5c-127f-46ea-9846-f82b5fd60d27'
+      const activityId = 'fd1b6653-ea7b-4e12-9d45-72ff9b1a3ea0'
+
+      await provider.addInteraction({
+        state: `a draft action plan with ID ${draftActionPlanId} exists and it has an activity with ID ${activityId}`,
+        uponReceiving: `a PATCH request to update the activity with id ${activityId}`,
+        withRequest: {
+          method: 'PATCH',
+          path: `/action-plan/${draftActionPlanId}/activities/${activityId}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+          body: {
+            description: 'do something totally different!',
+          },
+        },
+        willRespondWith: {
+          status: 200,
+          body: {
+            id: draftActionPlanId,
+            activities: [
+              {
+                id: activityId,
+                description: 'do something totally different!',
+                createdAt: Matchers.like('2020-12-07T20:45:21.986389Z'),
+              },
+            ],
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const draftActionPlan = await interventionsService.updateActionPlanActivity(
+        probationPractitionerToken,
+        draftActionPlanId,
+        activityId,
+        'do something totally different!'
+      )
+
+      expect(draftActionPlan.id).toBe(draftActionPlanId)
+      expect(draftActionPlan.activities[0].id).toEqual(activityId)
+      expect(draftActionPlan.activities[0].description).toEqual('do something totally different!')
+    })
+  })
+
+  describe('submitDraftActionPlan', () => {
+    const submittedActionPlan = {
+      id: '486ba46a-0b57-46ab-82c0-d8c5c43710c6',
+      referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+      numberOfSessions: 4,
+      activities: [
+        {
+          id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
+          description: 'Attend training course',
+          createdAt: '2020-12-07T20:45:21.986389Z',
+        },
+        {
+          id: 'e5755c27-2c85-448b-9f6d-e3959ec9c2d0',
+          description: 'Attend session',
+          createdAt: '2020-12-07T20:47:21.986389Z',
+        },
+      ],
+      submittedBy: {
+        username: 'BERNARD.BEAKS',
+        userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+        authSource: 'delius',
+      },
+      submittedAt: '2020-12-08T20:47:21.986389Z',
+      approvedBy: {
+        username: 'BERNARD.BEAKS',
+        userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+        authSource: 'delius',
+      },
+      approvedAt: '2020-12-08T20:47:21.986389Z',
+    }
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'a draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27 exists and is ready to be submitted',
+        uponReceiving: 'a POST request to send the draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27',
+        withRequest: {
+          method: 'POST',
+          path: '/draft-action-plan/6e8dfb5c-127f-46ea-9846-f82b5fd60d27/submit',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like(submittedActionPlan),
+          headers: {
+            'Content-Type': 'application/json',
+            Location: Matchers.like(
+              'https://hmpps-interventions-service.com/action-plan/6e8dfb5c-127f-46ea-9846-f82b5fd60d27'
+            ),
+          },
+        },
+      })
+    })
+
+    it('returns a submitted action plan', async () => {
+      expect(
+        await interventionsService.submitActionPlan(probationPractitionerToken, '6e8dfb5c-127f-46ea-9846-f82b5fd60d27')
+      ).toMatchObject(submittedActionPlan)
+    })
+  })
+
+  describe('approveActionPlan', () => {
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'an action plan exists with ID 7a165933-d851-48c1-9ab0-ff5b8da12695, and it has been submitted',
+        uponReceiving: 'a POST request to approve the action plan with ID 7a165933-d851-48c1-9ab0-ff5b8da12695',
+        withRequest: {
+          method: 'POST',
+          path: '/action-plan/7a165933-d851-48c1-9ab0-ff5b8da12695/approve',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+        },
+      })
+    })
+    it('returns successfully', async () => {
+      await interventionsService.approveActionPlan(probationPractitionerToken, '7a165933-d851-48c1-9ab0-ff5b8da12695')
+    })
+  })
+
+  describe('getApprovedActionPlanSummaries', () => {
+    it('returns a list of approved action plans for the given referral id', async () => {
+      const actionPlanVersionOneSummary = approvedActionPlanSummaryFactory.build({
+        id: 'f3ade2c5-075a-4235-9826-eed289e4d17a',
+      })
+
+      const actionPlanVersionTwoSummary = approvedActionPlanSummaryFactory.build({
+        id: '8f3e1895-9c46-40ad-bdb3-d33eacbb693e',
+      })
+      const referralId = '8d107952-9bde-4854-ad1e-dee09daab992'
+      const actionPlanVersionOneSummaryRequestBody: InterfaceToTemplate<ApprovedActionPlanSummary> =
+        actionPlanVersionOneSummary
+      const actionPlanVersionTwoSummaryRequestBody: InterfaceToTemplate<ApprovedActionPlanSummary> =
+        actionPlanVersionTwoSummary
+
+      await provider.addInteraction({
+        state: `two approved action plans exists with IDs ${actionPlanVersionOneSummary.id} and ${actionPlanVersionTwoSummary.id}`,
+        uponReceiving: `a GET request to view the approved action plans for a referral with ID ${referralId}`,
+        withRequest: {
+          method: 'GET',
+          path: `/sent-referral/${referralId}/approved-action-plans`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like([actionPlanVersionOneSummaryRequestBody, actionPlanVersionTwoSummaryRequestBody]),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const approvedActionPlanSummaries = await interventionsService.getApprovedActionPlanSummaries(
+        probationPractitionerToken,
+        referralId
+      )
+      expect(approvedActionPlanSummaries).toEqual([actionPlanVersionOneSummary, actionPlanVersionTwoSummary])
+    })
+  })
+
+  describe('getActionPlanAppointments', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
+    appointmentTime.setHours(0, 0, 0, 0)
+
+    const actionPlanAppointments = [
+      actionPlanAppointmentFactory.build({
+        sessionNumber: 1,
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+        durationInMinutes: 120,
+        sessionType: 'GROUP',
+        appointmentDeliveryType: 'PHONE_CALL',
+      }),
+      actionPlanAppointmentFactory.build({
+        sessionNumber: 2,
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+        durationInMinutes: 120,
+        sessionType: 'ONE_TO_ONE',
+        appointmentDeliveryType: 'PHONE_CALL',
+      }),
+      actionPlanAppointmentFactory.build({
+        sessionNumber: 3,
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+        durationInMinutes: 120,
+        sessionType: 'GROUP',
+        appointmentDeliveryType: 'PHONE_CALL',
+      }),
+    ]
+
+    const actionPlanAppointmentsRequestBody: InterfaceToTemplate<Array<ActionPlanAppointment>> =
+      actionPlanAppointments.map(appointment => ({
+        ...appointment,
+        currentAppointment: null,
+        oldAppointments: null,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: null,
+        },
+        appointmentDeliveryAddress: null,
+      }))
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'an action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and it has 3 scheduled appointments',
+        uponReceiving: 'a GET request for the appointments on action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
+        withRequest: {
+          method: 'GET',
+          path: '/action-plan/e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d/appointments',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(actionPlanAppointmentsRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns action plan appointments', async () => {
+      expect(
+        await interventionsService.getActionPlanAppointments(
+          probationPractitionerToken,
+          'e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d'
+        )
+      ).toMatchObject(actionPlanAppointments)
+    })
+  })
+
+  describe('getActionPlanAppointment', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
+
+    const actionPlanAppointment = actionPlanAppointmentFactory.build({
+      sessionNumber: 1,
+      appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+      durationInMinutes: 120,
+      sessionType: 'ONE_TO_ONE',
+      appointmentDeliveryType: 'PHONE_CALL',
+    })
+
+    const actionPlanAppointmentsRequestBody: InterfaceToTemplate<ActionPlanAppointment> = {
+      ...actionPlanAppointment,
+      currentAppointment: null,
+      oldAppointments: null,
+      appointmentFeedback: null,
+      appointmentDeliveryAddress: null,
+    }
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state:
+          'an action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and has an appointment for session 1',
+        uponReceiving:
+          'a GET request for the appointment for session 1 on action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
+        withRequest: {
+          method: 'GET',
+          path: '/action-plan/e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d/appointments/1',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(actionPlanAppointmentsRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+    })
+
+    it('returns the requested action plan appointment', async () => {
+      const appointment = await interventionsService.getActionPlanAppointment(
+        probationPractitionerToken,
+        'e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
+        1
+      )
+      expect(appointment.sessionNumber).toEqual(1)
+      expect(appointment.appointmentTime).toContain(`${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`)
+      expect(appointment.durationInMinutes).toEqual(120)
+      expect(appointment.sessionType).toEqual('ONE_TO_ONE')
+      expect(appointment.appointmentDeliveryType).toEqual('PHONE_CALL')
+    })
+  })
+
+  describe('updateActionPlanAppointment', () => {
+    const futureAppointmentTime = new Date()
+    futureAppointmentTime.setMonth(futureAppointmentTime.getMonth() + 4)
+    const pastAppointmentTime = new Date()
+    pastAppointmentTime.setUTCHours(2, 0, 0, 0) // create appointment in the morning
+    const pastAppointmentTimeString = pastAppointmentTime.toISOString().replace(/(.*)(:00\.000Z)$/, '$1:00Z')
+
+    // TODO skip past appointment tests until Pact contract update can be scheduled
+    // see https://trello.com/c/ZKPMdxVa
+    describe.skip('with a past appointment time', () => {
+      it('returns a scheduled action plan appointment with feedback', async () => {
+        const actionPlanAppointment = actionPlanAppointmentFactory.build({
+          sessionNumber: 2,
+          appointmentTime: pastAppointmentTimeString,
+          durationInMinutes: 60,
+          sessionType: 'ONE_TO_ONE',
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+          appointmentDeliveryAddress: {
+            firstAddressLine: 'Harmony Living Office, Room 4',
+            secondAddressLine: '44 Bouverie Road',
+            townOrCity: 'Blackpool',
+            county: 'Lancashire',
+            postCode: 'SY40RE',
+          },
+          appointmentFeedback: {
+            attendanceFeedback: {
+              attended: 'yes',
+            },
+            sessionFeedback: {
+              sessionSummary: 'stub session summary',
+              sessionResponse: 'stub session response',
+              notifyProbationPractitioner: false,
+            },
+            submittedBy: {
+              authSource: 'auth',
+              userId: '6c4036b7-e87d-44fb-864f-5a06c1c492f3',
+              username: 'TEST_INTERVENTIONS_SP_1',
+            },
+            submitted: true,
+          },
+        })
+
+        const actionPlanAppointmentRequestBody: InterfaceToTemplate<ActionPlanAppointment> = {
+          ...actionPlanAppointment,
+          currentAppointment: null,
+          oldAppointments: null,
+          appointmentFeedback: {
+            attendanceFeedback: {
+              attended: 'yes',
+            },
+            sessionFeedback: {
+              sessionSummary: 'stub session summary',
+              sessionResponse: 'stub session response',
+              notifyProbationPractitioner: false,
+            },
+            submittedBy: {
+              authSource: 'auth',
+              userId: '6c4036b7-e87d-44fb-864f-5a06c1c492f3',
+              username: 'TEST_INTERVENTIONS_SP_1',
+            },
+            submitted: true,
+          },
+          appointmentDeliveryAddress: { ...actionPlanAppointment.appointmentDeliveryAddress },
+        }
+
+        await provider.addInteraction({
+          state:
+            'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
+          uponReceiving:
+            'a PATCH request to update a past appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+          withRequest: {
+            method: 'PATCH',
+            path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
+            body: {
+              appointmentTime: pastAppointmentTimeString,
+              durationInMinutes: 60,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+              attendanceFeedback: {
+                attended: 'yes',
+              },
+              sessionFeedback: {
+                sessionSummary: 'stub session summary',
+                sessionResponse: 'stub session response',
+                notifyProbationPractitioner: false,
+              },
+            },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
+          },
+          // note - this is an exact match
+          willRespondWith: {
+            status: 200,
+            body: actionPlanAppointmentRequestBody,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        })
+
+        expect(
+          await interventionsService.updateActionPlanAppointment(
+            serviceProviderToken,
+            '345059d4-1697-467b-8914-fedec9957279',
+            2,
+            {
+              appointmentTime: pastAppointmentTimeString,
+              durationInMinutes: 60,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+              attendanceFeedback: {
+                didSessionHappen: true,
+                attended: 'yes',
+                attendanceFailureInformation: '',
+              },
+              sessionFeedback: {
+                notifyProbationPractitioner: false,
+                sessionSummary: 'stub session summary',
+                sessionResponse: 'stub session response',
+                sessionConcerns: '',
+                late: null,
+                lateReason: null,
+                noSessionReasonType: null,
+                noSessionReasonPopAcceptable: null,
+                noSessionReasonPopUnacceptable: null,
+                noSessionReasonLogistics: null,
+              },
+            }
+          )
+        ).toMatchObject(actionPlanAppointment)
+      })
+    })
+    describe('with a future appointment time', () => {
+      it('returns an updated action plan appointment', async () => {
+        const actionPlanAppointment = actionPlanAppointmentFactory.build({
+          sessionNumber: 2,
+          appointmentTime: `${futureAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+          durationInMinutes: 60,
+          sessionType: 'ONE_TO_ONE',
+          appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+          appointmentDeliveryAddress: {
+            firstAddressLine: 'Harmony Living Office, Room 4',
+            secondAddressLine: '44 Bouverie Road',
+            townOrCity: 'Blackpool',
+            county: 'Lancashire',
+            postCode: 'SY40RE',
+          },
+        })
+
+        const actionPlanAppointmentRequestBody: InterfaceToTemplate<ActionPlanAppointment> = {
+          ...actionPlanAppointment,
+          currentAppointment: null,
+          oldAppointments: null,
+          appointmentFeedback: {
+            ...actionPlanAppointment.appointmentFeedback,
+            attendanceFeedback: { ...actionPlanAppointment.appointmentFeedback.attendanceFeedback },
+            sessionFeedback: { ...actionPlanAppointment.appointmentFeedback.sessionFeedback },
+            submittedBy: null,
+          },
+          appointmentDeliveryAddress: { ...actionPlanAppointment.appointmentDeliveryAddress },
+        }
+
+        await provider.addInteraction({
+          state:
+            'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
+          uponReceiving:
+            'a PATCH request to update a future appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+          withRequest: {
+            method: 'PATCH',
+            path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
+            body: {
+              appointmentTime: `${futureAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+              durationInMinutes: 60,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+            },
+            headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
+          },
+          willRespondWith: {
+            status: 200,
+            body: Matchers.like({ ...actionPlanAppointmentRequestBody }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        })
+
+        expect(
+          await interventionsService.updateActionPlanAppointment(
+            serviceProviderToken,
+            '345059d4-1697-467b-8914-fedec9957279',
+            2,
+            {
+              appointmentTime: `${futureAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+              durationInMinutes: 60,
+              sessionType: 'ONE_TO_ONE',
+              appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
+              appointmentDeliveryAddress: {
+                firstAddressLine: 'Harmony Living Office, Room 4',
+                secondAddressLine: '44 Bouverie Road',
+                townOrCity: 'Blackpool',
+                county: 'Lancashire',
+                postCode: 'SY40RE',
+              },
+              npsOfficeCode: null,
+            }
+          )
+        ).toMatchObject(actionPlanAppointment)
+      })
+    })
+  })
+
+  // describe('recordActionPlanAppointmentAttendance', () => {
+  //   const appointmentTime = new Date()
+  //   appointmentTime.setMonth(appointmentTime.getMonth() + 4)
+
+  //   it('returns an updated action plan appointment with the service user‘s attendance', async () => {
+  //     await provider.addInteraction({
+  //       state:
+  //         'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has an appointment for which no session feedback has been recorded',
+  //       uponReceiving:
+  //         'a POST request to set the attendance for session 2 on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
+  //       withRequest: {
+  //         method: 'POST',
+  //         path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2/record-attendance',
+  //         body: {
+  //           attended: 'late',
   //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: {
-  //             id: '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
-  //             desiredOutcomes: Matchers.like([
-  //               {
-  //                 serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //                 desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
-  //               },
-  //             ]),
-  //           },
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const referral = await interventionsService.setDesiredOutcomesForServiceCategory(
-  //         probationPractitionerToken,
-  //         '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
-  //         {
-  //           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //           desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
-  //         }
-  //       )
-
-  //       expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
-  //       expect(referral.desiredOutcomes![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
-  //       expect(referral.desiredOutcomes![0].desiredOutcomesIds).toEqual([
-  //         '301ead30-30a4-4c7c-8296-2768abfb59b5',
-  //         '65924ac6-9724-455b-ad30-906936291421',
-  //       ])
-  //     })
-  //   })
-
-  //   describe('setComplexityLevelForServiceCategory', () => {
-  //     it('returns the updated referral when selecting a complexity level on a cohort referral', async () => {
-  //       await provider.addInteraction({
-  //         state: `There is an existing draft cohort referral with ID of 06716f8e-f507-42d4-bdcc-44c90e18dbd7, and it has had multiple service categories selected`,
-  //         uponReceiving: 'a PATCH request to set the complexity level for a service category on a referral',
-  //         withRequest: {
-  //           method: 'PATCH',
-  //           path: `/draft-referral/06716f8e-f507-42d4-bdcc-44c90e18dbd7/complexity-level`,
-  //           headers: {
-  //             Accept: 'application/json',
-  //             'Content-Type': 'application/json',
-  //             Authorization: `Bearer ${probationPractitionerToken}`,
-  //           },
-  //           body: {
-  //             serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //             complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-  //           },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: {
-  //             id: '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
-  //             complexityLevels: Matchers.like([
-  //               {
-  //                 serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //                 complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-  //               },
-  //             ]),
-  //           },
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const referral = await interventionsService.setComplexityLevelForServiceCategory(
-  //         probationPractitionerToken,
-  //         '06716f8e-f507-42d4-bdcc-44c90e18dbd7',
-  //         {
-  //           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //           complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-  //         }
-  //       )
-
-  //       expect(referral.id).toBe('06716f8e-f507-42d4-bdcc-44c90e18dbd7')
-  //       expect(referral.complexityLevels![0].serviceCategoryId).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
-  //       expect(referral.complexityLevels![0].complexityLevelId).toEqual('d0db50b0-4a50-4fc7-a006-9c97530e38b2')
-  //     })
-  //   })
-
-  //   describe('getServiceCategory/getServiceCategories', () => {
-  //     const complexityLevels = [
-  //       {
-  //         id: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-  //         title: 'Low complexity',
-  //         description:
-  //           'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
+  //         headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
   //       },
-  //       {
-  //         id: '110f2405-d944-4c15-836c-0c6684e2aa78',
-  //         title: 'Medium complexity',
-  //         description:
-  //           'Service user is at risk of homelessness/is homeless, or will be on release from prison. Service user has had some success in maintaining atenancy but may have additional needs e.g. Learning Difficulties and/or Learning Disabilities or other challenges currently.',
-  //       },
-  //       {
-  //         id: 'c86be5ec-31fa-4dfa-8c0c-8fe13451b9f6',
-  //         title: 'High complexity',
-  //         description:
-  //           'Service user is homeless or in temporary/unstable accommodation, or will be on release from prison. Service user has poor accommodation history, complex needs and limited skills to secure or sustain a tenancy.',
-  //       },
-  //     ]
-  //     const desiredOutcomes = [
-  //       {
-  //         id: '301ead30-30a4-4c7c-8296-2768abfb59b5',
-  //         description:
-  //           'All barriers, as identified in the Service user action plan (for example financial, behavioural, physical, mental or offence-type related), to obtaining or sustaining accommodation are successfully removed',
-  //       },
-  //       {
-  //         id: '65924ac6-9724-455b-ad30-906936291421',
-  //         description: 'Service user makes progress in obtaining accommodation',
-  //       },
-  //       {
-  //         id: '9b30ffad-dfcb-44ce-bdca-0ea49239a21a',
-  //         description: 'Service user is helped to secure social or supported housing',
-  //       },
-  //       {
-  //         id: 'e7f199de-eee1-4f57-a8c9-69281ea6cd4d',
-  //         description: 'Service user is helped to secure a tenancy in the private rented sector (PRS)',
-  //       },
-  //       {
-  //         id: '19d5ef58-5cfc-41fe-894c-acd705dc1325',
-  //         description: 'Service user is helped to sustain existing accommodation',
-  //       },
-  //       {
-  //         id: 'f6f70273-16a2-4dc7-aafc-9bc74215e713',
-  //         description: 'Service user is prevented from becoming homeless',
-  //       },
-  //       {
-  //         id: '449a93d7-e705-4340-9936-c859644abd52',
-  //         description:
-  //           'Settled accommodation is sustained for a period of at least 6 months or until the end of sentence, whichever occurs first (including for those serving custodial sentences of less than 6 months)',
-  //       },
-  //       {
-  //         id: '55a9cf76-428d-4409-8a57-aaa523f3b631',
-  //         description: 'Service user at risk of losing their tenancy are successfully helped to retain it',
-  //       },
-  //     ]
-
-  //     beforeEach(async () => {
-  //       await provider.addInteraction({
-  //         state: 'a service category with ID 428ee70f-3001-4399-95a6-ad25eaaede16 exists',
-  //         uponReceiving: 'a GET request to fetch the service category',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/service-category/428ee70f-3001-4399-95a6-ad25eaaede16',
-  //           headers: {
-  //             Accept: 'application/json',
-  //             Authorization: `Bearer ${probationPractitionerToken}`,
-  //           },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like({
-  //             id: '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //             name: 'Accommodation',
-  //             complexityLevels,
-  //             desiredOutcomes,
-  //           }),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-  //     })
-
-  //     it('getServiceCategory returns a single service category by ID', async () => {
-  //       const serviceCategory = await interventionsService.getServiceCategory(
-  //         probationPractitionerToken,
-  //         '428ee70f-3001-4399-95a6-ad25eaaede16'
-  //       )
-
-  //       expect(serviceCategory.id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
-  //       expect(serviceCategory.name).toEqual('Accommodation')
-  //       expect(serviceCategory.complexityLevels).toEqual(complexityLevels)
-  //       expect(serviceCategory.desiredOutcomes).toEqual(desiredOutcomes)
-  //     })
-
-  //     it('getServiceCategories returns a list of service categories by ID', async () => {
-  //       const serviceCategories = await interventionsService.getServiceCategories(probationPractitionerToken, [
-  //         '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //         '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //       ])
-
-  //       expect(serviceCategories[0].id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
-  //       expect(serviceCategories[0].name).toEqual('Accommodation')
-  //       expect(serviceCategories[1].id).toEqual('428ee70f-3001-4399-95a6-ad25eaaede16')
-  //       expect(serviceCategories[1].name).toEqual('Accommodation')
-  //     })
-  //   })
-
-  //   describe('getDraftReferralsForUserToken', () => {
-  //     it('returns a list of draft referrals for a given userID', async () => {
-  //       const userToken = oauth2TokenFactory
-  //         .probationPractitionerToken()
-  //         .build('', { transient: { userID: '8751622134' } })
-
-  //       await provider.addInteraction({
-  //         state: 'a single referral for user with ID 8751622134 exists',
-  //         uponReceiving: 'a GET request to return the referrals for that user ID',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/draft-referrals',
-  //           headers: {
-  //             Accept: 'application/json',
-  //             Authorization: `Bearer ${userToken}`,
-  //           },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: [
-  //             {
-  //               id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
-  //               createdAt: '2020-12-07T20:45:21.986389Z',
-  //             },
-  //           ],
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const referrals = await interventionsService.getDraftReferralsForUserToken(userToken)
-  //       expect(referrals.length).toBe(1)
-  //       expect(referrals[0].id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
-  //     })
-
-  //     it('returns an empty list for an unknown user ID', async () => {
-  //       const unknownUserToken = oauth2TokenFactory
-  //         .probationPractitionerToken()
-  //         .build('', { transient: { userID: '123344556' } })
-
-  //       await provider.addInteraction({
-  //         state: 'a referral does not exist for user with ID 123344556',
-  //         uponReceiving: 'a GET request to return the referrals for that user ID',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/draft-referrals',
-  //           headers: {
-  //             Accept: 'application/json',
-  //             Authorization: `Bearer ${unknownUserToken}`,
-  //           },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: [],
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const referrals = await interventionsService.getDraftReferralsForUserToken(unknownUserToken)
-  //       expect(referrals.length).toBe(0)
-  //     })
-  //   })
-
-  //   const serviceUser = {
-  //     crn: 'X862134',
-  //     title: 'Mr',
-  //     firstName: 'Alex',
-  //     lastName: 'River',
-  //     dateOfBirth: '1980-01-01',
-  //     gender: 'Male',
-  //     ethnicity: 'British',
-  //     preferredLanguage: 'English',
-  //     religionOrBelief: 'Agnostic',
-  //     disabilities: ['Autism spectrum condition', 'sciatica'],
-  //   } as ServiceUser
-
-  //   const sentReferral: SentReferral = {
-  //     id: '81d754aa-d868-4347-9c0f-50690773014e',
-  //     sentAt: '2021-01-14T15:56:45.382884Z',
-  //     sentBy: {
-  //       username: 'BERNARD.BEAKS',
-  //       userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-  //       authSource: 'delius',
-  //     },
-  //     assignedTo: null,
-  //     actionPlanId: null,
-  //     endRequestedAt: null,
-  //     endRequestedReason: null,
-  //     endRequestedComments: null,
-  //     endOfServiceReportCreationRequired: false,
-  //     concludedAt: null,
-  //     endOfServiceReport: null,
-  //     referenceNumber: 'HDJ2123F',
-  //     supplementaryRiskId: 'a1f5ce02-53a3-47c4-bc71-45f1bdbf504c',
-  //     withdrawalState: WithdrawalState.preICA,
-  //     withdrawalCode: null,
-  //     withdrawalComments: null,
-  //     referral: {
-  //       createdAt: '2021-01-11T10:32:12.382884Z',
-  //       completionDeadline: '2021-04-01',
-  //       serviceProvider: {
-  //         id: '12345',
-  //         name: 'Harmony Living',
-  //       },
-  //       interventionId: '000b2538-914b-4641-a1cc-a293409536bf',
-  //       serviceCategoryIds: ['428ee70f-3001-4399-95a6-ad25eaaede16'],
-  //       complexityLevels: [
-  //         {
-  //           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //           complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-  //         },
-  //       ],
-  //       furtherInformation: 'Some information about the service user',
-  //       relevantSentenceId: 2600295124,
-  //       desiredOutcomes: [
-  //         {
-  //           serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
-  //           desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
-  //         },
-  //       ],
-  //       additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
-  //       accessibilityNeeds: 'She uses a wheelchair',
-  //       needsInterpreter: true,
-  //       interpreterLanguage: 'Spanish',
-  //       hasAdditionalResponsibilities: true,
-  //       whenUnavailable: 'She works Mondays 9am - midday',
-  //       serviceUser,
-  //       maximumEnforceableDays: 10,
-  //       personCurrentLocationType: CurrentLocationType.custody,
-  //       personCustodyPrisonId: 'aaa',
-  //       alreadyKnowPrisonName: null,
-  //       expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
-  //       expectedReleaseDateMissingReason: null,
-  //       expectedProbationOffice: 'London',
-  //       expectedProbationOfficeUnKnownReason: null,
-  //       hasExpectedReleaseDate: null,
-  //       ndeliusPPName: 'Bob',
-  //       ndeliusPPEmailAddress: 'bob@example.com',
-  //       ndeliusPDU: 'Hackney and City',
-  //       ndeliusPhoneNumber: '073232324232',
-  //       ndeliusTeamPhoneNumber: '020-32352323213',
-  //       ppName: 'Alice',
-  //       ppEmailAddress: 'alice@example.com',
-  //       ppProbationOffice: 'London',
-  //       ppPdu: 'East Sussex',
-  //       ppEstablishment: 'aaa',
-  //       ppPhoneNumber: '093232324232',
-  //       ppTeamPhoneNumber: '08023232323',
-  //       hasValidDeliusPPDetails: false,
-  //       isReferralReleasingIn12Weeks: false,
-  //       roleOrJobTitle: 'Probation Practitioner',
-  //       hasMainPointOfContactDetails: false,
-  //       ppLocationType: null,
-  //       allocatedCommunityPP: true,
-  //       reasonForReferral: 'for crs',
-  //       reasonForReferralFurtherInformation: 'more info',
-  //       reasonForReferralCreationBeforeAllocation: 'for quick assessment',
-  //     },
-  //   }
-
-  //   const sentReferralSummaries1: SentReferralSummaries = {
-  //     id: 'eb25cf36-4956-4924-a887-989fe3d6638d',
-  //     sentAt: '2021-01-14T15:56:45.382884Z',
-  //     sentBy: {
-  //       username: 'BERNARD.BEAKS',
-  //       userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-  //       authSource: 'delius',
-  //     },
-  //     assignedTo: null,
-  //     concludedAt: null,
-  //     referenceNumber: 'HDJ2123F',
-  //     serviceProvider: {
-  //       id: '12345',
-  //       name: 'Harmony Living',
-  //     },
-  //     serviceUser,
-  //     interventionTitle: 'Womens Care Home',
-  //     supplementaryRiskId: '12345',
-  //     expectedReleaseDate: '2021-01-14',
-  //     location: 'aaa',
-  //     locationType: 'COMMUNITY',
-  //     isReferralReleasingIn12Weeks: false,
-  //   }
-
-  //   const sentReferralSummaries2: SentReferralSummaries = {
-  //     id: 'bfabb659-1200-4479-bae7-8927e1e87a0d',
-  //     sentAt: '2021-01-14T15:56:45.382884Z',
-  //     sentBy: {
-  //       username: 'BERNARD.BEAKS',
-  //       userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-  //       authSource: 'delius',
-  //     },
-  //     assignedTo: null,
-  //     concludedAt: null,
-  //     referenceNumber: 'HDJ2123F',
-  //     serviceProvider: {
-  //       id: '12345',
-  //       name: 'Harmony Living',
-  //     },
-  //     serviceUser,
-  //     interventionTitle: 'Womens Care Home',
-  //     supplementaryRiskId: '12345',
-  //     expectedReleaseDate: '2021-01-14',
-  //     location: 'aaa',
-  //     locationType: 'COMMUNITY',
-  //     isReferralReleasingIn12Weeks: false,
-  //   }
-
-  //   const sentReferralSummariesPages: Page<SentReferralSummaries> = {
-  //     content: [sentReferralSummaries1, sentReferralSummaries2],
-  //     size: 2,
-  //     totalElements: 2,
-  //     totalPages: 1,
-  //     numberOfElements: 2,
-  //     number: 2,
-  //   }
-
-  //   const sentReferralSummariesCancelledPages: Page<SentReferralSummaries> = {
-  //     content: [sentReferralSummaries1],
-  //     size: 1,
-  //     totalElements: 1,
-  //     totalPages: 1,
-  //     numberOfElements: 1,
-  //     number: 1,
-  //   }
-
-  //   describe('sendDraftReferral', () => {
-  //     beforeEach(async () => {
-  //       await provider.addInteraction({
-  //         state: 'a draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6 exists and is ready to be sent',
-  //         uponReceiving: 'a POST request to send the draft referral with ID 2a67075a-9c77-4103-9de0-63c4cfe3e8d6',
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/draft-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6/send',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 201,
-  //           body: Matchers.like(sentReferral),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //             Location: Matchers.like(
-  //               'https://hmpps-interventions-service.com/sent-referral/2a67075a-9c77-4103-9de0-63c4cfe3e8d6'
-  //             ),
-  //           },
-  //         },
-  //       })
-  //     })
-
-  //     it('returns a sent referral', async () => {
-  //       expect(
-  //         await interventionsService.sendDraftReferral(probationPractitionerToken, '2a67075a-9c77-4103-9de0-63c4cfe3e8d6')
-  //       ).toEqual(sentReferral)
-  //     })
-  //   })
-
-  //   describe('getSentReferral', () => {
-  //     it('returns a referral for the given ID', async () => {
-  //       await provider.addInteraction({
-  //         state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
-  //         uponReceiving: 'a request for the sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(sentReferral),
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-
-  //       expect(
-  //         await interventionsService.getSentReferral(probationPractitionerToken, '81d754aa-d868-4347-9c0f-50690773014e')
-  //       ).toEqual(sentReferral)
-  //     })
-
-  //     describe('for a referral that has had a caseworker assigned', () => {
-  //       it('populates the assignedTo property', async () => {
-  //         await provider.addInteraction({
-  //           state:
-  //             'There is an existing sent referral with ID of 2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e, and it has a caseworker assigned',
-  //           uponReceiving: 'a request for the sent referral with ID of 2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e',
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/sent-referral/2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e',
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like({
-  //               assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
-  //             }),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         expect(
-  //           await interventionsService.getSentReferral(probationPractitionerToken, '2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e')
-  //         ).toMatchObject({
-  //           assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
-  //         })
-  //       })
-  //     })
-
-  //     describe('for a referral that has an action plan', () => {
-  //       it('populates the actionPlanId property', async () => {
-  //         await provider.addInteraction({
-  //           state:
-  //             'There is an existing sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9, and it has an action plan',
-  //           uponReceiving: 'a request for the sent referral with ID of 8b423e17-9b60-4cc2-a927-8941ac76fdf9',
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/sent-referral/8b423e17-9b60-4cc2-a927-8941ac76fdf9',
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like({
-  //               actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
-  //             }),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         expect(
-  //           await interventionsService.getSentReferral(probationPractitionerToken, '8b423e17-9b60-4cc2-a927-8941ac76fdf9')
-  //         ).toMatchObject({
-  //           actionPlanId: '8b423e17-9b60-4cc2-a927-8941ac76fdf9',
-  //         })
-  //       })
-  //     })
-
-  //     describe('for a referral that has an end of service report', () => {
-  //       it('populates the endOfServiceReport property', async () => {
-  //         const id = '03bf1369-00d3-4b7f-88b2-da3cc8cc35b9'
-  //         const endOfServiceReport = endOfServiceReportFactory.build()
-
-  //         await provider.addInteraction({
-  //           state: `There is an existing sent referral with ID of ${id}, and it has an end of service report`,
-  //           uponReceiving: `a request for the sent referral with ID of ${id}`,
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: `/sent-referral/${id}`,
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like({
-  //               endOfServiceReport,
-  //             }),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         expect(await interventionsService.getSentReferral(probationPractitionerToken, id)).toMatchObject({
-  //           endOfServiceReport,
-  //         })
-  //       })
-  //     })
-
-  //     describe('for a sent referral that has had an end request', () => {
-  //       it('populates the endRequested properties', async () => {
-  //         const endRequestedReferral = sentReferralFactory.endRequested().build({ withdrawalCode: 'MIS' })
-  //         await provider.addInteraction({
-  //           state:
-  //             'There is an existing sent referral with ID of c5554f8f-aac6-4eaf-ba70-63281de35685, and it has been requested to be ended',
-  //           uponReceiving: 'a request for the sent referral with ID of c5554f8f-aac6-4eaf-ba70-63281de35685',
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/sent-referral/c5554f8f-aac6-4eaf-ba70-63281de35685',
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like(endRequestedReferral),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         const referral = await interventionsService.getSentReferral(
-  //           probationPractitionerToken,
-  //           'c5554f8f-aac6-4eaf-ba70-63281de35685'
-  //         )
-  //         expect(referral.endRequestedAt).not.toBeNull()
-  //         expect(referral.endRequestedReason).not.toBeNull()
-  //         expect(referral.endRequestedComments).not.toBeNull()
-  //       })
-  //     })
-  //   })
-
-  //   describe('updateSentReferralDetails', () => {
-  //     it('returns the updated referral details', async () => {
-  //       const update = {
-  //         reasonForChange: "change in the service user's circumstances",
-  //         furtherInformation: 'this person now has 4 children',
-  //       }
-
-  //       await provider.addInteraction({
-  //         state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
-  //         uponReceiving: 'a request to create a new version of the referral details with updated fields',
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e/referral-details',
-  //           body: update,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(
-  //             referralDetailsFactory.build({
-  //               referralId: '81d754aa-d868-4347-9c0f-50690773014e',
-  //               furtherInformation: update.furtherInformation,
-  //             })
-  //           ),
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-
-  //       const updatedDetails = await interventionsService.updateSentReferralDetails(
-  //         probationPractitionerToken,
-  //         '81d754aa-d868-4347-9c0f-50690773014e',
-  //         update
-  //       )
-  //       expect(updatedDetails.furtherInformation).toBe(update.furtherInformation)
-  //       // these fields are already set in the existing version of the referral details
-  //       expect(updatedDetails.maximumEnforceableDays).not.toBeNull()
-  //       expect(updatedDetails.completionDeadline).not.toBeNull()
-  //     })
-
-  //     it('fails if no fields to update are included', async () => {
-  //       const update = {
-  //         reasonForChange: 'some reason or another',
-  //       }
-
-  //       await provider.addInteraction({
-  //         state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
-  //         uponReceiving: 'a request to create a new version of the referral details but with no fields to update',
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/sent-referral/81d754aa-d868-4347-9c0f-50690773014e/referral-details',
-  //           body: update,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 400,
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-
-  //       await expect(async () =>
-  //         interventionsService.updateSentReferralDetails(
-  //           probationPractitionerToken,
-  //           '81d754aa-d868-4347-9c0f-50690773014e',
-  //           update
-  //         )
-  //       ).rejects.toThrow(Error)
-  //     })
-
-  //     describe('amendComplexityLevelForServiceCategory', () => {
-  //       it('successfully update the complexity level for a selected service category on a sent referral', async () => {
-  //         const serviceCategoryId = '428ee70f-3001-4399-95a6-ad25eaaede16'
-  //         const update = {
-  //           complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
-  //           reasonForChange: 'random update',
-  //         }
-  //         await provider.addInteraction({
-  //           state: `There is an existing sent referral with ID of ${sentReferral.id}`,
-  //           uponReceiving: 'a POST request to update the complexity level for a service category on a sent referral',
-  //           withRequest: {
-  //             method: 'POST',
-  //             path: `/sent-referral/${sentReferral.id}/service-category/${serviceCategoryId}/amend-complexity-level`,
-  //             headers: {
-  //               Accept: 'application/json',
-  //               'Content-Type': 'application/json',
-  //               Authorization: `Bearer ${probationPractitionerToken}`,
-  //             },
-  //             body: update,
-  //           },
-  //           willRespondWith: {
-  //             status: 204,
-  //           },
-  //         })
-
-  //         await expect(
-  //           await interventionsService.amendComplexityLevelForServiceCategory(
-  //             probationPractitionerToken,
-  //             sentReferral.id,
-  //             serviceCategoryId,
-  //             update
-  //           )
-  //         ).toEqual({})
-  //       })
-  //     })
-
-  //     describe('amendDesiredOutcomesForServiceCategory', () => {
-  //       it('returns the updated referral details', async () => {
-  //         const serviceCategoryId = '428ee70f-3001-4399-95a6-ad25eaaede16'
-  //         const update = {
-  //           desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
-  //           reasonForChange: 'update the desired outcomes',
-  //         }
-  //         await provider.addInteraction({
-  //           state: `There is an existing sent referral with ID of ${sentReferral.id}`,
-  //           uponReceiving: 'a POST request to update the desired outcomes for a service category on a referral',
-  //           withRequest: {
-  //             method: 'POST',
-  //             path: `/sent-referral/${sentReferral.id}/service-category/${serviceCategoryId}/amend-desired-outcomes`,
-  //             headers: {
-  //               Accept: 'application/json',
-  //               'Content-Type': 'application/json',
-  //               Authorization: `Bearer ${probationPractitionerToken}`,
-  //             },
-  //             body: update,
-  //           },
-  //           willRespondWith: {
-  //             status: 204,
-  //           },
-  //         })
-
-  //         await expect(
-  //           await interventionsService.updateDesiredOutcomesForServiceCategory(
-  //             probationPractitionerToken,
-  //             sentReferral.id,
-  //             serviceCategoryId,
-  //             update
-  //           )
-  //         ).toEqual({})
-  //       })
-  //     })
-  //   })
-
-  //   describe('getServiceProviderSentReferralsSummaryForUserToken', () => {
-  //     it('returns a list of sent referrals', async () => {
-  //       const spUserWithAccess = oauth2TokenFactory
-  //         .transient({
-  //           authSource: 'auth',
-  //           userID: '608955ae-52ed-44cc-884c-011597a77949',
-  //           username: 'AUTH_USER',
-  //           roles: ['ROLE_CRS_PROVIDER', 'INT_SP_HARMONY_LIVING'],
-  //         })
-  //         .build()
-  //       const sentReferralSummary = {
-  //         referralId: '4afb07a0-e50b-490c-a8c1-c858d5a1e912',
-  //         referenceNumber: 'JS18726AC',
-  //         interventionTitle: 'Accommodation Services - West Midlands',
-  //         assignedToUserName: 'AUTH_USER',
-  //         serviceUserFirstName: 'George',
-  //         serviceUserLastName: 'Michael',
-  //         endOfServiceReportSubmitted: false,
-  //       }
-  //       await provider.addInteraction({
-  //         state:
-  //           'There is an existing sent referral with ID of 2f4e91bf-5f73-4ca8-ad84-afee3f12ed8e, and it has a caseworker assigned',
-  //         uponReceiving: 'a request for all sent referral summaries',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/sent-referrals/summary/service-provider',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${spUserWithAccess}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like([sentReferralSummary]),
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-  //       const summaryResult =
-  //         await interventionsService.getServiceProviderSentReferralsSummaryForUserToken(spUserWithAccess)
-  //       expect(summaryResult.length).toEqual(1)
-  //       expect(summaryResult[0].referralId).toEqual(sentReferralSummary.referralId)
-  //       expect(summaryResult[0].referenceNumber).toEqual(sentReferralSummary.referenceNumber)
-  //       expect(summaryResult[0].interventionTitle).toEqual(sentReferralSummary.interventionTitle)
-  //       expect(summaryResult[0].assignedToUserName).toEqual(sentReferralSummary.assignedToUserName)
-  //       expect(summaryResult[0].serviceUserFirstName).toEqual(sentReferralSummary.serviceUserFirstName)
-  //       expect(summaryResult[0].serviceUserLastName).toEqual(sentReferralSummary.serviceUserLastName)
-  //       expect(summaryResult[0].endOfServiceReportSubmitted).toEqual(sentReferralSummary.endOfServiceReportSubmitted)
-  //     })
-  //   })
-
-  //   describe('getReferralsForUserToken', () => {
-  //     it('returns a list of sent referrals', async () => {
-  //       await provider.addInteraction({
-  //         state: 'There are some existing sent referrals sent by a probation practitioner user',
-  //         uponReceiving: 'a request for all sent referrals for the probation practitioner user',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/sent-referrals/summaries',
-  //           query: { page: '0', size: '10', sort: ['sentAt,DESC'] },
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(sentReferralSummariesPages),
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-
-  //       expect(
-  //         await interventionsService.getSentReferralsForUserTokenPaged(
-  //           probationPractitionerToken,
-  //           {},
-  //           { page: 0, size: 10, sort: ['sentAt,DESC'] }
-  //         )
-  //       ).toEqual(sentReferralSummariesPages)
-  //     })
-
-  //     describe('with "concluded" option', () => {
-  //       it('returns concluded sent referrals', async () => {
-  //         await provider.addInteraction({
-  //           state: 'There are some sent referrals in various states of completion for probation practitioner user',
-  //           uponReceiving: 'a request for sent referrals which are concluded',
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/sent-referrals/summaries',
-  //             query: { completed: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like(sentReferralSummariesPages),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         const actualSentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
-  //           probationPractitionerToken,
-  //           { completed: true },
-  //           { page: 0, size: 10, sort: ['sentAt,DESC'] }
-  //         )
-  //         expect(actualSentReferralSummaries.content.length).toEqual(2)
-  //         const sentReferralIds = actualSentReferralSummaries.content.map(referral => referral.id)
-  //         expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
-  //         expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
-  //       })
-  //     })
-
-  //     describe('with "cancelled" option', () => {
-  //       it('returns cancelled sent referrals', async () => {
-  //         await provider.addInteraction({
-  //           state: 'There are some sent referrals in various states of completion for probation practitioner user',
-  //           uponReceiving: 'a request for sent referrals which are cancelled',
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/sent-referrals/summaries',
-  //             query: { cancelled: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like(sentReferralSummariesCancelledPages),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         const sentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
-  //           probationPractitionerToken,
-  //           { cancelled: true },
-  //           { page: 0, size: 10, sort: ['sentAt,DESC'] }
-  //         )
-  //         expect(sentReferralSummaries.content.length).toEqual(1)
-  //         const sentReferralIds = sentReferralSummaries.content.map(referral => referral.id)
-  //         expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
-  //       })
-  //     })
-
-  //     describe('with "unassigned" option', () => {
-  //       it('returns unassigned sent referrals', async () => {
-  //         await provider.addInteraction({
-  //           state: 'There are some sent referrals in various states of completion for probation practitioner user',
-  //           uponReceiving: 'a request for sent referrals which are unassigned',
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/sent-referrals/summaries',
-  //             query: { unassigned: 'true', page: '0', size: '10', sort: ['sentAt,DESC'] },
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like(sentReferralSummariesPages),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         const actualSentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
-  //           probationPractitionerToken,
-  //           { unassigned: true },
-  //           { page: 0, size: 10, sort: ['sentAt,DESC'] }
-  //         )
-  //         expect(actualSentReferralSummaries.content.length).toEqual(2)
-  //         const sentReferralIds = actualSentReferralSummaries.content.map(referral => referral.id)
-  //         expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
-  //         expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
-  //       })
-  //     })
-
-  //     describe('with "assigned" option', () => {
-  //       it('returns assigned sent referrals', async () => {
-  //         await provider.addInteraction({
-  //           state: 'There are some sent referrals in various states of completion for probation practitioner user',
-  //           uponReceiving: 'a request for sent referrals which are assigned',
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/sent-referrals/summaries',
-  //             query: { assignedTo: 'AUTH_USER', page: '0', size: '10', sort: ['sentAt,DESC'] },
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like(sentReferralSummariesPages),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         const actualSentReferralSummaries = await interventionsService.getSentReferralsForUserTokenPaged(
-  //           probationPractitionerToken,
-  //           { assignedTo: 'AUTH_USER' },
-  //           { page: 0, size: 10, sort: ['sentAt,DESC'] }
-  //         )
-  //         expect(actualSentReferralSummaries.content.length).toEqual(2)
-  //         const sentReferralIds = actualSentReferralSummaries.content.map(referral => referral.id)
-  //         expect(sentReferralIds).toContain('eb25cf36-4956-4924-a887-989fe3d6638d')
-  //         expect(sentReferralIds).toContain('bfabb659-1200-4479-bae7-8927e1e87a0d')
-  //       })
-  //     })
-  //   })
-
-  //   describe('assignSentReferral', () => {
-  //     it('returns the sent referral, with the assignedTo property populated', async () => {
-  //       await provider.addInteraction({
-  //         state:
-  //           'There is an existing sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf and it is unassigned',
-  //         uponReceiving:
-  //           'a request to assign the sent referral with ID of 400be4c6-1aa4-4f52-ae86-cbd5d23309bf to a caseworker',
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/sent-referral/400be4c6-1aa4-4f52-ae86-cbd5d23309bf/assign',
-  //           body: {
-  //             assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
-  //           },
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like({
-  //             assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
-  //           }),
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-
-  //       expect(
-  //         await interventionsService.assignSentReferral(
-  //           probationPractitionerToken,
-  //           '400be4c6-1aa4-4f52-ae86-cbd5d23309bf',
-  //           {
-  //             username: 'UserABC',
-  //             userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-  //             authSource: 'auth',
-  //           }
-  //         )
-  //       ).toMatchObject({
-  //         assignedTo: { username: 'UserABC', userId: '555224b3-865c-4b56-97dd-c3e817592ba3', authSource: 'auth' },
-  //       })
-  //     })
-  //   })
-
-  //   describe('getInterventions', () => {
-  //     it('returns a list of all interventions', async () => {
-  //       const interventions = interventionFactory.buildList(2)
-
-  //       await provider.addInteraction({
-  //         state: 'There are some interventions',
-  //         uponReceiving: 'a request for all interventions',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/interventions',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(interventions),
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-
-  //       expect(await interventionsService.getInterventions(probationPractitionerToken, {})).toEqual(interventions)
-  //     })
-
-  //     describe('allowsMale filter', () => {
-  //       it.each([[true], [false]])('accepts a value of %s', async value => {
-  //         const interventions = interventionFactory.buildList(2)
-
-  //         await provider.addInteraction({
-  //           state: 'There are some interventions',
-  //           uponReceiving: `a request to get all interventions, filtered by allowsMale == ${value}`,
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/interventions',
-  //             query: { allowsMale: value ? 'true' : 'false' },
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like(interventions),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         expect(await interventionsService.getInterventions(probationPractitionerToken, { allowsMale: value })).toEqual(
-  //           interventions
-  //         )
-  //       })
-  //     })
-
-  //     describe('allowsFemale filter', () => {
-  //       it.each([[true], [false]])('accepts a value of %s', async value => {
-  //         const interventions = interventionFactory.buildList(2)
-
-  //         await provider.addInteraction({
-  //           state: 'There are some interventions',
-  //           uponReceiving: `a request to get all interventions, filtered by allowsFemale == ${value}`,
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/interventions',
-  //             query: { allowsFemale: value ? 'true' : 'false' },
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like(interventions),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         expect(
-  //           await interventionsService.getInterventions(probationPractitionerToken, { allowsFemale: value })
-  //         ).toEqual(interventions)
-  //       })
-  //     })
-
-  //     describe('pccRegionIds filter', () => {
-  //       it('accepts a list of PCC region IDs', async () => {
-  //         const intervention = interventionFactory.build()
-
-  //         await provider.addInteraction({
-  //           state: 'There are some interventions',
-  //           uponReceiving: `a request to get all interventions, filtered by a non-empty list of pccRegions`,
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/interventions',
-  //             query: { pccRegionIds: 'cheshire,cumbria,merseyside' },
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like([intervention, intervention]),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         expect(
-  //           await interventionsService.getInterventions(probationPractitionerToken, {
-  //             pccRegionIds: ['cheshire', 'cumbria', 'merseyside'],
-  //           })
-  //         ).toEqual([intervention, intervention])
-  //       })
-  //     })
-
-  //     describe('maximumAge filter', () => {
-  //       it('accepts a positive integer', async () => {
-  //         const interventions = interventionFactory.buildList(2)
-
-  //         await provider.addInteraction({
-  //           state: 'There are some interventions',
-  //           uponReceiving: `a request to get all interventions, filtered by maximumAge`,
-  //           withRequest: {
-  //             method: 'GET',
-  //             path: '/interventions',
-  //             query: { maximumAge: '25' },
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like(interventions),
-  //             headers: { 'Content-Type': 'application/json' },
-  //           },
-  //         })
-
-  //         expect(await interventionsService.getInterventions(probationPractitionerToken, { maximumAge: 25 })).toEqual(
-  //           interventions
-  //         )
-  //       })
-  //     })
-  //   })
-
-  //   describe('getMyInterventions', () => {
-  //     it('returns a list of interventions', async () => {
-  //       const interventions = interventionFactory.buildList(2)
-
-  //       await provider.addInteraction({
-  //         state: "There are some interventions associated with the default service provider user's access scope",
-  //         uponReceiving: "a request for 'my' interventions",
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/my-interventions',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(interventions),
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-
-  //       expect(await interventionsService.getMyInterventions(serviceProviderToken)).toEqual(interventions)
-  //     })
-  //   })
-
-  //   describe('getIntervention', () => {
-  //     it('returns a single intervention', async () => {
-  //       const interventionId = '15237ae5-a017-4de6-a033-abf350f14d99'
-  //       const intervention = interventionFactory.build({ id: interventionId })
-
-  //       await provider.addInteraction({
-  //         state: 'There is an existing intervention with ID 15237ae5-a017-4de6-a033-abf350f14d99',
-  //         uponReceiving: 'a request for that intervention',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: `/intervention/${interventionId}`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(intervention),
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-
-  //       expect(await interventionsService.getIntervention(probationPractitionerToken, interventionId)).toEqual(
-  //         intervention
-  //       )
-  //     })
-  //   })
-
-  //   describe('getPccRegions', () => {
-  //     it('returns a list of PCC regions', async () => {
-  //       const pccRegions = [
-  //         { id: 'cheshire', name: 'Cheshire' },
-  //         { id: 'cumbria', name: 'Cumbria' },
-  //         { id: 'lancashire', name: 'Lancashire' },
-  //         { id: 'merseyside', name: 'Merseyside' },
-  //       ]
-
-  //       await provider.addInteraction({
-  //         state: 'There are some PCC regions',
-  //         uponReceiving: 'a request for all the PCC regions',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: `/pcc-regions`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(pccRegions),
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-
-  //       expect(await interventionsService.getPccRegions(probationPractitionerToken)).toEqual(pccRegions)
-  //     })
-  //   })
-
-  //   describe('createDraftActionPlan', () => {
-  //     it('returns a newly created draft action plan', async () => {
-  //       const referralId = '81d754aa-d868-4347-9c0f-50690773014e'
-  //       await provider.addInteraction({
-  //         state: 'a caseworker has been assigned to a sent referral and an action plan can be created',
-  //         uponReceiving: 'a POST request to create a draft action plan',
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/draft-action-plan',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           body: {
-  //             referralId,
-  //           },
-  //         },
-  //         willRespondWith: {
-  //           status: 201,
-  //           body: Matchers.like({
-  //             id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
-  //             referralId: '81d754aa-d868-4347-9c0f-50690773014e',
-  //             numberOfSessions: null,
-  //             activities: [],
-  //           }),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //             Location: Matchers.like(
-  //               'https://hmpps-interventions-service.com/draft-action-plan/dfb64747-f658-40e0-a827-87b4b0bdcfed'
-  //             ),
-  //           },
-  //         },
-  //       })
-
-  //       const draftActionPlan = await interventionsService.createDraftActionPlan(probationPractitionerToken, referralId)
-  //       expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
-  //       expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
-  //     })
-
-  //     it('returns a newly created draft action plan with number of sessions and activities', async () => {
-  //       const referralId = '81d754aa-d868-4347-9c0f-50690773014e'
-  //       await provider.addInteraction({
-  //         state: 'a caseworker has been assigned to a sent referral and an action plan can be created',
-  //         uponReceiving: 'a POST request to create a draft action plan that includes numberOfSessions and activities',
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/draft-action-plan',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           body: {
-  //             referralId,
-  //             numberOfSessions: 5,
-  //             activities: [{ description: 'activity 1' }, { description: 'activity 2' }],
-  //           },
-  //         },
-  //         willRespondWith: {
-  //           status: 201,
-  //           body: Matchers.like({
-  //             id: 'dfb64747-f658-40e0-a827-87b4b0bdcfed',
-  //             referralId: '81d754aa-d868-4347-9c0f-50690773014e',
-  //             numberOfSessions: 5,
-  //             activities: [
-  //               {
-  //                 id: '5f7ce12c-0858-4188-a6af-5c8bdd697536',
-  //                 createdAt: '2020-12-07T20:45:21.986389Z',
-  //                 description: 'activity 1',
-  //               },
-  //               {
-  //                 id: '5f7ce12c-0858-4188-a6af-5c8bdd697536',
-  //                 createdAt: '2020-12-07T20:45:21.986389Z',
-  //                 description: 'activity 2',
-  //               },
-  //             ],
-  //           }),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //             Location: Matchers.like(
-  //               'https://hmpps-interventions-service.com/draft-action-plan/dfb64747-f658-40e0-a827-87b4b0bdcfed'
-  //             ),
-  //           },
-  //         },
-  //       })
-
-  //       const draftActionPlan = await interventionsService.createDraftActionPlan(
-  //         probationPractitionerToken,
-  //         referralId,
-  //         5,
-  //         [{ description: 'activity 1' }, { description: 'activity 2' }]
-  //       )
-  //       expect(draftActionPlan.id).toBe('dfb64747-f658-40e0-a827-87b4b0bdcfed')
-  //       expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
-  //       expect(draftActionPlan.numberOfSessions).toBe(5)
-  //       expect(draftActionPlan.activities.length).toBe(2)
-  //     })
-  //   })
-
-  //   describe('getActionPlan', () => {
-  //     it('returns an existing draft action plan', async () => {
-  //       const actionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
-  //       const referralId = '1be9f8e5-535f-4836-9b00-4d64c96784fd'
-
-  //       await provider.addInteraction({
-  //         state: `an action plan exists with ID ${actionPlanId}, and it has not been submitted`,
-  //         uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: `/action-plan/${actionPlanId}`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like({
-  //             id: actionPlanId,
-  //             referralId,
-  //             activities: [],
-  //             numberOfSessions: null,
-  //             submittedAt: null,
-  //             submittedBy: null,
-  //             approvedAt: null,
-  //             approvedBy: null,
-  //           }),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const actionPlan = await interventionsService.getActionPlan(probationPractitionerToken, actionPlanId)
-  //       expect(actionPlan).toMatchObject({
-  //         id: actionPlanId,
-  //         referralId,
-  //         activities: [],
-  //         numberOfSessions: null,
-  //         submittedAt: null,
-  //         submittedBy: null,
-  //         approvedAt: null,
-  //         approvedBy: null,
-  //       })
-  //     })
-
-  //     it('returns an existing submitted action plan', async () => {
-  //       const actionPlanId = '7a165933-d851-48c1-9ab0-ff5b8da12695'
-  //       const referralId = '1BE9F8E5-535F-4836-9B00-4D64C96784FD'
-  //       const user = {
-  //         authSource: 'auth',
-  //         userId: 'BB9C99F7-13EA-43D0-960A-768DC8FA0D91',
-  //         username: 'SP_USER_1',
-  //       }
-  //       const activities = [
-  //         {
-  //           id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
-  //           description: 'Attend training course',
-  //           createdAt: '2020-12-07T20:45:21.986389Z',
-  //         },
-  //       ]
-
-  //       await provider.addInteraction({
-  //         state: `an action plan exists with ID ${actionPlanId}, and it has been submitted`,
-  //         uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: `/action-plan/${actionPlanId}`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like({
-  //             id: actionPlanId,
-  //             referralId,
-  //             activities,
-  //             submittedAt: '2021-03-09T15:08:38Z',
-  //             submittedBy: user,
-  //             approvedAt: null,
-  //             approvedBy: null,
-  //           }),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const actionPlan = await interventionsService.getActionPlan(probationPractitionerToken, actionPlanId)
-  //       expect(actionPlan).toMatchObject({
-  //         id: actionPlanId,
-  //         referralId,
-  //         activities,
-  //         submittedAt: '2021-03-09T15:08:38Z',
-  //         submittedBy: user,
-  //         approvedAt: null,
-  //         approvedBy: null,
-  //       })
-  //     })
-
-  //     it('returns an existing approved action plan', async () => {
-  //       const actionPlanId = 'f3ade2c5-075a-4235-9826-eed289e4d17a'
-  //       const referralId = '1BE9F8E5-535F-4836-9B00-4D64C96784FD'
-  //       const user = {
-  //         authSource: 'auth',
-  //         userId: 'BB9C99F7-13EA-43D0-960A-768DC8FA0D91',
-  //         username: 'SP_USER_1',
-  //       }
-  //       const activities = [
-  //         {
-  //           id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
-  //           description: 'Attend training course',
-  //           createdAt: '2020-12-07T20:45:21.986389Z',
-  //         },
-  //       ]
-
-  //       await provider.addInteraction({
-  //         state: `an action plan exists with ID ${actionPlanId}, and it has been approved`,
-  //         uponReceiving: `a GET request to view the action plan with ID ${actionPlanId}`,
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: `/action-plan/${actionPlanId}`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like({
-  //             id: actionPlanId,
-  //             referralId,
-  //             activities,
-  //             submittedAt: '2021-03-09T15:08:38Z',
-  //             submittedBy: user,
-  //             approvedAt: '2021-03-09T15:08:38Z',
-  //             approvedBy: user,
-  //           }),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const actionPlan = await interventionsService.getActionPlan(probationPractitionerToken, actionPlanId)
-  //       expect(actionPlan).toMatchObject({
-  //         id: actionPlanId,
-  //         referralId,
-  //         activities,
-  //         submittedAt: '2021-03-09T15:08:38Z',
-  //         submittedBy: user,
-  //         approvedAt: '2021-03-09T15:08:38Z',
-  //         approvedBy: user,
-  //       })
-  //     })
-  //   })
-
-  //   describe('updateDraftActionPlan', () => {
-  //     it('updates and returns the newly-updated draft action plan when adding an activity', async () => {
-  //       const draftActionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
-
-  //       await provider.addInteraction({
-  //         state: `an action plan exists with id ${draftActionPlanId}`,
-  //         uponReceiving: 'a PATCH request to set the activities on the action plan',
-  //         withRequest: {
-  //           method: 'PATCH',
-  //           path: `/draft-action-plan/${draftActionPlanId}`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           body: {
-  //             newActivity: {
-  //               description: 'Attend training course',
-  //             },
-  //           },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like({
-  //             id: draftActionPlanId,
-  //             referralId: '81d754aa-d868-4347-9c0f-50690773014e',
-  //             numberOfSessions: null,
-  //             activities: [
-  //               {
-  //                 id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
-  //                 description: 'Attend training course',
-  //                 createdAt: '2020-12-07T20:45:21.986389Z',
-  //               },
-  //             ],
-  //           }),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const draftActionPlan = await interventionsService.updateDraftActionPlan(
-  //         probationPractitionerToken,
-  //         draftActionPlanId,
-  //         {
-  //           newActivity: {
-  //             description: 'Attend training course',
-  //           },
-  //         }
-  //       )
-
-  //       expect(draftActionPlan.id).toBe(draftActionPlanId)
-  //       expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
-  //       expect(draftActionPlan.numberOfSessions).toBe(null)
-  //       expect(draftActionPlan.activities[0].id).toEqual('91e7ceab-74fd-45d8-97c8-ec58844618dd')
-  //       expect(draftActionPlan.activities[0].description).toEqual('Attend training course')
-  //       expect(draftActionPlan.activities[0].createdAt).toEqual('2020-12-07T20:45:21.986389Z')
-  //     })
-
-  //     it('updates and returns the newly-updated draft action plan when setting number of sessions', async () => {
-  //       const draftActionPlanId = 'dfb64747-f658-40e0-a827-87b4b0bdcfed'
-
-  //       await provider.addInteraction({
-  //         state: `an action plan exists with id ${draftActionPlanId}`,
-  //         uponReceiving: 'a PATCH request to set the number of sessions on the action plan',
-  //         withRequest: {
-  //           method: 'PATCH',
-  //           path: `/draft-action-plan/${draftActionPlanId}`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           body: {
-  //             numberOfSessions: 4,
-  //           },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like({
-  //             id: draftActionPlanId,
-  //             referralId: '81d754aa-d868-4347-9c0f-50690773014e',
-  //             numberOfSessions: 4,
-  //             activities: [
-  //               {
-  //                 id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
-  //                 description: 'Attend training course',
-  //                 createdAt: '2020-12-07T20:45:21.986389Z',
-  //               },
-  //             ],
-  //             createdBy: {
-  //               username: 'BERNARD.BEAKS',
-  //               userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-  //               authSource: 'delius',
-  //             },
-  //             createdAt: '2020-12-07T20:45:21.986389Z',
-  //           }),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const draftActionPlan = await interventionsService.updateDraftActionPlan(
-  //         probationPractitionerToken,
-  //         draftActionPlanId,
-  //         {
-  //           numberOfSessions: 4,
-  //         }
-  //       )
-  //       expect(draftActionPlan.id).toBe(draftActionPlanId)
-  //       expect(draftActionPlan.referralId).toBe('81d754aa-d868-4347-9c0f-50690773014e')
-  //       expect(draftActionPlan.numberOfSessions).toBe(4)
-  //       expect(draftActionPlan.activities[0].id).toEqual('91e7ceab-74fd-45d8-97c8-ec58844618dd')
-  //       expect(draftActionPlan.activities[0].description).toEqual('Attend training course')
-  //       expect(draftActionPlan.activities[0].createdAt).toEqual('2020-12-07T20:45:21.986389Z')
-  //     })
-  //   })
-
-  //   describe('updateActionPlanActivity', () => {
-  //     it('updates and returns an updated action plan activity', async () => {
-  //       const draftActionPlanId = '6e8dfb5c-127f-46ea-9846-f82b5fd60d27'
-  //       const activityId = 'fd1b6653-ea7b-4e12-9d45-72ff9b1a3ea0'
-
-  //       await provider.addInteraction({
-  //         state: `a draft action plan with ID ${draftActionPlanId} exists and it has an activity with ID ${activityId}`,
-  //         uponReceiving: `a PATCH request to update the activity with id ${activityId}`,
-  //         withRequest: {
-  //           method: 'PATCH',
-  //           path: `/action-plan/${draftActionPlanId}/activities/${activityId}`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           body: {
-  //             description: 'do something totally different!',
-  //           },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: {
-  //             id: draftActionPlanId,
-  //             activities: [
-  //               {
-  //                 id: activityId,
-  //                 description: 'do something totally different!',
-  //                 createdAt: Matchers.like('2020-12-07T20:45:21.986389Z'),
-  //               },
-  //             ],
-  //           },
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const draftActionPlan = await interventionsService.updateActionPlanActivity(
-  //         probationPractitionerToken,
-  //         draftActionPlanId,
-  //         activityId,
-  //         'do something totally different!'
-  //       )
-
-  //       expect(draftActionPlan.id).toBe(draftActionPlanId)
-  //       expect(draftActionPlan.activities[0].id).toEqual(activityId)
-  //       expect(draftActionPlan.activities[0].description).toEqual('do something totally different!')
-  //     })
-  //   })
-
-  //   describe('submitDraftActionPlan', () => {
-  //     const submittedActionPlan = {
-  //       id: '486ba46a-0b57-46ab-82c0-d8c5c43710c6',
-  //       referralId: '81d754aa-d868-4347-9c0f-50690773014e',
-  //       numberOfSessions: 4,
-  //       activities: [
-  //         {
-  //           id: '91e7ceab-74fd-45d8-97c8-ec58844618dd',
-  //           description: 'Attend training course',
-  //           createdAt: '2020-12-07T20:45:21.986389Z',
-  //         },
-  //         {
-  //           id: 'e5755c27-2c85-448b-9f6d-e3959ec9c2d0',
-  //           description: 'Attend session',
-  //           createdAt: '2020-12-07T20:47:21.986389Z',
-  //         },
-  //       ],
-  //       submittedBy: {
-  //         username: 'BERNARD.BEAKS',
-  //         userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-  //         authSource: 'delius',
-  //       },
-  //       submittedAt: '2020-12-08T20:47:21.986389Z',
-  //       approvedBy: {
-  //         username: 'BERNARD.BEAKS',
-  //         userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
-  //         authSource: 'delius',
-  //       },
-  //       approvedAt: '2020-12-08T20:47:21.986389Z',
-  //     }
-
-  //     beforeEach(async () => {
-  //       await provider.addInteraction({
-  //         state: 'a draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27 exists and is ready to be submitted',
-  //         uponReceiving: 'a POST request to send the draft action plan with ID 6e8dfb5c-127f-46ea-9846-f82b5fd60d27',
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/draft-action-plan/6e8dfb5c-127f-46ea-9846-f82b5fd60d27/submit',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 201,
-  //           body: Matchers.like(submittedActionPlan),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //             Location: Matchers.like(
-  //               'https://hmpps-interventions-service.com/action-plan/6e8dfb5c-127f-46ea-9846-f82b5fd60d27'
-  //             ),
-  //           },
-  //         },
-  //       })
-  //     })
-
-  //     it('returns a submitted action plan', async () => {
-  //       expect(
-  //         await interventionsService.submitActionPlan(probationPractitionerToken, '6e8dfb5c-127f-46ea-9846-f82b5fd60d27')
-  //       ).toMatchObject(submittedActionPlan)
-  //     })
-  //   })
-
-  //   describe('approveActionPlan', () => {
-  //     beforeEach(async () => {
-  //       await provider.addInteraction({
-  //         state: 'an action plan exists with ID 7a165933-d851-48c1-9ab0-ff5b8da12695, and it has been submitted',
-  //         uponReceiving: 'a POST request to approve the action plan with ID 7a165933-d851-48c1-9ab0-ff5b8da12695',
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/action-plan/7a165933-d851-48c1-9ab0-ff5b8da12695/approve',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //         },
-  //       })
-  //     })
-  //     it('returns successfully', async () => {
-  //       await interventionsService.approveActionPlan(probationPractitionerToken, '7a165933-d851-48c1-9ab0-ff5b8da12695')
-  //     })
-  //   })
-
-  //   describe('getApprovedActionPlanSummaries', () => {
-  //     it('returns a list of approved action plans for the given referral id', async () => {
-  //       const actionPlanVersionOneSummary = approvedActionPlanSummaryFactory.build({
-  //         id: 'f3ade2c5-075a-4235-9826-eed289e4d17a',
-  //       })
-
-  //       const actionPlanVersionTwoSummary = approvedActionPlanSummaryFactory.build({
-  //         id: '8f3e1895-9c46-40ad-bdb3-d33eacbb693e',
-  //       })
-  //       const referralId = '8d107952-9bde-4854-ad1e-dee09daab992'
-
-  //       await provider.addInteraction({
-  //         state: `two approved action plans exists with IDs ${actionPlanVersionOneSummary.id} and ${actionPlanVersionTwoSummary.id}`,
-  //         uponReceiving: `a GET request to view the approved action plans for a referral with ID ${referralId}`,
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: `/sent-referral/${referralId}/approved-action-plans`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like([actionPlanVersionOneSummary, actionPlanVersionTwoSummary]),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const approvedActionPlanSummaries = await interventionsService.getApprovedActionPlanSummaries(
-  //         probationPractitionerToken,
-  //         referralId
-  //       )
-  //       expect(approvedActionPlanSummaries).toEqual([actionPlanVersionOneSummary, actionPlanVersionTwoSummary])
-  //     })
-  //   })
-
-  //   describe('getActionPlanAppointments', () => {
-  //     const appointmentTime = new Date()
-  //     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-  //     appointmentTime.setHours(0, 0, 0, 0)
-
-  //     const actionPlanAppointments = [
-  //       actionPlanAppointmentFactory.build({
-  //         sessionNumber: 1,
-  //         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //         durationInMinutes: 120,
-  //         sessionType: 'GROUP',
-  //         appointmentDeliveryType: 'PHONE_CALL',
-  //       }),
-  //       actionPlanAppointmentFactory.build({
-  //         sessionNumber: 2,
-  //         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //         durationInMinutes: 120,
-  //         sessionType: 'ONE_TO_ONE',
-  //         appointmentDeliveryType: 'PHONE_CALL',
-  //       }),
-  //       actionPlanAppointmentFactory.build({
-  //         sessionNumber: 3,
-  //         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //         durationInMinutes: 120,
-  //         sessionType: 'GROUP',
-  //         appointmentDeliveryType: 'PHONE_CALL',
-  //       }),
-  //     ]
-
-  //     beforeEach(async () => {
-  //       await provider.addInteraction({
-  //         state: 'an action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and it has 3 scheduled appointments',
-  //         uponReceiving: 'a GET request for the appointments on action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/action-plan/e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d/appointments',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(actionPlanAppointments),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-  //     })
-
-  //     it('returns action plan appointments', async () => {
-  //       expect(
-  //         await interventionsService.getActionPlanAppointments(
-  //           probationPractitionerToken,
-  //           'e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d'
-  //         )
-  //       ).toMatchObject(actionPlanAppointments)
-  //     })
-  //   })
-
-  //   describe('getActionPlanAppointment', () => {
-  //     const appointmentTime = new Date()
-  //     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-
-  //     const actionPlanAppointment = actionPlanAppointmentFactory.build({
-  //       sessionNumber: 1,
-  //       appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //       durationInMinutes: 120,
-  //       sessionType: 'ONE_TO_ONE',
-  //       appointmentDeliveryType: 'PHONE_CALL',
-  //     })
-
-  //     beforeEach(async () => {
-  //       await provider.addInteraction({
-  //         state:
-  //           'an action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and has an appointment for session 1',
-  //         uponReceiving:
-  //           'a GET request for the appointment for session 1 on action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/action-plan/e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d/appointments/1',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(actionPlanAppointment),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-  //     })
-
-  //     it('returns the requested action plan appointment', async () => {
-  //       const appointment = await interventionsService.getActionPlanAppointment(
-  //         probationPractitionerToken,
-  //         'e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d',
-  //         1
-  //       )
-  //       expect(appointment.sessionNumber).toEqual(1)
-  //       expect(appointment.appointmentTime).toContain(`${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`)
-  //       expect(appointment.durationInMinutes).toEqual(120)
-  //       expect(appointment.sessionType).toEqual('ONE_TO_ONE')
-  //       expect(appointment.appointmentDeliveryType).toEqual('PHONE_CALL')
-  //     })
-  //   })
-
-  //   describe('getSubsequentActionPlanAppointment', () => {
-  //     describe('when the current appointment is not the final one', () => {
-  //       const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
-  //       const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
-
-  //       it('fetches the subsequent action plan appointment', async () => {
-  //         interventionsService.getActionPlanAppointment = jest.fn()
-  //         await interventionsService.getSubsequentActionPlanAppointment(
-  //           probationPractitionerToken,
-  //           actionPlan,
-  //           appointment
-  //         )
-
-  //         expect(interventionsService.getActionPlanAppointment).toHaveBeenCalledWith(
-  //           probationPractitionerToken,
-  //           actionPlan.id,
-  //           2
-  //         )
-  //       })
-  //     })
-
-  //     describe('when the current appointment is the final one', () => {
-  //       const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
-  //       const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
-
-  //       it('does not fetch the subsequent action plan appointment', async () => {
-  //         interventionsService.getActionPlanAppointment = jest.fn()
-
-  //         const subsequentAppointment = await interventionsService.getSubsequentActionPlanAppointment(
-  //           probationPractitionerToken,
-  //           actionPlan,
-  //           appointment
-  //         )
-
-  //         expect(subsequentAppointment).toBeNull()
-  //         expect(interventionsService.getActionPlanAppointment).not.toHaveBeenCalled()
-  //       })
-  //     })
-
-  //     afterEach(() => {
-  //       jest.clearAllMocks()
-  //     })
-  //   })
-
-  //   describe('updateActionPlanAppointment', () => {
-  //     const futureAppointmentTime = new Date()
-  //     futureAppointmentTime.setMonth(futureAppointmentTime.getMonth() + 4)
-  //     const pastAppointmentTime = new Date()
-  //     pastAppointmentTime.setUTCHours(2, 0, 0, 0) // create appointment in the morning
-  //     const pastAppointmentTimeString = pastAppointmentTime.toISOString().replace(/(.*)(:00\.000Z)$/, '$1:00Z')
-
-  //     // TODO skip past appointment tests until Pact contract update can be scheduled
-  //     // see https://trello.com/c/ZKPMdxVa
-  //     describe.skip('with a past appointment time', () => {
-  //       it('returns a scheduled action plan appointment with feedback', async () => {
-  //         const actionPlanAppointment = actionPlanAppointmentFactory.build({
+  //       willRespondWith: {
+  //         status: 200,
+  //         body: Matchers.like({
   //           sessionNumber: 2,
-  //           appointmentTime: pastAppointmentTimeString,
+  //           appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
   //           durationInMinutes: 60,
-  //           sessionType: 'ONE_TO_ONE',
+  //           sessionType: 'GROUP',
   //           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
   //           appointmentDeliveryAddress: {
   //             firstAddressLine: 'Harmony Living Office, Room 4',
@@ -3088,783 +3653,731 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   //               attended: 'yes',
   //             },
   //             sessionFeedback: {
-  //               sessionSummary: 'stub session summary',
-  //               sessionResponse: 'stub session response',
-  //               notifyProbationPractitioner: false,
+  //               sessionSummary: null,
+  //               sessionResponse: null,
+  //               sessionConcerns: null,
+  //               notifyProbationPractitioner: null,
   //             },
-  //             submittedBy: {
-  //               authSource: 'auth',
-  //               userId: '6c4036b7-e87d-44fb-864f-5a06c1c492f3',
-  //               username: 'TEST_INTERVENTIONS_SP_1',
-  //             },
-  //             submitted: true,
+  //             submitted: false,
+  //             submittedBy: null,
   //           },
-  //         })
-
-  //         await provider.addInteraction({
-  //           state:
-  //             'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
-  //           uponReceiving:
-  //             'a PATCH request to update a past appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
-  //           withRequest: {
-  //             method: 'PATCH',
-  //             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
-  //             body: {
-  //               appointmentTime: pastAppointmentTimeString,
-  //               durationInMinutes: 60,
-  //               sessionType: 'ONE_TO_ONE',
-  //               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
-  //               appointmentDeliveryAddress: {
-  //                 firstAddressLine: 'Harmony Living Office, Room 4',
-  //                 secondAddressLine: '44 Bouverie Road',
-  //                 townOrCity: 'Blackpool',
-  //                 county: 'Lancashire',
-  //                 postCode: 'SY40RE',
-  //               },
-  //               npsOfficeCode: null,
-  //               attendanceFeedback: {
-  //                 attended: 'yes',
-  //               },
-  //               sessionFeedback: {
-  //                 sessionSummary: 'stub session summary',
-  //                 sessionResponse: 'stub session response',
-  //                 notifyProbationPractitioner: false,
-  //               },
-  //             },
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
-  //           },
-  //           // note - this is an exact match
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: actionPlanAppointment,
-  //             headers: {
-  //               'Content-Type': 'application/json',
-  //             },
-  //           },
-  //         })
-
-  //         expect(
-  //           await interventionsService.updateActionPlanAppointment(
-  //             serviceProviderToken,
-  //             '345059d4-1697-467b-8914-fedec9957279',
-  //             2,
-  //             {
-  //               appointmentTime: pastAppointmentTimeString,
-  //               durationInMinutes: 60,
-  //               sessionType: 'ONE_TO_ONE',
-  //               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
-  //               appointmentDeliveryAddress: {
-  //                 firstAddressLine: 'Harmony Living Office, Room 4',
-  //                 secondAddressLine: '44 Bouverie Road',
-  //                 townOrCity: 'Blackpool',
-  //                 county: 'Lancashire',
-  //                 postCode: 'SY40RE',
-  //               },
-  //               npsOfficeCode: null,
-  //               attendanceFeedback: {
-  //                 didSessionHappen: true,
-  //                 attended: 'yes',
-  //                 attendanceFailureInformation: '',
-  //               },
-  //               sessionFeedback: {
-  //                 notifyProbationPractitioner: false,
-  //                 sessionSummary: 'stub session summary',
-  //                 sessionResponse: 'stub session response',
-  //                 sessionConcerns: '',
-  //                 late: null,
-  //                 lateReason: null,
-  //                 noSessionReasonType: null,
-  //                 noSessionReasonPopAcceptable: null,
-  //                 noSessionReasonPopUnacceptable: null,
-  //                 noSessionReasonLogistics: null,
-  //               },
-  //             }
-  //           )
-  //         ).toMatchObject(actionPlanAppointment)
-  //       })
+  //         }),
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //       },
   //     })
-  //     describe('with a future appointment time', () => {
-  //       it('returns an updated action plan appointment', async () => {
-  //         const actionPlanAppointment = actionPlanAppointmentFactory.build({
-  //           sessionNumber: 2,
-  //           appointmentTime: `${futureAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //           durationInMinutes: 60,
-  //           sessionType: 'ONE_TO_ONE',
-  //           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
-  //           appointmentDeliveryAddress: {
-  //             firstAddressLine: 'Harmony Living Office, Room 4',
-  //             secondAddressLine: '44 Bouverie Road',
-  //             townOrCity: 'Blackpool',
-  //             county: 'Lancashire',
-  //             postCode: 'SY40RE',
-  //           },
-  //         })
 
-  //         await provider.addInteraction({
-  //           state:
-  //             'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
-  //           uponReceiving:
-  //             'a PATCH request to update a future appointment for session 2 to change the duration to an hour on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
-  //           withRequest: {
-  //             method: 'PATCH',
-  //             path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2',
-  //             body: {
-  //               appointmentTime: `${futureAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //               durationInMinutes: 60,
-  //               sessionType: 'ONE_TO_ONE',
-  //               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
-  //               appointmentDeliveryAddress: {
-  //                 firstAddressLine: 'Harmony Living Office, Room 4',
-  //                 secondAddressLine: '44 Bouverie Road',
-  //                 townOrCity: 'Blackpool',
-  //                 county: 'Lancashire',
-  //                 postCode: 'SY40RE',
-  //               },
-  //               npsOfficeCode: null,
-  //             },
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${serviceProviderToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like(actionPlanAppointment),
-  //             headers: {
-  //               'Content-Type': 'application/json',
-  //             },
-  //           },
-  //         })
-
-  //         expect(
-  //           await interventionsService.updateActionPlanAppointment(
-  //             serviceProviderToken,
-  //             '345059d4-1697-467b-8914-fedec9957279',
-  //             2,
-  //             {
-  //               appointmentTime: `${futureAppointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //               durationInMinutes: 60,
-  //               sessionType: 'ONE_TO_ONE',
-  //               appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
-  //               appointmentDeliveryAddress: {
-  //                 firstAddressLine: 'Harmony Living Office, Room 4',
-  //                 secondAddressLine: '44 Bouverie Road',
-  //                 townOrCity: 'Blackpool',
-  //                 county: 'Lancashire',
-  //                 postCode: 'SY40RE',
-  //               },
-  //               npsOfficeCode: null,
-  //             }
-  //           )
-  //         ).toMatchObject(actionPlanAppointment)
-  //       })
-  //     })
-  //   })
-
-  //   // describe('recordActionPlanAppointmentAttendance', () => {
-  //   //   const appointmentTime = new Date()
-  //   //   appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-  //   //
-  //   //   it('returns an updated action plan appointment with the service user‘s attendance', async () => {
-  //   //     await provider.addInteraction({
-  //   //       state:
-  //   //         'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has an appointment for which no session feedback has been recorded',
-  //   //       uponReceiving:
-  //   //         'a POST request to set the attendance for session 2 on action plan with ID 345059d4-1697-467b-8914-fedec9957279',
-  //   //       withRequest: {
-  //   //         method: 'POST',
-  //   //         path: '/action-plan/345059d4-1697-467b-8914-fedec9957279/appointment/2/record-attendance',
-  //   //         body: {
-  //   //           attended: 'late',
-  //   //         },
-  //   //         headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //   //       },
-  //   //       willRespondWith: {
-  //   //         status: 200,
-  //   //         body: Matchers.like({
-  //   //           sessionNumber: 2,
-  //   //           appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //   //           durationInMinutes: 60,
-  //   //           sessionType: 'GROUP',
-  //   //           appointmentDeliveryType: 'IN_PERSON_MEETING_OTHER',
-  //   //           appointmentDeliveryAddress: {
-  //   //             firstAddressLine: 'Harmony Living Office, Room 4',
-  //   //             secondAddressLine: '44 Bouverie Road',
-  //   //             townOrCity: 'Blackpool',
-  //   //             county: 'Lancashire',
-  //   //             postCode: 'SY40RE',
-  //   //           },
-  //   //           appointmentFeedback: {
-  //   //             attendanceFeedback: {
-  //   //               attended: 'yes',
-  //   //             },
-  //   //             sessionFeedback: {
-  //   //               sessionSummary: null,
-  //   //               sessionResponse: null,
-  //   //               sessionConcerns: null,
-  //   //               notifyProbationPractitioner: null,
-  //   //             },
-  //   //             submitted: false,
-  //   //             submittedBy: null,
-  //   //           },
-  //   //         }),
-  //   //         headers: {
-  //   //           'Content-Type': 'application/json',
-  //   //         },
-  //   //       },
-  //   //     })
-  //   //
-  //   //     const appointment = await interventionsService.recordActionPlanAppointmentAttendance(
-  //   //       probationPractitionerToken,
-  //   //       '345059d4-1697-467b-8914-fedec9957279',
-  //   //         '345059d4-1697-467b-8914-fedec9957279',
-  //   //       {
-  //   //         attended: 'yes',
-  //   //       }
-  //   //     )
-  //   //     expect(appointment.appointmentFeedback!.attendanceFeedback!.attended).toEqual('yes')
-  //   //   })
-  //   // })
-
-  //   // describe('recordActionPlanAppointmentSessionFeedback', () => {
-  //   //   const appointmentTime = new Date()
-  //   //   appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-  //   //
-  //   //   it('returns an updated action plan appointment with the session feedback', async () => {
-  //   //     await provider.addInteraction({
-  //   //       state:
-  //   //         'an action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d exists with 1 appointment with recorded attendance',
-  //   //       uponReceiving:
-  //   //         'a POST request to set the session feedback for the appointment on action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
-  //   //       withRequest: {
-  //   //         method: 'POST',
-  //   //         path: '/action-plan/81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d/appointment/1/record-session-feedback',
-  //   //         body: {
-  //   //           late: false,
-  //   //           lateReason: null,
-  //   //           sessionSummary: 'Discussed accommodation',
-  //   //           sessionResponse: 'Engaged well',
-  //   //           notifyProbationPractitioner: false,
-  //   //         },
-  //   //         headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //   //       },
-  //   //       willRespondWith: {
-  //   //         status: 200,
-  //   //         body: Matchers.like({
-  //   //           sessionNumber: 1,
-  //   //           appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //   //           durationInMinutes: 120,
-  //   //           appointmentFeedback: {
-  //   //             attendanceFeedback: {
-  //   //               didSessionHappen: true,
-  //   //               attended: 'yes',
-  //   //             },
-  //   //             sessionFeedback: {
-  //   //               late: false,
-  //   //               lateReason: null,
-  //   //               sessionSummary: 'Discussed accommodation',
-  //   //               sessionResponse: 'Engaged well',
-  //   //               notifyProbationPractitioner: false,
-  //   //             },
-  //   //             submitted: false,
-  //   //             submittedBy: null,
-  //   //           },
-  //   //         }),
-  //   //         headers: {
-  //   //           'Content-Type': 'application/json',
-  //   //         },
-  //   //       },
-  //   //     })
-  //   //
-  //   //     const appointment = await interventionsService.recordActionPlanAppointmentSessionFeedback(
-  //   //       probationPractitionerToken,
-  //   //       '81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
-  //   //       '1',
-  //   //       {
-  //   //         late: false,
-  //   //         lateReason: null,
-  //   //         sessionSummary: 'Discussed accommodation',
-  //   //         sessionResponse: 'Engaged well',
-  //   //         notifyProbationPractitioner: false,
-  //   //       }
-  //   //     )
-  //   //     expect(appointment.appointmentFeedback!.sessionFeedback!.sessionSummary).toEqual('Discussed accommodation')
-  //   //     expect(appointment.appointmentFeedback!.sessionFeedback!.sessionResponse).toEqual('Engaged well')
-  //   //     expect(appointment.appointmentFeedback!.sessionFeedback!.notifyProbationPractitioner).toEqual(false)
-  //   //   })
-  //   // })
-
-  //   // describe('submitActionPlanSessionFeedback', () => {
-  //   //   const appointmentTime = new Date()
-  //   //   appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-  //   //
-  //   //   it('submits attendance and session feedback to the PP', async () => {
-  //   //     await provider.addInteraction({
-  //   //       state:
-  //   //         'an action plan with ID 0f5afe04-e323-4699-9423-fb6122580638 exists with 1 appointment with recorded attendance and session feedback',
-  //   //       uponReceiving:
-  //   //         'a POST request to submit the feedback for appointment 1 on action plan with ID 0f5afe04-e323-4699-9423-fb6122580638',
-  //   //       withRequest: {
-  //   //         method: 'POST',
-  //   //         path: '/action-plan/0f5afe04-e323-4699-9423-fb6122580638/appointment/1/submit',
-  //   //         headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //   //       },
-  //   //       willRespondWith: {
-  //   //         status: 200,
-  //   //         body: Matchers.like({
-  //   //           sessionNumber: 1,
-  //   //           appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //   //           durationInMinutes: 120,
-  //   //           appointmentFeedback: {
-  //   //             attendanceFeedback: {
-  //   //               attended: 'yes',
-  //   //               didSessionHappen: true,
-  //   //             },
-  //   //             sessionFeedback: {
-  //   //               late: false,
-  //   //               sessionSummary: 'Discussed accommodation',
-  //   //               sessionResponse: 'Engaged well',
-  //   //               notifyProbationPractitioner: false,
-  //   //             },
-  //   //             submitted: true,
-  //   //             submittedBy: {
-  //   //               authSource: 'delius',
-  //   //               userId: '2500128586',
-  //   //               username: 'joe.smith',
-  //   //             },
-  //   //           },
-  //   //         }),
-  //   //         headers: {
-  //   //           'Content-Type': 'application/json',
-  //   //         },
-  //   //       },
-  //   //     })
-  //   //
-  //   //     const appointment = await interventionsService.submitActionPlanSessionFeedback(
-  //   //       probationPractitionerToken,
-  //   //       '0f5afe04-e323-4699-9423-fb6122580638',
-  //   //       '1'
-  //   //     )
-  //   //     expect(appointment.appointmentFeedback!.submitted).toEqual(true)
-  //   //   })
-  //   // })
-
-  //   describe('createDraftEndOfServiceReport', () => {
-  //     it('creates a draft end of service report for a referral', async () => {
-  //       const referralId = '993d7bdf-bab7-4594-8b27-7d9f7061b403'
-  //       const endOfServiceReport = endOfServiceReportFactory.justCreated().build()
-
-  //       await provider.addInteraction({
-  //         state: `a sent referral exists with ID ${referralId}`,
-  //         uponReceiving: `a request to create a draft end of service report for the referral with ID ${referralId}`,
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/draft-end-of-service-report',
-  //           body: { referralId },
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 201,
-  //           body: Matchers.like(endOfServiceReport),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const result = await interventionsService.createDraftEndOfServiceReport(probationPractitionerToken, referralId)
-  //       expect(result).toEqual(endOfServiceReport)
-  //     })
-  //   })
-
-  //   describe('getEndOfServiceReport', () => {
-  //     it('returns an existing end of service report', async () => {
-  //       const id = '31ad504a-1827-46e4-ac95-68b4e1256659'
-  //       const endOfServiceReport = endOfServiceReportFactory.justCreated().build()
-
-  //       await provider.addInteraction({
-  //         state: `an end of service report exists with ID ${id}`,
-  //         uponReceiving: `a request for the end of service report with ID ${id}`,
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: `/end-of-service-report/${id}`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(endOfServiceReport),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const result = await interventionsService.getEndOfServiceReport(probationPractitionerToken, id)
-  //       expect(result).toEqual(endOfServiceReport)
-  //     })
-  //   })
-
-  //   describe('updateEndOfServiceReport', () => {
-  //     it('updates a draft end of service report', async () => {
-  //       const id = 'c1a23b08-5a52-47bb-90c2-37c2f3a409aa'
-  //       const desiredOutcomeId = 'dc4894fa-4088-4999-bf58-5f05495979df'
-  //       const updatedEndOfServiceReport = endOfServiceReportFactory.justCreated().build({
-  //         furtherInformation: 'Some further information',
-  //         outcomes: [
-  //           {
-  //             desiredOutcome: {
-  //               id: desiredOutcomeId,
-  //               description: 'Example',
-  //             },
-  //             achievementLevel: 'ACHIEVED',
-  //             progressionComments: 'Some progression comments',
-  //             additionalTaskComments: 'Some additional task comments',
-  //           },
-  //         ],
-  //       })
-  //       const patch: UpdateDraftEndOfServiceReportParams = {
-  //         furtherInformation: 'Some further information',
-  //         outcome: {
-  //           desiredOutcomeId,
-  //           achievementLevel: 'ACHIEVED',
-  //           progressionComments: 'Some progression comments',
-  //           additionalTaskComments: 'Some additional task comments',
-  //         },
+  //     const appointment = await interventionsService.recordActionPlanAppointmentAttendance(
+  //       probationPractitionerToken,
+  //       '345059d4-1697-467b-8914-fedec9957279',
+  //       '345059d4-1697-467b-8914-fedec9957279',
+  //       {
+  //         attended: 'yes',
   //       }
-
-  //       await provider.addInteraction({
-  //         state: `an end of service report exists with ID ${id}`,
-  //         uponReceiving: `a request for the end of service report with ID ${id}`,
-  //         withRequest: {
-  //           method: 'PATCH',
-  //           path: `/draft-end-of-service-report/${id}`,
-  //           body: patch,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(updatedEndOfServiceReport),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const result = await interventionsService.updateDraftEndOfServiceReport(probationPractitionerToken, id, patch)
-  //       expect(result).toEqual(updatedEndOfServiceReport)
-  //     })
+  //     )
+  //     expect(appointment.appointmentFeedback!.attendanceFeedback!.attended).toEqual('yes')
   //   })
+  // })
 
-  //   describe('submitEndOfServiceReport', () => {
-  //     it('submits a draft end of service report', async () => {
-  //       const id = 'c3239695-b258-4ac6-9478-cb6929668aaa'
-  //       const submittedEndOfServiceReport = endOfServiceReportFactory.submitted().build()
+  // describe('recordActionPlanAppointmentSessionFeedback', () => {
+  //   const appointmentTime = new Date()
+  //   appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
-  //       await provider.addInteraction({
-  //         state: `an end of service report exists with ID ${id}`,
-  //         uponReceiving: `a request for the end of service report with ID ${id}`,
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: `/draft-end-of-service-report/${id}/submit`,
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(submittedEndOfServiceReport),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const result = await interventionsService.submitEndOfServiceReport(probationPractitionerToken, id)
-  //       expect(result).toEqual(submittedEndOfServiceReport)
-  //     })
-  //   })
-
-  //   describe('getCancellationReasons', () => {
-  //     const reasons = [
-  //       { code: 'REC', description: 'Service user has been recalled' },
-  //       { code: 'DIE', description: 'Service user died' },
-  //     ]
-
-  //     beforeEach(async () => {
-  //       await provider.addInteraction({
-  //         state: 'nothing',
-  //         uponReceiving: 'a GET request for the cancellation reasons',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/referral-cancellation-reasons',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(reasons),
-  //           headers: { 'Content-Type': 'application/json' },
-  //         },
-  //       })
-  //     })
-
-  //     it('returns cancellation reasons', async () => {
-  //       expect(await interventionsService.getReferralCancellationReasons(probationPractitionerToken)).toMatchObject(
-  //         reasons
-  //       )
-  //     })
-  //   })
-
-  //   describe('getSupplierAssessment', () => {
-  //     it('returns the referral’s supplier assessment', async () => {
-  //       const supplierAssessment = supplierAssessmentFactory.build({
-  //         appointments: [],
-  //       })
-
-  //       await provider.addInteraction({
-  //         state:
-  //           'a sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa exists, and a supplier assessment appointment has not yet been booked for it',
-  //         uponReceiving:
-  //           'a GET request for the supplier assessment on sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/sent-referral/cbf2f82b-4581-4fe1-9de1-1b52465f1afa/supplier-assessment',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(supplierAssessment),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const fetchedSupplierAssessment = await interventionsService.getSupplierAssessment(
-  //         probationPractitionerToken,
-  //         'cbf2f82b-4581-4fe1-9de1-1b52465f1afa'
-  //       )
-  //       expect(fetchedSupplierAssessment).toEqual(supplierAssessment)
-  //     })
-
-  //     it('returns the referral’s supplier assessment, including a list of its appointments', async () => {
-  //       const appointment = initialAssessmentAppointmentFactory.newlyBooked().phoneCall.build()
-  //       const supplierAssessment = supplierAssessmentFactory.build({
-  //         appointments: [appointment],
-  //         currentAppointmentId: appointment.id,
-  //       })
-
-  //       await provider.addInteraction({
-  //         state:
-  //           'a sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962 exists, and it has a phone call supplier assessment appointment booked with no feedback yet submitted',
-  //         uponReceiving:
-  //           'a GET request for the supplier assessment appointment on sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962',
-  //         withRequest: {
-  //           method: 'GET',
-  //           path: '/sent-referral/a38d9184-5498-4049-af16-3d8eb2547962/supplier-assessment',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(supplierAssessment),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const fetchedSupplierAssessment = await interventionsService.getSupplierAssessment(
-  //         probationPractitionerToken,
-  //         'a38d9184-5498-4049-af16-3d8eb2547962'
-  //       )
-  //       expect(fetchedSupplierAssessment).toEqual(supplierAssessment)
-  //     })
-  //   })
-
-  //   describe('scheduleSupplierAssessmentAppointment', () => {
-  //     const appointmentTime = new Date()
-  //     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-
-  //     const appointmentParams = {
-  //       appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //       durationInMinutes: 60,
-  //     }
-
-  //     describe.each([
-  //       [
-  //         'a video call appointment',
-  //         '77f6c5cf-9772-4731-9a9a-97f2f53f2770',
-  //         initialAssessmentAppointmentFactory.videoCall.build(appointmentParams),
-  //       ],
-  //       [
-  //         'a phone call appointment',
-  //         '4567945e-73be-43f0-9021-74c4a8ce49db',
-  //         initialAssessmentAppointmentFactory.phoneCall.build(appointmentParams),
-  //       ],
-  //       [
-  //         'a face to face appointment',
-  //         'fb10c5fe-12ce-482f-8ca1-104974ab21f5',
-  //         initialAssessmentAppointmentFactory.inPersonOtherWithFullAddress.build(appointmentParams),
-  //       ],
-  //     ])('booking %s', (_, supplierAssessmentId, appointment) => {
-  //       it('returns a supplier assessment appointment', async () => {
-  //         await provider.addInteraction({
-  //           state: `a supplier assessment with ID ${supplierAssessmentId} exists`,
-  //           uponReceiving: `a PUT request to schedule an appointment for the supplier assessment with ID ${supplierAssessmentId}`,
-  //           withRequest: {
-  //             method: 'PUT',
-  //             path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
-  //             body: appointment,
-  //             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //           },
-  //           willRespondWith: {
-  //             status: 200,
-  //             body: Matchers.like(appointment),
-  //             headers: {
-  //               'Content-Type': 'application/json',
-  //             },
-  //           },
-  //         })
-
-  //         expect(
-  //           await interventionsService.scheduleSupplierAssessmentAppointment(
-  //             probationPractitionerToken,
-  //             supplierAssessmentId,
-  //             appointment
-  //           )
-  //         ).toMatchObject(appointment)
-  //       })
-  //     })
-  //   })
-
-  //   describe('recordSupplierAssessmentAppointmentAttendance', () => {
-  //     const appointmentTime = new Date()
-  //     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-
-  //     it('returns an updated appointment with the service user‘s attendance', async () => {
-  //       const appointment = initialAssessmentAppointmentFactory.build({
-  //         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //         durationInMinutes: 60,
-  //         appointmentFeedback: {
-  //           attendanceFeedback: {
-  //             attended: 'yes',
-  //             didSessionHappen: true,
-  //           },
-  //           sessionFeedback: {
-  //             sessionSummary: null,
-  //             sessionResponse: null,
-  //             sessionConcerns: null,
-  //             notifyProbationPractitioner: null,
-  //           },
-  //           submitted: false,
-  //           submittedBy: null,
-  //         },
-  //       })
-
-  //       await provider.addInteraction({
-  //         state:
-  //           'There is an existing sent referral with ID 58963698-0f2e-4d6e-a072-0e2cf351f3b2 and the supplier assessment has been booked but no feedback details have yet been submitted',
-  //         uponReceiving:
-  //           'a PUT request to set the attendance for the supplier asessment appointment with for referral with ID 58963698-0f2e-4d6e-a072-0e2cf351f3b2',
-  //         withRequest: {
-  //           method: 'PUT',
-  //           path: '/referral/58963698-0f2e-4d6e-a072-0e2cf351f3b2/supplier-assessment/record-attendance',
-  //           body: {
-  //             didSessionHappen: true,
-  //             attended: 'yes',
-  //           },
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(appointment),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const result = await interventionsService.recordSupplierAssessmentAppointmentAttendance(
-  //         probationPractitionerToken,
-  //         '58963698-0f2e-4d6e-a072-0e2cf351f3b2',
-  //         {
+  //   it('returns an updated action plan appointment with the session feedback', async () => {
+  //     const actionPlanAppointment: ActionPlanAppointment = actionPlanAppointmentFactory.build({
+  //       sessionNumber: 1,
+  //       appointmentTime: `${appointmentTime.toISOString().split('T')[0]}`,
+  //       durationInMinutes: 120,
+  //       appointmentFeedback: {
+  //         attendanceFeedback: {
   //           didSessionHappen: true,
   //           attended: 'yes',
-  //         }
-  //       )
-  //       expect(result.appointmentFeedback!.attendanceFeedback!.attended).toEqual('yes')
+  //         },
+  //         sessionFeedback: {
+  //           late: false,
+  //           lateReason: null,
+  //           sessionSummary: 'Discussed accommodation',
+  //           sessionResponse: 'Engaged well',
+  //           notifyProbationPractitioner: false,
+  //         },
+  //         submitted: false,
+  //         submittedBy: null,
+  //       },
   //     })
-  //   })
-
-  //   describe('submitSupplierAssessmentAppointmentFeedback', () => {
-  //     const appointmentTime = new Date()
-  //     appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-
-  //     it('submits attendance and session feedback', async () => {
-  //       const appointment = initialAssessmentAppointmentFactory.build({
-  //         appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //         durationInMinutes: 120,
-  //         appointmentFeedback: {
-  //           attendanceFeedback: {
-  //             attended: 'yes',
-  //           },
-  //           sessionFeedback: {
-  //             sessionSummary: '',
-  //             sessionResponse: '',
-  //             sessionConcerns: null,
-  //             notifyProbationPractitioner: false,
-  //           },
-  //           submitted: true,
-  //           submittedBy: {
-  //             authSource: 'delius',
-  //             userId: '2500128586',
-  //             username: 'joe.smith',
-  //           },
+  //     const response: InterfaceToTemplate<ActionPlanAppointment> = {
+  //       ...actionPlanAppointment,
+  //       currentAppointment: null,
+  //       oldAppointments: null,
+  //       appointmentFeedback: {
+  //         ...actionPlanAppointment.appointmentFeedback,
+  //         attendanceFeedback: { ...actionPlanAppointment.appointmentFeedback.attendanceFeedback },
+  //         sessionFeedback: { ...actionPlanAppointment.appointmentFeedback.sessionFeedback },
+  //         submittedBy: null,
+  //       },
+  //       appointmentDeliveryAddress: null,
+  //     }
+  //     await provider.addInteraction({
+  //       state:
+  //         'an action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d exists with 1 appointment with recorded attendance',
+  //       uponReceiving:
+  //         'a POST request to set the session feedback for the appointment on action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
+  //       withRequest: {
+  //         method: 'POST',
+  //         path: '/action-plan/81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d/appointment/1/record-session-feedback',
+  //         body: {
+  //           late: false,
+  //           lateReason: null,
+  //           sessionSummary: 'Discussed accommodation',
+  //           sessionResponse: 'Engaged well',
+  //           notifyProbationPractitioner: false,
   //         },
-  //       })
-
-  //       await provider.addInteraction({
-  //         state:
-  //           'There is an existing sent referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1 and the supplier assessment attendance and session feedback have been recorded',
-  //         uponReceiving:
-  //           'a POST request to submit the feedback for the supplier assessment appointment for referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1',
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/referral/cd8f46a2-78f2-457b-ab14-7d77adce73d1/supplier-assessment/submit-feedback',
-  //           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+  //         headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+  //       },
+  //       willRespondWith: {
+  //         status: 200,
+  //         body: Matchers.like(response),
+  //         headers: {
+  //           'Content-Type': 'application/json',
   //         },
-  //         willRespondWith: {
-  //           status: 200,
-  //           body: Matchers.like(appointment),
-  //           headers: {
-  //             'Content-Type': 'application/json',
-  //           },
-  //         },
-  //       })
-
-  //       const result = await interventionsService.submitSupplierAssessmentAppointmentFeedback(
-  //         probationPractitionerToken,
-  //         'cd8f46a2-78f2-457b-ab14-7d77adce73d1'
-  //       )
-  //       expect(result.appointmentFeedback!.submitted).toEqual(true)
-  //       expect(result.appointmentFeedback!.submittedBy).not.toBeNull()
+  //       },
   //     })
+
+  //     const appointment = await interventionsService.recordActionPlanAppointmentSessionFeedback(
+  //       probationPractitionerToken,
+  //       '81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
+  //       '1',
+  //       {
+  //         late: false,
+  //         lateReason: null,
+  //         sessionSummary: 'Discussed accommodation',
+  //         sessionResponse: 'Engaged well',
+  //         notifyProbationPractitioner: false,
+  //       }
+  //     )
+  //     expect(appointment.appointmentFeedback!.sessionFeedback!.sessionSummary).toEqual('Discussed accommodation')
+  //     expect(appointment.appointmentFeedback!.sessionFeedback!.sessionResponse).toEqual('Engaged well')
+  //     expect(appointment.appointmentFeedback!.sessionFeedback!.notifyProbationPractitioner).toEqual(false)
+  //     expect(appointment).toEqual(actionPlanAppointment)
   //   })
+  // })
 
-  //   describe('generateServiceProviderPerformanceReport', () => {
-  //     it('returns a 202 response indicating that a performance report will be asynchronously generated', async () => {
-  //       await provider.addInteraction({
-  //         state: 'there are referrals available for the reporting period of 1 June 2021 to 10 June 2021',
-  //         uponReceiving: 'a service provider user’s POST request to generate a performance report',
-  //         withRequest: {
-  //           method: 'POST',
-  //           path: '/reports/service-provider/performance',
-  //           body: { fromDate: '2021-06-01', toDate: '2021-06-10' },
-  //           headers: { Authorization: `Bearer ${serviceProviderToken}` },
-  //         },
-  //         willRespondWith: {
-  //           status: 202,
-  //         },
-  //       })
+  // describe('submitActionPlanSessionFeedback', () => {
+  //   const appointmentTime = new Date()
+  //   appointmentTime.setMonth(appointmentTime.getMonth() + 4)
 
-  //       await interventionsService.generateServiceProviderPerformanceReport(serviceProviderToken, {
-  //         fromIncludingDate: CalendarDay.fromComponents(1, 6, 2021)!,
-  //         toIncludingDate: CalendarDay.fromComponents(10, 6, 2021)!,
-  //       })
+  //   it('submits attendance and session feedback to the PP', async () => {
+  //     await provider.addInteraction({
+  //       state:
+  //         'an action plan with ID 0f5afe04-e323-4699-9423-fb6122580638 exists with 1 appointment with recorded attendance and session feedback',
+  //       uponReceiving:
+  //         'a POST request to submit the feedback for appointment 1 on action plan with ID 0f5afe04-e323-4699-9423-fb6122580638',
+  //       withRequest: {
+  //         method: 'POST',
+  //         path: '/action-plan/0f5afe04-e323-4699-9423-fb6122580638/appointment/1/submit',
+  //         headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+  //       },
+  //       willRespondWith: {
+  //         status: 200,
+  //         body: Matchers.like({
+  //           sessionNumber: 1,
+  //           appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+  //           durationInMinutes: 120,
+  //           appointmentFeedback: {
+  //             attendanceFeedback: {
+  //               attended: 'yes',
+  //               didSessionHappen: true,
+  //             },
+  //             sessionFeedback: {
+  //               late: false,
+  //               sessionSummary: 'Discussed accommodation',
+  //               sessionResponse: 'Engaged well',
+  //               notifyProbationPractitioner: false,
+  //             },
+  //             submitted: true,
+  //             submittedBy: {
+  //               authSource: 'delius',
+  //               userId: '2500128586',
+  //               username: 'joe.smith',
+  //             },
+  //           },
+  //         }),
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //       },
   //     })
+
+  //     const appointment = await interventionsService.submitActionPlanSessionFeedback(
+  //       probationPractitionerToken,
+  //       '0f5afe04-e323-4699-9423-fb6122580638',
+  //       '1'
+  //     )
+  //     expect(appointment.appointmentFeedback!.submitted).toEqual(true)
   //   })
+  // })
+
+  describe('createDraftEndOfServiceReport', () => {
+    it('creates a draft end of service report for a referral', async () => {
+      const referralId = '993d7bdf-bab7-4594-8b27-7d9f7061b403'
+      const endOfServiceReport = endOfServiceReportFactory.justCreated().build()
+      const endOfServiceReportRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
+        ...endOfServiceReport,
+        outcomes: [],
+      }
+
+      await provider.addInteraction({
+        state: `a sent referral exists with ID ${referralId}`,
+        uponReceiving: `a request to create a draft end of service report for the referral with ID ${referralId}`,
+        withRequest: {
+          method: 'POST',
+          path: '/draft-end-of-service-report',
+          body: { referralId },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 201,
+          body: Matchers.like(endOfServiceReportRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.createDraftEndOfServiceReport(probationPractitionerToken, referralId)
+      expect(result).toEqual(endOfServiceReport)
+    })
+  })
+
+  describe('getEndOfServiceReport', () => {
+    it('returns an existing end of service report', async () => {
+      const id = '31ad504a-1827-46e4-ac95-68b4e1256659'
+      const endOfServiceReport = endOfServiceReportFactory.justCreated().build()
+      const endOfServiceReportRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
+        ...endOfServiceReport,
+        outcomes: [],
+      }
+      await provider.addInteraction({
+        state: `an end of service report exists with ID ${id}`,
+        uponReceiving: `a request for the end of service report with ID ${id}`,
+        withRequest: {
+          method: 'GET',
+          path: `/end-of-service-report/${id}`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(endOfServiceReportRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.getEndOfServiceReport(probationPractitionerToken, id)
+      expect(result).toEqual(endOfServiceReport)
+    })
+  })
+
+  describe('updateEndOfServiceReport', () => {
+    it('updates a draft end of service report', async () => {
+      const id = 'c1a23b08-5a52-47bb-90c2-37c2f3a409aa'
+      const desiredOutcomeId = 'dc4894fa-4088-4999-bf58-5f05495979df'
+      const updatedEndOfServiceReport = endOfServiceReportFactory.justCreated().build({
+        furtherInformation: 'Some further information',
+        outcomes: [
+          {
+            desiredOutcome: {
+              id: desiredOutcomeId,
+              description: 'Example',
+            },
+            achievementLevel: 'ACHIEVED',
+            progressionComments: 'Some progression comments',
+            additionalTaskComments: 'Some additional task comments',
+          },
+        ],
+      })
+      const updatedEndOfServiceReportRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
+        ...updatedEndOfServiceReport,
+        outcomes: [
+          {
+            desiredOutcome: {
+              id: desiredOutcomeId,
+              description: 'Example',
+            },
+            achievementLevel: 'ACHIEVED',
+            progressionComments: 'Some progression comments',
+            additionalTaskComments: 'Some additional task comments',
+          },
+        ],
+      }
+      const patch: UpdateDraftEndOfServiceReportParams = {
+        furtherInformation: 'Some further information',
+        outcome: {
+          desiredOutcomeId,
+          achievementLevel: 'ACHIEVED',
+          progressionComments: 'Some progression comments',
+          additionalTaskComments: 'Some additional task comments',
+        },
+      }
+
+      const patchRequestBody: InterfaceToTemplate<UpdateDraftEndOfServiceReportParams> = {
+        furtherInformation: 'Some further information',
+        outcome: {
+          desiredOutcomeId,
+          achievementLevel: 'ACHIEVED',
+          progressionComments: 'Some progression comments',
+          additionalTaskComments: 'Some additional task comments',
+        },
+      }
+
+      await provider.addInteraction({
+        state: `an end of service report exists with ID ${id}`,
+        uponReceiving: `a request for the end of service report with ID ${id}`,
+        withRequest: {
+          method: 'PATCH',
+          path: `/draft-end-of-service-report/${id}`,
+          body: patchRequestBody,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(updatedEndOfServiceReportRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.updateDraftEndOfServiceReport(probationPractitionerToken, id, patch)
+      expect(result).toEqual(updatedEndOfServiceReport)
+    })
+  })
+
+  describe('submitEndOfServiceReport', () => {
+    it('submits a draft end of service report', async () => {
+      const id = 'c3239695-b258-4ac6-9478-cb6929668aaa'
+      const submittedEndOfServiceReport = endOfServiceReportFactory.submitted().build()
+      const submittedEndOfServiceReporttRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
+        ...submittedEndOfServiceReport,
+        outcomes: [],
+      }
+
+      await provider.addInteraction({
+        state: `an end of service report exists with ID ${id}`,
+        uponReceiving: `a request for the end of service report with ID ${id}`,
+        withRequest: {
+          method: 'POST',
+          path: `/draft-end-of-service-report/${id}/submit`,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(submittedEndOfServiceReporttRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.submitEndOfServiceReport(probationPractitionerToken, id)
+      expect(result).toEqual(submittedEndOfServiceReport)
+    })
+  })
+
+  describe('getCancellationReasons', () => {
+    const reasons = [
+      { code: 'REC', description: 'Service user has been recalled' },
+      { code: 'DIE', description: 'Service user died' },
+    ]
+
+    beforeEach(async () => {
+      await provider.addInteraction({
+        state: 'nothing',
+        uponReceiving: 'a GET request for the cancellation reasons',
+        withRequest: {
+          method: 'GET',
+          path: '/referral-cancellation-reasons',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(reasons),
+          headers: { 'Content-Type': 'application/json' },
+        },
+      })
+    })
+
+    it('returns cancellation reasons', async () => {
+      expect(await interventionsService.getReferralCancellationReasons(probationPractitionerToken)).toMatchObject(
+        reasons
+      )
+    })
+  })
+
+  describe('getSupplierAssessment', () => {
+    it('returns the referral’s supplier assessment', async () => {
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [],
+      })
+      const supplierAssessmentRequestBody: InterfaceToTemplate<SupplierAssessment> = {
+        ...supplierAssessment,
+        appointments: [],
+      }
+
+      await provider.addInteraction({
+        state:
+          'a sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa exists, and a supplier assessment appointment has not yet been booked for it',
+        uponReceiving:
+          'a GET request for the supplier assessment on sent referral with ID cbf2f82b-4581-4fe1-9de1-1b52465f1afa',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referral/cbf2f82b-4581-4fe1-9de1-1b52465f1afa/supplier-assessment',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(supplierAssessmentRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const fetchedSupplierAssessment = await interventionsService.getSupplierAssessment(
+        probationPractitionerToken,
+        'cbf2f82b-4581-4fe1-9de1-1b52465f1afa'
+      )
+      expect(fetchedSupplierAssessment).toEqual(supplierAssessment)
+    })
+
+    it('returns the referral’s supplier assessment, including a list of its appointments', async () => {
+      const appointment = initialAssessmentAppointmentFactory.newlyBooked().phoneCall.build()
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: null,
+        },
+        appointmentDeliveryAddress: null,
+      }
+      const supplierAssessment = supplierAssessmentFactory.build({
+        appointments: [appointment],
+        currentAppointmentId: appointment.id,
+      })
+      const supplierAssessmentRequestBody: InterfaceToTemplate<SupplierAssessment> = {
+        ...supplierAssessment,
+        appointments: [appointmentRequestBody],
+        currentAppointmentId: appointmentRequestBody.id,
+      }
+
+      await provider.addInteraction({
+        state:
+          'a sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962 exists, and it has a phone call supplier assessment appointment booked with no feedback yet submitted',
+        uponReceiving:
+          'a GET request for the supplier assessment appointment on sent referral with ID a38d9184-5498-4049-af16-3d8eb2547962',
+        withRequest: {
+          method: 'GET',
+          path: '/sent-referral/a38d9184-5498-4049-af16-3d8eb2547962/supplier-assessment',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(supplierAssessmentRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const fetchedSupplierAssessment = await interventionsService.getSupplierAssessment(
+        probationPractitionerToken,
+        'a38d9184-5498-4049-af16-3d8eb2547962'
+      )
+      expect(fetchedSupplierAssessment).toEqual(supplierAssessment)
+    })
+  })
+
+  describe('scheduleSupplierAssessmentAppointment', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
+
+    const appointmentParams = {
+      appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+      durationInMinutes: 60,
+    }
+    it('returns a supplier assessment appointment - Video Call', async () => {
+      const supplierAssessmentId = '77f6c5cf-9772-4731-9a9a-97f2f53f2770'
+      const appointment = initialAssessmentAppointmentFactory.videoCall.build(appointmentParams)
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: null,
+        },
+        appointmentDeliveryAddress: null,
+      }
+      await provider.addInteraction({
+        state: `a supplier assessment with ID ${supplierAssessmentId} exists`,
+        uponReceiving: `a PUT request to schedule an appointment for the supplier assessment with ID ${supplierAssessmentId}`,
+        withRequest: {
+          method: 'PUT',
+          path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
+          body: appointmentRequestBody,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointmentRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+      const result = await interventionsService.scheduleSupplierAssessmentAppointment(
+        probationPractitionerToken,
+        supplierAssessmentId,
+        appointment
+      )
+
+      expect(result).toEqual(appointment)
+    })
+    it('returns a supplier assessment appointment - Face to Face Call', async () => {
+      const supplierAssessmentId = 'fb10c5fe-12ce-482f-8ca1-104974ab21f5'
+      const appointment = initialAssessmentAppointmentFactory.inPersonOtherWithFullAddress.build(appointmentParams)
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: null,
+        },
+        appointmentDeliveryAddress: { ...appointment.appointmentDeliveryAddress },
+      }
+      await provider.addInteraction({
+        state: `a supplier assessment with ID ${supplierAssessmentId} exists`,
+        uponReceiving: `a PUT request to schedule an appointment for the supplier assessment with ID ${supplierAssessmentId}`,
+        withRequest: {
+          method: 'PUT',
+          path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
+          body: appointmentRequestBody,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointmentRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+      const result = await interventionsService.scheduleSupplierAssessmentAppointment(
+        probationPractitionerToken,
+        supplierAssessmentId,
+        appointment
+      )
+
+      expect(result).toEqual(appointment)
+    })
+    it('returns a supplier assessment appointment - Phone Call', async () => {
+      const supplierAssessmentId = '4567945e-73be-43f0-9021-74c4a8ce49db'
+      const appointment = initialAssessmentAppointmentFactory.phoneCall.build(appointmentParams)
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: null,
+        },
+        appointmentDeliveryAddress: null,
+      }
+      await provider.addInteraction({
+        state: `a supplier assessment with ID ${supplierAssessmentId} exists`,
+        uponReceiving: `a PUT request to schedule an appointment for the supplier assessment with ID ${supplierAssessmentId}`,
+        withRequest: {
+          method: 'PUT',
+          path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
+          body: appointmentRequestBody,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointmentRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+      const result = await interventionsService.scheduleSupplierAssessmentAppointment(
+        probationPractitionerToken,
+        supplierAssessmentId,
+        appointment
+      )
+
+      expect(result).toEqual(appointment)
+    })
+  })
+
+  describe('recordSupplierAssessmentAppointmentAttendance', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
+
+    it('returns an updated appointment with the service user‘s attendance', async () => {
+      const appointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+        durationInMinutes: 60,
+        appointmentFeedback: {
+          attendanceFeedback: {
+            attended: 'yes',
+            didSessionHappen: true,
+          },
+          sessionFeedback: {
+            sessionSummary: null,
+            sessionResponse: null,
+            sessionConcerns: null,
+            notifyProbationPractitioner: null,
+          },
+          submitted: false,
+          submittedBy: null,
+        },
+      })
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: { ...appointment.appointmentFeedback.submittedBy },
+        },
+        appointmentDeliveryAddress: null,
+      }
+
+      await provider.addInteraction({
+        state:
+          'There is an existing sent referral with ID 58963698-0f2e-4d6e-a072-0e2cf351f3b2 and the supplier assessment has been booked but no feedback details have yet been submitted',
+        uponReceiving:
+          'a PUT request to set the attendance for the supplier asessment appointment with for referral with ID 58963698-0f2e-4d6e-a072-0e2cf351f3b2',
+        withRequest: {
+          method: 'PUT',
+          path: '/referral/58963698-0f2e-4d6e-a072-0e2cf351f3b2/supplier-assessment/record-attendance',
+          body: {
+            didSessionHappen: true,
+            attended: 'yes',
+          },
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointmentRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.recordSupplierAssessmentAppointmentAttendance(
+        probationPractitionerToken,
+        '58963698-0f2e-4d6e-a072-0e2cf351f3b2',
+        {
+          didSessionHappen: true,
+          attended: 'yes',
+        }
+      )
+      expect(result.appointmentFeedback!.attendanceFeedback!.attended).toEqual('yes')
+    })
+  })
+
+  describe('submitSupplierAssessmentAppointmentFeedback', () => {
+    const appointmentTime = new Date()
+    appointmentTime.setMonth(appointmentTime.getMonth() + 4)
+
+    it('submits attendance and session feedback', async () => {
+      const appointment = initialAssessmentAppointmentFactory.build({
+        appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
+        durationInMinutes: 120,
+        appointmentFeedback: {
+          attendanceFeedback: {
+            attended: 'yes',
+          },
+          sessionFeedback: {
+            sessionSummary: '',
+            sessionResponse: '',
+            sessionConcerns: null,
+            notifyProbationPractitioner: false,
+          },
+          submitted: true,
+          submittedBy: {
+            authSource: 'delius',
+            userId: '2500128586',
+            username: 'joe.smith',
+          },
+        },
+      })
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: { ...appointment.appointmentFeedback.submittedBy },
+        },
+        appointmentDeliveryAddress: null,
+      }
+
+      await provider.addInteraction({
+        state:
+          'There is an existing sent referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1 and the supplier assessment attendance and session feedback have been recorded',
+        uponReceiving:
+          'a POST request to submit the feedback for the supplier assessment appointment for referral with ID cd8f46a2-78f2-457b-ab14-7d77adce73d1',
+        withRequest: {
+          method: 'POST',
+          path: '/referral/cd8f46a2-78f2-457b-ab14-7d77adce73d1/supplier-assessment/submit-feedback',
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointmentRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+
+      const result = await interventionsService.submitSupplierAssessmentAppointmentFeedback(
+        probationPractitionerToken,
+        'cd8f46a2-78f2-457b-ab14-7d77adce73d1'
+      )
+      expect(result.appointmentFeedback!.submitted).toEqual(true)
+      expect(result.appointmentFeedback!.submittedBy).not.toBeNull()
+    })
+  })
+
+  describe('generateServiceProviderPerformanceReport', () => {
+    it('returns a 202 response indicating that a performance report will be asynchronously generated', async () => {
+      await provider.addInteraction({
+        state: 'there are referrals available for the reporting period of 1 June 2021 to 10 June 2021',
+        uponReceiving: 'a service provider user’s POST request to generate a performance report',
+        withRequest: {
+          method: 'POST',
+          path: '/reports/service-provider/performance',
+          body: { fromDate: '2021-06-01', toDate: '2021-06-10' },
+          headers: { Authorization: `Bearer ${serviceProviderToken}` },
+        },
+        willRespondWith: {
+          status: 202,
+        },
+      })
+
+      await interventionsService.generateServiceProviderPerformanceReport(serviceProviderToken, {
+        fromIncludingDate: CalendarDay.fromComponents(1, 6, 2021)!,
+        toIncludingDate: CalendarDay.fromComponents(10, 6, 2021)!,
+      })
+    })
+  })
 })
