@@ -75,7 +75,6 @@ class InitialAssessmentAppointmentFactory extends Factory<InitialAssessmentAppoi
   }
 }
 
-const defaultAppointmentDeliveryType: AppointmentDeliveryType = 'VIDEO_CALL'
 const defaultSessionType: SessionType = 'ONE_TO_ONE'
 
 export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
@@ -84,8 +83,7 @@ export default InitialAssessmentAppointmentFactory.define(({ sequence }) => ({
   appointmentTime: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
   durationInMinutes: 60,
   sessionType: defaultSessionType,
-  // For some reason the compiler complains if I write 'VIDEO_CALL' inline
-  appointmentDeliveryType: defaultAppointmentDeliveryType,
+  appointmentDeliveryType: 'VIDEO_CALL' as AppointmentDeliveryType,
   appointmentDeliveryAddress: null,
   npsOfficeCode: null,
   appointmentFeedback: {
