@@ -1,9 +1,9 @@
 import { Factory } from 'fishery'
 import Intervention from '../../server/models/intervention'
-import serviceCategoryFactory from './serviceCategory'
-import serviceProviderFactory from './serviceProvider'
 import eligibilityFactory from './eligibility'
 import pccRegionFactory from './pccRegion'
+import serviceCategoryFactory from './serviceCategory'
+import serviceProviderFactory from './serviceProvider'
 
 export default Factory.define<Intervention>(({ sequence }) => {
   const serviceCategory = serviceCategoryFactory.build()
