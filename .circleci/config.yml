@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@7.5.1
+  hmpps: ministryofjustice/hmpps@11.0.0
   node: circleci/node@4.9.0
 
 executors:
