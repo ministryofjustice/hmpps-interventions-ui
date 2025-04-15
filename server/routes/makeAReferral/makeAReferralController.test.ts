@@ -1893,7 +1893,7 @@ describe('GET /referrals/:referralId/service-category/:service-category-id/compl
       .build()
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+    interventionsService.getServiceCategoryByIdAndContractReference.mockResolvedValue(socialInclusionServiceCategory)
   })
 
   it('renders a form page', async () => {
@@ -1904,14 +1904,17 @@ describe('GET /referrals/:referralId/service-category/:service-category-id/compl
         expect(res.text).toContain('What is the complexity level for the Social inclusion service?')
       })
 
-    expect(interventionsService.getServiceCategory).toHaveBeenCalledWith(
+    expect(interventionsService.getServiceCategoryByIdAndContractReference).toHaveBeenCalledWith(
       'token',
-      'b33c19d1-7414-4014-b543-e543e59c5b39'
+      'b33c19d1-7414-4014-b543-e543e59c5b39',
+      '160'
     )
   })
 
   it('renders an error when the request for a service category fails', async () => {
-    interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
+    interventionsService.getServiceCategoryByIdAndContractReference.mockRejectedValue(
+      new Error('Failed to get service category')
+    )
 
     await request(app)
       .get('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/complexity-level')
@@ -2271,7 +2274,7 @@ describe('GET /referrals/:referralId/service-category/:service-category-id/desir
       .build()
 
     interventionsService.getDraftReferral.mockResolvedValue(referral)
-    interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+    interventionsService.getServiceCategoryByIdAndContractReference.mockResolvedValue(socialInclusionServiceCategory)
   })
 
   it('renders a form page', async () => {
@@ -2282,14 +2285,17 @@ describe('GET /referrals/:referralId/service-category/:service-category-id/desir
         expect(res.text).toContain('What are the desired outcomes for the Social inclusion service?')
       })
 
-    expect(interventionsService.getServiceCategory.mock.calls[0]).toEqual([
+    expect(interventionsService.getServiceCategoryByIdAndContractReference.mock.calls[0]).toEqual([
       'token',
       'b33c19d1-7414-4014-b543-e543e59c5b39',
+      '192',
     ])
   })
 
   it('renders an error when the request for a service category fails', async () => {
-    interventionsService.getServiceCategory.mockRejectedValue(new Error('Failed to get service category'))
+    interventionsService.getServiceCategoryByIdAndContractReference.mockRejectedValue(
+      new Error('Failed to get service category')
+    )
 
     await request(app)
       .get('/referrals/1/service-category/b33c19d1-7414-4014-b543-e543e59c5b39/desired-outcomes')
