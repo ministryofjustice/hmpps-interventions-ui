@@ -408,7 +408,11 @@ export default class MakeAReferralController {
     }
 
     const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategoryByIdAndContractReference(accessToken, serviceCategoryId, referral.dynamicFrameworkContractReference),
+      this.interventionsService.getServiceCategoryByIdAndContractReference(
+        accessToken,
+        serviceCategoryId,
+        referral.dynamicFrameworkContractReference
+      ),
       this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn),
     ])
 
@@ -623,10 +627,6 @@ export default class MakeAReferralController {
     if (!selectedServiceCategoryId) {
       throw new Error('Requested service category not set on the referral')
     }
-
-    console.log('----------------------------')
-    console.log(referral)
-    console.log('----------------------------')
 
     const [serviceCategory, serviceUser] = await Promise.all([
       this.interventionsService.getServiceCategoryByIdAndContractReference(
