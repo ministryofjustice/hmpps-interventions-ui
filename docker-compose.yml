@@ -16,17 +16,19 @@ services:
       - hmpps
     container_name: hmpps-auth
     depends_on:
-      - auth-db
+        - postgres
     ports:
       - '8090:8090'
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8090/auth/health']
     environment:
       - SERVER_PORT=8090
-      - SPRING_PROFILES_ACTIVE=dev,delius,local-postgres
+      - SPRING_PROFILES_ACTIVE=dev,delius
       - DELIUS_ENDPOINT_URL=http://wiremock:8080/delius
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/auth-db
       - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
+      - DELIUS_ENABLED=true
+      - MANAGE_USERS_API_ENABLED=true
+      - MANAGE_USERS_API_ENDPOINT_URL=http://hmpps-manage-users:8096
 
   hmpps-manage-users:
     image: quay.io/hmpps/hmpps-manage-users-api:latest
@@ -68,23 +70,27 @@ services:
       - API_BASE_URL_OAUTH=http://hmpps-auth:8090/auth
   
   hmpps-external-users-api:
-    image: quay.io/hmpps/hmpps-external-users-api:latest
-    networks:
-      - hmpps
-    container_name: hmpps-external-users-api
-    depends_on:
-      - auth-db
-      - hmpps-auth
-    ports:
-      - "8098:8098"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8098/health/ping"]
-    environment:
-      - SERVER_PORT=8098
-      - SPRING_PROFILES_ACTIVE=dev,local-postgres
-      - SPRING_R2DBC_URL=r2dbc:postgresql://auth-db:5432/auth-db?sslmode=verify-full
-      - SPRING_FLYWAY_URL=jdbc:postgresql://auth-db:5432/auth-db?sslmode=verify-full
-      - API_BASE_URL_OAUTH=http://hmpps-auth:8090/auth
+      image: quay.io/hmpps/hmpps-external-users-api:latest
+      networks:
+        - hmpps
+      container_name: hmpps-external-users-api
+      depends_on:
+        - postgres
+        - hmpps-auth
+      ports:
+        - "8098:8098"
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:8098/health/ping"]
+      environment:
+        - SERVER_PORT=8098
+        - SPRING_PROFILES_ACTIVE=dev
+        - API_BASE_URL_OAUTH=http://hmpps-auth:8090/auth
+        - SPRING_R2DBC_URL=r2dbc:postgresql://postgres:5432/auth-db?sslmode=prefer
+        - SPRING_FLYWAY_URL=jdbc:postgresql://postgres:5432/auth-db?sslmode=prefer
+        - SPRING_R2DBC_USERNAME=root
+        - SPRING_R2DBC_PASSWORD=dev
+        - HMPPS_SQS_PROVIDER=localstack
+        - HMPPS_SQS_LOCALSTACKURL=http://localstack:4566  
 
   community-api:
     image: quay.io/hmpps/community-api:latest
@@ -119,7 +125,7 @@ services:
       - REFERANDMONITORANDDELIUS_BASEURL=http://hmpps-interventions-ui-wiremock-1:8080
 
   postgres:
-    image: postgres:14.12-alpine
+    image: postgres:14.17-alpine
     container_name: postgres
     networks:
       - hmpps
@@ -130,20 +136,6 @@ services:
     volumes:
       - ./testutils/docker/postgres:/docker-entrypoint-initdb.d:ro
 
-  auth-db:
-    image: postgres:15
-    networks:
-      - hmpps
-    container_name: auth-db
-    restart: always
-    ports:
-      - "5434:5432"
-    environment:
-      - POSTGRES_PASSWORD=admin_password
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=auth-db
-    healthcheck:
-      test: pg_isready -d auth-db
 
   wiremock:
     image: wiremock/wiremock
@@ -173,6 +165,9 @@ services:
       - API_CLIENT_ID=interventions
       - API_CLIENT_SECRET=clientsecret
       - SPRING_PROFILES_ACTIVE=oasys-rsr,dev
+      - DATABASE_ENDPOINT=postgres:5432
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=password
 
   offender-assessments-api:
     image: quay.io/hmpps/offender-assessments-api:latest
@@ -188,6 +183,16 @@ services:
       - SERVER_PORT=8080
       - OAUTH_ENDPOINT_URL=http://hmpps-auth:8090/auth
       - SPRING_PROFILES_ACTIVE=dev
+
+  localstack:
+      image: localstack/localstack:3
+      networks:
+        - hmpps
+      container_name: localstack
+      ports:
+        - "4566:4566"
+      environment:
+        - SERVICES=sqs
 
 networks:
   hmpps:

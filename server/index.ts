@@ -1,19 +1,22 @@
 import createApp from './app'
-import HmppsAuthService from './services/hmppsAuthService'
 import config from './config'
-import InterventionsService from './services/interventionsService'
 import RestClient from './data/restClient'
+import setupRedisClient from './middleware/setupRedisClient'
 import AssessRisksAndNeedsService from './services/assessRisksAndNeedsService'
-import ReferenceDataService from './services/referenceDataService'
-import PrisonRegisterService from './services/prisonRegisterService'
-import RamDeliusApiService from './services/ramDeliusApiService'
+import HmppsAuthService from './services/hmppsAuthService'
+import InterventionsService from './services/interventionsService'
 import PrisonAndSecuredChildAgencyService from './services/prisonAndSecuredChildAgencyService'
 import PrisonApiService from './services/prisonApiService'
+import PrisonRegisterService from './services/prisonRegisterService'
+import RamDeliusApiService from './services/ramDeliusApiService'
+import ReferenceDataService from './services/referenceDataService'
 
 const assessRisksAndNeedsRestClient = new RestClient('assessRisksAndNeedsClient', config.apis.assessRisksAndNeedsApi)
 const ramDeliusApiRestClient = new RestClient('ramDeliusApiClient', config.apis.ramDeliusApi)
 
-const hmppsAuthService = new HmppsAuthService()
+const redisClient = setupRedisClient()
+
+const hmppsAuthService = new HmppsAuthService(redisClient)
 const ramDeliusApiService = new RamDeliusApiService(hmppsAuthService, ramDeliusApiRestClient)
 const interventionsService = new InterventionsService(config.apis.interventionsService)
 const assessRisksAndNeedsService = new AssessRisksAndNeedsService(assessRisksAndNeedsRestClient)
@@ -33,7 +36,8 @@ const app = createApp(
   referenceDataService,
   prisonRegisterService,
   prisonApiService,
-  prisonAndSecuredChildAgencyService
+  prisonAndSecuredChildAgencyService,
+  redisClient
 )
 
 export default app
