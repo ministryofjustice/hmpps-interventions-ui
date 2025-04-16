@@ -109,6 +109,26 @@ export default class InterventionsServiceMocks {
     })
   }
 
+  stubGetServiceCategoryByIdAndContractReference = async (
+    id: string,
+    contractReference: string,
+    responseJson: unknown
+  ): Promise<unknown> => {
+    return this.wiremock.stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${this.mockPrefix}/service-category/${id}/contract-reference/${contractReference}`,
+      },
+      response: {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        jsonBody: responseJson,
+      },
+    })
+  }
+
   stubGetDraftReferralsForUserToken = async (responseJson: unknown): Promise<unknown> => {
     return this.wiremock.stubFor({
       request: {
