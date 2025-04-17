@@ -99,6 +99,13 @@ describe('getSubsequentActionPlanAppointment', () => {
   })
 })
 
+/*
+  There are issues in the latest pact foundation release with the way Typescript interfaces and the matchers interact.
+  The long term fix for this is to change our Interface's to Type's but the workaround for the moment is to use the provided
+  InterfaceToTemplate type from Pact Foundation to wrap our request body's. The issue and workaround are detailed in this github issue
+  https://github.com/pact-foundation/pact-js/issues/1054
+*/
+
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService
   let probationPractitionerToken: string
@@ -1937,30 +1944,30 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     describe('for a referral that has an end of service report', () => {
       it('populates the endOfServiceReport property', async () => {
-        const id = '03bf1369-00d3-4b7f-88b2-da3cc8cc35b9'
+        const referralId = '03bf1369-00d3-4b7f-88b2-da3cc8cc35b9'
         const endOfServiceReport = endOfServiceReportFactory.build()
-        const endOfServiceReportRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
+        const endOfServiceReportResponseBody: InterfaceToTemplate<EndOfServiceReport> = {
           ...endOfServiceReport,
           outcomes: [],
         }
 
         await provider.addInteraction({
-          state: `There is an existing sent referral with ID of ${id}, and it has an end of service report`,
-          uponReceiving: `a request for the sent referral with ID of ${id}`,
+          state: `There is an existing sent referral with ID of ${referralId}, and it has an end of service report`,
+          uponReceiving: `a request for the sent referral with ID of ${referralId}`,
           withRequest: {
             method: 'GET',
-            path: `/sent-referral/${id}`,
+            path: `/sent-referral/${referralId}`,
             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(endOfServiceReportRequestBody),
+            body: Matchers.like({ endOfServiceReport: endOfServiceReportResponseBody }),
             headers: { 'Content-Type': 'application/json' },
           },
         })
 
-        expect(await interventionsService.getSentReferral(probationPractitionerToken, id)).toMatchObject({
-          ...endOfServiceReport,
+        expect(await interventionsService.getSentReferral(probationPractitionerToken, referralId)).toMatchObject({
+          endOfServiceReport,
         })
       })
     })
@@ -1973,16 +1980,16 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           referral: {
             ...endRequestedReferral.referral,
             serviceProvider: { ...endRequestedReferral.referral.serviceProvider },
-            complexityLevels: {
+            complexityLevels: [
               ...endRequestedReferral.referral.complexityLevels.map(level => ({
                 ...level,
               })),
-            },
-            desiredOutcomes: { ...endRequestedReferral.referral.desiredOutcomes.map(outcome => ({ ...outcome })) },
+            ],
+            desiredOutcomes: [...endRequestedReferral.referral.desiredOutcomes.map(outcome => ({ ...outcome }))],
             serviceUser: { ...endRequestedReferral.referral.serviceUser },
           } as InterfaceToTemplate<ReferralFields>,
           sentBy: { ...endRequestedReferral.sentBy },
-          assignedTo: null,
+          assignedTo: { ...endRequestedReferral.assignedTo },
           endOfServiceReport: null,
         }
         await provider.addInteraction({
@@ -1996,7 +2003,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(endRequestedReferralRequestBody),
+            body: Matchers.like({ ...endRequestedReferralRequestBody }),
             headers: { 'Content-Type': 'application/json' },
           },
         })
@@ -3284,19 +3291,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       }),
     ]
 
-    const actionPlanAppointmentsRequestBody: InterfaceToTemplate<Array<ActionPlanAppointment>> =
-      actionPlanAppointments.map(appointment => ({
-        ...appointment,
-        currentAppointment: null,
-        oldAppointments: null,
-        appointmentFeedback: {
-          ...appointment.appointmentFeedback,
-          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
-          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
-          submittedBy: null,
-        },
-        appointmentDeliveryAddress: null,
-      }))
+    const actionPlanAppointmentsRequestBody: Array<InterfaceToTemplate<ActionPlanAppointment>> =
+      actionPlanAppointments.map(
+        appointment =>
+          ({
+            ...appointment,
+          }) as unknown as InterfaceToTemplate<ActionPlanAppointment>
+      )
 
     beforeEach(async () => {
       await provider.addInteraction({
@@ -3341,11 +3342,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     const actionPlanAppointmentsRequestBody: InterfaceToTemplate<ActionPlanAppointment> = {
       ...actionPlanAppointment,
-      currentAppointment: null,
-      oldAppointments: null,
-      appointmentFeedback: null,
-      appointmentDeliveryAddress: null,
-    }
+      appointmentFeedback: {
+        ...actionPlanAppointment.appointmentFeedback,
+        attendanceFeedback: { ...actionPlanAppointment.appointmentFeedback.attendanceFeedback },
+        sessionFeedback: { ...actionPlanAppointment.appointmentFeedback.sessionFeedback },
+        submittedBy: null,
+      },
+    } as InterfaceToTemplate<ActionPlanAppointment>
 
     beforeEach(async () => {
       await provider.addInteraction({
@@ -3548,8 +3551,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
         const actionPlanAppointmentRequestBody: InterfaceToTemplate<ActionPlanAppointment> = {
           ...actionPlanAppointment,
-          currentAppointment: null,
-          oldAppointments: null,
           appointmentFeedback: {
             ...actionPlanAppointment.appointmentFeedback,
             attendanceFeedback: { ...actionPlanAppointment.appointmentFeedback.attendanceFeedback },
@@ -3557,7 +3558,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             submittedBy: null,
           },
           appointmentDeliveryAddress: { ...actionPlanAppointment.appointmentDeliveryAddress },
-        }
+        } as InterfaceToTemplate<ActionPlanAppointment>
 
         await provider.addInteraction({
           state:
@@ -4255,7 +4256,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           ...appointment.appointmentFeedback,
           attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
           sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
-          submittedBy: { ...appointment.appointmentFeedback.submittedBy },
+          submittedBy: null,
         },
         appointmentDeliveryAddress: null,
       }
