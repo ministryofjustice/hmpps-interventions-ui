@@ -299,6 +299,19 @@ export default class InterventionsService {
     })) as ServiceCategory
   }
 
+  async getServiceCategoryByIdAndContractReference(
+    token: string,
+    id: string,
+    contractReference: string
+  ): Promise<ServiceCategory> {
+    const restClient = this.createRestClient(token)
+
+    return (await restClient.get({
+      path: `/service-category/${id}/contract-reference/${contractReference}`,
+      headers: { Accept: 'application/json' },
+    })) as ServiceCategory
+  }
+
   async getServiceCategories(token: string, serviceCategoryIds: string[]): Promise<ServiceCategory[]> {
     // observation: will generate lots of small calls; however, service categories are practically static
     // it might make sense to preload them at application startup, so that recycling the pods will evict the cache
