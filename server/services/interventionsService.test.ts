@@ -1,24 +1,30 @@
+import { InterfaceToTemplate, Matchers } from '@pact-foundation/pact'
 import { pactWith } from 'jest-pact'
-import { Matchers } from '@pact-foundation/pact'
-import moment from 'moment-timezone'
-import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
-import SentReferral, { WithdrawalState } from '../models/sentReferral'
-import SentReferralSummaries from '../models/sentReferralSummaries'
-import ServiceUser from '../models/serviceUser'
-import config from '../config'
-import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
-import interventionFactory from '../../testutils/factories/intervention'
 import actionPlanFactory from '../../testutils/factories/actionPlan'
 import actionPlanAppointmentFactory from '../../testutils/factories/actionPlanAppointment'
-import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
-import sentReferralFactory from '../../testutils/factories/sentReferral'
-import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
-import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
-import CalendarDay from '../utils/calendarDay'
 import approvedActionPlanSummaryFactory from '../../testutils/factories/approvedActionPlanSummary'
+import endOfServiceReportFactory from '../../testutils/factories/endOfServiceReport'
+import initialAssessmentAppointmentFactory from '../../testutils/factories/initialAssessmentAppointment'
+import interventionFactory from '../../testutils/factories/intervention'
+import oauth2TokenFactory from '../../testutils/factories/oauth2Token'
 import referralDetailsFactory from '../../testutils/factories/referralDetails'
+import sentReferralFactory from '../../testutils/factories/sentReferral'
+import supplierAssessmentFactory from '../../testutils/factories/supplierAssessment'
+import config from '../config'
+import { CurrentLocationType, ReferralFields } from '../models/draftReferral'
 import { Page } from '../models/pagination'
-import { CurrentLocationType } from '../models/draftReferral'
+import SentReferral, { WithdrawalState } from '../models/sentReferral'
+
+import { ActionPlanAppointment, InitialAssessmentAppointment } from '../models/appointment'
+import ApprovedActionPlanSummary from '../models/approvedActionPlanSummary'
+import EndOfServiceReport from '../models/endOfServiceReport'
+import Intervention from '../models/intervention'
+import ReferralDetails from '../models/referralDetails'
+import SentReferralSummaries from '../models/sentReferralSummaries'
+import ServiceUser from '../models/serviceUser'
+import SupplierAssessment from '../models/supplierAssessment'
+import CalendarDay from '../utils/calendarDay'
+import InterventionsService, { UpdateDraftEndOfServiceReportParams } from './interventionsService'
 
 jest.mock('../services/hmppsAuthService')
 
@@ -46,6 +52,59 @@ ven ID
     made relating to the above ticket.
  */
 jest.setTimeout(45_000)
+
+describe('getSubsequentActionPlanAppointment', () => {
+  let interventionsService: InterventionsService
+  let probationPractitionerToken: string
+  beforeEach(() => {
+    interventionsService = new InterventionsService({ ...config.apis.interventionsService })
+    probationPractitionerToken = oauth2TokenFactory.probationPractitionerToken().build()
+  })
+  describe('when the current appointment is not the final one', () => {
+    const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
+    const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
+
+    it('fetches the subsequent action plan appointment', async () => {
+      interventionsService.getActionPlanAppointment = jest.fn()
+      await interventionsService.getSubsequentActionPlanAppointment(probationPractitionerToken, actionPlan, appointment)
+
+      expect(interventionsService.getActionPlanAppointment).toHaveBeenCalledWith(
+        probationPractitionerToken,
+        actionPlan.id,
+        2
+      )
+    })
+  })
+
+  describe('when the current appointment is the final one', () => {
+    const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
+    const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
+
+    it('does not fetch the subsequent action plan appointment', async () => {
+      interventionsService.getActionPlanAppointment = jest.fn()
+
+      const subsequentAppointment = await interventionsService.getSubsequentActionPlanAppointment(
+        probationPractitionerToken,
+        actionPlan,
+        appointment
+      )
+
+      expect(subsequentAppointment).toBeNull()
+      expect(interventionsService.getActionPlanAppointment).not.toHaveBeenCalled()
+    })
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+})
+
+/*
+  There are issues in the latest pact foundation release with the way Typescript interfaces and the matchers interact.
+  The long term fix for this is to change our Interface's to Type's but the workaround for the moment is to use the provided
+  InterfaceToTemplate type from Pact Foundation to wrap our request body's. The issue and workaround are detailed in this github issue
+  https://github.com/pact-foundation/pact-js/issues/1054
+*/
 
 pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, provider => {
   let interventionsService: InterventionsService
@@ -646,6 +705,8 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         disabilities: ['Autism spectrum condition', 'sciatica'],
       } as ServiceUser
 
+      const serviceUserRequestBody: InterfaceToTemplate<ServiceUser> = serviceUser
+
       await provider.addInteraction({
         state: 'a draft referral with ID dfb64747-f658-40e0-a827-87b4b0bdcfed exists',
         uponReceiving: 'a PATCH request to update service user',
@@ -658,7 +719,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
             Authorization: `Bearer ${probationPractitionerToken}`,
           },
           body: {
-            serviceUser,
+            serviceUser: serviceUserRequestBody,
           },
         },
         willRespondWith: {
@@ -666,7 +727,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           body: {
             id: Matchers.like('dfb64747-f658-40e0-a827-87b4b0bdcfed'),
             createdAt: '2020-12-07T20:45:21.986389Z',
-            serviceUser,
+            serviceUser: serviceUserRequestBody,
           },
           headers: {
             'Content-Type': 'application/json',
@@ -1564,7 +1625,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       personCurrentLocationType: CurrentLocationType.custody,
       personCustodyPrisonId: 'aaa',
       alreadyKnowPrisonName: null,
-      expectedReleaseDate: moment().add(1, 'days').format('YYYY-MM-DD'),
+      expectedReleaseDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       expectedReleaseDateMissingReason: null,
       expectedProbationOffice: 'London',
       expectedProbationOfficeUnKnownReason: null,
@@ -1590,6 +1651,94 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       reasonForReferral: 'for crs',
       reasonForReferralFurtherInformation: 'more info',
       reasonForReferralCreationBeforeAllocation: 'for quick assessment',
+      dynamicFrameworkContractReference: '428ee70f-3001-4399-95a6-ad25eaaede22',
+    },
+  }
+
+  const serviceUserRequestBody: InterfaceToTemplate<ServiceUser> = serviceUser
+
+  const sentReferralRequestBody: InterfaceToTemplate<SentReferral> = {
+    id: '81d754aa-d868-4347-9c0f-50690773014e',
+    sentAt: '2021-01-14T15:56:45.382884Z',
+    sentBy: {
+      username: 'BERNARD.BEAKS',
+      userId: '555224b3-865c-4b56-97dd-c3e817592ba3',
+      authSource: 'delius',
+    },
+    assignedTo: null,
+    actionPlanId: null,
+    endRequestedAt: null,
+    endRequestedReason: null,
+    endRequestedComments: null,
+    endOfServiceReportCreationRequired: false,
+    concludedAt: null,
+    endOfServiceReport: null,
+    referenceNumber: 'HDJ2123F',
+    supplementaryRiskId: 'a1f5ce02-53a3-47c4-bc71-45f1bdbf504c',
+    withdrawalState: WithdrawalState.preICA,
+    withdrawalCode: null,
+    withdrawalComments: null,
+    referral: {
+      createdAt: '2021-01-11T10:32:12.382884Z',
+      completionDeadline: '2021-04-01',
+      serviceProvider: {
+        id: '12345',
+        name: 'Harmony Living',
+      },
+      interventionId: '000b2538-914b-4641-a1cc-a293409536bf',
+      serviceCategoryIds: ['428ee70f-3001-4399-95a6-ad25eaaede16'],
+      complexityLevels: [
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          complexityLevelId: 'd0db50b0-4a50-4fc7-a006-9c97530e38b2',
+        },
+      ],
+      furtherInformation: 'Some information about the service user',
+      relevantSentenceId: 2600295124,
+      desiredOutcomes: [
+        {
+          serviceCategoryId: '428ee70f-3001-4399-95a6-ad25eaaede16',
+          desiredOutcomesIds: ['301ead30-30a4-4c7c-8296-2768abfb59b5', '65924ac6-9724-455b-ad30-906936291421'],
+        },
+      ],
+      additionalNeedsInformation: 'Alex is currently sleeping on her aunt’s sofa',
+      accessibilityNeeds: 'She uses a wheelchair',
+      needsInterpreter: true,
+      interpreterLanguage: 'Spanish',
+      hasAdditionalResponsibilities: true,
+      whenUnavailable: 'She works Mondays 9am - midday',
+      serviceUser: serviceUserRequestBody,
+      maximumEnforceableDays: 10,
+      personCurrentLocationType: CurrentLocationType.custody,
+      personCustodyPrisonId: 'aaa',
+      alreadyKnowPrisonName: null,
+      expectedReleaseDate: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      expectedReleaseDateMissingReason: null,
+      expectedProbationOffice: 'London',
+      expectedProbationOfficeUnKnownReason: null,
+      hasExpectedReleaseDate: null,
+      ndeliusPPName: 'Bob',
+      ndeliusPPEmailAddress: 'bob@example.com',
+      ndeliusPDU: 'Hackney and City',
+      ndeliusPhoneNumber: '073232324232',
+      ndeliusTeamPhoneNumber: '020-32352323213',
+      ppName: 'Alice',
+      ppEmailAddress: 'alice@example.com',
+      ppProbationOffice: 'London',
+      ppPdu: 'East Sussex',
+      ppEstablishment: 'aaa',
+      ppPhoneNumber: '093232324232',
+      ppTeamPhoneNumber: '08023232323',
+      hasValidDeliusPPDetails: false,
+      isReferralReleasingIn12Weeks: false,
+      roleOrJobTitle: 'Probation Practitioner',
+      hasMainPointOfContactDetails: false,
+      ppLocationType: null,
+      allocatedCommunityPP: true,
+      reasonForReferral: 'for crs',
+      reasonForReferralFurtherInformation: 'more info',
+      reasonForReferralCreationBeforeAllocation: 'for quick assessment',
+      dynamicFrameworkContractReference: '428ee70f-3001-4399-95a6-ad25eaaede22',
     },
   }
 
@@ -1617,6 +1766,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     isReferralReleasingIn12Weeks: false,
   }
 
+  const sentReferralSummaries1RequestBody: InterfaceToTemplate<SentReferralSummaries> = {
+    ...sentReferralSummaries1,
+    sentBy: { ...sentReferralSummaries1.sentBy },
+    assignedTo: null,
+    serviceProvider: { ...sentReferralSummaries1.serviceProvider },
+    serviceUser: { ...sentReferralSummaries1.serviceUser },
+  }
+
   const sentReferralSummaries2: SentReferralSummaries = {
     id: 'bfabb659-1200-4479-bae7-8927e1e87a0d',
     sentAt: '2021-01-14T15:56:45.382884Z',
@@ -1641,6 +1798,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     isReferralReleasingIn12Weeks: false,
   }
 
+  const sentReferralSummaries2RequestBody: InterfaceToTemplate<SentReferralSummaries> = {
+    ...sentReferralSummaries2,
+    sentBy: { ...sentReferralSummaries2.sentBy },
+    assignedTo: null,
+    serviceProvider: { ...sentReferralSummaries2.serviceProvider },
+    serviceUser: { ...sentReferralSummaries2.serviceUser },
+  }
+
   const sentReferralSummariesPages: Page<SentReferralSummaries> = {
     content: [sentReferralSummaries1, sentReferralSummaries2],
     size: 2,
@@ -1650,6 +1815,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     number: 2,
   }
 
+  const sentReferralSummariesPagesRequestBody: InterfaceToTemplate<Page<SentReferralSummaries>> = {
+    ...sentReferralSummariesPages,
+    content: [sentReferralSummaries1RequestBody, sentReferralSummaries2RequestBody],
+  }
+
   const sentReferralSummariesCancelledPages: Page<SentReferralSummaries> = {
     content: [sentReferralSummaries1],
     size: 1,
@@ -1657,6 +1827,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     totalPages: 1,
     numberOfElements: 1,
     number: 1,
+  }
+
+  const sentReferralSummariesCancelledPagesRequestBody: InterfaceToTemplate<Page<SentReferralSummaries>> = {
+    ...sentReferralSummariesCancelledPages,
+    content: [sentReferralSummaries1RequestBody],
   }
 
   describe('sendDraftReferral', () => {
@@ -1671,7 +1846,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 201,
-          body: Matchers.like(sentReferral),
+          body: Matchers.like(sentReferralRequestBody),
           headers: {
             'Content-Type': 'application/json',
             Location: Matchers.like(
@@ -1701,7 +1876,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(sentReferral),
+          body: Matchers.like(sentReferralRequestBody),
           headers: { 'Content-Type': 'application/json' },
         },
       })
@@ -1769,27 +1944,29 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     describe('for a referral that has an end of service report', () => {
       it('populates the endOfServiceReport property', async () => {
-        const id = '03bf1369-00d3-4b7f-88b2-da3cc8cc35b9'
+        const referralId = '03bf1369-00d3-4b7f-88b2-da3cc8cc35b9'
         const endOfServiceReport = endOfServiceReportFactory.build()
+        const endOfServiceReportResponseBody: InterfaceToTemplate<EndOfServiceReport> = {
+          ...endOfServiceReport,
+          outcomes: [],
+        }
 
         await provider.addInteraction({
-          state: `There is an existing sent referral with ID of ${id}, and it has an end of service report`,
-          uponReceiving: `a request for the sent referral with ID of ${id}`,
+          state: `There is an existing sent referral with ID of ${referralId}, and it has an end of service report`,
+          uponReceiving: `a request for the sent referral with ID of ${referralId}`,
           withRequest: {
             method: 'GET',
-            path: `/sent-referral/${id}`,
+            path: `/sent-referral/${referralId}`,
             headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like({
-              endOfServiceReport,
-            }),
+            body: Matchers.like({ endOfServiceReport: endOfServiceReportResponseBody }),
             headers: { 'Content-Type': 'application/json' },
           },
         })
 
-        expect(await interventionsService.getSentReferral(probationPractitionerToken, id)).toMatchObject({
+        expect(await interventionsService.getSentReferral(probationPractitionerToken, referralId)).toMatchObject({
           endOfServiceReport,
         })
       })
@@ -1798,6 +1975,23 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     describe('for a sent referral that has had an end request', () => {
       it('populates the endRequested properties', async () => {
         const endRequestedReferral = sentReferralFactory.endRequested().build({ withdrawalCode: 'MIS' })
+        const endRequestedReferralRequestBody: InterfaceToTemplate<SentReferral> = {
+          ...endRequestedReferral,
+          referral: {
+            ...endRequestedReferral.referral,
+            serviceProvider: { ...endRequestedReferral.referral.serviceProvider },
+            complexityLevels: [
+              ...endRequestedReferral.referral.complexityLevels.map(level => ({
+                ...level,
+              })),
+            ],
+            desiredOutcomes: [...endRequestedReferral.referral.desiredOutcomes.map(outcome => ({ ...outcome }))],
+            serviceUser: { ...endRequestedReferral.referral.serviceUser },
+          } as InterfaceToTemplate<ReferralFields>,
+          sentBy: { ...endRequestedReferral.sentBy },
+          assignedTo: { ...endRequestedReferral.assignedTo },
+          endOfServiceReport: null,
+        }
         await provider.addInteraction({
           state:
             'There is an existing sent referral with ID of c5554f8f-aac6-4eaf-ba70-63281de35685, and it has been requested to be ended',
@@ -1809,7 +2003,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(endRequestedReferral),
+            body: Matchers.like({ ...endRequestedReferralRequestBody }),
             headers: { 'Content-Type': 'application/json' },
           },
         })
@@ -1832,6 +2026,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         furtherInformation: 'this person now has 4 children',
       }
 
+      const referralDetails = referralDetailsFactory.build({
+        referralId: '81d754aa-d868-4347-9c0f-50690773014e',
+        furtherInformation: update.furtherInformation,
+      })
+
+      const referralDetailsRequestBody: InterfaceToTemplate<ReferralDetails> = referralDetails
+
       await provider.addInteraction({
         state: 'There is an existing sent referral with ID of 81d754aa-d868-4347-9c0f-50690773014e',
         uponReceiving: 'a request to create a new version of the referral details with updated fields',
@@ -1843,12 +2044,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(
-            referralDetailsFactory.build({
-              referralId: '81d754aa-d868-4347-9c0f-50690773014e',
-              furtherInformation: update.furtherInformation,
-            })
-          ),
+          body: Matchers.like(referralDetailsRequestBody),
           headers: { 'Content-Type': 'application/json' },
         },
       })
@@ -2026,7 +2222,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(sentReferralSummariesPages),
+          body: Matchers.like(sentReferralSummariesPagesRequestBody),
           headers: { 'Content-Type': 'application/json' },
         },
       })
@@ -2053,7 +2249,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(sentReferralSummariesPages),
+            body: Matchers.like(sentReferralSummariesPagesRequestBody),
             headers: { 'Content-Type': 'application/json' },
           },
         })
@@ -2083,7 +2279,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(sentReferralSummariesCancelledPages),
+            body: Matchers.like(sentReferralSummariesCancelledPagesRequestBody),
             headers: { 'Content-Type': 'application/json' },
           },
         })
@@ -2112,7 +2308,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(sentReferralSummariesPages),
+            body: Matchers.like(sentReferralSummariesPagesRequestBody),
             headers: { 'Content-Type': 'application/json' },
           },
         })
@@ -2142,7 +2338,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(sentReferralSummariesPages),
+            body: Matchers.like(sentReferralSummariesPagesRequestBody),
             headers: { 'Content-Type': 'application/json' },
           },
         })
@@ -2203,7 +2399,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('getInterventions', () => {
     it('returns a list of all interventions', async () => {
       const interventions = interventionFactory.buildList(2)
-
+      const interventionsRequestBody: InterfaceToTemplate<Array<Intervention>> = interventions.map(intervention => ({
+        ...intervention,
+        npsRegion: { ...intervention.npsRegion },
+        pccRegions: intervention.pccRegions.map(pccRegion => ({
+          ...pccRegion,
+          npsRegion: { ...intervention.npsRegion },
+        })),
+        serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+          ...serviceCategory,
+          complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+            ...complexityLevel,
+          })),
+          desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+            ...desiredOutcome,
+          })),
+        })),
+        serviceProvider: { ...intervention.serviceProvider },
+        eligibility: { ...intervention.eligibility },
+        contractType: { ...intervention.contractType },
+      }))
       await provider.addInteraction({
         state: 'There are some interventions',
         uponReceiving: 'a request for all interventions',
@@ -2214,7 +2429,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(interventions),
+          body: Matchers.like(interventionsRequestBody),
           headers: { 'Content-Type': 'application/json' },
         },
       })
@@ -2225,6 +2440,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     describe('allowsMale filter', () => {
       it.each([[true], [false]])('accepts a value of %s', async value => {
         const interventions = interventionFactory.buildList(2)
+        const interventionsRequestBody: InterfaceToTemplate<Array<Intervention>> = interventions.map(intervention => ({
+          ...intervention,
+          npsRegion: { ...intervention.npsRegion },
+          pccRegions: intervention.pccRegions.map(pccRegion => ({
+            ...pccRegion,
+            npsRegion: { ...intervention.npsRegion },
+          })),
+          serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+            ...serviceCategory,
+            complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+              ...complexityLevel,
+            })),
+            desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+              ...desiredOutcome,
+            })),
+          })),
+          serviceProvider: { ...intervention.serviceProvider },
+          eligibility: { ...intervention.eligibility },
+          contractType: { ...intervention.contractType },
+        }))
 
         await provider.addInteraction({
           state: 'There are some interventions',
@@ -2237,7 +2472,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(interventions),
+            body: Matchers.like(interventionsRequestBody),
             headers: { 'Content-Type': 'application/json' },
           },
         })
@@ -2251,6 +2486,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     describe('allowsFemale filter', () => {
       it.each([[true], [false]])('accepts a value of %s', async value => {
         const interventions = interventionFactory.buildList(2)
+        const interventionsRequestBody: InterfaceToTemplate<Array<Intervention>> = interventions.map(intervention => ({
+          ...intervention,
+          npsRegion: { ...intervention.npsRegion },
+          pccRegions: intervention.pccRegions.map(pccRegion => ({
+            ...pccRegion,
+            npsRegion: { ...intervention.npsRegion },
+          })),
+          serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+            ...serviceCategory,
+            complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+              ...complexityLevel,
+            })),
+            desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+              ...desiredOutcome,
+            })),
+          })),
+          serviceProvider: { ...intervention.serviceProvider },
+          eligibility: { ...intervention.eligibility },
+          contractType: { ...intervention.contractType },
+        }))
 
         await provider.addInteraction({
           state: 'There are some interventions',
@@ -2263,7 +2518,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(interventions),
+            body: Matchers.like(interventionsRequestBody),
             headers: { 'Content-Type': 'application/json' },
           },
         })
@@ -2277,6 +2532,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     describe('pccRegionIds filter', () => {
       it('accepts a list of PCC region IDs', async () => {
         const intervention = interventionFactory.build()
+        const interventionRequestBody: InterfaceToTemplate<Intervention> = {
+          ...intervention,
+          npsRegion: { ...intervention.npsRegion },
+          pccRegions: intervention.pccRegions.map(pccRegion => ({
+            ...pccRegion,
+            npsRegion: { ...intervention.npsRegion },
+          })),
+          serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+            ...serviceCategory,
+            complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+              ...complexityLevel,
+            })),
+            desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+              ...desiredOutcome,
+            })),
+          })),
+          serviceProvider: { ...intervention.serviceProvider },
+          eligibility: { ...intervention.eligibility },
+          contractType: { ...intervention.contractType },
+        }
 
         await provider.addInteraction({
           state: 'There are some interventions',
@@ -2289,7 +2564,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like([intervention, intervention]),
+            body: Matchers.like([interventionRequestBody, interventionRequestBody]),
             headers: { 'Content-Type': 'application/json' },
           },
         })
@@ -2305,6 +2580,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     describe('maximumAge filter', () => {
       it('accepts a positive integer', async () => {
         const interventions = interventionFactory.buildList(2)
+        const interventionsRequestBody: InterfaceToTemplate<Array<Intervention>> = interventions.map(intervention => ({
+          ...intervention,
+          npsRegion: { ...intervention.npsRegion },
+          pccRegions: intervention.pccRegions.map(pccRegion => ({
+            ...pccRegion,
+            npsRegion: { ...intervention.npsRegion },
+          })),
+          serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+            ...serviceCategory,
+            complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+              ...complexityLevel,
+            })),
+            desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+              ...desiredOutcome,
+            })),
+          })),
+          serviceProvider: { ...intervention.serviceProvider },
+          eligibility: { ...intervention.eligibility },
+          contractType: { ...intervention.contractType },
+        }))
 
         await provider.addInteraction({
           state: 'There are some interventions',
@@ -2317,7 +2612,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(interventions),
+            body: Matchers.like(interventionsRequestBody),
             headers: { 'Content-Type': 'application/json' },
           },
         })
@@ -2332,6 +2627,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('getMyInterventions', () => {
     it('returns a list of interventions', async () => {
       const interventions = interventionFactory.buildList(2)
+      const interventionsRequestBody: InterfaceToTemplate<Array<Intervention>> = interventions.map(intervention => ({
+        ...intervention,
+        npsRegion: { ...intervention.npsRegion },
+        pccRegions: intervention.pccRegions.map(pccRegion => ({
+          ...pccRegion,
+          npsRegion: { ...intervention.npsRegion },
+        })),
+        serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+          ...serviceCategory,
+          complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+            ...complexityLevel,
+          })),
+          desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+            ...desiredOutcome,
+          })),
+        })),
+        serviceProvider: { ...intervention.serviceProvider },
+        eligibility: { ...intervention.eligibility },
+        contractType: { ...intervention.contractType },
+      }))
 
       await provider.addInteraction({
         state: "There are some interventions associated with the default service provider user's access scope",
@@ -2343,7 +2658,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(interventions),
+          body: Matchers.like(interventionsRequestBody),
           headers: { 'Content-Type': 'application/json' },
         },
       })
@@ -2356,6 +2671,26 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     it('returns a single intervention', async () => {
       const interventionId = '15237ae5-a017-4de6-a033-abf350f14d99'
       const intervention = interventionFactory.build({ id: interventionId })
+      const interventionRequestBody: InterfaceToTemplate<Intervention> = {
+        ...intervention,
+        npsRegion: { ...intervention.npsRegion },
+        pccRegions: intervention.pccRegions.map(pccRegion => ({
+          ...pccRegion,
+          npsRegion: { ...intervention.npsRegion },
+        })),
+        serviceCategories: intervention.serviceCategories.map(serviceCategory => ({
+          ...serviceCategory,
+          complexityLevels: serviceCategory.complexityLevels.map(complexityLevel => ({
+            ...complexityLevel,
+          })),
+          desiredOutcomes: serviceCategory.desiredOutcomes.map(desiredOutcome => ({
+            ...desiredOutcome,
+          })),
+        })),
+        serviceProvider: { ...intervention.serviceProvider },
+        eligibility: { ...intervention.eligibility },
+        contractType: { ...intervention.contractType },
+      }
 
       await provider.addInteraction({
         state: 'There is an existing intervention with ID 15237ae5-a017-4de6-a033-abf350f14d99',
@@ -2367,7 +2702,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(intervention),
+          body: Matchers.like(interventionRequestBody),
           headers: { 'Content-Type': 'application/json' },
         },
       })
@@ -2897,6 +3232,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         id: '8f3e1895-9c46-40ad-bdb3-d33eacbb693e',
       })
       const referralId = '8d107952-9bde-4854-ad1e-dee09daab992'
+      const actionPlanVersionOneSummaryRequestBody: InterfaceToTemplate<ApprovedActionPlanSummary> =
+        actionPlanVersionOneSummary
+      const actionPlanVersionTwoSummaryRequestBody: InterfaceToTemplate<ApprovedActionPlanSummary> =
+        actionPlanVersionTwoSummary
 
       await provider.addInteraction({
         state: `two approved action plans exists with IDs ${actionPlanVersionOneSummary.id} and ${actionPlanVersionTwoSummary.id}`,
@@ -2908,7 +3247,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like([actionPlanVersionOneSummary, actionPlanVersionTwoSummary]),
+          body: Matchers.like([actionPlanVersionOneSummaryRequestBody, actionPlanVersionTwoSummaryRequestBody]),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -2952,6 +3291,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       }),
     ]
 
+    const actionPlanAppointmentsRequestBody: Array<InterfaceToTemplate<ActionPlanAppointment>> =
+      actionPlanAppointments.map(
+        appointment =>
+          ({
+            ...appointment,
+          }) as unknown as InterfaceToTemplate<ActionPlanAppointment>
+      )
+
     beforeEach(async () => {
       await provider.addInteraction({
         state: 'an action plan with ID e5ed2f80-dfe2-4bf3-b5c4-d8d4486e963d exists and it has 3 scheduled appointments',
@@ -2963,7 +3310,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(actionPlanAppointments),
+          body: Matchers.like(actionPlanAppointmentsRequestBody),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -2993,6 +3340,16 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       appointmentDeliveryType: 'PHONE_CALL',
     })
 
+    const actionPlanAppointmentsRequestBody: InterfaceToTemplate<ActionPlanAppointment> = {
+      ...actionPlanAppointment,
+      appointmentFeedback: {
+        ...actionPlanAppointment.appointmentFeedback,
+        attendanceFeedback: { ...actionPlanAppointment.appointmentFeedback.attendanceFeedback },
+        sessionFeedback: { ...actionPlanAppointment.appointmentFeedback.sessionFeedback },
+        submittedBy: null,
+      },
+    } as InterfaceToTemplate<ActionPlanAppointment>
+
     beforeEach(async () => {
       await provider.addInteraction({
         state:
@@ -3006,7 +3363,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(actionPlanAppointment),
+          body: Matchers.like(actionPlanAppointmentsRequestBody),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -3025,50 +3382,6 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       expect(appointment.durationInMinutes).toEqual(120)
       expect(appointment.sessionType).toEqual('ONE_TO_ONE')
       expect(appointment.appointmentDeliveryType).toEqual('PHONE_CALL')
-    })
-  })
-
-  describe('getSubsequentActionPlanAppointment', () => {
-    describe('when the current appointment is not the final one', () => {
-      const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 1 })
-      const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
-
-      it('fetches the subsequent action plan appointment', async () => {
-        interventionsService.getActionPlanAppointment = jest.fn()
-        await interventionsService.getSubsequentActionPlanAppointment(
-          probationPractitionerToken,
-          actionPlan,
-          appointment
-        )
-
-        expect(interventionsService.getActionPlanAppointment).toHaveBeenCalledWith(
-          probationPractitionerToken,
-          actionPlan.id,
-          2
-        )
-      })
-    })
-
-    describe('when the current appointment is the final one', () => {
-      const appointment = actionPlanAppointmentFactory.build({ sessionNumber: 2 })
-      const actionPlan = actionPlanFactory.build({ numberOfSessions: 2 })
-
-      it('does not fetch the subsequent action plan appointment', async () => {
-        interventionsService.getActionPlanAppointment = jest.fn()
-
-        const subsequentAppointment = await interventionsService.getSubsequentActionPlanAppointment(
-          probationPractitionerToken,
-          actionPlan,
-          appointment
-        )
-
-        expect(subsequentAppointment).toBeNull()
-        expect(interventionsService.getActionPlanAppointment).not.toHaveBeenCalled()
-      })
-    })
-
-    afterEach(() => {
-      jest.clearAllMocks()
     })
   })
 
@@ -3114,6 +3427,29 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
+        const actionPlanAppointmentRequestBody: InterfaceToTemplate<ActionPlanAppointment> = {
+          ...actionPlanAppointment,
+          currentAppointment: null,
+          oldAppointments: null,
+          appointmentFeedback: {
+            attendanceFeedback: {
+              attended: 'yes',
+            },
+            sessionFeedback: {
+              sessionSummary: 'stub session summary',
+              sessionResponse: 'stub session response',
+              notifyProbationPractitioner: false,
+            },
+            submittedBy: {
+              authSource: 'auth',
+              userId: '6c4036b7-e87d-44fb-864f-5a06c1c492f3',
+              username: 'TEST_INTERVENTIONS_SP_1',
+            },
+            submitted: true,
+          },
+          appointmentDeliveryAddress: { ...actionPlanAppointment.appointmentDeliveryAddress },
+        }
+
         await provider.addInteraction({
           state:
             'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
@@ -3149,7 +3485,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           // note - this is an exact match
           willRespondWith: {
             status: 200,
-            body: actionPlanAppointment,
+            body: actionPlanAppointmentRequestBody,
             headers: {
               'Content-Type': 'application/json',
             },
@@ -3213,6 +3549,17 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         })
 
+        const actionPlanAppointmentRequestBody: InterfaceToTemplate<ActionPlanAppointment> = {
+          ...actionPlanAppointment,
+          appointmentFeedback: {
+            ...actionPlanAppointment.appointmentFeedback,
+            attendanceFeedback: { ...actionPlanAppointment.appointmentFeedback.attendanceFeedback },
+            sessionFeedback: { ...actionPlanAppointment.appointmentFeedback.sessionFeedback },
+            submittedBy: null,
+          },
+          appointmentDeliveryAddress: { ...actionPlanAppointment.appointmentDeliveryAddress },
+        } as InterfaceToTemplate<ActionPlanAppointment>
+
         await provider.addInteraction({
           state:
             'an action plan with ID 345059d4-1697-467b-8914-fedec9957279 exists and has 2 2-hour appointments already',
@@ -3239,7 +3586,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
           willRespondWith: {
             status: 200,
-            body: Matchers.like(actionPlanAppointment),
+            body: Matchers.like({ ...actionPlanAppointmentRequestBody }),
             headers: {
               'Content-Type': 'application/json',
             },
@@ -3274,7 +3621,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   // describe('recordActionPlanAppointmentAttendance', () => {
   //   const appointmentTime = new Date()
   //   appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-  //
+
   //   it('returns an updated action plan appointment with the service user‘s attendance', async () => {
   //     await provider.addInteraction({
   //       state:
@@ -3323,11 +3670,11 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   //         },
   //       },
   //     })
-  //
+
   //     const appointment = await interventionsService.recordActionPlanAppointmentAttendance(
   //       probationPractitionerToken,
   //       '345059d4-1697-467b-8914-fedec9957279',
-  //         '345059d4-1697-467b-8914-fedec9957279',
+  //       '345059d4-1697-467b-8914-fedec9957279',
   //       {
   //         attended: 'yes',
   //       }
@@ -3339,8 +3686,40 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   // describe('recordActionPlanAppointmentSessionFeedback', () => {
   //   const appointmentTime = new Date()
   //   appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-  //
+
   //   it('returns an updated action plan appointment with the session feedback', async () => {
+  //     const actionPlanAppointment: ActionPlanAppointment = actionPlanAppointmentFactory.build({
+  //       sessionNumber: 1,
+  //       appointmentTime: `${appointmentTime.toISOString().split('T')[0]}`,
+  //       durationInMinutes: 120,
+  //       appointmentFeedback: {
+  //         attendanceFeedback: {
+  //           didSessionHappen: true,
+  //           attended: 'yes',
+  //         },
+  //         sessionFeedback: {
+  //           late: false,
+  //           lateReason: null,
+  //           sessionSummary: 'Discussed accommodation',
+  //           sessionResponse: 'Engaged well',
+  //           notifyProbationPractitioner: false,
+  //         },
+  //         submitted: false,
+  //         submittedBy: null,
+  //       },
+  //     })
+  //     const response: InterfaceToTemplate<ActionPlanAppointment> = {
+  //       ...actionPlanAppointment,
+  //       currentAppointment: null,
+  //       oldAppointments: null,
+  //       appointmentFeedback: {
+  //         ...actionPlanAppointment.appointmentFeedback,
+  //         attendanceFeedback: { ...actionPlanAppointment.appointmentFeedback.attendanceFeedback },
+  //         sessionFeedback: { ...actionPlanAppointment.appointmentFeedback.sessionFeedback },
+  //         submittedBy: null,
+  //       },
+  //       appointmentDeliveryAddress: null,
+  //     }
   //     await provider.addInteraction({
   //       state:
   //         'an action plan with ID 81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d exists with 1 appointment with recorded attendance',
@@ -3360,32 +3739,13 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   //       },
   //       willRespondWith: {
   //         status: 200,
-  //         body: Matchers.like({
-  //           sessionNumber: 1,
-  //           appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
-  //           durationInMinutes: 120,
-  //           appointmentFeedback: {
-  //             attendanceFeedback: {
-  //               didSessionHappen: true,
-  //               attended: 'yes',
-  //             },
-  //             sessionFeedback: {
-  //               late: false,
-  //               lateReason: null,
-  //               sessionSummary: 'Discussed accommodation',
-  //               sessionResponse: 'Engaged well',
-  //               notifyProbationPractitioner: false,
-  //             },
-  //             submitted: false,
-  //             submittedBy: null,
-  //           },
-  //         }),
+  //         body: Matchers.like(response),
   //         headers: {
   //           'Content-Type': 'application/json',
   //         },
   //       },
   //     })
-  //
+
   //     const appointment = await interventionsService.recordActionPlanAppointmentSessionFeedback(
   //       probationPractitionerToken,
   //       '81987e8b-aeb9-4fbf-8ecb-1a054ad74b2d',
@@ -3401,13 +3761,14 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   //     expect(appointment.appointmentFeedback!.sessionFeedback!.sessionSummary).toEqual('Discussed accommodation')
   //     expect(appointment.appointmentFeedback!.sessionFeedback!.sessionResponse).toEqual('Engaged well')
   //     expect(appointment.appointmentFeedback!.sessionFeedback!.notifyProbationPractitioner).toEqual(false)
+  //     expect(appointment).toEqual(actionPlanAppointment)
   //   })
   // })
 
   // describe('submitActionPlanSessionFeedback', () => {
   //   const appointmentTime = new Date()
   //   appointmentTime.setMonth(appointmentTime.getMonth() + 4)
-  //
+
   //   it('submits attendance and session feedback to the PP', async () => {
   //     await provider.addInteraction({
   //       state:
@@ -3449,7 +3810,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   //         },
   //       },
   //     })
-  //
+
   //     const appointment = await interventionsService.submitActionPlanSessionFeedback(
   //       probationPractitionerToken,
   //       '0f5afe04-e323-4699-9423-fb6122580638',
@@ -3463,6 +3824,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     it('creates a draft end of service report for a referral', async () => {
       const referralId = '993d7bdf-bab7-4594-8b27-7d9f7061b403'
       const endOfServiceReport = endOfServiceReportFactory.justCreated().build()
+      const endOfServiceReportRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
+        ...endOfServiceReport,
+        outcomes: [],
+      }
 
       await provider.addInteraction({
         state: `a sent referral exists with ID ${referralId}`,
@@ -3475,7 +3840,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 201,
-          body: Matchers.like(endOfServiceReport),
+          body: Matchers.like(endOfServiceReportRequestBody),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -3491,7 +3856,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     it('returns an existing end of service report', async () => {
       const id = '31ad504a-1827-46e4-ac95-68b4e1256659'
       const endOfServiceReport = endOfServiceReportFactory.justCreated().build()
-
+      const endOfServiceReportRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
+        ...endOfServiceReport,
+        outcomes: [],
+      }
       await provider.addInteraction({
         state: `an end of service report exists with ID ${id}`,
         uponReceiving: `a request for the end of service report with ID ${id}`,
@@ -3502,7 +3870,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(endOfServiceReport),
+          body: Matchers.like(endOfServiceReportRequestBody),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -3532,7 +3900,31 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         ],
       })
+      const updatedEndOfServiceReportRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
+        ...updatedEndOfServiceReport,
+        outcomes: [
+          {
+            desiredOutcome: {
+              id: desiredOutcomeId,
+              description: 'Example',
+            },
+            achievementLevel: 'ACHIEVED',
+            progressionComments: 'Some progression comments',
+            additionalTaskComments: 'Some additional task comments',
+          },
+        ],
+      }
       const patch: UpdateDraftEndOfServiceReportParams = {
+        furtherInformation: 'Some further information',
+        outcome: {
+          desiredOutcomeId,
+          achievementLevel: 'ACHIEVED',
+          progressionComments: 'Some progression comments',
+          additionalTaskComments: 'Some additional task comments',
+        },
+      }
+
+      const patchRequestBody: InterfaceToTemplate<UpdateDraftEndOfServiceReportParams> = {
         furtherInformation: 'Some further information',
         outcome: {
           desiredOutcomeId,
@@ -3548,12 +3940,12 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         withRequest: {
           method: 'PATCH',
           path: `/draft-end-of-service-report/${id}`,
-          body: patch,
+          body: patchRequestBody,
           headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(updatedEndOfServiceReport),
+          body: Matchers.like(updatedEndOfServiceReportRequestBody),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -3569,6 +3961,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     it('submits a draft end of service report', async () => {
       const id = 'c3239695-b258-4ac6-9478-cb6929668aaa'
       const submittedEndOfServiceReport = endOfServiceReportFactory.submitted().build()
+      const submittedEndOfServiceReporttRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
+        ...submittedEndOfServiceReport,
+        outcomes: [],
+      }
 
       await provider.addInteraction({
         state: `an end of service report exists with ID ${id}`,
@@ -3580,7 +3976,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(submittedEndOfServiceReport),
+          body: Matchers.like(submittedEndOfServiceReporttRequestBody),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -3627,6 +4023,10 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [],
       })
+      const supplierAssessmentRequestBody: InterfaceToTemplate<SupplierAssessment> = {
+        ...supplierAssessment,
+        appointments: [],
+      }
 
       await provider.addInteraction({
         state:
@@ -3640,7 +4040,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(supplierAssessment),
+          body: Matchers.like(supplierAssessmentRequestBody),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -3656,10 +4056,25 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
 
     it('returns the referral’s supplier assessment, including a list of its appointments', async () => {
       const appointment = initialAssessmentAppointmentFactory.newlyBooked().phoneCall.build()
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: null,
+        },
+        appointmentDeliveryAddress: null,
+      }
       const supplierAssessment = supplierAssessmentFactory.build({
         appointments: [appointment],
         currentAppointmentId: appointment.id,
       })
+      const supplierAssessmentRequestBody: InterfaceToTemplate<SupplierAssessment> = {
+        ...supplierAssessment,
+        appointments: [appointmentRequestBody],
+        currentAppointmentId: appointmentRequestBody.id,
+      }
 
       await provider.addInteraction({
         state:
@@ -3673,7 +4088,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(supplierAssessment),
+          body: Matchers.like(supplierAssessmentRequestBody),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -3696,51 +4111,119 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
       appointmentTime: `${appointmentTime.toISOString().split('T')[0]}T12:30:00Z`,
       durationInMinutes: 60,
     }
-
-    describe.each([
-      [
-        'a video call appointment',
-        '77f6c5cf-9772-4731-9a9a-97f2f53f2770',
-        initialAssessmentAppointmentFactory.videoCall.build(appointmentParams),
-      ],
-      [
-        'a phone call appointment',
-        '4567945e-73be-43f0-9021-74c4a8ce49db',
-        initialAssessmentAppointmentFactory.phoneCall.build(appointmentParams),
-      ],
-      [
-        'a face to face appointment',
-        'fb10c5fe-12ce-482f-8ca1-104974ab21f5',
-        initialAssessmentAppointmentFactory.inPersonOtherWithFullAddress.build(appointmentParams),
-      ],
-    ])('booking %s', (_, supplierAssessmentId, appointment) => {
-      it('returns a supplier assessment appointment', async () => {
-        await provider.addInteraction({
-          state: `a supplier assessment with ID ${supplierAssessmentId} exists`,
-          uponReceiving: `a PUT request to schedule an appointment for the supplier assessment with ID ${supplierAssessmentId}`,
-          withRequest: {
-            method: 'PUT',
-            path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
-            body: appointment,
-            headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+    it('returns a supplier assessment appointment - Video Call', async () => {
+      const supplierAssessmentId = '77f6c5cf-9772-4731-9a9a-97f2f53f2770'
+      const appointment = initialAssessmentAppointmentFactory.videoCall.build(appointmentParams)
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: null,
+        },
+        appointmentDeliveryAddress: null,
+      }
+      await provider.addInteraction({
+        state: `a supplier assessment with ID ${supplierAssessmentId} exists`,
+        uponReceiving: `a PUT request to schedule an appointment for the supplier assessment with ID ${supplierAssessmentId}`,
+        withRequest: {
+          method: 'PUT',
+          path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
+          body: appointmentRequestBody,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointmentRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
           },
-          willRespondWith: {
-            status: 200,
-            body: Matchers.like(appointment),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          },
-        })
-
-        expect(
-          await interventionsService.scheduleSupplierAssessmentAppointment(
-            probationPractitionerToken,
-            supplierAssessmentId,
-            appointment
-          )
-        ).toMatchObject(appointment)
+        },
       })
+      const result = await interventionsService.scheduleSupplierAssessmentAppointment(
+        probationPractitionerToken,
+        supplierAssessmentId,
+        appointment
+      )
+
+      expect(result).toEqual(appointment)
+    })
+    it('returns a supplier assessment appointment - Face to Face Call', async () => {
+      const supplierAssessmentId = 'fb10c5fe-12ce-482f-8ca1-104974ab21f5'
+      const appointment = initialAssessmentAppointmentFactory.inPersonOtherWithFullAddress.build(appointmentParams)
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: null,
+        },
+        appointmentDeliveryAddress: { ...appointment.appointmentDeliveryAddress },
+      }
+      await provider.addInteraction({
+        state: `a supplier assessment with ID ${supplierAssessmentId} exists`,
+        uponReceiving: `a PUT request to schedule an appointment for the supplier assessment with ID ${supplierAssessmentId}`,
+        withRequest: {
+          method: 'PUT',
+          path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
+          body: appointmentRequestBody,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointmentRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+      const result = await interventionsService.scheduleSupplierAssessmentAppointment(
+        probationPractitionerToken,
+        supplierAssessmentId,
+        appointment
+      )
+
+      expect(result).toEqual(appointment)
+    })
+    it('returns a supplier assessment appointment - Phone Call', async () => {
+      const supplierAssessmentId = '4567945e-73be-43f0-9021-74c4a8ce49db'
+      const appointment = initialAssessmentAppointmentFactory.phoneCall.build(appointmentParams)
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: null,
+        },
+        appointmentDeliveryAddress: null,
+      }
+      await provider.addInteraction({
+        state: `a supplier assessment with ID ${supplierAssessmentId} exists`,
+        uponReceiving: `a PUT request to schedule an appointment for the supplier assessment with ID ${supplierAssessmentId}`,
+        withRequest: {
+          method: 'PUT',
+          path: `/supplier-assessment/${supplierAssessmentId}/schedule-appointment`,
+          body: appointmentRequestBody,
+          headers: { Accept: 'application/json', Authorization: `Bearer ${probationPractitionerToken}` },
+        },
+        willRespondWith: {
+          status: 200,
+          body: Matchers.like(appointmentRequestBody),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        },
+      })
+      const result = await interventionsService.scheduleSupplierAssessmentAppointment(
+        probationPractitionerToken,
+        supplierAssessmentId,
+        appointment
+      )
+
+      expect(result).toEqual(appointment)
     })
   })
 
@@ -3767,6 +4250,16 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           submittedBy: null,
         },
       })
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: null,
+        },
+        appointmentDeliveryAddress: null,
+      }
 
       await provider.addInteraction({
         state:
@@ -3784,7 +4277,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(appointment),
+          body: Matchers.like(appointmentRequestBody),
           headers: {
             'Content-Type': 'application/json',
           },
@@ -3829,6 +4322,16 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
           },
         },
       })
+      const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
+        ...appointment,
+        appointmentFeedback: {
+          ...appointment.appointmentFeedback,
+          attendanceFeedback: { ...appointment.appointmentFeedback.attendanceFeedback },
+          sessionFeedback: { ...appointment.appointmentFeedback.sessionFeedback },
+          submittedBy: { ...appointment.appointmentFeedback.submittedBy },
+        },
+        appointmentDeliveryAddress: null,
+      }
 
       await provider.addInteraction({
         state:
@@ -3842,7 +4345,7 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
         },
         willRespondWith: {
           status: 200,
-          body: Matchers.like(appointment),
+          body: Matchers.like(appointmentRequestBody),
           headers: {
             'Content-Type': 'application/json',
           },

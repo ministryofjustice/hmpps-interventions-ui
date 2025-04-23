@@ -16,19 +16,20 @@ services:
       - hmpps
     container_name: hmpps-auth
     depends_on:
-        - postgres
+        - auth-db
     ports:
       - '8090:8090'
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8090/auth/health']
     environment:
       - SERVER_PORT=8090
-      - SPRING_PROFILES_ACTIVE=dev,delius
+      - SPRING_PROFILES_ACTIVE=dev,delius,local-postgres
       - DELIUS_ENDPOINT_URL=http://wiremock:8080/delius
       - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
       - DELIUS_ENABLED=true
       - MANAGE_USERS_API_ENABLED=true
       - MANAGE_USERS_API_ENDPOINT_URL=http://hmpps-manage-users:8096
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/auth-db
 
   hmpps-manage-users:
     image: quay.io/hmpps/hmpps-manage-users-api:latest
@@ -75,7 +76,7 @@ services:
         - hmpps
       container_name: hmpps-external-users-api
       depends_on:
-        - postgres
+        - auth-db
         - hmpps-auth
       ports:
         - "8098:8098"
@@ -85,10 +86,10 @@ services:
         - SERVER_PORT=8098
         - SPRING_PROFILES_ACTIVE=dev
         - API_BASE_URL_OAUTH=http://hmpps-auth:8090/auth
-        - SPRING_R2DBC_URL=r2dbc:postgresql://postgres:5432/auth-db?sslmode=prefer
-        - SPRING_FLYWAY_URL=jdbc:postgresql://postgres:5432/auth-db?sslmode=prefer
-        - SPRING_R2DBC_USERNAME=root
-        - SPRING_R2DBC_PASSWORD=dev
+        - SPRING_R2DBC_URL=r2dbc:postgresql://auth-db:5432/auth-db?sslmode=prefer
+        - SPRING_FLYWAY_URL=jdbc:postgresql://auth-db:5432/auth-db?sslmode=prefer
+        - SPRING_R2DBC_USERNAME=admin
+        - SPRING_R2DBC_PASSWORD=admin_password
         - HMPPS_SQS_PROVIDER=localstack
         - HMPPS_SQS_LOCALSTACKURL=http://localstack:4566  
 
@@ -123,6 +124,21 @@ services:
       - COMMUNITYAPI_BASEURL=http://community-api:8080
       - ASSESSRISKSANDNEEDS_BASEURL=http://assess-risks-and-needs:8080
       - REFERANDMONITORANDDELIUS_BASEURL=http://hmpps-interventions-ui-wiremock-1:8080
+
+  auth-db:
+    container_name: auth-db
+    environment:
+      - POSTGRES_PASSWORD=admin_password
+      - POSTGRES_USER=admin
+      - POSTGRES_DB=auth-db
+    healthcheck:
+      test: ['CMD', 'pg_isready', '--username=admin', '--dbname=auth-db']
+    image: postgres:15
+    networks:
+      - hmpps
+    ports:
+      - '5434:5432'
+    restart: always
 
   postgres:
     image: postgres:14.17-alpine

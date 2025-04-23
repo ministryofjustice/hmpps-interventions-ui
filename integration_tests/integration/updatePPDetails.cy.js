@@ -216,7 +216,11 @@ describe('Referral form', () => {
       const intervention = interventionFactory.build({ serviceCategories: [accommodationServiceCategory] })
 
       cy.stubCreateDraftReferral(draftReferral)
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        completedNeedsAndRequirementsDraftReferral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
       cy.stubGetDraftReferralsForUserToken([])
       cy.stubGetDraftReferral(draftReferral.id, draftReferral)
