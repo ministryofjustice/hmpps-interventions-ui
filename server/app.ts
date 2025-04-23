@@ -6,8 +6,7 @@ import compression from 'compression'
 import flash from 'connect-flash'
 import { RedisStore } from 'connect-redis'
 import { randomBytes } from 'crypto'
-import csurf from 'csurf'
-import addRequestId from 'express-request-id'
+import requestID from 'express-request-id'
 import session from 'express-session'
 import helmet from 'helmet'
 import noCache from 'nocache'
@@ -35,6 +34,7 @@ import ReferenceDataService from './services/referenceDataService'
 import UserDataService from './services/userDataService'
 import ControllerUtils from './utils/controllerUtils'
 import nunjucksSetup from './utils/nunjucksSetup'
+import setUpCsrf from './middleware/setUpCsrf'
 
 declare module 'express-session' {
   export interface SessionData {
@@ -139,7 +139,8 @@ export default function createApp(
     next()
   })
 
-  app.use(addRequestId())
+  app.use(requestID())
+
   app.use(
     session({
       store: new RedisStore({ client: redisClient }),
@@ -238,7 +239,7 @@ export default function createApp(
 
   // CSRF protection
   if (!config.testMode) {
-    app.use(csurf())
+    app.use(setUpCsrf())
   }
 
   // Update a value in the cookie so that the set-cookie will be sent.

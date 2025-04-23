@@ -8,5 +8,6 @@ declare module 'express-session' {
     // We populate this in app.ts although I’m not convinced anything
     // uses it
     nowInMinutes: number
+    csrfToken?: CsrfSyncedToken
   }
 }
