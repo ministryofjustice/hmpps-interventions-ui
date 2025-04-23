@@ -1,9 +1,9 @@
-declare module 'govuk-frontend' {
-  interface GOVUKFrontend {
-    initAll()
-  }
-}
+// declare module 'govuk-frontend' {
+//   interface GOVUKFrontend {
+//     initAll()
+//   }
+// }
 
-declare interface Window {
-  GOVUKFrontend: GOVUKFrontend
-}
+// declare interface Window {
+//   GOVUKFrontend: GOVUKFrontend
+// }

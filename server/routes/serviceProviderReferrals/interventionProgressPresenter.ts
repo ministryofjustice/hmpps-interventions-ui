@@ -119,7 +119,7 @@ export default class InterventionProgressPresenter {
     return null
   }
 
-  private withdrawalCodeDisplayTextMap = {
+  private withdrawalCodeDisplayTextMap: any = {
     INE: `This is because it was an ineligible referral.`,
     MIS: `This is because it was a mistaken or duplicate referral.`,
     NOT: `This is because ${this.serviceUser.name.forename} ${this.serviceUser.name.surname} was not engaged in the intervention.`,

@@ -2,7 +2,7 @@ import pageFactory from '../../testutils/factories/page'
 import prisonFactory from '../../testutils/factories/prison'
 import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
 
-const AuthLoginPage = require('../pages/authLogin')
+import { verifyOnPage } from '../pages/authLogin'
 
 context('Login', () => {
   beforeEach(() => {
@@ -12,7 +12,7 @@ context('Login', () => {
 
   it('Unauthenticated user directed to auth', () => {
     cy.visit('/')
-    AuthLoginPage.verifyOnPage()
+    verifyOnPage()
   })
 
   describe('after logging in as a probation practitioner', () => {

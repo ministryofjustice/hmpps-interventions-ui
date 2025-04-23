@@ -7,4 +7,4 @@ export default {
   numberOfSessions: {
     CANNOT_BE_REDUCED: errorMessages.actionPlanNumberOfSessions.cannotBeReduced,
   },
-}
+} as Record<string, any>

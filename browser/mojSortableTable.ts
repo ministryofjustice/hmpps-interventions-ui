@@ -18,7 +18,7 @@
  * 4. The table can only be sorted by one column at a time.
  */
 // eslint-disable-next-line max-classes-per-file
-type ARIASort = 'none' | 'ascending' | 'descending'
+export type ARIASort = 'none' | 'ascending' | 'descending'
 
 interface SortOrderDTO {
   columnPersistentId: string

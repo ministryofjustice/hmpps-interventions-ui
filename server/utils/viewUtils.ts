@@ -397,7 +397,7 @@ export default class ViewUtils {
     rows: SortableTableRow[],
     options?: { secondOrderColumnNumber?: number }
   ): TableArgs {
-    const tableAttributes = { 'data-persistent-id': persistentId }
+    const tableAttributes: Record<string, any> = { 'data-persistent-id': persistentId }
     if (options && options.secondOrderColumnNumber !== undefined) {
       tableAttributes['second-order-column'] = options.secondOrderColumnNumber
     }

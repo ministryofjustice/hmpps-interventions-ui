@@ -25,7 +25,7 @@ export default function createErrorHandler(production: boolean) {
         let userMessage
         let userHeader
 
-        const userHeaderTypes = {
+        const userHeaderTypes: Record<string, string> = {
           userHeaderService: 'You do not have permission to view this service',
           userHeaderPage: 'You do not have permission to view this page',
         }

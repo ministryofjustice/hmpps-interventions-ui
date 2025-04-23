@@ -1,5 +1,3 @@
-const page = require('./page')
+import page from './page'
 
-module.exports = {
-  verifyOnPage: () => page('Sign in', {}),
-}
+export const verifyOnPage= () => page('Sign in', {})

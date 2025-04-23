@@ -391,4 +391,4 @@ export default {
   returnedError,
   userHeaderTypes,
   errorHandlerAccessErrorMessages,
-}
+} as Record<string, any>

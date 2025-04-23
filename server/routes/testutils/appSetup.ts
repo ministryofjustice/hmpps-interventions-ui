@@ -55,7 +55,6 @@ function appSetup(
           defaultSrc: ["'self'"],
           scriptSrc: [
             "'self'",
-            'code.jquery.com',
             // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
             "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",
             'https://www.google-analytics.com',
@@ -64,7 +63,7 @@ function appSetup(
             // Used to allow inline script to set Google Analytics uaId in `layout.njk`
             `'nonce-${nonce}'`,
           ],
-          styleSrc: ["'self'", 'code.jquery.com'],
+          styleSrc: ["'self'"],
           fontSrc: ["'self'"],
           imgSrc: ["'self'", 'https://www.google-analytics.com'],
           connectSrc: [

@@ -1,4 +1,4 @@
-import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
+import RiskSummary, { RiskScore } from '../../models/assessRisksAndNeeds/riskSummary'
 import DateUtils from '../../utils/dateUtils'
 import logger from '../../../log'
 
@@ -41,7 +41,7 @@ export default class RoshPanelPresenter {
 
     const { riskInCommunity } = this.riskSummary.summary
 
-    const roshRankings = ['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW']
+    const roshRankings: RiskScore[] = ['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW']
 
     let i = 0
 

@@ -13,7 +13,7 @@ export default class DashboardView {
         services: this.presenter.serviceTitlesAndSummaries.reduce((acc, titleAndSummary) => {
           acc[titleAndSummary[0]] = ViewUtils.summaryListArgs(titleAndSummary[1])
           return acc
-        }, {}),
+        }, {} as Record<string, unknown>),
       },
     ]
   }

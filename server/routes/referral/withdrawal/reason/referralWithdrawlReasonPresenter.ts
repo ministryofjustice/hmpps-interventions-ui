@@ -137,7 +137,7 @@ export default class ReferralWithdrawalReasonPresenter {
         errorMessage: PresenterUtils.errorMessage(this.error, 'withdrawal-comments-EAR'),
       },
     },
-  }
+  } as any
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 }

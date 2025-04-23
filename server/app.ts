@@ -92,7 +92,6 @@ export default function createApp(
           defaultSrc: ["'self'"],
           scriptSrc: [
             "'self'",
-            'code.jquery.com',
             // Hash allows inline script pulled in from https://github.com/alphagov/govuk-frontend/blob/master/src/govuk/template.njk
             "'sha256-kO+eZShFZU3Fq3BsxyiRjZlNO7gpZPH3odgOhHWCLxo='",
             "'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU='",

@@ -4,6 +4,7 @@
  * In particular, applicationinsights automatically collects bunyan logs
  */
 import initialiseAppInsights from './server/azureAppInsights'
+import setUpMocks from './mocks'
 
 initialiseAppInsights()
 
@@ -15,7 +16,7 @@ app.listen(config.port, async () => {
   log.info(`Server listening on port ${config.port}`)
 
   if (process.env.NODE_ENV === 'development') {
-    const { default: setUpMocks } = await import('./mocks')
+    
     await setUpMocks()
     log.info('Mocks set up for development')
   }

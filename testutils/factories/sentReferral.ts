@@ -5,7 +5,7 @@ import { CurrentLocationType, ReferralFields } from '../../server/models/draftRe
 import serviceCategoryFactory from './serviceCategory'
 import interventionFactory from './intervention'
 
-const exampleReferralFields = () => {
+const exampleReferralFields = (): ReferralFields => {
   const serviceCategoryId = serviceCategoryFactory.build().id
 
   return {
@@ -85,11 +85,14 @@ const exampleReferralFields = () => {
 
 class SentReferralFactory extends Factory<SentReferral> {
   fromFields(fields: ReferralFields) {
-    const referralParams = {}
+    // This has to be `any`, we had issues with type campatability, even though it looks
+    // intuitively simple, --tjwc&nre 2025-04-23
+    const referralParams: any = {}
+    
     // This is a possibly clunky way of getting the
     // keys of the ReferralFields type at runtime
-    Object.keys(exampleReferralFields()).forEach(key => {
-      referralParams[key] = fields[key]
+    Object.keys(exampleReferralFields()).forEach((key) => {
+      referralParams[key] = fields[key as keyof ReferralFields]
     })
     return this.params({ referral: referralParams })
   }

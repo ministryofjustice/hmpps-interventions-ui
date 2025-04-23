@@ -2,12 +2,13 @@
   "compileOnSave": true,
   "compilerOptions": {
     "target": "es2018",
-    "lib": ["es2019"],
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "lib": [
+      "es2019"
+    ],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "outDir": "./dist",
     "sourceMap": true,
-    "suppressImplicitAnyIndexErrors": true,
     "skipLibCheck": true,
     "noEmit": false,
     "allowJs": true,
@@ -17,8 +18,22 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "strict": true,
-    "typeRoots": ["./node_modules/@types", "./types"]
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types"
+    ]
   },
-  "exclude": ["node_modules", "assets/**/*.js", "integration_tests", "dist", "script", "browser", "cypress.config.ts"],
-  "include": ["**/*.js", "**/*.ts"]
+  "exclude": [
+    "node_modules",
+    "assets/**/*.js",
+    "integration_tests",
+    "dist",
+    "script",
+    "browser",
+    "cypress.config.ts"
+  ],
+  "include": [
+    "**/*.js",
+    "**/*.ts"
+  ]
 }
