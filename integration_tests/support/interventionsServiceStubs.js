@@ -26,6 +26,10 @@ Cypress.Commands.add('stubGetServiceCategory', (id, responseJson) => {
   cy.task('stubGetServiceCategory', { id, responseJson })
 })
 
+Cypress.Commands.add('stubGetServiceCategoryByIdAndContractReference', (id, contractReference, responseJson) => {
+  cy.task('stubGetServiceCategoryByIdAndContractReference', { id, contractReference, responseJson })
+})
+
 Cypress.Commands.add('stubGetDraftReferralsForUserToken', responseJson => {
   cy.task('stubGetDraftReferralsForUserToken', { responseJson })
 })

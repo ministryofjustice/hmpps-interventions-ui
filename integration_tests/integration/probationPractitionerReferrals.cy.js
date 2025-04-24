@@ -865,7 +865,11 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubUpdateDesiredOutcomesForServiceCategory(referral.id, accommodationServiceCategory.id, referral)
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
+      cy.stubGetServiceCategory(
+        accommodationServiceCategory.id,
+        referral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
       cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetPrisons(prisonFactory.build())
       cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())
@@ -967,7 +971,11 @@ describe('Probation practitioner referrals dashboard', () => {
       cy.stubGetSupplementaryRiskInformation(referral.supplementaryRiskId, supplementaryRiskInformation)
       cy.stubUpdateDesiredOutcomesForServiceCategory(referral.id, accommodationServiceCategory.id, referral)
       cy.stubGetApprovedActionPlanSummaries(referral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        referral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
       cy.stubGetResponsibleOfficer(referral.referral.serviceUser.crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetPrisons(prisonFactory.build())
       cy.stubGetSecuredChildAgencies(secureChildrenAgenciesFactory.build())

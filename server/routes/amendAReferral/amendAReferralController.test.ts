@@ -163,7 +163,7 @@ describe('GET /probation-practitioner/referrals/:referralId/:serviceCategoryId/u
     serviceCategory = serviceCategoryFactory.build()
     interventionsService.getSentReferral.mockResolvedValue(referral)
     ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
-    interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
+    interventionsService.getServiceCategoryByIdAndContractReference.mockResolvedValue(serviceCategory)
   })
 
   it('renders the page to update desired outcomes', () => {
@@ -198,6 +198,7 @@ describe('POST /probation-practitioner/referrals/:referralId/:serviceCategoryId/
     ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
     interventionsService.getServiceCategory.mockResolvedValue(serviceCategory)
     interventionsService.updateDesiredOutcomesForServiceCategory.mockResolvedValue(null)
+    interventionsService.getServiceCategoryByIdAndContractReference.mockResolvedValue(serviceCategory)
   })
 
   it('redirects to the referral details page on success', () => {
@@ -250,7 +251,7 @@ describe('POST /probation-practitioner/referrals/:id/update-complexity-level', (
     interventionsService.getSentReferral.mockResolvedValue(referral)
     interventionsService.updateSentReferralDetails.mockResolvedValue(referralDetails.build({ referralId: referral.id }))
     ramDeliusApiService.getCaseDetailsByCrn.mockResolvedValue(deliusServiceUser.build())
-    interventionsService.getServiceCategory.mockResolvedValue(socialInclusionServiceCategory)
+    interventionsService.getServiceCategoryByIdAndContractReference.mockResolvedValue(socialInclusionServiceCategory)
   })
 
   it('redirects to the referral details page on success', () => {

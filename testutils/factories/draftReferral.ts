@@ -300,4 +300,5 @@ export default DraftReferralFactory.define(({ sequence }) => ({
   reasonForReferralFurtherInformation: null,
   withdrawalState: null,
   reasonForReferralCreationBeforeAllocation: null,
+  dynamicFrameworkContractReference: sequence.toString(),
 }))

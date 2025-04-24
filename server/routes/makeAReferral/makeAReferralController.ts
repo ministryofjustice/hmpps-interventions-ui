@@ -408,7 +408,11 @@ export default class MakeAReferralController {
     }
 
     const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(accessToken, serviceCategoryId),
+      this.interventionsService.getServiceCategoryByIdAndContractReference(
+        accessToken,
+        serviceCategoryId,
+        referral.dynamicFrameworkContractReference
+      ),
       this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn),
     ])
 
@@ -625,7 +629,11 @@ export default class MakeAReferralController {
     }
 
     const [serviceCategory, serviceUser] = await Promise.all([
-      this.interventionsService.getServiceCategory(accessToken, selectedServiceCategoryId),
+      this.interventionsService.getServiceCategoryByIdAndContractReference(
+        accessToken,
+        selectedServiceCategoryId,
+        referral.dynamicFrameworkContractReference
+      ),
       this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn),
     ])
 
