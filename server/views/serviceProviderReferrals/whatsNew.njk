@@ -11,6 +11,16 @@
       <h1 class="govuk-heading-l">What's new</h1>
       <p>Find out about recent changes to Refer and monitor an intervention.</p>
 
+      {% set whatsNewVersion6Html %}
+          <h3 class="govuk-heading-s">Changes to desired outcomes</h3>
+          <p>The desired outcomes that a Probation Practitioner can choose from have been combined to ensure that they are practical and achievable. These changes are designed to:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>Improve the services provided to individuals on probation</li>
+            <li>enhance the quality and visibility of the services</li>
+            <li>ensure that the outcomes are aligned with the needs of the individuals and the goals of reducing reoffending</li>
+          </ul>
+      {% endset %}
+
       {% set whatsNewVersion5Html %}
           <h3 class="govuk-heading-s">Rescheduled session history</h3>
           <p>The history of all SAAs, ICAs and sessions rescheduled before the session took place will now be visible to you and the probation practitioner.</p>
@@ -99,6 +109,16 @@
 
           {{ mojTimeline({
                   items: [
+                 {
+                    label: {
+                    text: "Changes to Refer and monitor an intervention"
+                 },
+                    html: whatsNewVersion6Html,
+                    datetime: {
+                    timestamp: "2025-04-29",
+                    type: "date"
+                 }
+                 },                  
                  {
                     label: {
                     text: "Changes to Refer and monitor an intervention"
