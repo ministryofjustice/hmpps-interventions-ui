@@ -57,7 +57,7 @@ jobs:
           name: Tag contract version with deployment
           command: |
             npx --package=@pact-foundation/pact-cli@15.0.0 -c 'pact-broker create-version-tag \
-               --pacticipant="Accredited Programmes UI" --version="$CIRCLE_SHA1" --tag="<< parameters.tag >>" \
+               --pacticipant="Interventions UI" --version="$CIRCLE_SHA1" --tag="<< parameters.tag >>" \
                --broker-base-url="$PACT_BROKER_BASE_URL" --broker-username="$PACT_BROKER_USERNAME" --broker-password="$PACT_BROKER_PASSWORD"'
 
   integration_test:

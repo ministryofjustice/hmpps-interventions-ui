@@ -372,8 +372,16 @@ context('Amend a referral', () => {
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        socialInclusionServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        socialInclusionServiceCategory
+      )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
@@ -615,8 +623,16 @@ context('Amend a referral', () => {
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        socialInclusionServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        socialInclusionServiceCategory
+      )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
@@ -743,8 +759,16 @@ context('Amend a referral', () => {
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        socialInclusionServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        socialInclusionServiceCategory
+      )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
@@ -868,8 +892,16 @@ context('Amend a referral', () => {
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        socialInclusionServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        socialInclusionServiceCategory
+      )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
@@ -980,8 +1012,16 @@ context('Amend a referral', () => {
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        socialInclusionServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        socialInclusionServiceCategory
+      )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
@@ -1092,8 +1132,16 @@ context('Amend a referral', () => {
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        socialInclusionServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        socialInclusionServiceCategory
+      )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
@@ -1205,8 +1253,16 @@ context('Amend a referral', () => {
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        socialInclusionServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        socialInclusionServiceCategory
+      )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
@@ -1317,8 +1373,16 @@ context('Amend a referral', () => {
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        sentReferral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory.id,
+        accommodationServiceCategory
+      )
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        socialInclusionServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        socialInclusionServiceCategory
+      )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
     }
@@ -1438,8 +1502,16 @@ context('Amend a referral', () => {
       cy.stubGetSupplementaryRiskInformation(sentReferral.supplementaryRiskId, supplementaryRiskInformation.build())
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        socialInclusionServiceCategory.id,
+        sentReferral.referral.dynamicFrameworkContractReference,
+        socialInclusionServiceCategory
+      )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
     }

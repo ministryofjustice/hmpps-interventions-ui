@@ -95,6 +95,14 @@ export default on => {
       return interventionsService.stubGetServiceCategory(arg.id, arg.responseJson)
     },
 
+    stubGetServiceCategoryByIdAndContractReference: arg => {
+      return interventionsService.stubGetServiceCategoryByIdAndContractReference(
+        arg.id,
+        arg.contractReference,
+        arg.responseJson
+      )
+    },
+
     stubGetDraftReferralsForUserToken: arg => {
       return interventionsService.stubGetDraftReferralsForUserToken(arg.responseJson)
     },

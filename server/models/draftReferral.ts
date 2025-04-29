@@ -52,6 +52,7 @@ export interface ReferralFields {
   reasonForReferral: string | null
   reasonForReferralFurtherInformation: string | null
   reasonForReferralCreationBeforeAllocation: string | null
+  dynamicFrameworkContractReference: string
 }
 
 export enum CurrentLocationType {
@@ -68,4 +69,5 @@ export default interface DraftReferral extends WithNullableValues<ReferralFields
   // risk information is a special field which is only set on the draft referral
   additionalRiskInformation: string | null
   contractTypeName: string
+  dynamicFrameworkContractReference: string
 }
