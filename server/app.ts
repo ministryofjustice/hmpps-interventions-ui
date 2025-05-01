@@ -74,11 +74,9 @@ export default function createApp(
   // Server Configuration
   app.set('port', config.port)
 
-  // Reads config from SENTRY_DSN env variable, if exists
-  Sentry.init({ environment: config.deploymentEnvironment })
-
-  // The Sentry request handler must be the first middleware on the app
-  app.use(Sentry.Handlers.requestHandler())
+  Sentry.init({
+    environment: config.deploymentEnvironment,
+  })
 
   const nonce = randomBytes(16).toString('base64')
   // Secure code best practice - see:
@@ -276,8 +274,7 @@ export default function createApp(
     return ControllerUtils.renderWithLayout(req, res, { renderArgs: ['errors/notFound', {}] }, null, null)
   })
 
-  // The Sentry error handler must be before any other error middleware and after all controllers
-  app.use(Sentry.Handlers.errorHandler())
+  Sentry.setupExpressErrorHandler(app)
 
   app.use(createErrorHandler(config.production))
 
