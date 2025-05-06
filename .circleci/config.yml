@@ -34,10 +34,10 @@ jobs:
       - run:
           name: Upload pact files to broker
           command: |
-            npx --package=@pact-foundation/pact-cli@15.0.0 -c 'pact-broker publish pact/pacts \
+            npx pact-broker publish pact/pacts \
               --broker-base-url $PACT_BROKER_BASE_URL \
               --consumer-app-version $CIRCLE_SHA1 --tag $CIRCLE_BRANCH \
-              -u $PACT_BROKER_USERNAME -p $PACT_BROKER_PASSWORD'
+              -u $PACT_BROKER_USERNAME -p $PACT_BROKER_PASSWORD
       - run: npm run build
       - run: npm run scripts:typecheck
       - run: npm run lint
