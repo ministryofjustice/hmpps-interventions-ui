@@ -1,22 +1,22 @@
-import { setup, Contracts, defaultClient, DistributedTracingModes } from 'applicationinsights'
+import { setup, defaultClient, DistributedTracingModes } from 'applicationinsights'
 import type { Request } from 'express'
+import { TelemetryItem } from 'applicationinsights/out/src/declarations/generated'
 import applicationVersion from './applicationVersion'
 import config from './config'
 import logger from '../log'
 
 function ignoreExcludedRequestsProcessor(
-  envelope: Contracts.EnvelopeTelemetry,
+  envelope: TelemetryItem,
   _contextObjects: { [name: string]: unknown } | undefined
 ): boolean {
-  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request) {
+  if (envelope.data?.baseType === 'RequestData') {
     const requestData = envelope.data.baseData
-    if (requestData instanceof Contracts.RequestData) {
-      const { excludedRequests } = config.applicationInsights
-      for (let i = 0; i < excludedRequests.length; i += 1) {
-        const pattern = excludedRequests[i]
-        if (requestData.name.match(pattern) !== null) {
-          return false
-        }
+    const { excludedRequests } = config.applicationInsights
+
+    for (let i = 0; i < excludedRequests.length; i += 1) {
+      const pattern = excludedRequests[i]
+      if (requestData?.name && requestData.name.match(pattern) !== null) {
+        return false
       }
     }
   }
@@ -24,12 +24,16 @@ function ignoreExcludedRequestsProcessor(
 }
 
 function addUsernameProcessor(
-  envelope: Contracts.EnvelopeTelemetry,
+  envelope: TelemetryItem,
   contextObjects: { [name: string]: unknown } | undefined
 ): boolean {
-  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request) {
+  if (envelope.data?.baseType === 'RequestData') {
     const userId = (contextObjects?.['http.ServerRequest'] as Request)?.user?.userId
     if (userId) {
+      if (envelope.tags === undefined) {
+        // eslint-disable-next-line no-param-reassign
+        envelope.tags = {}
+      }
       // eslint-disable-next-line no-param-reassign
       envelope.tags[defaultClient.context.keys.userAuthUserId] = userId
     }
@@ -38,10 +42,10 @@ function addUsernameProcessor(
 }
 
 function errorStatusCodeProcessor(
-  envelope: Contracts.EnvelopeTelemetry,
+  envelope: TelemetryItem,
   _contextObjects: { [name: string]: unknown } | undefined
 ): boolean {
-  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request && envelope.data.baseData !== undefined) {
+  if (envelope.data?.baseType === 'RequestData' && envelope.data?.baseData !== undefined) {
     // only mark 5xx response codes as failures. the application serves 4xx
     // responses to indicate authorization/validation errors and the like.
     // eslint-disable-next-line no-param-reassign
