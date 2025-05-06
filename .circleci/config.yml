@@ -25,7 +25,8 @@ jobs:
       tag: 20.9-browsers
     steps:
       - checkout
-      - run: sudo npm install -g npm@latest
+      - node/install-npm:
+          version: 11.3.0
       - node/install-packages
       - run: npm run test
       - store_artifacts:
