@@ -12,7 +12,7 @@
   a,
   a:link,
   a:visited {
-    color: govuk-colour("white");
+    color: govuk-colour('white');
   }
 
   label {
@@ -26,7 +26,7 @@
 
   .govuk-error-summary + .govuk-form-group {
     padding-left: 15px;
-    border-left: 5px solid govuk-colour("white");
+    border-left: 5px solid govuk-colour('white');
   }
 
   .maximize-text-width {
@@ -55,15 +55,16 @@
     }
   }
 
-  .govuk-radios__label::before, ::after {
-    border-color: govuk-colour("black");
-    color: govuk-colour("black");
-    background-color: govuk-colour("white");
+  .govuk-radios__label::before,
+  ::after {
+    border-color: govuk-colour('black');
+    color: govuk-colour('black');
+    background-color: govuk-colour('white');
   }
 
   .govuk-inset-text {
-    border-left: $govuk-border-width-wide solid govuk-colour("white");
-    color: govuk-colour("white");
+    border-left: $govuk-border-width-wide solid govuk-colour('white');
+    color: govuk-colour('white');
   }
 }
 @media (min-width: 769px) {

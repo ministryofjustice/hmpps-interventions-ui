@@ -30,6 +30,7 @@
     "record-build-info": "node ./bin/record-build-info",
     "security_audit": "npx audit-ci --config audit-ci.json",
     "lint": "eslint . --cache --max-warnings 0 && stylelint **/*.scss",
+    "stylelint:fix": "stylelint **/*.scss --fix",
     "clean": "rm -rf dist build node_modules stylesheets browser/build",
     "generate-frontend-types": "ts-node script/generateGovukFrontendTypes/runner.ts && prettier --write server/utils/govukFrontendTypes.ts",
     "prepare": "husky"
@@ -160,8 +161,8 @@
     "nodemon": "^3.1.4",
     "prettier": "^3.3.3",
     "sass": "^1.77.8",
-    "stylelint": "^15.11.0",
-    "stylelint-config-sass-guidelines": "^10.0.0",
+    "stylelint": "^16.19.1",
+    "stylelint-config-sass-guidelines": "^12.0.0",
     "supertest": "^6.3.4",
     "ts-jest": "^27.1.5",
     "ts-node": "^10.9.2",
