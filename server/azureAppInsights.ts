@@ -1,9 +1,10 @@
-import { setup, defaultClient, DistributedTracingModes } from 'applicationinsights'
-import type { Request } from 'express'
+import { defaultClient, DistributedTracingModes } from 'applicationinsights'
 import { TelemetryItem } from 'applicationinsights/out/src/declarations/generated'
-import applicationVersion from './applicationVersion'
-import config from './config'
+import type { Request } from 'express'
+import * as appInsights from 'applicationinsights'
 import logger from '../log'
+import config from './config'
+import applicationVersion from './applicationVersion'
 
 function ignoreExcludedRequestsProcessor(
   envelope: TelemetryItem,
@@ -56,18 +57,20 @@ function errorStatusCodeProcessor(
 
 export default function initialiseAppInsights(): void {
   const { connectionString } = config.applicationInsights
-  if (connectionString !== null) {
+
+  if (connectionString != null) {
     logger.info('Enabling Application Insights')
 
-    setup(connectionString).setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
+    appInsights.setup(connectionString).setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
 
-    // application level properties
-    defaultClient.context.tags[defaultClient.context.keys.cloudRole] = config.applicationInsights.cloudRoleName
-    defaultClient.context.tags[defaultClient.context.keys.applicationVersion] = applicationVersion.buildNumber
+    const client = appInsights.defaultClient
 
-    // custom processors to fine tune behaviour
-    defaultClient.addTelemetryProcessor(ignoreExcludedRequestsProcessor)
-    defaultClient.addTelemetryProcessor(addUsernameProcessor)
-    defaultClient.addTelemetryProcessor(errorStatusCodeProcessor)
+    client.context.tags['ai.cloud.role'] = config.applicationInsights.cloudRoleName
+    client.context.tags['ai.application.ver'] = applicationVersion.buildNumber
+
+    // Add custom telemetry processors
+    client.addTelemetryProcessor(ignoreExcludedRequestsProcessor)
+    client.addTelemetryProcessor(addUsernameProcessor)
+    client.addTelemetryProcessor(errorStatusCodeProcessor)
   }
 }
