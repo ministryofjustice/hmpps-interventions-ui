@@ -1,22 +1,22 @@
-import { defaultClient, DistributedTracingModes } from 'applicationinsights'
 import { TelemetryItem } from 'applicationinsights/out/src/declarations/generated'
 import type { Request } from 'express'
 import * as appInsights from 'applicationinsights'
+import { setup as setupApplicationInsights, defaultClient, DistributedTracingModes } from 'applicationinsights'
 import logger from '../log'
 import config from './config'
 import applicationVersion from './applicationVersion'
 
 function ignoreExcludedRequestsProcessor(
-  envelope: TelemetryItem,
+  telemetryItem: TelemetryItem,
   _contextObjects: { [name: string]: unknown } | undefined
 ): boolean {
-  if (envelope.data?.baseType === 'RequestData') {
-    const requestData = envelope.data.baseData
+  if (telemetryItem.data?.baseType === 'RequestData') {
+    const requestData = telemetryItem.data.baseData
     const { excludedRequests } = config.applicationInsights
 
     for (let i = 0; i < excludedRequests.length; i += 1) {
       const pattern = excludedRequests[i]
-      if (requestData?.name && requestData.name.match(pattern) !== null) {
+      if (requestData?.name?.match(pattern) !== null) {
         return false
       }
     }
@@ -25,32 +25,30 @@ function ignoreExcludedRequestsProcessor(
 }
 
 function addUsernameProcessor(
-  envelope: TelemetryItem,
+  telemetryItem: TelemetryItem,
   contextObjects: { [name: string]: unknown } | undefined
 ): boolean {
-  if (envelope.data?.baseType === 'RequestData') {
+  if (telemetryItem.data?.baseType === 'RequestData') {
     const userId = (contextObjects?.['http.ServerRequest'] as Request)?.user?.userId
     if (userId) {
-      if (envelope.tags === undefined) {
-        // eslint-disable-next-line no-param-reassign
-        envelope.tags = {}
-      }
       // eslint-disable-next-line no-param-reassign
-      envelope.tags[defaultClient.context.keys.userAuthUserId] = userId
+      telemetryItem.tags = telemetryItem?.tags ?? {}
+      // eslint-disable-next-line no-param-reassign
+      telemetryItem.tags[defaultClient.context.keys.userAuthUserId] = userId
     }
   }
   return true
 }
 
 function errorStatusCodeProcessor(
-  envelope: TelemetryItem,
+  telemetryItem: TelemetryItem,
   _contextObjects: { [name: string]: unknown } | undefined
 ): boolean {
-  if (envelope.data?.baseType === 'RequestData' && envelope.data?.baseData !== undefined) {
+  if (telemetryItem.data?.baseType === 'RequestData' && telemetryItem.data?.baseData) {
     // only mark 5xx response codes as failures. the application serves 4xx
     // responses to indicate authorization/validation errors and the like.
     // eslint-disable-next-line no-param-reassign
-    envelope.data.baseData.success = envelope.data.baseData.responseCode < 500
+    telemetryItem.data.baseData.success = telemetryItem.data.baseData.responseCode < 500
   }
   return true
 }
@@ -58,10 +56,10 @@ function errorStatusCodeProcessor(
 export default function initialiseAppInsights(): void {
   const { connectionString } = config.applicationInsights
 
-  if (connectionString != null) {
+  if (connectionString) {
     logger.info('Enabling Application Insights')
 
-    appInsights.setup(connectionString).setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
+    setupApplicationInsights(connectionString).setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
 
     const client = appInsights.defaultClient
 
