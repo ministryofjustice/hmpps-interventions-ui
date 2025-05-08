@@ -1,6 +1,5 @@
 import { TelemetryItem } from 'applicationinsights/out/src/declarations/generated'
 import type { Request } from 'express'
-import * as appInsights from 'applicationinsights'
 import { setup as setupApplicationInsights, defaultClient, DistributedTracingModes } from 'applicationinsights'
 import logger from '../log'
 import config from './config'
@@ -61,7 +60,7 @@ export default function initialiseAppInsights(): void {
 
     setupApplicationInsights(connectionString).setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
 
-    const client = appInsights.defaultClient
+    const client = defaultClient
 
     client.context.tags['ai.cloud.role'] = config.applicationInsights.cloudRoleName
     client.context.tags['ai.application.ver'] = applicationVersion.buildNumber
