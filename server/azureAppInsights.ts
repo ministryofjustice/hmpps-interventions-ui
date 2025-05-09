@@ -1,22 +1,22 @@
-import { TelemetryItem } from 'applicationinsights/out/src/declarations/generated'
+import { setup, Contracts, defaultClient, DistributedTracingModes } from 'applicationinsights'
 import type { Request } from 'express'
-import { setup as setupApplicationInsights, defaultClient, DistributedTracingModes } from 'applicationinsights'
-import logger from '../log'
-import config from './config'
 import applicationVersion from './applicationVersion'
+import config from './config'
+import logger from '../log'
 
 function ignoreExcludedRequestsProcessor(
-  telemetryItem: TelemetryItem,
+  envelope: Contracts.EnvelopeTelemetry,
   _contextObjects: { [name: string]: unknown } | undefined
 ): boolean {
-  if (telemetryItem.data?.baseType === 'RequestData') {
-    const requestData = telemetryItem.data.baseData
-    const { excludedRequests } = config.applicationInsights
-
-    for (let i = 0; i < excludedRequests.length; i += 1) {
-      const pattern = excludedRequests[i]
-      if (requestData?.name?.match(pattern) !== null) {
-        return false
+  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request) {
+    const requestData = envelope.data.baseData
+    if (requestData instanceof Contracts.RequestData) {
+      const { excludedRequests } = config.applicationInsights
+      for (let i = 0; i < excludedRequests.length; i += 1) {
+        const pattern = excludedRequests[i]
+        if (requestData.name.match(pattern) !== null) {
+          return false
+        }
       }
     }
   }
@@ -24,50 +24,46 @@ function ignoreExcludedRequestsProcessor(
 }
 
 function addUsernameProcessor(
-  telemetryItem: TelemetryItem,
+  envelope: Contracts.EnvelopeTelemetry,
   contextObjects: { [name: string]: unknown } | undefined
 ): boolean {
-  if (telemetryItem.data?.baseType === 'RequestData') {
+  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request) {
     const userId = (contextObjects?.['http.ServerRequest'] as Request)?.user?.userId
     if (userId) {
       // eslint-disable-next-line no-param-reassign
-      telemetryItem.tags = telemetryItem?.tags ?? {}
-      // eslint-disable-next-line no-param-reassign
-      telemetryItem.tags[defaultClient.context.keys.userAuthUserId] = userId
+      envelope.tags[defaultClient.context.keys.userAuthUserId] = userId
     }
   }
   return true
 }
 
 function errorStatusCodeProcessor(
-  telemetryItem: TelemetryItem,
+  envelope: Contracts.EnvelopeTelemetry,
   _contextObjects: { [name: string]: unknown } | undefined
 ): boolean {
-  if (telemetryItem.data?.baseType === 'RequestData' && telemetryItem.data?.baseData) {
+  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request && envelope.data.baseData !== undefined) {
     // only mark 5xx response codes as failures. the application serves 4xx
     // responses to indicate authorization/validation errors and the like.
     // eslint-disable-next-line no-param-reassign
-    telemetryItem.data.baseData.success = telemetryItem.data.baseData.responseCode < 500
+    envelope.data.baseData.success = envelope.data.baseData.responseCode < 500
   }
   return true
 }
 
 export default function initialiseAppInsights(): void {
   const { connectionString } = config.applicationInsights
-
-  if (connectionString) {
+  if (connectionString !== null) {
     logger.info('Enabling Application Insights')
 
-    setupApplicationInsights(connectionString).setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
+    setup(connectionString).setDistributedTracingMode(DistributedTracingModes.AI_AND_W3C).start()
 
-    const client = defaultClient
+    // application level properties
+    defaultClient.context.tags[defaultClient.context.keys.cloudRole] = config.applicationInsights.cloudRoleName
+    defaultClient.context.tags[defaultClient.context.keys.applicationVersion] = applicationVersion.buildNumber
 
-    client.context.tags['ai.cloud.role'] = config.applicationInsights.cloudRoleName
-    client.context.tags['ai.application.ver'] = applicationVersion.buildNumber
-
-    // Add custom telemetry processors
-    client.addTelemetryProcessor(ignoreExcludedRequestsProcessor)
-    client.addTelemetryProcessor(addUsernameProcessor)
-    client.addTelemetryProcessor(errorStatusCodeProcessor)
+    // custom processors to fine tune behaviour
+    defaultClient.addTelemetryProcessor(ignoreExcludedRequestsProcessor)
+    defaultClient.addTelemetryProcessor(addUsernameProcessor)
+    defaultClient.addTelemetryProcessor(errorStatusCodeProcessor)
   }
 }
