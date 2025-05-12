@@ -4,7 +4,7 @@ window.applicationInsights = (function () {
   return {
     init: (connectionString, applicationInsightsRoleName, authenticatedUser) => {
       if (!appInsights && connectionString) {
-        appInsights = new Microsoft.ApplicationInsights.ApplicationInsights({
+        appInsights = new ApplicationInsights({
           config: {
             connectionString,
             autoTrackPageVisitTime: true,
