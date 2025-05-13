@@ -16,16 +16,13 @@
   margin-bottom: 60px;
 }
 
-.app-task-list__task-name
-{
-  display:block
+.app-task-list__task-name {
+  display: block;
 }
 
-@media(min-width: 28.125em)
-{
-  .app-task-list__task-name
-  {
-    float:left;
-    width:75%
+@media(min-width: 28.125em) {
+  .app-task-list__task-name {
+    float: left;
+    width: 75%;
   }
 }
