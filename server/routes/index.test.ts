@@ -42,7 +42,7 @@ describe('check response headers are set correctly', () => {
       date: expect.any(String),
       location: '/probation-practitioner/dashboard',
       'referrer-policy': 'no-referrer',
-      'strict-transport-security': 'max-age=15552000; includeSubDomains',
+      'strict-transport-security': 'max-age=31536000; includeSubDomains',
       vary: 'Accept',
       'x-content-type-options': 'nosniff',
       'x-dns-prefetch-control': 'off',
