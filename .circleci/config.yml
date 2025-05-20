@@ -1,8 +1,8 @@
 version: 2.1
 
 orbs:
-  hmpps: ministryofjustice/hmpps@7.5.1
-  node: circleci/node@4.9.0
+  hmpps: ministryofjustice/hmpps@11.0.0
+  node: circleci/node@7.1.0
 
 executors:
   integration:
@@ -25,8 +25,7 @@ jobs:
       tag: 20.9-browsers
     steps:
       - checkout
-      - node/install-npm:
-          version: 10.1.0
+      - run: sudo npm install -g npm@10.1.0
       - node/install-packages
       - run: npm run test
       - store_artifacts:
@@ -57,7 +56,7 @@ jobs:
           name: Tag contract version with deployment
           command: |
             npx --package=@pact-foundation/pact-cli@15.0.0 -c 'pact-broker create-version-tag \
-               --pacticipant="Accredited Programmes UI" --version="$CIRCLE_SHA1" --tag="<< parameters.tag >>" \
+               --pacticipant="Interventions UI" --version="$CIRCLE_SHA1" --tag="<< parameters.tag >>" \
                --broker-base-url="$PACT_BROKER_BASE_URL" --broker-username="$PACT_BROKER_USERNAME" --broker-password="$PACT_BROKER_PASSWORD"'
 
   integration_test:

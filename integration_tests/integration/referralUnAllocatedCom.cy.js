@@ -180,7 +180,11 @@ describe('Referral form', () => {
       const intervention = interventionFactory.build({ serviceCategories: [accommodationServiceCategory] })
 
       cy.stubCreateDraftReferral(draftReferral)
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        completedNeedsAndRequirementsDraftReferral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
       cy.stubGetDraftReferralsForUserToken([])
       cy.stubGetDraftReferral(draftReferral.id, draftReferral)
@@ -852,7 +856,11 @@ describe('Referral form', () => {
       const intervention = interventionFactory.build({ serviceCategories: [accommodationServiceCategory] })
 
       cy.stubCreateDraftReferral(draftReferral)
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        completedNeedsAndRequirementsDraftReferral.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
       cy.stubGetDraftReferralsForUserToken([])
       cy.stubGetDraftReferral(draftReferral.id, draftReferral)
@@ -1548,8 +1556,16 @@ describe('Referral form', () => {
       const sentReferral = sentReferralFactory.fromFields(completedDraftReferral).build()
 
       cy.stubCreateDraftReferral(draftReferral)
-      cy.stubGetServiceCategory(accommodationServiceCategory.id, accommodationServiceCategory)
-      cy.stubGetServiceCategory(socialInclusionServiceCategory.id, socialInclusionServiceCategory)
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        accommodationServiceCategory.id,
+        completedSelectingServiceCategories.dynamicFrameworkContractReference,
+        accommodationServiceCategory
+      )
+      cy.stubGetServiceCategoryByIdAndContractReference(
+        socialInclusionServiceCategory.id,
+        completedSelectingServiceCategories.dynamicFrameworkContractReference,
+        socialInclusionServiceCategory
+      )
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent([]).build())
       cy.stubGetDraftReferralsForUserToken([])
       cy.stubGetDraftReferral(draftReferral.id, draftReferral)
