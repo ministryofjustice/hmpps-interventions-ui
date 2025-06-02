@@ -25,7 +25,7 @@ jobs:
       tag: 20.9-browsers
     steps:
       - checkout
-      - run: sudo npm install -g npm@10.1.0
+      - run: sudo npm install -g npm@latest
       - node/install-packages
       - run: npm run test
       - store_artifacts:

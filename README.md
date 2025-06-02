@@ -5,8 +5,8 @@
 ### Requirements
 
 - nvm (optional)
-- Node.js >= 14
-- npm >= 7.5 (`npm i -g npm` to update)
+- Node.js >= 20
+- npm >= 11 (`npm i -g npm` to update)
 - Docker
 - git lfs (`brew install git-lfs`)
 
