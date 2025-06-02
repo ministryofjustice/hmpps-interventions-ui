@@ -112,6 +112,9 @@
     "uuid": "^11.0.0"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.2.9",
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.28.0",
     "@pact-foundation/pact": "^15.0.0",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
@@ -146,6 +149,7 @@
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-prettier": "^5.2.1",
     "fishery": "^2.2.2",
+    "globals": "^16.2.0",
     "husky": "^9.1.7",
     "jest": "^27.5.1",
     "jest-html-reporter": "^4.0.0",
