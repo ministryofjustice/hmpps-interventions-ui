@@ -1,4 +1,4 @@
-import { RedisClientType } from 'redis'
+import { createClient, RedisClientType } from 'redis'
 import DraftsService from './draftsService'
 
 let mockedUuid: string
@@ -8,15 +8,10 @@ jest.mock('uuid', () => {
   }
 })
 
-interface ChosenRedisOverloads {
-  get: jest.Mock
-  set: jest.Mock
-}
-
 const redis = {
   get: jest.fn().mockResolvedValue(true),
   set: jest.fn().mockImplementation((_key, _value, _options) => Promise.resolve(true)),
-} as unknown as jest.Mocked<ChosenRedisOverloads> & RedisClientType
+} as unknown as jest.Mocked<Pick<RedisClientType, 'get' | 'set'>>
 
 const expiry = { seconds: 24 * 60 * 60 }
 
@@ -31,9 +26,9 @@ describe(DraftsService, () => {
     it('generates a random UUID and stores the data in Redis under a key derived from that UUID, with the given expiry time', async () => {
       mockedUuid = '2dc7ef56-58dd-4339-9924-c33318738068'
 
-      redis.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve(true))
+      redis.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve('OK'))
 
-      const draftsService = new DraftsService(redis, expiry, clock)
+      const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
       const draft = await draftsService.createDraft('someExampleType', { a: 1, b: 2 }, { userId: 'someUserId' })
 
@@ -51,7 +46,18 @@ describe(DraftsService, () => {
         EX: expiry.seconds,
       })
 
-      expect(JSON.parse(redis.set.mock.calls[0][1])).toEqual({
+      const valueArg = redis.set.mock.calls[0][1]
+
+      let parsed: unknown
+
+      if (typeof valueArg === 'string') {
+        parsed = JSON.parse(valueArg)
+      } else {
+        // fallback if it's not a string
+        parsed = valueArg
+      }
+
+      expect(parsed).toEqual({
         version: 2,
         id: '2dc7ef56-58dd-4339-9924-c33318738068',
         type: 'someExampleType',
@@ -79,7 +85,7 @@ describe(DraftsService, () => {
 
         redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
-        const draftsService = new DraftsService(redis, expiry, clock)
+        const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
         const draft = await draftsService.fetchDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
 
@@ -111,7 +117,7 @@ describe(DraftsService, () => {
 
         redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
-        const draftsService = new DraftsService(redis, expiry, clock)
+        const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
         await expect(
           draftsService.fetchDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
@@ -123,7 +129,7 @@ describe(DraftsService, () => {
 
     describe('when Redis doesn’t contain a draft for that ID', () => {
       it('returns null', async () => {
-        const draftsService = new DraftsService(redis, expiry, clock)
+        const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
         redis.get.mockImplementation(_key => Promise.resolve(null))
 
@@ -150,7 +156,7 @@ describe(DraftsService, () => {
 
           redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
-          const draftsService = new DraftsService(redis, expiry, clock)
+          const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
           const draft = await draftsService.fetchDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
 
@@ -182,7 +188,7 @@ describe(DraftsService, () => {
 
           redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
-          const draftsService = new DraftsService(redis, expiry, clock)
+          const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
           const draft = await draftsService.fetchDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
 
@@ -215,9 +221,9 @@ describe(DraftsService, () => {
 
         redis.get.mockImplementationOnce(_key => Promise.resolve(initialData))
 
-        redis.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve(true))
+        redis.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve('Ok'))
 
-        const draftsService = new DraftsService(redis, expiry, clock)
+        const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
         await draftsService.updateDraft(
           '2dc7ef56-58dd-4339-9924-c33318738068',
@@ -229,7 +235,18 @@ describe(DraftsService, () => {
           EX: expiry.seconds,
         })
 
-        expect(JSON.parse(redis.set.mock.calls[0][1])).toEqual({
+        const valueArg = redis.set.mock.calls[0][1]
+
+        let parsed: unknown
+
+        if (typeof valueArg === 'string') {
+          parsed = JSON.parse(valueArg)
+        } else {
+          // fallback if it's not a string
+          parsed = valueArg
+        }
+
+        expect(parsed).toEqual({
           version: 2,
           id: '2dc7ef56-58dd-4339-9924-c33318738068',
           type: 'someExampleType',
@@ -256,7 +273,7 @@ describe(DraftsService, () => {
 
         redis.get.mockImplementationOnce(_key => Promise.resolve(initialData))
 
-        const draftsService = new DraftsService(redis, expiry, clock)
+        const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
         await expect(
           draftsService.updateDraft('2dc7ef56-58dd-4339-9924-c33318738068', { c: 3, d: 4 }, { userId: 'someUserId' })
@@ -270,7 +287,7 @@ describe(DraftsService, () => {
       it('throws an error', async () => {
         redis.get.mockImplementationOnce(_key => Promise.resolve(null))
 
-        const draftsService = new DraftsService(redis, expiry, clock)
+        const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
         await expect(
           draftsService.updateDraft('2dc7ef56-58dd-4339-9924-c33318738068', { c: 3, d: 4 }, { userId: 'someUserId' })
@@ -298,9 +315,9 @@ describe(DraftsService, () => {
 
         redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
-        redis.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve(true))
+        redis.set.mockImplementationOnce((_key, _value, _options) => Promise.resolve('OK'))
 
-        const draftsService = new DraftsService(redis, expiry, clock)
+        const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
         await draftsService.deleteDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
 
@@ -308,7 +325,17 @@ describe(DraftsService, () => {
           EX: expiry.seconds,
         })
 
-        expect(JSON.parse(redis.set.mock.calls[0][1])).toEqual({
+        const valueArg = redis.set.mock.calls[0][1]
+        let parsed: unknown
+
+        if (typeof valueArg === 'string') {
+          parsed = JSON.parse(valueArg)
+        } else {
+          // fallback if it's not a string
+          parsed = valueArg
+        }
+
+        expect(parsed).toEqual({
           version: 2,
           id: '2dc7ef56-58dd-4339-9924-c33318738068',
           type: 'someExampleType',
@@ -335,7 +362,7 @@ describe(DraftsService, () => {
 
         redis.get.mockImplementationOnce(_key => Promise.resolve(data))
 
-        const draftsService = new DraftsService(redis, expiry, clock)
+        const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
         await expect(
           draftsService.deleteDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
@@ -349,7 +376,7 @@ describe(DraftsService, () => {
       it('throws an error', async () => {
         redis.get.mockImplementationOnce(_key => Promise.resolve(null))
 
-        const draftsService = new DraftsService(redis, expiry, clock)
+        const draftsService = new DraftsService(redis as unknown as ReturnType<typeof createClient>, expiry, clock)
 
         await expect(
           draftsService.deleteDraft('2dc7ef56-58dd-4339-9924-c33318738068', { userId: 'someUserId' })
