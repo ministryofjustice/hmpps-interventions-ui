@@ -1,6 +1,5 @@
 import nock from 'nock'
-
-import { RedisClientType } from 'redis'
+import { createClient, RedisClientType } from 'redis'
 import config from '../config'
 import HmppsAuthService from './hmppsAuthService'
 
@@ -8,18 +7,13 @@ const token = { access_token: 'token-1', expires_in: 300 }
 const authUser = { username: 'AUTH_ADM', authSource: 'auth', userId: '123456' }
 const deliusUser = { username: 'bernard.beaks', authSource: 'delius', userId: '123456' }
 
-interface ChosenRedisOverloads {
-  get: jest.Mock
-  set: jest.Mock
-}
-
 const redis = {
   get: jest.fn().mockResolvedValue(true),
   set: jest.fn().mockImplementation((_key, _value, _options) => Promise.resolve(true)),
-} as unknown as jest.Mocked<ChosenRedisOverloads> & RedisClientType
+} as unknown as jest.Mocked<Pick<RedisClientType, 'get' | 'set'>>
 
 function givenRedisResponse(storedToken: string | null) {
-  redis.get.mockImplementation(_key => storedToken)
+  redis.get.mockImplementation(_key => Promise.resolve(storedToken))
 }
 
 describe('hmppsAuthService', () => {
@@ -30,7 +24,7 @@ describe('hmppsAuthService', () => {
   beforeEach(() => {
     fakeHmppsAuthApi = nock(config.apis.hmppsAuth.url)
     fakeManagerUsersApi = nock(config.apis.hmppsManageUsersApi.url)
-    hmppsAuthService = new HmppsAuthService(redis)
+    hmppsAuthService = new HmppsAuthService(redis as unknown as ReturnType<typeof createClient>)
   })
 
   afterEach(() => {

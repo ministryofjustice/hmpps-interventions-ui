@@ -5,12 +5,13 @@ import config from '../config'
 
 type RedisClient = ReturnType<typeof createClient>
 
-const createRedisClient = (): RedisClient => {
+const createRedisClient = (): ReturnType<typeof createClient> => {
+  const useTls = config.redis.tls_enabled === 'true'
   const client = createClient({
     socket: {
       port: config.redis.port,
-      host: config.redis.host,
-      tls: config.redis.tls_enabled === 'true',
+      host: config.redis.host!,
+      ...(useTls ? { tls: true } : {}),
     },
     password: config.redis.password,
   })
