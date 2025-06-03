@@ -6,6 +6,7 @@ import path from 'path'
 import helmet from 'helmet'
 import { randomBytes } from 'crypto'
 
+import qs from 'qs'
 import indexRoutes, { Services } from '../index'
 import serviceProviderRoutes, { serviceProviderUrlPrefix } from '../serviceProviderRoutes'
 import nunjucksSetup from '../../utils/nunjucksSetup'
@@ -40,6 +41,7 @@ function appSetup(
   const app = express()
 
   app.set('view engine', 'njk')
+  app.set('query parser', (str: string) => qs.parse(str))
 
   nunjucksSetup(app, path)
 
