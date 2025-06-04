@@ -13,6 +13,7 @@ import helmet from 'helmet'
 import noCache from 'nocache'
 import path from 'path'
 import { createClient } from 'redis'
+import qs from 'qs'
 import passportSetup from './authentication/passport'
 import broadcastMessageConfig from './broadcast-message-config.json'
 import config from './config'
@@ -58,6 +59,7 @@ export default function createApp(
   const app = express()
 
   app.set('json spaces', 2)
+  app.set('query parser', (str: string) => qs.parse(str))
 
   // Configure Express for running behind proxies
   // https://expressjs.com/en/guide/behind-proxies.html
