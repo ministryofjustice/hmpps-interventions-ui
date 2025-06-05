@@ -20,14 +20,14 @@ export default class CurrentLocationView {
           value: 'yes',
           text: 'Yes',
           checked:
-            this.request.body['already-know-prison-name'] === 'yes' ||
+            this.request.body?.['already-know-prison-name'] === 'yes' ||
             this.presenter.fields.alreadyKnowPrisonName === true,
         },
         {
           value: 'no',
           text: 'No',
           checked:
-            this.request.body['already-know-prison-name'] === 'no' ||
+            this.request.body?.['already-know-prison-name'] === 'no' ||
             this.presenter.fields.alreadyKnowPrisonName === false,
           conditional: {
             html: noHtml,

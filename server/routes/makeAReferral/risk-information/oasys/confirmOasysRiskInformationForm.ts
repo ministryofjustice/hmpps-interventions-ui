@@ -35,7 +35,7 @@ export default class ConfirmOasysRiskInformationForm {
   }
 
   get userWantsToEdit(): boolean {
-    return this.request.body['edit-risk-confirmation'] === 'yes'
+    return this.request.body?.['edit-risk-confirmation'] === 'yes'
   }
 
   get error(): FormValidationError | null {

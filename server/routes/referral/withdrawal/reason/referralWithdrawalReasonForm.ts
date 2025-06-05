@@ -29,8 +29,8 @@ export default class ReferralWithdrawalReasonForm {
 
     return {
       paramsForUpdate: {
-        withdrawalReason: this.request.body['withdrawal-reason'],
-        withdrawalComments: this.request.body[`withdrawal-comments-${this.request.body['withdrawal-reason']}`],
+        withdrawalReason: this.request.body?.['withdrawal-reason'],
+        withdrawalComments: this.request.body?.[`withdrawal-comments-${this.request.body?.['withdrawal-reason']}`],
         withdrawalState: this.getWithdrawalState(), // Determine based on reason to return a new state back to service.
       },
       error: null,
@@ -38,11 +38,12 @@ export default class ReferralWithdrawalReasonForm {
   }
 
   validations(): ValidationChain[] {
+    const reason = this.request.body?.['withdrawal-reason'] || ''
     return [
       body('withdrawal-reason')
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.withdrawReferral.withdrawalReason.empty),
-      body(`withdrawal-comments-${this.request.body['withdrawal-reason']}`)
+      body(`withdrawal-comments-${reason}`)
         .if(body('withdrawal-reason').notEmpty({ ignore_whitespace: true }))
         .notEmpty({ ignore_whitespace: true })
         .withMessage(errorMessages.withdrawReferral.withdrawalComments.empty),

@@ -20,8 +20,8 @@ export default class ExpectedReleaseDateView {
           value: 'yes',
           text: 'Yes',
           checked:
-            this.request.body['expected-release-date'] === 'yes' ||
-            this.presenter.fields.hasExpectedReleaseDate === true,
+            this.request.body?.['expected-release-date'] === 'yes' ||
+            this.presenter.fields?.hasExpectedReleaseDate === true,
           conditional: {
             html: yesHtml,
           },
@@ -30,8 +30,8 @@ export default class ExpectedReleaseDateView {
           value: 'no',
           text: 'No',
           checked:
-            this.request.body['expected-release-date'] === 'no' ||
-            this.presenter.fields.hasExpectedReleaseDate === false,
+            this.request.body?.['expected-release-date'] === 'no' ||
+            this.presenter.fields?.hasExpectedReleaseDate === false,
           conditional: {
             html: noHtml,
           },

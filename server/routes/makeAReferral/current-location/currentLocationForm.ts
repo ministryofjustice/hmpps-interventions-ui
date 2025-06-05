@@ -74,6 +74,6 @@ export default class CurrentLocationForm {
   }
 
   private get alreadyKnowPrisonName(): boolean {
-    return this.request.body['already-know-prison-name'] === 'yes'
+    return this.request.body?.['already-know-prison-name'] === 'yes'
   }
 }
