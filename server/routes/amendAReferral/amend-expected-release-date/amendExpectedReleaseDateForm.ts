@@ -31,7 +31,7 @@ export default class AmendExpectedReleaseDateForm {
       }
     }
 
-    if (this.request.body['release-date'] === 'confirm') {
+    if (this.request.body?.['release-date'] === 'confirm') {
       return this.expectedReleaseDateData()
     }
     return this.expectedReleaseDateUnknownReasonData()
@@ -112,7 +112,7 @@ export default class AmendExpectedReleaseDateForm {
     return {
       paramsForUpdate: {
         expectedReleaseDate: null,
-        expectedReleaseDateMissingReason: this.request.body['amend-date-unknown-reason'],
+        expectedReleaseDateMissingReason: this.request.body?.['amend-date-unknown-reason'],
       },
       error: null,
     }

@@ -73,7 +73,7 @@ export default class OasysRiskInformationView {
         {
           value: 'yes',
           text: 'Yes',
-          checked: this.request.body['edit-risk-confirmation'] === 'yes',
+          checked: this.request.body?.['edit-risk-confirmation'] === 'yes',
         },
         {
           value: 'no',
@@ -81,7 +81,7 @@ export default class OasysRiskInformationView {
           conditional: {
             html: noEditRiskSelectionHTML,
           },
-          checked: this.request.body['edit-risk-confirmation'] === 'no',
+          checked: this.request.body?.['edit-risk-confirmation'] === 'no',
         },
       ],
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.errors.editRiskInformation),

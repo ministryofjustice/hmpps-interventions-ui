@@ -57,7 +57,7 @@ export default class ExpectedReleaseDateForm {
       : {
           paramsForUpdate: {
             hasExpectedReleaseDate: this.expectedReleaseDate,
-            expectedReleaseDate: this.expectedReleaseDate ? this.request.body['release-date'] : null,
+            expectedReleaseDate: this.expectedReleaseDate ? this.request.body?.['release-date'] : null,
             expectedReleaseDateMissingReason: !this.expectedReleaseDate
               ? this.request.body['release-date-unknown-reason']
               : null,
@@ -106,6 +106,6 @@ export default class ExpectedReleaseDateForm {
   }
 
   private get expectedReleaseDate(): boolean {
-    return this.request.body['expected-release-date'] === 'yes'
+    return this.request.body?.['expected-release-date'] === 'yes'
   }
 }

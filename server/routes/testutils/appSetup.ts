@@ -6,7 +6,6 @@ import path from 'path'
 import helmet from 'helmet'
 import { randomBytes } from 'crypto'
 
-import qs from 'qs'
 import indexRoutes, { Services } from '../index'
 import serviceProviderRoutes, { serviceProviderUrlPrefix } from '../serviceProviderRoutes'
 import nunjucksSetup from '../../utils/nunjucksSetup'
@@ -41,7 +40,7 @@ function appSetup(
   const app = express()
 
   app.set('view engine', 'njk')
-  app.set('query parser', (str: string) => qs.parse(str))
+  app.set('query parser', 'extended')
 
   nunjucksSetup(app, path)
 
@@ -89,10 +88,9 @@ function appSetup(
   }
 
   app.use((req, res, next) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(req as any).isAuthenticated = () => true
     req.user = user
-    req.isAuthenticated = () => {
-      return true
-    }
     res.locals = {}
     res.locals.user = req.user
     next()

@@ -26,7 +26,7 @@ export default class SelectExpectedReleaseDateForm {
         },
       }
     }
-    if (this.request.body['expected-release-date'] === 'confirm') {
+    if (this.request.body?.['expected-release-date'] === 'confirm') {
       return {
         paramsForUpdate: {
           hasExpectedReleaseDate: true,

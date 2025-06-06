@@ -254,13 +254,13 @@ export default class ScheduleAppointmentView {
           id: 'rescheduleRequestedBySpRadio',
           value: 'Service Provider',
           text: 'Service Provider',
-          checked: this.request.body['reschedule-requested-by'] === 'Service Provider',
+          checked: this.request.body?.['reschedule-requested-by'] === 'Service Provider',
         },
         {
           id: 'rescheduleRequestedByUserRadio',
           value: this.serviceUserName,
           text: this.serviceUserName,
-          checked: this.request.body['reschedule-requested-by'] === this.serviceUserName,
+          checked: this.request.body?.['reschedule-requested-by'] === this.serviceUserName,
         },
       ],
     }
