@@ -15,6 +15,7 @@ import PrisonRegisterService from '../services/prisonRegisterService'
 import PrisonApiService from '../services/prisonApiService'
 import RamDeliusApiService from '../services/ramDeliusApiService'
 import PrisonAndSecuredChildAgencyService from '../services/prisonAndSecuredChildAgencyService'
+import AuditService from '../services/auditService'
 
 export interface Services {
   ramDeliusApiService: RamDeliusApiService
@@ -27,6 +28,7 @@ export interface Services {
   prisonRegisterService: PrisonRegisterService
   prisonApiService: PrisonApiService
   prisonAndSecuredChildAgencyService: PrisonAndSecuredChildAgencyService
+  auditService: AuditService
 }
 
 export const get = (router: Router, path: string, handler: RequestHandler): Router =>
@@ -90,7 +92,8 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
     services.ramDeliusApiService,
     services.assessRisksAndNeedsService,
     services.prisonAndSecuredChildAgencyService,
-    services.referenceDataService
+    services.referenceDataService,
+    services.auditService
   )
   get(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.startReferral(req, res))
   post(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.createReferral(req, res))

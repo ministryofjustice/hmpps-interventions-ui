@@ -13,6 +13,9 @@ generic-service:
     NODE_ENV: "production"
     TOKEN_VERIFICATION_ENABLED: "true"
     REDIS_TLS_ENABLED: "true"
+    AUDIT_SQS_REGION: 'eu-west-2'
+    AUDIT_SERVICE_NAME: 'hmpps-interventions-ui' # Your audit service name
+
 
   namespace_secrets:
     # [name of kubernetes secret]:
@@ -33,6 +36,9 @@ generic-service:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "connection_string"
     storage-s3-bucket:
       AWS_S3_BUCKET_NAME: "bucket_name"
+    sqs-hmpps-audit-secret:
+      AUDIT_SQS_QUEUE_URL: 'sqs_queue_url'
+      AUDIT_SQS_QUEUE_NAME: 'sqs_queue_name'
 
   poddisruptionbudget:
     enabled: false

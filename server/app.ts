@@ -35,6 +35,7 @@ import ReferenceDataService from './services/referenceDataService'
 import UserDataService from './services/userDataService'
 import ControllerUtils from './utils/controllerUtils'
 import nunjucksSetup from './utils/nunjucksSetup'
+import AuditService from './services/auditService'
 
 declare module 'express-session' {
   export interface SessionData {
@@ -53,7 +54,8 @@ export default function createApp(
   prisonRegisterService: PrisonRegisterService,
   prisonApiService: PrisonApiService,
   prisonAndSecuredChildAgencyService: PrisonAndSecuredChildAgencyService,
-  redisClient: ReturnType<typeof createClient>
+  redisClient: ReturnType<typeof createClient>,
+  auditService: AuditService
 ): express.Application {
   const app = express()
 
@@ -262,6 +264,7 @@ export default function createApp(
     prisonRegisterService,
     prisonApiService,
     prisonAndSecuredChildAgencyService,
+    auditService,
   }
 
   app.use('/', indexRoutes(standardRouter(), services))
