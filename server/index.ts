@@ -9,10 +9,13 @@ import PrisonAndSecuredChildAgencyService from './services/prisonAndSecuredChild
 import PrisonApiService from './services/prisonApiService'
 import PrisonRegisterService from './services/prisonRegisterService'
 import RamDeliusApiService from './services/ramDeliusApiService'
+import AuditService from './services/auditService'
 import ReferenceDataService from './services/referenceDataService'
+import HmppsAuditClient from './data/hmppsAuditClient'
 
 const assessRisksAndNeedsRestClient = new RestClient('assessRisksAndNeedsClient', config.apis.assessRisksAndNeedsApi)
 const ramDeliusApiRestClient = new RestClient('ramDeliusApiClient', config.apis.ramDeliusApi)
+const hmppsAuditClient = new HmppsAuditClient(config.sqs.audit)
 
 const redisClient = setupRedisClient()
 
@@ -27,6 +30,7 @@ const prisonAndSecuredChildAgencyService = new PrisonAndSecuredChildAgencyServic
   prisonRegisterService,
   prisonApiService
 )
+const auditService = new AuditService(hmppsAuditClient)
 
 const app = createApp(
   ramDeliusApiService,
@@ -37,7 +41,8 @@ const app = createApp(
   prisonRegisterService,
   prisonApiService,
   prisonAndSecuredChildAgencyService,
-  redisClient
+  redisClient,
+  auditService
 )
 
 export default app

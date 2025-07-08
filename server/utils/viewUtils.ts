@@ -62,7 +62,7 @@ export default class ViewUtils {
   }
 
   private static isAuthUserDetails(line: SummaryListItemContent): line is AuthUserDetails {
-    return <AuthUserDetails>line !== null && (<AuthUserDetails>line).username !== undefined
+    return line != null && (line as AuthUserDetails).username !== undefined
   }
 
   private static summaryListItemLine(line: SummaryListItemContent): string {

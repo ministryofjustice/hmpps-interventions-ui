@@ -124,6 +124,7 @@ import ExpectedProbationOfficeUnknownForm from './expected-probation-office/expe
 import ReferralCreationReasonPresenter from './referral-creation-reason/referralCreationReasonPresenter'
 import ReferralCreationReasonView from './referral-creation-reason/referralCreationReasonView'
 import ReferralCreationReasonForm from './referral-creation-reason/referralCreationReasonForm'
+import AuditService from '../../services/auditService'
 
 export default class MakeAReferralController {
   constructor(
@@ -131,7 +132,8 @@ export default class MakeAReferralController {
     private readonly ramDeliusApiService: RamDeliusApiService,
     private readonly assessRisksAndNeedsService: AssessRisksAndNeedsService,
     private readonly prisonAndSecureChildAgencyService: PrisonAndSecureChildAgencyService,
-    private readonly referenceDataService: ReferenceDataService
+    private readonly referenceDataService: ReferenceDataService,
+    private readonly auditService: AuditService
   ) {}
 
   async startReferral(req: Request, res: Response): Promise<void> {
@@ -153,6 +155,11 @@ export default class MakeAReferralController {
     // We trim and change to uppercase to make user experience more pleasant. All CRNs are uppercase in delius.
     const crn = req.body['service-user-crn']?.trim()?.toUpperCase()
     const { interventionId } = req.params
+
+    await this.auditService.logSearchServiceUser({
+      who: req.user!.username,
+      details: { identifier: crn },
+    })
 
     if (form.isValid) {
       try {

@@ -32,6 +32,8 @@ import { CurrentLocationType } from '../../models/draftReferral'
 import secureChildAgency from '../../../testutils/factories/secureChildAgency'
 import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 import prisoner from '../../../testutils/factories/prisoner'
+import AuditService from '../../services/auditService'
+import HmppsAuditClient from '../../data/hmppsAuditClient'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/ramDeliusApiService')
@@ -39,6 +41,14 @@ jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/prisonRegisterService')
 jest.mock('../../services/referenceDataService')
 jest.mock('../../services/prisonApiService')
+jest.mock('../../services/auditService')
+
+const auditClientConfig = {
+  queueUrl: 'http://localhost:4566/000000000000/mainQueue',
+  region: 'eu-west-2',
+  serviceName: 'hmpps-service',
+  enabled: true,
+}
 
 const interventionsService = new InterventionsService(
   apiConfig.apis.interventionsService
@@ -52,6 +62,8 @@ const prisonAndSecuredChildAgencyService = new PrisonAndSecuredChildAgencyServic
   prisonRegisterService,
   prisonApiService
 )
+const hmppsAuditClient = new HmppsAuditClient(auditClientConfig) as jest.Mocked<HmppsAuditClient>
+const auditService = new AuditService(hmppsAuditClient) as jest.Mocked<AuditService>
 
 const serviceUser = {
   crn: 'X123456',
@@ -78,6 +90,7 @@ beforeEach(() => {
       prisonApiService,
       referenceDataService,
       prisonAndSecuredChildAgencyService,
+      auditService,
     },
     userType: AppSetupUserType.probationPractitioner,
   })
@@ -125,6 +138,10 @@ describe('POST /intervention/:id/refer', () => {
         .expect(301)
         .expect('Location', '/referrals/1/community-allocated-form')
 
+      expect(auditService.logSearchServiceUser).toHaveBeenCalledWith({
+        details: { identifier: 'X123456' },
+        who: 'user1',
+      })
       expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
     })
 
@@ -161,6 +178,10 @@ describe('POST /intervention/:id/refer', () => {
         .expect(301)
         .expect('Location', '/referrals/1/community-allocated-form')
 
+      expect(auditService.logSearchServiceUser).toHaveBeenCalledWith({
+        details: { identifier: 'X123456' },
+        who: 'user1',
+      })
       expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
     })
 

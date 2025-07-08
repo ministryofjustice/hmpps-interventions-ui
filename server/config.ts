@@ -33,6 +33,20 @@ export interface ApiConfig {
   agent: AgentConfig
 }
 
+const auditConfig = () => {
+  const auditEnabled = get('AUDIT_ENABLED', 'false') === 'true'
+  return {
+    enabled: auditEnabled,
+    queueUrl: get(
+      'AUDIT_SQS_QUEUE_URL',
+      'http://localhost:4566/000000000000/mainQueue',
+      auditEnabled ? requiredInProduction : undefined
+    ),
+    serviceName: get('AUDIT_SERVICE_NAME', 'UNASSIGNED', auditEnabled ? requiredInProduction : undefined),
+    region: get('AUDIT_SQS_REGION', 'eu-west-2'),
+  }
+}
+
 export default {
   version: Date.now().toString(),
   production,
@@ -191,5 +205,8 @@ export default {
   domain: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   draftsService: {
     expiry: { seconds: Number(get('DRAFTS_EXPIRY_IN_SECONDS', `${24 * 60 * 60}`)) },
+  },
+  sqs: {
+    audit: auditConfig(),
   },
 }

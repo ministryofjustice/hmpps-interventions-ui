@@ -28,3 +28,4 @@ generic-service:
     FLAG_CUSTODY_LOCATION_ENABLED: true
     PRISON_REGISTER_API_URL: https://prison-register.hmpps.service.justice.gov.uk
     PRISON_API_URL: https://prison-api.prison.service.justice.gov.uk
+    AUDIT_ENABLED: "false"
