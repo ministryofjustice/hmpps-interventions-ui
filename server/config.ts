@@ -56,6 +56,7 @@ export default {
   staticResourceCacheDuration: 20,
   deploymentEnvironment: get('DEPLOYMENT_ENV', 'local', requiredInProduction),
   googleAnalyticsTrackingId: get('GA_ID', '', requiredInProduction),
+  whatsNewBannerEnabled: false, // This is a static config flag to control the "What's New" banner globall
   features: {
     serviceProviderReporting: get('FEATURE_SP_REPORTING_ENABLED', 'true') === 'true',
     previouslyApprovedActionPlans: get('FEATURE_PREVIOUSLY_APPROVED_ACTION_PLANS', 'false') === 'true',
