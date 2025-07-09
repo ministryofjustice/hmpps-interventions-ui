@@ -13,11 +13,16 @@ export default class LayoutView {
     private readonly content: PageContentView
   ) {}
 
+  // Add a static config flag to control the "What's New" banner globally
+  private static readonly whatsNewBannerEnabled: boolean = config.whatsNewBannerEnabled !== false
+
   private readonly serviceUserBannerView = this.presenter.serviceUserBannerPresenter
     ? new ServiceUserBannerView(this.presenter.serviceUserBannerPresenter)
     : null
 
-  get whatsNewBannerArgs(): NotificationBannerArgs {
+  get whatsNewBannerArgs(): NotificationBannerArgs | null {
+    // If the feature is disabled, never show the banner
+    if (!LayoutView.whatsNewBannerEnabled) return null
     const html = `<div class="refer-and-monitor__max-width">
                     <p class="govuk-notification-banner__heading">${this.presenter.whatsNewBanner?.heading}</p>
                     <p class="govuk-body">
@@ -36,6 +41,8 @@ export default class LayoutView {
   }
 
   get renderArgs(): [string, Record<string, unknown>] {
+    // If the feature is disabled, never show the banner
+    const showWhatsNewBanner = LayoutView.whatsNewBannerEnabled && this.presenter.showWhatsNewBanner
     return [
       this.content.renderArgs[0],
       {
@@ -43,7 +50,7 @@ export default class LayoutView {
         headerPresenter: this.presenter.headerPresenter,
         googleAnalyticsTrackingId: config.googleAnalyticsTrackingId,
         ...this.content.renderArgs[1],
-        showWhatsNewBanner: this.presenter.showWhatsNewBanner,
+        showWhatsNewBanner,
         whatsNewBannerArgs: this.whatsNewBannerArgs,
       },
     ]

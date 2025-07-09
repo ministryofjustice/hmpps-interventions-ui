@@ -9,6 +9,8 @@ import { createDraftFactory } from '../../testutils/factories/draft'
 import loggedInUser from '../../testutils/factories/loggedInUser'
 import ReferenceDataService from '../services/referenceDataService'
 import WhatsNewCookieService from '../services/whatsNewCookieService'
+import HeaderPresenter from '../routes/shared/headerPresenter'
+import ServiceUserBannerPresenter from '../routes/shared/serviceUserBannerPresenter'
 
 describe(ControllerUtils, () => {
   describe('parseQueryParamAsPositiveInteger', () => {
@@ -50,10 +52,10 @@ describe(ControllerUtils, () => {
         expect(res.render).toHaveBeenCalledWith('myTemplate', {
           foo: '1',
           bar: '2',
-          headerPresenter: expect.anything(),
+          headerPresenter: expect.any(HeaderPresenter),
           googleAnalyticsTrackingId: 'UA-TEST-ID',
           showWhatsNewBanner: false,
-          whatsNewBannerArgs: expect.anything(),
+          whatsNewBannerArgs: null,
         })
       })
     })
@@ -72,11 +74,11 @@ describe(ControllerUtils, () => {
         expect(res.render).toHaveBeenCalledWith('myTemplate', {
           foo: '1',
           bar: '2',
-          headerPresenter: expect.anything(),
+          headerPresenter: expect.any(HeaderPresenter),
           googleAnalyticsTrackingId: 'UA-TEST-ID',
-          serviceUserBannerPresenter: expect.anything(),
+          serviceUserBannerPresenter: expect.any(ServiceUserBannerPresenter),
           showWhatsNewBanner: false,
-          whatsNewBannerArgs: expect.anything(),
+          whatsNewBannerArgs: null,
         })
       })
     })
@@ -100,11 +102,11 @@ describe(ControllerUtils, () => {
         expect(res.render).toHaveBeenCalledWith('myTemplate', {
           foo: '1',
           bar: '2',
-          headerPresenter: expect.anything(),
+          headerPresenter: expect.any(HeaderPresenter),
           googleAnalyticsTrackingId: 'UA-TEST-ID',
-          serviceUserBannerPresenter: expect.anything(),
+          serviceUserBannerPresenter: expect.any(ServiceUserBannerPresenter),
           showWhatsNewBanner: false,
-          whatsNewBannerArgs: expect.anything(),
+          whatsNewBannerArgs: null,
         })
       })
     })
@@ -128,11 +130,11 @@ describe(ControllerUtils, () => {
         expect(res.render).toHaveBeenCalledWith('myTemplate', {
           foo: '1',
           bar: '2',
-          headerPresenter: expect.anything(),
+          headerPresenter: expect.any(HeaderPresenter),
           googleAnalyticsTrackingId: 'UA-TEST-ID',
-          serviceUserBannerPresenter: expect.anything(),
-          showWhatsNewBanner: true,
-          whatsNewBannerArgs: expect.anything(),
+          serviceUserBannerPresenter: expect.any(ServiceUserBannerPresenter),
+          showWhatsNewBanner: false,
+          whatsNewBannerArgs: null,
         })
       })
     })
@@ -157,11 +159,11 @@ describe(ControllerUtils, () => {
         expect(res.render).toHaveBeenCalledWith('myTemplate', {
           foo: '1',
           bar: '2',
-          headerPresenter: expect.anything(),
+          headerPresenter: expect.any(HeaderPresenter),
           googleAnalyticsTrackingId: 'UA-TEST-ID',
-          serviceUserBannerPresenter: expect.anything(),
+          serviceUserBannerPresenter: expect.any(ServiceUserBannerPresenter),
           showWhatsNewBanner: false,
-          whatsNewBannerArgs: expect.anything(),
+          whatsNewBannerArgs: null,
         })
       })
     })
@@ -192,11 +194,11 @@ describe(ControllerUtils, () => {
         expect(res.render).toHaveBeenCalledWith('myTemplate', {
           foo: '1',
           bar: '2',
-          headerPresenter: expect.anything(),
+          headerPresenter: expect.any(HeaderPresenter),
           googleAnalyticsTrackingId: 'UA-TEST-ID',
-          serviceUserBannerPresenter: expect.anything(),
+          serviceUserBannerPresenter: expect.any(ServiceUserBannerPresenter),
           showWhatsNewBanner: false,
-          whatsNewBannerArgs: expect.anything(),
+          whatsNewBannerArgs: null,
         })
       })
     })
@@ -221,11 +223,11 @@ describe(ControllerUtils, () => {
         expect(res.render).toHaveBeenCalledWith('myTemplate', {
           foo: '1',
           bar: '2',
-          headerPresenter: expect.anything(),
+          headerPresenter: expect.any(HeaderPresenter),
           googleAnalyticsTrackingId: 'UA-TEST-ID',
-          serviceUserBannerPresenter: expect.anything(),
+          serviceUserBannerPresenter: expect.any(ServiceUserBannerPresenter),
           showWhatsNewBanner: false,
-          whatsNewBannerArgs: expect.anything(),
+          whatsNewBannerArgs: null,
         })
       })
     })
