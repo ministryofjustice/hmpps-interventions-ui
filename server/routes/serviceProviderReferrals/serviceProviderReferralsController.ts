@@ -116,7 +116,9 @@ export default class ServiceProviderReferralsController {
 
   private handlePaginatedSearchText(req: Request) {
     if (req.method === 'GET' && req.query.paginatedSearch === 'true') {
-      req.body['case-search-text'] = req.session.searchText
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      req.body?.['case-search-text'] = req.session.searchText
     }
 
     if (req.method === 'GET' && req.query.paginatedSearch === undefined) {
