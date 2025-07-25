@@ -70,7 +70,7 @@
     "@microsoft/applicationinsights-web": "^3.3.0",
     "@ministryofjustice/frontend": "2.2.5",
     "@ministryofjustice/hmpps-audit-client": "^1.1.1",
-    "@sentry/node": "^9.0.0",
+    "@sentry/node": "^9.33.0",
     "@types/connect-flash": "0.0.40",
     "@types/express-serve-static-core": "^5.0.6",
     "@types/md5": "^2.3.5",
