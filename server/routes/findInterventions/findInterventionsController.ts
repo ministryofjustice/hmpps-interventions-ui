@@ -6,6 +6,8 @@ import InterventionDetailsView from './interventionDetailsView'
 import InterventionsFilter from './interventionsFilter'
 import SearchResultsPresenter from './searchResultsPresenter'
 import SearchResultsView from './searchResultsView'
+import CrsLandingPagePresenter from '../probationPractitionerReferrals/crsLandingPagePresenter'
+import CrsLandingPageView from '../probationPractitionerReferrals/crsLandingPageView'
 
 export default class FindInterventionsController {
   constructor(private readonly interventionsService: InterventionsService) {}
@@ -33,6 +35,12 @@ export default class FindInterventionsController {
     const presenter = new InterventionDetailsPresenter(intervention, res.locals.user)
     const view = new InterventionDetailsView(presenter)
 
+    await ControllerUtils.renderWithLayout(req, res, view, null, 'probation-practitioner')
+  }
+
+  async showIndex(req: Request, res: Response): Promise<void> {
+    const presenter = new CrsLandingPagePresenter()
+    const view = new CrsLandingPageView(presenter)
     await ControllerUtils.renderWithLayout(req, res, view, null, 'probation-practitioner')
   }
 }

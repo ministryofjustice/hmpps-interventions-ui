@@ -87,6 +87,7 @@ export default class DashboardView {
         pagination: this.presenter.pagination.mojPaginationArgs,
         clearHref: this.presenter.hrefLinkForClear,
         serviceOutageBannerArgs: this.serviceOutageBannerArgs,
+        backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
   }

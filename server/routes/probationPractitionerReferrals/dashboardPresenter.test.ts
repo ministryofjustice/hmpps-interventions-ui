@@ -2,6 +2,7 @@ import SentReferralSummariesFactory from '../../../testutils/factories/sentRefer
 import DashboardPresenter from './dashboardPresenter'
 import loggedInUserFactory from '../../../testutils/factories/loggedInUser'
 import pageFactory from '../../../testutils/factories/page'
+import draftReferralFactory from '../../../testutils/factories/draftReferral'
 import { Page } from '../../models/pagination'
 
 import SentReferralSummaries from '../../models/sentReferralSummaries'
@@ -41,7 +42,7 @@ describe('DashboardPresenter', () => {
   const loggedInUser = loggedInUserFactory.probationUser().build()
 
   describe('tableRows', () => {
-    it('returns a list of table rows with appropriate sort values', () => {
+    it('returns a list of table rows with appropriate sort values for Open cases', () => {
       const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
       const presenter = new DashboardPresenter(
         page,
@@ -50,7 +51,8 @@ describe('DashboardPresenter', () => {
         'ppOpenCases',
         'sentAt,ASC',
         false,
-        'abc'
+        'abc',
+        []
       )
 
       expect(presenter.tableRows).toEqual([
@@ -100,6 +102,48 @@ describe('DashboardPresenter', () => {
             sortValue: null,
             href: '/probation-practitioner/referrals/3/progress',
           },
+        ],
+      ])
+    })
+
+    it('returns a list of table rows for Draft cases', () => {
+      const referral1 = draftReferralFactory.build({
+        serviceUser: { firstName: 'Alice', lastName: 'Smith', crn: 'CRN1' },
+        serviceProvider: { name: 'Provider1', id: 'sp1' },
+        contractTypeName: 'Intervention X',
+        createdAt: '2022-02-01T10:00:00.000Z',
+      })
+
+      const referral2 = draftReferralFactory.build({
+        serviceUser: { firstName: 'Bob', lastName: 'Jones', crn: 'CRN2' },
+        serviceProvider: { name: 'Provider2', id: 'sp2' },
+        contractTypeName: 'Intervention Y',
+        createdAt: '2022-01-01T10:00:00.000Z',
+      })
+      const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+      const presenter = new DashboardPresenter(
+        page, // as Page<DraftReferralSummary>
+        loggedInUser,
+        'Draft cases',
+        'ppDraftCases',
+        '',
+        false,
+        'abc',
+        [referral1, referral2]
+      )
+
+      expect(presenter.tableRowsForDrafts).toEqual([
+        [
+          { text: 'Alice Smith', sortValue: null, href: '/referrals/1/community-allocated-form' },
+          { text: 'Provider1', sortValue: null, href: null },
+          { text: 'Intervention X', sortValue: null, href: null },
+          { text: '1 Feb 2022', sortValue: null, href: null },
+        ],
+        [
+          { text: 'Bob Jones', sortValue: null, href: '/referrals/2/community-allocated-form' },
+          { text: 'Provider2', sortValue: null, href: null },
+          { text: 'Intervention Y', sortValue: null, href: null },
+          { text: '1 Jan 2022', sortValue: null, href: null },
         ],
       ])
     })

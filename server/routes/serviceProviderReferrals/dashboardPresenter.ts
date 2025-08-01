@@ -58,6 +58,8 @@ export default class DashboardPresenter {
 
   private readonly requestedSortOrder: string
 
+  readonly backLinkUrl: string
+
   constructor(
     private readonly sentReferralSummaries: Page<SentReferralSummaries>,
     readonly dashboardType: DashboardType,
@@ -74,6 +76,7 @@ export default class DashboardPresenter {
     const [sortField, sortOrder] = this.requestedSort.split(',')
     this.requestedSortField = sortField
     this.requestedSortOrder = ControllerUtils.sortOrderToAriaSort(sortOrder)
+    this.backLinkUrl = `#`
   }
 
   get closeHref(): string {

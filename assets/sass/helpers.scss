@@ -1,0 +1,35 @@
+@use 'sass:math';
+
+@mixin full-width-within-govuk-width-container {
+  $margin-horizontal: -0.9375rem;
+  $padding-horizontal: 0.9375rem;
+
+  margin-right: $margin-horizontal;
+  margin-left: $margin-horizontal;
+  padding-right: $padding-horizontal;
+  padding-left: $padding-horizontal;
+
+  @media (width > 40em) {
+    $margin-horizontal: -1.875rem;
+    $padding-horizontal: 1.875rem;
+
+    margin-right: $margin-horizontal;
+    margin-left: $margin-horizontal;
+    padding-right: $padding-horizontal;
+    padding-left: $padding-horizontal;
+  }
+
+  @media (width >= 76.875em) {
+    $content-width: 73.125rem;
+    $half-content-width: math.div($content-width, 2);
+    $actual-content-margin-differential: 0.46875rem; /* stylelint-disable-line number-max-precision */
+    $margin-horizontal: calc(-50vw + $half-content-width + $actual-content-margin-differential);
+    $padding-horizontal: calc(50vw - $half-content-width - $actual-content-margin-differential);
+
+    width: $content-width;
+    margin-right: $margin-horizontal;
+    margin-left: $margin-horizontal;
+    padding-right: $padding-horizontal;
+    padding-left: $padding-horizontal;
+  }
+}
