@@ -14,7 +14,7 @@ describe('GET /', () => {
   describe('when logged in as a probation practitioner', () => {
     it('redirects to the referral start page', () => {
       const app = appWithAllRoutes({ userType: AppSetupUserType.probationPractitioner })
-      return request(app).get('/').expect(302).expect('Location', '/probation-practitioner/dashboard')
+      return request(app).get('/').expect(302).expect('Location', '/crs-homepage')
     })
   })
 
@@ -36,11 +36,11 @@ describe('check response headers are set correctly', () => {
     const response = await request(app).get('/')
     expect(response.header).toMatchObject({
       connection: 'close',
-      'content-length': '55',
+      'content-length': '35',
       'content-security-policy': expect.any(String),
       'content-type': 'text/plain; charset=utf-8',
       date: expect.any(String),
-      location: '/probation-practitioner/dashboard',
+      location: '/crs-homepage',
       'referrer-policy': 'no-referrer',
       'strict-transport-security': 'max-age=31536000; includeSubDomains',
       vary: 'Accept',

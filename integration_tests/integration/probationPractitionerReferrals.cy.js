@@ -65,7 +65,7 @@ describe('Probation practitioner referrals dashboard', () => {
     cy.stubGetSentReferralsForUserTokenPaged(page)
 
     cy.login()
-
+    cy.contains('a', 'View referrals').click()
     cy.get('h1').contains('Open cases')
 
     cy.get('table')
@@ -1164,6 +1164,7 @@ describe('Probation practitioner referrals dashboard', () => {
         cy.stubGetPrisonerDetails(referral.referral.serviceUser.crn, prisoner.build())
 
         cy.login()
+        cy.contains('a', 'View referrals').click()
 
         cy.get('a').contains(table.dashboardType).click()
         cy.location('pathname').should('equal', `/probation-practitioner/dashboard/${table.pathname}`)

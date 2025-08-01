@@ -47,7 +47,7 @@ export default function routes(router: Router, services: Services): Router {
   get(router, '/', (req, res, next) => {
     const { authSource } = res.locals.user
     if (authSource === 'delius') {
-      res.redirect('/probation-practitioner/dashboard')
+      res.redirect('/crs-homepage')
     } else {
       res.redirect('/service-provider/dashboard')
     }

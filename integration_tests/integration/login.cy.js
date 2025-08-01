@@ -27,7 +27,7 @@ context('Login', () => {
     })
 
     it('the user is redirected to the referral start page', () => {
-      cy.location('pathname').should('equal', '/probation-practitioner/dashboard')
+      cy.location('pathname').should('equal', '/crs-homepage')
     })
 
     it('the user name is visible in the header', () => {
@@ -46,7 +46,7 @@ context('Login', () => {
     })
 
     it('the user can sign out', () => {
-      cy.location('pathname').should('eq', '/probation-practitioner/dashboard')
+      cy.location('pathname').should('eq', '/crs-homepage')
       cy.get('[data-qa=sign-out]').click()
       cy.location('pathname').should('eq', '/sign-out/success')
     })
