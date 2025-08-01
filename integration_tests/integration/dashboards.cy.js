@@ -68,7 +68,7 @@ describe('Dashboards', () => {
     describe('Viewing the dashboard page', () => {
       it('shows a list of sent referrals', () => {
         cy.login()
-
+        cy.contains('a', 'View referrals').click()
         cy.get('h1').contains('Open cases')
 
         cy.get('table')
@@ -98,6 +98,7 @@ describe('Dashboards', () => {
       describe('Selecting "Unassigned cases"', () => {
         it('should see "Unassigned cases"', () => {
           cy.login()
+          cy.contains('a', 'View referrals').click()
           cy.get('h1').contains('Open cases')
           cy.contains('Unassigned cases').click()
           cy.get('h1').contains('Unassigned cases')
@@ -127,6 +128,7 @@ describe('Dashboards', () => {
       describe('Selecting "Completed cases"', () => {
         it('should see "Completed cases"', () => {
           cy.login()
+          cy.contains('a', 'View referrals').click()
           cy.get('h1').contains('Open cases')
           cy.contains('Completed cases').click()
           cy.get('h1').contains('Completed cases')
@@ -158,6 +160,7 @@ describe('Dashboards', () => {
       describe('Selecting "Cancelled cases"', () => {
         it('should see "Cancelled cases"', () => {
           cy.login()
+          cy.contains('a', 'View referrals').click()
           cy.get('h1').contains('Open cases')
           cy.contains('Cancelled cases').click()
           cy.get('h1').contains('Cancelled cases')
@@ -189,8 +192,6 @@ describe('Dashboards', () => {
       describe('Selecting "Draft cases"', () => {
         it('should see "Draft cases"', () => {
           cy.login()
-          // check if the page is accessible from the CRS homepage
-          cy.visit('/crs-homepage')
           cy.contains('a', 'View referrals').click()
           cy.get('h1').contains('Open cases')
           cy.contains('Draft cases').click()
@@ -228,6 +229,7 @@ describe('Dashboards', () => {
         headings.forEach(heading => {
           it(`when sorted by ${heading} sort direction should be set on header`, () => {
             cy.login()
+            cy.contains('a', 'View referrals').click()
             cy.get('h1').contains('Open cases')
 
             cy.get('table').within(() => cy.contains('button', heading).click())

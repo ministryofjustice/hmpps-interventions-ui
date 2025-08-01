@@ -125,12 +125,9 @@ describe('GET /probation-practitioner/find', () => {
 
     await request(app)
       .get('/probation-practitioner/find')
-      .expect(200)
+      .expect(302)
       .expect(res => {
-        expect(res.text).toContain('Refer and monitor an intervention')
-        expect(res.text).toContain('Find interventions')
-        expect(res.text).toContain('Alex River')
-        expect(res.text).toContain('Accommodation')
+        expect(res.text).toContain('Found. Redirecting to /crs-homepage')
       })
   })
 })

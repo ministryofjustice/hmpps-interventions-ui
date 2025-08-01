@@ -16,17 +16,6 @@ context('Find an intervention', () => {
     cy.login()
   })
 
-  it('Probation practitioner clicks the find interventions tab', () => {
-    cy.visit('/probation-practitioner/find')
-
-    cy.get('[data-cy=download-interventions-header]').contains('Download structured interventions')
-
-    cy.get('[data-cy=download-interventions-content]').contains(
-      'You can download information about structured interventions. You cannot use this service to search for (or refer) to these interventions. This list was updated in April 2022.'
-    )
-    cy.get('[data-cy=find-interventions-button]').contains('Find interventions')
-  })
-
   it('Probation practitioner views a list of search results', () => {
     const thinkingAndBehaviourInterventionId = '6bf9d895-0d61-4b99-af91-f343befbc9a3'
 
@@ -82,12 +71,5 @@ context('Find an intervention', () => {
 
     cy.get('h1').contains('Better solutions (anger management)')
     cy.contains('Thinking and behaviour')
-
-    // check if the page is accessible from the CRS homepage
-    cy.visit('/crs-homepage')
-    cy.contains('a', 'Find a CRS intervention and make a referral').click()
-
-    cy.get('h1').contains('Find interventions')
-    cy.contains('2 results found')
   })
 })
