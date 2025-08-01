@@ -66,15 +66,8 @@ export default class ProbationPractitionerReferralsController {
   }
 
   async showDraftCases(req: Request, res: Response): Promise<void> {
-    const pageSize = config.dashboards.probationPractitioner.unassignedCases
-    await this.showDashboard(
-      req,
-      res,
-      { completed: false, unassigned: true },
-      'Draft cases',
-      'ppUnassignedCases',
-      pageSize
-    )
+    const pageSize = config.dashboards.probationPractitioner.draftCases
+    await this.showDashboard(req, res, { completed: false, unassigned: true }, 'Draft cases', 'ppDraftCases', pageSize)
   }
 
   async showCompletedCases(req: Request, res: Response): Promise<void> {
