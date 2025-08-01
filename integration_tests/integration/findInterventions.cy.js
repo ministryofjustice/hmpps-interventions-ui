@@ -17,9 +17,7 @@ context('Find an intervention', () => {
   })
 
   it('Probation practitioner clicks the find interventions tab', () => {
-    cy.contains('Find interventions').click()
-
-    cy.url().should('contain', '/find')
+    cy.visit('/probation-practitioner/find')
 
     cy.get('[data-cy=download-interventions-header]').contains('Download structured interventions')
 
@@ -84,5 +82,12 @@ context('Find an intervention', () => {
 
     cy.get('h1').contains('Better solutions (anger management)')
     cy.contains('Thinking and behaviour')
+
+    // check if the page is accessible from the CRS homepage
+    cy.visit('/crs-homepage')
+    cy.contains('a', 'Find a CRS intervention and make a referral').click()
+
+    cy.get('h1').contains('Find interventions')
+    cy.contains('2 results found')
   })
 })

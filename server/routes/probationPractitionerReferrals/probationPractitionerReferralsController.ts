@@ -65,6 +65,11 @@ export default class ProbationPractitionerReferralsController {
     )
   }
 
+  async showDraftCases(req: Request, res: Response): Promise<void> {
+    const pageSize = config.dashboards.probationPractitioner.draftCases
+    await this.showDashboard(req, res, { completed: false, unassigned: true }, 'Draft cases', 'ppDraftCases', pageSize)
+  }
+
   async showCompletedCases(req: Request, res: Response): Promise<void> {
     const pageSize = config.dashboards.probationPractitioner.completedCases
     await this.showDashboard(
@@ -94,13 +99,22 @@ export default class ProbationPractitionerReferralsController {
       req.session.disableDowntimeBanner = true
     }
 
+    let sortFields: string[] = []
+    if (dashboardType === 'Draft cases') {
+      sortFields = DashboardPresenter.headingsAndSortFieldsForDraftCases
+        .map(it => it.sortField)
+        .filter(it => it) as unknown as string[]
+    } else {
+      sortFields = DashboardPresenter.headingsAndSortFields.map(it => it.sortField).filter(it => it) as string[]
+    }
+
     const sort = await ControllerUtils.getSortOrderFromMojServerSideSortableTable(
       req,
       res,
       this.userDataService,
       config.userData.ppDashboardSortOrder.storageDurationInSeconds,
       tablePersistentId,
-      DashboardPresenter.headingsAndSortFields.map(it => it.sortField).filter(it => it) as string[],
+      sortFields,
       'serviceuserlastname,ASC',
       'sentat,ASC'
     )
@@ -111,6 +125,13 @@ export default class ProbationPractitionerReferralsController {
       sort,
     }
     await this.interventionsService.addNewUserToIntervention(res.locals.user.token.accessToken)
+
+    let existingDraftReferrals
+    if (dashboardType === 'Draft cases') {
+      existingDraftReferrals = await this.interventionsService.getDraftReferralsForUserToken(
+        res.locals.user.token.accessToken
+      )
+    }
 
     const cases = await this.interventionsService.getSentReferralsForUserTokenPaged(
       res.locals.user.token.accessToken,
@@ -130,7 +151,8 @@ export default class ProbationPractitionerReferralsController {
       tablePersistentId,
       sort[0],
       disablePlannedDowntimeNotification,
-      req.session.dashboardOriginPage
+      req.session.dashboardOriginPage,
+      existingDraftReferrals
     )
 
     const view = new DashboardView(presenter)

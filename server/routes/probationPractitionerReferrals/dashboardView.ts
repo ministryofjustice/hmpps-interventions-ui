@@ -10,6 +10,11 @@ export default class DashboardView {
     return ViewUtils.sortableTable(this.presenter.tablePersistentId, tableHeadings, tableRows)
   }
 
+  private get tableArgsForDraftCases(): TableArgs {
+    const { tableHeadings, tableRowsForDrafts } = this.presenter
+    return ViewUtils.sortableTable(this.presenter.tablePersistentId, tableHeadings, tableRowsForDrafts)
+  }
+
   readonly subNavArgs = {
     items: [
       {
@@ -31,6 +36,11 @@ export default class DashboardView {
         text: 'Cancelled cases',
         href: `/probation-practitioner/dashboard/cancelled-cases`,
         active: this.presenter.dashboardType === 'Cancelled cases',
+      },
+      {
+        text: 'Draft cases',
+        href: `/probation-practitioner/dashboard/draft-cases`,
+        active: this.presenter.dashboardType === 'Draft cases',
       },
     ],
   }
@@ -56,12 +66,13 @@ export default class DashboardView {
       'probationPractitionerReferrals/dashboard',
       {
         presenter: this.presenter,
-        tableArgs: this.tableArgs,
+        tableArgs: this.presenter.dashboardType !== 'Draft cases' ? this.tableArgs : this.tableArgsForDraftCases,
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
         subNavArgs: this.subNavArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
         showSearchResult: {},
         serviceOutageBannerArgs: this.serviceOutageBannerArgs,
+        backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
   }

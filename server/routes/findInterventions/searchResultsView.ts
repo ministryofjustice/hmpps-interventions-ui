@@ -69,6 +69,7 @@ export default class SearchResultsView {
         summaryListArgs: SearchResultsView.summaryListArgs,
         searchSummarySummaryListArgs: this.searchSummarySummaryListArgs,
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
+        backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
   }

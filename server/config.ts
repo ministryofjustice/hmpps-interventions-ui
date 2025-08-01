@@ -190,6 +190,7 @@ export default {
       unassignedCases: Number(get('PP_UNASSIGNED_CASES_PAGE_SIZE', '500')),
       completedCases: Number(get('PP_MY_CASES_PAGE_SIZE', '500')),
       cancelledCases: Number(get('PP_CANCELLED_CASES_PAGE_SIZE', '500')),
+      draftCases: Number(get('PP_DRAFT_CASES_PAGE_SIZE', '500')),
     },
     serviceProvider: {
       percentageOfPaginationUsers: Number(get('SP_PERCENTAGE_OF_DASHBOARD_PAGINATION_USERS', '100')),

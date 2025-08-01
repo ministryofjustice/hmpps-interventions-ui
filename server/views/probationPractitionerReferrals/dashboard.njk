@@ -2,21 +2,27 @@
 {% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
 {% from "moj/components/sub-navigation/macro.njk" import mojSubNavigation %}
 {% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = "Referral" %}
 {% set pageSubTitle = "Referrals" %}
 
-{% block primaryNav %}
-  {{ mojPrimaryNavigation(primaryNavArgs) }}
-{% endblock %}
+
 
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
+      <div class="govuk-grid-row app-grid-container">
+        <div class="govuk-grid-column-one-half">
+            {{ govukBackLink(backLinkArgs) }}
+        </div>
+        <div class="govuk-grid-column-one-half govuk-!-text-align-right">
+          <a href={{ presenter.crsHomePageUrl}} class="govuk-link">Go to CRS homepage</a>
+        </div>
+      </div>
       <h1 class="govuk-heading-xl">{{ presenter.title }}</h1>
-
       {{ mojSubNavigation(subNavArgs) }}
       {% include "../partials/pagination.njk" %}
       <hr class="govuk-section-break govuk-section-break--m">

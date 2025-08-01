@@ -1,0 +1,33 @@
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
+
+{% extends "../partials/layout.njk" %}
+
+{% set pageTitleOverride = "Commissioned Rehabilitative Service" %}
+{% set mainClasses = "app-container govuk-body dashboard__main" %}
+
+{% block pageContent %}
+
+  {{ govukBackLink(backLinkArgs) }}
+  
+  <h1 class="govuk-heading-l">{{ pageHeading }}</h1>
+
+  <div class="dashboard__cards-wrapper">
+    <div class="govuk-grid-row dashboard__cards">
+      <div class="govuk-grid-column-one-third dashboard__card-wrapper">
+        <div class="dashboard__card">
+          <h2 class="govuk-heading-m dashboard__card-heading">
+            <a class="govuk-link dashboard__card-link" href="{{ findAndMake }}">Find a CRS intervention and make a referral</a>
+          </h2>
+          <p class="govuk-body dashboard__card-description">Search for suitable CRS interventions and start a referral.</p>
+        </div>
+      </div>
+      <div class="govuk-grid-column-one-third dashboard__card-wrapper">
+        <div class="dashboard__card">
+          <h2 class="govuk-heading-m dashboard__card-heading">
+            <a class="govuk-link dashboard__card-link" href="{{ viewReferral }}">View referrals</a>
+          </h2>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock pageContent %}

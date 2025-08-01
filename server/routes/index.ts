@@ -86,6 +86,7 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   get(router, '/find-interventions/intervention/:id', (req, res) =>
     findInterventionsController.viewInterventionDetails(req, res)
   )
+  get(router, '/crs-homepage', (req, res) => findInterventionsController.showIndex(req, res))
 
   const makeAReferralController = new MakeAReferralController(
     services.interventionsService,

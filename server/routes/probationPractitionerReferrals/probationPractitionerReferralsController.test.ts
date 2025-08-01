@@ -168,6 +168,51 @@ describe('GET /probation-practitioner/dashboard', () => {
       searchString: 'page=2',
     },
   ]
+
+  it('displays the Draft cases dashboard with correct draft referral data', async () => {
+    const draftReferral1 = draftReferralFactory.build({
+      id: '1',
+      serviceUser: { firstName: 'Alice', lastName: 'Smith', crn: 'CRN1' },
+      serviceProvider: { name: 'Provider1', id: 'sp1' },
+      contractTypeName: 'Intervention X',
+      createdAt: '2022-02-01T10:00:00.000Z',
+    })
+    const draftReferral2 = draftReferralFactory.build({
+      id: '2',
+      serviceUser: { firstName: 'Bob', lastName: 'Jones', crn: 'CRN2' },
+      serviceProvider: { name: 'Provider2', id: 'sp2' },
+      contractTypeName: 'Intervention Y',
+      createdAt: '2022-01-01T10:00:00.000Z',
+    })
+
+    interventionsService.getDraftReferralsForUserToken.mockResolvedValue([draftReferral1, draftReferral2])
+    // Sent referrals page can be empty for draft dashboard
+    const emptyPage = pageFactory.pageContent([]).build() as Page<SentReferralSummaries>
+    interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(emptyPage)
+
+    await request(app)
+      .get('/probation-practitioner/dashboard/draft-cases')
+      .expect(200)
+      .expect(res => {
+        // Table headings for draft cases
+        expect(res.text).toContain('Name')
+        expect(res.text).toContain('Provider')
+        expect(res.text).toContain('Intervention type')
+        expect(res.text).toContain('Started on')
+        // Draft referral data
+        expect(res.text).toContain('Alice Smith')
+        expect(res.text).toContain('Provider1')
+        expect(res.text).toContain('Intervention X')
+        expect(res.text).toContain('1 Feb 2022')
+        expect(res.text).toContain('Bob Jones')
+        expect(res.text).toContain('Provider2')
+        expect(res.text).toContain('Intervention Y')
+        expect(res.text).toContain('1 Jan 2022')
+        // Link to edit draft
+        expect(res.text).toContain('/referrals/1/community-allocated-form')
+        expect(res.text).toContain('/referrals/2/community-allocated-form')
+      })
+  })
   describe.each(dashboardRequests)('for dashboard %s', dashboard => {
     it('displays a dashboard page', async () => {
       const referrals = [sentReferralSummariesFactory.build()]
