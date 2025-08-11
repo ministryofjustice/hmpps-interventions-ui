@@ -1,3 +1,5 @@
+import config from '../../config'
+
 export default class CrsLandingPagePresenter {
   readonly findInterventionsUrl: string
 
@@ -8,8 +10,8 @@ export default class CrsLandingPagePresenter {
   constructor() {
     this.findInterventionsUrl = '/find-interventions'
     this.viewReferral = '/probation-practitioner/dashboard'
-    this.backLinkUrl = '#'
+    this.backLinkUrl = `${config.findAndRefer.url}/interventions-homepage`
   }
 
-  readonly pageHeading = 'Commissioned Rehabilitative Service (CRS)'
+  readonly pageHeading = 'Commissioned Rehabilitative Services (CRS)'
 }
