@@ -184,6 +184,13 @@ export default {
       agent: new AgentConfig(),
     },
   },
+  findAndRefer: {
+    url: get('FIND_AND_REFER_URL', 'http://localhost:8092', requiredInProduction),
+    timeout: {
+      response: 10000,
+      deadline: 10000,
+    },
+  },
   dashboards: {
     probationPractitioner: {
       openCases: Number(get('PP_OPEN_CASES_PAGE_SIZE', '500')),

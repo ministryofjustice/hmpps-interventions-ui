@@ -14,6 +14,7 @@ generic-service:
     INTERVENTIONS_SERVICE_URL: https://hmpps-interventions-service.apps.live-1.cloud-platform.service.justice.gov.uk
     ASSESS_RISKS_AND_NEEDS_API_URL: https://assess-risks-and-needs.hmpps.service.justice.gov.uk
     TOKEN_VERIFICATION_API_URL: https://token-verification-api.prison.service.justice.gov.uk
+    FIND_AND_REFER_URL: http://find-and-refer-intervention.hmpps.service.justice.gov.uk
     TOKEN_VERIFICATION_API_TIMEOUT_RESPONSE: 10000
     TOKEN_VERIFICATION_API_TIMEOUT_DEADLINE: 10000
     GA_ID: G-THWB3S7TLX
