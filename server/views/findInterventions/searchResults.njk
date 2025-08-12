@@ -11,15 +11,15 @@
 
 
 {% block pageContent %}
+  <div class="govuk-grid-row app-grid-container">
+    <div class="govuk-grid-column-one-half">
+        {{ govukBackLink(backLinkArgs) }}
+    </div>
+    <div class="govuk-grid-column-one-half govuk-!-text-align-right">
+        <a href={{ presenter.crsHomePageUrl}} class="govuk-link">Go to CRS homepage</a>
+    </div>
+  </div>
   <div class="govuk-grid-row govuk-!-margin-bottom-7">
-      <div class="govuk-grid-row app-grid-container">
-        <div class="govuk-grid-column-one-half">
-            {{ govukBackLink(backLinkArgs) }}
-        </div>
-        <div class="govuk-grid-column-one-half govuk-!-text-align-right">
-          <a href={{ presenter.crsHomePageUrl}} class="govuk-link">Go to CRS homepage</a>
-        </div>
-      </div>    
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">Find interventions</h1>
 
