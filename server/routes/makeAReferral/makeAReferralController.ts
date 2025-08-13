@@ -159,6 +159,8 @@ export default class MakeAReferralController {
     await this.auditService.logSearchServiceUser({
       who: req.user!.username,
       details: { identifier: crn },
+      subjectType: 'CRN',
+      subjectId: crn,
     })
 
     if (form.isValid) {
