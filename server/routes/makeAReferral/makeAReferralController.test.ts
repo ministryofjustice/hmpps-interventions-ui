@@ -141,6 +141,8 @@ describe('POST /intervention/:id/refer', () => {
       expect(auditService.logSearchServiceUser).toHaveBeenCalledWith({
         details: { identifier: 'X123456' },
         who: 'user1',
+        subjectType: 'CRN',
+        subjectId: 'X123456',
       })
       expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
     })
@@ -181,6 +183,8 @@ describe('POST /intervention/:id/refer', () => {
       expect(auditService.logSearchServiceUser).toHaveBeenCalledWith({
         details: { identifier: 'X123456' },
         who: 'user1',
+        subjectType: 'CRN',
+        subjectId: 'X123456',
       })
       expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
     })
