@@ -5,12 +5,17 @@ import PresenterUtils from '../../../utils/presenterUtils'
 export default class PrisonReleasePresenter {
   readonly backLinkUrl: string
 
+  readonly communityAllocatedPage = `/referrals/${this.referral.id}/community-allocated-form`
+
+  readonly communityAllocatedPageWithParams = `${this.communityAllocatedPage}?startReferral=true`
+
   constructor(
     readonly referral: DraftReferral,
     private readonly error: FormValidationError | null = null,
-    private readonly userInputData: Record<string, unknown> | null = null
+    private readonly userInputData: Record<string, unknown> | null = null,
+    readonly startReferral: boolean = false
   ) {
-    this.backLinkUrl = `/referrals/${referral.id}/community-allocated-form`
+    this.backLinkUrl = startReferral ? this.communityAllocatedPageWithParams : this.communityAllocatedPage
   }
 
   private errorMessageForField(field: string): string | null {

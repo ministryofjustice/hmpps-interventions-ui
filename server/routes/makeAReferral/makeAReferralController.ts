@@ -139,7 +139,7 @@ export default class MakeAReferralController {
   async startReferral(req: Request, res: Response): Promise<void> {
     const { interventionId } = req.params
 
-    const presenter = new ReferralStartPresenter(interventionId)
+    const presenter = new ReferralStartPresenter(interventionId, null)
     const view = new ReferralStartView(presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, null, 'probation-practitioner')
@@ -207,7 +207,7 @@ export default class MakeAReferralController {
         serviceUser: this.interventionsService.serializeDeliusServiceUser(serviceUser),
       })
 
-      res.redirect(301, `/referrals/${referral.id}/community-allocated-form`)
+      res.redirect(301, `/referrals/${referral.id}/community-allocated-form?startReferral=true`)
     } else {
       const presenter = new ReferralStartPresenter(interventionId, error)
       const view = new ReferralStartView(presenter)
@@ -248,6 +248,7 @@ export default class MakeAReferralController {
 
   async viewReferralForm(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
+    const startReferral = req.query.startReferral === 'true'
     const referralId = req.params.id
     const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
 
@@ -263,7 +264,7 @@ export default class MakeAReferralController {
     }
 
     const draftOasysRiskInformation = await this.getDraftOasysRiskInformation(accessToken, referralId)
-    const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation)
+    const presenter = new ReferralFormPresenter(referral, intervention, draftOasysRiskInformation, startReferral)
     const view = new ReferralFormView(presenter)
 
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
@@ -271,11 +272,12 @@ export default class MakeAReferralController {
 
   async viewReferralTypeForm(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
+    const startReferral = req.query.startReferral === 'true'
     const referralId = req.params.id
     const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
 
     const [serviceUser] = await Promise.all([this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)])
-    const presenter = new ReferralTypePresenter(referral, null, req.body)
+    const presenter = new ReferralTypePresenter(referral, null, req.body, startReferral)
     const view = new ReferralTypeFormView(presenter)
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
@@ -283,21 +285,23 @@ export default class MakeAReferralController {
   async viewCommunityAllocatedForm(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
     const referralId = req.params.id
+    const startReferral = req.query.startReferral === 'true'
     const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
 
     const [serviceUser] = await Promise.all([this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)])
-    const presenter = new CommunityAllocatedPresenter(referral, null, req.body)
+    const presenter = new CommunityAllocatedPresenter(referral, null, req.body, startReferral)
     const view = new CommunityAllocatedView(presenter)
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
 
   async viewPrisonReleaseForm(req: Request, res: Response): Promise<void> {
     const { accessToken } = res.locals.user.token
+    const startReferral = req.query.startReferral === 'true'
     const referralId = req.params.id
     const referral = await this.interventionsService.getDraftReferral(accessToken, referralId)
 
     const serviceUser = await Promise.resolve(this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn))
-    const presenter = new PrisonReleasePresenter(referral, null, req.body)
+    const presenter = new PrisonReleasePresenter(referral, null, req.body, startReferral)
     const view = new PrisonReleaseFormView(presenter)
     await ControllerUtils.renderWithLayout(req, res, view, serviceUser, 'probation-practitioner')
   }
@@ -721,6 +725,7 @@ export default class MakeAReferralController {
   async submitReferralTypeForm(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const form = await ReferralTypeForm.createForm(req, referral)
+    const startReferral = req.query.startReferral === 'true'
 
     let error: FormValidationError | null = null
 
@@ -740,11 +745,15 @@ export default class MakeAReferralController {
     }
 
     if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      if (startReferral) {
+        res.redirect(`/referrals/${req.params.id}/form?startReferral=true`)
+      } else {
+        res.redirect(`/referrals/${req.params.id}/form`)
+      }
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-      const presenter = new ReferralTypePresenter(referral, error, req.body)
+      const presenter = new ReferralTypePresenter(referral, error, req.body, startReferral)
       const view = new ReferralTypeFormView(presenter)
 
       res.status(400)
@@ -755,6 +764,7 @@ export default class MakeAReferralController {
   async submitPrisonReleaseForm(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const form = await PrisonReleaseForm.createForm(req, referral)
+    const startReferral = req.query.startReferral === 'true'
 
     let error: FormValidationError | null = null
 
@@ -774,11 +784,15 @@ export default class MakeAReferralController {
     }
 
     if (error === null) {
-      res.redirect(`/referrals/${req.params.id}/form`)
+      if (startReferral) {
+        res.redirect(`/referrals/${req.params.id}/form?startReferral=true`)
+      } else {
+        res.redirect(`/referrals/${req.params.id}/form`)
+      }
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-      const presenter = new PrisonReleasePresenter(referral, error, req.body)
+      const presenter = new PrisonReleasePresenter(referral, error, req.body, startReferral)
       const view = new PrisonReleaseFormView(presenter)
 
       res.status(400)
@@ -789,6 +803,7 @@ export default class MakeAReferralController {
   async submitCommunityAllocatedForm(req: Request, res: Response): Promise<void> {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
     const form = await CommunityAllocatedForm.createForm(req, referral)
+    const startReferral = req.query.startReferral === 'true'
 
     let error: FormValidationError | null = null
 
@@ -808,13 +823,21 @@ export default class MakeAReferralController {
     }
 
     if (error === null && form.paramsForUpdate.allocatedCommunityPP) {
-      res.redirect(`/referrals/${req.params.id}/referral-type-form`)
+      if (startReferral) {
+        res.redirect(`/referrals/${req.params.id}/referral-type-form?startReferral=true`)
+      } else {
+        res.redirect(`/referrals/${req.params.id}/referral-type-form`)
+      }
     } else if (error === null && !form.paramsForUpdate.allocatedCommunityPP) {
-      res.redirect(`/referrals/${req.params.id}/prison-release-form`)
+      if (startReferral) {
+        res.redirect(`/referrals/${req.params.id}/prison-release-form?startReferral=true`)
+      } else {
+        res.redirect(`/referrals/${req.params.id}/prison-release-form`)
+      }
     } else {
       const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
 
-      const presenter = new PrisonReleasePresenter(referral, error, req.body)
+      const presenter = new PrisonReleasePresenter(referral, error, req.body, startReferral)
       const view = new PrisonReleaseFormView(presenter)
 
       res.status(400)
@@ -1370,6 +1393,7 @@ export default class MakeAReferralController {
     const referral = await this.interventionsService.getDraftReferral(res.locals.user.token.accessToken, req.params.id)
 
     const serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(referral.serviceUser.crn)
+
     const amendPPDetails = req.query.amendPPDetails === 'true'
 
     const presenter = new UpdateProbationPractitionerNamePresenter(

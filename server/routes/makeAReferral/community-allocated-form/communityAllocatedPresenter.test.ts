@@ -36,7 +36,7 @@ describe('CommunityAllocatedPresenter', () => {
         .serviceCategorySelected()
         .serviceUserSelected()
         .build({ serviceUser: { firstName: 'Geoffrey', lastName: 'Blue' } })
-      const presenter = new CommunityAllocatedPresenter(referral)
+      const presenter = new CommunityAllocatedPresenter(referral, null, null, true)
 
       expect(presenter.backLinkUrl).toBe(`/intervention/${referral.interventionId}/refer?`)
       expect(presenter.text).toEqual({
