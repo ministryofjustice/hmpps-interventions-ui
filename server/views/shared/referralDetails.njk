@@ -44,9 +44,11 @@
 
       {{ govukSummaryList(interventionDetailsSummaryListArgs) }}
 
-      {%  for section in serviceCategorySections %}
-        {{ govukSummaryList(section.summaryListArgs(govukTag)) }}
-      {% endfor %}
+      {% if serviceCategorySections and serviceCategorySections.length %}
+        {% for section in serviceCategorySections %}
+          {{ govukSummaryList(section.summaryListArgs(govukTag)) }}
+        {% endfor %}
+      {% endif %}
       {%  if (responsibleOfficerSummaryListArgs | length)  and  (presenter.isCustodyWithNoResponsibleOfficerDetails) %}
           {{ govukSummaryList(responsibleOfficerSummaryListArgs) }}
       {% endif %}
