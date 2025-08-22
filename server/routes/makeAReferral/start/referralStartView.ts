@@ -25,6 +25,7 @@ export default class ReferralStartView {
       {
         presenter: this.presenter,
         crnInputArgs: this.crnInputArgs(),
+        backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
   }

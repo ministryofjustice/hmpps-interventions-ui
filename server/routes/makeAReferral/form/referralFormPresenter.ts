@@ -15,18 +15,28 @@ export default class ReferralFormPresenter {
 
   readonly backLinkUrl: string
 
+  readonly prisonReleaseFormPage = `/referrals/${this.referral.id}/prison-release-form`
+
+  readonly prisonReleaseFormPageWithParams = `${this.prisonReleaseFormPage}?startReferral=true`
+
+  readonly referralTypeFormPage = `/referrals/${this.referral.id}/referral-type-form`
+
+  readonly referralTypeFormPageWithParams = `${this.referralTypeFormPage}?startReferral=true`
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
-    private readonly draftOasysRiskInformation: DraftOasysRiskInformation | null = null
+    private readonly draftOasysRiskInformation: DraftOasysRiskInformation | null = null,
+    readonly startReferral: boolean = false
   ) {
     this.taskValues = new TaskValues(referral, draftOasysRiskInformation)
     this.sectionValues = new SectionValues(this.taskValues)
     this.formSectionBuilder = new FormSectionBuilder(referral, intervention, this.taskValues, this.sectionValues)
-    this.backLinkUrl =
-      this.referral.isReferralReleasingIn12Weeks !== null
-        ? `/referrals/${referral.id}/prison-release-form`
-        : `/referrals/${referral.id}/referral-type-form`
+    if (this.referral.isReferralReleasingIn12Weeks !== null) {
+      this.backLinkUrl = startReferral ? this.prisonReleaseFormPageWithParams : this.prisonReleaseFormPage
+    } else {
+      this.backLinkUrl = startReferral ? this.referralTypeFormPageWithParams : this.referralTypeFormPage
+    }
   }
 
   readonly crnDescription = `${this.referral.serviceUser?.firstName} ${this.referral.serviceUser?.lastName} (CRN: ${this.referral.serviceUser?.crn})`
