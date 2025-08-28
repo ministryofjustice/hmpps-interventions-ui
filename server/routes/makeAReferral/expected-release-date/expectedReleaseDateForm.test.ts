@@ -56,7 +56,7 @@ describe(ExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-day',
               formFields: ['release-date-day'],
-              message: 'Enter the expected release date',
+              message: 'Expected release date must include a day',
             },
           ],
         })
@@ -78,7 +78,7 @@ describe(ExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-month',
               formFields: ['release-date-month'],
-              message: 'Enter the expected release date',
+              message: 'Expected release date must include a month',
             },
           ],
         })
@@ -100,7 +100,7 @@ describe(ExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-year',
               formFields: ['release-date-year'],
-              message: 'Enter the expected release date',
+              message: 'Expected release date must include a year',
             },
           ],
         })
@@ -122,7 +122,7 @@ describe(ExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'release-date-month',
               formFields: ['release-date-month'],
-              message: 'Enter date in the correct format',
+              message: 'Expected release date must be in the correct format',
             },
           ],
         })

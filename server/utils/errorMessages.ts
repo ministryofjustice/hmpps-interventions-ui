@@ -68,11 +68,11 @@ export default {
     mustBeInFuture: 'The date by which the service needs to be completed must be in the future',
   },
   releaseDate: {
-    dayEmpty: 'Enter the expected release date',
-    monthEmpty: 'Enter the expected release date',
-    yearEmpty: 'Enter the expected release date',
-    invalidDate: 'Enter date in the correct format',
-    mustBeInFuture: 'Enter date in the future',
+    dayEmpty: 'Expected release date must include a day',
+    monthEmpty: 'Expected release date must include a month',
+    yearEmpty: 'Expected release date must include a year',
+    invalidDate: 'Expected release date must be in the correct format',
+    mustBeInFuture: 'Expected release date must be in the future',
   },
   reasonForChange: {
     cannotBeEmpty: 'Reason for change cannot be empty',
@@ -172,9 +172,10 @@ export default {
   expectedReleaseDate: {
     empty: 'Select the expected release date or choose a different date',
     emptyRadioButton: 'Select an option',
-    emptyReason: 'Enter a reason',
-    noChangesinExpectedReleaseDate: 'Enter a different expected release date',
-    noChangesinExpectedReleaseDateMissingReason: 'Enter a different expected release date unknown reason',
+    emptyReason: 'Enter a reason why the expected release date is not known',
+    noChangesinExpectedReleaseDate: 'Enter a different expected release date, or go back to keep this date',
+    noChangesinExpectedReleaseDateMissingReason:
+      'Enter a different reason why the expected release date is not known, or go back to keep this reason',
   },
   releaseDateUnknownReason: {
     empty: `Enter a reason why the expected release date is not known`,

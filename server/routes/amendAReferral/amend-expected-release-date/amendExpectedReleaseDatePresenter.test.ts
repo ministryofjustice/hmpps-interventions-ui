@@ -7,7 +7,7 @@ describe('AmendExpectedReleaseDatePresenter', () => {
     it('contains a title, reasonForChangeHeading and back link url', () => {
       const presenter = new AmendExpectedReleaseDatePresenter(referral)
 
-      expect(presenter.text.title).toEqual(`Update Alex River's expected release date`)
+      expect(presenter.text.title).toEqual(`Do you know Alex River's expected release date?`)
       expect(presenter.text.reasonForChangeHeading).toEqual('Enter why the expected release date is not known')
       expect(presenter.backLinkUrl).toEqual(`/probation-practitioner/referrals/${referral.id}/details`)
     })

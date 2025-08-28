@@ -21,16 +21,16 @@ export default class AmendExpectedReleaseDateView {
       items: [
         {
           value: 'confirm',
-          text: `Enter a different date`,
-          checked: this.request.body?.['release-date'] === 'confirm',
+          text: `Yes`,
+          checked: this.amendReleaseDateCondition(),
           conditional: {
             html: enterExpectedReleaseDateHTML,
           },
         },
         {
           value: 'change',
-          text: `I don't know the expected release date`,
-          checked: this.request.body?.['release-date'] === 'change',
+          text: `No`,
+          checked: this.amendReleaseDateUnknownCondition(),
           conditional: {
             html: enterReasonWhyDateNotKnownHTML,
           },
@@ -40,10 +40,33 @@ export default class AmendExpectedReleaseDateView {
     }
   }
 
+  private amendReleaseDateUnknownCondition(): boolean | null | undefined {
+    return (
+      (this.request.body?.['release-date'] === 'change' &&
+        this.presenter.fields.expectedReleaseDateUnknownReason !== '') ||
+      this.presenter.referral.referral.expectedReleaseDateMissingReason !== null
+    )
+  }
+
+  private amendReleaseDateCondition(): boolean | null | undefined {
+    return (
+      (this.request.body?.['release-date'] === 'confirm' &&
+        (this.presenter.fields.expectedReleaseDate.day.value !== '' ||
+          this.presenter.fields.expectedReleaseDate.month.value !== '' ||
+          this.presenter.fields.expectedReleaseDate.year.value !== '')) ||
+      this.presenter.referral.referral.expectedReleaseDate !== null
+    )
+  }
+
   private get dateInputArgs(): DateInputArgs {
     return {
       id: 'amend-expected-release-date',
       namePrefix: 'amend-expected-release-date',
+      fieldset: {
+        legend: {
+          text: 'Enter the expected release date',
+        },
+      },
       hint: {
         text: this.presenter.expectedReleaseDateHint,
       },

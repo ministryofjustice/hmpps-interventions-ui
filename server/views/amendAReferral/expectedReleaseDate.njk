@@ -26,6 +26,7 @@
 
 
       <h1 class="govuk-heading-xl">{{ presenter.text.title }}</h1>
+      <p class="govuk-body-m">{{ presenter.text.hint }}</p>
 
       <form method="post" action={{ presenter.submitHref }}>
         <input type="hidden" name="_csrf" value="{{csrfToken}}">

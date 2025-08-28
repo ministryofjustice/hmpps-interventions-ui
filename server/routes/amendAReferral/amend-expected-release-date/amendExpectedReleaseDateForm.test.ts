@@ -56,7 +56,132 @@ describe(AmendExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'amend-expected-release-date-day',
               formFields: ['amend-expected-release-date-day'],
-              message: 'Enter the expected release date',
+              message: 'Expected release date must include a day',
+            },
+          ],
+        })
+      })
+    })
+
+    describe('when month of the expected release date is not passed', () => {
+      it('returns a validation error with the appropriate error message', async () => {
+        const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD')
+        const tomorrow = moment().add(1, 'days')
+        const request = TestUtils.createRequest({
+          'release-date': 'confirm',
+          'amend-expected-release-date-year': tomorrow.format('YYYY'),
+          'amend-expected-release-date-month': '',
+          'amend-expected-release-date-day': tomorrow.format('D'),
+          'amend-expected-release-date-unknown-reason': '',
+        })
+        const data = await new AmendExpectedReleaseDateForm(request, yesterday).data()
+
+        expect(data.error).toEqual({
+          errors: [
+            {
+              errorSummaryLinkedField: 'amend-expected-release-date-month',
+              formFields: ['amend-expected-release-date-month'],
+              message: 'Expected release date must include a month',
+            },
+          ],
+        })
+      })
+    })
+
+    describe('when year of the expected release date is not passed', () => {
+      it('returns a validation error with the appropriate error message', async () => {
+        const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD')
+        const tomorrow = moment().add(1, 'days')
+        const request = TestUtils.createRequest({
+          'release-date': 'confirm',
+          'amend-expected-release-date-year': '',
+          'amend-expected-release-date-month': tomorrow.format('M'),
+          'amend-expected-release-date-day': tomorrow.format('D'),
+          'amend-expected-release-date-unknown-reason': '',
+        })
+        const data = await new AmendExpectedReleaseDateForm(request, yesterday).data()
+
+        expect(data.error).toEqual({
+          errors: [
+            {
+              errorSummaryLinkedField: 'amend-expected-release-date-year',
+              formFields: ['amend-expected-release-date-year'],
+              message: 'Expected release date must include a year',
+            },
+          ],
+        })
+      })
+    })
+
+    describe('when day and month of the expected release date is not passed', () => {
+      it('returns a validation error with the appropriate error message', async () => {
+        const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD')
+        const tomorrow = moment().add(1, 'days')
+        const request = TestUtils.createRequest({
+          'release-date': 'confirm',
+          'amend-expected-release-date-year': tomorrow.format('YYYY'),
+          'amend-expected-release-date-month': '',
+          'amend-expected-release-date-day': '',
+          'amend-expected-release-date-unknown-reason': '',
+        })
+        const data = await new AmendExpectedReleaseDateForm(request, yesterday).data()
+
+        expect(data.error).toEqual({
+          errors: [
+            {
+              errorSummaryLinkedField: 'amend-expected-release-date-day',
+              formFields: ['amend-expected-release-date-day'],
+              message: 'Expected release date must include a day and a month',
+            },
+          ],
+        })
+      })
+    })
+
+    describe('when day and year of the expected release date is not passed', () => {
+      it('returns a validation error with the appropriate error message', async () => {
+        const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD')
+        const tomorrow = moment().add(1, 'days')
+        const request = TestUtils.createRequest({
+          'release-date': 'confirm',
+          'amend-expected-release-date-year': '',
+          'amend-expected-release-date-month': tomorrow.format('M'),
+          'amend-expected-release-date-day': '',
+          'amend-expected-release-date-unknown-reason': '',
+        })
+        const data = await new AmendExpectedReleaseDateForm(request, yesterday).data()
+
+        expect(data.error).toEqual({
+          errors: [
+            {
+              errorSummaryLinkedField: 'amend-expected-release-date-day',
+              formFields: ['amend-expected-release-date-day'],
+              message: 'Expected release date must include a day and a year',
+            },
+          ],
+        })
+      })
+    })
+
+    describe('when month and year of the expected release date is not passed', () => {
+      it('returns a validation error with the appropriate error message', async () => {
+        const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD')
+        const tomorrow = moment().add(1, 'days')
+        const request = TestUtils.createRequest({
+          'release-date': 'confirm',
+          'amend-expected-release-date-year': '',
+          'amend-expected-release-date-month': '',
+          'amend-expected-release-date-day': tomorrow.format('D'),
+          'amend-expected-release-date-unknown-reason': '',
+        })
+        const data = await new AmendExpectedReleaseDateForm(request, yesterday).data()
+
+        expect(data.error).toEqual({
+          errors: [
+            {
+              errorSummaryLinkedField: 'amend-expected-release-date-day',
+              formFields: ['amend-expected-release-date-day'],
+              message: 'Expected release date must include a month and a year',
             },
           ],
         })
@@ -81,7 +206,7 @@ describe(AmendExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'amend-expected-release-date-month',
               formFields: ['amend-expected-release-date-month'],
-              message: 'Enter date in the correct format',
+              message: 'Expected release date must be in the correct format',
             },
           ],
         })
@@ -105,7 +230,7 @@ describe(AmendExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'amend-expected-release-date-day',
               formFields: ['amend-expected-release-date-day'],
-              message: 'Enter date in the future',
+              message: 'Expected release date must be in the future',
             },
           ],
         })
@@ -127,9 +252,9 @@ describe(AmendExpectedReleaseDateForm, () => {
         expect(data.error).toEqual({
           errors: [
             {
-              errorSummaryLinkedField: 'amend-expected-release-date',
-              formFields: ['amend-expected-release-date'],
-              message: 'Enter a different expected release date',
+              errorSummaryLinkedField: 'amend-expected-release-date-day',
+              formFields: ['amend-expected-release-date-day'],
+              message: 'Enter a different expected release date, or go back to keep this date',
             },
           ],
         })
@@ -155,27 +280,8 @@ describe(AmendExpectedReleaseDateForm, () => {
             {
               errorSummaryLinkedField: 'amend-date-unknown-reason',
               formFields: ['amend-date-unknown-reason'],
-              message: 'Enter a different expected release date unknown reason',
-            },
-          ],
-        })
-      })
-    })
-
-    describe('when the form is submitted without selecting the radion button', () => {
-      it('returns a validation error with the appropriate error message', async () => {
-        const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD')
-        const request = TestUtils.createRequest({
-          'release-date': '',
-        })
-        const data = await new AmendExpectedReleaseDateForm(request, yesterday).data()
-
-        expect(data.error).toEqual({
-          errors: [
-            {
-              errorSummaryLinkedField: 'release-date',
-              formFields: ['release-date'],
-              message: 'Select an option',
+              message:
+                'Enter a different reason why the expected release date is not known, or go back to keep this reason',
             },
           ],
         })
