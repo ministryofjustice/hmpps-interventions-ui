@@ -624,19 +624,8 @@ export default class ShowReferralPresenter {
 
   get serviceUserLocationDetails(): SummaryListItem[] {
     const items: SummaryListItem[] = []
-    const { personCurrentLocationType } = this.sentReferral.referral
     items.push(this.locationAtTimeOfReferral)
     items.push(this.determineReleaseDate)
-    if (this.sentReferral.referral.expectedReleaseDateMissingReason) {
-      items.push({
-        key: 'Reason why expected release date is not known',
-        lines: [this.sentReferral.referral.expectedReleaseDateMissingReason],
-        changeLink:
-          this.userType === 'probation-practitioner' && personCurrentLocationType === CurrentLocationType.custody
-            ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-expected-release-date`
-            : undefined,
-      })
-    }
     items.push(...this.determineOfficeLocation)
     return items
   }
@@ -703,9 +692,11 @@ export default class ShowReferralPresenter {
     if (personCurrentLocationType === 'CUSTODY') {
       return {
         key: 'Expected release date',
-        lines: [this.determineExpectedReleaseDate],
+        lines: this.determineExpectedReleaseDate,
         changeLink:
-          this.userType === 'probation-practitioner' && personCurrentLocationType === CurrentLocationType.custody
+          this.userType === 'probation-practitioner' &&
+          personCurrentLocationType === CurrentLocationType.custody &&
+          this.sentReferral.referral.isReferralReleasingIn12Weeks === null
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-expected-release-date`
             : undefined,
       }
@@ -722,20 +713,20 @@ export default class ShowReferralPresenter {
     }
   }
 
-  private get determineExpectedReleaseDate(): string {
+  private get determineExpectedReleaseDate(): string[] {
     if (
       this.sentReferral.referral.expectedReleaseDate !== null &&
       this.sentReferral.referral.expectedReleaseDate !== ''
     ) {
-      return moment(this.sentReferral.referral.expectedReleaseDate).format('D MMM YYYY [(]ddd[)]')
+      return [moment(this.sentReferral.referral.expectedReleaseDate).format('D MMM YYYY [(]ddd[)]')]
     }
     if (
       this.sentReferral.referral.isReferralReleasingIn12Weeks !== null &&
       !this.sentReferral.referral.isReferralReleasingIn12Weeks
     ) {
-      return '---'
+      return ['---']
     }
-    return 'Not known'
+    return ['Not known', this.sentReferral.referral.expectedReleaseDateMissingReason || '']
   }
 
   private get locationAtTimeOfReferral(): SummaryListItem {

@@ -274,7 +274,7 @@ describe('ChangeLogPresenter', () => {
       'probation-practitioner'
     )
     expect(presenter.renderTitle).toEqual(
-      `${referral.referral.serviceUser.firstName} ${referral.referral.serviceUser.lastName}'s expected release date information has been added`
+      `${referral.referral.serviceUser.firstName} ${referral.referral.serviceUser.lastName}'s expected release date has been added`
     )
   })
 

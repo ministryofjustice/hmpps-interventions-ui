@@ -96,7 +96,7 @@ export default class ChangelogDetailPresenter {
       return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date has changed`
     }
     if (!oldValue.isValid() && newValue.isValid()) {
-      return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date information has been added`
+      return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date has been added`
     }
     return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date information has changed`
   }

@@ -17,8 +17,9 @@ export default class AmendExpectedReleaseDatePresenter {
   readonly expectedReleaseDateHint = 'For example, 27 5 2024'
 
   readonly text = {
-    title: `Update ${this.referral.referral.serviceUser.firstName} ${this.referral.referral.serviceUser.lastName}'s expected release date`,
+    title: `Do you know ${this.referral.referral.serviceUser.firstName} ${this.referral.referral.serviceUser.lastName}'s expected release date?`,
     reasonForChangeHeading: 'Enter why the expected release date is not known',
+    hint: 'If you add or change the expected release date, you must let the service provider know.',
     reasonForChangeErrorMessage: this.errorMessageForField('amend-date-unknown-reason'),
   }
 

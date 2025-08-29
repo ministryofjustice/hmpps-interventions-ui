@@ -758,16 +758,13 @@ describe(ShowReferralPresenter, () => {
         prisonerDetails
       )
       expect(presenter.serviceUserLocationDetails).toEqual([
-        { key: 'Prison establishment', lines: ['London'] },
+        { key: 'Prison establishment', lines: ['London'], changeLink: undefined },
         {
           key: 'Expected release date',
-          lines: ['Not known'],
+          lines: ['Not known', 'not in ndelius'],
+          changeLink: undefined,
         },
-        {
-          key: 'Reason why expected release date is not known',
-          lines: ['not in ndelius'],
-        },
-        { key: 'Expected probation office', lines: ['London'] },
+        { key: 'Expected probation office', lines: ['London'], changeLink: undefined },
       ])
     })
 
