@@ -164,7 +164,7 @@ export default class ChangelogDetailView {
   }
 
   private determineExpectedReleaseDateValue(expectedReleaseDateString: string): string {
-    const dateString = moment(expectedReleaseDateString)
+    const dateString = moment(expectedReleaseDateString, 'DD-MMM-YYYY', true)
     if (dateString.isValid()) {
       return moment(expectedReleaseDateString).format('DD MMM YYYY')
     }
@@ -172,8 +172,8 @@ export default class ChangelogDetailView {
   }
 
   private determineExpectedReleaseDate(oldValue: string[], newValue: string[]) {
-    const oldValueDateString = moment(oldValue[0].trim())
-    const newValueDateString = moment(newValue[0].trim())
+    const oldValueDateString = moment(oldValue[0].trim(), 'DD-MMM-YYYY', true)
+    const newValueDateString = moment(newValue[0].trim(), 'DD-MMM-YYYY', true)
     if (oldValueDateString.isValid() || newValueDateString.isValid()) {
       return {
         from: `<p>${oldValue[0].length > 0 ? this.determineExpectedReleaseDateValue(oldValue[0].trim()) : 'N/A'}</p>`,
