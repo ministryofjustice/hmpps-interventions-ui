@@ -33,6 +33,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             'Not found',
         ],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-name`,
+        hiddenText: 'Name',
       },
       {
         key: 'Email address',
@@ -47,8 +48,9 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             : undefined,
         valueLink:
           this.determineEmail() === 'Not found'
-            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address</a>`
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address<span class="govuk-visually-hidden">Email address</span></a>`
             : undefined,
+        hiddenText: 'Email address',
       },
       {
         key: 'Phone number',
@@ -59,24 +61,26 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             : undefined,
         valueLink:
           this.determinePhoneNumber() === 'Not found'
-            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number</a>`
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number<span class="govuk-visually-hidden">Phone number</span></a>`
             : undefined,
         deleteLink:
           this.determinePhoneNumber() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/phone-number`
             : undefined,
+        hiddenText: 'Phone number',
       },
       {
         key: 'PDU (Probation Delivery Unit)',
         lines: [this.referral.ppPdu || this.referral.ndeliusPDU || 'Not found'],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu`,
+        hiddenText: 'PDU (Probation Delivery Unit)',
       },
       {
         key: 'Probation office',
         lines: [this.determineProbationOffice()],
         valueLink:
           this.determineProbationOffice() === 'Not found'
-            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-office" class="govuk-link">Enter probation office</a>`
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-office" class="govuk-link">Enter probation office<span class="govuk-visually-hidden">Probation office</span></a>`
             : undefined,
 
         changeLink:
@@ -87,6 +91,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determineProbationOffice() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/probation-office`
             : undefined,
+        hiddenText: 'Probation office',
       },
       {
         key: 'Team phone number',
@@ -97,12 +102,13 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             : undefined,
         valueLink:
           this.determineTeamPhoneNumber() === 'Not found'
-            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number" class="govuk-link">Enter team phone number</a>`
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number" class="govuk-link">Enter team phone number<span class="govuk-visually-hidden">Team phone number</span></a>`
             : undefined,
         deleteLink:
           this.determineTeamPhoneNumber() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/team-phone-number`
             : undefined,
+        hiddenText: 'Team phone number',
       },
     ]
     return summary

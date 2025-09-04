@@ -111,6 +111,7 @@ export default class ViewUtils {
                   href: item.deleteLink,
                   text: 'Delete',
                   attributes: { id: `delete-link-${index}` },
+                  visuallyHiddenText: item.hiddenText || null,
                 })
               }
               if (item.changeLink) {
@@ -118,6 +119,7 @@ export default class ViewUtils {
                   href: item.changeLink,
                   text: 'Change',
                   attributes: { id: `change-link-${index}` },
+                  visuallyHiddenText: item.hiddenText || null,
                 })
               }
               return items
