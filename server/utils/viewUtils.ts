@@ -111,7 +111,7 @@ export default class ViewUtils {
                   href: item.deleteLink,
                   text: 'Delete',
                   attributes: { id: `delete-link-${index}` },
-                  visuallyHiddenText: item.hiddenText || null,
+                  visuallyHiddenText: item.deleteHiddenText || undefined,
                 })
               }
               if (item.changeLink) {
@@ -119,7 +119,7 @@ export default class ViewUtils {
                   href: item.changeLink,
                   text: 'Change',
                   attributes: { id: `change-link-${index}` },
-                  visuallyHiddenText: item.hiddenText || null,
+                  visuallyHiddenText: item.changeHiddenText || undefined,
                 })
               }
               return items
@@ -177,6 +177,7 @@ export default class ViewUtils {
                     href: item.changeLink,
                     text: 'Change',
                     attributes: { id: `change-link-${index}` },
+                    visuallyHiddenText: item.changeHiddenText || undefined,
                   },
                 ],
               }

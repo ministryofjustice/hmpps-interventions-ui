@@ -5,6 +5,7 @@ import { SummaryListItem, SummaryListItemContent } from '../../../utils/summaryL
 import DeliusOfficeLocation from '../../../models/deliusOfficeLocation'
 import DeliusDeliveryUnit from '../../../models/deliusDeliveryUnit'
 import { DeliusResponsibleOfficer } from '../../../models/delius/deliusResponsibleOfficer'
+import ViewUtils from '../../../utils/viewUtils'
 
 export default class ConfirmProbationPractitionerDetailsPresenter {
   readonly backLinkUrl: string
@@ -33,7 +34,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             'Not found',
         ],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-name`,
-        hiddenText: 'Name',
+        changeHiddenText: `Change probation practitioner's name`,
       },
       {
         key: 'Email address',
@@ -48,9 +49,10 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             : undefined,
         valueLink:
           this.determineEmail() === 'Not found'
-            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address<span class="govuk-visually-hidden">Email address</span></a>`
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address<span class="govuk-visually-hidden">${ViewUtils.escape(`Enter probation practioner's email address`)}</span></a>`
             : undefined,
-        hiddenText: 'Email address',
+        changeHiddenText: `Change probation practitioner's email address`,
+        deleteHiddenText: `Delete probation practitioner's email address`,
       },
       {
         key: 'Phone number',
@@ -61,26 +63,27 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             : undefined,
         valueLink:
           this.determinePhoneNumber() === 'Not found'
-            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number<span class="govuk-visually-hidden">Phone number</span></a>`
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-phone-number" class="govuk-link">Enter phone number<span class="govuk-visually-hidden">${ViewUtils.escape(`Enter probation practioner's phone number`)}</span></a>`
             : undefined,
         deleteLink:
           this.determinePhoneNumber() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/phone-number`
             : undefined,
-        hiddenText: 'Phone number',
+        changeHiddenText: `Change probation practitioner's phone number`,
+        deleteHiddenText: `Delete probation practitioner's phone number`,
       },
       {
         key: 'PDU (Probation Delivery Unit)',
         lines: [this.referral.ppPdu || this.referral.ndeliusPDU || 'Not found'],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu`,
-        hiddenText: 'PDU (Probation Delivery Unit)',
+        changeHiddenText: 'Change probation delivery unit',
       },
       {
         key: 'Probation office',
         lines: [this.determineProbationOffice()],
         valueLink:
           this.determineProbationOffice() === 'Not found'
-            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-office" class="govuk-link">Enter probation office<span class="govuk-visually-hidden">Probation office</span></a>`
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-office" class="govuk-link">Enter probation office<span class="govuk-visually-hidden">${ViewUtils.escape(`Enter probation office`)}</span></a>`
             : undefined,
 
         changeLink:
@@ -91,7 +94,8 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determineProbationOffice() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/probation-office`
             : undefined,
-        hiddenText: 'Probation office',
+        changeHiddenText: 'Change probation office',
+        deleteHiddenText: `Delete probation office`,
       },
       {
         key: 'Team phone number',
@@ -102,13 +106,14 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             : undefined,
         valueLink:
           this.determineTeamPhoneNumber() === 'Not found'
-            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number" class="govuk-link">Enter team phone number<span class="govuk-visually-hidden">Team phone number</span></a>`
+            ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number" class="govuk-link">Enter team phone number<span class="govuk-visually-hidden">${ViewUtils.escape(`Enter team phone number`)}</span></a>`
             : undefined,
         deleteLink:
           this.determineTeamPhoneNumber() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/team-phone-number`
             : undefined,
-        hiddenText: 'Team phone number',
+        changeHiddenText: 'Change team phone number',
+        deleteHiddenText: `Delete team phone number`,
       },
     ]
     return summary

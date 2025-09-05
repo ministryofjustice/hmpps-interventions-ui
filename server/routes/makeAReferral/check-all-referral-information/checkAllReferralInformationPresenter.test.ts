@@ -150,26 +150,31 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Name',
               lines: ['Victor Drake'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's name`,
             },
             {
               key: 'Email address',
               lines: ['a.b@xyz.com'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's email address`,
             },
             {
               key: 'Phone number',
               lines: ['075950243221'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's phone number`,
             },
             {
               key: 'Probation office',
               lines: ['London'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+              changeHiddenText: `Change expected probation office`,
             },
             {
               key: 'Team phone number',
               lines: ['020456734343'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's team phone number`,
             },
           ])
         })
@@ -202,26 +207,31 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Name',
               lines: ['Victor Drake'],
               changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-name?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's name`,
             },
             {
               key: 'Email address',
               lines: ['a.b@xyz.com'],
               changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's email address`,
             },
             {
               key: 'Phone number',
               lines: ['075950243221'],
               changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's phone number`,
             },
             {
               key: 'PDU (Probation Delivery Unit)',
               lines: ['London'],
               changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's probation delivery unit`,
             },
             {
               key: 'Team phone number',
               lines: ['020456734343'],
               changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's team phone number`,
             },
           ])
         })
@@ -257,21 +267,25 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Name',
               lines: ['Victor Drake'],
               changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+              changeHiddenText: `Change main point of contact's name`,
             },
             {
               key: 'Role / job title',
               lines: ['probation practitioner'],
               changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+              changeHiddenText: `Change main point of contact's role or job title`,
             },
             {
               key: 'Email address',
               lines: ['a.b@xyz.com'],
               changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+              changeHiddenText: `Change main point of contact's email address`,
             },
             {
               key: 'Reason why referral is being made before probation practitioner allocated',
               lines: ['some reason'],
               changeLink: `/referrals/${referralWithUnAllocatedCom.id}/reason-for-referral-before-allocation?amendPPDetails=true`,
+              changeHiddenText: `Change the reason why the referral is being made before a probation practitioner is allocated  `,
             },
           ])
         })
@@ -307,21 +321,25 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Name',
               lines: ['Victor Drake'],
               changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+              changeHiddenText: `Change main point of contact's name`,
             },
             {
               key: 'Role / job title',
               lines: ['probation practitioner'],
               changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+              changeHiddenText: `Change main point of contact's role or job title`,
             },
             {
               key: 'Email address',
               lines: ['a.b@xyz.com'],
               changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+              changeHiddenText: `Change main point of contact's email address`,
             },
             {
               key: 'Probation office',
               lines: ['London'],
               changeLink: `/referrals/${referralWithUnAllocatedCom.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+              changeHiddenText: `Change main point of contact's probation office`,
             },
           ])
         })
@@ -365,26 +383,31 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Name',
               lines: ['Victor Drake'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's name`,
             },
             {
               key: 'Email address',
               lines: ['a.c@abc.com'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's email address`,
             },
             {
               key: 'Phone number',
               lines: ['075950243221'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's phone number`,
             },
             {
               key: 'Probation office',
               lines: ['London'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+              changeHiddenText: `Change expected probation office`,
             },
             {
               key: 'Team phone number',
               lines: ['020456734343'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's team phone number`,
             },
           ])
         })
@@ -427,26 +450,31 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Name',
               lines: ['Victor Drake'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's name`,
             },
             {
               key: 'Email address',
               lines: ['Not provided'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's email address`,
             },
             {
               key: 'Phone number',
               lines: ['075950243221'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's phone number`,
             },
             {
               key: 'PDU (Probation Delivery Unit)',
               lines: ['London'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's probation delivery unit`,
             },
             {
               key: 'Team phone number',
               lines: ['Not provided'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's team phone number`,
             },
           ])
         })
@@ -560,6 +588,7 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Probation office',
               lines: ['Derbyshire: Buxton Probation Office'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+              changeHiddenText: `Change expected probation office`,
             },
             {
               key: 'Release date',
@@ -600,6 +629,7 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Probation office',
               lines: ['Derbyshire: Buxton Probation Office'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+              changeHiddenText: `Change expected probation office`,
             },
             {
               key: 'Release date',
@@ -634,16 +664,19 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Location at time of referral',
               lines: ['Aylesbury (HMYOI)'],
               changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+              changeHiddenText: `Change location at time of referral`,
             },
             {
               key: 'Expected release date',
               lines: [`4 Apr 2024 (Thu)`],
               changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+              changeHiddenText: `Change expected release date`,
             },
             {
               key: 'Expected probation office',
               lines: ['Derbyshire: Buxton Probation Office'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+              changeHiddenText: `Change expected probation office`,
             },
           ],
         })
@@ -675,16 +708,19 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Location at time of referral',
               lines: ['Aylesbury (HMYOI)'],
               changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+              changeHiddenText: `Change location at time of referral`,
             },
             {
               key: 'Expected release date',
               lines: [`4 Apr 2024 (Thu)`],
               changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+              changeHiddenText: `Change expected release date`,
             },
             {
               key: 'Expected PDU (Probation Delivery Unit)',
               lines: ['London'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
+              changeHiddenText: `Change probation practitioner's probation delivery unit`,
             },
           ],
         })
@@ -716,21 +752,25 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Location at time of referral',
               lines: ['Aylesbury (HMYOI)'],
               changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+              changeHiddenText: `Change location at time of referral`,
             },
             {
               key: 'Expected release date',
               lines: [`---`],
               changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+              changeHiddenText: `Change expected release date`,
             },
             {
               key: 'Reason why expected release date is not known',
               lines: [`it will be known next week`],
               changeLink: `/referrals/${referral.id}/expected-release-date-unknown?amendPPDetails=true`,
+              changeHiddenText: `Change reason why expected release date is not known`,
             },
             {
               key: 'Expected probation office',
               lines: ['Derbyshire: Buxton Probation Office'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+              changeHiddenText: `Change expected probation office`,
             },
           ],
         })
@@ -763,16 +803,19 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Location at time of referral',
               lines: ['Aylesbury (HMYOI)'],
               changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+              changeHiddenText: `Change location at time of referral`,
             },
             {
               key: 'Expected release date',
               lines: [`4 Apr 2024 (Thu)`],
               changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+              changeHiddenText: `Change expected release date`,
             },
             {
               key: 'Expected probation office',
               lines: ['London'],
               changeLink: `/referrals/${referral.id}/expected-probation-office?amendPPDetails=true`,
+              changeHiddenText: `Change expected probation office`,
             },
           ],
         })
@@ -806,21 +849,25 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Location at time of referral',
               lines: ['Aylesbury (HMYOI)'],
               changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+              changeHiddenText: `Change location at time of referral`,
             },
             {
               key: 'Expected release date',
               lines: [`4 Apr 2024 (Thu)`],
               changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+              changeHiddenText: `Change expected release date`,
             },
             {
               key: 'Expected probation office',
               lines: [`---`],
               changeLink: `/referrals/${referral.id}/expected-probation-office?amendPPDetails=true`,
+              changeHiddenText: `Change expected probation office`,
             },
             {
               key: 'Reason why expected probation office is not known',
               lines: ['some reason'],
               changeLink: `/referrals/${referral.id}/expected-probation-office-unknown?amendPPDetails=true`,
+              changeHiddenText: `Change reason why expected probation office is not known`,
             },
           ],
         })
@@ -853,16 +900,19 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Location at time of referral',
               lines: ['Aylesbury (HMYOI)'],
               changeLink: `/referrals/${referral.id}/submit-current-location?amendPPDetails=true`,
+              changeHiddenText: `Change location at time of referral`,
             },
             {
               key: 'Expected release date',
               lines: [`---`],
               changeLink: `/referrals/${referral.id}/expected-release-date?amendPPDetails=true`,
+              changeHiddenText: `Change expected release date`,
             },
             {
               key: 'Expected probation office',
               lines: ['---'],
               changeLink: `/referrals/${referral.id}/expected-probation-office?amendPPDetails=true`,
+              changeHiddenText: `Change expected probation office`,
             },
           ],
         })
@@ -897,6 +947,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           key: 'Additional risk information',
           lines: ['Past assault of strangers'],
           changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/risk-information',
+          changeHiddenText: 'Change additional risk information',
         })
       })
     })
@@ -941,6 +992,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             key: 'Identify needs',
             lines: ['Some additional needs information'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
+            changeHiddenText: 'Change identified needs',
           })
         })
       })
@@ -965,6 +1017,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             key: 'Mobility, disability or accessibility needs',
             lines: ['Some accessibility needs information'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
+            changeHiddenText: 'Change mobility, disability or accessibility needs',
           })
         })
       })
@@ -989,6 +1042,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             key: 'Interpreter required',
             lines: ['No'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
+            changeHiddenText: 'Change whether an interpreter is required',
           })
         })
 
@@ -1013,6 +1067,7 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Interpreter language',
               lines: ['Spanish'],
               changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
+              changeHiddenText: 'Change interpreter language',
             })
           })
         })
@@ -1058,6 +1113,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             key: 'Caring or employment responsibilities',
             lines: ['No'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
+            changeHiddenText: 'Change caring or employment responsibilities',
           })
         })
 
@@ -1082,6 +1138,7 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Caring or employment responsibilities',
               lines: ['Yes', 'Alex can’t attend on Fridays'],
               changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/needs-and-requirements',
+              changeHiddenText: 'Change caring or employment responsibilities',
             })
           })
         })
@@ -1166,6 +1223,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             lines: ['Low complexity', '', 'Low complexity accommodation description'],
             changeLink:
               '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/complexity-level',
+            changeHiddenText: 'Change complexity level',
           })
         })
       })
@@ -1180,6 +1238,7 @@ describe(CheckAllReferralInformationPresenter, () => {
             listStyle: ListStyle.bulleted,
             changeLink:
               '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-category/428ee70f-3001-4399-95a6-ad25eaaede16/desired-outcomes',
+            changeHiddenText: 'Change desired outcomes',
           })
         })
       })
@@ -1251,12 +1310,14 @@ describe(CheckAllReferralInformationPresenter, () => {
                 key: 'Reason for referral and further information for the service provider',
                 lines: ['Some reason'],
                 changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/reason-for-referral?amendPPDetails=true',
+                changeHiddenText: 'Change the reason for referral and referral details',
               },
               {
                 key: 'Selected services',
                 lines: ['Accommodation'],
                 listStyle: ListStyle.noMarkers,
                 changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
+                changeHiddenText: 'Change selected services',
               },
             ],
           })
@@ -1287,12 +1348,14 @@ describe(CheckAllReferralInformationPresenter, () => {
                 key: 'Reason for referral and further information for the service provider',
                 lines: ['Some reason'],
                 changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/reason-for-referral?amendPPDetails=true',
+                changeHiddenText: 'Change the reason for referral and referral details',
               },
               {
                 key: 'Selected services',
                 lines: ['Accommodation', 'Education, training and employment'],
                 listStyle: ListStyle.noMarkers,
                 changeLink: `/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/service-categories`,
+                changeHiddenText: 'Change selected services',
               },
             ],
           })
@@ -1344,26 +1407,31 @@ describe(CheckAllReferralInformationPresenter, () => {
             key: 'Sentence',
             lines: ['Common and other types of assault'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+            changeHiddenText: 'Change sentence',
           },
           {
             key: 'Subcategory',
             lines: ['Common assault and battery'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+            changeHiddenText: 'Change subcategory',
           },
           {
             key: 'End of sentence date',
             lines: ['15 Sep 2025'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/relevant-sentence',
+            changeHiddenText: 'Change end of sentence date',
           },
           {
             key: 'Maximum number of enforceable days',
             lines: ['15'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/enforceable-days',
+            changeHiddenText: 'Change maximum number of enforceable days',
           },
           {
             key: 'Date intervention to be completed by',
             lines: ['24 Oct 2021'],
             changeLink: '/referrals/03e9e6cd-a45f-4dfc-adad-06301349042e/completion-deadline',
+            changeHiddenText: 'Change the date the intervention is to be completed by',
           },
         ],
       })
