@@ -151,22 +151,26 @@ export default class CheckAllReferralInformationPresenter {
           key: 'Name',
           lines: [this.referral.ppName || this.referral.ndeliusPPName || 'Not found'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-name?amendPPDetails=true`,
+          changeHiddenText: `Change probation practitioner's name`,
         },
         {
           key: 'Email address',
           lines: [this.deriveEmailAddress],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-email-address?amendPPDetails=true`,
+          changeHiddenText: `Change probation practitioner's email address`,
         },
         {
           key: 'Phone number',
           lines: [this.referral.ppPhoneNumber || this.referral.ndeliusPhoneNumber || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-phone-number?amendPPDetails=true`,
+          changeHiddenText: `Change probation practitioner's phone number`,
         },
         ...this.derivePduOrProbationOffice('Probation office', 'PDU (Probation Delivery Unit)'),
         {
           key: 'Team phone number',
           lines: [this.referral.ppTeamPhoneNumber || this.referral.ndeliusTeamPhoneNumber || 'Not provided'],
           changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-team-phone-number?amendPPDetails=true`,
+          changeHiddenText: `Change probation practitioner's team phone number`,
         },
       ],
     }
@@ -180,11 +184,13 @@ export default class CheckAllReferralInformationPresenter {
             key: 'Expected probation office',
             lines: ['---'],
             changeLink: `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`,
+            changeHiddenText: 'Change expected probation office',
           },
           {
             key: 'Reason why expected probation office is not known',
             lines: [this.referral.expectedProbationOfficeUnKnownReason],
             changeLink: `/referrals/${this.referral.id}/expected-probation-office-unknown?amendPPDetails=true`,
+            changeHiddenText: 'Change reason why expected probation office is not known',
           },
         ]
       }
@@ -193,6 +199,7 @@ export default class CheckAllReferralInformationPresenter {
           key: probationOfficeHeading,
           lines: [this.referral.expectedProbationOffice || '---'],
           changeLink: `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`,
+          changeHiddenText: 'Change expected probation office',
         },
       ]
     }
@@ -204,6 +211,7 @@ export default class CheckAllReferralInformationPresenter {
           changeLink: this.checkIfUnAllocatedCOM
             ? `/referrals/${this.referral.id}/expected-probation-office?amendPPDetails=true`
             : `/referrals/${this.referral.id}/update-probation-practitioner-office?amendPPDetails=true`,
+          changeHiddenText: 'Change expected probation office',
         },
       ]
     }
@@ -212,6 +220,7 @@ export default class CheckAllReferralInformationPresenter {
         key: pduHeading,
         lines: [this.referral.ppPdu || this.referral.ndeliusPDU || '---'],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
+        changeHiddenText: `Change probation practitioner's probation delivery unit`,
       },
     ]
   }
@@ -227,16 +236,19 @@ export default class CheckAllReferralInformationPresenter {
           key: 'Name',
           lines: [this.referral.ppName || this.referral.ndeliusPPName || 'Not found'],
           changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+          changeHiddenText: `Change main point of contact's name`,
         },
         {
           key: 'Role / job title',
           lines: [this.referral.roleOrJobTitle || 'Not found'],
           changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+          changeHiddenText: `Change main point of contact's role or job title`,
         },
         {
           key: 'Email address',
           lines: [this.deriveEmailAddress],
           changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+          changeHiddenText: `Change main point of contact's email address`,
         },
         this.determineElementForMainPointOfContacts,
       ],
@@ -249,6 +261,7 @@ export default class CheckAllReferralInformationPresenter {
         key: 'Reason why referral is being made before probation practitioner allocated',
         lines: [this.referral.reasonForReferralCreationBeforeAllocation || ''],
         changeLink: `/referrals/${this.referral.id}/reason-for-referral-before-allocation?amendPPDetails=true`,
+        changeHiddenText: `Change the reason why the referral is being made before a probation practitioner is allocated  `,
       }
     }
     return this.establishmentOrProbationOffice
@@ -283,6 +296,7 @@ export default class CheckAllReferralInformationPresenter {
         key: 'Prison establishment',
         lines: [this.prisonName(this.referral.ppEstablishment)],
         changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+        changeHiddenText: `Change main point of contact's prison establishment`,
       }
     }
     if (this.referral.ppProbationOffice) {
@@ -290,12 +304,14 @@ export default class CheckAllReferralInformationPresenter {
         key: 'Probation office',
         lines: [this.referral.ppProbationOffice],
         changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+        changeHiddenText: `Change main point of contact's probation office`,
       }
     }
     return {
       key: 'Establishment/Probation office',
       lines: ['Not provided'],
       changeLink: `/referrals/${this.referral.id}/confirm-main-point-of-contact?amendPPDetails=true`,
+      changeHiddenText: `Change main point of contact's probation office`,
     }
   }
 
@@ -310,11 +326,13 @@ export default class CheckAllReferralInformationPresenter {
         key: 'Location at time of referral',
         lines: [this.prisonName(this.referral.personCustodyPrisonId)],
         changeLink: `/referrals/${this.referral.id}/submit-current-location?amendPPDetails=true`,
+        changeHiddenText: 'Change location at time of referral',
       },
       {
         key: 'Expected release date',
         lines: [expectedReleaseInfo],
         changeLink: `/referrals/${this.referral.id}/expected-release-date?amendPPDetails=true`,
+        changeHiddenText: 'Change expected release date',
       },
     ]
 
@@ -323,6 +341,7 @@ export default class CheckAllReferralInformationPresenter {
         key: 'Reason why expected release date is not known',
         lines: [this.referral.expectedReleaseDateMissingReason],
         changeLink: `/referrals/${this.referral.id}/expected-release-date-unknown?amendPPDetails=true`,
+        changeHiddenText: 'Change reason why expected release date is not known',
       })
     }
     currentLocationAndReleaseDetails.push(
@@ -402,41 +421,49 @@ export default class CheckAllReferralInformationPresenter {
             key: 'Who is at risk',
             lines: [this.editedOasysRiskInformation.riskSummaryWhoIsAtRisk || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+            changeHiddenText: 'Change who is at risk',
           },
           {
             key: 'Nature of risk',
             lines: [this.editedOasysRiskInformation.riskSummaryNatureOfRisk || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+            changeHiddenText: 'Change nature of risk',
           },
           {
             key: 'When risk likely to be greatest',
             lines: [this.editedOasysRiskInformation.riskSummaryRiskImminence || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+            changeHiddenText: 'Change when risk likely to be greatest',
           },
           {
             key: 'Concerns relating to self harm',
             lines: [this.editedOasysRiskInformation.riskToSelfSelfHarm || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+            changeHiddenText: 'Change concerns relating to self harm',
           },
           {
             key: 'Concerns relating to suicide',
             lines: [this.editedOasysRiskInformation.riskToSelfSuicide || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+            changeHiddenText: 'Change concerns relating to suicide',
           },
           {
             key: 'Concerns relating to coping in a hotel setting',
             lines: [this.editedOasysRiskInformation.riskToSelfHostelSetting || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+            changeHiddenText: `Change concerns relating to coping in a hotel setting`,
           },
           {
             key: 'Concerns relating to vulnerability',
             lines: [this.editedOasysRiskInformation.riskToSelfVulnerability || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+            changeHiddenText: `Change concerns relating to vulnerability`,
           },
           {
             key: 'Additional risk information',
             lines: [this.editedOasysRiskInformation.additionalInformation || ''],
             changeLink: `/referrals/${this.referral.id}/edit-oasys-risk-information`,
+            changeHiddenText: `Change additional risk information`,
           },
         ],
       }
@@ -448,6 +475,7 @@ export default class CheckAllReferralInformationPresenter {
           key: 'Additional risk information',
           lines: [this.referral.additionalRiskInformation ?? ''],
           changeLink: `/referrals/${this.referral.id}/risk-information`,
+          changeHiddenText: `Change additional risk information`,
         },
       ],
     }
@@ -463,21 +491,25 @@ export default class CheckAllReferralInformationPresenter {
           key: 'Identify needs',
           lines: [needsAndRequirementsPresenter.fields.additionalNeedsInformation],
           changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
+          changeHiddenText: 'Change identified needs',
         },
         {
           key: 'Mobility, disability or accessibility needs',
           lines: [needsAndRequirementsPresenter.fields.accessibilityNeeds],
           changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
+          changeHiddenText: 'Change mobility, disability or accessibility needs',
         },
         {
           key: 'Interpreter required',
           lines: [this.referral.needsInterpreter ? 'Yes' : 'No'],
           changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
+          changeHiddenText: 'Change whether an interpreter is required',
         },
         {
           key: 'Interpreter language',
           lines: [this.referral.interpreterLanguage || 'N/A'],
           changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
+          changeHiddenText: 'Change interpreter language',
         },
         {
           key: 'Primary language',
@@ -490,6 +522,7 @@ export default class CheckAllReferralInformationPresenter {
             needsAndRequirementsPresenter.fields.whenUnavailable
           ),
           changeLink: `/referrals/${this.referral.id}/needs-and-requirements`,
+          changeHiddenText: 'Change caring or employment responsibilities',
         },
       ],
     }
@@ -527,11 +560,13 @@ export default class CheckAllReferralInformationPresenter {
           key: 'Reason for referral and referral details',
           lines: [this.determineFurtherInformation(this.referral)],
           changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
+          changeHiddenText: `Change the reason for referral and referral details`,
         })
         summaries.push({
           key: 'Further Information for the service provider',
           lines: [this.determineReasonForReferralFurtherInformation(this.referral)],
           changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
+          changeHiddenText: `Change further information for the service provider`,
         })
       }
       summaries.push(
@@ -539,12 +574,14 @@ export default class CheckAllReferralInformationPresenter {
           key: 'Complexity level',
           lines: [checkedComplexityOption?.title ?? '', '', checkedComplexityOption?.hint ?? ''],
           changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/complexity-level`,
+          changeHiddenText: `Change complexity level`,
         },
         {
           key: 'Desired outcomes',
           lines: checkedDesiredOutcomesOptions.map(option => option.text),
           listStyle: checkedDesiredOutcomesOptions.length > 1 ? ListStyle.bulleted : ListStyle.noMarkers,
           changeLink: `/referrals/${this.referral.id}/service-category/${serviceCategoryId}/desired-outcomes`,
+          changeHiddenText: `Change desired outcomes`,
         }
       )
       return {
@@ -572,12 +609,16 @@ export default class CheckAllReferralInformationPresenter {
           key: 'Reason for referral and further information for the service provider',
           lines: [this.determineFurtherInformation(this.referral)],
           changeLink: `/referrals/${this.referral.id}/reason-for-referral?amendPPDetails=true`,
+          changeHiddenText: this.referral.reasonForReferral?.length
+            ? 'Change the reason for referral and referral details'
+            : 'Change further information for the service provider',
         },
         {
           key: 'Selected services',
           lines: serviceCategories.map(serviceCategory => utils.convertToProperCase(serviceCategory.name)),
           listStyle: ListStyle.noMarkers,
           changeLink: `/referrals/${this.referral.id}/service-categories`,
+          changeHiddenText: 'Change selected services',
         },
       ],
     }
@@ -599,26 +640,31 @@ export default class CheckAllReferralInformationPresenter {
           key: 'Sentence',
           lines: [presenter.category],
           changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
+          changeHiddenText: 'Change sentence',
         },
         {
           key: 'Subcategory',
           lines: [presenter.subcategory],
           changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
+          changeHiddenText: 'Change subcategory',
         },
         {
           key: 'End of sentence date',
           lines: [presenter.endOfSentenceDate],
           changeLink: `/referrals/${this.referral.id}/relevant-sentence`,
+          changeHiddenText: 'Change end of sentence date',
         },
         {
           key: 'Maximum number of enforceable days',
           lines: [this.referral.maximumEnforceableDays ? this.referral.maximumEnforceableDays.toString() : ''],
           changeLink: `/referrals/${this.referral.id}/enforceable-days`,
+          changeHiddenText: 'Change maximum number of enforceable days',
         },
         {
           key: 'Date intervention to be completed by',
           lines: [DateUtils.formattedDate(completionDeadline, { month: 'short' })],
           changeLink: `/referrals/${this.referral.id}/completion-deadline`,
+          changeHiddenText: 'Change the date the intervention is to be completed by',
         },
       ],
     }

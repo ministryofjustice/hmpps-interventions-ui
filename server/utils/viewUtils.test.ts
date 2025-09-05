@@ -115,7 +115,7 @@ describe('ViewUtils', () => {
                   href: '/risks',
                   text: 'Change',
                   attributes: { id: `change-link-0` },
-                  visuallyHiddenText: null,
+                  visuallyHiddenText: undefined,
                 },
               ],
             },
