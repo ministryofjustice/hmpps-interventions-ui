@@ -398,19 +398,19 @@ describe(ShowReferralPresenter, () => {
           key: 'Name',
           lines: ['Bernard Beaks'],
           changeLink: undefined,
-          changeHiddenText: `Change probation practitioner's name`,
+          changeHiddenText: `Probation practitioner's name`,
         },
         {
           key: 'Email address',
           lines: ['bernard.beaks@justice.gov.uk'],
           changeLink: undefined,
-          changeHiddenText: `Change probation practitioner's email address`,
+          changeHiddenText: `Probation practitioner's email address`,
         },
         {
           key: 'Phone number',
           lines: ['072121212125'],
           changeLink: undefined,
-          changeHiddenText: `Change probation practitioner's phone number`,
+          changeHiddenText: `Probation practitioner's phone number`,
         },
         {
           key: 'Probation Office',
@@ -421,7 +421,7 @@ describe(ShowReferralPresenter, () => {
           key: 'Team phone number',
           lines: ['020343434565'],
           changeLink: undefined,
-          changeHiddenText: `Change probation practitioner's team phone number`,
+          changeHiddenText: `Probation practitioner's team phone number`,
         },
       ])
     })
@@ -449,19 +449,19 @@ describe(ShowReferralPresenter, () => {
           key: 'Name',
           lines: ['Bernard Beaks'],
           changeLink: `/probation-practitioner/referrals/${sentReferral.id}/amend-probation-practitioner-name`,
-          changeHiddenText: `Change probation practitioner's name`,
+          changeHiddenText: `Probation practitioner's name`,
         },
         {
           key: 'Email address',
           lines: ['bernard.beaks@justice.gov.uk'],
           changeLink: `/probation-practitioner/referrals/${sentReferral.id}/amend-probation-practitioner-email`,
-          changeHiddenText: `Change probation practitioner's email address`,
+          changeHiddenText: `Probation practitioner's email address`,
         },
         {
           key: 'Phone number',
           lines: ['072121212125'],
           changeLink: `/probation-practitioner/referrals/${sentReferral.id}/amend-probation-practitioner-phone-number`,
-          changeHiddenText: `Change probation practitioner's phone number`,
+          changeHiddenText: `Probation practitioner's phone number`,
         },
         {
           key: 'Probation Office',
@@ -472,7 +472,7 @@ describe(ShowReferralPresenter, () => {
           key: 'Team phone number',
           lines: ['020343434565'],
           changeLink: '/probation-practitioner/referrals/16/amend-team-phone-number',
-          changeHiddenText: `Change probation practitioner's team phone number`,
+          changeHiddenText: `Probation practitioner's team phone number`,
         },
       ])
     })
@@ -729,19 +729,19 @@ describe(ShowReferralPresenter, () => {
           key: 'Prison establishment',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change prison establishment`,
+          changeHiddenText: `Prison establishment`,
         },
         {
           key: 'Expected release date',
           lines: ['---'],
           changeLink: undefined,
-          changeHiddenText: `Change expected release date`,
+          changeHiddenText: `Expected release date`,
         },
         {
           key: 'Expected probation office',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change expected probation office`,
+          changeHiddenText: `Expected probation office`,
         },
       ])
     })
@@ -779,19 +779,19 @@ describe(ShowReferralPresenter, () => {
           key: 'Prison establishment',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: 'Change prison establishment',
+          changeHiddenText: `Prison establishment`,
         },
         {
           key: 'Expected release date',
           lines: [moment.tz('Europe/London').add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
           changeLink: undefined,
-          changeHiddenText: `Change expected release date`,
+          changeHiddenText: `Expected release date`,
         },
         {
           key: 'Expected probation office',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change expected probation office`,
+          changeHiddenText: `Expected probation office`,
         },
       ])
     })
@@ -829,19 +829,19 @@ describe(ShowReferralPresenter, () => {
           key: 'Prison establishment',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change prison establishment`,
+          changeHiddenText: `Prison establishment`,
         },
         {
           key: 'Expected release date',
           lines: ['Not known', 'not in ndelius'],
           changeLink: undefined,
-          changeHiddenText: `Change expected release date`,
+          changeHiddenText: `Expected release date`,
         },
         {
           key: 'Expected probation office',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change expected probation office`,
+          changeHiddenText: `Expected probation office`,
         },
       ])
     })
@@ -881,13 +881,13 @@ describe(ShowReferralPresenter, () => {
           key: 'Prison establishment',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change prison establishment`,
+          changeHiddenText: `Prison establishment`,
         },
         {
           key: 'Expected release date',
           lines: [moment.tz('Europe/London').add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
           changeLink: undefined,
-          changeHiddenText: `Change expected release date`,
+          changeHiddenText: `Expected release date`,
         },
         { key: 'Expected PDU (Probation Delivery Unit)', lines: ['City'] },
       ])
@@ -927,19 +927,19 @@ describe(ShowReferralPresenter, () => {
           key: 'Prison establishment',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change prison establishment`,
+          changeHiddenText: `Prison establishment`,
         },
         {
           key: 'Expected release date',
           lines: [moment().add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
           changeLink: undefined,
-          changeHiddenText: `Change expected release date`,
+          changeHiddenText: `Expected release date`,
         },
         {
           key: 'Expected probation office',
           lines: ['Sheffield'],
           changeLink: undefined,
-          changeHiddenText: `Change expected probation office`,
+          changeHiddenText: `Expected probation office`,
         },
       ])
     })
@@ -977,19 +977,19 @@ describe(ShowReferralPresenter, () => {
           key: 'Prison establishment',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change prison establishment`,
+          changeHiddenText: `Prison establishment`,
         },
         {
           key: 'Expected release date',
           lines: [moment().add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
           changeLink: undefined,
-          changeHiddenText: `Change expected release date`,
+          changeHiddenText: `Expected release date`,
         },
         {
           key: 'Expected probation office',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change expected probation office`,
+          changeHiddenText: `Expected probation office`,
         },
       ])
     })
@@ -1030,13 +1030,13 @@ describe(ShowReferralPresenter, () => {
           key: 'Prison establishment',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change prison establishment`,
+          changeHiddenText: `Prison establishment`,
         },
         {
           key: 'Expected release date',
           lines: [moment().add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
           changeLink: undefined,
-          changeHiddenText: `Change expected release date`,
+          changeHiddenText: `Expected release date`,
         },
         {
           key: 'Expected probation office',
@@ -1080,19 +1080,19 @@ describe(ShowReferralPresenter, () => {
           key: 'Prison establishment',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change prison establishment`,
+          changeHiddenText: `Prison establishment`,
         },
         {
           key: 'Expected release date',
           lines: [moment().add(2, 'days').format('D MMM YYYY [(]ddd[)]')],
           changeLink: undefined,
-          changeHiddenText: `Change expected release date`,
+          changeHiddenText: `Expected release date`,
         },
         {
           key: 'Expected probation office',
           lines: ['London'],
           changeLink: undefined,
-          changeHiddenText: `Change expected probation office`,
+          changeHiddenText: `Expected probation office`,
         },
       ])
     })
@@ -1493,14 +1493,14 @@ describe(ShowReferralPresenter, () => {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
             changeLink: undefined,
-            changeHiddenText: `Change maximum number of enforceable days`,
+            changeHiddenText: `Maximum number of enforceable days`,
           },
           { key: 'Date intervention received', lines: ['1 Jan 2022'] },
           {
             key: 'Date intervention to be completed by',
             lines: ['1 Apr 2021'],
             changeLink: undefined,
-            changeHiddenText: `Change the date the intervention is to be completed by`,
+            changeHiddenText: `Date the intervention is to be completed by`,
           },
         ])
       })
@@ -1587,14 +1587,14 @@ describe(ShowReferralPresenter, () => {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
             changeLink: undefined,
-            changeHiddenText: `Change maximum number of enforceable days`,
+            changeHiddenText: `Maximum number of enforceable days`,
           },
           { key: 'Date intervention received', lines: ['1 Jan 2022'] },
           {
             key: 'Date intervention to be completed by',
             lines: ['1 Apr 2021'],
             changeLink: undefined,
-            changeHiddenText: `Change the date the intervention is to be completed by`,
+            changeHiddenText: `Date the intervention is to be completed by`,
           },
         ])
       })
@@ -1681,14 +1681,14 @@ describe(ShowReferralPresenter, () => {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
             changeLink: undefined,
-            changeHiddenText: `Change maximum number of enforceable days`,
+            changeHiddenText: `Maximum number of enforceable days`,
           },
           { key: 'Date intervention received', lines: ['1 Jan 2022'] },
           {
             key: 'Date intervention to be completed by',
             lines: ['1 Apr 2021'],
             changeLink: undefined,
-            changeHiddenText: `Change the date the intervention is to be completed by`,
+            changeHiddenText: `Date the intervention is to be completed by`,
           },
           { key: 'Date intervention withdrawn', lines: ['7 Feb 2024'] },
         ])
@@ -1776,14 +1776,14 @@ describe(ShowReferralPresenter, () => {
             key: 'Maximum number of enforceable days',
             lines: ['10'],
             changeLink: undefined,
-            changeHiddenText: `Change maximum number of enforceable days`,
+            changeHiddenText: `Maximum number of enforceable days`,
           },
           { key: 'Date intervention received', lines: ['1 Jan 2022'] },
           {
             key: 'Date intervention to be completed by',
             lines: ['1 Apr 2021'],
             changeLink: undefined,
-            changeHiddenText: `Change the date the intervention is to be completed by`,
+            changeHiddenText: `Date the intervention is to be completed by`,
           },
           { key: 'Date intervention completed', lines: ['7 Feb 2024'] },
         ])
@@ -1838,13 +1838,13 @@ describe(ShowReferralPresenter, () => {
           key: 'Reason for referral and referral details',
           lines: ['For crs'],
           changeLink: undefined,
-          changeHiddenText: `Change the reason for referral and referral details`,
+          changeHiddenText: `Reason for referral and referral details`,
         },
         {
           key: 'Further information',
           lines: ['more info'],
           changeLink: undefined,
-          changeHiddenText: `Change further information`,
+          changeHiddenText: `Further information`,
         },
         {
           key: 'Complexity level',
@@ -1853,7 +1853,7 @@ describe(ShowReferralPresenter, () => {
             'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
           ],
           changeLink: undefined,
-          changeHiddenText: `Change complexity level`,
+          changeHiddenText: `Complexity level`,
         },
         {
           key: 'Desired outcomes',
@@ -1862,7 +1862,7 @@ describe(ShowReferralPresenter, () => {
             'Service user makes progress in obtaining accommodation',
           ],
           changeLink: undefined,
-          changeHiddenText: `Change desired outcomes`,
+          changeHiddenText: `Desired outcomes`,
         },
       ])
     })
@@ -1897,13 +1897,13 @@ describe(ShowReferralPresenter, () => {
             key: 'Reason for referral and referral details',
             lines: ['For crs'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
-            changeHiddenText: `Change the reason for referral and referral details`,
+            changeHiddenText: `Reason for referral and referral details`,
           },
           {
             key: 'Further information for the service provider',
             lines: ['more info'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
-            changeHiddenText: `Change further information for the service provider`,
+            changeHiddenText: `Further information for the service provider`,
           },
           expect.objectContaining({
             key: 'Complexity level',
@@ -1912,7 +1912,7 @@ describe(ShowReferralPresenter, () => {
             key: 'Desired outcomes',
             lines: expect.any(Array),
             changeLink: `/probation-practitioner/referrals/${referral.id}/2/update-desired-outcomes`,
-            changeHiddenText: `Change desired outcomes`,
+            changeHiddenText: `Desired outcomes`,
           },
         ])
       })
@@ -1946,13 +1946,13 @@ describe(ShowReferralPresenter, () => {
             key: 'Reason for referral and referral details',
             lines: ['For crs'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
-            changeHiddenText: `Change the reason for referral and referral details`,
+            changeHiddenText: `Reason for referral and referral details`,
           },
           {
             key: 'Further information for the service provider',
             lines: ['more info'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
-            changeHiddenText: `Change further information for the service provider`,
+            changeHiddenText: `Further information for the service provider`,
           },
           expect.objectContaining({
             key: 'Complexity level',
@@ -1961,7 +1961,7 @@ describe(ShowReferralPresenter, () => {
             key: 'Desired outcomes',
             lines: expect.any(Array),
             changeLink: undefined,
-            changeHiddenText: `Change desired outcomes`,
+            changeHiddenText: `Desired outcomes`,
           },
         ])
       })
@@ -1995,13 +1995,13 @@ describe(ShowReferralPresenter, () => {
             key: 'Reason for referral and referral details',
             lines: ['For crs'],
             changeLink: undefined,
-            changeHiddenText: `Change the reason for referral and referral details`,
+            changeHiddenText: `Reason for referral and referral details`,
           },
           {
             key: 'Further information',
             lines: ['more info'],
             changeLink: undefined,
-            changeHiddenText: `Change further information`,
+            changeHiddenText: `Further information`,
           },
           expect.objectContaining({
             key: 'Complexity level',
@@ -2010,7 +2010,7 @@ describe(ShowReferralPresenter, () => {
             key: 'Desired outcomes',
             lines: expect.any(Array),
             changeLink: undefined,
-            changeHiddenText: `Change desired outcomes`,
+            changeHiddenText: `Desired outcomes`,
           },
         ])
       })
@@ -2047,13 +2047,13 @@ describe(ShowReferralPresenter, () => {
             key: 'Reason for referral and referral details',
             lines: ['For crs'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
-            changeHiddenText: `Change the reason for referral and referral details`,
+            changeHiddenText: `Reason for referral and referral details`,
           },
           {
             key: 'Further information for the service provider',
             lines: ['more info'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
-            changeHiddenText: `Change further information for the service provider`,
+            changeHiddenText: `Further information for the service provider`,
           },
           {
             key: 'Complexity level',
@@ -2062,7 +2062,7 @@ describe(ShowReferralPresenter, () => {
               'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
             ],
             changeLink: `/probation-practitioner/referrals/${referral.id}/service-category/${cohortServiceCategories[0].id}/update-complexity-level`,
-            changeHiddenText: `Change complexity level`,
+            changeHiddenText: `Complexity level`,
           },
           expect.objectContaining({
             key: 'Desired outcomes',
@@ -2100,13 +2100,13 @@ describe(ShowReferralPresenter, () => {
             key: 'Reason for referral and referral details',
             lines: ['For crs'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
-            changeHiddenText: `Change the reason for referral and referral details`,
+            changeHiddenText: `Reason for referral and referral details`,
           },
           {
             key: 'Further information for the service provider',
             lines: ['more info'],
             changeLink: `/probation-practitioner/referrals/${referral.id}/amend-reason-for-referral`,
-            changeHiddenText: `Change further information for the service provider`,
+            changeHiddenText: `Further information for the service provider`,
           },
           {
             key: 'Complexity level',
@@ -2115,10 +2115,10 @@ describe(ShowReferralPresenter, () => {
               'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
             ],
             changeLink: undefined,
-            changeHiddenText: `Change complexity level`,
+            changeHiddenText: `Complexity level`,
           },
           {
-            changeHiddenText: `Change desired outcomes`,
+            changeHiddenText: `Desired outcomes`,
             changeLink: undefined,
             key: 'Desired outcomes',
             lines: [
@@ -2159,13 +2159,13 @@ describe(ShowReferralPresenter, () => {
             key: 'Reason for referral and referral details',
             lines: ['For crs'],
             changeLink: undefined,
-            changeHiddenText: `Change the reason for referral and referral details`,
+            changeHiddenText: `Reason for referral and referral details`,
           },
           {
             key: 'Further information',
             lines: ['more info'],
             changeLink: undefined,
-            changeHiddenText: `Change further information`,
+            changeHiddenText: `Further information`,
           },
           {
             key: 'Complexity level',
@@ -2174,7 +2174,7 @@ describe(ShowReferralPresenter, () => {
               'Service user has some capacity and means to secure and/or maintain suitable accommodation but requires some support and guidance to do so.',
             ],
             changeLink: undefined,
-            changeHiddenText: `Change complexity level`,
+            changeHiddenText: `Complexity level`,
           },
           {
             key: 'Desired outcomes',
@@ -2183,7 +2183,7 @@ describe(ShowReferralPresenter, () => {
               'Service user makes progress in obtaining accommodation',
             ],
             changeLink: undefined,
-            changeHiddenText: `Change desired outcomes`,
+            changeHiddenText: `Desired outcomes`,
           },
         ])
       })
@@ -2346,19 +2346,19 @@ describe(ShowReferralPresenter, () => {
 
         expect(presenter.serviceUserNeeds).toEqual([
           {
-            changeHiddenText: `Change identified needs`,
+            changeHiddenText: `Identified needs`,
             changeLink: undefined,
             key: 'Identify needs',
             lines: ["Alex is currently sleeping on her aunt's sofa"],
           },
           {
-            changeHiddenText: `Change mobility, disability or accessibility needs`,
+            changeHiddenText: `Mobility, disability or accessibility needs`,
             changeLink: undefined,
             key: 'Mobility, disability or accessibility needs',
             lines: ['She uses a wheelchair'],
           },
           {
-            changeHiddenText: `Change whether an interpreter is required`,
+            changeHiddenText: `Interpreter required`,
             changeLink: undefined,
             key: 'Interpreter required',
             lines: ['Yes'],
@@ -2369,7 +2369,7 @@ describe(ShowReferralPresenter, () => {
             lines: ['Catalan'],
           },
           {
-            changeHiddenText: `Change caring or employment responsibilities`,
+            changeHiddenText: `Caring or employment responsibilities`,
             changeLink: undefined,
             key: 'Caring or employment responsibilities',
             lines: ['Yes'],
@@ -2446,19 +2446,19 @@ describe(ShowReferralPresenter, () => {
             changeLink: undefined,
             key: 'Identify needs',
             lines: ['N/A'],
-            changeHiddenText: 'Change identified needs',
+            changeHiddenText: `Identified needs`,
           },
           {
             changeLink: undefined,
             key: 'Mobility, disability or accessibility needs',
             lines: ['N/A'],
-            changeHiddenText: 'Change mobility, disability or accessibility needs',
+            changeHiddenText: `Mobility, disability or accessibility needs`,
           },
           {
             changeLink: undefined,
             key: 'Interpreter required',
             lines: ['No'],
-            changeHiddenText: `Change whether an interpreter is required`,
+            changeHiddenText: `Interpreter required`,
           },
           { changeLink: undefined, key: 'Interpreter language', lines: ['N/A'] },
           {
@@ -2469,7 +2469,7 @@ describe(ShowReferralPresenter, () => {
             changeLink: undefined,
             key: 'Caring or employment responsibilities',
             lines: ['No'],
-            changeHiddenText: `Change caring or employment responsibilities`,
+            changeHiddenText: `Caring or employment responsibilities`,
           },
         ])
       })
@@ -2537,7 +2537,7 @@ describe(ShowReferralPresenter, () => {
 
       expect(presenter.serviceUserNeeds).toEqual([
         {
-          changeHiddenText: `Change identified needs`,
+          changeHiddenText: `Identified needs`,
           changeLink: undefined,
           key: 'Identify needs',
           lines: ['N/A'],
@@ -2546,13 +2546,13 @@ describe(ShowReferralPresenter, () => {
           changeLink: undefined,
           key: 'Mobility, disability or accessibility needs',
           lines: ['N/A'],
-          changeHiddenText: `Change mobility, disability or accessibility needs`,
+          changeHiddenText: `Mobility, disability or accessibility needs`,
         },
         {
           changeLink: undefined,
           key: 'Interpreter required',
           lines: ['No'],
-          changeHiddenText: `Change whether an interpreter is required`,
+          changeHiddenText: `Interpreter required`,
         },
         { changeLink: undefined, key: 'Interpreter language', lines: ['N/A'] },
         {
@@ -2563,7 +2563,7 @@ describe(ShowReferralPresenter, () => {
           changeLink: undefined,
           key: 'Caring or employment responsibilities',
           lines: ['Yes'],
-          changeHiddenText: `Change caring or employment responsibilities`,
+          changeHiddenText: `Caring or employment responsibilities`,
         },
         {
           changeLink: undefined,
