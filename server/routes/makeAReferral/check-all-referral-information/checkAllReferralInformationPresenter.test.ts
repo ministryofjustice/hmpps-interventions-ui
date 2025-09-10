@@ -225,7 +225,7 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'PDU (Probation Delivery Unit)',
               lines: ['London'],
               changeLink: `/referrals/${referralWithOutProbationOffice.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
-              changeHiddenText: `Probation delivery unit`,
+              changeHiddenText: `Probation practitioner's probation delivery unit`,
             },
             {
               key: 'Team phone number',
@@ -468,7 +468,7 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'PDU (Probation Delivery Unit)',
               lines: ['London'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
-              changeHiddenText: `Probation delivery unit`,
+              changeHiddenText: `Probation practitioner's probation delivery unit`,
             },
             {
               key: 'Team phone number',
@@ -720,7 +720,7 @@ describe(CheckAllReferralInformationPresenter, () => {
               key: 'Expected PDU (Probation Delivery Unit)',
               lines: ['London'],
               changeLink: `/referrals/${referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
-              changeHiddenText: `Probation delivery unit`,
+              changeHiddenText: `Probation practitioner's probation delivery unit`,
             },
           ],
         })

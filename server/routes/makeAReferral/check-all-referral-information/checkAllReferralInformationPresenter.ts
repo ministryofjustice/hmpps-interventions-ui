@@ -220,7 +220,7 @@ export default class CheckAllReferralInformationPresenter {
         key: pduHeading,
         lines: [this.referral.ppPdu || this.referral.ndeliusPDU || '---'],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu?amendPPDetails=true`,
-        changeHiddenText: `Probation delivery unit`,
+        changeHiddenText: `Probation practitioner's probation delivery unit`,
       },
     ]
   }
