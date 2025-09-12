@@ -33,7 +33,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             'Not found',
         ],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-name`,
-        changeHiddenText: `Probation practitioner's name`,
+        changeHiddenText: `probation practitioner's name`,
       },
       {
         key: 'Email address',
@@ -50,8 +50,8 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determineEmail() === 'Not found'
             ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address</a>`
             : undefined,
-        changeHiddenText: `Probation practitioner's email address`,
-        deleteHiddenText: `Probation practitioner's email address`,
+        changeHiddenText: `probation practitioner's email address`,
+        deleteHiddenText: `probation practitioner's email address`,
       },
       {
         key: 'Phone number',
@@ -68,14 +68,14 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determinePhoneNumber() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/phone-number`
             : undefined,
-        changeHiddenText: `Probation practitioner's phone number`,
-        deleteHiddenText: `Probation practitioner's phone number`,
+        changeHiddenText: `probation practitioner's phone number`,
+        deleteHiddenText: `probation practitioner's phone number`,
       },
       {
         key: 'PDU (Probation Delivery Unit)',
         lines: [this.referral.ppPdu || this.referral.ndeliusPDU || 'Not found'],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu`,
-        changeHiddenText: 'Probation delivery unit',
+        changeHiddenText: 'probation delivery unit',
       },
       {
         key: 'Probation office',
@@ -93,8 +93,8 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determineProbationOffice() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/probation-office`
             : undefined,
-        changeHiddenText: 'Probation office',
-        deleteHiddenText: `Probation office`,
+        changeHiddenText: 'probation office',
+        deleteHiddenText: `probation office`,
       },
       {
         key: 'Team phone number',
@@ -111,8 +111,8 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determineTeamPhoneNumber() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/team-phone-number`
             : undefined,
-        changeHiddenText: 'Team phone number',
-        deleteHiddenText: `Team phone number`,
+        changeHiddenText: 'team phone number',
+        deleteHiddenText: `team phone number`,
       },
     ]
     return summary
