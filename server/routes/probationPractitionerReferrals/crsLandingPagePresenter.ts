@@ -7,11 +7,18 @@ export default class CrsLandingPagePresenter {
 
   readonly backLinkUrl: string
 
-  constructor() {
+  constructor(
+    private readonly bannerDisable: boolean,
+    private readonly crsHomePage: string
+  ) {
     this.findInterventionsUrl = '/find-interventions'
     this.viewReferral = '/probation-practitioner/dashboard'
     this.backLinkUrl = `${config.findAndRefer.url}/interventions-homepage`
   }
 
   readonly pageHeading = 'Commissioned Rehabilitative Services (CRS)'
+
+  readonly closeHref = `${this.crsHomePage}?dismissDowntimeBanner=true`
+
+  readonly disableDowntimeBanner = this.bannerDisable
 }

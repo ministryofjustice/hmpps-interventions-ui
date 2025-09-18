@@ -40,6 +40,8 @@ import AuditService from './services/auditService'
 declare module 'express-session' {
   export interface SessionData {
     dashboardOriginPage: string
+    findInterventionOriginPage: string
+    crsHomePage: string
     searchText: string
     disableDowntimeBanner: boolean
   }
