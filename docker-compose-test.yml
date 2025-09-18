@@ -2,7 +2,7 @@ version: '3.1'
 services:
 
   test-redis:
-    image: 'bitnami/redis:6.2'
+    image: 'bitnamilegacy/redis:6.2'
     networks:
       - hmpps_int
     environment:
