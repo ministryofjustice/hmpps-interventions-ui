@@ -17,6 +17,8 @@ export default class SearchResultsPresenter {
     private readonly interventions: Intervention[],
     private readonly filter: InterventionsFilter,
     private readonly pccRegions: PCCRegion[],
+    private readonly disableDowntimeBanner: boolean,
+    private readonly findInterventionUrl: string,
     private readonly loggedInUser: LoggedInUser
   ) {
     this.backLinkUrl = this.crsHomePage
@@ -24,6 +26,8 @@ export default class SearchResultsPresenter {
   }
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Find interventions', this.loggedInUser)
+
+  readonly closeHref = `${this.findInterventionUrl}?dismissDowntimeBanner=true`
 
   readonly pccRegionFilters: {
     value: string

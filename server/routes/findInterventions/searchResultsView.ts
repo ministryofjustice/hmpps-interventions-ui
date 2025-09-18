@@ -1,7 +1,7 @@
 import SearchResultsPresenter from './searchResultsPresenter'
 import ViewUtils from '../../utils/viewUtils'
 import { SummaryListItem } from '../../utils/summaryList'
-import { CheckboxesArgs, SummaryListArgs } from '../../utils/govukFrontendTypes'
+import { CheckboxesArgs, NotificationBannerArgs, SummaryListArgs } from '../../utils/govukFrontendTypes'
 
 export default class SearchResultsView {
   constructor(private readonly presenter: SearchResultsPresenter) {}
@@ -58,6 +58,22 @@ export default class SearchResultsView {
 
   private searchSummarySummaryListArgs = ViewUtils.summaryListArgs(this.presenter.summary.summary)
 
+  get serviceOutageBannerArgs(): NotificationBannerArgs {
+    const text =
+      'Refer and monitor an intervention will be unavailable between 9pm on Friday 19 September and 7am on Monday 22 September. This is due to planned maintenance in NDelius.'
+    const subHeading = 'Planned Downtime'
+
+    const html = `<div class="refer-and-monitor__max-width">
+                  <p class="govuk-notification-banner__heading"> ${subHeading}</p>
+                  <p class="govuk-body">${text}</p>
+                  <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p></div>`
+    return {
+      titleText: 'Downtime',
+      html,
+      classes: 'govuk-notification-banner--info',
+    }
+  }
+
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'findInterventions/searchResults',
@@ -69,6 +85,7 @@ export default class SearchResultsView {
         summaryListArgs: SearchResultsView.summaryListArgs,
         searchSummarySummaryListArgs: this.searchSummarySummaryListArgs,
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
+        serviceOutageBannerArgs: this.serviceOutageBannerArgs,
         backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
