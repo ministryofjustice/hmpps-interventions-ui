@@ -1,7 +1,6 @@
-version: '3.1'
 services:
   redis:
-    image: 'bitnamilegacy/redis:6.2'
+    image: 'redis:6.2'
     networks:
       - hmpps
     container_name: redis
