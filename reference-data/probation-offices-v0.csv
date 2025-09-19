@@ -322,3 +322,4 @@ probation_office_id,name,address,probation_region_id,gov_uk_url,delius_crs_locat
 322,Swansea Probation Office,"12 Orchard Street, West Glamorgan House, Swansea, SA1 5AD",D,https://www.gov.uk/guidance/swansea-12-orchard-street,WPTOWGH
 323,Swadlincote Police Station,"Swadlincote Police Station, Civic Way, Swadlincote, DE11 0AE",F,,N53LDAZ
 324,Worle Probation Office,"North Somerset Court House, Worle, BS22 7BB",G,"https://www.gov.uk/guidance/north-somerset-north-somerset-probation-office",CRS0229
+325,Worcester Probation Office,"Worcester Probation Office, Elgar House, Shrub Hill, Worcester, WR4 9EE",E,,N52LWAB
