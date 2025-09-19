@@ -10,8 +10,9 @@ executors:
       - image: cimg/node:20.18.0-browsers
       - image: rodolpheche/wiremock:2.31.0-alpine
         command: ['--port', '9091']
-      - image: bitnamilegacy/redis:6.2
-        command: ['/opt/bitnami/scripts/redis/run.sh', '--port', '6380']
+      - image: cimg/redis:6.2
+        name: redis-server
+        command: ['redis-server', '--port', '6380'] 
         environment:
           ALLOW_EMPTY_PASSWORD: 'yes'
 
