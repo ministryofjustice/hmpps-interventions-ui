@@ -1,7 +1,7 @@
 services:
 
   test-redis:
-    image: 'redis:6.2'
+    image: 'cimg/redis:6.2'
     networks:
       - hmpps_int
     environment:
