@@ -7,9 +7,6 @@
 {% set mainClasses = "app-container govuk-body dashboard__main" %}
 
 {% block pageContent %}
-  {% if disableDowntimeBanner != true %}
-    {{ govukNotificationBanner(serviceOutageBannerArgs) }}
-  {% endif %}
 
   {{ govukBackLink(backLinkArgs) }}
   
