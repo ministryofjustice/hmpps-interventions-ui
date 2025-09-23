@@ -12,9 +12,7 @@ executors:
         command: ['--port', '9091']
       - image: cimg/redis:6.2
         name: redis-server
-        command: ['redis-server', '--port', '6380'] 
-        environment:
-          ALLOW_EMPTY_PASSWORD: 'yes'
+        command: ['redis-server', '--port', '6380']
 
 jobs:
   build:
@@ -64,6 +62,19 @@ jobs:
     executor: integration
     steps:
       - checkout
+      - run:
+          name: Wait for Redis to be ready
+          command: |
+            for i in {1..30}; do
+              if redis-cli -h localhost -p 6380 ping | grep PONG; then
+                echo "Redis is ready"
+                break
+              fi
+              echo "Waiting for Redis..."
+              sleep 1
+            done
+      - run: netstat -tlnp | grep 6380
+      - run: redis-cli -h localhost -p 6380 ping    
       - run: sudo npm install -g npm@latest
       - node/install-packages
       - run: npm run build
