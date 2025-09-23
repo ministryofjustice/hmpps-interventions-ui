@@ -73,10 +73,10 @@ jobs:
               echo "Waiting for Redis..."
               sleep 1
             done
-      - run: netstat -tlnp | grep 6380
       - run: redis-cli -h localhost -p 6380 ping
       - run: redis-cli -h 127.0.0.1 -p 6380 ping
-      - run: redis-cli -h redis-server -p 6380 ping  
+      - run: redis-cli -h redis-server -p 6380 ping
+      - run: netstat -tlnp | grep 6380  
       - run: sudo npm install -g npm@latest
       - node/install-packages
       - run: npm run build
