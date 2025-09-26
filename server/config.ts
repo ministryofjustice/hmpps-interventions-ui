@@ -97,7 +97,7 @@ export default {
   },
   apis: {
     communityApi: {
-      url: get('COMMUNITY_API_URL', 'http://localhost:9092', requiredInProduction),
+      url: get('COMMUNITY_API_URL', 'http://localhost:9091', requiredInProduction),
       timeout: {
         response: Number(get('COMMUNITY_API_TIMEOUT_RESPONSE', 10000)),
         deadline: Number(get('COMMUNITY_API_TIMEOUT_DEADLINE', 10000)),
@@ -105,7 +105,7 @@ export default {
       agent: new AgentConfig(),
     },
     ramDeliusApi: {
-      url: get('RAM_DELIUS_API_URL', 'http://localhost:9092', requiredInProduction),
+      url: get('RAM_DELIUS_API_URL', 'http://localhost:9091', requiredInProduction),
       timeout: {
         response: Number(get('RAM_DELIUS_API_TIMEOUT_RESPONSE', 10000)),
         deadline: Number(get('RAM_DELIUS_API_TIMEOUT_DEADLINE', 10000)),
@@ -113,7 +113,7 @@ export default {
       agent: new AgentConfig(),
     },
     assessRisksAndNeedsApi: {
-      url: get('ASSESS_RISKS_AND_NEEDS_API_URL', 'http://localhost:9092', requiredInProduction),
+      url: get('ASSESS_RISKS_AND_NEEDS_API_URL', 'http://localhost:9091', requiredInProduction),
       timeout: {
         response: Number(get('ASSESS_RISKS_AND_NEEDS_API_TIMEOUT_RESPONSE', 20000)),
         deadline: Number(get('ASSESS_RISKS_AND_NEEDS_API_TIMEOUT_DEADLINE', 20000)),
@@ -145,7 +145,7 @@ export default {
       loginClientSecret: get('LOGIN_CLIENT_SECRET', 'clientsecret', requiredInProduction),
     },
     interventionsService: {
-      url: get('INTERVENTIONS_SERVICE_URL', 'http://localhost:9092', requiredInProduction),
+      url: get('INTERVENTIONS_SERVICE_URL', 'http://localhost:9091', requiredInProduction),
       // the interventions-service <-> community-api worst case timeout is 20s, this is intentionally just slightly higher
       // fixme: this is too long
       timeout: {
@@ -176,7 +176,7 @@ export default {
       agent: new AgentConfig(),
     },
     prisonApi: {
-      url: get('PRISON_API_URL', 'http://localhost:9092', requiredInProduction),
+      url: get('PRISON_API_URL', 'http://localhost:9091', requiredInProduction),
       timeout: {
         response: Number(get('PRISON_API_URL_TIMEOUT_RESPONSE', 5000)),
         deadline: Number(get('PRISON_API_URL_TIMEOUT_DEADLINE', 5000)),
