@@ -5,7 +5,7 @@ generic-service:
   serviceAccountName: "hmpps-interventions"
 
   image:
-    repository: quay.io/hmpps/hmpps-interventions-ui
+    repository: ghcr.io/ministryofjustice/hmpps-interventions-ui
     tag: latest
     port: 3000
 
@@ -32,8 +32,8 @@ generic-service:
       REDIS_AUTH_TOKEN: "auth_token"
     sentry:
       SENTRY_DSN: "ui_dsn"
-    application-insights:
-      APPLICATIONINSIGHTS_CONNECTION_STRING: "connection_string"
+    hmpps-interventions-ui-application-insights:
+      APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
     storage-s3-bucket:
       AWS_S3_BUCKET_NAME: "bucket_name"
     sqs-hmpps-audit-secret:

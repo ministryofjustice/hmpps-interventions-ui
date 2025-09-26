@@ -28,3 +28,4 @@ generic-service:
     PRISON_REGISTER_API_URL: https://prison-register-dev.hmpps.service.justice.gov.uk
     PRISON_API_URL: https://prison-api-dev.prison.service.justice.gov.uk
     AUDIT_ENABLED: "true"
+    ENVIRONMENT_NAME: DEV

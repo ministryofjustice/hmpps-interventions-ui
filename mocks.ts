@@ -26,7 +26,7 @@ import deliusServiceUser from './testutils/factories/deliusServiceUser'
 import deliusUser from './testutils/factories/deliusUser'
 import PrisonApiServiceMocks from './mockApis/prisonApiService'
 
-const wiremock = new Wiremock('http://localhost:9092/__admin')
+const wiremock = new Wiremock('http://localhost:9091/__admin')
 const interventionsMocks = new InterventionsServiceMocks(wiremock, '')
 const assessRisksAndNeedsApiMocks = new AssessRisksAndNeedsServiceMocks(wiremock, '')
 const prisonRegisterServiceMocks = new PrisonRegisterServiceMocks(wiremock, '')
