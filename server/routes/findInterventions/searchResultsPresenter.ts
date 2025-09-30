@@ -7,14 +7,27 @@ import LoggedInUser from '../../models/loggedInUser'
 import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
 
 export default class SearchResultsPresenter {
+  readonly backLinkUrl: string
+
+  readonly crsHomePageUrl: string
+
+  readonly crsHomePage = `/crs-homepage`
+
   constructor(
     private readonly interventions: Intervention[],
     private readonly filter: InterventionsFilter,
     private readonly pccRegions: PCCRegion[],
+    private readonly disableDowntimeBanner: boolean,
+    private readonly findInterventionUrl: string,
     private readonly loggedInUser: LoggedInUser
-  ) {}
+  ) {
+    this.backLinkUrl = this.crsHomePage
+    this.crsHomePageUrl = this.crsHomePage
+  }
 
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Find interventions', this.loggedInUser)
+
+  readonly closeHref = `${this.findInterventionUrl}?dismissDowntimeBanner=true`
 
   readonly pccRegionFilters: {
     value: string

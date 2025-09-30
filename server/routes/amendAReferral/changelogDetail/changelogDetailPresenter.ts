@@ -89,14 +89,14 @@ export default class ChangelogDetailPresenter {
   }
 
   private get determineExpectedReleaseDateHeading(): string {
-    const oldValue = moment(this.changelogDetail.oldValue[0])
-    const newValue = moment(this.changelogDetail.newValue[0])
+    const oldValue = moment(this.changelogDetail.oldValue[0], 'DD-MMM-YYYY', true)
+    const newValue = moment(this.changelogDetail.newValue[0], 'DD-MMM-YYYY', true)
 
     if (oldValue.isValid() && newValue.isValid()) {
       return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date has changed`
     }
     if (!oldValue.isValid() && newValue.isValid()) {
-      return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date information has been added`
+      return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date has been added`
     }
     return `${this.deliusServiceUser.name.forename} ${this.deliusServiceUser.name.surname}'s expected release date information has changed`
   }

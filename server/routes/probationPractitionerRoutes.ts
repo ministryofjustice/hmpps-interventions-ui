@@ -51,8 +51,9 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   get(router, '/dashboard/cancelled-cases', (req, res) =>
     probationPractitionerReferralsController.showCancelledCases(req, res)
   )
+  get(router, '/dashboard/draft-cases', (req, res) => probationPractitionerReferralsController.showDraftCases(req, res))
 
-  get(router, '/find', (req, res) => probationPractitionerReferralsController.showFindStartPage(req, res))
+  get(router, '/find', (req, res) => res.redirect('/crs-homepage'))
 
   get(router, '/referrals/:id/progress', (req, res) =>
     probationPractitionerReferralsController.showInterventionProgress(req, res)

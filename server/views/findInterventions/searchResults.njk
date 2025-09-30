@@ -2,17 +2,23 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "moj/components/primary-navigation/macro.njk" import mojPrimaryNavigation %}
+{% from "govuk/components/back-link/macro.njk" import govukBackLink %}
 
 {% extends "../partials/layout.njk" %}
 
 {% set pageTitle = "Find interventions" %}
 {% set pageSubTitle = "Find results" %}
 
-{% block primaryNav %}
-  {{ mojPrimaryNavigation(primaryNavArgs) }}
-{% endblock %}
 
 {% block pageContent %}
+  <div class="govuk-grid-row app-grid-container">
+    <div class="govuk-grid-column-one-half">
+        {{ govukBackLink(backLinkArgs) }}
+    </div>
+    <div class="govuk-grid-column-one-half govuk-!-text-align-right">
+        <a href={{ presenter.crsHomePageUrl}} class="govuk-link">Go to CRS homepage</a>
+    </div>
+  </div>
   <div class="govuk-grid-row govuk-!-margin-bottom-7">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-xl">Find interventions</h1>

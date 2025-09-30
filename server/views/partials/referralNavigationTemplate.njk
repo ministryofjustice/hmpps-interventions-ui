@@ -9,14 +9,10 @@
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-
-      <div class="govuk-grid-row">
-          {{ govukBackLink(backLinkArgs) }}
-          {% if notificationBannerArgs %}
-             {{ govukNotificationBanner(notificationBannerArgs) }}
-          {% endif %}
-      </div>
-
+      {{ govukBackLink(backLinkArgs) }}
+      {% if notificationBannerArgs %}
+          {{ govukNotificationBanner(notificationBannerArgs) }}
+      {% endif %}
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-two-thirds">
           <h1 class="govuk-heading-l">{{ presenter.text.title }}</h1>

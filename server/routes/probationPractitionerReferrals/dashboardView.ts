@@ -10,6 +10,11 @@ export default class DashboardView {
     return ViewUtils.sortableTable(this.presenter.tablePersistentId, tableHeadings, tableRows)
   }
 
+  private get tableArgsForDraftCases(): TableArgs {
+    const { tableHeadings, tableRowsForDrafts } = this.presenter
+    return ViewUtils.sortableTable(this.presenter.tablePersistentId, tableHeadings, tableRowsForDrafts)
+  }
+
   readonly subNavArgs = {
     items: [
       {
@@ -32,12 +37,17 @@ export default class DashboardView {
         href: `/probation-practitioner/dashboard/cancelled-cases`,
         active: this.presenter.dashboardType === 'Cancelled cases',
       },
+      {
+        text: 'Draft cases',
+        href: `/probation-practitioner/dashboard/draft-cases`,
+        active: this.presenter.dashboardType === 'Draft cases',
+      },
     ],
   }
 
   get serviceOutageBannerArgs(): NotificationBannerArgs | null {
     const text =
-      'Please be advised that Refer & Monitor will be offline from 5pm on Friday 14 March until 8am on Monday 17 March, due to planned maintenance being carried out in nDelius.'
+      'Refer and monitor an intervention will be unavailable between 9pm on Friday 19 September and 7am on Monday 22 September. This is due to planned maintenance in NDelius.'
     const subHeading = 'Planned Downtime'
 
     const html = `<div class="refer-and-monitor__max-width">
@@ -56,12 +66,13 @@ export default class DashboardView {
       'probationPractitionerReferrals/dashboard',
       {
         presenter: this.presenter,
-        tableArgs: this.tableArgs,
+        tableArgs: this.presenter.dashboardType !== 'Draft cases' ? this.tableArgs : this.tableArgsForDraftCases,
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
         subNavArgs: this.subNavArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
         showSearchResult: {},
         serviceOutageBannerArgs: this.serviceOutageBannerArgs,
+        backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
   }

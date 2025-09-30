@@ -1352,6 +1352,7 @@ context('Amend a referral', () => {
           },
         ],
         personCustodyPrisonId: 'AYI',
+        isReferralReleasingIn12Weeks: null,
       },
     })
 
@@ -1396,7 +1397,7 @@ context('Amend a referral', () => {
       it('takes the pp to the form when clicking the change link in the details page', () => {
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
         cy.contains('.govuk-summary-list__key', 'Expected release date').next().next().contains('Change').click()
-        cy.contains(`Update Jenny Jones's expected release date`)
+        cy.contains(`Do you know Jenny Jones's expected release date?`)
       })
 
       it('redirects to referral details on submission', () => {
@@ -1436,8 +1437,8 @@ context('Amend a referral', () => {
         cy.contains('Year').type(tomorrow.format('YYYY'))
         cy.contains('Save and continue').click()
 
-        cy.contains('There is a problem').next().contains('Enter the expected release date')
-        cy.get('#amend-expected-release-date').prev().contains('Enter the expected release date')
+        cy.contains('There is a problem').next().contains('Expected release date must include a day')
+        cy.get('#amend-expected-release-date').prev().contains('Expected release date must include a day')
       })
     })
   })
@@ -1481,6 +1482,7 @@ context('Amend a referral', () => {
           },
         ],
         personCustodyPrisonId: 'AYI',
+        isReferralReleasingIn12Weeks: null,
       },
     })
 
@@ -1525,7 +1527,7 @@ context('Amend a referral', () => {
       it('takes the pp to the form when clicking the change link in the details page', () => {
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/details`)
         cy.contains('.govuk-summary-list__key', 'Expected release date').next().next().contains('Change').click()
-        cy.contains(`Update Jenny Jones's expected release date`)
+        cy.contains(`Do you know Jenny Jones's expected release date?`)
       })
 
       it('redirects to referral details on submission', () => {
@@ -1556,8 +1558,10 @@ context('Amend a referral', () => {
         cy.get('textarea[name="amend-date-unknown-reason"]').clear()
         cy.contains('Save and continue').click()
 
-        cy.contains('There is a problem').next().contains('Enter a reason')
-        cy.get('textarea[name="amend-date-unknown-reason"]').prev().contains('Enter a reason')
+        cy.contains('There is a problem').next().contains('Enter a reason why the expected release date is not known')
+        cy.get('textarea[name="amend-date-unknown-reason"]')
+          .prev()
+          .contains('Enter a reason why the expected release date is not known')
       })
     })
   })

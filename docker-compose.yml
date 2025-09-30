@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   redis:
-    image: 'bitnami/redis:6.2'
+    image: 'cimg/redis:8.2'
     networks:
       - hmpps
     container_name: redis
@@ -141,7 +141,7 @@ services:
     restart: always
 
   postgres:
-    image: postgres:14.18-alpine
+    image: postgres:14.19-alpine
     container_name: postgres
     networks:
       - hmpps
@@ -159,7 +159,7 @@ services:
       - hmpps
     restart: always
     ports:
-      - "9092:8080"
+      - "9091:8080"
     volumes:
       - ./wiremock_mappings:/home/wiremock/mappings
     command: '--verbose'

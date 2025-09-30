@@ -19,7 +19,7 @@ export default class InterventionDetailsView {
       {
         presenter: this.presenter,
         summaryListArgs: InterventionDetailsView.summaryListArgs,
-        primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
+        backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
   }

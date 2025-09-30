@@ -3,6 +3,7 @@ import interventionFactory from '../../testutils/factories/intervention'
 import pageFactory from '../../testutils/factories/page'
 import prisonFactory from '../../testutils/factories/prison'
 import secureChildrenAgenciesFactory from '../../testutils/factories/secureChildAgency'
+import draftReferralFactory from '../../testutils/factories/draftReferral'
 
 describe('Dashboards', () => {
   beforeEach(() => {
@@ -39,6 +40,20 @@ describe('Dashboards', () => {
       }),
     ]
 
+    const draftReferral1 = draftReferralFactory.build({
+      serviceUser: { firstName: 'Alice', lastName: 'Smith', crn: 'CRN1' },
+      serviceProvider: { name: 'Provider1', id: 'sp1' },
+      contractTypeName: 'Intervention X',
+      createdAt: '2022-02-01T10:00:00.000Z',
+    })
+
+    const draftReferral2 = draftReferralFactory.build({
+      serviceUser: { firstName: 'Bob', lastName: 'Jones', crn: 'CRN2' },
+      serviceProvider: { name: 'Provider2', id: 'sp2' },
+      contractTypeName: 'Intervention Y',
+      createdAt: '2022-01-01T10:00:00.000Z',
+    })
+
     beforeEach(() => {
       cy.task('stubProbationPractitionerToken')
       cy.task('stubProbationPractitionerAuthUser')
@@ -47,12 +62,13 @@ describe('Dashboards', () => {
       cy.stubGetIntervention(womensServicesIntervention.id, womensServicesIntervention)
       cy.stubAddInterventionNewUser()
       cy.stubGetSentReferralsForUserTokenPaged(pageFactory.pageContent(sentReferrals).build())
+      cy.stubGetDraftReferralsForUserToken([draftReferral1, draftReferral2])
     })
 
     describe('Viewing the dashboard page', () => {
       it('shows a list of sent referrals', () => {
         cy.login()
-
+        cy.contains('a', 'View referrals').click()
         cy.get('h1').contains('Open cases')
 
         cy.get('table')
@@ -82,6 +98,7 @@ describe('Dashboards', () => {
       describe('Selecting "Unassigned cases"', () => {
         it('should see "Unassigned cases"', () => {
           cy.login()
+          cy.contains('a', 'View referrals').click()
           cy.get('h1').contains('Open cases')
           cy.contains('Unassigned cases').click()
           cy.get('h1').contains('Unassigned cases')
@@ -111,6 +128,7 @@ describe('Dashboards', () => {
       describe('Selecting "Completed cases"', () => {
         it('should see "Completed cases"', () => {
           cy.login()
+          cy.contains('a', 'View referrals').click()
           cy.get('h1').contains('Open cases')
           cy.contains('Completed cases').click()
           cy.get('h1').contains('Completed cases')
@@ -142,6 +160,7 @@ describe('Dashboards', () => {
       describe('Selecting "Cancelled cases"', () => {
         it('should see "Cancelled cases"', () => {
           cy.login()
+          cy.contains('a', 'View referrals').click()
           cy.get('h1').contains('Open cases')
           cy.contains('Cancelled cases').click()
           cy.get('h1').contains('Cancelled cases')
@@ -169,6 +188,32 @@ describe('Dashboards', () => {
             ])
         })
       })
+
+      describe('Selecting "Draft cases"', () => {
+        it('should see "Draft cases"', () => {
+          cy.login()
+          cy.contains('a', 'View referrals').click()
+          cy.get('h1').contains('Open cases')
+          cy.contains('Draft cases').click()
+          cy.get('h1').contains('Draft cases')
+          cy.get('table')
+            .getTable()
+            .should('deep.equal', [
+              {
+                Name: 'Alice Smith',
+                Provider: 'Provider1',
+                'Intervention type': 'Intervention X',
+                'Started on': '1 Feb 2022',
+              },
+              {
+                Name: 'Bob Jones',
+                Provider: 'Provider2',
+                'Intervention type': 'Intervention Y',
+                'Started on': '1 Jan 2022',
+              },
+            ])
+        })
+      })
     })
 
     describe(
@@ -184,6 +229,7 @@ describe('Dashboards', () => {
         headings.forEach(heading => {
           it(`when sorted by ${heading} sort direction should be set on header`, () => {
             cy.login()
+            cy.contains('a', 'View referrals').click()
             cy.get('h1').contains('Open cases')
 
             cy.get('table').within(() => cy.contains('button', heading).click())

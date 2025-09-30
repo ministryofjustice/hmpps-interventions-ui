@@ -8,14 +8,21 @@ import { Page } from '../../models/pagination'
 import Pagination from '../../utils/pagination/pagination'
 import ControllerUtils from '../../utils/controllerUtils'
 import SentReferralSummaries from '../../models/sentReferralSummaries'
+import DraftReferral from '../../models/draftReferral'
 
-export type PPDashboardType = 'Open cases' | 'Unassigned cases' | 'Completed cases' | 'Cancelled cases'
+export type PPDashboardType = 'Open cases' | 'Unassigned cases' | 'Completed cases' | 'Cancelled cases' | 'Draft cases'
 export default class DashboardPresenter {
   public readonly pagination: Pagination
 
   private readonly requestedSortField: string
 
   private readonly requestedSortOrder: string
+
+  readonly backLinkUrl: string
+
+  readonly crsHomePageUrl: string
+
+  readonly crsHomePage = `/crs-homepage`
 
   constructor(
     private readonly sentReferrals: Page<SentReferralSummaries>,
@@ -24,13 +31,16 @@ export default class DashboardPresenter {
     readonly tablePersistentId: string,
     private readonly requestedSort: string,
     readonly disableDowntimeBanner: boolean,
-    readonly dashboardOrigin: string
+    readonly dashboardOrigin: string,
+    private readonly existingDraftReferrals: DraftReferral[] | undefined
   ) {
+    this.backLinkUrl = this.crsHomePage
     this.pagination = new Pagination(sentReferrals)
 
     const [sortField, sortOrder] = this.requestedSort.split(',')
     this.requestedSortField = sortField
     this.requestedSortOrder = ControllerUtils.sortOrderToAriaSort(sortOrder)
+    this.crsHomePageUrl = this.crsHomePage
   }
 
   get closeHref(): string {
@@ -78,6 +88,25 @@ export default class DashboardPresenter {
     },
   ]
 
+  static readonly headingsAndSortFieldsForDraftCases = [
+    {
+      columnName: 'Name',
+      sortField: null,
+    },
+    {
+      columnName: 'Provider',
+      sortField: null,
+    },
+    {
+      columnName: 'Intervention type',
+      sortField: null,
+    },
+    {
+      columnName: 'Started on',
+      sortField: null,
+    },
+  ]
+
   private readonly showAssignedCaseworkerColumn = this.dashboardType !== 'Unassigned cases'
 
   readonly title = this.dashboardType
@@ -85,6 +114,15 @@ export default class DashboardPresenter {
   readonly navItemsPresenter = new PrimaryNavBarPresenter('Referrals', this.loggedInUser)
 
   get tableHeadings(): SortableTableHeaders {
+    if (this.dashboardType === 'Draft cases') {
+      return DashboardPresenter.headingsAndSortFieldsForDraftCases.map(heading => {
+        return {
+          text: heading.columnName,
+          persistentId: heading.sortField,
+          sort: this.requestedSortField === heading.sortField ? this.requestedSortOrder : 'none',
+        }
+      }) as SortableTableHeaders
+    }
     return DashboardPresenter.headingsAndSortFields
       .map(heading => {
         return {
@@ -141,4 +179,33 @@ export default class DashboardPresenter {
       },
     ].filter(row => row !== null) as SortableTableRow
   })
+
+  readonly tableRowsForDrafts: SortableTableRow[] = this.existingDraftReferrals
+    ? this.existingDraftReferrals
+        .sort((a, b) => (new Date(a.createdAt) > new Date(b.createdAt) ? -1 : 1))
+        .map(referral => {
+          return [
+            {
+              text: PresenterUtils.fullName(referral.serviceUser),
+              sortValue: null,
+              href: `/referrals/${referral.id}/community-allocated-form`,
+            },
+            {
+              text: referral.serviceProvider?.name ?? '',
+              sortValue: null,
+              href: null,
+            },
+            {
+              text: referral.contractTypeName,
+              sortValue: null,
+              href: null,
+            },
+            {
+              text: DateUtils.formattedDate(referral.createdAt, { month: 'short' }),
+              sortValue: null,
+              href: null,
+            },
+          ].filter(row => row !== null) as SortableTableRow
+        })
+    : []
 }

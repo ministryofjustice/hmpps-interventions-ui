@@ -16,19 +16,6 @@ context('Find an intervention', () => {
     cy.login()
   })
 
-  it('Probation practitioner clicks the find interventions tab', () => {
-    cy.contains('Find interventions').click()
-
-    cy.url().should('contain', '/find')
-
-    cy.get('[data-cy=download-interventions-header]').contains('Download structured interventions')
-
-    cy.get('[data-cy=download-interventions-content]').contains(
-      'You can download information about structured interventions. You cannot use this service to search for (or refer) to these interventions. This list was updated in April 2022.'
-    )
-    cy.get('[data-cy=find-interventions-button]').contains('Find interventions')
-  })
-
   it('Probation practitioner views a list of search results', () => {
     const thinkingAndBehaviourInterventionId = '6bf9d895-0d61-4b99-af91-f343befbc9a3'
 

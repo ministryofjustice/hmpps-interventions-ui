@@ -5,12 +5,17 @@ import PresenterUtils from '../../../utils/presenterUtils'
 export default class CommunityAllocatedPresenter {
   readonly backLinkUrl: string
 
+  readonly caseIdentifierPage = `/intervention/${this.referral.interventionId}/refer?`
+
+  readonly draftTabPage = `/probation-practitioner/dashboard/draft-cases`
+
   constructor(
     readonly referral: DraftReferral,
     private readonly error: FormValidationError | null = null,
-    private readonly userInputData: Record<string, unknown> | null = null
+    private readonly userInputData: Record<string, unknown> | null = null,
+    readonly startReferral: boolean = false
   ) {
-    this.backLinkUrl = `/intervention/${referral.interventionId}/refer?`
+    this.backLinkUrl = startReferral ? this.caseIdentifierPage : this.draftTabPage
   }
 
   private errorMessageForField(field: string): string | null {

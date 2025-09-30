@@ -33,6 +33,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
             'Not found',
         ],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-name`,
+        changeHiddenText: `probation practitioner's name`,
       },
       {
         key: 'Email address',
@@ -49,6 +50,8 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determineEmail() === 'Not found'
             ? `<a href="/referrals/${this.referral.id}/update-probation-practitioner-email-address" class="govuk-link">Enter email address</a>`
             : undefined,
+        changeHiddenText: `probation practitioner's email address`,
+        deleteHiddenText: `probation practitioner's email address`,
       },
       {
         key: 'Phone number',
@@ -65,11 +68,14 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determinePhoneNumber() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/phone-number`
             : undefined,
+        changeHiddenText: `probation practitioner's phone number`,
+        deleteHiddenText: `probation practitioner's phone number`,
       },
       {
         key: 'PDU (Probation Delivery Unit)',
         lines: [this.referral.ppPdu || this.referral.ndeliusPDU || 'Not found'],
         changeLink: `/referrals/${this.referral.id}/update-probation-practitioner-pdu`,
+        changeHiddenText: 'probation delivery unit',
       },
       {
         key: 'Probation office',
@@ -87,6 +93,8 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determineProbationOffice() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/probation-office`
             : undefined,
+        changeHiddenText: 'probation office',
+        deleteHiddenText: `probation office`,
       },
       {
         key: 'Team phone number',
@@ -103,6 +111,8 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
           this.determineTeamPhoneNumber() !== 'Not found'
             ? `/referrals/${this.referral.id}/delete-probation-practitioner/team-phone-number`
             : undefined,
+        changeHiddenText: 'team phone number',
+        deleteHiddenText: `team phone number`,
       },
     ]
     return summary

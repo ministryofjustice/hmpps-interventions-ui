@@ -111,6 +111,7 @@ export default class ViewUtils {
                   href: item.deleteLink,
                   text: 'Delete',
                   attributes: { id: `delete-link-${index}` },
+                  visuallyHiddenText: item.deleteHiddenText || undefined,
                 })
               }
               if (item.changeLink) {
@@ -118,6 +119,7 @@ export default class ViewUtils {
                   href: item.changeLink,
                   text: 'Change',
                   attributes: { id: `change-link-${index}` },
+                  visuallyHiddenText: item.changeHiddenText || undefined,
                 })
               }
               return items
@@ -137,12 +139,19 @@ export default class ViewUtils {
     return {
       card: (() => {
         if (options.showTitle) {
+          if (actions) {
+            return {
+              title: {
+                text: heading,
+              },
+              actions: {
+                items: [actions],
+              },
+            }
+          }
           return {
             title: {
               text: heading,
-            },
-            actions: {
-              items: [actions],
             },
           }
         }
@@ -175,6 +184,7 @@ export default class ViewUtils {
                     href: item.changeLink,
                     text: 'Change',
                     attributes: { id: `change-link-${index}` },
+                    visuallyHiddenText: item.changeHiddenText || undefined,
                   },
                 ],
               }

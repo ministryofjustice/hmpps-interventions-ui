@@ -136,11 +136,13 @@ describe('POST /intervention/:id/refer', () => {
         .post(`/intervention/${interventionId}/refer`)
         .send({ 'service-user-crn': serviceUserCRN })
         .expect(301)
-        .expect('Location', '/referrals/1/community-allocated-form')
+        .expect('Location', '/referrals/1/community-allocated-form?startReferral=true')
 
       expect(auditService.logSearchServiceUser).toHaveBeenCalledWith({
         details: { identifier: 'X123456' },
         who: 'user1',
+        subjectType: 'CRN',
+        subjectId: 'X123456',
       })
       expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
     })
@@ -176,11 +178,13 @@ describe('POST /intervention/:id/refer', () => {
         .post(`/intervention/${interventionId}/refer`)
         .send({ 'service-user-crn': serviceUserCRN })
         .expect(301)
-        .expect('Location', '/referrals/1/community-allocated-form')
+        .expect('Location', '/referrals/1/community-allocated-form?startReferral=true')
 
       expect(auditService.logSearchServiceUser).toHaveBeenCalledWith({
         details: { identifier: 'X123456' },
         who: 'user1',
+        subjectType: 'CRN',
+        subjectId: 'X123456',
       })
       expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
     })
@@ -211,7 +215,7 @@ describe('POST /intervention/:id/refer', () => {
           .post(`/intervention/${interventionId}/refer`)
           .send({ 'service-user-crn': serviceUserCRN })
           .expect(301)
-          .expect('Location', '/referrals/1/community-allocated-form')
+          .expect('Location', '/referrals/1/community-allocated-form?startReferral=true')
 
         expect(ramDeliusApiService.getCaseDetailsByCrn).toHaveBeenCalledWith(serviceUserCRNTrimmed)
         expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(
@@ -231,7 +235,7 @@ describe('POST /intervention/:id/refer', () => {
           .post(`/intervention/${interventionId}/refer`)
           .send({ 'service-user-crn': serviceUserCRN })
           .expect(301)
-          .expect('Location', '/referrals/1/community-allocated-form')
+          .expect('Location', '/referrals/1/community-allocated-form?startReferral=true')
 
         expect(ramDeliusApiService.getCaseDetailsByCrn).toHaveBeenCalledWith(serviceUserCRNTransformed)
         expect(interventionsService.createDraftReferral).toHaveBeenCalledWith(

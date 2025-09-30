@@ -212,6 +212,7 @@ export default class ShowReferralPresenter {
             this.userType === 'probation-practitioner'
               ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-probation-practitioner-name`
               : undefined,
+          changeHiddenText: `probation practitioner's name`,
         },
         {
           key: 'Email address',
@@ -220,6 +221,7 @@ export default class ShowReferralPresenter {
             this.userType === 'probation-practitioner'
               ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-probation-practitioner-email`
               : undefined,
+          changeHiddenText: `probation practitioner's email address`,
         }
       )
       probationPractitionerDetails.push({
@@ -231,6 +233,7 @@ export default class ShowReferralPresenter {
           this.userType === 'probation-practitioner'
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-probation-practitioner-phone-number`
             : undefined,
+        changeHiddenText: `probation practitioner's phone number`,
       })
       probationPractitionerDetails.push({
         key:
@@ -260,6 +263,7 @@ export default class ShowReferralPresenter {
           this.userType === 'probation-practitioner'
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-team-phone-number`
             : undefined,
+        changeHiddenText: `probation practitioner's team phone number`,
       })
       return probationPractitionerDetails
     }
@@ -415,6 +419,7 @@ export default class ShowReferralPresenter {
         this.userType === 'probation-practitioner'
           ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-reason-for-referral`
           : undefined,
+      changeHiddenText: `reason for referral and referral details`,
     })
     items.push({
       key: `Further information${extraInfoText}`,
@@ -423,6 +428,7 @@ export default class ShowReferralPresenter {
         this.userType === 'probation-practitioner'
           ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-reason-for-referral`
           : undefined,
+      changeHiddenText: `further information${extraInfoText}`,
     })
     const complexityLevel = this.getReferralComplexityLevelForServiceCategory(serviceCategory)
     items.push({
@@ -435,6 +441,7 @@ export default class ShowReferralPresenter {
         this.userType === 'probation-practitioner' && !this.hasApprovedActionPlan
           ? `/probation-practitioner/referrals/${this.sentReferral.id}/service-category/${serviceCategory.id}/update-complexity-level`
           : undefined,
+      changeHiddenText: `complexity level`,
     })
 
     const desiredOutcomes = this.getReferralDesiredOutcomesForServiceCategory(serviceCategory)
@@ -448,6 +455,7 @@ export default class ShowReferralPresenter {
         this.userType === 'probation-practitioner' && !this.hasApprovedActionPlan
           ? `/probation-practitioner/referrals/${this.sentReferral.id}/${serviceCategory.id}/update-desired-outcomes`
           : undefined,
+      changeHiddenText: `desired outcomes`,
     })
 
     return items
@@ -542,6 +550,7 @@ export default class ShowReferralPresenter {
           this.userType === 'probation-practitioner'
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-maximum-enforceable-days`
             : undefined,
+        changeHiddenText: `maximum number of enforceable days`,
       },
       {
         key: this.userType === 'probation-practitioner' ? 'Date referral submitted' : 'Date intervention received',
@@ -558,6 +567,7 @@ export default class ShowReferralPresenter {
           this.userType === 'probation-practitioner'
             ? `/referrals/${this.sentReferral.id}/completion-deadline`
             : undefined,
+        changeHiddenText: `date the intervention is to be completed by`,
       },
     ] as SummaryListItem[]
 
@@ -624,19 +634,8 @@ export default class ShowReferralPresenter {
 
   get serviceUserLocationDetails(): SummaryListItem[] {
     const items: SummaryListItem[] = []
-    const { personCurrentLocationType } = this.sentReferral.referral
     items.push(this.locationAtTimeOfReferral)
     items.push(this.determineReleaseDate)
-    if (this.sentReferral.referral.expectedReleaseDateMissingReason) {
-      items.push({
-        key: 'Reason why expected release date is not known',
-        lines: [this.sentReferral.referral.expectedReleaseDateMissingReason],
-        changeLink:
-          this.userType === 'probation-practitioner' && personCurrentLocationType === CurrentLocationType.custody
-            ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-expected-release-date`
-            : undefined,
-      })
-    }
     items.push(...this.determineOfficeLocation)
     return items
   }
@@ -668,6 +667,7 @@ export default class ShowReferralPresenter {
               this.userType === 'probation-practitioner'
                 ? `/probation-practitioner/referrals/${this.sentReferral.id}/confirm-amend-expected-probation-office`
                 : undefined,
+            changeHiddenText: `expected probation office`,
           },
         ]
       }
@@ -703,11 +703,14 @@ export default class ShowReferralPresenter {
     if (personCurrentLocationType === 'CUSTODY') {
       return {
         key: 'Expected release date',
-        lines: [this.determineExpectedReleaseDate],
+        lines: this.determineExpectedReleaseDate,
         changeLink:
-          this.userType === 'probation-practitioner' && personCurrentLocationType === CurrentLocationType.custody
+          this.userType === 'probation-practitioner' &&
+          personCurrentLocationType === CurrentLocationType.custody &&
+          this.sentReferral.referral.isReferralReleasingIn12Weeks === null
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-expected-release-date`
             : undefined,
+        changeHiddenText: `expected release date`,
       }
     }
     return {
@@ -722,20 +725,20 @@ export default class ShowReferralPresenter {
     }
   }
 
-  private get determineExpectedReleaseDate(): string {
+  private get determineExpectedReleaseDate(): string[] {
     if (
       this.sentReferral.referral.expectedReleaseDate !== null &&
       this.sentReferral.referral.expectedReleaseDate !== ''
     ) {
-      return moment(this.sentReferral.referral.expectedReleaseDate).format('D MMM YYYY [(]ddd[)]')
+      return [moment(this.sentReferral.referral.expectedReleaseDate).format('D MMM YYYY [(]ddd[)]')]
     }
     if (
       this.sentReferral.referral.isReferralReleasingIn12Weeks !== null &&
       !this.sentReferral.referral.isReferralReleasingIn12Weeks
     ) {
-      return '---'
+      return ['---']
     }
-    return 'Not known'
+    return ['Not known', this.sentReferral.referral.expectedReleaseDateMissingReason || '']
   }
 
   private get locationAtTimeOfReferral(): SummaryListItem {
@@ -747,16 +750,17 @@ export default class ShowReferralPresenter {
     } else if (personCurrentLocationType) {
       locationAtTimeOfReferral = utils.convertToProperCase(personCurrentLocationType)
     }
+
+    const isCurrentLocationTypeCustody = personCurrentLocationType === CurrentLocationType.custody
+
     return {
-      key:
-        personCurrentLocationType === CurrentLocationType.custody
-          ? 'Prison establishment'
-          : 'Location at time of referral',
+      key: isCurrentLocationTypeCustody ? 'Prison establishment' : 'Location at time of referral',
       lines: [locationAtTimeOfReferral],
       changeLink:
-        this.userType === 'probation-practitioner' && personCurrentLocationType === CurrentLocationType.custody
+        this.userType === 'probation-practitioner' && isCurrentLocationTypeCustody
           ? `/probation-practitioner/referrals/${this.sentReferral.id}/amend-prison-establishment`
           : undefined,
+      changeHiddenText: isCurrentLocationTypeCustody ? `prison establishment` : ``,
     }
   }
 
@@ -778,6 +782,7 @@ export default class ShowReferralPresenter {
           this.userType === 'probation-practitioner' && !this.hasApprovedActionPlan
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-additional-information`
             : undefined,
+        changeHiddenText: `identified needs`,
       },
       {
         key: 'Mobility, disability or accessibility needs',
@@ -786,6 +791,7 @@ export default class ShowReferralPresenter {
           this.userType === 'probation-practitioner'
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/update-accessibility-needs`
             : undefined,
+        changeHiddenText: `mobility, disability or accessibility needs`,
       },
       {
         key: 'Interpreter required',
@@ -794,6 +800,7 @@ export default class ShowReferralPresenter {
           this.userType === 'probation-practitioner'
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/interpreter-needs`
             : undefined,
+        changeHiddenText: `interpreter required`,
       },
       { key: 'Interpreter language', lines: [this.sentReferral.referral.interpreterLanguage || 'N/A'] },
       {
@@ -807,6 +814,7 @@ export default class ShowReferralPresenter {
           this.userType === 'probation-practitioner'
             ? `/probation-practitioner/referrals/${this.sentReferral.id}/employment-responsibilities`
             : undefined,
+        changeHiddenText: `caring or employment responsibilities`,
       },
     ]
 

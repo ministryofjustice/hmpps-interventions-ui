@@ -1,16 +1,24 @@
 import Intervention, { Eligibility } from '../../models/intervention'
 import { ListStyle, SummaryListItem } from '../../utils/summaryList'
 import utils from '../../utils/utils'
-import PrimaryNavBarPresenter from '../shared/primaryNavBar/primaryNavBarPresenter'
 import LoggedInUser from '../../models/loggedInUser'
 
 export default class InterventionDetailsPresenter {
+  readonly backLinkUrl: string
+
+  readonly crsHomePageUrl: string
+
+  readonly crsHomePage = `/crs-homepage`
+
+  readonly findInterventionsPage = `/find-interventions`
+
   constructor(
     private readonly intervention: Intervention,
     private readonly loggedInUser: LoggedInUser
-  ) {}
-
-  readonly navItemsPresenter = new PrimaryNavBarPresenter('Find interventions', this.loggedInUser)
+  ) {
+    this.backLinkUrl = this.findInterventionsPage
+    this.crsHomePageUrl = this.crsHomePage
+  }
 
   get title(): string {
     return this.intervention.title

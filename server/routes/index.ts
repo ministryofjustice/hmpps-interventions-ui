@@ -47,7 +47,7 @@ export default function routes(router: Router, services: Services): Router {
   get(router, '/', (req, res, next) => {
     const { authSource } = res.locals.user
     if (authSource === 'delius') {
-      res.redirect('/probation-practitioner/dashboard')
+      res.redirect('/crs-homepage')
     } else {
       res.redirect('/service-provider/dashboard')
     }
@@ -86,6 +86,7 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   get(router, '/find-interventions/intervention/:id', (req, res) =>
     findInterventionsController.viewInterventionDetails(req, res)
   )
+  get(router, '/crs-homepage', (req, res) => findInterventionsController.showIndex(req, res))
 
   const makeAReferralController = new MakeAReferralController(
     services.interventionsService,

@@ -115,6 +115,7 @@ describe('ViewUtils', () => {
                   href: '/risks',
                   text: 'Change',
                   attributes: { id: `change-link-0` },
+                  visuallyHiddenText: undefined,
                 },
               ],
             },
@@ -191,9 +192,6 @@ describe('ViewUtils', () => {
         card: {
           title: {
             text: 'Personal Details',
-          },
-          actions: {
-            items: [null],
           },
         },
         classes: undefined,
