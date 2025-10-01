@@ -66,7 +66,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.621.0",
     "@aws-sdk/client-sqs": "^3.840.0",
-    "@aws-sdk/credential-providers": "^3.839.0",
+    "@aws-sdk/credential-providers": "^3.621.0",
     "@aws-sdk/s3-request-presigner": "^3.621.0",
     "@microsoft/applicationinsights-web": "^3.3.0",
     "@ministryofjustice/frontend": "2.2.5",
@@ -76,7 +76,7 @@
     "@types/express-serve-static-core": "^5.0.6",
     "@types/md5": "^2.3.5",
     "@types/qs": "^6.9.15",
-    "@types/uuid": "^11.0.0",
+    "@types/uuid": "^10.0.0",
     "accessible-autocomplete": "^3.0.0",
     "agentkeepalive": "^4.5.0",
     "applicationinsights": "^2.9.5",
@@ -113,7 +113,7 @@
     "redis": "^5.0.0",
     "superagent": "^10.2.3",
     "timezone-support": "^3.1.0",
-    "uuid": "^13.0.0"
+    "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@pact-foundation/pact": "^15.0.1",
