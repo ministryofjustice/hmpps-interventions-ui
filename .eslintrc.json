@@ -58,7 +58,10 @@
           }
         ],
         "@typescript-eslint/no-non-null-assertion": 0,
-        "@typescript-eslint/no-floating-promises": 1
+        "@typescript-eslint/no-floating-promises": 1,
+        "no-empty-interface": 0,
+        "@typescript-eslint/no-empty-object-type": "off",
+        "@typescript-eslint/no-require-imports": "off"
       }
     }
   ],
@@ -75,6 +78,7 @@
     ],
     "no-use-before-define": 0,
     "semi": 0,
+    "no-empty-function": "off",
     "import/no-unresolved": "error",
     "import/extensions": [
       "error",
