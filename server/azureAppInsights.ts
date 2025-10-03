@@ -1,51 +1,67 @@
-import { setup, Contracts, defaultClient, DistributedTracingModes } from 'applicationinsights'
+import { setup, defaultClient, DistributedTracingModes } from 'applicationinsights'
 import type { Request } from 'express'
 import applicationVersion from './applicationVersion'
 import config from './config'
 import logger from '../log'
 
+interface TelemetryEnvelope {
+  data?: {
+    baseType?: string
+    baseData?: {
+      responseCode?: number
+      success?: boolean
+      [key: string]: unknown
+    }
+  }
+  tags?: { [key: string]: string }
+}
+
 function ignoreExcludedRequestsProcessor(
-  envelope: Contracts.EnvelopeTelemetry,
-  _contextObjects: { [name: string]: unknown } | undefined
+  envelope: TelemetryEnvelope,
+  _contextObjects?: { [name: string]: unknown }
 ): boolean {
-  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request) {
-    const requestData = envelope.data.baseData
-    if (requestData instanceof Contracts.RequestData) {
+  if (envelope.data?.baseType === 'RequestData') {
+    const requestData = envelope.data.baseData as { name?: string }
+
+    if (requestData?.name) {
       const { excludedRequests } = config.applicationInsights
-      for (let i = 0; i < excludedRequests.length; i += 1) {
-        const pattern = excludedRequests[i]
-        if (requestData.name.match(pattern) !== null) {
-          return false
-        }
+
+      const isExcluded = excludedRequests.some(pattern => requestData.name?.match(pattern) !== null)
+
+      if (isExcluded) {
+        return false
       }
     }
   }
   return true
 }
 
-function addUsernameProcessor(
-  envelope: Contracts.EnvelopeTelemetry,
-  contextObjects: { [name: string]: unknown } | undefined
-): boolean {
-  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request) {
+/* eslint-disable no-param-reassign */
+function addUsernameProcessor(envelope: TelemetryEnvelope, contextObjects?: { [name: string]: unknown }): boolean {
+  if (envelope.data?.baseType === 'RequestData') {
     const userId = (contextObjects?.['http.ServerRequest'] as Request)?.user?.userId
+
     if (userId) {
-      // eslint-disable-next-line no-param-reassign
-      envelope.tags[defaultClient.context.keys.userAuthUserId] = userId
+      // clone tags so we’re not reassigning envelope directly
+      const newTags = { ...(envelope.tags ?? {}) }
+      newTags[defaultClient.context.keys.userAuthUserId] = userId
+      // eslint-disable no-param-reassign
+      envelope.tags = newTags
     }
   }
   return true
 }
+/* eslint-disable no-param-reassign */
 
-function errorStatusCodeProcessor(
-  envelope: Contracts.EnvelopeTelemetry,
-  _contextObjects: { [name: string]: unknown } | undefined
-): boolean {
-  if (envelope.data.baseType === Contracts.TelemetryTypeString.Request && envelope.data.baseData !== undefined) {
-    // only mark 5xx response codes as failures. the application serves 4xx
-    // responses to indicate authorization/validation errors and the like.
-    // eslint-disable-next-line no-param-reassign
-    envelope.data.baseData.success = envelope.data.baseData.responseCode < 500
+function errorStatusCodeProcessor(envelope: TelemetryEnvelope, _contextObjects?: { [name: string]: unknown }): boolean {
+  if (envelope.data?.baseType === 'RequestData' && envelope.data.baseData) {
+    const { baseData } = envelope.data
+
+    // only mark 5xx response codes as failures.
+    // 4xx codes remain "successful" because they're expected (auth/validation).
+    if (typeof baseData.responseCode === 'number') {
+      baseData.success = baseData.responseCode < 500
+    }
   }
   return true
 }
