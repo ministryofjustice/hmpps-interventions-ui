@@ -17,7 +17,7 @@ export default function nunjucksSetup(app: express.Application, path: pathModule
     }
   )
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires,global-require
+  // eslint-disable-next-line @typescript-eslint/no-var-requires,global-require,@typescript-eslint/no-require-imports
   const getMojFilters = require('@ministryofjustice/frontend/moj/filters/all')
 
   const mojFilters = getMojFilters()

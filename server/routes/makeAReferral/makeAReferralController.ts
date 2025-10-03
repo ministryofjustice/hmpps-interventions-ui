@@ -1335,7 +1335,7 @@ export default class MakeAReferralController {
           ndeliusPhoneNumber: deliusResponsibleOfficer?.communityManager.telephoneNumber,
           ndeliusTeamPhoneNumber: deliusResponsibleOfficer?.communityManager.team.telephoneNumber,
         })
-      } catch (e) {
+      } catch {
         // ignore the error if it is happening while saving
       }
     }

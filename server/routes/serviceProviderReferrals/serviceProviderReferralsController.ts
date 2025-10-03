@@ -479,7 +479,7 @@ export default class ServiceProviderReferralsController {
 
     try {
       await this.hmppsAuthService.getSPUserByEmailAddress(token, email)
-    } catch (e) {
+    } catch {
       return res.redirect(
         `/service-provider/referrals/${req.params.id}/details?${querystring.stringify({
           error: errorMessages.assignReferral.emailNotFound,
