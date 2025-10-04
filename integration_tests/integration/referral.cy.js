@@ -266,12 +266,9 @@ describe('Referral form', () => {
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
       cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
       cy.get('h1').contains('Confirm Alex River’s current location')
-      cy.get('h2').contains('Is Alex River in Moorland (HMP & YOI)')
-      cy.contains('No').click()
-
       cy.contains('Which prison establishment is Alex in?')
       cy.contains('Start typing then choose prison name from the list.')
-      cy.get('#prison-select').type('Aylesbury (HMYOI)')
+      cy.get('#prison-select').type('London')
       cy.stubGetDraftReferral(draftReferral.id, completedEstablishmentDraftReferral)
       cy.contains('Save and continue').click()
 
@@ -969,12 +966,10 @@ describe('Referral form', () => {
       // Submit current location Page
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
       cy.get('h1').contains('Confirm Alex River’s current location')
-      cy.get('h2').contains('Is Alex River in Moorland (HMP & YOI)')
-      cy.contains('No').click()
 
       cy.contains('Which prison establishment is Alex in?')
       cy.contains('Start typing then choose prison name from the list.')
-      cy.get('#prison-select').type('Aylesbury (HMYOI)')
+      cy.get('#prison-select').type('London')
       cy.stubGetDraftReferral(draftReferral.id, completedEstablishmentDraftReferral)
       cy.contains('Save and continue').click()
 

@@ -304,7 +304,7 @@ describe('Referral form', () => {
       cy.contains('Email address').type('a.b@xyz.com')
       cy.contains('Phone number').type('1293')
       cy.get('[type="radio"]').check('establishment')
-      cy.get('#prison-select').type('Bedford (HMP & YOI)')
+      cy.get('#prison-select').type('London')
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
       cy.contains('Save and continue').click()
 
@@ -336,12 +336,10 @@ describe('Referral form', () => {
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
       cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
       cy.get('h1').contains('Confirm Alex River’s current location')
-      cy.get('h2').contains('Is Alex River in Moorland (HMP & YOI)')
-      cy.contains('No').click()
 
       cy.contains('Which prison establishment is Alex in?')
       cy.contains('Start typing then choose prison name from the list.')
-      cy.get('#prison-select').type('Aylesbury (HMYOI)')
+      cy.get('#prison-select').type('London')
       cy.stubGetDraftReferral(draftReferral.id, completedEstablishmentDraftReferral)
       cy.contains('Save and continue').click()
       // Submit expected release date
@@ -975,7 +973,7 @@ describe('Referral form', () => {
       cy.contains('Role / job title').type('Probation Practitoner')
       cy.contains('Email address').type('a.b@xyz.com')
       cy.get('[type="radio"]').check('establishment')
-      cy.get('#prison-select').type('Bedford (HMP & YOI)')
+      cy.get('#prison-select').type('London')
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
       cy.contains('Save and continue').click()
 
@@ -1003,12 +1001,10 @@ describe('Referral form', () => {
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
       cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
       cy.get('h1').contains('Confirm Alex River’s current location')
-      cy.get('h2').contains('Is Alex River in Moorland (HMP & YOI)')
-      cy.contains('No').click()
 
       cy.contains('Which prison establishment is Alex in?')
       cy.contains('Start typing then choose prison name from the list.')
-      cy.get('#prison-select').type('Aylesbury (HMYOI)')
+      cy.get('#prison-select').type('London')
       cy.stubGetDraftReferral(draftReferral.id, completedEstablishmentDraftReferral)
       cy.contains('Save and continue').click()
 
@@ -1262,7 +1258,7 @@ describe('Referral form', () => {
 
       cy.contains('Prison establishment')
         .next()
-        .should('contain', 'Bedford (HMP & YOI)')
+        .should('contain', 'London')
         .next()
         .contains('Change')
         .should('have.attr', 'href', `/referrals/${draftReferral.id}/confirm-main-point-of-contact?amendPPDetails=true`)
@@ -1672,7 +1668,7 @@ describe('Referral form', () => {
       cy.contains('Email address').type('a.b@xyz.com')
       cy.contains('Phone number').type('1293')
       cy.get('[type="radio"]').check('establishment')
-      cy.get('#prison-select').type('Bedford (HMP & YOI)')
+      cy.get('#prison-select').type('London')
       cy.stubGetDraftReferral(draftReferral.id, completedPPDetails)
       cy.contains('Save and continue').click()
 
@@ -1704,12 +1700,10 @@ describe('Referral form', () => {
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/submit-current-location`)
       cy.contains(`Alex River (CRN: ${completedPPDetails.serviceUser.crn})`)
       cy.get('h1').contains('Confirm Alex River’s current location')
-      cy.get('h2').contains('Is Alex River in Moorland (HMP & YOI)')
-      cy.contains('No').click()
 
       cy.contains('Which prison establishment is Alex in?')
       cy.contains('Start typing then choose prison name from the list.')
-      cy.get('#prison-select').type('Aylesbury (HMYOI)')
+      cy.get('#prison-select').type('London')
       cy.stubGetDraftReferral(draftReferral.id, completedEstablishmentDraftReferral)
       cy.contains('Save and continue').click()
 

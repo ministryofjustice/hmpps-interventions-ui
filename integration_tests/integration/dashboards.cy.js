@@ -547,7 +547,7 @@ describe('Dashboards', () => {
               {
                 'Name/CRN': 'Jenny Jones\n            X123456',
                 'Expected release date': 'Over 12 weeks',
-                Location: '',
+                Location: 'London',
                 'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 'Date received': '26 Jan 2021',
@@ -572,7 +572,7 @@ describe('Dashboards', () => {
               {
                 'Name/CRN': 'Jenny Jones\n            X123456',
                 'Expected release date': 'Not found',
-                Location: '',
+                Location: 'London',
                 'Referral number': 'REFERRAL_REF',
                 'Intervention type': 'Accommodation Services - West Midlands',
                 'Date received': '26 Jan 2021',

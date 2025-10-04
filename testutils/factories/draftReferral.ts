@@ -130,7 +130,7 @@ class DraftReferralFactory extends Factory<DraftReferral> {
     ppName = 'Bob Alice',
     ppEmailAddress = 'bobalice@example.com',
     ppPhoneNumber = '+441234',
-    ppEstablishment = 'BFI',
+    ppEstablishment = 'aaa',
     roleOrJobTitle = 'Probation practitioner'
   ) {
     return this.filledWhetherReferralReleaseWithIn12Weeks(isReferralReleasingIn12Weeks).params({

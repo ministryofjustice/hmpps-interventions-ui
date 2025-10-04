@@ -10,7 +10,12 @@ export default class PrisonRegisterServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `${this.mockPrefix}/prisons/names?active=true`,
+        urlPathPattern: `${this.mockPrefix}/prisons/names`,
+        queryParameters: {
+          active: {
+            equalTo: 'true',
+          },
+        },
       },
       response: {
         status: 200,
