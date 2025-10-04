@@ -10,6 +10,7 @@ import deliusResponsibleOfficerFactory from '../../testutils/factories/deliusRes
 import caseConvictionFactory from '../../testutils/factories/caseConviction'
 import secureChildAgency from '../../testutils/factories/secureChildAgency'
 import prisoner from '../../testutils/factories/prisoner'
+import prisonFactory from '../../testutils/factories/prison'
 
 context('Amend a referral', () => {
   beforeEach(() => {
@@ -43,6 +44,7 @@ context('Amend a referral', () => {
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -136,6 +138,7 @@ context('Amend a referral', () => {
       cy.stubGetApprovedActionPlanSummaries(sentReferral.id, [])
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -240,6 +243,7 @@ context('Amend a referral', () => {
       cy.stubGetResponsibleOfficer(crn, deliusResponsibleOfficerFactory.build())
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -384,6 +388,7 @@ context('Amend a referral', () => {
       )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -635,6 +640,7 @@ context('Amend a referral', () => {
       )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -771,6 +777,7 @@ context('Amend a referral', () => {
       )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -904,6 +911,7 @@ context('Amend a referral', () => {
       )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -1024,6 +1032,7 @@ context('Amend a referral', () => {
       )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -1144,6 +1153,7 @@ context('Amend a referral', () => {
       )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -1265,6 +1275,7 @@ context('Amend a referral', () => {
       )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -1281,7 +1292,7 @@ context('Amend a referral', () => {
 
       it('redirects to referral details on submission', () => {
         cy.login(`/probation-practitioner/referrals/${sentReferral.id}/amend-prison-establishment`)
-        cy.get('#amend-prison-establishment').type('Brinsford (HMP & YOI)')
+        cy.get('#amend-prison-establishment').type('London')
         cy.get('textarea[name="reason-for-change"]').type('some reason')
         cy.contains('Save and continue').click()
         cy.url().should(
@@ -1386,6 +1397,7 @@ context('Amend a referral', () => {
       )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {
@@ -1516,6 +1528,7 @@ context('Amend a referral', () => {
       )
       cy.stubGetSecuredChildAgencies(secureChildAgency.build())
       cy.stubGetPrisonerDetails(crn, prisoner.build())
+      cy.stubGetPrisons(prisonFactory.build())
     }
 
     describe('as a probation practitioner', () => {

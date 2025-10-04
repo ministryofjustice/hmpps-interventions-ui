@@ -1,7 +1,7 @@
 import { Application } from 'express'
 import passport from 'passport'
 import OAuth2Strategy from 'passport-oauth2'
-import jwtDecode, { JwtPayload } from 'jwt-decode'
+import { jwtDecode, JwtPayload } from 'jwt-decode'
 import type { Request, Response, NextFunction } from 'express'
 import config from '../config'
 import generateOauthClientBaiscAuthHeader from './clientCredentials'
