@@ -1,6 +1,5 @@
 import { Router } from 'express'
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import cookieParser from 'cookie-parser'
 import loginRedirectMiddleware from '../middleware/loginRedirectMiddleware'
 import tokenVerificationMiddleware from '../middleware/tokenVerificationMiddleware'

@@ -1425,7 +1425,6 @@ export default class AppointmentsController {
     }
   }
 
-  /* eslint-disable no-param-reassign */
   private async updateDraftSessionFeedback(
     draftAppointment: DraftAppointment,
     paramsForUpdate: Partial<AppointmentSession>,
@@ -1457,7 +1456,6 @@ export default class AppointmentsController {
       throw new Error('Draft appointment data is missing.')
     }
   }
-  /* eslint-enable no-param-reassign */
 
   private async getAssignedCaseworker(
     accessToken: string,
@@ -1790,7 +1788,6 @@ export default class AppointmentsController {
     return new Date(appointmentSchedulingDetails.appointmentTime) < new Date()
   }
 
-  /* eslint-disable no-param-reassign */
   private createOrUpdateDraftAttendance(
     draftAppointment: DraftAppointment,
     data: FormData<Partial<AppointmentAttendanceFormDetails>>
@@ -1856,5 +1853,4 @@ export default class AppointmentsController {
       }
     }
   }
-  /* eslint-enable no-param-reassign */
 }

@@ -12,7 +12,6 @@ export default function createErrorHandler(production: boolean) {
     }
     // Added so exceptions are visible in tests to help with debugging.
     if (config.testMode) {
-      // eslint-disable-next-line no-console
       console.log(err)
     }
 

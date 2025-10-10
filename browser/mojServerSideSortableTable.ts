@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 /* Extends the MOJ Frontend’s sortable table component to preserve the table’s sort order
  * between page visits (by reloading the page with the sort order in the url)
  *
@@ -17,7 +15,6 @@
  *
  * 4. The table can only be sorted by one column at a time.
  */
-// eslint-disable-next-line max-classes-per-file
 class PersistentServerSideSortOrder {
   static activate() {
     this.observeAttributeChanges()
@@ -81,7 +78,6 @@ class PersistentServerSideSortOrder {
     // IE11 doesn't support `.includes`, so we're using `indexOf` here.
     if (['descending', 'ascending'].indexOf(newAriaSortOrder) > -1) {
       const redirectLocation = window.location.href.split('?')[0]
-      // eslint-disable-next-line no-unused-expressions
       if (window.location.href.includes('paginatedSearch=true')) {
         window.location.replace(
           `${redirectLocation}?paginatedSearch=true&sort=${columnPersistentId},${newAriaSortOrder}`
@@ -117,7 +113,6 @@ $(() => {
     }
   }
 
-  // eslint-disable-next-line no-new
   new NonSortingSortableTable(table)
 
   PersistentServerSideSortOrder.activate()

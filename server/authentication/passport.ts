@@ -17,7 +17,6 @@ const authConfig = config.apis.hmppsAuth
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
-    // eslint-disable-next-line @typescript-eslint/no-empty-interface
     interface User extends LoggedInUser {}
   }
 }

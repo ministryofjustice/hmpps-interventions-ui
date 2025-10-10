@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 /* Extends the MOJ Frontend’s sortable table component to preserve the table’s sort order
  * between page visits.
  *
@@ -17,7 +15,6 @@
  *
  * 4. The table can only be sorted by one column at a time.
  */
-// eslint-disable-next-line max-classes-per-file
 type ARIASort = 'none' | 'ascending' | 'descending'
 
 interface SortOrderDTO {
@@ -247,7 +244,6 @@ class MOJFrontendTableSecondOrderSorter {
     const tableSecondOrderColumnAttr = this.table.getAttribute('second-order-column')
     if (tableSecondOrderColumnAttr !== null) {
       const parsedColumnNumber = parseInt(tableSecondOrderColumnAttr, 10)
-      // eslint-disable-next-line no-restricted-globals
       if (!isNaN(parsedColumnNumber)) {
         this.secondOrderColumnNumber = parsedColumnNumber
       }
@@ -314,7 +310,6 @@ $(() => {
       return this.secondOrderTableSorter.secondOrderSort(sortedRows, columnNumber)
     }
   }
-  // eslint-disable-next-line no-new
   new SecondOrderSortableTable(table)
 
   PersistentSortOrder.activate(table)
