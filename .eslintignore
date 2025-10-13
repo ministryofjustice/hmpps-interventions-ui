@@ -1,8 +1,0 @@
-node_modules
-public
-assets
-cypress.config.ts
-reporter-config.json
-dist/
-script/build/
-browser/build/

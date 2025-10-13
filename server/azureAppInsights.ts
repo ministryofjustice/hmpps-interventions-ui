@@ -36,7 +36,6 @@ function ignoreExcludedRequestsProcessor(
   return true
 }
 
-/* eslint-disable no-param-reassign */
 function addUsernameProcessor(envelope: TelemetryEnvelope, contextObjects?: { [name: string]: unknown }): boolean {
   if (envelope.data?.baseType === 'RequestData') {
     const userId = (contextObjects?.['http.ServerRequest'] as Request)?.user?.userId
@@ -51,7 +50,6 @@ function addUsernameProcessor(envelope: TelemetryEnvelope, contextObjects?: { [n
   }
   return true
 }
-/* eslint-disable no-param-reassign */
 
 function errorStatusCodeProcessor(envelope: TelemetryEnvelope, _contextObjects?: { [name: string]: unknown }): boolean {
   if (envelope.data?.baseType === 'RequestData' && envelope.data.baseData) {

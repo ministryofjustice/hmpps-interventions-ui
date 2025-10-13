@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-
 // Set CYPRESS_COMMAND_DELAY above zero for demoing to stakeholders,
 const CYPRESS_COMMAND_DELAY = Cypress.env('CYPRESS_COMMAND_DELAY') || 0
 if (CYPRESS_COMMAND_DELAY > 0) {

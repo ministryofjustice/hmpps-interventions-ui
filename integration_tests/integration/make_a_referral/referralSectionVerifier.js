@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-classes-per-file
 export default class ReferralSectionVerifier {
   static get verifySection() {
     return new _ReferralSectionChecker()

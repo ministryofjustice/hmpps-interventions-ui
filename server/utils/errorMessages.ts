@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 // Explicit return types would make this file very messy and not much more
 // informational — everything returned is a string, since they’re messages!
 

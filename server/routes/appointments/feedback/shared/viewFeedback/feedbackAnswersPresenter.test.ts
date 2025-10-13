@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-classes-per-file
 import FeedbackAnswersPresenter from './feedbackAnswersPresenter'
 import actionPlanAppointmentFactory from '../../../../../../testutils/factories/actionPlanAppointment'
 import deliusServiceUserFactory from '../../../../../../testutils/factories/deliusServiceUser'
