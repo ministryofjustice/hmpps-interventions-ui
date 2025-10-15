@@ -9,9 +9,8 @@ on:
         description: Additional docker tag that can be used to specify stable or testing tags
         required: false
         default: ''
-        type: string
       push:
-        description: Push docker image to registry flag
+        description: Push docker image to registry
         required: true
         default: false
         type: boolean
@@ -21,17 +20,21 @@ permissions:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+env:
+  PACT_BROKER_BASE_URL: 'https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk'
+  PACT_BROKER_USERNAME: 'interventions'
 jobs:
   node_build:
-    name: node build
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_build.yml@v2 # WORKFLOW_VERSION
+    name: Node build
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_build.yml@v2
     secrets: inherit
   node_unit_tests:
-    name: node unit tests
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_unit_tests.yml@v2 # WORKFLOW_VERSION
+    name: Node unit tests
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_unit_tests.yml@v2
     needs: [ node_build ]
     secrets: inherit
   node_integration_tests:
+    name: Node integration tests
     runs-on: ubuntu-latest
     needs: [ node_build ]
     services:
@@ -56,16 +59,20 @@ jobs:
         run: npm run build
       - name: Lint
         run: npm run lint
-      - name: Get wiremock
+      - name: Get Wiremock
         shell: bash
         run: |
           curl -o wiremock.jar https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/3.9.1/wiremock-standalone-3.9.1.jar
-      - name: Prepare and run integration tests
+      - name: Run integration tests
         shell: bash
         run: |
           nohup java -jar wiremock.jar --port 9091 &
           nohup npm run start:test &
-          sleep 10
+          # Wait for Wiremock to be ready
+          until curl -s http://localhost:9091/__admin; do
+            echo "Waiting for Wiremock..."
+            sleep 1
+          done
           npm run int-test
       - name: Upload videos
         uses: actions/upload-artifact@v4
@@ -81,55 +88,77 @@ jobs:
     strategy:
       matrix:
         environments: [ 'dev', 'preprod', 'prod' ]
-    name: helm lint
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2 # WORKFLOW_VERSION
+    name: Helm lint
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2
     secrets: inherit
     with:
       environment: ${{ matrix.environments }}
   build:
-    name: Build docker image from hmpps-github-actions
+    name: Build Docker image
     if: github.ref == 'refs/heads/main'
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2 # WORKFLOW_VERSION
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2
     needs:
       - node_integration_tests
       - node_unit_tests
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
-      additional_docker_tag: ""
-      push: ${{ inputs.push || true }}
+      additional_docker_tag: ${{ inputs.additional_docker_tag }}
+      push: ${{ inputs.push }}
       docker_multiplatform: false
       additional_docker_build_args: ""
   deploy_dev:
-    name: Deploy to the dev environment
+    name: Deploy to Dev
     if: github.ref == 'refs/heads/main'
     needs:
       - build
       - helm_lint
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2
     secrets: inherit
     with:
       environment: 'dev'
       app_version: '${{ needs.build.outputs.app_version }}'
   deploy_preprod:
-    name: Deploy to the preprod environment
+    name: Deploy to Preprod
     needs:
       - build
       - helm_lint
       - deploy_dev
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2
     secrets: inherit
     with:
       environment: 'preprod'
       app_version: '${{ needs.build.outputs.app_version }}'
   deploy_prod:
-    name: Deploy to the prod environment
+    name: Deploy to Prod
     needs:
       - build
       - helm_lint
-      - deploy_preprod
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2 # WORKFLOW_VERSION
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2
     secrets: inherit
     with:
       environment: 'prod'
       app_version: '${{ needs.build.outputs.app_version }}'
+  tag_pact_version:
+    name: Tag Pact version
+    runs-on: ubuntu-latest
+    needs:
+      - deploy_dev
+      - deploy_preprod
+      - deploy_prod
+    strategy:
+      matrix:
+        environment: [ dev, preprod, prod ]
+    env:
+      PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Tag Pact version
+        run: |
+          npx --package=@pact-foundation/pact-cli@15.0.0 -c 'pact-broker create-version-tag \
+            --pacticipant="Interventions UI" \
+            --version="${GITHUB_SHA}" \
+            --tag="deployed:${{ matrix.environment }}" \
+            --broker-base-url="$PACT_BROKER_BASE_URL" \
+            --broker-username="$PACT_BROKER_USERNAME" \
+            --broker-password="$PACT_BROKER_PASSWORD"'

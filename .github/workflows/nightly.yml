@@ -1,0 +1,30 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: '0 7 * * 1-5' # 7 AM Monday-Friday
+  workflow_dispatch:       # allows manual trigger
+permissions:
+  contents: read
+  packages: write
+env:
+  PACT_BROKER_BASE_URL: 'https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk'
+  PACT_BROKER_USERNAME: 'interventions'
+concurrency:
+  group: nightly-checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  npm_security_audit:
+    name: Node Security Audit
+    uses: .github/workflows/security_npm_dependency.yml
+    secrets: inherit
+  veracode_policy_scan:
+    name: Veracode Policy Scan
+    needs: npm_security_audit
+    uses: .github/workflows/security_veracode_policy_scan.yml
+    secrets: inherit
+  trivy_latest_scan:
+    name: Trivy Latest Scan
+    needs: veracode_policy_scan
+    uses: .github/workflows/security_trivy.yml
+    secrets: inherit
