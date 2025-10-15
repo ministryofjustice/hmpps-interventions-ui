@@ -106,7 +106,6 @@ jobs:
       additional_docker_tag: ${{ inputs.additional_docker_tag }}
       push: ${{ inputs.push }}
       docker_multiplatform: false
-      additional_docker_build_args: ""
   deploy_dev:
     name: Deploy to Dev
     if: github.ref == 'refs/heads/main'
