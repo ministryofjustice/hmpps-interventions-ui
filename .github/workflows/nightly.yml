@@ -3,7 +3,7 @@ name: Nightly
 on:
   schedule:
     - cron: '0 7 * * 1-5' # 7 AM Monday-Friday
-  workflow_dispatch:       # allows manual trigger
+  workflow_dispatch:
 permissions:
   contents: read
   packages: write
@@ -16,15 +16,15 @@ concurrency:
 jobs:
   npm_security_audit:
     name: Node Security Audit
-    uses: .github/workflows/security_npm_dependency.yml
+    uses: ./.github/workflows/security_npm_dependency.yml
     secrets: inherit
   veracode_policy_scan:
     name: Veracode Policy Scan
     needs: npm_security_audit
-    uses: .github/workflows/security_veracode_policy_scan.yml
+    uses: ./.github/workflows/security_veracode_policy_scan.yml
     secrets: inherit
   trivy_latest_scan:
     name: Trivy Latest Scan
     needs: veracode_policy_scan
-    uses: .github/workflows/security_trivy.yml
+    uses: ./.github/workflows/security_trivy.yml
     secrets: inherit
