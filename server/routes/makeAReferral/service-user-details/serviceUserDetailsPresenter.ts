@@ -57,7 +57,7 @@ export default class ServiceUserDetailsPresenter {
         key: 'Date of birth',
         lines: [this.dateOfBirthWithShortMonth ? `${this.dateOfBirthWithShortMonth} (${this.age} years old)` : ''],
       },
-      { key: 'Gender', lines: [this.serviceUser.gender ?? ''] },
+      { key: 'Sex', lines: [this.serviceUser.gender ?? ''] },
       { key: 'Ethnicity', lines: [this.serviceUser.ethnicity ?? ''] },
       { key: 'Preferred language', lines: [this.serviceUser.preferredLanguage ?? ''] },
       { key: 'Disabilities', lines: this.serviceUser.disabilities ?? [], listStyle: ListStyle.noMarkers },
@@ -68,7 +68,7 @@ export default class ServiceUserDetailsPresenter {
 
   get personalDetailsForReferralDetailsSummary(): SummaryListItem[] {
     const summary: SummaryListItem[] = [
-      { key: 'Gender', lines: [this.serviceUser.gender ?? ''] },
+      { key: 'Sex', lines: [this.serviceUser.gender ?? ''] },
       { key: 'Ethnicity', lines: [this.serviceUser.ethnicity ?? ''] },
       { key: 'Preferred language', lines: [this.serviceUser.preferredLanguage ?? ''] },
       { key: 'Disabilities', lines: this.serviceUser.disabilities ?? [], listStyle: ListStyle.noMarkers },
@@ -137,7 +137,7 @@ export default class ServiceUserDetailsPresenter {
         key: 'Date of birth',
         lines: [this.dateOfBirthWithShortMonth ? `${this.dateOfBirthWithShortMonth} (${this.age} years old)` : ''],
       },
-      { key: 'Gender', lines: [this.serviceUser.gender ?? ''] },
+      { key: 'Sex', lines: [this.serviceUser.gender ?? ''] },
       {
         key: 'Address',
         lines: address || ['Not found'],
@@ -178,7 +178,7 @@ export default class ServiceUserDetailsPresenter {
         lines: address || ['Not found'],
         listStyle: ListStyle.noMarkers,
       },
-      { key: 'Gender', lines: [this.serviceUser.gender ?? ''] },
+      { key: 'Sex', lines: [this.serviceUser.gender ?? ''] },
       { key: 'Ethnicity', lines: [this.serviceUser.ethnicity ?? ''] },
       { key: 'Preferred language', lines: [this.serviceUser.preferredLanguage ?? ''] },
       { key: 'Religion or belief', lines: [this.serviceUser.religionOrBelief ?? ''] },
