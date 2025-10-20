@@ -2,6 +2,7 @@ import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 
 export default class EnforceableDaysPresenter {
+  private formError: FormValidationError | null
   constructor(
     private readonly crn: string,
     private readonly maximumEnforceableDays: number | null,
@@ -9,7 +10,9 @@ export default class EnforceableDaysPresenter {
     private readonly lastName: string | null = null,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly text = {
     title: 'How many days will you use for this service?',

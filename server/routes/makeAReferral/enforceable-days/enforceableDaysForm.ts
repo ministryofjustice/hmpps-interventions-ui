@@ -46,7 +46,10 @@ export default class EnforceableDaysForm {
         .withMessage(errorMessages.maximumEnforceableDays.notWholeNumber)
         .bail()
         .isInt({ min: 1 })
-        .withMessage(errorMessages.maximumEnforceableDays.tooSmall),
+        .withMessage(errorMessages.maximumEnforceableDays.tooSmall)
+        .bail()
+        .isInt({ max: 100 })
+        .withMessage(errorMessages.maximumEnforceableDays.tooLarge),
     ]
   }
 
