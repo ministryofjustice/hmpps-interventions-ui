@@ -87,7 +87,7 @@ describe(CheckAllReferralInformationPresenter, () => {
           { key: 'First name', lines: ['Alex'] },
           { key: 'Last name(s)', lines: ['River'] },
           { key: 'Date of birth', lines: [`1 Jan 1980 (${yearsElapsed} years old)`] },
-          { key: 'Gender', lines: ['Male'] },
+          { key: 'Sex', lines: ['Male'] },
           {
             key: 'Address',
             lines: ['Flat 2 Test Walk', 'London', 'City of London', 'Greater London', 'SW16 1AQ'],

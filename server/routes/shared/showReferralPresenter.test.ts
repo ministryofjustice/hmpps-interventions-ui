@@ -2211,7 +2211,7 @@ describe(ShowReferralPresenter, () => {
       )
 
       expect(presenter.personalDetailSummary).toEqual([
-        { key: 'Gender', lines: ['Male'] },
+        { key: 'Sex', lines: ['Male'] },
         { key: 'Ethnicity', lines: ['British'] },
         { key: 'Preferred language', lines: ['English'] },
         { key: 'Disabilities', lines: ['Autism spectrum condition', 'sciatica'], listStyle: ListStyle.noMarkers },
