@@ -32,7 +32,12 @@
 {% endblock %}
 
 {% block pageTitle %}
-    HMPPS Interventions
+    {% if presenter.formError %}
+      Error: HMPPS Interventions
+    {% else %}
+      HMPPS Interventions
+    {% endif %}
+    
     {% if pageTitle %}
     - {{ pageTitle }}
     {% endif %}

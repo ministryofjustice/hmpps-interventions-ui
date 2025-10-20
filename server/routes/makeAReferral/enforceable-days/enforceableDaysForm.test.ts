@@ -68,5 +68,19 @@ describe(EnforceableDaysForm, () => {
         message: 'The maximum number of enforceable days must be at least 1',
       })
     })
+
+    it('returns an error when the maximum-enforceable-days property is more than 100', async () => {
+      const request = TestUtils.createRequest({
+        'maximum-enforceable-days': '101',
+      })
+
+      const data = await new EnforceableDaysForm(request).data()
+
+      expect(data.error?.errors).toContainEqual({
+        errorSummaryLinkedField: 'maximum-enforceable-days',
+        formFields: ['maximum-enforceable-days'],
+        message: 'The number of days must be 100 or fewer',
+      })
+    })
   })
 })

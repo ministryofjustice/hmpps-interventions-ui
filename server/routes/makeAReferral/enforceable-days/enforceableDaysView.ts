@@ -26,7 +26,7 @@ export default class EnforceableDaysView {
       value: this.presenter.fields.maximumEnforceableDays,
       errorMessage: ViewUtils.govukErrorMessage(this.presenter.errorMessage),
       inputmode: 'numeric',
-      pattern: '[0-9]*',
+      pattern: '[0-9]{3}',
     }
   }
 
