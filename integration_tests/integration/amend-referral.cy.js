@@ -107,8 +107,10 @@ context('Amend a referral', () => {
         cy.contains('What is the reason for changing the maximum number of days?').type('something')
         cy.contains('Save and continue').click()
 
-        cy.contains('There is a problem').next().contains('Enter the maximum number of enforceable days')
-        cy.get('input[name="maximum-enforceable-days"]').prev().contains('Enter the maximum number of enforceable days')
+        cy.contains('There is a problem').next().contains('Enter the number of days you will use for this service')
+        cy.get('input[name="maximum-enforceable-days"]')
+          .prev()
+          .contains('Enter the number of days you will use for this service')
       })
     })
   })

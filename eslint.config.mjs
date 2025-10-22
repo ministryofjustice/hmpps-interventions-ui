@@ -1,4 +1,4 @@
-import { defineConfig, globalIgnores } from 'eslint/config'
+import { defineConfig } from 'eslint/config'
 import _import from 'eslint-plugin-import'
 import { fixupPluginRules } from '@eslint/compat'
 import globals from 'globals'
@@ -19,16 +19,18 @@ const compat = new FlatCompat({
 })
 
 export default defineConfig([
-  globalIgnores([
-    '**/node_modules',
-    '**/public',
-    '**/assets',
-    '**/cypress.config.ts',
-    '**/reporter-config.json',
-    '**/dist/',
-    'script/build/',
-    'browser/build/',
-  ]),
+  {
+    ignores: [
+      'node_modules',
+      'public',
+      'assets',
+      'cypress.config.ts',
+      'reporter-config.json',
+      'dist/',
+      'script/build/',
+      'browser/build/',
+    ],
+  },
   {
     // --- Generic JS/Base Config Block ---
     extends: compat.extends('plugin:prettier/recommended'),
@@ -71,6 +73,7 @@ export default defineConfig([
       ],
 
       'no-use-before-define': 0,
+      'no-console': 'error',
       semi: 0,
       'import/no-unresolved': 'error',
 

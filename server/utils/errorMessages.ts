@@ -192,10 +192,10 @@ export default {
     empty: (name: string) => `Enter details of when ${name} will not be able to attend sessions`,
   },
   maximumEnforceableDays: {
-    empty: 'Enter the maximum number of enforceable days',
-    notNumber: 'The maximum number of enforceable days must be a number, like 5',
-    notWholeNumber: 'The maximum number of enforceable days must be a whole number, like 5',
-    tooSmall: 'The maximum number of enforceable days must be at least 1',
+    empty: 'Enter the number of days you will use for this service',
+    notNumber: 'The number of days must be a number between 1 and 100',
+    notWholeNumber: 'The number of days must be a whole number between 1 and 100',
+    tooSmall: 'The number of days must be a number between 1 and 100',
     tooLarge: 'The number of days must be 100 or fewer',
   },
   assignReferral: {

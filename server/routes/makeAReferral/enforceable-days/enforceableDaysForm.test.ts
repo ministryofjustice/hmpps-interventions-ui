@@ -24,7 +24,7 @@ describe(EnforceableDaysForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'maximum-enforceable-days',
         formFields: ['maximum-enforceable-days'],
-        message: 'Enter the maximum number of enforceable days',
+        message: 'Enter the number of days you will use for this service',
       })
     })
 
@@ -38,7 +38,7 @@ describe(EnforceableDaysForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'maximum-enforceable-days',
         formFields: ['maximum-enforceable-days'],
-        message: 'The maximum number of enforceable days must be a number, like 5',
+        message: 'The number of days must be a number between 1 and 100',
       })
     })
 
@@ -52,7 +52,7 @@ describe(EnforceableDaysForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'maximum-enforceable-days',
         formFields: ['maximum-enforceable-days'],
-        message: 'The maximum number of enforceable days must be a whole number, like 5',
+        message: 'The number of days must be a whole number between 1 and 100',
       })
     })
     it('returns an error when the maximum-enforceable-days property is less than 1', async () => {
@@ -65,7 +65,7 @@ describe(EnforceableDaysForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'maximum-enforceable-days',
         formFields: ['maximum-enforceable-days'],
-        message: 'The maximum number of enforceable days must be at least 1',
+        message: 'The number of days must be a number between 1 and 100',
       })
     })
 

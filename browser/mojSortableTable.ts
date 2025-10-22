@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* Extends the MOJ Frontend’s sortable table component to preserve the table’s sort order
  * between page visits.
  *

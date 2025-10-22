@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import Writer from './writer'
 
 // This script generates TypeScript interfaces for the arguments of Nunjucks macros,

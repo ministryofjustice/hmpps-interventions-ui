@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import jwt from 'jsonwebtoken'
 import Wiremock from './wiremock'
 import TokenVerifiationMocks from './tokenVerification'
