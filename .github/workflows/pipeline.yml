@@ -75,12 +75,12 @@ jobs:
           done
           npm run int-test
       - name: Upload videos
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: integration-videos
           path: integration_tests/videos
       - name: Upload screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: integration-screenshots
           path: integration_tests/screenshots
