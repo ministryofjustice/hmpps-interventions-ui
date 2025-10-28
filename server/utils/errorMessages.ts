@@ -193,10 +193,10 @@ export default {
   },
   maximumEnforceableDays: {
     empty: 'Enter the number of days you will use for this service',
-    notNumber: 'The number of days must be a number between 1 and 100',
-    notWholeNumber: 'The number of days must be a whole number between 1 and 100',
-    tooSmall: 'The number of days must be a number between 1 and 100',
-    tooLarge: 'The number of days must be 100 or fewer',
+    notNumber: 'The number of days must be a number between 1 and 40',
+    notWholeNumber: 'The number of days must be a whole number between 1 and 40',
+    tooSmall: 'The number of days must be a number between 1 and 40',
+    tooLarge: 'The number of days must be 40 or fewer',
   },
   assignReferral: {
     emailEmpty: 'An email address is required',
