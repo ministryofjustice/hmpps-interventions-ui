@@ -38,7 +38,7 @@ describe(EnforceableDaysForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'maximum-enforceable-days',
         formFields: ['maximum-enforceable-days'],
-        message: 'The number of days must be a number between 1 and 100',
+        message: 'The number of days must be a number between 1 and 40',
       })
     })
 
@@ -52,7 +52,7 @@ describe(EnforceableDaysForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'maximum-enforceable-days',
         formFields: ['maximum-enforceable-days'],
-        message: 'The number of days must be a whole number between 1 and 100',
+        message: 'The number of days must be a whole number between 1 and 40',
       })
     })
     it('returns an error when the maximum-enforceable-days property is less than 1', async () => {
@@ -65,11 +65,11 @@ describe(EnforceableDaysForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'maximum-enforceable-days',
         formFields: ['maximum-enforceable-days'],
-        message: 'The number of days must be a number between 1 and 100',
+        message: 'The number of days must be a number between 1 and 40',
       })
     })
 
-    it('returns an error when the maximum-enforceable-days property is more than 100', async () => {
+    it('returns an error when the maximum-enforceable-days property is more than 40', async () => {
       const request = TestUtils.createRequest({
         'maximum-enforceable-days': '101',
       })
@@ -79,7 +79,7 @@ describe(EnforceableDaysForm, () => {
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'maximum-enforceable-days',
         formFields: ['maximum-enforceable-days'],
-        message: 'The number of days must be 100 or fewer',
+        message: 'The number of days must be 40 or fewer',
       })
     })
   })
