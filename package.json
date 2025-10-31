@@ -80,7 +80,7 @@
     "@types/uuid": "^10.0.0",
     "accessible-autocomplete": "^3.0.0",
     "agentkeepalive": "^4.5.0",
-    "applicationinsights": "^3.0.0",
+    "applicationinsights": "^2.9.8",
     "body-parser": "^2.2.0",
     "bunyan": "^1.8.15",
     "compression": "^1.7.4",
