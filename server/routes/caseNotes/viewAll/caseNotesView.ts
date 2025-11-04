@@ -39,10 +39,10 @@ export default class CaseNotesView {
           },
           {
             html: `<p class="govuk-body">
-                    <b>${ViewUtils.escape(row.subject)}</b>
-                    <br><br>${ViewUtils.nl2br(
+                    <b class = "wrapped-text">${ViewUtils.escape(row.subject)}</b>
+                    <br><br><div class="wrapped-text">${ViewUtils.nl2br(
                       ViewUtils.escape(PresenterUtils.truncateCharacters(row.body, 250, { addEllipsis: true }))
-                    )}
+                    )}</div>
                     <p/><a href="${row.caseNoteLink}" class="govuk-link">Read More</a>
                     </p>`,
           },
