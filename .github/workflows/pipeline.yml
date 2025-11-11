@@ -84,6 +84,23 @@ jobs:
         with:
           name: integration-screenshots
           path: integration_tests/screenshots
+      - name: Publish Pacts
+        if: github.ref == 'refs/heads/main'
+        env:
+          PACT_BROKER_BASE_URL: ${{ env.PACT_BROKER_BASE_URL }}
+          PACT_BROKER_USERNAME: ${{ env.PACT_BROKER_USERNAME }}
+          PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
+        run: |
+          if [ -d "pacts" ]; then
+            echo "Publishing Pacts for version $GITHUB_SHA..."
+            npx --package=@pact-foundation/pact-cli@15.0.0 -c 'pact-broker publish pacts/ \
+              --consumer-app-version=$GITHUB_SHA \
+              --broker-base-url=$PACT_BROKER_BASE_URL \
+              --broker-username=$PACT_BROKER_USERNAME \
+              --broker-password=$PACT_BROKER_PASSWORD'
+          else
+            echo "No pacts directory found — skipping publish"
+          fi
   helm_lint:
     strategy:
       matrix:
@@ -154,6 +171,7 @@ jobs:
       - uses: actions/checkout@v5
       - name: Tag Pact version
         run: |
+          sleep 10
           npx --package=@pact-foundation/pact-cli@15.0.0 -c 'pact-broker create-version-tag \
             --pacticipant="Interventions UI" \
             --version="${GITHUB_SHA}" \
