@@ -1,4 +1,4 @@
-name: Security veracode pipeline scan
+name: Security Veracode Pipeline Scan
 on:
   workflow_dispatch:
   schedule:
