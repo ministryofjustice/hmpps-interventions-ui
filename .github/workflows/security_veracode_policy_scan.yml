@@ -1,6 +1,5 @@
-name: Security veracode policy scan
+name: Security Veracode Policy Scan
 on:
-  workflow_call:
   workflow_dispatch:
   schedule:
     - cron: "41 3 * * 1" # Every Monday at 03:41 UTC
