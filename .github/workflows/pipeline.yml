@@ -84,22 +84,29 @@ jobs:
         with:
           name: integration-screenshots
           path: integration_tests/screenshots
+  publish_pacts:
+    name: Publish Pacts
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: [ node_integration_tests ]
+    env:
+      PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v5
       - name: Publish Pacts
-        if: github.ref == 'refs/heads/main'
-        env:
-          PACT_BROKER_BASE_URL: ${{ env.PACT_BROKER_BASE_URL }}
-          PACT_BROKER_USERNAME: ${{ env.PACT_BROKER_USERNAME }}
-          PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
         run: |
-          if [ -d "pacts" ]; then
+          PACT_BROKER_BASE_URL="${PACT_BROKER_BASE_URL}"
+          PACT_BROKER_USERNAME="${PACT_BROKER_USERNAME}"
+          PACT_BROKER_PASSWORD="${PACT_BROKER_PASSWORD}"
+          if [ -d "pact/pacts" ]; then
             echo "Publishing Pacts for version $GITHUB_SHA..."
-            npx --package=@pact-foundation/pact-cli@15.0.0 -c 'pact-broker publish pacts/ \
+            npx --package=@pact-foundation/pact-cli@15.0.0 -c 'pact-broker publish pact/pacts/ \
               --consumer-app-version=$GITHUB_SHA \
               --broker-base-url=$PACT_BROKER_BASE_URL \
               --broker-username=$PACT_BROKER_USERNAME \
               --broker-password=$PACT_BROKER_PASSWORD'
           else
-            echo "No pacts directory found — skipping publish"
+            echo "No pact/pacts directory found — skipping publish"
           fi
   helm_lint:
     strategy:
@@ -117,6 +124,7 @@ jobs:
     needs:
       - node_integration_tests
       - node_unit_tests
+      - publish_pacts
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
