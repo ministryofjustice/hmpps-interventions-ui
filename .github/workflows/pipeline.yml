@@ -74,6 +74,11 @@ jobs:
             sleep 1
           done
           npm run int-test
+      - name: Upload pacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: pacts
+          path: pact/pacts
       - name: Upload videos
         uses: actions/upload-artifact@v5
         with:
@@ -93,11 +98,13 @@ jobs:
       PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
     steps:
       - uses: actions/checkout@v5
+      - name: Download Pacts
+        uses: actions/download-artifact@v4
+        with:
+          name: pacts
+          path: pact/pacts
       - name: Publish Pacts
         run: |
-          PACT_BROKER_BASE_URL="${PACT_BROKER_BASE_URL}"
-          PACT_BROKER_USERNAME="${PACT_BROKER_USERNAME}"
-          PACT_BROKER_PASSWORD="${PACT_BROKER_PASSWORD}"
           if [ -d "pact/pacts" ]; then
             echo "Publishing Pacts for version $GITHUB_SHA..."
             npx --package=@pact-foundation/pact-cli@15.0.0 -c 'pact-broker publish pact/pacts/ \
