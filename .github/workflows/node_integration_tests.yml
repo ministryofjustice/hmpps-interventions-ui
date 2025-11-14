@@ -1,0 +1,55 @@
+name: Node Integration Tests
+
+on:
+  workflow_call:
+
+jobs:
+  node_integration_tests:
+    name: Run Node Integration Tests
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7.0
+        ports:
+          - 6380:6379
+        env:
+          ALLOW_EMPTY_PASSWORD: 'yes'
+        options: >-
+          --health-cmd "redis-cli -p 6379 ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install latest npm
+        run: sudo npm install -g npm@latest
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Lint
+        run: npm run lint
+      - name: Get Wiremock
+        shell: bash
+        run: |
+          curl -o wiremock.jar https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/3.9.1/wiremock-standalone-3.9.1.jar
+      - name: Run integration tests
+        shell: bash
+        run: |
+          nohup java -jar wiremock.jar --port 9091 &
+          nohup npm run start:test &
+          until curl -s http://localhost:9091/__admin; do
+            echo "Waiting for Wiremock..."
+            sleep 1
+          done
+          npm run int-test
+      - name: Upload videos
+        uses: actions/upload-artifact@v5
+        with:
+          name: integration-videos
+          path: integration_tests/videos
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v5
+        with:
+          name: integration-screenshots
+          path: integration_tests/screenshots
