@@ -33,88 +33,15 @@ jobs:
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_unit_tests.yml@v2
     needs: [ node_build ]
     secrets: inherit
+  generate_pacts:
+    name: Generate Pacts and Publish
+    uses: ./.github/workflows/generate_pacts_and_publish.yml
+    needs: [ node_unit_tests ]
+    secrets: inherit
   node_integration_tests:
-    name: Node integration tests
-    runs-on: ubuntu-latest
-    needs: [ node_build ]
-    services:
-      redis:
-        image: redis:7.0
-        ports:
-          - 6380:6379
-        env:
-          ALLOW_EMPTY_PASSWORD: 'yes'
-        options: >-
-          --health-cmd "redis-cli -p 6379 ping"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
-    steps:
-      - uses: actions/checkout@v5
-      - name: Install latest npm
-        run: sudo npm install -g npm@latest
-      - name: Install dependencies
-        run: npm ci
-      - name: Build
-        run: npm run build
-      - name: Lint
-        run: npm run lint
-      - name: Get Wiremock
-        shell: bash
-        run: |
-          curl -o wiremock.jar https://repo1.maven.org/maven2/org/wiremock/wiremock-standalone/3.9.1/wiremock-standalone-3.9.1.jar
-      - name: Run integration tests
-        shell: bash
-        run: |
-          nohup java -jar wiremock.jar --port 9091 &
-          nohup npm run start:test &
-          # Wait for Wiremock to be ready
-          until curl -s http://localhost:9091/__admin; do
-            echo "Waiting for Wiremock..."
-            sleep 1
-          done
-          npm run int-test
-      - name: Upload pacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: pacts
-          path: pact/pacts
-      - name: Upload videos
-        uses: actions/upload-artifact@v5
-        with:
-          name: integration-videos
-          path: integration_tests/videos
-      - name: Upload screenshots
-        uses: actions/upload-artifact@v5
-        with:
-          name: integration-screenshots
-          path: integration_tests/screenshots
-  publish_pacts:
-    name: Publish Pacts
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    needs: [ node_integration_tests ]
-    env:
-      PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Download Pacts
-        uses: actions/download-artifact@v4
-        with:
-          name: pacts
-          path: pact/pacts
-      - name: Publish Pacts
-        run: |
-          if [ -d "pact/pacts" ]; then
-            echo "Publishing Pacts for version $GITHUB_SHA..."
-            npx --package=@pact-foundation/pact-cli@15.0.0 -c 'pact-broker publish pact/pacts/ \
-              --consumer-app-version=$GITHUB_SHA \
-              --broker-base-url=$PACT_BROKER_BASE_URL \
-              --broker-username=$PACT_BROKER_USERNAME \
-              --broker-password=$PACT_BROKER_PASSWORD'
-          else
-            echo "No pact/pacts directory found — skipping publish"
-          fi
+    name: Node Integration Tests
+    uses: ./.github/workflows/node_integration_tests.yml
+    needs: [ node_build]
   helm_lint:
     strategy:
       matrix:
@@ -131,7 +58,7 @@ jobs:
     needs:
       - node_integration_tests
       - node_unit_tests
-      - publish_pacts
+      - generate_pacts
     with:
       docker_registry: 'ghcr.io'
       registry_org: 'ministryofjustice'
