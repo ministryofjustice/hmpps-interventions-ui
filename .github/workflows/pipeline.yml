@@ -108,7 +108,7 @@ jobs:
       matrix:
         environment: [ dev, preprod, prod ]
     env:
-      PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
+      PACT_BROKER_PASSWORD: ${{ secrets.HMPPS_PACT_BROKER_PASSWORD }}
     steps:
       - uses: actions/checkout@v5
       - name: Tag Pact version

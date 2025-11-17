@@ -25,7 +25,7 @@ jobs:
     env:
       PACT_BROKER_BASE_URL: 'https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk'
       PACT_BROKER_USERNAME: 'interventions'
-      PACT_BROKER_PASSWORD: ${{ secrets.PACT_BROKER_PASSWORD }}
+      PACT_BROKER_PASSWORD: ${{ secrets.HMPPS_PACT_BROKER_PASSWORD }}
     steps:
       - uses: actions/checkout@v5
       - name: Install latest npm
