@@ -1,0 +1,60 @@
+name: Node Build and Publish Pacts
+
+on:
+  workflow_call:
+    inputs:
+      additional_docker_tag:
+        description: Additional Docker tag to pass
+        required: false
+        type: string
+        default: ''
+      push:
+        description: Push Docker image to registry
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  node_build_and_publish_pacts:
+    name: Node Build and Publish Pacts
+    runs-on: ubuntu-latest
+    env:
+      PACT_BROKER_BASE_URL: 'https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk'
+      PACT_BROKER_USERNAME: 'interventions'
+      PACT_BROKER_PASSWORD: ${{ secrets.HMPPS_PACT_BROKER_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install latest npm
+        run: sudo npm install -g npm@latest
+      - name: Install dependencies
+        run: npm ci
+      - name: Download unit test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: npm_unit_test_artifacts
+          path: test_results  # or whatever path you used in node_unit_tests
+      - name: Run tests
+        run: npm run test
+      - name: Upload Pact files as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pacts
+          path: pact/pacts
+      - name: Publish Pact files to broker
+        run: |
+          if [ -d "pact/pacts" ]; then
+            echo "Publishing Pacts for version $GITHUB_SHA..."
+            npx --package=@pact-foundation/pact-cli@15.0.0 pact-broker publish pact/pacts \
+              --consumer-app-version=$GITHUB_SHA \
+              --broker-base-url=$PACT_BROKER_BASE_URL \
+              --broker-username=$PACT_BROKER_USERNAME \
+              --broker-password=$PACT_BROKER_PASSWORD
+          else
+            echo "No pact/pacts directory found — skipping publish"
+          fi
+      - name: Type check
+        run: npm run scripts:typecheck
