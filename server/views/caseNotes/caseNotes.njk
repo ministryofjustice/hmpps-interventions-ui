@@ -18,6 +18,9 @@
         <h2 class="govuk-heading-m">All case notes</h2>
     {% endif %}
 
-    {{ govukTable(tableArgs(mojBadge)) }}
+    <div class="case-note-view">
+        {{ govukTable(tableArgs(mojBadge)) }}
+    </div>
+    
     {% include "../partials/pagination.njk" %}
 {% endblock %}
