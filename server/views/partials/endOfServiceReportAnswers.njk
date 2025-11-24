@@ -10,10 +10,10 @@
   <div class="govuk-inset-text">{{ outcome.subtitle }}</div>
 
   <p class="govuk-body"><strong>Describe their progress on this outcome.</strong></p>
-  <p class="govuk-body">{{ outcome.progressionComments | escape | nl2br }}</p>
+  <p class="govuk-body wrapped-text">{{ outcome.progressionComments | escape | nl2br }}</p>
 
   <p class="govuk-body"><strong>Enter if anything else needs to be done (optional).</strong></p>
-  <p class="govuk-body">{{ outcome.additionalTaskComments | escape | nl2br }}</p>
+  <p class="govuk-body wrapped-text">{{ outcome.additionalTaskComments | escape | nl2br }}</p>
 
   {% if endOfServiceReportAnswersPresenter.allowChange %}
     <p>
@@ -24,7 +24,7 @@
 
 <h3 class="govuk-heading-m">Additional information</h3>
 
-<p class="govuk-body">{{ endOfServiceReportAnswersPresenter.furtherInformation.text | escape | nl2br }}</p>
+<p class="govuk-body wrapped-text">{{ endOfServiceReportAnswersPresenter.furtherInformation.text | escape | nl2br }}</p>
 {% if endOfServiceReportAnswersPresenter.allowChange %}
   <p>
   <a class="govuk-link" id="change-further-information" href="{{ endOfServiceReportAnswersPresenter.furtherInformation.changeHref }}">Change</a>
