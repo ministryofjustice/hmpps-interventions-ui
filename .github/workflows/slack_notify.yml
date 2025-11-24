@@ -1,0 +1,70 @@
+name: Slack Notify
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Deployment environment
+        required: true
+        type: string
+      deployer:
+        description: GitHub user who deployed
+        required: true
+        type: string
+      status:
+        description: Deployment status (success/failure)
+        required: true
+        type: string
+      gh_to_slack_mapping:
+        description: JSON string mapping GitHub users to Slack IDs
+        required: true
+        type: string
+    secrets:
+      SLACK_WEBHOOK_URL:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Map GitHub user to Slack ID
+        id: slack-mapping
+        run: |
+          GITHUB_USERNAME="${{ inputs.deployer }}"
+
+          SLACK_USER_ID=$(echo '${{ inputs.gh_to_slack_mapping }}' \
+            | jq -r 'fromjson' \
+            | jq -r --arg user "$GITHUB_USERNAME" '.[$user] // "unknown"')
+
+          echo "slack_user_id=$SLACK_USER_ID" >> $GITHUB_OUTPUT
+
+      - name: Send Slack notification
+        run: |
+          PAYLOAD=$(jq -n \
+            --arg env "${{ inputs.environment }}" \
+            --arg deployer "${{ inputs.deployer }}" \
+            --arg slack_user "${{ steps.slack-mapping.outputs.slack_user_id }}" \
+            --arg status "${{ inputs.status }}" \
+            --arg repo "${{ github.repository }}" \
+            '{
+              environment: $env,
+              deployer: $deployer,
+              slack_user_id: $slack_user,
+              status: $status,
+              repository: $repo,
+              timestamp: now
+            }')
+
+          # Echo the payload for debugging
+          echo "Slack payload: $PAYLOAD"
+
+          curl -X POST \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD" \
+            "${{ secrets.SLACK_WEBHOOK_URL }}" \
+            --fail \
+            --show-error \
+            --silent

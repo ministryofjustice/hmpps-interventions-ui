@@ -76,6 +76,16 @@ jobs:
     with:
       environment: 'dev'
       app_version: '${{ needs.build.outputs.app_version }}'
+  notify_dev:
+    needs: deploy_dev
+    if: always()
+    uses: ./.github/workflows/slack_notify.yml
+    with:
+      environment: "dev"
+      deployer: ${{ github.actor }}
+      status: ${{ needs.deploy_dev.result == 'success' && 'success' || 'failure' }}
+      gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
+    secrets: inherit
   deploy_preprod:
     name: Deploy to Preprod
     needs:
@@ -87,16 +97,48 @@ jobs:
     with:
       environment: 'preprod'
       app_version: '${{ needs.build.outputs.app_version }}'
+  notify_preprod:
+    needs: deploy_preprod
+    if: always()
+    uses: ./.github/workflows/slack_notify.yml
+    with:
+      environment: "preprod"
+      deployer: ${{ github.actor }}
+      status: ${{ needs.deploy_preprod.result == 'success' && 'success' || 'failure' }}
+      gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
+    secrets: inherit
+  notify_prod_approval:
+    needs:
+      - deploy_preprod
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/notify_prod_approval.yml
+    with:
+      environment: "prod"
+      run_id: ${{ github.run_id }}
+      gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
+    secrets:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   deploy_prod:
     name: Deploy to Prod
     needs:
       - build
       - helm_lint
+      - deploy_preprod
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2
     secrets: inherit
     with:
       environment: 'prod'
       app_version: '${{ needs.build.outputs.app_version }}'
+  notify_prod:
+    needs: deploy_prod
+    if: always()
+    uses: ./.github/workflows/slack_notify.yml
+    with:
+      environment: "prod"
+      deployer: ${{ github.actor }}
+      status: ${{ needs.deploy_prod.result == 'success' && 'success' || 'failure' }}
+      gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
+    secrets: inherit
   tag_pact_version:
     name: Tag Pact version
     runs-on: ubuntu-latest
