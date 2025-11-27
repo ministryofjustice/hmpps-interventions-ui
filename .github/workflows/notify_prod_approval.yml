@@ -4,17 +4,24 @@ on:
   workflow_call:
     inputs:
       environment:
+        description: Deployment environment requiring manual approval
         required: true
         type: string
       run_id:
+        description: GitHub Actions run ID used to construct URLs for approvals or deep links
         required: true
         type: string
       gh_to_slack_mapping:
+        description: JSON object that maps GitHub usernames to their corresponding Slack user IDs
         required: true
         type: string
     secrets:
       SLACK_WEBHOOK_URL:
+        description: Slack webhook URL used to send the approval notification message
         required: true
+
+permissions:
+  contents: read
 
 jobs:
   notify-prod-approval:
@@ -39,12 +46,14 @@ jobs:
           echo "pr_author=$PR_AUTHOR" >> $GITHUB_OUTPUT
       - name: Map GitHub Username to Slack ID
         id: slack
-        run: |
-          USER_MAPPING='${{ inputs.gh_to_slack_mapping }}'
+        run: |          
           GITHUB_USERNAME="${{ github.actor }}"
-          SLACK_ID=$(echo "$USER_MAPPING" | jq -r --arg user "$GITHUB_USERNAME" '.[$user] // "unknown"')
-          echo "slack_id=$SLACK_ID" >> $GITHUB_OUTPUT
-      - name: Build approval link
+          SLACK_USER_ID=$(echo '${{ inputs.gh_to_slack_mapping }}' \
+            | jq -r 'fromjson' \
+            | jq -r --arg user "$GITHUB_USERNAME" '.[$user] // "unknown"')
+
+          echo "slack_user_id=$SLACK_USER_ID" >> $GITHUB_OUTPUT
+      - name: Build Approval Link
         id: link
         run: |
           LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.run_id }}"
