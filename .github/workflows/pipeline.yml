@@ -82,7 +82,14 @@ jobs:
   notify_dev:
     name: Send Dev Deployment Notification
     needs: deploy_dev
-    if: always()
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      (
+        contains(github.event.head_commit.message, 'Merge pull request') ||
+        contains(github.event.head_commit.message, '(#')
+      )
     uses: ./.github/workflows/slack_notify.yml
     with:
       environment: "dev"
@@ -104,7 +111,14 @@ jobs:
   notify_preprod:
     name:  Send Preprod Deployment Notification
     needs: deploy_preprod
-    if: always()
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      (
+        contains(github.event.head_commit.message, 'Merge pull request') ||
+        contains(github.event.head_commit.message, '(#')
+      )
     uses: ./.github/workflows/slack_notify.yml
     with:
       environment: "preprod"
@@ -122,7 +136,7 @@ jobs:
       run_id: ${{ github.run_id }}
       gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
     secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_PROD }}
   deploy_prod:
     name: Deploy to Prod
     needs:
@@ -134,10 +148,18 @@ jobs:
     with:
       environment: 'prod'
       app_version: '${{ needs.build.outputs.app_version }}'
+      slack_notification: "true"
   notify_prod:
     name: Send Prod Deployment Notification
     needs: deploy_prod
-    if: always()
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      (
+        contains(github.event.head_commit.message, 'Merge pull request') ||
+        contains(github.event.head_commit.message, '(#')
+      )
     uses: ./.github/workflows/slack_notify.yml
     with:
       environment: "prod"

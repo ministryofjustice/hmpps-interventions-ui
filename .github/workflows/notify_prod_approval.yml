@@ -61,21 +61,15 @@ jobs:
       - name: Send Slack Notification
         run: |
           PAYLOAD=$(jq -n \
-            --arg env "${{ inputs.environment }}" \
-            --arg pr_title "${{ steps.pr-info.outputs.pr_title }}" \
-            --arg pr_number "${{ steps.pr-info.outputs.pr_number }}" \
-            --arg author "${{ steps.pr-info.outputs.pr_author }}" \
-            --arg link "${{ steps.link.outputs.link }}" \
-            --arg slack "${{ steps.slack.outputs.slack_id }}" \
+            --arg slack_user "${{ steps.slack-mapping.outputs.slack_user_id }}" \
+            --arg pr_name "${{ steps.pr-info.outputs.pr_title }}" \
+            --arg repo "${{ github.repository }}" \
+            --arg link "${{ steps.approval-link.outputs.approval_link }}" \
             '{
-              message_type: "prod_approval_required",
-              environment: $env,
-              pr_title: $pr_title,
-              pr_number: $pr_number,
-              github_username: $author,
-              slack_user_to_tag: $slack,
-              approval_link: $link,
-              timestamp: now
+              developer_to_tag_slack_user_id: $slack_user,
+              human_readable_pr_name: $pr_name,
+              repository: $repo,
+              link_to_approval_step: $link
             }'
           )
 
