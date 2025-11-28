@@ -14,22 +14,25 @@ on:
         required: true
         default: false
         type: boolean
+
 permissions:
   contents: read
   packages: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref == 'refs/heads/main' && github.sha || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 env:
   PACT_BROKER_BASE_URL: 'https://pact-broker-prod.apps.live-1.cloud-platform.service.justice.gov.uk'
   PACT_BROKER_USERNAME: 'interventions'
 jobs:
   node_build:
-    name: Node build
+    name: Node Build
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_build.yml@v2
     secrets: inherit
   node_unit_tests:
-    name: Node unit tests
+    name: Node Unit Tests
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_unit_tests.yml@v2
     needs: [ node_build ]
     secrets: inherit
@@ -52,7 +55,7 @@ jobs:
     with:
       environment: ${{ matrix.environments }}
   build:
-    name: Build Docker image
+    name: Build Docker Image
     if: github.ref == 'refs/heads/main'
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/docker_build.yml@v2
     needs:
@@ -77,8 +80,16 @@ jobs:
       environment: 'dev'
       app_version: '${{ needs.build.outputs.app_version }}'
   notify_dev:
+    name: Send Dev Deployment Notification
     needs: deploy_dev
-    if: always()
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      (
+        contains(github.event.head_commit.message, 'Merge pull request') ||
+        contains(github.event.head_commit.message, '(#')
+      )
     uses: ./.github/workflows/slack_notify.yml
     with:
       environment: "dev"
@@ -98,8 +109,16 @@ jobs:
       environment: 'preprod'
       app_version: '${{ needs.build.outputs.app_version }}'
   notify_preprod:
+    name:  Send Preprod Deployment Notification
     needs: deploy_preprod
-    if: always()
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      (
+        contains(github.event.head_commit.message, 'Merge pull request') ||
+        contains(github.event.head_commit.message, '(#')
+      )
     uses: ./.github/workflows/slack_notify.yml
     with:
       environment: "preprod"
@@ -108,8 +127,8 @@ jobs:
       gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
     secrets: inherit
   notify_prod_approval:
-    needs:
-      - deploy_preprod
+    name: Send Prod Manual Deployment Approval
+    needs: deploy_preprod
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/notify_prod_approval.yml
     with:
@@ -117,7 +136,7 @@ jobs:
       run_id: ${{ github.run_id }}
       gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
     secrets:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_PROD }}
   deploy_prod:
     name: Deploy to Prod
     needs:
@@ -129,9 +148,18 @@ jobs:
     with:
       environment: 'prod'
       app_version: '${{ needs.build.outputs.app_version }}'
+      slack_notification: "true"
   notify_prod:
+    name: Send Prod Deployment Notification
     needs: deploy_prod
-    if: always()
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      (
+        contains(github.event.head_commit.message, 'Merge pull request') ||
+        contains(github.event.head_commit.message, '(#')
+      )
     uses: ./.github/workflows/slack_notify.yml
     with:
       environment: "prod"
@@ -140,7 +168,7 @@ jobs:
       gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
     secrets: inherit
   tag_pact_version:
-    name: Tag Pact version
+    name: Tag Pact Version
     runs-on: ubuntu-latest
     needs:
       - deploy_dev
