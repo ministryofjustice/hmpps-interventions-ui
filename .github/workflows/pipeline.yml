@@ -79,24 +79,7 @@ jobs:
     with:
       environment: 'dev'
       app_version: '${{ needs.build.outputs.app_version }}'
-  notify_dev:
-    name: Send Dev Deployment Notification
-    needs: deploy_dev
-    if: |
-      always() &&
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      (
-        contains(github.event.head_commit.message, 'Merge pull request') ||
-        contains(github.event.head_commit.message, '(#')
-      )
-    uses: ./.github/workflows/slack_notify.yml
-    with:
-      environment: "dev"
-      deployer: ${{ github.actor }}
-      status: ${{ needs.deploy_dev.result == 'success' && 'success' || 'failure' }}
-      gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
-    secrets: inherit
+      slack_notification: "true"
   deploy_preprod:
     name: Deploy to Preprod
     needs:
@@ -108,24 +91,7 @@ jobs:
     with:
       environment: 'preprod'
       app_version: '${{ needs.build.outputs.app_version }}'
-  notify_preprod:
-    name:  Send Preprod Deployment Notification
-    needs: deploy_preprod
-    if: |
-      always() &&
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      (
-        contains(github.event.head_commit.message, 'Merge pull request') ||
-        contains(github.event.head_commit.message, '(#')
-      )
-    uses: ./.github/workflows/slack_notify.yml
-    with:
-      environment: "preprod"
-      deployer: ${{ github.actor }}
-      status: ${{ needs.deploy_preprod.result == 'success' && 'success' || 'failure' }}
-      gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
-    secrets: inherit
+      slack_notification: "true"
   notify_prod_approval:
     name: Send Prod Manual Deployment Approval
     needs: deploy_preprod
@@ -149,24 +115,6 @@ jobs:
       environment: 'prod'
       app_version: '${{ needs.build.outputs.app_version }}'
       slack_notification: "true"
-  notify_prod:
-    name: Send Prod Deployment Notification
-    needs: deploy_prod
-    if: |
-      always() &&
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main' &&
-      (
-        contains(github.event.head_commit.message, 'Merge pull request') ||
-        contains(github.event.head_commit.message, '(#')
-      )
-    uses: ./.github/workflows/slack_notify.yml
-    with:
-      environment: "prod"
-      deployer: ${{ github.actor }}
-      status: ${{ needs.deploy_prod.result == 'success' && 'success' || 'failure' }}
-      gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
-    secrets: inherit
   tag_pact_version:
     name: Tag Pact Version
     runs-on: ubuntu-latest

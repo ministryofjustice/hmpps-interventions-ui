@@ -16,7 +16,7 @@ on:
         required: true
         type: string
     secrets:
-      SLACK_WEBHOOK_URL:
+      slack_webhook_url:
         description: Slack webhook URL used to send the approval notification message
         required: true
 
@@ -29,51 +29,86 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Get PR Information
+      - name: Get PR information
         id: pr-info
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |        
-          COMMIT_SHA=$(git rev-parse HEAD)
-          PR_INFO=$(gh pr list --state merged --search "$COMMIT_SHA" --json number,title,author --jq '.[0]')
-          
-          PR_NUMBER=$(echo "$PR_INFO" | jq -r '.number // "unknown"')
-          PR_TITLE=$(echo "$PR_INFO" | jq -r '.title // "Unknown PR"')
-          PR_AUTHOR="${{ github.actor }}"
+        run: |
+          # Get the commit SHA from the last commit
+          # See https://docs.github.com/en/webhooks/webhook-events-and-payloads#workflow_run
+          COMMIT_SHA="${{ github.sha }}"
 
+          # Get the first line of the most recent commit message 
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B "$COMMIT_SHA" | head -n 1)
+          echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+
+          # Use the GitHub CLI to get the PR associated with this commit, its number, title, and author 
+          PR_INFO=$(gh pr list --search "$COMMIT_SHA" --json number,title,author --jq '.[0]')
+          PR_NUMBER=$(echo "$PR_INFO" | jq -r '.number')
+          PR_TITLE=$(echo "$PR_INFO" | jq -r '.title')
+
+          # The author is the author of the commit 
+          PR_AUTHOR="${{ github.actor}}"
+
+          echo "pr_author=$PR_AUTHOR" >> $GITHUB_OUTPUT
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
           echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
-          echo "pr_author=$PR_AUTHOR" >> $GITHUB_OUTPUT
-      - name: Map GitHub Username to Slack ID
-        id: slack
-        run: |          
-          GITHUB_USERNAME="${{ github.actor }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Map GitHub user to Slack ID
+        id: slack-mapping
+        run: |
+          GITHUB_USERNAME="${{ inputs.deployer }}"
           SLACK_USER_ID=$(echo '${{ inputs.gh_to_slack_mapping }}' \
             | jq -r 'fromjson' \
             | jq -r --arg user "$GITHUB_USERNAME" '.[$user] // "unknown"')
 
           echo "slack_user_id=$SLACK_USER_ID" >> $GITHUB_OUTPUT
-      - name: Build Approval Link
-        id: link
+      - name: Generate the Approval link
+        id: approval-link
         run: |
-          LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ inputs.run_id }}"
-          echo "link=$LINK" >> $GITHUB_OUTPUT
-      - name: Send Slack Notification
+          # Create link to the workflow that needs approval 
+          APPROVAL_LINK="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          echo "Approval Link: $APPROVAL_LINK"
+          echo "approval_link=$APPROVAL_LINK" >> $GITHUB_OUTPUT
+      - name: Send Slack notification
         run: |
+          # Prepare the JSON payload
           PAYLOAD=$(jq -n \
+            --arg link "${{ steps.approval-link.outputs.approval_link }}" \
             --arg slack_user "${{ steps.slack-mapping.outputs.slack_user_id }}" \
             --arg pr_name "${{ steps.pr-info.outputs.pr_title }}" \
+            --arg pr_number "${{ steps.pr-info.outputs.pr_number }}" \
+            --arg github_user "${{ github.actor }}" \
             --arg repo "${{ github.repository }}" \
-            --arg link "${{ steps.approval-link.outputs.approval_link }}" \
+            --arg environment "${{ inputs.environment }}" \
+            --arg timestamp "$(date -u +"%Y-%m-%d %H:%M:%S UTC")"
             '{
-              developer_to_tag_slack_user_id: $slack_user,
-              human_readable_pr_name: $pr_name,
               repository: $repo,
-              link_to_approval_step: $link
-            }'
-          )
+              environment: $environment,
+              pr_number: $pr_number,
+              human_readable_pr_name: $pr_name,
+              timestamp: $timestamp
+              link_to_approval_step: $link,
+              developer_to_tag_slack_user_id: $slack_user,
+              github_username: $github_user,
+            }')
 
+          # Echo the payload for debugging
+          echo "Slack payload: $PAYLOAD"
+
+          # Send the webhook request
           curl -X POST \
             -H "Content-Type: application/json" \
             -d "$PAYLOAD" \
-            "${{ secrets.SLACK_WEBHOOK_URL }}"
+            "${{ secrets.slack_webhook_url }}" \
+            --fail \
+            --show-error \
+            --silent
+
+          if [[ $? -eq 0 ]]; then
+            echo "Slack notification sent successfully"
+          else
+            echo "Failed to send Slack notification"
+            echo "Please check the GH_TO_SLACK_MAPPING variable for user "${{ github.actor }}" and SLACK_WEBHOOK_URL secret."
+            exit 1
+          fi
