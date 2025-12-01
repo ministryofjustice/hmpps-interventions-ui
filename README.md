@@ -162,3 +162,10 @@ SP_CANCELLED_PAGE_SIZE=10
 
 - hmpps-auth - for authentication
 - redis - session store and token caching
+
+### Slack channel for pipeline security notifications
+
+Ths channel should be specific to your team and is for daily / weekly security scanning job results. It is your team's
+responsibility to keep up-to-date with security issues and update your application so that these jobs pass. You will
+only be notified if the jobs fail. The scan results can always be found in GitHub actions and results are sent to the GitHub security tab. This is
+configured by setting GitHub actions environment variable called `SECURITY_ALERTS_SLACK_CHANNEL_ID`.
