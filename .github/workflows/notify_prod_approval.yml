@@ -46,7 +46,7 @@ jobs:
           PR_TITLE=$(echo "$PR_INFO" | jq -r '.title')
 
           # The author is the author of the commit 
-          PR_AUTHOR="${{ github.actor}}"
+          PR_AUTHOR="${{ github.actor }}"
 
           echo "pr_author=$PR_AUTHOR" >> $GITHUB_OUTPUT
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
@@ -56,7 +56,9 @@ jobs:
       - name: Map GitHub user to Slack ID
         id: slack-mapping
         run: |
-          GITHUB_USERNAME="${{ inputs.deployer }}"
+          GITHUB_USERNAME="${{ steps.pr-info.outputs.pr_author }}"
+          echo "Mapping GitHub user: $GITHUB_USERNAME"
+          
           SLACK_USER_ID=$(echo '${{ inputs.gh_to_slack_mapping }}' \
             | jq -r 'fromjson' \
             | jq -r --arg user "$GITHUB_USERNAME" '.[$user] // "unknown"')
@@ -72,7 +74,6 @@ jobs:
           echo "approval_link=$APPROVAL_LINK" >> $GITHUB_OUTPUT
       - name: Send Slack notification
         run: |
-          # Prepare the JSON payload
           PAYLOAD=$(jq -n \
             --arg link "${{ steps.approval-link.outputs.approval_link }}" \
             --arg slack_user "${{ steps.slack-mapping.outputs.slack_user_id }}" \
@@ -81,22 +82,21 @@ jobs:
             --arg github_user "${{ github.actor }}" \
             --arg repo "${{ github.repository }}" \
             --arg environment "${{ inputs.environment }}" \
-            --arg timestamp "$(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            --arg timestamp "$(date -u +"%Y-%m-%d %H:%M:%S UTC")" \
             '{
               repository: $repo,
               environment: $environment,
               pr_number: $pr_number,
               human_readable_pr_name: $pr_name,
-              timestamp: $timestamp
+              timestamp: $timestamp,
               link_to_approval_step: $link,
               developer_to_tag_slack_user_id: $slack_user,
-              github_username: $github_user,
-            }')
+              github_username: $github_user
+            }'
+          )
 
-          # Echo the payload for debugging
           echo "Slack payload: $PAYLOAD"
 
-          # Send the webhook request
           curl -X POST \
             -H "Content-Type: application/json" \
             -d "$PAYLOAD" \
