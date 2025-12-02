@@ -32,25 +32,19 @@ jobs:
       - name: Get PR information
         id: pr-info
         run: |
-          # Get the commit SHA from the last commit
-          # See https://docs.github.com/en/webhooks/webhook-events-and-payloads#workflow_run
           COMMIT_SHA="${{ github.sha }}"
 
-          # Get the first line of the most recent commit message 
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B "$COMMIT_SHA" | head -n 1)
-          echo "commit_message=$COMMIT_MESSAGE" >> $GITHUB_OUTPUT
+          # Query GitHub API for PRs associated with this commit
+          PR_INFO=$(gh api \
+            repos/${{ github.repository }}/commits/$COMMIT_SHA/pulls \
+            --jq '.[0]')
 
-          # Use the GitHub CLI to get the PR associated with this commit, its number, title, and author 
-          PR_INFO=$(gh pr list --search "$COMMIT_SHA" --json number,title,author --jq '.[0]')
           PR_NUMBER=$(echo "$PR_INFO" | jq -r '.number')
           PR_TITLE=$(echo "$PR_INFO" | jq -r '.title')
 
-          # The author is the author of the commit 
-          PR_AUTHOR="${{ github.actor }}"
-
-          echo "pr_author=$PR_AUTHOR" >> $GITHUB_OUTPUT
           echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
           echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
+          echo "pr_author=${{ github.actor }}" >> $GITHUB_OUTPUT
         env:
           GH_TOKEN: ${{ github.token }}
       - name: Map GitHub user to Slack ID
