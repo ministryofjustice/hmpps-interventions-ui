@@ -27,7 +27,7 @@ export default class EndOfServiceReportOutcomeView {
     name: 'progression-comments',
     value: this.presenter.fields.progressionComments.value,
     label: {
-      text: 'Describe their progress on this outcome.',
+      text: 'Describe their progress on this outcome',
     },
     errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.progressionComments.errorMessage),
   }
