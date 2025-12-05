@@ -57,7 +57,7 @@ export default class SessionFeedbackInputsPresenter {
     },
     notifyProbationPractitioner: {
       value: this.utils.booleanValue(
-        this.appointment.appointmentFeedback?.sessionFeedback?.notifyProbationPractitioner ?? null,
+        this.appointment.appointmentFeedback?.sessionFeedback?.notifyProbationPractitionerOfConcerns ?? null,
         'notify-probation-practitioner'
       ),
       errorMessage: this.errorMessageForField('notify-probation-practitioner'),
