@@ -131,7 +131,7 @@ export default class NoSessionFeedbackView {
         classes: 'govuk-body govuk-!-margin-bottom-4',
         isPageHeading: false,
       },
-      value: this.inputsPresenter.fields.noSessionReasonPopAcceptable.value,
+      value: this.inputsPresenter.fields.noSessionReasonPopUnacceptable.value,
       errorMessage: ViewUtils.govukErrorMessage(
         this.inputsPresenter.fields.noSessionReasonPopUnacceptable.errorMessage
       ),
