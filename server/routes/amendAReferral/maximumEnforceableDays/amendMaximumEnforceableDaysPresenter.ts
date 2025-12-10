@@ -5,6 +5,7 @@ import AmendMaximumEnforceableDaysForm from './amendMaximumEnforceableDaysForm'
 
 export default class AmendMaximumEnforceableDaysPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
+  private formError: FormValidationError | null
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, AmendMaximumEnforceableDaysForm.reasonForChangeId)
 
@@ -27,6 +28,7 @@ export default class AmendMaximumEnforceableDaysPresenter {
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null
   ) {
+    this.formError = error
     this.enforceableDaysPresenter = new EnforceableDaysPresenter(
       crn,
       maximumEnforceableDays,

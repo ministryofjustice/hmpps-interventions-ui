@@ -6,6 +6,8 @@ import utils from '../../../utils/utils'
 import AmendDesiredOutcomesForm from './amendDesiredOutcomesForm'
 
 export default class AmendDesiredOutcomesPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: SentReferral,
     private readonly serviceCategory: ServiceCategory,
@@ -14,6 +16,7 @@ export default class AmendDesiredOutcomesPresenter {
     readonly showNoChangesBanner: boolean = false
   ) {
     this.backLinkUrl = `/probation-practitioner/referrals/${referral.id}/details`
+    this.formError = error
     this.fields = {
       reasonForChange: this.utils.stringValue(null, AmendDesiredOutcomesForm.reasonForChangeId),
     }

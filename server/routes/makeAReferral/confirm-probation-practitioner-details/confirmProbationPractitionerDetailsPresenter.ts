@@ -9,6 +9,8 @@ import { DeliusResponsibleOfficer } from '../../../models/delius/deliusResponsib
 export default class ConfirmProbationPractitionerDetailsPresenter {
   readonly backLinkUrl: string
 
+  private formError: FormValidationError | null
+
   constructor(
     readonly referral: DraftReferral,
     readonly deliusOfficeLocations: DeliusOfficeLocation[],
@@ -18,6 +20,7 @@ export default class ConfirmProbationPractitionerDetailsPresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
     this.backLinkUrl = `/referrals/${referral.id}/form`
+    this.formError = error
   }
 
   get summary(): SummaryListItem[] {

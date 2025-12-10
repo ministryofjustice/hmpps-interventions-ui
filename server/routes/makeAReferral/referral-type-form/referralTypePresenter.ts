@@ -9,6 +9,8 @@ export default class ReferralTypePresenter {
 
   readonly communityAllocatedPageWithParams = `${this.communityAllocatedPage}?startReferral=true`
 
+  private formError: FormValidationError | null
+
   constructor(
     readonly referral: DraftReferral,
     private readonly error: FormValidationError | null = null,
@@ -16,6 +18,7 @@ export default class ReferralTypePresenter {
     readonly startReferral: boolean = false
   ) {
     this.backLinkUrl = startReferral ? this.communityAllocatedPageWithParams : this.communityAllocatedPage
+    this.formError = error
   }
 
   private errorMessageForField(field: string): string | null {

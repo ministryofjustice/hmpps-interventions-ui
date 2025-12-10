@@ -5,6 +5,8 @@ import { FormValidationError } from '../../../../utils/formValidationError'
 import PresenterUtils from '../../../../utils/presenterUtils'
 
 export default class ReferralWithdrawalCheckAnswersPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referralId: string,
     private readonly draftWithdrawalId: string,
@@ -13,7 +15,9 @@ export default class ReferralWithdrawalCheckAnswersPresenter {
     private readonly withdrawalState: string,
     private readonly error: FormValidationError | null = null,
     readonly userInputData: Record<string, unknown> | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly backLinkHref = {
     href: `/probation-practitioner/referrals/${this.referralId}/withdrawal/${this.draftWithdrawalId}/reason`,

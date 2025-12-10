@@ -5,6 +5,7 @@ import AmendAdditionalInformationForm from './amendAdditionalInformationForm'
 
 export default class AmendAdditionalInformationPresenter {
   fields: Record<string, unknown>
+  private formError: FormValidationError | null
 
   private readonly utils = new PresenterUtils(this.userInputData)
 
@@ -16,6 +17,7 @@ export default class AmendAdditionalInformationPresenter {
     readonly showNoChangesBanner: boolean = false
   ) {
     this.backLinkUrl = `/probation-practitioner/referrals/${sentReferral.id}/details`
+    this.formError = error
     this.fields = {
       additionalInformation: this.utils.stringValue(null, AmendAdditionalInformationForm.additionalInformationId),
       reasonForChange: this.utils.stringValue(null, AmendAdditionalInformationForm.reasonForChangeId),

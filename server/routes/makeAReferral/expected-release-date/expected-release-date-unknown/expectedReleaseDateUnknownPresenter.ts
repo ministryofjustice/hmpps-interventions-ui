@@ -5,12 +5,15 @@ import PresenterUtils from '../../../../utils/presenterUtils'
 export default class ExpectedReleaseDateUnknownPresenter {
   readonly backLinkUrl: string
 
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
     this.backLinkUrl = `/referrals/${referral.id}/expected-release-date`
+    this.formError = error
   }
 
   private errorMessageForField(field: string): string | null {

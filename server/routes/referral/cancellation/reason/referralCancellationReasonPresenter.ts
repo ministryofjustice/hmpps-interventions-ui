@@ -9,6 +9,8 @@ import DraftCancellationData from '../draftCancellationData'
 import { Draft } from '../../../../services/draftsService'
 
 export default class ReferralCancellationReasonPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly draftCancellation: Draft<DraftCancellationData>,
     private readonly sentReferral: SentReferral,
@@ -16,7 +18,9 @@ export default class ReferralCancellationReasonPresenter {
     private readonly serviceUser: DeliusServiceUser,
     private readonly cancellationReasons: CancellationReason[],
     private readonly error: FormValidationError | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly text = {
     title: 'Referral cancellation',

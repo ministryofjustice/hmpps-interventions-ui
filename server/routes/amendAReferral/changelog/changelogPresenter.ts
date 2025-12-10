@@ -8,6 +8,7 @@ import ReferralOverviewPagePresenter, { ReferralOverviewPageSection } from '../.
 
 export default class ChangelogPresenter {
   referralOverviewPagePresenter: ReferralOverviewPagePresenter
+  private formError: FormValidationError | null
 
   constructor(
     private readonly error: FormValidationError | null = null,
@@ -16,6 +17,7 @@ export default class ChangelogPresenter {
     private intervention: Intervention,
     public loggedInUserType: 'service-provider' | 'probation-practitioner'
   ) {
+    this.formError = error
     this.referralOverviewPagePresenter = new ReferralOverviewPagePresenter(
       ReferralOverviewPageSection.Changelog,
       referralId,

@@ -5,6 +5,7 @@ import DeliusOfficeLocation from '../../../models/deliusOfficeLocation'
 
 export default class AmendProbationOfficePresenter {
   backLinkUrl: string
+  private formError: FormValidationError | null
 
   constructor(
     private readonly sentReferral: SentReferral,
@@ -14,6 +15,7 @@ export default class AmendProbationOfficePresenter {
     private readonly probationOfficeType: string | null = null
   ) {
     this.backLinkUrl = `/probation-practitioner/referrals/${sentReferral.id}/details`
+    this.formError = error
   }
 
   readonly text = {

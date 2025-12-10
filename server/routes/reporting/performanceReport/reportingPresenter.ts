@@ -4,11 +4,15 @@ import PrimaryNavBarPresenter from '../../shared/primaryNavBar/primaryNavBarPres
 import LoggedInUser from '../../../models/loggedInUser'
 
 export default class ReportingPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly loggedInUser: LoggedInUser,
     private readonly validationError: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
-  ) {}
+  ) {
+    this.formError = validationError
+  }
 
   readonly primaryNavBarPresenter = new PrimaryNavBarPresenter('Reporting', this.loggedInUser)
 

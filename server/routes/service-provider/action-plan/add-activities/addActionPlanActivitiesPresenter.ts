@@ -8,6 +8,8 @@ import ActionPlanPresenter from '../../../shared/action-plan/actionPlanPresenter
 export default class AddActionPlanActivitiesPresenter {
   actionPlanPresenter: ActionPlanPresenter
 
+  private formError: FormValidationError | null
+
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly serviceCategories: ServiceCategory[],
@@ -16,6 +18,7 @@ export default class AddActionPlanActivitiesPresenter {
     private readonly errors: FormValidationError | null = null
   ) {
     this.actionPlanPresenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
+    this.formError = errors
   }
 
   readonly actionPlanId = this.actionPlan.id

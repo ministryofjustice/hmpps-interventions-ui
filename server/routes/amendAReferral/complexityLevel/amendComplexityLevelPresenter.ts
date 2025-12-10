@@ -7,6 +7,7 @@ import SentReferral from '../../../models/sentReferral'
 
 export default class AmendComplexityLevelPresenter {
   fields: Record<string, unknown>
+  private formError: FormValidationError | null
 
   private readonly utils = new PresenterUtils(this.userInputData)
 
@@ -18,6 +19,7 @@ export default class AmendComplexityLevelPresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
     this.backLinkUrl = `/probation-practitioner/referrals/${sentReferral.id}/details`
+    this.formError = error
     this.fields = {
       reasonForChange: this.utils.stringValue(null, AmendMaximumEnforceableDaysForm.reasonForChangeId),
     }

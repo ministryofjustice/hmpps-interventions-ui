@@ -88,7 +88,7 @@ export default {
   },
   applicationInsights: {
     connectionString: get('APPLICATIONINSIGHTS_CONNECTION_STRING', null, requiredInProduction),
-    cloudRoleName: 'interventions-ui',
+    cloudRoleName: 'hmpps-interventions-ui',
     excludedRequests: [/^GET \/assets\/.*/, /^GET \/health.*/],
   },
   session: {

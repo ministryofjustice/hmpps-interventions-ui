@@ -11,6 +11,8 @@ export default class EditOasysRiskInformationPresenter {
 
   displayLabel
 
+  private formError: FormValidationError | null
+
   constructor(
     readonly riskSummary: RiskSummary | null,
     readonly draftOasysRiskInformation: DraftOasysRiskInformation | null,
@@ -19,6 +21,7 @@ export default class EditOasysRiskInformationPresenter {
   ) {
     this.riskPresenter = new RoshPanelPresenter(riskSummary)
     this.displayLabel = label
+    this.formError = error
   }
 
   readonly errors = {

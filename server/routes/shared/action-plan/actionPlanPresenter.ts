@@ -15,6 +15,8 @@ export default class ActionPlanPresenter {
 
   sortedApprovedActionPlanSummaries: ApprovedActionPlanSummary[]
 
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: SentReferral,
     private readonly actionPlan: ActionPlan,
@@ -23,6 +25,7 @@ export default class ActionPlanPresenter {
     private readonly validationError: FormValidationError | null = null,
     approvedActionPlanSummaries: ApprovedActionPlanSummary[] = []
   ) {
+    this.formError = this.validationError
     this.actionPlanSummaryPresenter = new ActionPlanSummaryPresenter(actionPlan, userType)
     this.sortedApprovedActionPlanSummaries =
       ActionPlanUtils.sortApprovedActionPlanSummaries(approvedActionPlanSummaries)

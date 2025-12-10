@@ -6,6 +6,7 @@ import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 
 export default class IntepreterRequiredPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
+  private formError: FormValidationError | null
 
   readonly reasonForChangeError = PresenterUtils.errorMessage(
     this.error,
@@ -29,6 +30,7 @@ export default class IntepreterRequiredPresenter {
     readonly showNoChangesBanner: boolean = false
   ) {
     this.backLinkUrl = `/probation-practitioner/referrals/${sentReferral.id}/details`
+    this.formError = error
   }
 
   private errorMessageForField(field: string): string | null {

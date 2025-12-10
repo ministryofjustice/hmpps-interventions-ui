@@ -8,6 +8,8 @@ export default class SelectExpectedProbationOfficePresenter {
 
   readonly probationOfficeUnknownUrl: string
 
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: DraftReferral,
     readonly deliusOfficeLocations: DeliusOfficeLocation[],
@@ -18,6 +20,7 @@ export default class SelectExpectedProbationOfficePresenter {
     this.backLinkUrl = amendPPDetails
       ? `/referrals/${referral.id}/check-all-referral-information`
       : `/referrals/${referral.id}/expected-release-date`
+    this.formError = error
     this.probationOfficeUnknownUrl = `/referrals/${referral.id}/expected-probation-office-unknown${
       this.amendPPDetails ? '?amendPPDetails=true' : ''
     }`

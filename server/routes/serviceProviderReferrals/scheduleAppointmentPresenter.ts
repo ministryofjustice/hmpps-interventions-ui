@@ -12,6 +12,8 @@ import AppointmentSummary from '../appointments/appointmentSummary'
 import { SummaryListItem } from '../../utils/summaryList'
 
 export default class ScheduleAppointmentPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly formType: 'supplierAssessment' | 'actionPlan',
     private readonly referral: SentReferral,
@@ -24,7 +26,9 @@ export default class ScheduleAppointmentPresenter {
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly serverError: FormValidationError | null = null,
     private readonly overrideBackLinkHref?: string
-  ) {}
+  ) {
+    this.formError = this.serverError || this.validationError
+  }
 
   private readonly appointmentDecorator = this.currentAppointment
     ? new AppointmentDecorator(this.currentAppointment)

@@ -9,6 +9,8 @@ import { Draft } from '../../../../services/draftsService'
 import ViewUtils from '../../../../utils/viewUtils'
 
 export default class ReferralWithdrawalReasonPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly draftWithdrawal: Draft<DraftWithdrawalData>,
     private readonly sentReferral: SentReferral,
@@ -17,7 +19,9 @@ export default class ReferralWithdrawalReasonPresenter {
     readonly withdrawalReasons: WithdrawalReason[],
     private readonly error: FormValidationError | null = null,
     readonly userInputData: Record<string, unknown> | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly backLinkHref = `/probation-practitioner/referrals/${this.sentReferral.id}/progress`
 

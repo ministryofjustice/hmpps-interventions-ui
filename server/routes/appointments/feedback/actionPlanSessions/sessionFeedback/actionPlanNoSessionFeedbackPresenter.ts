@@ -5,6 +5,8 @@ import SessionFeedbackInputsPresenter from '../../shared/sessionFeedback/session
 import SessionFeedbackQuestionnaire from '../../shared/sessionFeedback/sessionFeedbackQuestionnaire'
 
 export default class ActionPlanNoSessionFeedbackPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly appointment: ActionPlanAppointment,
     private readonly serviceUser: DeliusServiceUser,
@@ -12,7 +14,9 @@ export default class ActionPlanNoSessionFeedbackPresenter {
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly draftId: string | undefined = undefined
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly text = {
     title:

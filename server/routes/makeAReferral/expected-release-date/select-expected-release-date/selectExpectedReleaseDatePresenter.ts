@@ -8,6 +8,8 @@ export default class SelectExpectedReleaseDatePresenter {
 
   readonly releaseDateUnknownUrl: string
 
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly amendPPDetails: boolean,
@@ -16,6 +18,7 @@ export default class SelectExpectedReleaseDatePresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
     this.backLinkUrl = `/referrals/${referral.id}/submit-current-location`
+    this.formError = error
     this.releaseDateUnknownUrl = `/referrals/${referral.id}/expected-release-date-unknown${
       this.amendPPDetails ? '?amendPPDetails=true' : ''
     }`
