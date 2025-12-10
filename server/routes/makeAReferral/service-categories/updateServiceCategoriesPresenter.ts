@@ -4,11 +4,15 @@ import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 
 export default class UpdateServiceCategoriesPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: DraftReferral,
     readonly serviceCategories: ServiceCategory[],
     private readonly error: FormValidationError | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly text = {
     title: `What service categories are you referring ${this.referral.serviceUser.firstName} to?`,

@@ -5,6 +5,8 @@ import PresenterUtils from '../../../../utils/presenterUtils'
 export default class UpdateProbationPractitionerPduPresenter {
   backLinkUrl: string
 
+  private formError: FormValidationError | null
+
   constructor(
     private readonly id: string,
     private readonly crn: string,
@@ -19,6 +21,7 @@ export default class UpdateProbationPractitionerPduPresenter {
     this.backLinkUrl = amendPPDetails
       ? `/referrals/${id}/check-all-referral-information`
       : `/referrals/${id}/confirm-probation-practitioner-details`
+    this.formError = error
   }
 
   readonly text = {

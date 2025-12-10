@@ -7,13 +7,17 @@ import utils from '../../../utils/utils'
 import SentencePresenter from './sentencePresenter'
 
 export default class RelevantSentencePresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
     private readonly convictions: DeliusConviction[],
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly title = `Select the relevant sentence for the ${utils.convertToProperCase(
     this.intervention.contractType.name

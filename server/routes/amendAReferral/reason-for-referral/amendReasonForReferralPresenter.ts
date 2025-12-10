@@ -4,6 +4,7 @@ import PresenterUtils from '../../../utils/presenterUtils'
 
 export default class AmendReasonForReferralPresenter {
   readonly backLinkUrl: string
+  private formError: FormValidationError | null
 
   constructor(
     readonly referral: SentReferral,
@@ -11,6 +12,7 @@ export default class AmendReasonForReferralPresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
     this.backLinkUrl = `/probation-practitioner/referrals/${this.referral.id}/details`
+    this.formError = error
   }
 
   readonly text = {

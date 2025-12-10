@@ -8,6 +8,8 @@ import PresenterUtils from '../../../../utils/presenterUtils'
 export default class ReviewActionPlanPresenter {
   actionPlanPresenter: ActionPlanPresenter
 
+  private formError: FormValidationError | null
+
   constructor(
     private readonly sentReferral: SentReferral,
     private readonly serviceCategories: ServiceCategory[],
@@ -15,6 +17,7 @@ export default class ReviewActionPlanPresenter {
     private readonly error: FormValidationError | null = null
   ) {
     this.actionPlanPresenter = new ActionPlanPresenter(sentReferral, actionPlan, serviceCategories, 'service-provider')
+    this.formError = error
   }
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)

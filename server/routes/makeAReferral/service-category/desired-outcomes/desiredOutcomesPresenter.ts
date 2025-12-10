@@ -5,12 +5,16 @@ import PresenterUtils from '../../../../utils/presenterUtils'
 import utils from '../../../../utils/utils'
 
 export default class DesiredOutcomesPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly serviceCategory: ServiceCategory,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string[]> | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'desired-outcomes-ids')
 

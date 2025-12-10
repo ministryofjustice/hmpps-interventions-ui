@@ -19,6 +19,8 @@ interface AttendanceFeedbackFormText {
 export default abstract class AttendanceFeedbackPresenter {
   readonly text: AttendanceFeedbackFormText
 
+  private formError: FormValidationError | null
+
   protected constructor(
     private readonly appointment: ActionPlanAppointment | InitialAssessmentAppointment,
     private readonly title: string,
@@ -30,6 +32,7 @@ export default abstract class AttendanceFeedbackPresenter {
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
+    this.formError = error
     this.text = {
       title,
       subTitle,

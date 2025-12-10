@@ -5,6 +5,7 @@ import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 
 export default class AmendEmploymentResponsibilitiesPresenter {
   private readonly utils = new PresenterUtils(this.userInputData)
+  private formError: FormValidationError | null
 
   readonly errorMessage = PresenterUtils.errorMessage(this.error, 'abc') // AmendMaximumEnforceableDaysForm.reasonForChangeId)
 
@@ -20,6 +21,7 @@ export default class AmendEmploymentResponsibilitiesPresenter {
     readonly showNoChangesBanner: boolean = false
   ) {
     this.backLinkUrl = `/probation-practitioner/referrals/${sentReferral.id}/details`
+    this.formError = error
   }
 
   private errorMessageForField(field: string): string | null {

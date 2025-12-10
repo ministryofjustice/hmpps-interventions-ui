@@ -9,6 +9,8 @@ export default class CommunityAllocatedPresenter {
 
   readonly draftTabPage = `/probation-practitioner/dashboard/draft-cases`
 
+  private formError: FormValidationError | null
+
   constructor(
     readonly referral: DraftReferral,
     private readonly error: FormValidationError | null = null,
@@ -16,6 +18,7 @@ export default class CommunityAllocatedPresenter {
     readonly startReferral: boolean = false
   ) {
     this.backLinkUrl = startReferral ? this.caseIdentifierPage : this.draftTabPage
+    this.formError = error
   }
 
   private errorMessageForField(field: string): string | null {

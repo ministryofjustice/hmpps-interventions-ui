@@ -7,6 +7,8 @@ import CompletionDeadlineForm from './completionDeadlineForm'
 import ServiceUser from '../../../models/serviceUser'
 
 export default class CompletionDeadlinePresenter {
+  private formError: FormValidationError | null
+
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 
   readonly title = `What date does the ${utils.convertToProperCase(
@@ -26,7 +28,9 @@ export default class CompletionDeadlinePresenter {
     private readonly serviceUserDetails: ServiceUser,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly label = `${this.serviceUserDetails.firstName} ${this.serviceUserDetails?.lastName} (CRN: ${this.serviceUserDetails?.crn})`
 

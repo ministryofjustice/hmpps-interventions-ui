@@ -6,6 +6,8 @@ import PresenterUtils from '../../../../utils/presenterUtils'
 import EndOfServiceReportFormPresenter from '../endOfServiceReportFormPresenter'
 
 export default class EndOfServiceReportOutcomePresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: SentReferral,
     private readonly endOfServiceReport: EndOfServiceReport,
@@ -15,7 +17,9 @@ export default class EndOfServiceReportOutcomePresenter {
     private readonly outcome: EndOfServiceReportOutcome | null,
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly error: FormValidationError | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 

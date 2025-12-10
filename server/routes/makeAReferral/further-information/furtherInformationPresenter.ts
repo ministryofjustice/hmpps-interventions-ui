@@ -5,12 +5,16 @@ import Intervention from '../../../models/intervention'
 import utils from '../../../utils/utils'
 
 export default class FurtherInformationPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly intervention: Intervention,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly title = `Do you have further information for the ${utils.convertToProperCase(
     this.intervention.contractType.name

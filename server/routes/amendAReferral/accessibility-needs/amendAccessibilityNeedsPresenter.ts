@@ -5,6 +5,8 @@ import AccessibilityNeedsForm from './amendAccessibilityNeedsForm'
 import DeliusServiceUser from '../../../models/delius/deliusServiceUser'
 
 export default class AccessibilityNeedsPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: SentReferral,
     private readonly serviceUser: DeliusServiceUser,
@@ -13,6 +15,7 @@ export default class AccessibilityNeedsPresenter {
     readonly showNoChangesBanner: boolean = false
   ) {
     this.backLinkUrl = `/probation-practitioner/referrals/${referral.id}/details`
+    this.formError = error
   }
 
   private errorMessageForField(field: string): string | null {

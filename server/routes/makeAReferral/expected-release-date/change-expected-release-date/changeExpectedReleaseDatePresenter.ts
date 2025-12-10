@@ -5,6 +5,7 @@ import CalendarDay from '../../../../utils/calendarDay'
 
 export default class ChangeExpectedReleaseDatePresenter {
   readonly backLinkUrl: string
+  private formError: FormValidationError | null
 
   constructor(
     private readonly referral: DraftReferral,
@@ -12,6 +13,7 @@ export default class ChangeExpectedReleaseDatePresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
     this.backLinkUrl = `/referrals/${referral.id}/expected-release-date`
+    this.formError = error
   }
 
   readonly expectedReleaseDateHint = 'For example, 27 3 2023'

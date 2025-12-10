@@ -5,12 +5,15 @@ import PresenterUtils from '../../../../utils/presenterUtils'
 export default class ExpectedProbationOfficeUnknownPresenter {
   readonly backLinkUrl: string
 
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
     this.backLinkUrl = `/referrals/${referral.id}/expected-probation-office`
+    this.formError = error
   }
 
   private errorMessageForField(field: string): string | null {

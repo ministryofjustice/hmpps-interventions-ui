@@ -4,13 +4,17 @@ import AddNewCaseNoteForm from './AddNewCaseNoteForm'
 import { CaseNote } from '../../../models/caseNote'
 
 export default class AddCaseNotePresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private referralId: string,
     public loggedInUserType: 'service-provider' | 'probation-practitioner',
     private readonly caseNote: CaseNote | null = null,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, string> | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   backLinkHref = `/${this.loggedInUserType}/referrals/${this.referralId}/case-notes`
 

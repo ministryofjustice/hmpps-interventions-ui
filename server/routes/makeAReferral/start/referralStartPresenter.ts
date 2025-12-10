@@ -6,11 +6,14 @@ export default class ReferralStartPresenter {
 
   readonly interventionDetailsPage = `/find-interventions/intervention/${this.interventionId}`
 
+  private formError: FormValidationError | null
+
   constructor(
     private readonly interventionId: string,
     private readonly error: FormValidationError | null = null
   ) {
     this.backLinkUrl = this.interventionDetailsPage
+    this.formError = error
   }
 
   readonly text = {

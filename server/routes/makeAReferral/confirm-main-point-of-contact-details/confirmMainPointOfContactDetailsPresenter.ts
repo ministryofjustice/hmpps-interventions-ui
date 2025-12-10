@@ -9,6 +9,8 @@ import PrisonAndSecuredChildAgency from '../../../models/prisonAndSecureChildAge
 export default class ConfirmMainPointOfContactDetailsPresenter {
   readonly backLinkUrl: string
 
+  private formError: FormValidationError | null
+
   constructor(
     readonly referral: DraftReferral,
     readonly prisonAndSecureChildAgency: PrisonAndSecuredChildAgency[],
@@ -19,6 +21,7 @@ export default class ConfirmMainPointOfContactDetailsPresenter {
     private readonly userInputData: Record<string, unknown> | null = null
   ) {
     this.backLinkUrl = `/referrals/${referral.id}/form`
+    this.formError = error
   }
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error, {

@@ -7,6 +7,8 @@ import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 
 export default class ChangelogDetailPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly error: FormValidationError | null = null,
     readonly changelogDetail: ChangelogDetail,
@@ -14,7 +16,9 @@ export default class ChangelogDetailPresenter {
     private deliusServiceUser: DeliusServiceUser,
     readonly prisonAndSecuredChildAgency: PrisonAndSecuredChildAgency[],
     public loggedInUserType: 'service-provider' | 'probation-practitioner'
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly backUrl = `/${this.loggedInUserType}/referrals/${this.sentReferral.id}/changelog`
 

@@ -6,6 +6,8 @@ import { FormValidationError } from '../../../../utils/formValidationError'
 import PresenterUtils from '../../../../utils/presenterUtils'
 
 export default class ActionPlanNumberOfSessionsPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly actionPlan: ActionPlan,
     private readonly serviceUser: DeliusServiceUser,
@@ -13,7 +15,9 @@ export default class ActionPlanNumberOfSessionsPresenter {
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null,
     private readonly interventionTitle: string
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly errorSummary = PresenterUtils.errorSummary(this.error)
 

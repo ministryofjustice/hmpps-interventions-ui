@@ -3,11 +3,15 @@ import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 
 export default class NeedsAndRequirementsPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   private errorMessageForField(field: string): string | null {
     return PresenterUtils.errorMessage(this.error, field)

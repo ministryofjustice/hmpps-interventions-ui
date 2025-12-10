@@ -10,6 +10,8 @@ export default class OasysRiskInformationPresenter {
 
   readonly displayLabel: string
 
+  private formError: FormValidationError | null
+
   constructor(
     readonly referralId: string,
     readonly riskSummary: RiskSummary | null,
@@ -18,6 +20,7 @@ export default class OasysRiskInformationPresenter {
   ) {
     this.riskPresenter = new RoshPanelPresenter(riskSummary)
     this.displayLabel = label
+    this.formError = error
   }
 
   readonly errors = {

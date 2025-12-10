@@ -3,11 +3,15 @@ import { FormValidationError } from '../../../utils/formValidationError'
 import PresenterUtils from '../../../utils/presenterUtils'
 
 export default class RiskInformationPresenter {
+  private formError: FormValidationError | null
+
   constructor(
     private readonly referral: DraftReferral,
     private readonly error: FormValidationError | null = null,
     private readonly userInputData: Record<string, unknown> | null = null
-  ) {}
+  ) {
+    this.formError = error
+  }
 
   readonly text = {
     title: `${this.referral.serviceUser?.firstName}’s risk information`,
