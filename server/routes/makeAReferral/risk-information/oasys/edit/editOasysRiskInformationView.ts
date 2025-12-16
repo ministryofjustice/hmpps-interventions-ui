@@ -149,8 +149,7 @@ export default class EditOasysRiskInformationView {
       {
         errorSummaryArgs: this.errorSummaryArgs,
         riskInformation: this.riskSummaryView.oasysRiskInformationArgs,
-        displayLabel: this.presenter.displayLabel,
-        latestAssessment: this.presenter.latestAssessment,
+        presenter: this.presenter,
         whoIsAtRiskTextareaArgs: this.whoIsAtRiskTextareaArgs,
         natureOfRiskTextareaArgs: this.natureOfRiskTextareaArgs,
         riskImminenceTextareaArgs: this.riskImminenceTextareaArgs,

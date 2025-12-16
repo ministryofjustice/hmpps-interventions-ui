@@ -13,13 +13,13 @@
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <p class="govuk-caption-xl">{{ displayLabel }} </p>
+      <p class="govuk-caption-xl">{{ presenter.displayLabel }} </p>
       <h1 class="govuk-heading-xl">OASys risk information</h1>
       {% if errorSummaryArgs !== null %}
         {{ govukErrorSummary(errorSummaryArgs) }}
       {% endif %}
 
-      <p class="govuk-body">Latest assessment: {{ latestAssessment }} </p>
+      <p class="govuk-body">Latest assessment: {{ presenter.latestAssessment }} </p>
       <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
       <form method="post">
         <input type="hidden" name="_csrf" value="{{csrfToken}}">

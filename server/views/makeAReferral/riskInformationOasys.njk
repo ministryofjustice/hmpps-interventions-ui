@@ -18,13 +18,13 @@
 {% block pageContent %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <p class="govuk-caption-xl">{{ displayLabel }}</p>
+      <p class="govuk-caption-xl">{{ presenter.displayLabel }}</p>
       <h1 class="govuk-heading-xl">OASys risk information</h1>
         {% if errorSummaryArgs !== null %}
           {{ govukErrorSummary(errorSummaryArgs) }}
         {% endif %}
 
-        <p class="govuk-body">Latest assessment: {{ latestAssessment }} </p>
+        <p class="govuk-body">Latest assessment: {{ presenter.latestAssessment }} </p>
         <hr/>
 
         <h2 class="govuk-heading-m">Who is at risk</h2>
@@ -95,10 +95,10 @@
       </form>
     </div>
     <div class="govuk-grid-column-one-third">
-      <div class="refer-and-monitor__rosh-analysis-table {{ roshPanelPresenter.overallRoshStyle }}">
+      <div class="refer-and-monitor__rosh-analysis-table {{ presenter.roshPanelPresenter.overallRoshStyle }}">
         <p class="rosh-analysis-table__header"><strong>{{ roshPanelPresenter.formattedOverallRoshScore }}</strong> RoSH</p>
         <p class="rosh-analysis-table__subheader">Risk of serious harm</p>
-        <p class="rosh-analysis-table__last-updated">{{ roshPanelPresenter.lastUpdated }}</p>
+        <p class="rosh-analysis-table__last-updated">{{ presenter.roshPanelPresenter.lastUpdated }}</p>
         {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
       </div>
     </div>
