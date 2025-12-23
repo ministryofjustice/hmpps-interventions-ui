@@ -4,6 +4,7 @@ import appWithAllRoutes, { AppSetupUserType } from './testutils/appSetup'
 
 jest.mock('crypto', () => ({
   randomBytes: () => 'mocked',
+  randomUUID: () => 'mocked-uuid',
 }))
 
 afterEach(() => {
