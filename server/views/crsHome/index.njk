@@ -8,6 +8,8 @@
 
 {% block pageContent %}
 
+  {% include "../components/downtimeBanner.njk" %}
+
   {{ govukBackLink(backLinkArgs) }}
   
   <h1 class="govuk-heading-l">{{ pageHeading }}</h1>

@@ -1,5 +1,5 @@
-import { NotificationBannerArgs, TableArgs } from '../../utils/govukFrontendTypes'
-import ViewUtils from '../../utils/viewUtils'
+import { TableArgs } from '../../utils/govukFrontendTypes'
+import ViewUtils, { serviceOutageBannerArgs } from '../../utils/viewUtils'
 import DashboardPresenter from './dashboardPresenter'
 
 export default class DashboardView {
@@ -44,23 +44,6 @@ export default class DashboardView {
       },
     ],
   }
-
-  get serviceOutageBannerArgs(): NotificationBannerArgs | null {
-    const text =
-      'Refer and monitor an intervention will be unavailable between 9pm on Friday 19 September and 7am on Monday 22 September. This is due to planned maintenance in NDelius.'
-    const subHeading = 'Planned Downtime'
-
-    const html = `<div class="refer-and-monitor__max-width">
-                  <p class="govuk-notification-banner__heading"> ${subHeading}</p>
-                  <p class="govuk-body">${text}</p>
-                  <p><a class="govuk-notification-banner__link" href= ${this.presenter.closeHref}>Close</a></p></div>`
-    return {
-      titleText: 'Downtime',
-      html,
-      classes: 'govuk-notification-banner--info',
-    }
-  }
-
   get renderArgs(): [string, Record<string, unknown>] {
     return [
       'probationPractitionerReferrals/dashboard',
@@ -71,7 +54,10 @@ export default class DashboardView {
         subNavArgs: this.subNavArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
         showSearchResult: {},
-        serviceOutageBannerArgs: this.serviceOutageBannerArgs,
+        serviceOutageBannerArgs: serviceOutageBannerArgs(
+          this.presenter.closeHref,
+          !this.presenter.disableDowntimeBanner
+        ),
         backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]

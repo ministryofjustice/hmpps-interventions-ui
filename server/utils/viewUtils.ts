@@ -2,6 +2,7 @@ import * as nunjucks from 'nunjucks'
 import { ListStyle, SummaryListItem, SummaryListItemContent } from './summaryList'
 import {
   ErrorSummaryArgs,
+  NotificationBannerArgs,
   SummaryListArgs,
   SummaryListArgsRowActionsItem,
   TableArgs,
@@ -12,6 +13,7 @@ import SessionStatusPresenter from '../routes/shared/sessionStatusPresenter'
 import { PrimaryNavBarItem } from '../routes/shared/primaryNavBar/primaryNavBarPresenter'
 import AuthUserDetails from '../models/hmppsAuth/authUserDetails'
 import { RiskInformationArgs } from '../routes/makeAReferral/risk-information/oasys/riskInformationLabels'
+import content from './content'
 
 export type SortableTableHeaders = {
   text: string
@@ -479,5 +481,22 @@ export default class ViewUtils {
 
   static changelogDetailTagHtml(value: string, colorClass: string, tagMacro: (args: TagArgs) => string): string {
     return tagMacro({ html: value, classes: colorClass })
+  }
+}
+
+export const serviceOutageBannerArgs = (closeHref: string, open: boolean): NotificationBannerArgs => {
+  const { title, text, subHeading } = content.serviceOutageBanner
+
+  const html =
+    text && open
+      ? `<div class="refer-and-monitor__max-width">
+                    <p class="govuk-notification-banner__heading"> ${subHeading}</p>
+                    <p class="govuk-body">${text}</p>
+                    <p><a class="govuk-notification-banner__link" href= ${closeHref}>Close</a></p></div>`
+      : undefined
+  return {
+    titleText: title,
+    html,
+    classes: 'govuk-notification-banner--info',
   }
 }

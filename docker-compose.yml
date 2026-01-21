@@ -113,6 +113,7 @@ services:
       - hmpps
     container_name: interventions-service
     depends_on:
+      - hmpps-auth
       - postgres
     ports:
       - '8092:8080'
