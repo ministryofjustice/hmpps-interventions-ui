@@ -54,8 +54,10 @@ export default class DashboardView {
         subNavArgs: this.subNavArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
         showSearchResult: {},
-        serviceOutageBannerArgs: serviceOutageBannerArgs(this.presenter.closeHref),
-        enableDowntimeBanner: !this.presenter.disableDowntimeBanner,
+        serviceOutageBannerArgs: serviceOutageBannerArgs(
+          this.presenter.closeHref,
+          !this.presenter.disableDowntimeBanner
+        ),
         backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]

@@ -69,8 +69,10 @@ export default class SearchResultsView {
         summaryListArgs: SearchResultsView.summaryListArgs,
         searchSummarySummaryListArgs: this.searchSummarySummaryListArgs,
         primaryNavArgs: ViewUtils.primaryNav(this.presenter.navItemsPresenter.items),
-        serviceOutageBannerArgs: serviceOutageBannerArgs(this.presenter.closeHref),
-        enableDowntimeBanner: !this.presenter.disableDowntimeBanner,
+        serviceOutageBannerArgs: serviceOutageBannerArgs(
+          this.presenter.closeHref,
+          !this.presenter.disableDowntimeBanner
+        ),
         backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]

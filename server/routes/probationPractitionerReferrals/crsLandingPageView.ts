@@ -12,8 +12,10 @@ export default class CrsLandingPageView {
         viewReferral: this.presenter.viewReferral,
         backLinkArgs: { href: this.presenter.backLinkUrl },
         pageHeading: this.presenter.pageHeading,
-        enableDowntimeBanner: !this.presenter.disableDowntimeBanner,
-        serviceOutageBannerArgs: serviceOutageBannerArgs(this.presenter.closeHref),
+        serviceOutageBannerArgs: serviceOutageBannerArgs(
+          this.presenter.closeHref,
+          !this.presenter.disableDowntimeBanner
+        ),
       },
     ]
   }

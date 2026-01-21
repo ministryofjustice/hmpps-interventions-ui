@@ -70,8 +70,10 @@ export default class DashboardView {
         subjectInputArgs: this.subjectInputArgs,
         pagination: this.presenter.pagination.mojPaginationArgs,
         clearHref: this.presenter.hrefLinkForClear,
-        serviceOutageBannerArgs: serviceOutageBannerArgs(this.presenter.closeHref),
-        enableDowntimeBanner: !this.presenter.disableDowntimeBanner,
+        serviceOutageBannerArgs: serviceOutageBannerArgs(
+          this.presenter.closeHref,
+          !this.presenter.disableDowntimeBanner
+        ),
         backLinkArgs: { href: this.presenter.backLinkUrl },
       },
     ]
