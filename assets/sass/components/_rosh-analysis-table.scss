@@ -1,23 +1,29 @@
-$refer-and-monitor-rosh-low-colour: #85994b;
-$refer-and-monitor-rosh-medium-colour: #f47738;
-$refer-and-monitor-rosh-high-colour: #d4351c;
-$refer-and-monitor-rosh-very-high-colour: #942514;
+$refer-and-monitor-rosh-low-colour: #485b10;
+$refer-and-monitor-rosh-low-border-colour: #85994b;
+$refer-and-monitor-rosh-medium-colour: #a34e00;
+$refer-and-monitor-rosh-medium-border-colour: #f47738;
+$refer-and-monitor-rosh-high-colour: #942514;
+$refer-and-monitor-rosh-high-border-colour: #d4351c;
+$refer-and-monitor-rosh-very-high-colour: #711a0d;
+$refer-and-monitor-rosh-very-high-border-colour: #942514;
 
 .refer-and-monitor__rosh-analysis-table {
-  border: 2px solid;
-  padding: 20px;
+  border: 2px solid govuk-colour('black');
+  padding: govuk-spacing(4);
+  margin-bottom: govuk-spacing(4);
 
   .rosh-analysis-table__header {
-    margin-bottom: 0;
+    margin-bottom: govuk-spacing(1);
+    font-weight: 400;
   }
 
   .rosh-analysis-table__subheader {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
   }
 
   .rosh-analysis-table__last-updated {
     color: $govuk-secondary-text-colour;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
   }
 
   .rosh-analysis-table__risk-score {
@@ -41,39 +47,35 @@ $refer-and-monitor-rosh-very-high-colour: #942514;
   }
 
   &.rosh-analysis-table--low {
-    border-color: $refer-and-monitor-rosh-low-colour;
+    border: 2px solid $refer-and-monitor-rosh-low-border-colour;
 
     .rosh-analysis-table__header {
       color: $refer-and-monitor-rosh-low-colour;
     }
-
   }
 
   &.rosh-analysis-table--medium {
-    border-color: $refer-and-monitor-rosh-medium-colour;
+    border: 2px solid $refer-and-monitor-rosh-medium-border-colour;
 
     .rosh-analysis-table__header {
       color: $refer-and-monitor-rosh-medium-colour;
     }
-
   }
 
   &.rosh-analysis-table--high {
-    border-color: $refer-and-monitor-rosh-high-colour;
+    border: 2px solid $refer-and-monitor-rosh-high-border-colour;
 
     .rosh-analysis-table__header {
       color: $refer-and-monitor-rosh-high-colour;
     }
-
   }
 
   &.rosh-analysis-table--very-high {
-    border-color: $refer-and-monitor-rosh-very-high-colour;
+    border: 2px solid $refer-and-monitor-rosh-very-high-border-colour;
 
     .rosh-analysis-table__header {
       color: $refer-and-monitor-rosh-very-high-colour;
     }
-
   }
 
 }
