@@ -14,7 +14,7 @@ export default class OasysRiskInformationView {
     readonly request: Request,
     readonly presenter: OasysRiskInformationPresenter
   ) {
-    this.roshPanelView = new RoshPanelView(this.presenter.riskPresenter, 'probation-practitioner')
+    this.roshPanelView = new RoshPanelView(this.presenter.roshPanelPresenter, 'probation-practitioner')
     this.riskSummaryView = new OasysRiskSummaryView(presenter.riskSummary)
   }
 

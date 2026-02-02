@@ -96,7 +96,7 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <div class="refer-and-monitor__rosh-analysis-table {{ presenter.roshPanelPresenter.overallRoshStyle }}">
-        <p class="rosh-analysis-table__header"><strong>{{ roshPanelPresenter.formattedOverallRoshScore }}</strong> RoSH</p>
+        <p class="rosh-analysis-table__header"><strong>{{ presenter.roshPanelPresenter.formattedOverallRoshScore }}</strong> ROSH</p>
         <p class="rosh-analysis-table__subheader">Risk of serious harm</p>
         <p class="rosh-analysis-table__last-updated">{{ presenter.roshPanelPresenter.lastUpdated }}</p>
         {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
