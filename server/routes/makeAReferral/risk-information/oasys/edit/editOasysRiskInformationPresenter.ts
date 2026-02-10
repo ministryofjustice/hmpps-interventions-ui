@@ -7,7 +7,7 @@ import { FormValidationError } from '../../../../../utils/formValidationError'
 import { DraftOasysRiskInformation } from '../../../../../models/draftOasysRiskInformation'
 
 export default class EditOasysRiskInformationPresenter {
-  riskPresenter: RoshPanelPresenter
+  roshPanelPresenter: RoshPanelPresenter
 
   displayLabel
 
@@ -19,7 +19,7 @@ export default class EditOasysRiskInformationPresenter {
     private readonly error: FormValidationError | null = null,
     readonly label: string
   ) {
-    this.riskPresenter = new RoshPanelPresenter(riskSummary)
+    this.roshPanelPresenter = new RoshPanelPresenter(riskSummary)
     this.displayLabel = label
     this.formError = error
   }

@@ -95,11 +95,23 @@
       </form>
     </div>
     <div class="govuk-grid-column-one-third">
+      <h3 class="govuk-heading-m rosh-information__title"><strong>Risk information</strong></h3>
       <div class="refer-and-monitor__rosh-analysis-table {{ presenter.roshPanelPresenter.overallRoshStyle }}">
-        <p class="rosh-analysis-table__header"><strong>{{ presenter.roshPanelPresenter.formattedOverallRoshScore }}</strong> ROSH</p>
+        <p class="rosh-analysis-table__header">
+          <strong>{{ presenter.roshPanelPresenter.formattedOverallRoshScore }}</strong> ROSH
+        </p>
         <p class="rosh-analysis-table__subheader">Risk of serious harm</p>
-        <p class="rosh-analysis-table__last-updated">{{ presenter.roshPanelPresenter.lastUpdated }}</p>
-        {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
+
+        {% if presenter.roshPanelPresenter.roshSummaryMessage %}
+          <p class="rosh-analysis-table__last-updated-info">
+            {{ presenter.roshPanelPresenter.roshSummaryMessage }}
+          </p>
+        {% else %}
+          <p class="rosh-analysis-table__last-updated-info">
+            {{ presenter.roshPanelPresenter.lastUpdated }}
+          </p>
+          {{ govukTable(roshAnalysisTableArgs(govukTag)) }}
+        {% endif %}
       </div>
     </div>
   </div>

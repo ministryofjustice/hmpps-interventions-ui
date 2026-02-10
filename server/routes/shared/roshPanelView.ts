@@ -24,6 +24,7 @@ export default class RoshPanelView {
           },
         ]
       }),
+      classes: 'rosh-analysis-table__section',
     }
   }
 
