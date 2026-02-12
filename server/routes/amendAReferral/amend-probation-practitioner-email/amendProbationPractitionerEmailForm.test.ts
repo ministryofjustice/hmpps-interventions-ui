@@ -6,11 +6,11 @@ describe(AmendProbationPractitionerEmailForm, () => {
     describe('when email address is passed', () => {
       it('returns a paramsForUpdate with the email', async () => {
         const request = TestUtils.createRequest({
-          'amend-probation-practitioner-email': 'alex.river@somewhere.com',
+          'amend-probation-practitioner-email': 'alex.river@justice.gov.uk',
         })
         const data = await new AmendProbationPractitionerEmailForm(request, 'alex.river@somewhereelse.com').data()
 
-        expect(data.paramsForUpdate?.ppEmail).toEqual('alex.river@somewhere.com')
+        expect(data.paramsForUpdate?.ppEmail).toEqual('alex.river@justice.gov.uk')
       })
     })
   })
@@ -45,14 +45,28 @@ describe(AmendProbationPractitionerEmailForm, () => {
 
   describe('unchanged email', () => {
     it('returns an error when the email is unchanged', async () => {
-      const request = TestUtils.createRequest({ 'amend-probation-practitioner-email': 'alex.river@somewhere.com' })
+      const request = TestUtils.createRequest({ 'amend-probation-practitioner-email': 'alex.river@justice.gov.uk' })
 
-      const data = await new AmendProbationPractitionerEmailForm(request, 'alex.river@somewhere.com').data()
+      const data = await new AmendProbationPractitionerEmailForm(request, 'alex.river@justice.gov.uk').data()
 
       expect(data.error?.errors).toContainEqual({
         errorSummaryLinkedField: 'amend-probation-practitioner-email',
         formFields: ['amend-probation-practitioner-email'],
         message: 'Probation practitioner email address must have changed',
+      })
+    })
+  })
+
+  describe('invalid email domain', () => {
+    it('returns an error when the email does not end with gov.uk', async () => {
+      const request = TestUtils.createRequest({ 'amend-probation-practitioner-email': 'alex.river@somewhere.com' })
+
+      const data = await new AmendProbationPractitionerEmailForm(request, 'alex.river@justice.gov.uk').data()
+
+      expect(data.error?.errors).toContainEqual({
+        errorSummaryLinkedField: 'amend-probation-practitioner-email',
+        formFields: ['amend-probation-practitioner-email'],
+        message: 'Email address must end with gov.uk',
       })
     })
   })

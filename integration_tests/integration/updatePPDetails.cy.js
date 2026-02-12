@@ -106,7 +106,7 @@ describe('Referral form', () => {
       const updatedPPDetails = draftReferralFactory.filledFormUptoPPDetails('Bob Marley').build({
         id: draftReferral.id,
         ndeliusPPName: 'Bob Marley',
-        ndeliusPPEmailAddress: 'a.b@xyz.com',
+        ndeliusPPEmailAddress: 'a.b@justice.gov.uk',
         ndeliusPhoneNumber: '07434332323',
         ndeliusPDU: '97 Hackney and City',
         ndeliusTeamPhoneNumber: '020346865656',
@@ -121,7 +121,7 @@ describe('Referral form', () => {
       const deletedPPDetails = draftReferralFactory.filledFormUptoPPDetails('Bob Marley').build({
         id: draftReferral.id,
         ndeliusPPName: 'Bob Marley',
-        ndeliusPPEmailAddress: 'a.b@xyz.com',
+        ndeliusPPEmailAddress: 'a.b@justice.gov.uk',
         ndeliusPhoneNumber: '',
         ppProbationOffice: '',
         ndeliusPDU: '97 Hackney and City',
@@ -153,7 +153,7 @@ describe('Referral form', () => {
       const updatedProbationOfficeDetails = draftReferralFactory.filledFormUptoPPDetails('Bob Marley').build({
         id: draftReferral.id,
         ndeliusPPName: 'Bob Marley',
-        ndeliusPPEmailAddress: 'a.b@xyz.com',
+        ndeliusPPEmailAddress: 'a.b@justice.gov.uk',
         ndeliusPhoneNumber: '07434332323',
         ndeliusPDU: '97 Hackney and City',
         ppProbationOffice: 'Lincolnshire: Skegness Probation Office',
@@ -331,12 +331,12 @@ describe('Referral form', () => {
         `/referrals/${draftReferral.id}/update-probation-practitioner-email-address`
       )
       cy.get('#delius-probation-practitioner-email-address').clear()
-      cy.get('#delius-probation-practitioner-email-address').type('a.b@xyz.com')
+      cy.get('#delius-probation-practitioner-email-address').type('a.b@justice.gov.uk')
       cy.stubGetDraftReferral(draftReferral.id, updatedPPDetails)
       cy.contains('Save and continue').click()
 
       cy.location('pathname').should('equal', `/referrals/${draftReferral.id}/confirm-probation-practitioner-details`)
-      cy.contains('a.b@xyz.com')
+      cy.contains('a.b@justice.gov.uk')
 
       cy.get('#change-link-2').click()
       cy.location('pathname').should(

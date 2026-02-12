@@ -38,6 +38,9 @@ export default class UpdateProbationPractitionerEmailAddressForm {
         .if(body('delius-probation-practitioner-email-address').notEmpty({ ignore_whitespace: true }))
         .isEmail()
         .withMessage(errorMessages.updateProbationPractitionerDetails.invalidEmail),
+      body('delius-probation-practitioner-email-address')
+        .custom(value => value.trim().toLowerCase().endsWith('.gov.uk'))
+        .withMessage(errorMessages.probationPractitionerEmail.invalidDomain),
     ]
   }
 
