@@ -7,18 +7,6 @@ interface RiskInCommunity {
 }
 
 describe(RoshPanelPresenter, () => {
-  describe('riskSummaryNotFound', () => {
-    it('is true if riskSummary is null', () => {
-      const presenter = new RoshPanelPresenter(null)
-      expect(presenter.riskSummaryNotFound).toEqual(true)
-    })
-
-    it('is false if riskSummary is not null', () => {
-      const presenter = new RoshPanelPresenter(riskSummary.build())
-      expect(presenter.riskSummaryNotFound).toEqual(false)
-    })
-  })
-
   describe('riskInformationAvailable', () => {
     it('is true if riskSummary is not null', () => {
       const presenter = new RoshPanelPresenter(riskSummary.build())
@@ -28,6 +16,11 @@ describe(RoshPanelPresenter, () => {
     it('is false if riskSummary is null', () => {
       const presenter = new RoshPanelPresenter(null)
       expect(presenter.riskInformationAvailable).toEqual(false)
+      expect(presenter.formattedOverallRoshScore).toEqual('UNKNOWN LEVEL')
+      expect(presenter.overallRoshStyle).toEqual('rosh-analysis-table--unknown-not-available')
+      expect(presenter.roshSummaryMessage).toEqual(
+        'Something went wrong. We are unable to show ROSH information at this time. Try again later.'
+      )
     })
   })
 
@@ -147,14 +140,47 @@ describe(RoshPanelPresenter, () => {
     })
 
     describe('when the highest risk summary is something unexpected', () => {
-      it(`returns UNDEFINED`, () => {
+      it(`returns UNKNOWN LEVEL`, () => {
         const riskRosh = createRiskSummary({
           UNEXPECTED: ['public'],
         })
 
         const presenter = new RoshPanelPresenter(riskRosh)
 
-        expect(presenter.formattedOverallRoshScore).toEqual('UNDEFINED')
+        expect(presenter.formattedOverallRoshScore).toEqual('UNKNOWN LEVEL')
+        expect(presenter.overallRoshStyle).toEqual('rosh-analysis-table--unknown-not-completed')
+        expect(presenter.roshSummaryMessage).toEqual(
+          `A ROSH summary has not been completed for this individual. Check OASys for this person's current assessment status.`
+        )
+      })
+    })
+
+    describe('when the highest risk summary is present but has no value associated with it', () => {
+      it(`returns UNKNOWN LEVEL`, () => {
+        const riskRosh = createRiskSummary({
+          LOW: [],
+        })
+
+        const presenter = new RoshPanelPresenter(riskRosh)
+
+        expect(presenter.formattedOverallRoshScore).toEqual('UNKNOWN LEVEL')
+        expect(presenter.overallRoshStyle).toEqual('rosh-analysis-table--unknown-not-completed')
+        expect(presenter.roshSummaryMessage).toEqual(
+          `A ROSH summary has not been completed for this individual. Check OASys for this person's current assessment status.`
+        )
+      })
+    })
+
+    describe('when riskInCommunity is empty', () => {
+      it('returns UNKNOWN LEVEL', () => {
+        const riskRosh = createRiskSummary({})
+        const presenter = new RoshPanelPresenter(riskRosh)
+
+        expect(presenter.formattedOverallRoshScore).toEqual('UNKNOWN LEVEL')
+        expect(presenter.overallRoshStyle).toEqual('rosh-analysis-table--unknown-not-completed')
+        expect(presenter.roshSummaryMessage).toEqual(
+          `A ROSH summary has not been completed for this individual. Check OASys for this person's current assessment status.`
+        )
       })
     })
   })

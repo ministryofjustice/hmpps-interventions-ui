@@ -1,3 +1,7 @@
+$refer-and-monitor-rosh-unknown-unavailable-colour: #0b0c0c;
+$refer-and-monitor-rosh-unknown-unavailable-border-colour: #0b0c0c;
+$refer-and-monitor-rosh-unknown-not-completed-colour: #0b0c0c;
+$refer-and-monitor-rosh-unknown-not-completed-border-colour: #fd0;
 $refer-and-monitor-rosh-low-colour: #485b10;
 $refer-and-monitor-rosh-low-border-colour: #85994b;
 $refer-and-monitor-rosh-medium-colour: #a34e00;
@@ -7,10 +11,19 @@ $refer-and-monitor-rosh-high-border-colour: #d4351c;
 $refer-and-monitor-rosh-very-high-colour: #711a0d;
 $refer-and-monitor-rosh-very-high-border-colour: #942514;
 
+.rosh-information__title {
+  margin-top: 130px;
+}
+
 .refer-and-monitor__rosh-analysis-table {
   border: 2px solid govuk-colour('black');
   padding: govuk-spacing(4);
   margin-bottom: govuk-spacing(4);
+
+  .rosh-analysis-table__section {
+    text-align: left;
+    margin: 0;
+  }
 
   .rosh-analysis-table__header {
     margin-bottom: govuk-spacing(1);
@@ -21,7 +34,7 @@ $refer-and-monitor-rosh-very-high-border-colour: #942514;
     margin-bottom: 20px;
   }
 
-  .rosh-analysis-table__last-updated {
+  .rosh-analysis-table__last-updated-info {
     color: $govuk-secondary-text-colour;
     margin-bottom: 15px;
   }
@@ -44,6 +57,24 @@ $refer-and-monitor-rosh-very-high-border-colour: #942514;
 
   .rosh-analysis-table__risk-score__very-high {
     color: $refer-and-monitor-rosh-very-high-colour;
+  }
+
+  &.rosh-analysis-table--unknown-unavailable {
+    border: 2px solid $refer-and-monitor-rosh-unknown-unavailable-colour;
+
+    .rosh-analysis-table__header {
+      color: $refer-and-monitor-rosh-unknown-unavailable-border-colour;
+    }
+  }
+
+  &.rosh-analysis-table--unknown-not-completed {
+    border: 2px solid $refer-and-monitor-rosh-unknown-not-completed-border-colour;
+    text-align: left;
+    text-justify: inter-word;
+
+    .rosh-analysis-table__header {
+      color: $refer-and-monitor-rosh-unknown-not-completed-colour;
+    }
   }
 
   &.rosh-analysis-table--low {

@@ -2,6 +2,10 @@ import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
 import DateUtils from '../../utils/dateUtils'
 import logger from '../../../log'
 
+export type RoshLevel = 'VERY_HIGH' | 'HIGH' | 'MEDIUM' | 'LOW'
+export type UnknownLevel = 'UNKNOWN_NOT_COMPLETED' | 'UNKNOWN_NOT_AVAILABLE'
+export type RoshLevelOrUnknown = RoshLevel | UnknownLevel
+
 export interface RoshAnalysisTableRow {
   riskTo: string
   riskScore: string
@@ -10,10 +14,8 @@ export interface RoshAnalysisTableRow {
 export default class RoshPanelPresenter {
   constructor(private readonly riskSummary: RiskSummary | null) {}
 
-  readonly riskSummaryNotFound = this.riskSummary === null
-
   get riskInformationAvailable(): boolean {
-    return !this.riskSummaryNotFound
+    return this.riskSummary != null
   }
 
   readonly text = {
@@ -31,55 +33,71 @@ export default class RoshPanelPresenter {
   }
 
   get roshAnalysisHeaders(): string[] {
-    return ['Risk to', 'Risk in community']
+    return ['Risk to', 'Community']
   }
 
   private get overallRoshScore(): string {
     if (!this.riskSummary) {
-      return 'Rosh score not found'
+      return 'UNKNOWN_NOT_AVAILABLE'
     }
 
-    const { riskInCommunity } = this.riskSummary.summary
+    const riskInCommunity = this.riskSummary.summary.riskInCommunity
 
-    const roshRankings = ['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW']
+    const roshRankings: RoshLevel[] = ['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW']
 
-    let i = 0
+    const ranking = roshRankings.find(level => {
+      const entries = riskInCommunity[level]
+      return entries?.length
+    })
 
-    // For each roshRanking, check to see if it is defined. If not, step to the
-    // next, rinse and repeat.
-    while (riskInCommunity[roshRankings[i]] === undefined) {
-      i += 1
-      // If we've run out of rankings then log an error, short circuit and
-      // return 'UNDEFINED'
-      if (i > roshRankings.length) {
-        logger.error({
-          err: `Unable to get ROSH score from risk in community response: ${Object.keys(riskInCommunity)}`,
-        })
-        return 'UNDEFINED'
-      }
+    if (!ranking) {
+      logger.error({
+        err: `Unable to determine ROSH score from keys: ${Object.keys(riskInCommunity)}`,
+      })
+      return 'UNKNOWN_NOT_COMPLETED'
     }
 
-    // Return whichever roshRanking was the first defined one we came across
-    return roshRankings[i]
-  }
-
-  get formattedOverallRoshScore(): string {
-    return this.overallRoshScore.replace('_', ' ')
+    return ranking
   }
 
   get overallRoshStyle(): string {
-    switch (this.overallRoshScore) {
-      case 'LOW':
-        return 'rosh-analysis-table--low'
-      case 'MEDIUM':
-        return 'rosh-analysis-table--medium'
-      case 'HIGH':
-        return 'rosh-analysis-table--high'
-      case 'VERY_HIGH':
-        return 'rosh-analysis-table--very-high'
-      default:
-        return ''
+    const styleMap: Record<RoshLevelOrUnknown, string> = {
+      LOW: 'rosh-analysis-table--low',
+      MEDIUM: 'rosh-analysis-table--medium',
+      HIGH: 'rosh-analysis-table--high',
+      VERY_HIGH: 'rosh-analysis-table--very-high',
+      UNKNOWN_NOT_COMPLETED: 'rosh-analysis-table--unknown-not-completed',
+      UNKNOWN_NOT_AVAILABLE: 'rosh-analysis-table--unknown-not-available',
     }
+
+    return styleMap[this.overallRoshScore] ?? styleMap['UNKNOWN_NOT_AVAILABLE']
+  }
+
+  private readonly UNKNOWN_LEVELS: ReadonlySet<UnknownLevel> = new Set([
+    'UNKNOWN_NOT_COMPLETED',
+    'UNKNOWN_NOT_AVAILABLE',
+  ])
+
+  private isUnknownLevel(level: string): level is UnknownLevel {
+    return this.UNKNOWN_LEVELS.has(level as UnknownLevel)
+  }
+
+  get formattedOverallRoshScore(): string {
+    const level = this.overallRoshScore
+
+    return this.isUnknownLevel(level) ? 'UNKNOWN LEVEL' : level.replace('_', ' ')
+  }
+
+  get roshSummaryMessage(): string | null {
+    if (!this.riskInformationAvailable) {
+      return 'Something went wrong. We are unable to show ROSH information at this time. Try again later.'
+    }
+
+    if (this.isUnknownLevel(this.overallRoshScore)) {
+      return `A ROSH summary has not been completed for this individual. Check OASys for this person's current assessment status.`
+    }
+
+    return null
   }
 
   get roshAnalysisRows(): RoshAnalysisTableRow[] {
