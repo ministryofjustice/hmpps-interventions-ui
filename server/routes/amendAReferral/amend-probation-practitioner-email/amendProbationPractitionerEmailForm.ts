@@ -45,6 +45,9 @@ export default class AmendProbationPractitionerEmailForm {
       body('amend-probation-practitioner-email')
         .isEmail()
         .withMessage(errorMessages.probationPractitionerEmail.invalidEmail),
+      body('amend-probation-practitioner-email')
+        .custom(value => value.trim().toLowerCase().endsWith('.gov.uk'))
+        .withMessage(errorMessages.probationPractitionerEmail.invalidDomain),
     ]
   }
 

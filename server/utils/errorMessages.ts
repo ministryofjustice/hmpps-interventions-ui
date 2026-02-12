@@ -350,6 +350,7 @@ export default {
     empty: 'Enter probation practitioner email address',
     unchanged: 'Probation practitioner email address must have changed',
     invalidEmail: `Enter email address in the correct format`,
+    invalidDomain: 'Email address must end with gov.uk',
   },
   probationPractitionerPhoneNumber: {
     empty: 'Enter probation practitioner phone number',

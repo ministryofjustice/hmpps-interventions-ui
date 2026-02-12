@@ -473,7 +473,7 @@ describe('POST /probation-practitioner/referrals/:id/amend-probation-practitione
     return request(app)
       .post(`/probation-practitioner/referrals/${referral.id}/amend-probation-practitioner-email`)
       .send({
-        'amend-probation-practitioner-email': 'luke.right@somewhere.com',
+        'amend-probation-practitioner-email': 'luke.right@justice.gov.uk',
       })
       .expect(302)
       .expect('Location', `/probation-practitioner/referrals/${referral.id}/details?detailsUpdated=true`)

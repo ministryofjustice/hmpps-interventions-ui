@@ -6,11 +6,11 @@ describe(UpdateProbationPractitionerEmailAddressForm, () => {
     describe('when a valid probation Practitioner email address is passed', () => {
       it('returns a paramsForUpdate with the nDeliusPPEmailAddress property', async () => {
         const request = TestUtils.createRequest({
-          'delius-probation-practitioner-email-address': 'a.z@xyz.com',
+          'delius-probation-practitioner-email-address': 'a.z@justice.gov.uk',
         })
         const data = await new UpdateProbationPractitionerEmailAddressForm(request).data()
 
-        expect(data.paramsForUpdate?.ppEmailAddress).toEqual('a.z@xyz.com')
+        expect(data.paramsForUpdate?.ppEmailAddress).toEqual('a.z@justice.gov.uk')
       })
     })
   })
