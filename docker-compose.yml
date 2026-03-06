@@ -11,7 +11,7 @@ services:
       - '6379:6379'
 
   hmpps-auth:
-    image: quay.io/hmpps/hmpps-auth:latest
+    image: ghcr.io/ministryofjustice/hmpps-auth:latest
     networks:
       - hmpps
     container_name: hmpps-auth
@@ -32,7 +32,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://auth-db:5432/auth-db
 
   hmpps-manage-users:
-    image: quay.io/hmpps/hmpps-manage-users-api:latest
+    image: ghcr.io/ministryofjustice/hmpps-manage-users-api:latest
     networks:
       - hmpps
     container_name: hmpps-manage-users
@@ -71,7 +71,7 @@ services:
       - API_BASE_URL_OAUTH=http://hmpps-auth:8090/auth
   
   hmpps-external-users-api:
-      image: quay.io/hmpps/hmpps-external-users-api:latest
+      image: ghcr.io/ministryofjustice/hmpps-external-users-api:latest
       networks:
         - hmpps
       container_name: hmpps-external-users-api
