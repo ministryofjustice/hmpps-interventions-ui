@@ -180,9 +180,5 @@
     "ts-jest": "^28.0.8",
     "ts-node": "^10.9.2",
     "typescript": "^4.9.5"
-  },
-  "overrides": {
-    "glob": ">=11.1.0",
-    "minimatch": ">=10.2.3"
   }
 }
