@@ -35,7 +35,7 @@ jobs:
       - name: Install latest npm
         run: sudo npm install -g npm@latest
       - name: Install dependencies
-        run: npm ci
+        run: npm run setup
       - name: Download unit test artifacts
         uses: actions/download-artifact@v4
         with:
