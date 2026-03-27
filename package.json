@@ -35,7 +35,8 @@
     "stylelint:fix": "stylelint **/*.scss --fix",
     "clean": "rm -rf dist build node_modules stylesheets browser/build",
     "generate-frontend-types": "ts-node script/generateGovukFrontendTypes/runner.ts && prettier --write server/utils/govukFrontendTypes.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "setup": "npm ci && hmpps-npm-script-run-allowlist"
   },
   "engines": {
     "node": "^24",
@@ -119,6 +120,7 @@
     "@eslint/compat": "^1.2.9",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.28.0",
+    "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.3",
     "@pact-foundation/pact": "^15.0.1",
     "@types/body-parser": "^1.19.5",
     "@types/bunyan": "^1.8.11",
