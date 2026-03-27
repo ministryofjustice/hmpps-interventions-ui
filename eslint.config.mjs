@@ -109,7 +109,8 @@ export default defineConfig([
             '**/*.test.ts',
             'testutils/factories/*.ts',
             'mockApis/**/*.ts',
-            'eslint.config.mjs', // ✅ Add this line
+            'eslint.config.mjs',
+            '.allowed-scripts.mjs',
           ],
         },
       ],
