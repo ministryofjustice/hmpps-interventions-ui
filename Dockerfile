@@ -1,5 +1,5 @@
 # Build stage 1.
-FROM node:24-alpine AS base
+FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine AS base
 
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
@@ -8,10 +8,6 @@ RUN apk add --no-cache tzdata && \
       test -e "/usr/share/zoneinfo/$TZ" && \
       ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && \
       echo "$TZ" > /etc/timezone
-
-RUN addgroup --gid 2000 --system appgroup && \
-    adduser --uid 2000 --system appuser && \
-    adduser appuser appgroup
 
 WORKDIR /app
 
