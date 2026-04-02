@@ -20,7 +20,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
       - name: Install latest npm
         run: sudo npm install -g npm@latest
       - name: Install dependencies
@@ -44,12 +44,12 @@ jobs:
           done
           npm run int-test
       - name: Upload videos
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: integration-videos
           path: integration_tests/videos
       - name: Upload screenshots
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: integration-screenshots
           path: integration_tests/screenshots
