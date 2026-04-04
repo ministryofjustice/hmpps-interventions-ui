@@ -1,6 +1,6 @@
 services:
   redis:
-    image: 'cimg/redis:8.2'
+    image: 'cimg/redis:8.6'
     networks:
       - hmpps
     container_name: redis
