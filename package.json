@@ -121,7 +121,7 @@
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.28.0",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.3",
-    "@pact-foundation/pact": "^15.0.1",
+    "@pact-foundation/pact": "^16.0.0",
     "@types/body-parser": "^1.19.5",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
