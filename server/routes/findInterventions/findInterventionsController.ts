@@ -44,7 +44,8 @@ export default class FindInterventionsController {
   async viewInterventionDetails(req: Request, res: Response): Promise<void> {
     const intervention = await this.interventionsService.getIntervention(
       res.locals.user.token.accessToken,
-      req.params.id
+      req.params.id,
+      true
     )
 
     const presenter = new InterventionDetailsPresenter(intervention, res.locals.user)
