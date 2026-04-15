@@ -262,7 +262,7 @@ export default class InterventionsServiceMocks {
     return this.wiremock.stubFor({
       request: {
         method: 'GET',
-        urlPattern: `${this.mockPrefix}/intervention/${id}`,
+        urlPathPattern: `${this.mockPrefix}/intervention/${id}`,
       },
       response: {
         status: 200,
