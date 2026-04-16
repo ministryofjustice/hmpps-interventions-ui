@@ -566,12 +566,13 @@ export default class InterventionsService {
     })) as Intervention[]
   }
 
-  async getIntervention(token: string, id: string): Promise<Intervention> {
+  async getIntervention(token: string, id: string, checkEndDate = false): Promise<Intervention> {
     const restClient = this.createRestClient(token)
 
     return (await restClient.get({
       path: `/intervention/${id}`,
       headers: { Accept: 'application/json' },
+      ...(checkEndDate ? { query: { checkEndDate: 'true' } } : {}),
     })) as Intervention
   }
 
