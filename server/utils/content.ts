@@ -16,7 +16,7 @@ const content: Content = {
      * To turn on banner: uncomment and modify the content in below "text: 'content'" line
      * To turn off the banner: remove or comment out below "text: xxx" line
      */
-    //text: 'Refer and monitor an intervention will be unavailable between 6pm on Friday 20 March and 8am on Monday 23 March. This is due to planned maintenance in NDelius.',
+    text: 'Refer and monitor an intervention will be unavailable between 5:30pm on Wednesday 29 April and 9am on Thursday 30 April. This is due to planned maintenance in NDelius.',
   },
 }
 export default content
