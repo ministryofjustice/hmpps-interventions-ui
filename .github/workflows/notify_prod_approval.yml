@@ -49,12 +49,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
       - name: Map GitHub user to Slack ID
         id: slack-mapping
+        env:
+          GH_TO_SLACK_MAPPING: ${{ inputs.gh_to_slack_mapping }}
         run: |
           GITHUB_USERNAME="${{ steps.pr-info.outputs.pr_author }}"
           echo "Mapping GitHub user: $GITHUB_USERNAME"
-          
-          SLACK_USER_ID=$(echo '${{ inputs.gh_to_slack_mapping }}' \
-            | jq -r 'fromjson' \
+
+          SLACK_USER_ID=$(echo "$GH_TO_SLACK_MAPPING" \
             | jq -r --arg user "$GITHUB_USERNAME" '.[$user] // "unknown"')
 
           echo "slack_user_id=$SLACK_USER_ID" >> $GITHUB_OUTPUT
