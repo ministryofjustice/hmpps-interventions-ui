@@ -68,6 +68,7 @@ export default class ExpectedReleaseDateForm {
 
   static get validations(): ValidationChain[] {
     return [
+      body('expected-release-date').notEmpty().withMessage(errorMessages.expectedReleaseDate.emptyRadioButton),
       body('release-date-unknown-reason')
         .if(body('expected-release-date').equals('no'))
         .notEmpty()
