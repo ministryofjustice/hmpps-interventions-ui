@@ -49,6 +49,7 @@ export default class ExpectedReleaseDatePresenter {
 
   readonly fields = {
     hasExpectedReleaseDate: this.knowsExpectedReleaseDate(),
+    hasExpectedReleaseDateErrorMessage: this.errorMessageForField('expected-release-date'),
     releaseDate: this.utils.dateValue(
       this.referral.expectedReleaseDate === null
         ? null

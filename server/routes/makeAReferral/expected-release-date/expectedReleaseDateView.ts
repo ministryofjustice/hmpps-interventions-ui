@@ -37,6 +37,7 @@ export default class ExpectedReleaseDateView {
           },
         },
       ],
+      errorMessage: ViewUtils.govukErrorMessage(this.presenter.fields.hasExpectedReleaseDateErrorMessage),
     }
   }
 
