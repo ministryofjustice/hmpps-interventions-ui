@@ -71,7 +71,7 @@
     "@aws-sdk/s3-request-presigner": "^3.1005.0",
     "@dr.pogodin/csurf": "^1.16.5",
     "@microsoft/applicationinsights-web": "^3.3.0",
-    "@ministryofjustice/frontend": "2.2.5",
+    "@ministryofjustice/frontend": "11.0.1",
     "@ministryofjustice/hmpps-audit-client": "^1.1.1",
     "@sentry/node": "^10.0.0",
     "@types/connect-flash": "0.0.40",
