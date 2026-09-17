@@ -10,8 +10,8 @@ export interface Content {
 
 const content: Content = {
   serviceOutageBanner: {
-    title: 'Downtime',
-    subHeading: 'Planned downtime',
+    title: 'Important',
+    subHeading: 'Planned maintenance',
     /*
      * To turn on banner: uncomment and modify the content in below "text: 'content'" line
      * To turn off the banner: remove or comment out below "text: xxx" line
