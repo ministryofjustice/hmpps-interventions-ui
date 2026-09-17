@@ -100,7 +100,7 @@ jobs:
     with:
       environment: "prod"
       run_id: ${{ github.run_id }}
-      gh_to_slack_mapping: ${{ toJSON(vars.GH_TO_SLACK_MAPPING) }}
+      gh_to_slack_mapping: ${{ vars.GH_TO_SLACK_MAPPING }}
     secrets:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   deploy_prod:
