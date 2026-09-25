@@ -128,7 +128,7 @@ jobs:
     env:
       PACT_BROKER_PASSWORD: ${{ secrets.HMPPS_PACT_BROKER_PASSWORD }}
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Tag Pact version
         run: |
           sleep 10
