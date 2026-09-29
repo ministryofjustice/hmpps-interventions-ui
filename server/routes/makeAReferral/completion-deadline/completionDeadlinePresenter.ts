@@ -15,7 +15,8 @@ export default class CompletionDeadlinePresenter {
     this.intervention.contractType.name
   )} intervention need to be completed by?`
 
-  readonly completionDeadlineHint = 'For example, 27 10 2021'
+  readonly completionDeadlineHint =
+    'This date must allow enough time to deliver the service and complete the end of service report. Do not use the licence end date or sentence end date.'
 
   readonly reasonForChangeHint =
     'For example, there are not enough days to deliver the intervention based on the complexity levels.'

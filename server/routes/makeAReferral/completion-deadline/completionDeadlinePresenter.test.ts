@@ -139,7 +139,9 @@ describe('CompletionDeadlinePresenter', () => {
         referral.serviceUser
       )
 
-      expect(presenter.completionDeadlineHint).toEqual('For example, 27 10 2021')
+      expect(presenter.completionDeadlineHint).toEqual(
+        'This date must allow enough time to deliver the service and complete the end of service report. Do not use the licence end date or sentence end date.'
+      )
     })
     it('returns a reason for change hint', () => {
       const referral = draftReferralFactory.build()
