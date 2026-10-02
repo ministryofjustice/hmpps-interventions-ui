@@ -25,6 +25,7 @@ interface JwtPayloadExtended extends JwtPayload {
   authorities: string[]
   user_name: string
   user_id: string
+  user_uuid?: string
   auth_source: string
 }
 
@@ -52,11 +53,12 @@ export default function passportSetup(app: Application, hmppsAuthService: HmppsA
             authorities: roles = [],
             user_name: username,
             user_id: userId,
+            user_uuid: userUuid,
             auth_source: authSource,
           } = jwtDecode<JwtPayloadExtended>(accessToken)
 
           // augment the token response from with extra user details
-          const user: User = { username, userId, authSource }
+          const user: User = { username, userId, userUuid, authSource }
           const { name } = await hmppsAuthService.getUserDetails(accessToken)
           const { email } = await hmppsAuthService.getUserEmail(accessToken)
           const clientCredToken = await hmppsAuthService.getApiClientToken()
