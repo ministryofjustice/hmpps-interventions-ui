@@ -36,16 +36,24 @@ function ignoreExcludedRequestsProcessor(
   return true
 }
 
-function addUsernameProcessor(envelope: TelemetryEnvelope, contextObjects?: { [name: string]: unknown }): boolean {
+export function addUserDetailsProcessor(
+  envelope: TelemetryEnvelope,
+  contextObjects?: { [name: string]: unknown }
+): boolean {
   if (envelope.data?.baseType === 'RequestData') {
-    const userId = (contextObjects?.['http.ServerRequest'] as Request)?.user?.userId
+    const user = (contextObjects?.['http.ServerRequest'] as Request)?.user
 
-    if (userId) {
+    if (user?.userId) {
       // clone tags so we’re not reassigning envelope directly
       const newTags = { ...(envelope.tags ?? {}) }
-      newTags[defaultClient.context.keys.userAuthUserId] = userId
+      newTags[defaultClient.context.keys.userAuthUserId] = user.userId
       // eslint-disable no-param-reassign
       envelope.tags = newTags
+    }
+
+    if (user?.userUuid && envelope.data.baseData) {
+      const { baseData } = envelope.data
+      baseData.properties = { ...((baseData.properties as object) ?? {}), userUuid: user.userUuid }
     }
   }
   return true
@@ -77,7 +85,7 @@ export default function initialiseAppInsights(): void {
 
     // custom processors to fine tune behaviour
     defaultClient.addTelemetryProcessor(ignoreExcludedRequestsProcessor)
-    defaultClient.addTelemetryProcessor(addUsernameProcessor)
+    defaultClient.addTelemetryProcessor(addUserDetailsProcessor)
     defaultClient.addTelemetryProcessor(errorStatusCodeProcessor)
   }
 }
