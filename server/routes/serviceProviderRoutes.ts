@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { AuditAction } from '../services/auditService'
 import { get, post } from './index'
 import ServiceProviderReferralsController from './serviceProviderReferrals/serviceProviderReferralsController'
 import config from '../config'
@@ -55,27 +56,39 @@ export default function serviceProviderRoutes(
   get(router, '/dashboard/all-open-cases', (req, res) =>
     serviceProviderReferralsController.showAllOpenCasesDashboard(req, res)
   )
-  post(router, '/dashboard/all-open-cases', (req, res) =>
-    serviceProviderReferralsController.showAllOpenCasesDashboard(req, res)
+  post(
+    router,
+    '/dashboard/all-open-cases',
+    (req, res) => serviceProviderReferralsController.showAllOpenCasesDashboard(req, res),
+    { action: AuditAction.SEARCH, searchTermField: 'case-search-text' }
   )
 
   get(router, '/dashboard/unassigned-cases', (req, res) =>
     serviceProviderReferralsController.showUnassignedCasesDashboard(req, res)
   )
-  post(router, '/dashboard/unassigned-cases', (req, res) =>
-    serviceProviderReferralsController.showUnassignedCasesDashboard(req, res)
+  post(
+    router,
+    '/dashboard/unassigned-cases',
+    (req, res) => serviceProviderReferralsController.showUnassignedCasesDashboard(req, res),
+    { action: AuditAction.SEARCH, searchTermField: 'case-search-text' }
   )
   get(router, '/dashboard/completed-cases', (req, res) =>
     serviceProviderReferralsController.showCompletedCasesDashboard(req, res)
   )
-  post(router, '/dashboard/completed-cases', (req, res) =>
-    serviceProviderReferralsController.showCompletedCasesDashboard(req, res)
+  post(
+    router,
+    '/dashboard/completed-cases',
+    (req, res) => serviceProviderReferralsController.showCompletedCasesDashboard(req, res),
+    { action: AuditAction.SEARCH, searchTermField: 'case-search-text' }
   )
   get(router, '/dashboard/cancelled-cases', (req, res) =>
     serviceProviderReferralsController.showCancelledCases(req, res)
   )
-  post(router, '/dashboard/cancelled-cases', (req, res) =>
-    serviceProviderReferralsController.showCancelledCases(req, res)
+  post(
+    router,
+    '/dashboard/cancelled-cases',
+    (req, res) => serviceProviderReferralsController.showCancelledCases(req, res),
+    { action: AuditAction.SEARCH, searchTermField: 'case-search-text' }
   )
 
   get(router, '/referrals/:id/details', (req, res) => serviceProviderReferralsController.showReferral(req, res))
@@ -94,8 +107,11 @@ export default function serviceProviderRoutes(
   get(router, '/referrals/:id/assignment/confirmation', (req, res) =>
     serviceProviderReferralsController.confirmAssignment(req, res)
   )
-  post(router, '/referrals/:id/action-plan', (req, res) =>
-    serviceProviderReferralsController.createDraftActionPlan(req, res)
+  post(
+    router,
+    '/referrals/:id/action-plan',
+    (req, res) => serviceProviderReferralsController.createDraftActionPlan(req, res),
+    { action: AuditAction.CREATE, entity: 'ACTION_PLAN' }
   )
   get(router, '/action-plan/:id/add-activity/:number', (req, res) =>
     serviceProviderReferralsController.showActionPlanAddActivitiesForm(req, res)
@@ -230,8 +246,11 @@ export default function serviceProviderRoutes(
   get(router, '/end-of-service-report/:id', (req, res) =>
     serviceProviderReferralsController.viewEndOfServiceReport(req, res)
   )
-  post(router, '/referrals/:id/end-of-service-report', (req, res) =>
-    serviceProviderReferralsController.createDraftEndOfServiceReport(req, res)
+  post(
+    router,
+    '/referrals/:id/end-of-service-report',
+    (req, res) => serviceProviderReferralsController.createDraftEndOfServiceReport(req, res),
+    { action: AuditAction.CREATE, entity: 'END_OF_SERVICE_REPORT' }
   )
   get(router, '/end-of-service-report/:id/outcomes/:number', (req, res) =>
     serviceProviderReferralsController.editEndOfServiceReportOutcome(req, res)
@@ -394,8 +413,11 @@ export default function serviceProviderRoutes(
     caseNotesController.checkCaseNoteAnswers(req, res, 'service-provider')
   )
 
-  post(router, '/referrals/:id/add-case-note/:draftCaseNoteId/submit', (req, res) =>
-    caseNotesController.submitCaseNote(req, res, 'service-provider')
+  post(
+    router,
+    '/referrals/:id/add-case-note/:draftCaseNoteId/submit',
+    (req, res) => caseNotesController.submitCaseNote(req, res, 'service-provider'),
+    { action: AuditAction.CREATE, entity: 'CASE_NOTE' }
   )
 
   get(router, '/referrals/:id/add-case-note/confirmation', (req, res) =>
@@ -408,11 +430,15 @@ export default function serviceProviderRoutes(
     const reportingController = new ReportingController(services.interventionsService)
 
     get(router, '/performance-report', (req, res) => reportingController.viewReporting(req, res))
-    post(router, '/performance-report', (req, res) => reportingController.createReport(req, res))
+    post(router, '/performance-report', (req, res) => reportingController.createReport(req, res), {
+      action: AuditAction.CREATE,
+    })
     get(router, '/performance-report/confirmation', (req, res) =>
       reportingController.showPerformanceReportConfirmation(req, res)
     )
-    get(router, '/performance-report/download', (req, res) => reportingController.downloadPerformanceReport(req, res))
+    get(router, '/performance-report/download', (req, res) => reportingController.downloadPerformanceReport(req, res), {
+      action: AuditAction.DOWNLOAD,
+    })
   }
 
   return router

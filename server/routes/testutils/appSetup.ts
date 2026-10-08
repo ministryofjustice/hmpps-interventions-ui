@@ -25,6 +25,7 @@ import PrisonApiService from '../../services/prisonApiService'
 import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
 import MockRamDeliusApiService from './mocks/mockRamDeliusApiService'
 import AuditService from '../../services/auditService'
+import HmppsAuditClient from '../../data/hmppsAuditClient'
 
 export enum AppSetupUserType {
   probationPractitioner = 'delius',
@@ -36,9 +37,12 @@ function appSetup(
   serviceProviderRouter: Router,
   probationPractitionerRouter: Router,
   production: boolean,
-  userType: AppSetupUserType
+  userType: AppSetupUserType,
+  auditService: AuditService
 ): Express {
   const app = express()
+
+  app.set('auditService', auditService)
 
   app.set('view engine', 'njk')
   app.set('query parser', 'extended')
@@ -130,7 +134,9 @@ export default function appWithAllRoutes({
     prisonRegisterService: {} as PrisonRegisterService,
     prisonApiService: {} as PrisonApiService,
     prisonAndSecuredChildAgencyService: {} as PrisonAndSecuredChildAgencyService,
-    auditService: {} as AuditService, // Use the imported auditService directly
+    auditService: new AuditService(
+      new HmppsAuditClient({ enabled: false, queueUrl: '', region: 'eu-west-2', serviceName: 'test' })
+    ),
     ...overrides,
   }
 
@@ -139,6 +145,7 @@ export default function appWithAllRoutes({
     serviceProviderRoutes(standardRouter(), services),
     probationPractitionerRoutes(standardRouter(), services),
     production,
-    userType
+    userType,
+    services.auditService
   )
 }

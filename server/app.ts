@@ -62,6 +62,8 @@ export default function createApp(
   const app = express()
 
   app.set('json spaces', 2)
+  // used by the route helpers to audit every request (see middleware/auditMiddleware.ts)
+  app.set('auditService', auditService)
   app.set('query parser', 'extended')
 
   // Configure Express for running behind proxies

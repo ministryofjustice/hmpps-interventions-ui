@@ -4,6 +4,7 @@ import Logger from 'bunyan'
 import createError, { HttpError } from 'http-errors'
 import { ApiConfig } from '../config'
 import { loggerFactory } from '../../log'
+import AuditContext from '../utils/auditContext'
 
 interface GetRequest {
   path?: string
@@ -95,6 +96,8 @@ export default class RestClient {
       const result =
         token === null ? await unauthenticatedRequest : await unauthenticatedRequest.auth(token, { type: 'bearer' })
 
+      AuditContext.recordSubjectsFrom(result.body)
+
       return raw ? result : result.body
     } catch (error) {
       this.logger.warn({ err: error, query, path, verb: 'GET' }, 'rest client error')
@@ -124,6 +127,8 @@ export default class RestClient {
 
       const result =
         token === null ? await unauthenticatedRequest : await unauthenticatedRequest.auth(token, { type: 'bearer' })
+
+      AuditContext.recordSubjectsFrom(result.body)
 
       return raw ? result : result.body
     } catch (error) {
@@ -156,6 +161,8 @@ export default class RestClient {
       const result =
         token === null ? await unauthenticatedRequest : await unauthenticatedRequest.auth(token, { type: 'bearer' })
 
+      AuditContext.recordSubjectsFrom(result.body)
+
       return raw ? result : result.body
     } catch (error) {
       this.logger.warn({ err: error, path, verb: 'PATCH' }, 'rest client error')
@@ -186,6 +193,8 @@ export default class RestClient {
 
       const result =
         token === null ? await unauthenticatedRequest : await unauthenticatedRequest.auth(token, { type: 'bearer' })
+
+      AuditContext.recordSubjectsFrom(result.body)
 
       return raw ? result : result.body
     } catch (error) {

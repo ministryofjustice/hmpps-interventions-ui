@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { AuditAction } from '../services/auditService'
 import { get, post, Services } from './index'
 import ProbationPractitionerReferralsController from './probationPractitionerReferrals/probationPractitionerReferralsController'
 import CaseNotesController from './caseNotes/caseNotesController'
@@ -246,8 +247,11 @@ export default function probationPractitionerRoutes(router: Router, services: Se
   post(router, '/referrals/:id/withdrawal/:draftWithdrawalId/check-your-answers', (req, res) =>
     referralWithdrawalController.withdrawalCheckAnswers(req, res)
   )
-  get(router, '/referrals/:id/withdrawal/:draftWithdrawalId/submit', (req, res) =>
-    referralWithdrawalController.submitWithdrawal(req, res)
+  get(
+    router,
+    '/referrals/:id/withdrawal/:draftWithdrawalId/submit',
+    (req, res) => referralWithdrawalController.submitWithdrawal(req, res),
+    { action: AuditAction.EDIT }
   )
   get(router, '/referrals/:id/withdrawal/confirmation', (req, res) =>
     referralWithdrawalController.showWithdrawalConfirmationPage(req, res)
@@ -308,8 +312,11 @@ export default function probationPractitionerRoutes(router: Router, services: Se
     caseNotesController.checkCaseNoteAnswers(req, res, 'probation-practitioner')
   )
 
-  post(router, '/referrals/:id/add-case-note/:draftCaseNoteId/submit', (req, res) =>
-    caseNotesController.submitCaseNote(req, res, 'probation-practitioner')
+  post(
+    router,
+    '/referrals/:id/add-case-note/:draftCaseNoteId/submit',
+    (req, res) => caseNotesController.submitCaseNote(req, res, 'probation-practitioner'),
+    { action: AuditAction.CREATE, entity: 'CASE_NOTE' }
   )
 
   get(router, '/referrals/:id/add-case-note/confirmation', (req, res) =>

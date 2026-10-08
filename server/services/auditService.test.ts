@@ -1,4 +1,4 @@
-import AuditService, { Page } from './auditService'
+import AuditService, { AuditAction, AuditOutcome, AuditSubjectType } from './auditService'
 import HmppsAuditClient from '../data/hmppsAuditClient'
 
 jest.mock('../data/hmppsAuditClient')
@@ -40,24 +40,42 @@ describe('Audit service', () => {
     })
   })
 
-  describe('logPageView', () => {
-    it('sends page view event audit message using audit client', async () => {
-      await auditService.logPageView(Page.EXAMPLE_PAGE, {
+  describe('logInteraction', () => {
+    it('sends an <ACTION>_<ENTITY>_<OUTCOME> event without throwing on send errors', async () => {
+      await auditService.logInteraction(AuditAction.VIEW, 'REFERRAL_DETAILS', AuditOutcome.SUCCESS, {
         who: 'user1',
-        subjectId: 'subject123',
-        subjectType: 'exampleType',
+        subjectId: 'X123456',
+        subjectType: AuditSubjectType.CRN,
         correlationId: 'request123',
-        details: { extraDetails: 'example' },
+        details: { entityIds: { id: 'referral-1' } },
       })
 
-      expect(hmppsAuditClient.sendMessage).toHaveBeenCalledWith({
-        what: 'PAGE_VIEW_EXAMPLE_PAGE',
+      expect(hmppsAuditClient.sendMessage).toHaveBeenCalledWith(
+        {
+          what: 'VIEW_REFERRAL_DETAILS_SUCCESS',
+          who: 'user1',
+          subjectId: 'X123456',
+          subjectType: 'CRN',
+          correlationId: 'request123',
+          details: { entityIds: { id: 'referral-1' } },
+        },
+        false
+      )
+    })
+  })
+
+  describe('logSearchServiceUser', () => {
+    it('sends a SEARCH_SERVICE_USER event with the given outcome', async () => {
+      await auditService.logSearchServiceUser(AuditOutcome.ATTEMPT, {
         who: 'user1',
-        subjectId: 'subject123',
-        subjectType: 'exampleType',
-        correlationId: 'request123',
-        details: { extraDetails: 'example' },
+        subjectId: 'X123456',
+        subjectType: AuditSubjectType.SEARCH_TERM,
       })
+
+      expect(hmppsAuditClient.sendMessage).toHaveBeenCalledWith(
+        { what: 'SEARCH_SERVICE_USER_ATTEMPT', who: 'user1', subjectId: 'X123456', subjectType: 'SEARCH_TERM' },
+        false
+      )
     })
   })
 })
