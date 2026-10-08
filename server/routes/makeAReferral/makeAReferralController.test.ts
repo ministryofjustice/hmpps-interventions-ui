@@ -41,7 +41,11 @@ jest.mock('../../services/assessRisksAndNeedsService')
 jest.mock('../../services/prisonRegisterService')
 jest.mock('../../services/referenceDataService')
 jest.mock('../../services/prisonApiService')
-jest.mock('../../services/auditService')
+jest.mock('../../services/auditService', () => ({
+  ...jest.requireActual('../../services/auditService'),
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({ logSearchServiceUser: jest.fn(), logInteraction: jest.fn() })),
+}))
 
 const auditClientConfig = {
   queueUrl: 'http://localhost:4566/000000000000/mainQueue',
@@ -138,11 +142,18 @@ describe('POST /intervention/:id/refer', () => {
         .expect(301)
         .expect('Location', '/referrals/1/community-allocated-form?startReferral=true')
 
-      expect(auditService.logSearchServiceUser).toHaveBeenCalledWith({
-        details: { identifier: 'X123456' },
+      expect(auditService.logSearchServiceUser).toHaveBeenCalledWith('ATTEMPT', {
+        correlationId: expect.any(String),
         who: 'user1',
         subjectType: 'CRN',
         subjectId: 'X123456',
+      })
+      expect(auditService.logSearchServiceUser).toHaveBeenCalledWith('SUCCESS', {
+        correlationId: expect.any(String),
+        who: 'user1',
+        subjectType: 'CRN',
+        subjectId: 'X123456',
+        details: { results: { resultCount: 1, returnedSubjectIds: ['X320741'] } },
       })
       expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
     })
@@ -180,11 +191,18 @@ describe('POST /intervention/:id/refer', () => {
         .expect(301)
         .expect('Location', '/referrals/1/community-allocated-form?startReferral=true')
 
-      expect(auditService.logSearchServiceUser).toHaveBeenCalledWith({
-        details: { identifier: 'X123456' },
+      expect(auditService.logSearchServiceUser).toHaveBeenCalledWith('ATTEMPT', {
+        correlationId: expect.any(String),
         who: 'user1',
         subjectType: 'CRN',
         subjectId: 'X123456',
+      })
+      expect(auditService.logSearchServiceUser).toHaveBeenCalledWith('SUCCESS', {
+        correlationId: expect.any(String),
+        who: 'user1',
+        subjectType: 'CRN',
+        subjectId: 'X123456',
+        details: { results: { resultCount: 1, returnedSubjectIds: ['X320741'] } },
       })
       expect(interventionsService.createDraftReferral).toHaveBeenCalledWith('token', serviceUserCRN, interventionId)
     })
@@ -295,6 +313,13 @@ describe('POST /intervention/:id/refer', () => {
         })
 
       expect(ramDeliusApiService.getCaseDetailsByCrn).toHaveBeenCalledTimes(1)
+      expect(auditService.logSearchServiceUser).toHaveBeenCalledWith('FAILURE', {
+        correlationId: expect.any(String),
+        who: 'user1',
+        subjectType: 'CRN',
+        subjectId: 'X123456',
+        details: { failureReason: 'CRN not found' },
+      })
     })
   })
 })

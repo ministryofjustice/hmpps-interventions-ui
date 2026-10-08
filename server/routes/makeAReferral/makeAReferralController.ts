@@ -124,7 +124,7 @@ import ExpectedProbationOfficeUnknownForm from './expected-probation-office/expe
 import ReferralCreationReasonPresenter from './referral-creation-reason/referralCreationReasonPresenter'
 import ReferralCreationReasonView from './referral-creation-reason/referralCreationReasonView'
 import ReferralCreationReasonForm from './referral-creation-reason/referralCreationReasonForm'
-import AuditService from '../../services/auditService'
+import AuditService, { AuditOutcome, AuditSubjectType, newAuditRequestIds } from '../../services/auditService'
 
 export default class MakeAReferralController {
   constructor(
@@ -156,18 +156,23 @@ export default class MakeAReferralController {
     const crn = req.body['service-user-crn']?.trim()?.toUpperCase()
     const { interventionId } = req.params
 
-    await this.auditService.logSearchServiceUser({
+    const searchAuditDetails = {
+      ...newAuditRequestIds(),
       who: req.user!.username,
-      details: { identifier: crn },
-      subjectType: 'CRN',
+      subjectType: AuditSubjectType.CRN,
       subjectId: crn,
-    })
+    }
+    await this.auditService.logSearchServiceUser(AuditOutcome.ATTEMPT, searchAuditDetails)
 
     if (form.isValid) {
       try {
         serviceUser = await this.ramDeliusApiService.getCaseDetailsByCrn(crn)
       } catch (e) {
         const rce = e as RestClientError
+        await this.auditService.logSearchServiceUser(AuditOutcome.FAILURE, {
+          ...searchAuditDetails,
+          details: { failureReason: rce.status === 404 ? 'CRN not found' : rce.message },
+        })
 
         if (rce.status === 404) {
           error = {
@@ -194,6 +199,13 @@ export default class MakeAReferralController {
       }
     } else {
       error = form.error
+    }
+
+    if (serviceUser) {
+      await this.auditService.logSearchServiceUser(AuditOutcome.SUCCESS, {
+        ...searchAuditDetails,
+        details: { results: { resultCount: 1, returnedSubjectIds: [serviceUser.crn] } },
+      })
     }
 
     if (error === null) {

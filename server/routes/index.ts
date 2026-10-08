@@ -15,7 +15,8 @@ import PrisonRegisterService from '../services/prisonRegisterService'
 import PrisonApiService from '../services/prisonApiService'
 import RamDeliusApiService from '../services/ramDeliusApiService'
 import PrisonAndSecuredChildAgencyService from '../services/prisonAndSecuredChildAgencyService'
-import AuditService from '../services/auditService'
+import AuditService, { AuditAction } from '../services/auditService'
+import auditedHandler, { RouteAuditOptions } from '../middleware/auditMiddleware'
 
 export interface Services {
   ramDeliusApiService: RamDeliusApiService
@@ -31,11 +32,11 @@ export interface Services {
   auditService: AuditService
 }
 
-export const get = (router: Router, path: string, handler: RequestHandler): Router =>
-  router.get(path, asyncMiddleware(handler))
+export const get = (router: Router, path: string, handler: RequestHandler, audit?: RouteAuditOptions): Router =>
+  router.get(path, asyncMiddleware(auditedHandler('GET', path, handler, audit)))
 
-export const post = (router: Router, path: string, handler: RequestHandler): Router =>
-  router.post(path, asyncMiddleware(handler))
+export const post = (router: Router, path: string, handler: RequestHandler, audit?: RouteAuditOptions): Router =>
+  router.post(path, asyncMiddleware(auditedHandler('POST', path, handler, audit)))
 
 export default function routes(router: Router, services: Services): Router {
   const staticContentController = new StaticContentController()
@@ -97,7 +98,10 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
     services.auditService
   )
   get(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.startReferral(req, res))
-  post(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.createReferral(req, res))
+  post(router, '/intervention/:interventionId/refer', (req, res) => makeAReferralController.createReferral(req, res), {
+    action: AuditAction.CREATE,
+    entity: 'DRAFT_REFERRAL',
+  })
   get(router, '/referrals/:id/form', (req, res) => makeAReferralController.viewReferralForm(req, res))
   get(router, '/referrals/:id/referral-type-form', (req, res) => makeAReferralController.viewReferralTypeForm(req, res))
   post(router, '/referrals/:id/referral-type-form', (req, res) =>
@@ -263,8 +267,11 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   get(router, '/referrals/:id/delete-probation-practitioner/:fieldName', (req, res) =>
     makeAReferralController.viewDeleteProbationPractitionerDetails(req, res)
   )
-  post(router, '/referrals/:id/delete-probation-practitioner/:fieldName', (req, res) =>
-    makeAReferralController.deleteProbationPractitionerDetails(req, res)
+  post(
+    router,
+    '/referrals/:id/delete-probation-practitioner/:fieldName',
+    (req, res) => makeAReferralController.deleteProbationPractitionerDetails(req, res),
+    { action: AuditAction.DELETE, entity: 'REFERRAL_PROBATION_PRACTITIONER_DETAILS' }
   )
   get(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.viewRiskInformation(req, res))
   post(router, '/referrals/:id/risk-information', (req, res) => makeAReferralController.updateRiskInformation(req, res))
@@ -286,7 +293,10 @@ function probationPractitionerRoutesWithoutPrefix(router: Router, services: Serv
   get(router, '/referrals/:id/check-all-referral-information', (req, res) =>
     makeAReferralController.checkAllReferralInformation(req, res)
   )
-  post(router, '/referrals/:id/send', (req, res) => makeAReferralController.sendDraftReferral(req, res))
+  post(router, '/referrals/:id/send', (req, res) => makeAReferralController.sendDraftReferral(req, res), {
+    action: AuditAction.CREATE,
+    entity: 'REFERRAL',
+  })
   get(router, '/referrals/:id/confirmation', (req, res) => makeAReferralController.viewConfirmation(req, res))
 
   return router
