@@ -72,7 +72,7 @@
     "@dr.pogodin/csurf": "^1.16.5",
     "@microsoft/applicationinsights-web": "^3.3.0",
     "@ministryofjustice/frontend": "2.2.5",
-    "@ministryofjustice/hmpps-audit-client": "^1.1.1",
+    "@ministryofjustice/hmpps-audit-client": "^2.0.0",
     "@sentry/node": "^10.0.0",
     "@types/connect-flash": "0.0.40",
     "@types/express-serve-static-core": "^5.0.6",
