@@ -142,7 +142,7 @@
     "@types/passport-oauth2": "^1.4.17",
     "@types/pg": "^8.16.0",
     "@types/superagent": "^8.1.9",
-    "@types/supertest": "^6.0.0",
+    "@types/supertest": "^7.0.0",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
     "@typescript-eslint/parser": "^8.33.0",
     "audit-ci": "^7.1.0",
