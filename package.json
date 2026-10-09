@@ -86,7 +86,7 @@
     "bunyan": "^1.8.15",
     "compression": "^1.7.4",
     "connect-flash": "^0.1.1",
-    "connect-redis": "^9.0.0",
+    "connect-redis": "^10.0.0",
     "cookie-parser": "^1.4.6",
     "csvtojson": "^2.0.10",
     "date-fns": "^4.0.0",
