@@ -5,7 +5,7 @@ FROM ghcr.io/ministryofjustice/hmpps-node:24-alpine-runtime-20261020 AS base
 LABEL maintainer="HMPPS Digital Studio <info@digital.justice.gov.uk>"
 
 ENV TZ=Europe/London
-RUN apk add --no-cache tzdata && \
+RUN apk add --no-cache tzdata make python3 npm && \
       test -e "/usr/share/zoneinfo/$TZ" && \
       ln -snf "/usr/share/zoneinfo/$TZ" /etc/localtime && \
       echo "$TZ" > /etc/timezone
@@ -14,8 +14,6 @@ WORKDIR /app
 
 # Stage: build assets
 FROM base AS build
-
-RUN apk add --no-cache make python3
 
 COPY package*.json ./
 RUN CYPRESS_INSTALL_BINARY=0 npm ci --no-audit
