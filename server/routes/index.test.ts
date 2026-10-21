@@ -57,21 +57,19 @@ describe('check response headers are set correctly', () => {
   it('should set content-security-policy correctly', async () => {
     const { header } = await request(app).get('/')
     const contentSecurityPolicy = header['content-security-policy'].split(';')
-    expect(contentSecurityPolicy).toMatchInlineSnapshot(`
-      Array [
-        "default-src 'self'",
-        "script-src 'self' code.jquery.com 'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU=' https://www.google-analytics.com https://ssl.google-analytics.com https://www.googletagmanager.com/ 'nonce-mocked'",
-        "style-src 'self' code.jquery.com",
-        "font-src 'self'",
-        "img-src 'self' https://www.google-analytics.com",
-        "connect-src 'self' https://www.google-analytics.com *.google-analytics.com *.analytics.google.com *.applicationinsights.azure.com",
-        "base-uri 'self'",
-        "form-action 'self'",
-        "frame-ancestors 'self'",
-        "object-src 'none'",
-        "script-src-attr 'none'",
-        "upgrade-insecure-requests",
-      ]
-    `)
+    expect(contentSecurityPolicy).toEqual([
+      "default-src 'self'",
+      "base-uri 'self'",
+      "font-src 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'self'",
+      "img-src 'self' https://www.google-analytics.com",
+      "object-src 'none'",
+      "script-src 'self' code.jquery.com 'sha256-+6WnXIl4mbFTCARd8N3COQmT3bJJmo32N8q8ZSQAIcU=' https://www.google-analytics.com https://ssl.google-analytics.com https://www.googletagmanager.com/ 'nonce-mocked'",
+      "script-src-attr 'none'",
+      "style-src 'self' code.jquery.com",
+      'upgrade-insecure-requests',
+      "connect-src 'self' https://www.google-analytics.com *.google-analytics.com *.analytics.google.com *.applicationinsights.azure.com",
+    ])
   })
 })

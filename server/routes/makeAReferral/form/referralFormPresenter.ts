@@ -726,8 +726,7 @@ class TaskValues {
   }
 }
 export type ReferralFormSectionPresenter =
-  | ReferralFormSingleListSectionPresenter
-  | ReferralFormMultiListSectionPresenter
+  ReferralFormSingleListSectionPresenter | ReferralFormMultiListSectionPresenter
 
 export interface ReferralFormSingleListSectionPresenter extends ReferralFormTaskListSectionPresenter {
   type: 'single'

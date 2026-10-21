@@ -7,11 +7,7 @@ interface DraftAppointmentBookingSchedulingDetails {
   durationInMinutes: number | null
   sessionType: 'ONE_TO_ONE' | 'GROUP' | null
   appointmentDeliveryType:
-    | 'PHONE_CALL'
-    | 'VIDEO_CALL'
-    | 'IN_PERSON_MEETING_PROBATION_OFFICE'
-    | 'IN_PERSON_MEETING_OTHER'
-    | null
+    'PHONE_CALL' | 'VIDEO_CALL' | 'IN_PERSON_MEETING_PROBATION_OFFICE' | 'IN_PERSON_MEETING_OTHER' | null
   appointmentDeliveryAddress: {
     firstAddressLine: string
     secondAddressLine: string | null

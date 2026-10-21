@@ -91,15 +91,13 @@ export default class CalendarDay {
 
     const convertedBack = TimezoneSupport.getZonedTime(converted, zone)
 
-    if (
-      !(
-        convertedBack.year === this.year &&
-        convertedBack.month === this.month &&
-        convertedBack.day === this.day &&
-        convertedBack.hours === time.hour &&
-        convertedBack.minutes === time.minute
-      )
-    ) {
+    if (!(
+      convertedBack.year === this.year &&
+      convertedBack.month === this.month &&
+      convertedBack.day === this.day &&
+      convertedBack.hours === time.hour &&
+      convertedBack.minutes === time.minute
+    )) {
       return null
     }
 
