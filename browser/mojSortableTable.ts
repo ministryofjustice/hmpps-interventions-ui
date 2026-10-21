@@ -120,14 +120,12 @@ class PersistentSortOrder {
 
     const deserialized = JSON.parse(serialized) as unknown
 
-    if (
-      !(
-        typeof deserialized === 'object' &&
-        deserialized !== null &&
-        'columnPersistentId' in deserialized &&
-        'order' in deserialized
-      )
-    ) {
+    if (!(
+      typeof deserialized === 'object' &&
+      deserialized !== null &&
+      'columnPersistentId' in deserialized &&
+      'order' in deserialized
+    )) {
       return null
     }
 

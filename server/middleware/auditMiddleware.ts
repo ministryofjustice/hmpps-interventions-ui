@@ -104,7 +104,7 @@ export default function auditedHandler(
         await handler(req, res, next)
       } catch (err) {
         await log(AuditOutcome.FAILURE, { failureReason: (err as Error)?.message ?? 'unknown error' })
-        throw err
+        return next(err)
       }
 
       if (res.statusCode >= 400) {
