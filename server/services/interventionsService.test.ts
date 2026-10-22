@@ -3960,7 +3960,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
   describe('submitEndOfServiceReport', () => {
     it('submits a draft end of service report', async () => {
       const id = 'c3239695-b258-4ac6-9478-cb6929668aaa'
-      const submittedEndOfServiceReport = endOfServiceReportFactory.submitted().build()
+      const submittedEndOfServiceReport = endOfServiceReportFactory
+        .submitted()
+        .build({ submittedAt: '2021-03-09T15:08:38Z' })
       const submittedEndOfServiceReporttRequestBody: InterfaceToTemplate<EndOfServiceReport> = {
         ...submittedEndOfServiceReport,
         outcomes: [],
@@ -4055,7 +4057,9 @@ pactWith({ consumer: 'Interventions UI', provider: 'Interventions Service' }, pr
     })
 
     it('returns the referral’s supplier assessment, including a list of its appointments', async () => {
-      const appointment = initialAssessmentAppointmentFactory.newlyBooked().phoneCall.build()
+      const appointment = initialAssessmentAppointmentFactory
+        .newlyBooked()
+        .phoneCall.build({ appointmentTime: '2021-03-24T09:30:00Z' })
       const appointmentRequestBody: InterfaceToTemplate<InitialAssessmentAppointment> = {
         ...appointment,
         appointmentFeedback: {

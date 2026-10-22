@@ -38,6 +38,7 @@ export default Oauth2TokenFactory.define(({ transientParams }) => {
     authorities: roles,
     client_id: clientID,
     exp: 3758875200, // warning - tests may start to fail in 2089...
+    iat: 1609459200, // fixed so the generated pact contract is the same on every run
   }
   return jwt.sign(payload, 'secret')
 })
