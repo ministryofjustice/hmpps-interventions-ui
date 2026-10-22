@@ -80,8 +80,9 @@ export default function auditedHandler(
     ) => {
       const crns = [...context.crns]
       let subject = { subjectId: NO_SUBJECT_ID, subjectType: AuditSubjectType.NOT_APPLICABLE as AuditSubjectType }
-      if (searchTerm !== null) {
-        subject = { subjectId: searchTerm, subjectType: AuditSubjectType.SEARCH_TERM }
+      if (action === AuditAction.SEARCH) {
+        // searches are recorded against the user performing them; the search term goes in the details
+        subject = { subjectId: who, subjectType: AuditSubjectType.USER_ID }
       } else if (crns.length === 1) {
         subject = { subjectId: crns[0], subjectType: AuditSubjectType.CRN }
       }
@@ -92,7 +93,8 @@ export default function auditedHandler(
         ...subject,
         details: {
           ...baseDetails,
-          ...(searchTerm === null && crns.length > 1 ? { returnedSubjectIds: crns } : {}),
+          ...(searchTerm !== null ? { searchTerm } : {}),
+          ...(action !== AuditAction.SEARCH && crns.length > 1 ? { returnedSubjectIds: crns } : {}),
           ...extraDetails,
         },
       })
