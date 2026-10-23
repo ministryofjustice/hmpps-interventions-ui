@@ -141,7 +141,7 @@ services:
     restart: always
 
   postgres:
-    image: postgres:14.24-alpine
+    image: postgres:18
     container_name: postgres
     networks:
       - hmpps

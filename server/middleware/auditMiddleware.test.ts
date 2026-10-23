@@ -122,7 +122,7 @@ describe('auditedHandler', () => {
     expect(events()[1].slice(0, 3)).toEqual(['EDIT', 'REFERRAL_UPDATE_PROBATION_PRACTITIONER_NAME', 'SUCCESS'])
   })
 
-  it('uses the search term as the subject for SEARCH routes', async () => {
+  it('uses the user ID as the subject for SEARCH routes and records the search term in the details', async () => {
     const app = createApp(
       'POST',
       '/dashboard/all-open-cases',
@@ -140,15 +140,20 @@ describe('auditedHandler', () => {
       .expect(200)
 
     expect(events()[1].slice(0, 3)).toEqual(['SEARCH', 'DASHBOARD_ALL_OPEN_CASES', 'SUCCESS'])
-    expect(events()[1][3]).toMatchObject({ subjectId: 'Alex River', subjectType: 'SEARCH_TERM' })
+    expect(events()[0][3]).toMatchObject({ subjectId: 'user1', subjectType: 'USER_ID' })
+    expect(events()[1][3]).toMatchObject({
+      subjectId: 'user1',
+      subjectType: 'USER_ID',
+      details: { searchTerm: 'Alex River' },
+    })
     expect(events()[1][3].details).not.toHaveProperty('changes')
     expect(events()[1][3].details).not.toHaveProperty('results')
 
     expect(events()).toHaveLength(3)
     expect(events()[2].slice(0, 3)).toEqual(['VIEW', 'DASHBOARD_ALL_OPEN_CASES_SEARCH_RESULTS', 'SUCCESS'])
     expect(events()[2][3]).toMatchObject({
-      subjectId: 'Alex River',
-      subjectType: 'SEARCH_TERM',
+      subjectId: 'user1',
+      subjectType: 'USER_ID',
       correlationId: events()[0][3].correlationId,
       details: { results: { resultCount: 2, returnedSubjectIds: ['AB1234CD', 'EF5678GH'] } },
     })
