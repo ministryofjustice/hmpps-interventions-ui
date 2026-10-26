@@ -1,25 +1,25 @@
-import request from 'supertest'
 import { Express } from 'express'
 import moment from 'moment-timezone'
-import InterventionsService from '../../services/interventionsService'
-import apiConfig from '../../config'
-import RamDeliusApiService from '../../services/ramDeliusApiService'
-import referralDetails from '../../../testutils/factories/referralDetails'
+import request from 'supertest'
+
 import deliusServiceUser from '../../../testutils/factories/deliusServiceUser'
-import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import prisonAndSecuredChildFactory from '../../../testutils/factories/secureChildAgency'
 import prisonFactory from '../../../testutils/factories/prison'
-import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
+import referralDetails from '../../../testutils/factories/referralDetails'
+import prisonAndSecuredChildFactory from '../../../testutils/factories/secureChildAgency'
 import sentReferral from '../../../testutils/factories/sentReferral'
+import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
+import apiConfig from '../../config'
+import { CurrentLocationType } from '../../models/draftReferral'
+import PrisonAndSecuredChildAgency from '../../models/prisonAndSecureChildAgency'
 import SentReferral from '../../models/sentReferral'
 import ServiceCategory from '../../models/serviceCategory'
-import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
-import PrisonApiService from '../../services/prisonApiService'
-import PrisonAndSecuredChildAgency from '../../models/prisonAndSecureChildAgency'
-import PrisonRegisterService from '../../services/prisonRegisterService'
+import InterventionsService from '../../services/interventionsService'
 import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
+import PrisonApiService from '../../services/prisonApiService'
+import PrisonRegisterService from '../../services/prisonRegisterService'
 import ReferenceDataService from '../../services/referenceDataService'
-import { CurrentLocationType } from '../../models/draftReferral'
+import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
+import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/ramDeliusApiService')
@@ -28,17 +28,17 @@ jest.mock('../../services/prisonApiService')
 jest.mock('../../services/prisonAndSecuredChildAgencyService')
 jest.mock('../../services/referenceDataService')
 
-const interventionsService = new InterventionsService(
-  apiConfig.apis.interventionsService
-) as jest.Mocked<InterventionsService>
-const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
-const prisonApiService = new PrisonApiService() as jest.Mocked<PrisonApiService>
-const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
-const prisonAndSecuredChildAgencyService = new PrisonAndSecuredChildAgencyService(
-  prisonRegisterService,
-  prisonApiService
-) as jest.Mocked<PrisonAndSecuredChildAgencyService>
-const referenceDataService = new ReferenceDataService() as jest.Mocked<ReferenceDataService>
+const interventionsService = jest.mocked(new InterventionsService(apiConfig.apis.interventionsService), {
+  shallow: true,
+})
+const ramDeliusApiService = jest.mocked(new MockRamDeliusApiService(), { shallow: true })
+const prisonApiService = jest.mocked(new PrisonApiService(), { shallow: true })
+const prisonRegisterService = jest.mocked(new PrisonRegisterService(), { shallow: true })
+const prisonAndSecuredChildAgencyService = jest.mocked(
+  new PrisonAndSecuredChildAgencyService(prisonRegisterService, prisonApiService),
+  { shallow: true }
+)
+const referenceDataService = jest.mocked(new ReferenceDataService(), { shallow: true })
 
 let app: Express
 let referral: SentReferral
@@ -630,8 +630,8 @@ describe('POST /probation-practitioner/referrals/:id/amend-expected-probation-of
         })
         .expect(302)
 
-      expect(interventionsService.updateExpectedProbationOffice).toBeCalledTimes(1)
-      expect(interventionsService.updateProbationPractitionerProbationOffice).toBeCalledTimes(0)
+      expect(interventionsService.updateExpectedProbationOffice).toHaveBeenCalledTimes(1)
+      expect(interventionsService.updateProbationPractitionerProbationOffice).toHaveBeenCalledTimes(0)
     })
   })
 
@@ -646,8 +646,8 @@ describe('POST /probation-practitioner/referrals/:id/amend-expected-probation-of
         })
         .expect(302)
 
-      expect(interventionsService.updateExpectedProbationOffice).toBeCalledTimes(1)
-      expect(interventionsService.updateProbationPractitionerProbationOffice).toBeCalledTimes(1)
+      expect(interventionsService.updateExpectedProbationOffice).toHaveBeenCalledTimes(1)
+      expect(interventionsService.updateProbationPractitionerProbationOffice).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -693,8 +693,8 @@ describe('POST /probation-practitioner/referrals/:id/amend-pp-probation-office',
         })
         .expect(302)
 
-      expect(interventionsService.updateProbationPractitionerProbationOffice).toBeCalledTimes(1)
-      expect(interventionsService.updateExpectedProbationOffice).toBeCalledTimes(0)
+      expect(interventionsService.updateProbationPractitionerProbationOffice).toHaveBeenCalledTimes(1)
+      expect(interventionsService.updateExpectedProbationOffice).toHaveBeenCalledTimes(0)
     })
   })
 
@@ -709,8 +709,8 @@ describe('POST /probation-practitioner/referrals/:id/amend-pp-probation-office',
         })
         .expect(302)
 
-      expect(interventionsService.updateProbationPractitionerProbationOffice).toBeCalledTimes(1)
-      expect(interventionsService.updateExpectedProbationOffice).toBeCalledTimes(1)
+      expect(interventionsService.updateProbationPractitionerProbationOffice).toHaveBeenCalledTimes(1)
+      expect(interventionsService.updateExpectedProbationOffice).toHaveBeenCalledTimes(1)
     })
   })
 

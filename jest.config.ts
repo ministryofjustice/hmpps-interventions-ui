@@ -1,6 +1,11 @@
-/** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
-module.exports = {
-  preset: 'ts-jest',
+import { defineConfig } from 'jest'
+
+export default defineConfig({
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json',
+    },
+  },
   testEnvironment: 'node',
   collectCoverageFrom: ['server/**/*.{ts,js,jsx,mjs}'],
   testMatch: ['<rootDir>/(server|job)/**/?(*.)(spec|test).{ts,js,jsx,mjs}'],
@@ -24,4 +29,4 @@ module.exports = {
   moduleNameMapper: {
     '^axios$': require.resolve('axios'),
   },
-}
+})

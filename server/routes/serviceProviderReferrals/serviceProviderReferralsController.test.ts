@@ -1,57 +1,55 @@
-import request from 'supertest'
 import { Express } from 'express'
 import createError from 'http-errors'
 import moment from 'moment-timezone'
-import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
-import getCookieValue from '../testutils/responseUtils'
-import InterventionsService from '../../services/interventionsService'
-import apiConfig from '../../config'
+import { createClient } from 'redis'
+import request from 'supertest'
+
+import actionPlanFactory from '../../../testutils/factories/actionPlan'
+import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
+import approvedActionPlanSummary from '../../../testutils/factories/approvedActionPlanSummary'
+import caseConvictionFactory from '../../../testutils/factories/caseConviction'
+import deliusResponsibleOfficerFactory from '../../../testutils/factories/deliusResponsibleOfficer'
+import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
+import { createDraftFactory } from '../../../testutils/factories/draft'
+import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
+import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
+import interventionFactory from '../../../testutils/factories/intervention'
+import pageFactory from '../../../testutils/factories/page'
+import prisonFactory from '../../../testutils/factories/prison'
+import prisoner from '../../../testutils/factories/prisoner'
+import ramDeliusUserFactory from '../../../testutils/factories/ramDeliusUser'
+import riskSummaryFactory from '../../../testutils/factories/riskSummary'
+import secureChildAgency from '../../../testutils/factories/secureChildAgency'
 import sentReferralFactory from '../../../testutils/factories/sentReferral'
 import sentReferralSummariesFactory from '../../../testutils/factories/sentReferralSummaries'
 import serviceCategoryFactory from '../../../testutils/factories/serviceCategory'
-import deliusServiceUserFactory from '../../../testutils/factories/deliusServiceUser'
-import HmppsAuthService from '../../services/hmppsAuthService'
-import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
-import hmppsAuthUserFactory from '../../../testutils/factories/hmppsAuthUser'
-import actionPlanFactory from '../../../testutils/factories/actionPlan'
-import endOfServiceReportFactory from '../../../testutils/factories/endOfServiceReport'
-import interventionFactory from '../../../testutils/factories/intervention'
-import prisonFactory from '../../../testutils/factories/prison'
-import AssessRisksAndNeedsService from '../../services/assessRisksAndNeedsService'
-import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
 import supplementaryRiskInformationFactory from '../../../testutils/factories/supplementaryRiskInformation'
 import supplierAssessmentFactory from '../../../testutils/factories/supplierAssessment'
-import riskSummaryFactory from '../../../testutils/factories/riskSummary'
-import actionPlanAppointmentFactory from '../../../testutils/factories/actionPlanAppointment'
-import approvedActionPlanSummary from '../../../testutils/factories/approvedActionPlanSummary'
-import SentReferral from '../../models/sentReferral'
-import { RamDeliusUser } from '../../models/delius/deliusUser'
-import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
-import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
-import { createDraftFactory } from '../../../testutils/factories/draft'
-import { DraftAssignmentData } from './serviceProviderReferralsController'
-import DraftsService from '../../services/draftsService'
-import MockReferenceDataService from '../testutils/mocks/mockReferenceDataService'
-import ReferenceDataService from '../../services/referenceDataService'
-import pageFactory from '../../../testutils/factories/page'
-import { Page } from '../../models/pagination'
-import UserDataService from '../../services/userDataService'
-import SentReferralSummaries from '../../models/sentReferralSummaries'
+import apiConfig from '../../config'
 import { ActionPlanAppointment } from '../../models/appointment'
 import ApprovedActionPlanSummary from '../../models/approvedActionPlanSummary'
-import PrisonRegisterService from '../../services/prisonRegisterService'
-import Prison from '../../models/prisonRegister/prison'
+import RiskSummary from '../../models/assessRisksAndNeeds/riskSummary'
+import { SupplementaryRiskInformation } from '../../models/assessRisksAndNeeds/supplementaryRiskInformation'
 import { DeliusResponsibleOfficer } from '../../models/delius/deliusResponsibleOfficer'
-import deliusResponsibleOfficerFactory from '../../../testutils/factories/deliusResponsibleOfficer'
-import RamDeliusApiService from '../../services/ramDeliusApiService'
-import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
-import ramDeliusUserFactory from '../../../testutils/factories/ramDeliusUser'
-import caseConvictionFactory from '../../../testutils/factories/caseConviction'
+import { RamDeliusUser } from '../../models/delius/deliusUser'
 import { CurrentLocationType } from '../../models/draftReferral'
-import PrisonApiService from '../../services/prisonApiService'
+import { Page } from '../../models/pagination'
+import Prison from '../../models/prisonRegister/prison'
+import SentReferral from '../../models/sentReferral'
+import SentReferralSummaries from '../../models/sentReferralSummaries'
+import DraftsService from '../../services/draftsService'
+import InterventionsService from '../../services/interventionsService'
 import PrisonAndSecuredChildAgencyService from '../../services/prisonAndSecuredChildAgencyService'
-import secureChildAgency from '../../../testutils/factories/secureChildAgency'
-import prisoner from '../../../testutils/factories/prisoner'
+import PrisonApiService from '../../services/prisonApiService'
+import PrisonRegisterService from '../../services/prisonRegisterService'
+import MockedHmppsAuthService from '../../services/testutils/hmppsAuthServiceSetup'
+import UserDataService from '../../services/userDataService'
+import appWithAllRoutes, { AppSetupUserType } from '../testutils/appSetup'
+import MockAssessRisksAndNeedsService from '../testutils/mocks/mockAssessRisksAndNeedsService'
+import MockRamDeliusApiService from '../testutils/mocks/mockRamDeliusApiService'
+import MockReferenceDataService from '../testutils/mocks/mockReferenceDataService'
+import getCookieValue from '../testutils/responseUtils'
+import { DraftAssignmentData } from './serviceProviderReferralsController'
 
 jest.mock('../../services/interventionsService')
 jest.mock('../../services/hmppsAuthService')
@@ -60,41 +58,37 @@ jest.mock('../../services/draftsService')
 jest.mock('../../services/prisonRegisterService')
 jest.mock('../../services/prisonApiService')
 jest.mock('../../services/ramDeliusApiService')
+jest.mock('../../services/referenceDataService')
+jest.mock('../../services/userDataService')
 
 const draftAssignmentFactory = createDraftFactory<DraftAssignmentData>({ email: null })
 
-const interventionsService = new InterventionsService(
-  apiConfig.apis.interventionsService
-) as jest.Mocked<InterventionsService>
+const interventionsService = jest.mocked(new InterventionsService(apiConfig.apis.interventionsService), {
+  shallow: true,
+})
 
-const referenceDataService = new MockReferenceDataService() as jest.Mocked<ReferenceDataService>
+const referenceDataService = jest.mocked(new MockReferenceDataService(), { shallow: true })
 
-const ramDeliusApiService = new MockRamDeliusApiService() as jest.Mocked<RamDeliusApiService>
+const ramDeliusApiService = jest.mocked(new MockRamDeliusApiService(), { shallow: true })
 
-const hmppsAuthService = new MockedHmppsAuthService() as jest.Mocked<HmppsAuthService>
+const hmppsAuthService = jest.mocked(new MockedHmppsAuthService(), { shallow: true })
 
-const assessRisksAndNeedsService = new MockAssessRisksAndNeedsService() as jest.Mocked<AssessRisksAndNeedsService>
+const assessRisksAndNeedsService = jest.mocked(new MockAssessRisksAndNeedsService(), { shallow: true })
 
-const prisonRegisterService = new PrisonRegisterService() as jest.Mocked<PrisonRegisterService>
+const prisonRegisterService = jest.mocked(new PrisonRegisterService(), { shallow: true })
 
-const prisonApiService = new PrisonApiService() as jest.Mocked<PrisonApiService>
+const prisonApiService = jest.mocked(new PrisonApiService(), { shallow: true })
 
 const prisonAndSecuredChildAgencyService = new PrisonAndSecuredChildAgencyService(
   prisonRegisterService,
   prisonApiService
 )
 
-const userDataService = {
-  store: jest.fn(),
-  retrieve: jest.fn(),
-} as unknown as jest.Mocked<UserDataService>
+const userDataService = jest.mocked(new UserDataService(createClient()), { shallow: true })
 
-const draftsService = {
-  createDraft: jest.fn(),
-  fetchDraft: jest.fn(),
-  updateDraft: jest.fn(),
-  deleteDraft: jest.fn(),
-} as unknown as jest.Mocked<DraftsService>
+const draftsService = jest.mocked(new DraftsService(createClient(), { seconds: 3600 }, { now: () => new Date() }), {
+  shallow: true,
+})
 
 let app: Express
 
@@ -127,6 +121,7 @@ describe('GET /service-provider/dashboard', () => {
     prisonApiService.getSecureChildrenAgencies.mockResolvedValue(secureChildAgency.build())
     prisonRegisterService.getPrisons.mockResolvedValue(prisonFactory.build())
     const page = pageFactory.pageContent(referrals).build() as Page<SentReferralSummaries>
+
     interventionsService.getSentReferralsForUserTokenPaged.mockResolvedValue(page)
     await request(app)
       .get('/service-provider/dashboard')
@@ -2779,7 +2774,7 @@ describe('POST /service-provider/referrals/:id/action-plan/edit', () => {
       .expect(303)
       .expect('Location', `/service-provider/action-plan/${newActionPlan.id}/add-activity/1`)
 
-    expect(interventionsService.createDraftActionPlan).toBeCalledWith('token', referral.id, 5, [
+    expect(interventionsService.createDraftActionPlan).toHaveBeenCalledWith('token', referral.id, 5, [
       { description: 'existing activity - 2020-12-07T20:45:21.986389Z' },
       { description: 'existing activity - 2020-12-07T20:50:21.986389Z' },
       { description: 'existing activity - 2020-12-10T19:45:21.986389Z' },

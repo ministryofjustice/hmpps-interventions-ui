@@ -252,7 +252,7 @@ describe('hmppsAuthService', () => {
       const output = await hmppsAuthService.getApiClientToken()
 
       expect(output).toEqual(token.access_token)
-      expect(redis.set).toBeCalledWith('systemToken:interventions:%ANONYMOUS%', token.access_token, { EX: 240 })
+      expect(redis.set).toHaveBeenCalledWith('systemToken:interventions:%ANONYMOUS%', token.access_token, { EX: 240 })
     })
   })
 
