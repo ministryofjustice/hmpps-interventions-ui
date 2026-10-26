@@ -1,11 +1,8 @@
 import { defineConfig } from 'jest'
 
 export default defineConfig({
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.json',
-    },
-  },
+  globals: {},
+  preset: 'ts-jest',
   testEnvironment: 'node',
   collectCoverageFrom: ['server/**/*.{ts,js,jsx,mjs}'],
   testMatch: ['<rootDir>/(server|job)/**/?(*.)(spec|test).{ts,js,jsx,mjs}'],
@@ -27,6 +24,6 @@ export default defineConfig({
   ],
   moduleFileExtensions: ['web.js', 'js', 'json', 'node', 'ts'],
   moduleNameMapper: {
-    '^axios$': require.resolve('axios'),
+    '^axios$': '<rootDir>/node_modules/axios/dist/node/axios.cjs',
   },
 })
