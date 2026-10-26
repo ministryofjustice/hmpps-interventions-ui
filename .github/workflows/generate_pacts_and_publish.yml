@@ -50,7 +50,9 @@ jobs:
           path: pact/pacts
       - name: Publish Pact files to broker
         run: |
-          if [ -d "pact/pacts" ]; then
+          if [ -z "$PACT_BROKER_PASSWORD" ]; then
+            echo "Pact broker password not available (e.g. Dependabot run) — skipping publish"
+          elif [ -d "pact/pacts" ]; then
             echo "Publishing Pacts for version $GITHUB_SHA..."
             npx --package=@pact-foundation/pact-cli@15.0.0 pact-broker publish pact/pacts \
               --consumer-app-version=$GITHUB_SHA \
