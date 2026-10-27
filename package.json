@@ -70,7 +70,7 @@
     "@aws-sdk/credential-providers": "^3.1005.0",
     "@aws-sdk/s3-request-presigner": "^3.1005.0",
     "@dr.pogodin/csurf": "^1.16.5",
-    "@microsoft/applicationinsights-web": "^3.3.0",
+    "@microsoft/applicationinsights-web": "^3.3.9",
     "@ministryofjustice/frontend": "2.2.5",
     "@ministryofjustice/hmpps-audit-client": "^2.0.0",
     "@sentry/node": "^11.0.0",
