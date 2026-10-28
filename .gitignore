@@ -31,3 +31,4 @@ integration_tests/screenshots/
 !**/templates/secrets.yaml
 pact/
 browser/build/
+vendor/
