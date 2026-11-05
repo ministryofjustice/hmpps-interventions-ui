@@ -44,7 +44,7 @@ You'll also need to add the following line to your `/etc/hosts` file:
 npm run start:dev
 ```
 
-
+.
 Navigate to `http://localhost:3000` and log in:
 
 - To log in as a service provider user, use HMPPS Auth dev credentials e.g. `TEST_INTERVENTIONS_SP_1 / password123456` (and, this user has an email address of `test.interventions.sp.1@digital.justice.gov.uk` if you want to assign a referral to them)
