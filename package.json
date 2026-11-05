@@ -102,7 +102,7 @@
     "http-status-codes": "^2.3.0",
     "indefinite": "^2.5.1",
     "jest": "30.5.2",
-    "joi": "^18.0.0",
+    "joi": "^18.3.1",
     "jquery": "^3.7.1",
     "jwt-decode": "^4.0.0",
     "md5": "^2.3.0",
