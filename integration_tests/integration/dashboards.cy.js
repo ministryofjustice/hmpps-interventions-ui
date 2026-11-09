@@ -240,15 +240,13 @@ describe('Dashboards', () => {
               .find('th')
               .each($el => {
                 const sort = $el.text() === heading ? 'ascending' : 'none'
-                cy.wrap($el).should('have.attr', { 'aria-sort': sort })
+                cy.wrap($el).should('have.attr', 'aria-sort', sort)
               })
 
             // clicking again sorts in the other direction
             cy.get('table').within(() => cy.contains('button', heading).click())
             cy.get('h1').contains('Open cases')
-            cy.get('table').within(() =>
-              cy.contains('button', heading).should('have.attr', { 'aria-sort': 'descending' })
-            )
+            cy.get('table').within(() => cy.contains('button', heading).should('have.attr', 'aria-sort', 'descending'))
           })
         })
       }
@@ -713,7 +711,7 @@ describe('Dashboards', () => {
                 .find('th')
                 .each($el => {
                   const sort = $el.text() === heading ? 'ascending' : 'none'
-                  cy.wrap($el).should('have.attr', { 'aria-sort': sort })
+                  cy.wrap($el).should('have.attr', 'aria-sort', sort)
                 })
 
               // clicking again sorts in the other direction
@@ -721,7 +719,7 @@ describe('Dashboards', () => {
               cy.get('h1').contains('All open cases')
 
               cy.get('table').within(() =>
-                cy.contains('button', heading).should('have.attr', { 'aria-sort': 'descending' })
+                cy.contains('button', heading).should('have.attr', 'aria-sort', 'descending')
               )
             })
           })
@@ -759,7 +757,7 @@ describe('Dashboards', () => {
             cy.get('table').within(() => cy.contains('button', table.sortField).click())
             cy.get('h1').contains(table.dashboardType)
             cy.get('table').within(() =>
-              cy.contains('button', table.sortField).should('have.attr', { 'aria-sort': 'ascending' })
+              cy.contains('button', table.sortField).should('have.attr', 'aria-sort', 'ascending')
             )
 
             cy.get('[data-cy=dashboard-navigation]').contains(table.dashboardType).click()
@@ -768,7 +766,7 @@ describe('Dashboards', () => {
             // Wait for header sort button to load, as it means JS has run
             cy.get('table').within(() => cy.contains('button', table.sortField))
             cy.get('table').within(() =>
-              cy.contains('button', table.sortField).should('have.attr', { 'aria-sort': 'ascending' })
+              cy.contains('button', table.sortField).should('have.attr', 'aria-sort', 'ascending')
             )
           })
         })
