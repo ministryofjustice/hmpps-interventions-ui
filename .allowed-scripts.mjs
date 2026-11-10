@@ -5,7 +5,7 @@ export default configureAllowedScripts({
     // Needed by esbuild for watching files during development
     'node_modules/@parcel/watcher@2.6.0': 'ALLOW',
     // Downloads Cypress binary; required for E2E tests
-    'node_modules/cypress@15.8.1': 'ALLOW',
+    'node_modules/cypress@15.21.1': 'ALLOW',
     // Optional native DTrace bindings; fails gracefully; transitive dependency of Cypress; required for E2E tests
     'node_modules/dtrace-provider@0.8.8': 'ALLOW',
     // macOS native file events; standard transitive dep
